@@ -37,7 +37,7 @@ jobs:
       run: |-
         [ ! -d "edc" ] && git submodule add https://github.com/eclipse-dataspaceconnector/DataSpaceConnector.git edc
         git submodule update --init
-        git -C edc checkout d429b6cd5e81e0fc79e8f9a0cb1b31888d0900a4
+        git -C edc checkout 705a44712fecb9cf5ac18622311e6a2dbd86ffc3
     -
       name: Set up JDK 11
       uses: actions/setup-java@v2
