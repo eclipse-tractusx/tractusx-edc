@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edc-dataplane.fullname" . }}-configmap
+  labels:
+    {{- include "edc-dataplane.labels" . | nindent 4 }}
+data:
+  configuration.properties: |-
+    {{ .Values.configuration.properties | nindent 4 }}
