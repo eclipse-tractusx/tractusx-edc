@@ -6,4 +6,10 @@ metadata:
     {{- include "edc-dataplane.labels" . | nindent 4 }}
 data:
   configuration.properties: |-
-    {{ .Values.configuration.properties | nindent 4 }}
+    {{- range $k, $v := .Values.configuration.properties }}
+    {{- if $v }}
+    {{ $k | replace "_" "." }}={{ $v }}
+    {{- else }}
+    # {{ $k | replace "_" "." }}=
+    {{- end }}
+    {{- end }}

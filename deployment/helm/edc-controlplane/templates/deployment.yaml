@@ -20,9 +20,14 @@ spec:
       labels:
         {{- include "edc-controlplane.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.imagePullSecret.dockerconfigjson }}
+      imagePullSecrets:
+        - name: {{ include "edc-controlplane.fullname" . }}-imagepullsecret
+      {{- else }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
       serviceAccountName: {{ include "edc-controlplane.serviceAccountName" . }}
       securityContext:

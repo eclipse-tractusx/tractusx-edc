@@ -31,7 +31,7 @@ updates:
   -
     package-ecosystem: "maven"
     target-branch: develop
-    directory: "edc-controlplane/edc-controlplane-cosmosdb/src/main/docker"
+    directory: /
     labels:
       - "dependabot"
       - "dependencies"
