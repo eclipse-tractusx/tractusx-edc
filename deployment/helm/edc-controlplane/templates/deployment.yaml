@@ -38,9 +38,6 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}{{- if .Values.flavor }}-{{ .Values.flavor }}{{- end -}}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: CONFIGURATION_PROPERTIES
-              value: "/etc/edc/configuration.properties"
           ports:
             - name: http
               containerPort: 80
@@ -57,7 +54,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: configuration
-              mountPath: /etc/edc
+              mountPath: /app/configuration.properties
+              subPath: configuration.properties
       volumes:
         - name: configuration
           configMap:
