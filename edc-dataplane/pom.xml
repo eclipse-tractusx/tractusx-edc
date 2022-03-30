@@ -40,9 +40,16 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>
+                                        META-INF/services/org.eclipse.dataspaceconnector.spi.system.VaultExtension
+                                    </resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>
                                         META-INF/services/org.eclipse.dataspaceconnector.spi.system.ConfigurationExtension
                                     </resource>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
                         </configuration>
                     </execution>
@@ -52,22 +59,13 @@
     </build>
 
     <dependencies>
+        <!-- Config -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>web-spi</artifactId>
+            <artifactId>filesystem-configuration</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-boot</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>http</artifactId>
-        </dependency>
+
+        <!-- APIs -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>data-plane-framework</artifactId>
@@ -82,7 +80,23 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>filesystem-configuration</artifactId>
+            <artifactId>observability-api</artifactId>
+        </dependency>
+
+        <!-- Core -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-boot</artifactId>
+        </dependency>
+
+        <!-- Supportive -->
+        <dependency> <!-- includes jetty and jersey -->
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>http</artifactId>
         </dependency>
     </dependencies>
 
