@@ -1,17 +1,8 @@
-FROM openjdk:11-jre-slim-buster
+FROM gcr.io/distroless/java11-debian11
 ARG JAR
-
-ENV CONFIGURATION_PROPERTIES=/app/configuration.properties
-
-RUN useradd --create-home app
 
 WORKDIR /app
 
-USER app
-
 COPY $JAR edc-dataplane.jar
 
-ENTRYPOINT java \
-    -Djava.security.edg=file:/dev/.urandom \
-    -Dedc.fs.config="${CONFIGURATION_PROPERTIES}" \
-    -jar edc-dataplane.jar
+CMD ["-Djava.security.edg=file:/dev/.urandom", "-Dedc.fs.config=/app/configuration.properties", "-jar", "edc-dataplane.jar"]
