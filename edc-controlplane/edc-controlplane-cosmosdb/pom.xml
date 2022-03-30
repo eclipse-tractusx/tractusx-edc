@@ -50,9 +50,16 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>
+                                        META-INF/services/org.eclipse.dataspaceconnector.spi.system.VaultExtension
+                                    </resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>
                                         META-INF/services/org.eclipse.dataspaceconnector.spi.system.ConfigurationExtension
                                     </resource>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>
@@ -62,55 +69,65 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>web-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer-process-store-memory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractnegotiation-store-memory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids</artifactId>
-        </dependency>
+        <!-- Config -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>filesystem-configuration</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-mock</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>control-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>http</artifactId>
-        </dependency>
+
+        <!-- Vault -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>azure-vault</artifactId>
         </dependency>
+
+        <!-- APIs -->
+        <dependency> <!-- Once org.eclipse.dataspaceconnector:data-management-api is ready this will go away -->
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>control-api</artifactId>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-management-api</artifactId>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>observability-api</artifactId>
+        </dependency>
+
+        <!-- IDS -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-api-configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-api-multipart-dispatcher-v1</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-api-multipart-endpoint-v1</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-api-transform-v1</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>ids-token-validation</artifactId>
+        </dependency>
+
+        <!-- Stores -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>assetindex-cosmos</artifactId>
@@ -126,6 +143,53 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>transfer-process-store-cosmos</artifactId>
+        </dependency>
+
+        <dependency> <!-- Cosmosdb not yet supported -->
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>policy-store-memory</artifactId>
+        </dependency>
+
+        <!-- Core -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>transfer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>contract</artifactId>
+        </dependency>
+
+        <!-- IAM -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>iam-mock</artifactId>
+        </dependency>
+
+        <!-- Supportive -->
+        <dependency> <!-- includes jetty and jersey -->
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>http</artifactId>
+        </dependency>
+
+        <dependency> <!-- http-posts EndpointDataReference to configured external service -->
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>http-receiver</artifactId>
+        </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
