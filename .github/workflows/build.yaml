@@ -51,6 +51,41 @@ jobs:
       working-directory: edc
 
     #################################
+    ### edc-controlplane-memory ###
+    #################################
+    -
+      name: Build edc-controlplane-memory
+      run: |-
+        ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-memory -am verify
+      env:
+        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: Docker Metadata
+      id: edc_controlplane_memory_meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-memory
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{raw}}
+          type=match,pattern=\d.\d.\d
+          type=sha
+    -
+      name: Build Docker Image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
+        build-args: |
+          JAR=edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.edc_controlplane_memory_meta.outputs.tags }}
+        labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
+
+    #################################
     ### edc-controlplane-cosmosdb ###
     #################################
     -

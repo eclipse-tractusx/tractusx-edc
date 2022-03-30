@@ -15,5 +15,6 @@
 
     <modules>
         <module>edc-controlplane-cosmosdb</module>
+        <module>edc-controlplane-memory</module>
     </modules>
 </project>

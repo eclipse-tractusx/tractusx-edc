@@ -29,6 +29,15 @@ updates:
     schedule:
       interval: "daily"
   -
+    package-ecosystem: "docker"
+    target-branch: develop
+    directory: "edc-controlplane/edc-controlplane-memory/src/main/docker"
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "daily"
+  -
     package-ecosystem: "maven"
     target-branch: develop
     directory: /
