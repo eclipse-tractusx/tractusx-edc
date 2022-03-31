@@ -24,6 +24,8 @@
         <com.diffplug.spotless.maven.plugin.version>1.31.3</com.diffplug.spotless.maven.plugin.version>
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
+        <com.azure.sdk.bom.version>1.2.0</com.azure.sdk.bom.version>
+        <jakarta.ws.rs.api.version>3.0.0</jakarta.ws.rs.api.version>
     </properties>
 
     <distributionManagement>
@@ -108,6 +110,22 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- BOMs -->
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-sdk-bom</artifactId>
+                <version>${com.azure.sdk.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- dependencies -->
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${jakarta.ws.rs.api.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>api-configuration</artifactId>
