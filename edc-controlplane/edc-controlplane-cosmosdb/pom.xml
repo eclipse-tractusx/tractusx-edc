@@ -29,6 +29,7 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>module-info.class</exclude>
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
@@ -59,7 +60,8 @@
                                         META-INF/services/org.eclipse.dataspaceconnector.spi.system.ConfigurationExtension
                                     </resource>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>
@@ -79,6 +81,16 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>azure-vault</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-security-keyvault-secrets</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-identity</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- APIs -->
@@ -131,18 +143,42 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>assetindex-cosmos</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>contract-definition-store-cosmos</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>contract-negotiation-store-cosmos</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>transfer-process-store-cosmos</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency> <!-- Cosmosdb not yet supported -->
@@ -189,7 +225,19 @@
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-cosmos</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-security-keyvault-secrets</artifactId>
         </dependency>
     </dependencies>
 
