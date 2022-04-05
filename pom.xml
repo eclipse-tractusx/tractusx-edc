@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.catenax.edc</groupId>
@@ -10,6 +8,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>edc-extensions</module>
         <module>edc-controlplane</module>
         <module>edc-dataplane</module>
     </modules>
@@ -110,6 +109,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- CX Extensions -->
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>aas-controller</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- EDC Extensions -->
             <!-- BOMs -->
             <dependency>
                 <groupId>com.azure</groupId>
@@ -125,7 +132,6 @@
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${jakarta.ws.rs.api.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>api-configuration</artifactId>
@@ -736,6 +742,7 @@
                 <artifactId>web-spi</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

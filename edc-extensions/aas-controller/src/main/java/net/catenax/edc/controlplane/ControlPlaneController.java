@@ -1,3 +1,17 @@
+/*
+ *  Copyright (c) 2022 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial API and Implementation
+ *
+ */
+
 package net.catenax.edc.controlplane;
 
 import jakarta.ws.rs.Consumes;
@@ -19,7 +33,7 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.TransferProcess;
 
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
-@Path("/")
+@Path("/v1")
 public class ControlPlaneController {
   private final Monitor monitor;
   private final AssetLoader assetLoader;
@@ -40,11 +54,11 @@ public class ControlPlaneController {
   // TODO: most of these api will be replaced by data management api
   @Path("/assets")
   @POST
-  public String createAsset(Map<String, Map<String, String>> properties) {
-    var assetProperties = properties.get("asset");
+  public String createAsset(AssetEntryDto assetEntry) {
+    var assetProperties = assetEntry.asset.properties;
     var asset = Asset.Builder.newInstance().properties(assetProperties).build();
 
-    var dataAddressProperties = properties.get("dataAddress");
+    var dataAddressProperties = assetEntry.dataAddress.properties;
     var dataAddress = DataAddress.Builder.newInstance().properties(dataAddressProperties).build();
     monitor.debug("Create asset: " + asset.getId());
     assetLoader.accept(asset, dataAddress);
@@ -62,5 +76,60 @@ public class ControlPlaneController {
   @GET
   public TransferProcess getTransferProcess(@PathParam("id") String id) {
     return transferProcessStore.find(id);
+  }
+
+  private static class AssetDto {
+
+    public AssetDto() {}
+
+    Map<String, String> properties;
+
+    public Map<String, String> getProperties() {
+      return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+      this.properties = properties;
+    }
+  }
+
+  private static class DataAddressDto {
+
+    public DataAddressDto() {}
+
+    Map<String, String> properties;
+
+    public Map<String, String> getProperties() {
+      return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+      this.properties = properties;
+    }
+  }
+
+  private static class AssetEntryDto {
+
+    public AssetEntryDto() {}
+
+    private AssetDto asset;
+
+    private DataAddressDto dataAddress;
+
+    public AssetDto getAsset() {
+      return asset;
+    }
+
+    public void setAsset(AssetDto asset) {
+      this.asset = asset;
+    }
+
+    public DataAddressDto getDataAddress() {
+      return dataAddress;
+    }
+
+    public void setDataAddress(DataAddressDto dataAddress) {
+      this.dataAddress = dataAddress;
+    }
   }
 }
