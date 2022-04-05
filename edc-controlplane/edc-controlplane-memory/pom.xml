@@ -169,6 +169,28 @@
             <artifactId>iam-mock</artifactId>
         </dependency>
 
+        <!-- Telemetry -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-micrometer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jersey-micrometer</artifactId>
+            <version>${org.eclipse.dataspaceconnector.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jetty-micrometer</artifactId>
+            <version>${org.eclipse.dataspaceconnector.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jdk-logger-monitor</artifactId>
+        </dependency>
+
         <!-- Supportive -->
         <dependency>
             <!-- includes jetty and jersey -->

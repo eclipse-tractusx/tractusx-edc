@@ -84,6 +84,20 @@ tolerations: []
 
 affinity: {}
 
+logging:
+  properties:
+    _level: INFO
+    org_eclipse_dataspaceconnector_level: ALL
+    handlers: java.util.logging.ConsoleHandler
+    java_util_logging_ConsoleHandler_formatter: java.util.logging.SimpleFormatter
+    java_util_logging_ConsoleHandler_level: ALL
+    java_util_logging_SimpleFormatter_format: "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"
+
+opentelemetry:
+  properties:
+    otel_javaagent_enabled: "true"
+    otel_javaagent_debug: "false"
+
 configuration:
   properties:
     edc_api_control_auth_apikey_key: ""

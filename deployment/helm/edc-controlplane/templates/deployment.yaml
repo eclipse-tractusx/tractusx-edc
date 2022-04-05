@@ -42,6 +42,9 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /
@@ -56,6 +59,12 @@ spec:
             - name: configuration
               mountPath: /app/configuration.properties
               subPath: configuration.properties
+            - name: configuration
+              mountPath: /app/opentelemetry.properties
+              subPath: opentelemetry.properties
+            - name: configuration
+              mountPath: /app/logging.properties
+              subPath: logging.properties
       volumes:
         - name: configuration
           configMap:
@@ -63,6 +72,10 @@ spec:
             items:
               - key: configuration.properties
                 path: configuration.properties
+              - key: opentelemetry.properties
+                path: opentelemetry.properties
+              - key: logging.properties
+                path: logging.properties
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
