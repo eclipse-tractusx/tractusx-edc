@@ -1,4 +1,4 @@
-FROM alpine:3.14 as otel
+FROM alpine:3.15.4 as otel
 
 ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.1/opentelemetry-javaagent.jar"
 
