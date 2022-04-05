@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>edc-controlplane</artifactId>
         <groupId>net.catenax.edc</groupId>
@@ -37,30 +35,26 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
                                     </mainClass>
                                 </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>
                                         META-INF/services/org.eclipse.dataspaceconnector.spi.system.ServiceExtension
                                     </resource>
                                 </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>
                                         META-INF/services/org.eclipse.dataspaceconnector.spi.system.VaultExtension
                                     </resource>
                                 </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>
                                         META-INF/services/org.eclipse.dataspaceconnector.spi.system.ConfigurationExtension
                                     </resource>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
                         </configuration>
                     </execution>
@@ -70,6 +64,12 @@
     </build>
 
     <dependencies>
+        <!-- AAS Controller -->
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>aas-controller</artifactId>
+        </dependency>
+
         <!-- Config -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -77,16 +77,15 @@
         </dependency>
 
         <!-- APIs -->
-        <dependency> <!-- Once org.eclipse.dataspaceconnector:data-management-api is ready this will go away -->
+        <dependency>
+            <!-- Once org.eclipse.dataspaceconnector:data-management-api is ready this will go away -->
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>control-api</artifactId>
         </dependency>
-        <!--
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>data-management-api</artifactId>
         </dependency>
-        -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>observability-api</artifactId>
@@ -140,7 +139,8 @@
             <artifactId>transfer-process-store-memory</artifactId>
         </dependency>
 
-        <dependency> <!-- Cosmosdb not yet supported -->
+        <dependency>
+            <!-- Cosmosdb not yet supported -->
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>policy-store-memory</artifactId>
         </dependency>
@@ -170,21 +170,16 @@
         </dependency>
 
         <!-- Supportive -->
-        <dependency> <!-- includes jetty and jersey -->
+        <dependency>
+            <!-- includes jetty and jersey -->
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>http</artifactId>
         </dependency>
 
-        <dependency> <!-- http-posts EndpointDataReference to configured external service -->
+        <dependency>
+            <!-- http-posts EndpointDataReference to configured external service -->
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>http-receiver</artifactId>
-        </dependency>
-
-        <!-- Other -->
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
