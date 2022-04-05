@@ -13,3 +13,19 @@ data:
     # {{ $k | replace "_" "." }}=
     {{- end }}
     {{- end }}
+  opentelemetry.properties: |-
+    {{- range $k, $v := .Values.opentelemetry.properties }}
+    {{- if $v }}
+    {{ $k | replace "_" "." }}={{ $v }}
+    {{- else }}
+    # {{ $k | replace "_" "." }}=
+    {{- end }}
+    {{- end }}
+  logging.properties: |-
+    {{- range $k, $v := .Values.logging.properties }}
+    {{- if $v }}
+    {{ $k | replace "_" "." }}={{ $v }}
+    {{- else }}
+    # {{ $k | replace "_" "." }}=
+    {{- end }}
+    {{- end }}
