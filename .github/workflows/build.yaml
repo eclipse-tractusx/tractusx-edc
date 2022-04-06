@@ -38,7 +38,8 @@ jobs:
       run: |-
         [ ! -d "edc" ] && git submodule add https://github.com/eclipse-dataspaceconnector/DataSpaceConnector.git edc
         git submodule update --init
-        git -C edc checkout 3305340d6a19ba919540d28a731b3cab6d23857a
+        git -C edc fetch --all
+        git -C edc checkout febacc631b4c07aaec2e76ff8a81e8564a99090d
     -
       name: Set up JDK 11
       uses: actions/setup-java@v2
@@ -120,6 +121,41 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
+
+    #################################
+    ### edc-controlplane-postgresql ###
+    #################################
+    -
+      name: Build edc-controlplane-postgresql
+      run: |-
+        ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-postgresql -am verify
+      env:
+        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: edc-controlplane-postgresql Docker Metadata
+      id: edc_controlplane_postgresql_meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-postgresql
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{raw}}
+          type=match,pattern=\d.\d.\d
+          type=sha
+    -
+      name: Build edc-controlplane-postgresql Docker Image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: edc-controlplane/edc-controlplane-postgresql/src/main/docker/Dockerfile
+        build-args: |
+          JAR=edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.edc_controlplane_postgresql_meta.outputs.tags }}
+        labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
 
     #####################
     ### edc-dataplane ###

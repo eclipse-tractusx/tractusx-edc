@@ -9,6 +9,7 @@
 
     <modules>
         <module>edc-extensions</module>
+
         <module>edc-controlplane</module>
         <module>edc-dataplane</module>
     </modules>
@@ -25,6 +26,8 @@
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.0</com.azure.sdk.bom.version>
         <jakarta.ws.rs.api.version>3.0.0</jakarta.ws.rs.api.version>
+        <org.postgresql.version>42.2.6</org.postgresql.version>
+        <org.flywaydb.version>8.5.5</org.flywaydb.version>
     </properties>
 
     <distributionManagement>
@@ -115,23 +118,30 @@
                 <artifactId>aas-controller</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-            <!-- EDC Extensions -->
-            <!-- BOMs -->
             <dependency>
-                <groupId>com.azure</groupId>
-                <artifactId>azure-sdk-bom</artifactId>
-                <version>${com.azure.sdk.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>postgresql-migration</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
-            <!-- dependencies -->
+            <!-- Common Dependencies -->
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${jakarta.ws.rs.api.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${org.postgresql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${org.flywaydb.version}</version>
+            </dependency>
+
+            <!-- EDC Extensions -->
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>api-configuration</artifactId>
@@ -637,6 +647,12 @@
                 <artifactId>spi</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>sql-asset-index</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>sql-common</artifactId>
@@ -662,6 +678,17 @@
                 <artifactId>sql-transferprocess-store</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>sql-contractnegotiation-store</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>sql-policy-store</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>state-machine-lib</artifactId>
@@ -743,6 +770,14 @@
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
 
+            <!-- BOMs -->
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-sdk-bom</artifactId>
+                <version>${com.azure.sdk.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
