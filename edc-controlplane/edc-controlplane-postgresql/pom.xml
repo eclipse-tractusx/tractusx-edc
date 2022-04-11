@@ -69,13 +69,15 @@
     </build>
 
     <dependencies>
-        <!-- AAS Controller -->
+        <!-- CX Extensions -->
         <dependency>
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>aas-controller</artifactId>
         </dependency>
-
-        <!-- Postgresql Migration -->
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>business-partner-validation</artifactId>
+        </dependency>
         <dependency>
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>postgresql-migration</artifactId>
