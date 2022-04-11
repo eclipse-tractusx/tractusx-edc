@@ -182,7 +182,11 @@
         <!-- IAM -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-mock</artifactId>
+            <artifactId>oauth2-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>iam-daps</artifactId>
         </dependency>
 
         <!-- Telemetry -->
