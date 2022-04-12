@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,11 +8,19 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ .Values.edc.endpoints.default.port }}
+      targetPort: default
       protocol: TCP
-      name: http
-    - port: 9090
+      name: default
+    - port: {{ .Values.edc.endpoints.control.port }}
+      targetPort: control
+      protocol: TCP
+      name: control
+    - port: {{ .Values.edc.endpoints.public.port }}
+      targetPort: public
+      protocol: TCP
+      name: public
+    - port: {{ .Values.edc.endpoints.metrics.port }}
       targetPort: metrics
       protocol: TCP
       name: metrics

@@ -226,12 +226,10 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>jersey-micrometer</artifactId>
-            <version>${org.eclipse.dataspaceconnector.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>jetty-micrometer</artifactId>
-            <version>${org.eclipse.dataspaceconnector.version}</version>
         </dependency>
 
         <!-- Logging -->

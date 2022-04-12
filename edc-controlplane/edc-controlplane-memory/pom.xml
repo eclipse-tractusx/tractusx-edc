@@ -167,14 +167,18 @@
         </dependency>
 
         <!-- IAM -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>oauth2-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-daps</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.dataspaceconnector</groupId>-->
+<!--            <artifactId>oauth2-core</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.dataspaceconnector</groupId>-->
+<!--            <artifactId>iam-daps</artifactId>-->
+<!--        </dependency>-->
+                <dependency>
+                    <groupId>org.eclipse.dataspaceconnector</groupId>
+                    <artifactId>iam-mock</artifactId>
+                </dependency>
 
         <!-- Telemetry -->
         <dependency>
@@ -184,12 +188,10 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>jersey-micrometer</artifactId>
-            <version>${org.eclipse.dataspaceconnector.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>jetty-micrometer</artifactId>
-            <version>${org.eclipse.dataspaceconnector.version}</version>
         </dependency>
 
         <!-- Logging -->
