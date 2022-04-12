@@ -8,8 +8,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 #  Contributors:
-#       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
+#       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
 #
-
 net.catenax.edc.validation.businesspartner.BusinessPartnerValidationExtension
