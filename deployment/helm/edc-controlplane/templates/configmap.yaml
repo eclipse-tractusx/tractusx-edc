@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,26 +7,18 @@ metadata:
     {{- include "edc-controlplane.labels" . | nindent 4 }}
 data:
   configuration.properties: |-
-    {{- range $k, $v := .Values.configuration.properties }}
-    {{- if $v }}
-    {{ $k | replace "_" "." }}={{ $v }}
-    {{- else }}
-    # {{ $k | replace "_" "." }}=
-    {{- end }}
-    {{- end }}
+    web.http.default.port={{ .Values.edc.endpoints.default.port }}
+    web.http.default.path={{ .Values.edc.endpoints.default.path }}
+    web.http.data.port={{ .Values.edc.endpoints.data.port }}
+    web.http.data.path={{ .Values.edc.endpoints.data.path }}
+    web.http.control.port={{ .Values.edc.endpoints.control.port }}
+    web.http.control.path={{ .Values.edc.endpoints.control.path }}
+    web.http.ids.port={{ .Values.edc.endpoints.ids.port }}
+    web.http.ids.path={{ .Values.edc.endpoints.ids.path }}
+    {{- .Values.configuration.properties | nindent 4 }}
+
   opentelemetry.properties: |-
-    {{- range $k, $v := .Values.opentelemetry.properties }}
-    {{- if $v }}
-    {{ $k | replace "_" "." }}={{ $v }}
-    {{- else }}
-    # {{ $k | replace "_" "." }}=
-    {{- end }}
-    {{- end }}
+    {{- .Values.opentelemetry.properties | nindent 4 }}
+
   logging.properties: |-
-    {{- range $k, $v := .Values.logging.properties }}
-    {{- if $v }}
-    {{ $k | replace "_" "." }}={{ $v }}
-    {{- else }}
-    # {{ $k | replace "_" "." }}=
-    {{- end }}
-    {{- end }}
+    {{- .Values.logging.properties | nindent 4 }}

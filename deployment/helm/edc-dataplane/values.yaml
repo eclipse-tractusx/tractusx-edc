@@ -5,31 +5,50 @@
 replicaCount: 1
 
 image:
+  ##
+  ## Which edc-dataplane container image to use.
+  ##
   repository: ghcr.io/catenax-ng/catena-x-edc/edc-dataplane
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  ##
+  ## Overrides the image tag whose default is the chart appVersion.
+  ##
   tag: ""
 
+##
+## Image pull secret to create to obtain the container image
+## Note: 'imagePullSecret.dockerconfigjson' takes precedence if configured together with 'imagePullSecrets'
+##
 imagePullSecret:
   dockerconfigjson: ""
 
+##
+## Existing image pull secret to use to obtain the container image
+##
 imagePullSecrets: []
+
 nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  ##
+  ## Specifies whether a service account should be created per release
+  ##
   create: true
-  # Annotations to add to the service account
+  ##
+  ## Annotations to add to the service account
+  ##
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
+  ##
+  ## The name of the service account to use.
+  ## If not set and create is true, a name is generated using the fullname template
+  ##
   name: ""
 
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
   # capabilities:
@@ -37,27 +56,97 @@ securityContext: {}
   #   - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
-  # runAsUser: 1000
+# runAsUser: 1000
 
+##
+## Whether to enable kubernetes liveness-probes
+##
+livenessProbe:
+  enabled: true
+
+##
+## Whether to enable kubernetes readiness-probes
+##
+readinessProbe:
+  enabled: true
+
+##
+## Whether to enable kubernetes startup-probes
+##
+startupProbe:
+  enabled: true
+
+##
+## EDC endpoints exposed by the data-plane
+##
+edc:
+  endpoints:
+    # Default api exposing health checks etc
+    default:
+      port: "8080"
+      path: /api
+      ingress: false
+    # Control API
+    control:
+      port: "9999"
+      path: /api/control
+      ingress: true
+    # Public endpoint for data transfer
+    public:
+      port: "8185"
+      path: /api/public
+      ingress: true
+    # Prometheus endpoint
+    metrics:
+      port: "9090"
+      path: /metrics
+      ingress: false
+
+##
+## Service to expose the running application on a set of Pods as a network service.
+##
 service:
   type: ClusterIP
-  port: 80
 
+##
+## Ingress declaration to publicly expose the network service.
+##
 ingress:
-  enabled: false
+  ##
+  ## Set to true to enable ingress record generation
+  ##
+  enabled: true
+  ##
+  ## Defines the ingress class to use https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
+  ##
   className: ""
+  ##
+  ## En
+  ##
+  tls: false
+
+  ##
+  ## Adds cert-manager annotations to the ingress
+  ##
+  certManager:
+    ##
+    ## If preset enables certificate generation via cert-manager namespace scoped issuer
+    ##
+    issuer: ""
+    ##
+    ## If preset enables certificate generation via cert-manager cluster-wide issuer
+    ##
+    clusterIssuer: ""
+
+  ##
+  ## Additional ingress annotations to add
+  ##
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: dataplane-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+
+  ##
+  ## The hostname to be used to precisely map incoming traffic onto the underlying network service
+  ##
+  hostname: "edc-dataplane.local"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -69,7 +158,7 @@ resources: {}
   #   memory: 128Mi
   # requests:
   #   cpu: 100m
-  #   memory: 128Mi
+#   memory: 128Mi
 
 autoscaling:
   enabled: false
@@ -84,138 +173,151 @@ tolerations: []
 
 affinity: {}
 
+##
+## EDC logging.properties configuring the java.util.logging subsystem
+##
 logging:
-  properties:
-    _level: INFO
-    org_eclipse_dataspaceconnector_level: ALL
-    handlers: java.util.logging.ConsoleHandler
-    java_util_logging_ConsoleHandler_formatter: java.util.logging.SimpleFormatter
-    java_util_logging_ConsoleHandler_level: ALL
-    java_util_logging_SimpleFormatter_format: "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"
+  properties: |-
+    .level=INFO
+    org.eclipse.dataspaceconnector.level=ALL
+    handlers=java.util.logging.ConsoleHandler
+    java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+    java.util.logging.ConsoleHandler.level=ALL
+    java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
 
+##
+## opentelemetry.properties configuring the opentelemetry agent
+##
+## See https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/ for further configuration options
+##
 opentelemetry:
-  properties:
-    otel_javaagent_enabled: "true"
-    otel_javaagent_debug: "false"
+  properties: |-
+    otel.javaagent.enabled=true
+    otel.javaagent.debug=false
 
+##
+## EDC configuration.properties
+##
+## Consult the eclipse-dataspaceconnector documentation for further details: https://github.com/eclipse-dataspaceconnector/DataSpaceConnector
+##
 configuration:
-  properties:
-    edc_api_control_auth_apikey_key: ""
-    edc_api_control_auth_apikey_value: ""
-    edc_assetindex_cosmos_account-name: ""
-    edc_assetindex_cosmos_container-name: ""
-    edc_assetindex_cosmos_database-name: ""
-    edc_assetindex_cosmos_preferred-region: ""
-    edc_atomikos_checkpoint_interval: ""
-    edc_atomikos_directory: ""
-    edc_atomikos_logging: ""
-    edc_atomikos_threaded2pc: ""
-    edc_atomikos_timeout: ""
-    edc_aws_access_key: ""
-    edc_aws_provision_retry_retries_max: ""
-    edc_aws_provision_role_duration_session_max: ""
-    edc_aws_secret_access_key: ""
-    edc_blobstore_endpoint: ""
-    edc_contractdefinitionstore_cosmos_account-name: ""
-    edc_contractdefinitionstore_cosmos_container-name: ""
-    edc_contractdefinitionstore_cosmos_database-name: ""
-    edc_contractdefinitionstore_cosmos_preferred-region: ""
-    edc_contractnegotiationstore_cosmos_account-name: ""
-    edc_contractnegotiationstore_cosmos_container-name: ""
-    edc_contractnegotiationstore_cosmos_database-name: ""
-    edc_contractnegotiationstore_cosmos_preferred-region: ""
-    edc_controlplane_validation-endpoint: ""
-    edc_core_retry_backoff_max: ""
-    edc_core_retry_backoff_min: ""
-    edc_core_retry_retries_max: ""
-    edc_core_system_health_check_liveness-period: ""
-    edc_core_system_health_check_readiness-period: ""
-    edc_core_system_health_check_startup-period: ""
-    edc_core_system_health_check_threadpool-size: ""
-    edc_cosmos_partition-key: ""
-    edc_cosmos_query-metrics-enabled: ""
-    edc_dataplane_queue_capacity: ""
-    edc_dataplane_wait: ""
-    edc_dataplane_workers: ""
-    edc_datasource_asset_name: "default"
-    edc_datasource_contractdefinition_name: "default"
-    edc_datasource_contractnegotiation_name: "default"
-    edc_datasource_policy_name: "default"
-    edc_datasource_transferprocess_name: "default"
-    edc_datasource_default_pool_maxIdleConnections: ""
-    edc_datasource_default_pool_maxTotalConnections: ""
-    edc_datasource_default_pool_minIdleConnections: ""
-    edc_datasource_default_pool_testConnectionOnBorrow: ""
-    edc_datasource_default_pool_testConnectionOnCreate: ""
-    edc_datasource_default_pool_testConnectionOnReturn: ""
-    edc_datasource_default_pool_testConnectionWhileIdle: ""
-    edc_datasource_default_pool_testQuery: ""
-    edc_datasource_default_url: ""
-    edc_datasource_default_user: ""
-    edc_datasource_default_password: ""
-    edc_dpf_selector_url: ""
-    edc_events_topic_endpoint: ""
-    edc_events_topic_name: ""
-    edc_fs_config: ""
-    edc_hostname: ""
-    edc_identity_did_url: ""
-    edc_ids_catalog_id: ""
-    edc_ids_curator: ""
-    edc_ids_description: ""
-    edc_ids_endpoint: ""
-    edc_ids_id: ""
-    edc_ids_maintainer: ""
-    edc_ids_security_profile: ""
-    edc_ids_title: ""
-    edc_ids_validation_referringconnector: ""
-    edc_ion_crawler_did-type: ""
-    edc_ion_crawler_interval-minutes: ""
-    edc_ion_crawler_ion_url: ""
-    edc_keystore: ""
-    edc_keystore_password: ""
-    edc_metrics_enabled: ""
-    edc_metrics_executor_enabled: ""
-    edc_metrics_jersey_enabled: ""
-    edc_metrics_jetty_enabled: ""
-    edc_metrics_okhttp_enabled: ""
-    edc_metrics_system_enabled: ""
-    edc_negotiation_consumer_state-machine_batch-size: ""
-    edc_negotiation_provider_state-machine_batch-size: ""
-    edc_node_directory_cosmos_account_name: ""
-    edc_node_directory_cosmos_container_name: ""
-    edc_node_directory_cosmos_database_name: ""
-    edc_node_directory_cosmos_preferred_region: ""
-    edc_oauth_client_id: ""
-    edc_oauth_private_key_alias: ""
-    edc_oauth_provider_audience: ""
-    edc_oauth_provider_jwks_refresh: ""
-    edc_oauth_provider_jwks_url: ""
-    edc_oauth_public_key_alias: ""
-    edc_oauth_token_url: ""
-    edc_oauth_validation_nbf_leeway: ""
-    edc_public_key_alias: ""
-    edc_receiver_http_auth-code: ""
-    edc_receiver_http_auth-key: ""
-    edc_receiver_http_endpoint: ""
-    edc_transfer_dataplane_sync_endpoint: ""
-    edc_transfer_dataplane_sync_token_validity: ""
-    edc_transfer_dataplane_token_signer_privatekey_alias: ""
-    edc_transfer_functions_check_endpoint: ""
-    edc_transfer_functions_enabled_protocols: ""
-    edc_transfer_functions_transfer_endpoint: ""
-    edc_transfer-process-store_cosmos_account_name: ""
-    edc_transfer-process-store_cosmos_container-name: ""
-    edc_transfer-process-store_cosmos_preferred-region: ""
-    edc_transfer-process-store_database_name: ""
-    edc_transfer_state-machine_batch-size: ""
-    edc_vault: ""
-    edc_vault_certificate: ""
-    edc_vault_clientid: ""
-    edc_vault_clientsecret: ""
-    edc_vault_name: ""
-    edc_vault_tenantid: ""
-    edc_webdid_doh_url: ""
-    edc_web_rest_cors_enabled: ""
-    edc_web_rest_cors_headers: ""
-    edc_web_rest_cors_methods: ""
-    edc_web_rest_cors_origins: ""
+  properties: |-
+    # edc.api.control.auth.apikey.key=
+    # edc.api.control.auth.apikey.value=
+    # edc.assetindex.cosmos.account-name=
+    # edc.assetindex.cosmos.container-name=
+    # edc.assetindex.cosmos.database-name=
+    # edc.assetindex.cosmos.preferred-region=
+    # edc.atomikos.checkpoint.interval=
+    # edc.atomikos.directory=
+    # edc.atomikos.logging=
+    # edc.atomikos.threaded2pc=
+    # edc.atomikos.timeout=
+    # edc.aws.access.key=
+    # edc.aws.provision.retry.retries.max=
+    # edc.aws.provision.role.duration.session.max=
+    # edc.aws.secret.access.key=
+    # edc.blobstore.endpoint=
+    # edc.contractdefinitionstore.cosmos.account-name=
+    # edc.contractdefinitionstore.cosmos.container-name=
+    # edc.contractdefinitionstore.cosmos.database-name=
+    # edc.contractdefinitionstore.cosmos.preferred-region=
+    # edc.contractnegotiationstore.cosmos.account-name=
+    # edc.contractnegotiationstore.cosmos.container-name=
+    # edc.contractnegotiationstore.cosmos.database-name=
+    # edc.contractnegotiationstore.cosmos.preferred-region=
+    # edc.controlplane.validation-endpoint=
+    # edc.core.retry.backoff.max=
+    # edc.core.retry.backoff.min=
+    # edc.core.retry.retries.max=
+    # edc.core.system.health.check.liveness-period=
+    # edc.core.system.health.check.readiness-period=
+    # edc.core.system.health.check.startup-period=
+    # edc.core.system.health.check.threadpool-size=
+    # edc.cosmos.partition-key=
+    # edc.cosmos.query-metrics-enabled=
+    # edc.dataplane.queue.capacity=
+    # edc.dataplane.wait=
+    # edc.dataplane.workers=
+    # edc.datasource.asset.name="default"
+    # edc.datasource.contractdefinition.name="default"
+    # edc.datasource.contractnegotiation.name="default"
+    # edc.datasource.policy.name="default"
+    # edc.datasource.transferprocess.name="default"
+    # edc.datasource.default.pool.maxIdleConnections=
+    # edc.datasource.default.pool.maxTotalConnections=
+    # edc.datasource.default.pool.minIdleConnections=
+    # edc.datasource.default.pool.testConnectionOnBorrow=
+    # edc.datasource.default.pool.testConnectionOnCreate=
+    # edc.datasource.default.pool.testConnectionOnReturn=
+    # edc.datasource.default.pool.testConnectionWhileIdle=
+    # edc.datasource.default.pool.testQuery=
+    # edc.datasource.default.url=
+    # edc.datasource.default.user=
+    # edc.datasource.default.password=
+    # edc.dpf.selector.url=
+    # edc.events.topic.endpoint=
+    # edc.events.topic.name=
+    # edc.fs.config=
+    # edc.hostname=
+    # edc.identity.did.url=
+    # edc.ids.catalog.id=
+    # edc.ids.curator=
+    # edc.ids.description=
+    # edc.ids.endpoint=
+    # edc.ids.id=
+    # edc.ids.maintainer=
+    # edc.ids.security.profile=
+    # edc.ids.title=
+    # edc.ids.validation.referringconnector=
+    # edc.ion.crawler.did-type=
+    # edc.ion.crawler.interval-minutes=
+    # edc.ion.crawler.ion.url=
+    # edc.keystore=
+    # edc.keystore.password=
+    # edc.metrics.enabled=
+    # edc.metrics.executor.enabled=
+    # edc.metrics.jersey.enabled=
+    # edc.metrics.jetty.enabled=
+    # edc.metrics.okhttp.enabled=
+    # edc.metrics.system.enabled=
+    # edc.negotiation.consumer.state-machine.batch-size=
+    # edc.negotiation.provider.state-machine.batch-size=
+    # edc.node.directory.cosmos.account.name=
+    # edc.node.directory.cosmos.container.name=
+    # edc.node.directory.cosmos.database.name=
+    # edc.node.directory.cosmos.preferred.region=
+    # edc.oauth.client.id=
+    # edc.oauth.private.key.alias=
+    # edc.oauth.provider.audience=
+    # edc.oauth.provider.jwks.refresh=
+    # edc.oauth.provider.jwks.url=
+    # edc.oauth.public.key.alias=
+    # edc.oauth.token.url=
+    # edc.oauth.validation.nbf.leeway=
+    # edc.public.key.alias=
+    # edc.receiver.http.auth-code=
+    # edc.receiver.http.auth-key=
+    # edc.receiver.http.endpoint=
+    # edc.transfer.dataplane.sync.endpoint=
+    # edc.transfer.dataplane.sync.token.validity=
+    # edc.transfer.dataplane.token.signer.privatekey.alias=
+    # edc.transfer.functions.check.endpoint=
+    # edc.transfer.functions.enabled.protocols=
+    # edc.transfer.functions.transfer.endpoint=
+    # edc.transfer-process-store.cosmos.account.name=
+    # edc.transfer-process-store.cosmos.container-name=
+    # edc.transfer-process-store.cosmos.preferred-region=
+    # edc.transfer-process-store.database.name=
+    # edc.transfer.state-machine.batch-size=
+    # edc.vault=
+    # edc.vault.certificate=
+    # edc.vault.clientid=
+    # edc.vault.clientsecret=
+    # edc.vault.name=
+    # edc.vault.tenantid=
+    # edc.webdid.doh.url=
+    # edc.web.rest.cors.enabled=
+    # edc.web.rest.cors.headers=
+    # edc.web.rest.cors.methods=
+    # edc.web.rest.cors.origins=

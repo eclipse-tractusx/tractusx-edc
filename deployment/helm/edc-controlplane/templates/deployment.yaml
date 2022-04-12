@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,23 +37,44 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}{{- if .Values.flavor }}-{{ .Values.flavor }}{{- end -}}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 80
+            - name: default
+              containerPort: {{ .Values.edc.endpoints.default.port }}
+              protocol: TCP
+            - name: control
+              containerPort: {{ .Values.edc.endpoints.control.port }}
+              protocol: TCP
+            - name: data
+              containerPort: {{ .Values.edc.endpoints.data.port }}
+              protocol: TCP
+            - name: ids
+              containerPort: {{ .Values.edc.endpoints.ids.port }}
               protocol: TCP
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.edc.endpoints.metrics.port }}
               protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{ .Values.edc.endpoints.default.path }}/check/liveness
+              port: default
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{ .Values.edc.endpoints.default.path }}/check/readiness
+              port: default
+          {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.edc.endpoints.default.path }}/check/startup
+              port: default
+            failureThreshold: 12
+            initialDelaySeconds: 10
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
