@@ -43,7 +43,7 @@ jobs:
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Bump version in deployment/helm
-        uses: mikefarah/yq@v4.24.2
+        uses: mikefarah/yq@v4.24.4
         with:
           cmd: |-
             find deployment/helm -name Chart.yaml | xargs -n1 yq -i '.appVersion = "${{ github.event.inputs.version }}" | .version = "${{ github.event.inputs.version }}"'
