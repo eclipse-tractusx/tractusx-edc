@@ -89,6 +89,22 @@
             <artifactId>filesystem-configuration</artifactId>
         </dependency>
 
+        <!-- Vault -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>azure-vault</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-security-keyvault-secrets</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-identity</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- APIs -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -142,7 +158,18 @@
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>http</artifactId>
         </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-security-keyvault-secrets</artifactId>
+        </dependency>
     </dependencies>
+
 
     <profiles>
         <profile>
@@ -154,18 +181,31 @@
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>default</id>
+                                <id>${project.artifactId}:${project.version}</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
+                                    <goal>tag</goal>
                                 </goals>
+                                <configuration>
+                                    <tag>${project.version}</tag>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>${project.artifactId}:latest</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>tag</goal>
+                                </goals>
+                                <configuration>
+                                    <tag>latest</tag>
+                                </configuration>
                             </execution>
                         </executions>
                         <configuration>
                             <contextDirectory>.</contextDirectory>
                             <dockerfile>src/main/docker/Dockerfile</dockerfile>
                             <repository>${project.artifactId}</repository>
-                            <tag>${project.version}</tag>
                             <buildArgs>
                                 <JAR>target/${project.artifactId}.jar</JAR>
                             </buildArgs>
