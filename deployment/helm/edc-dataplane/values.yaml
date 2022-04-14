@@ -89,7 +89,7 @@ edc:
     # Control API
     control:
       port: "9999"
-      path: /api/control
+      path: /api/dataplane/control
       ingress: true
     # Public endpoint for data transfer
     public:

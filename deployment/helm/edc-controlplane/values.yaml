@@ -95,10 +95,15 @@ edc:
       port: "8181"
       path: /data
       ingress: true
+    # Validation API
+    validation:
+      port: "8182"
+      path: /validation
+      ingress: false
     # Control API
     control:
       port: "9999"
-      path: /api/control
+      path: /api/controlplane/control
       ingress: true
     # IDS endpoints
     ids:

@@ -221,6 +221,12 @@
             <artifactId>contract</artifactId>
         </dependency>
 
+        <!-- Data-Plane -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-transfer-sync</artifactId>
+        </dependency>
+
         <!-- IAM -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -264,6 +270,7 @@
             <artifactId>http-receiver</artifactId>
         </dependency>
 
+        <!-- Other -->
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-cosmos</artifactId>
@@ -288,18 +295,31 @@
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>default</id>
+                                <id>${project.artifactId}:${project.version}</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
+                                    <goal>tag</goal>
                                 </goals>
+                                <configuration>
+                                    <tag>${project.version}</tag>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>${project.artifactId}:latest</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>tag</goal>
+                                </goals>
+                                <configuration>
+                                    <tag>latest</tag>
+                                </configuration>
                             </execution>
                         </executions>
                         <configuration>
                             <contextDirectory>.</contextDirectory>
                             <dockerfile>src/main/docker/Dockerfile</dockerfile>
                             <repository>${project.artifactId}</repository>
-                            <tag>${project.version}</tag>
                             <buildArgs>
                                 <JAR>target/${project.artifactId}.jar</JAR>
                             </buildArgs>
