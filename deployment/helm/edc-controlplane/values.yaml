@@ -8,11 +8,11 @@ image:
   ##
   ## Which derivate of the edc controlplane to use.
   ## One of:
-  ##   * ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-memory
-  ##   * ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-postgresql
-  ##   * ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-cosmosdb
+  ##   * ghcr.io/catenax-ng/product-edc/edc-controlplane-memory
+  ##   * ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql
+  ##   * ghcr.io/catenax-ng/product-edc/edc-controlplane-cosmosdb
   ##
-  repository: ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-memory
+  repository: ghcr.io/catenax-ng/product-edc/edc-controlplane-memory
   pullPolicy: IfNotPresent
   ##
   ## Overrides the image tag whose default is the chart appVersion.

@@ -68,7 +68,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-memory
+          ghcr.io/catenax-ng/product-edc/edc-controlplane-memory
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -103,7 +103,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-cosmosdb
+          ghcr.io/catenax-ng/product-edc/edc-controlplane-cosmosdb
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -138,7 +138,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-postgresql
+          ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -173,7 +173,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ghcr.io/catenax-ng/catena-x-edc/edc-dataplane
+          ghcr.io/catenax-ng/product-edc/edc-dataplane
         tags: |
           type=ref,event=branch
           type=ref,event=pr
