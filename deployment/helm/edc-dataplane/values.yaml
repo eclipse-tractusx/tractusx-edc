@@ -8,7 +8,7 @@ image:
   ##
   ## Which edc-dataplane container image to use.
   ##
-  repository: ghcr.io/catenax-ng/catena-x-edc/edc-dataplane
+  repository: ghcr.io/catenax-ng/product-edc/edc-dataplane
   pullPolicy: IfNotPresent
   ##
   ## Overrides the image tag whose default is the chart appVersion.

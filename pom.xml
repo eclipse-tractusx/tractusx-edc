@@ -16,7 +16,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.catenax.edc</groupId>
-    <artifactId>catena-x-edc-parent</artifactId>
+    <artifactId>product-edc-parent</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -50,7 +50,7 @@
         <repository>
             <id>github-catenax-ng</id>
             <name>Catena-X NG: Github Packages</name>
-            <url>https://maven.pkg.github.com/catenax-ng/catena-x-edc</url>
+            <url>https://maven.pkg.github.com/catenax-ng/product-edc</url>
         </repository>
     </distributionManagement>
 
@@ -76,7 +76,7 @@
         <repository>
             <id>github-catenax-ng</id>
             <name>Catena-X NG: Github Packages</name>
-            <url>https://maven.pkg.github.com/catenax-ng/catena-x-edc</url>
+            <url>https://maven.pkg.github.com/catenax-ng/product-edc</url>
         </repository>
     </repositories>
 
