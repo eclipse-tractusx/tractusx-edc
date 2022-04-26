@@ -31,7 +31,7 @@ jobs:
         version: v3.8.1
     -
       name: python (setup)
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: 3.7
     -
