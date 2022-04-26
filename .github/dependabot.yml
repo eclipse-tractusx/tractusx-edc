@@ -2,6 +2,15 @@
 version: 2
 updates:
   -
+    package-ecosystem: "gitsubmodule"
+    target-branch: develop
+    directory: "/"
+    labels:
+      - "dependabot"
+      - "edc"
+    schedule:
+      interval: "daily"
+  -
     package-ecosystem: "github-actions"
     target-branch: develop
     directory: "/"
