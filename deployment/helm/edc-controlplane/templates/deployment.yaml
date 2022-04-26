@@ -43,14 +43,14 @@ spec:
             - name: default
               containerPort: {{ .Values.edc.endpoints.default.port }}
               protocol: TCP
-            - name: control
-              containerPort: {{ .Values.edc.endpoints.control.port }}
-              protocol: TCP
             - name: data
               containerPort: {{ .Values.edc.endpoints.data.port }}
               protocol: TCP
             - name: validation
               containerPort: {{ .Values.edc.endpoints.validation.port }}
+              protocol: TCP
+            - name: control
+              containerPort: {{ .Values.edc.endpoints.control.port }}
               protocol: TCP
             - name: ids
               containerPort: {{ .Values.edc.endpoints.ids.port }}

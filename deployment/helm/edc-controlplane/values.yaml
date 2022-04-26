@@ -1,3 +1,4 @@
+---
 # Default values for edc-controlplane.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -129,13 +130,13 @@ ingress:
   ##
   ## Set to true to enable ingress record generation
   ##
-  enabled: true
+  enabled: false
   ##
   ## Defines the ingress class to use https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
   ##
   className: ""
   ##
-  ## En
+  ## Enables TLS on the ingress resource
   ##
   tls: false
 
@@ -335,4 +336,3 @@ configuration:
     # edc.web.rest.cors.headers=
     # edc.web.rest.cors.methods=
     # edc.web.rest.cors.origins=
-
