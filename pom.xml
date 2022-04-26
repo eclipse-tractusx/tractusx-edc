@@ -33,7 +33,7 @@
         <!-- plugins -->
         <org.apache.maven.plugins.shade.version>3.2.4</org.apache.maven.plugins.shade.version>
         <com.spotify.dockerfile.maven.plugin.version>1.4.13</com.spotify.dockerfile.maven.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>1.31.3</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.22.2</com.diffplug.spotless.maven.plugin.version>
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.0</com.azure.sdk.bom.version>
