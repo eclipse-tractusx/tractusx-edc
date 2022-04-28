@@ -36,7 +36,7 @@
         <com.diffplug.spotless.maven.plugin.version>2.22.3</com.diffplug.spotless.maven.plugin.version>
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
-        <com.azure.sdk.bom.version>1.2.0</com.azure.sdk.bom.version>
+        <com.azure.sdk.bom.version>1.2.1</com.azure.sdk.bom.version>
         <jakarta.ws.rs.api.version>3.1.0</jakarta.ws.rs.api.version>
         <org.postgresql.version>42.3.4</org.postgresql.version>
         <org.flywaydb.version>8.5.9</org.flywaydb.version>
