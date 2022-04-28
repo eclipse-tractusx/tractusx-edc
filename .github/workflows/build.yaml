@@ -76,7 +76,7 @@ jobs:
         file: edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/catena-x-edc' }}
+        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
         tags: ${{ steps.edc_controlplane_memory_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
 
@@ -111,7 +111,7 @@ jobs:
         file: edc-controlplane/edc-controlplane-cosmosdb/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/catena-x-edc' }}
+        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
         tags: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
 
@@ -146,7 +146,7 @@ jobs:
         file: edc-controlplane/edc-controlplane-postgresql/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/catena-x-edc' }}
+        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
         tags: ${{ steps.edc_controlplane_postgresql_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
 
@@ -181,6 +181,6 @@ jobs:
         file: edc-dataplane/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-dataplane/target/edc-dataplane.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/catena-x-edc' }}
+        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
         tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
         labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
