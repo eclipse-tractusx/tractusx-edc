@@ -671,45 +671,44 @@
                 <artifactId>spi</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-asset-index</artifactId>
+                <artifactId>asset-index-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-common</artifactId>
+                <artifactId>common-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-contractdefinition-store</artifactId>
+                <artifactId>contractdefinition-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-lease</artifactId>
+                <artifactId>lease-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-pool-apache-commons-pool</artifactId>
+                <artifactId>apache-commons-pool-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-transferprocess-store</artifactId>
+                <artifactId>transfer-process-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-contractnegotiation-store</artifactId>
+                <artifactId>contractnegotiation-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>sql-policy-store</artifactId>
+                <artifactId>policy-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
 

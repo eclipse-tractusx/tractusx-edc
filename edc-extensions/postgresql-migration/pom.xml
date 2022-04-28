@@ -38,14 +38,14 @@
         <!-- Stores -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-asset-index</artifactId>
+            <artifactId>asset-index-sql</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <!-- Supportive -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-common</artifactId>
+            <artifactId>common-sql</artifactId>
         </dependency>
 
         <!-- Other -->

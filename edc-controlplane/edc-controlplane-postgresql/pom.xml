@@ -165,23 +165,23 @@
         <!-- Stores -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-asset-index</artifactId>
+            <artifactId>asset-index-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-contractdefinition-store</artifactId>
+            <artifactId>contractdefinition-store-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-contractnegotiation-store</artifactId>
+            <artifactId>contractnegotiation-store-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-transferprocess-store</artifactId>
+            <artifactId>transfer-process-store-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-policy-store</artifactId>
+            <artifactId>policy-store-sql</artifactId>
         </dependency>
 
         <!-- Core -->
@@ -246,7 +246,7 @@
 
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>sql-pool-apache-commons-pool</artifactId>
+            <artifactId>apache-commons-pool-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
