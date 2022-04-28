@@ -32,7 +32,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.CXNG_GHCR_PAT }}
     -
       name: Set up JDK 11
       uses: actions/setup-java@v3.2.0
@@ -54,7 +54,7 @@ jobs:
         ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-memory -am verify
       env:
         GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-        GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
     -
       name: edc-controlplane-memory Docker Metadata
       id: edc_controlplane_memory_meta
@@ -89,7 +89,7 @@ jobs:
         ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-cosmosdb -am verify
       env:
         GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-        GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
     -
       name: edc-controlplane-cosmosdb Docker Metadata
       id: edc_controlplane_cosmosdb_meta
@@ -124,7 +124,7 @@ jobs:
         ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-postgresql -am verify
       env:
         GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-        GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
     -
       name: edc-controlplane-postgresql Docker Metadata
       id: edc_controlplane_postgresql_meta
@@ -159,7 +159,7 @@ jobs:
         ./mvnw -s settings.xml -B -pl .,edc-dataplane -am verify
       env:
         GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-        GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
     -
       name: edc-dataplane Docker Metadata
       id: edc_dataplane_meta

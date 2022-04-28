@@ -68,9 +68,6 @@ jobs:
           cache: 'maven'
       -
         name: Merge main back into develop and set new snapshot version
-        env:
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Prepare git env
           git config user.name "GitHub actions"
