@@ -40,7 +40,7 @@ jobs:
           ./mvnw -s settings.xml -B versions:set -DnewVersion=${{ github.event.inputs.version }} -DprocessAllModules
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Bump version in deployment/helm
         uses: mikefarah/yq@v4.24.5
