@@ -78,6 +78,9 @@ spec:
             failureThreshold: 12
             initialDelaySeconds: 10
           {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "edc-controlplane.fullname" . }}-env
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

@@ -189,6 +189,15 @@ tolerations: []
 affinity: {}
 
 ##
+## Container environment variables
+##   e.g. for configuring JAVA_TOOL_OPTIONS (see: https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/envvars002.html)
+##
+##   JAVA_TOOL_OPTIONS: >
+##     -Dhttp.proxyHost=proxy -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts="localhost|127.*|[::1]" -Dhttps.proxyHost=proxy -Dhttps.proxyPort=443
+##
+env: {}
+
+##
 ## EDC logging.properties configuring the java.util.logging subsystem
 ##
 logging:
