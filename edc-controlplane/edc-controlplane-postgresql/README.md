@@ -64,8 +64,8 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.datasource.transferprocess.url                    | X         | jdbc:postgresql://postgres.svc.cluster.local:5432/edc_transferprocess_db | |
 | edc.datasource.transferprocess.user                   | X         | username | |
 | edc.datasource.transferprocess.password               | X         | password | |
-| edc.transfer.dataplane.sync.endpoint                  | X         | | |
-| edc.transfer.dataplane.token.signer.privatekey.alias  | X         | | |
+| edc.transfer.proxy.endpoint                  | X         | | |
+| edc.transfer.proxy.token.signer.privatekey.alias  | X         | | |
 
 #### Example configuration.properties
 
@@ -117,8 +117,8 @@ edc.vault.name=my-vault-name
 edc.vault.clientsecret=34-chars-secret
 
 # Control- / Data- Plane configuration
-edc.transfer.dataplane.sync.endpoint=http://dataplane-public-endpoint/public
-edc.transfer.dataplane.token.signer.privatekey.alias=azure-vault-token-signer-private-key
+edc.transfer.proxy.endpoint=http://dataplane-public-endpoint/public
+edc.transfer.proxy.token.signer.privatekey.alias=azure-vault-token-signer-private-key
 
 # Postgresql related configuration
 edc.datasource.asset.name=asset
