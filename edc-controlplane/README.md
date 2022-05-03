@@ -176,18 +176,18 @@ This chapter contains only the mandatory data plane configuration.
 
 ### Encryption
 
-The communication between dataplane and controlplane is encrypted and needs some keys in the key vault and configuration in the EDC. 
+The communication between dataplane and controlplane is encrypted and needs some keys in the key vault and configuration in the EDC.
 
 #### Private Key
 
 ```bash
 # Generate Private Key
-openssl genpkey -out my-data-plane-private-key.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048     
+openssl genpkey -out my-data-plane-private-key.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
 ```
 
 ```bash
 # Upload Private Key
-az keyvault secret set --name my-data-plane-private-key --vault-name tree512 --file my-data-plane-private-key.pem 
+az keyvault secret set --name my-data-plane-private-key --vault-name tree512 --file my-data-plane-private-key.pem
 ```
 
 ```properties
