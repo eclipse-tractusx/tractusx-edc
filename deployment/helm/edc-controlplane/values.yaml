@@ -52,10 +52,12 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -163,7 +165,8 @@ ingress:
   ##
   hostname: "edc-controlplane.local"
 
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -319,13 +322,12 @@ configuration:
     # edc.oauth.public.key.alias=
     # edc.oauth.token.url=
     # edc.oauth.validation.nbf.leeway=
-    # edc.public.key.alias=
     # edc.receiver.http.auth-code=
     # edc.receiver.http.auth-key=
     # edc.receiver.http.endpoint=
-    # edc.transfer.dataplane.sync.endpoint=
+    # edc.transfer.proxy.endpoint=
     # edc.transfer.dataplane.sync.token.validity=
-    # edc.transfer.dataplane.token.signer.privatekey.alias=
+    # edc.transfer.proxy.token.signer.privatekey.alias=
     # edc.transfer.functions.check.endpoint=
     # edc.transfer.functions.enabled.protocols=
     # edc.transfer.functions.transfer.endpoint=
