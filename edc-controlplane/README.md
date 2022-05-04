@@ -517,8 +517,24 @@ curl -G -X GET $__connectorUrl/$__defaultApiPath/control/catalog --header "$__ap
 | $__targetConnectorUrl     | URL of the Connector of the target connector with the IDS API port configured in `web.http.ids.port`(in the configuration of the other connector) |
 | $__targetConnectorIdsPath | The IDS Path as configured in `web.http.ids.path` (in the configuration of the other connector)                                                   |
 
+
+
 # Known Control Plane Issues
 
 Please have look at all the open issues in the open source repository. The list below might not be maintained well and
 only contains the most important issues.
 EDC Github Repository https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues
+
+## Contract negotiation not working when `web.http.ids.path` is configured/changed
+
+https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1249
+
+**Workaround:**
+Don't configure `web.http.ids.path`, so that the default path is used.
+
+## Contract negotiation not working when initiated with policy id
+
+https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1251
+
+**Workaround:**
+The DataManagement API can also initiate a contract negotiation using the actual policy object.
