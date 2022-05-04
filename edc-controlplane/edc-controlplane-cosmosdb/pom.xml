@@ -186,7 +186,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer-process-store-cosmos</artifactId>
+            <artifactId>policy-store-cosmos</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>
@@ -194,11 +194,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
-            <!-- Cosmosdb not yet supported -->
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-store-memory</artifactId>
+            <artifactId>transfer-process-store-cosmos</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Core -->

@@ -33,13 +33,13 @@
         <!-- plugins -->
         <org.apache.maven.plugins.shade.version>3.3.0</org.apache.maven.plugins.shade.version>
         <com.spotify.dockerfile.maven.plugin.version>1.4.13</com.spotify.dockerfile.maven.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>2.22.3</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.22.4</com.diffplug.spotless.maven.plugin.version>
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.1</com.azure.sdk.bom.version>
         <jakarta.ws.rs.api.version>3.1.0</jakarta.ws.rs.api.version>
         <org.postgresql.version>42.3.4</org.postgresql.version>
-        <org.flywaydb.version>8.5.9</org.flywaydb.version>
+        <org.flywaydb.version>8.5.10</org.flywaydb.version>
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
         <mockito.version>1.10.19</mockito.version>
@@ -168,6 +168,11 @@
             <!-- EDC Extensions -->
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>apache-commons-pool-sql</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>api-configuration</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -188,7 +193,12 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>assetindex-memory</artifactId>
+                <artifactId>asset-index-sql</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>auth-basic</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -258,22 +268,22 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>catalog-api</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>catalog-cache</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>catalog-cache-store-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>catalog-node-directory-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>catalog-spi</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>common-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -303,7 +313,7 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractdefinition-store-memory</artifactId>
+                <artifactId>contractdefinition-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -318,7 +328,7 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractnegotiation-store-memory</artifactId>
+                <artifactId>contractnegotiation-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -344,6 +354,11 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>core-boot</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>core-defaults</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -403,7 +418,22 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>data-plane-s3</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>data-plane-selector-api</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>data-plane-selector-client</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>data-plane-selector-core</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -423,7 +453,12 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-transfer-core</artifactId>
+                <artifactId>data-plane-transfer</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>data-plane-transfer-client</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -439,11 +474,6 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>decentralized-identity</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>did-document-store-memory</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -474,6 +504,11 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>http</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>http-provisioner</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -523,11 +558,6 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>identity-hub-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>ids</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -573,11 +603,6 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>in-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>jdk-logger-monitor</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -599,6 +624,11 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>jetty-micrometer</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>lease-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -638,7 +668,12 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>policy-store-memory</artifactId>
+                <artifactId>policy-store-cosmos</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>policy-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -673,45 +708,9 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>asset-index-sql</artifactId>
+                <artifactId>sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>common-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractdefinition-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>lease-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>apache-commons-pool-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>transfer-process-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractnegotiation-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>policy-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>state-machine-lib</artifactId>
@@ -774,7 +773,7 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>transfer-process-store-memory</artifactId>
+                <artifactId>transfer-process-store-sql</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
