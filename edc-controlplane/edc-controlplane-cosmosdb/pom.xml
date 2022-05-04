@@ -186,6 +186,16 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>policy-store-cosmos</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>transfer-process-store-cosmos</artifactId>
             <exclusions>
                 <exclusion>
