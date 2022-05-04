@@ -153,30 +153,6 @@
             <artifactId>ids-token-validation</artifactId>
         </dependency>
 
-        <!-- Stores -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>assetindex-memory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractdefinition-store-memory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractnegotiation-store-memory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer-process-store-memory</artifactId>
-        </dependency>
-
-        <dependency>
-            <!-- Cosmosdb not yet supported -->
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-store-memory</artifactId>
-        </dependency>
-
         <!-- Core -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>

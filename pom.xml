@@ -188,11 +188,6 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>assetindex-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>auth-spi</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -303,22 +298,12 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractdefinition-store-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>contractnegotiation-api</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>contract-negotiation-store-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractnegotiation-store-memory</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -573,11 +558,6 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>in-memory</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>jdk-logger-monitor</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -634,11 +614,6 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>policy-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>policy-store-memory</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -770,11 +745,6 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>transfer-process-store-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>transfer-process-store-memory</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
