@@ -36,8 +36,8 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.api.control.auth.apikey.key                       |           | X-Api-Key | |
 | edc.api.control.auth.apikey.value                     |           | super-strong-api-key | |
 | edc.hostname                                          |           | localhost | |
-| edc.transfer.dataplane.sync.endpoint                  | X         | | |
-| edc.transfer.dataplane.token.signer.privatekey.alias  | X         | | |
+| edc.transfer.proxy.endpoint                  | X         | | |
+| edc.transfer.proxy.token.signer.privatekey.alias  | X         | | |
 
 #### Example configuration.properties
 
@@ -84,8 +84,8 @@ edc.vault.name=my-vault-name
 edc.vault.clientsecret=34-chars-secret
 
 # Control- / Data- Plane configuration
-edc.transfer.dataplane.sync.endpoint=http://dataplane-public-endpoint/public
-edc.transfer.dataplane.token.signer.privatekey.alias=azure-vault-token-signer-private-key
+edc.transfer.proxy.endpoint=http://dataplane-public-endpoint/public
+edc.transfer.proxy.token.signer.privatekey.alias=azure-vault-token-signer-private-key
 EOF
 ```
 

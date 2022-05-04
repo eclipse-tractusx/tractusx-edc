@@ -60,8 +60,8 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.transfer-process-store.database.name              | X         | transfer-process-store | |
 | edc.transfer-process-store.cosmos.preferred-region    | X         | westeurope | |
 | edc.transfer-process-store.cosmos.container-name      | X         | cosmosdb-transfer-process-store-container-name | |
-| edc.transfer.dataplane.sync.endpoint                  | X         | | |
-| edc.transfer.dataplane.token.signer.privatekey.alias  | X         | | |
+| edc.transfer.proxy.endpoint                  | X         | | |
+| edc.transfer.proxy.token.signer.privatekey.alias  | X         | | |
 
 #### Example configuration.properties
 
@@ -113,8 +113,8 @@ edc.vault.name=my-vault-name
 edc.vault.clientsecret=34-chars-secret
 
 # Control- / Data- Plane configuration
-edc.transfer.dataplane.sync.endpoint=http://dataplane-public-endpoint/public
-edc.transfer.dataplane.token.signer.privatekey.alias=azure-vault-token-signer-private-key
+edc.transfer.proxy.endpoint=http://dataplane-public-endpoint/public
+edc.transfer.proxy.token.signer.privatekey.alias=azure-vault-token-signer-private-key
 
 # Azure CosmosDB related configuration
 edc.assetindex.cosmos.account-name=cosmosdb-assetindex-account-name
