@@ -195,12 +195,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <!-- Cosmosdb not yet supported -->
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-store-memory</artifactId>
-        </dependency>
-
         <!-- Core -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
