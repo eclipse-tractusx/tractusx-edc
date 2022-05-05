@@ -27,13 +27,7 @@ not yet publish artifacts to a maven repository, which this project relies on, i
 to be built upfront to be used:
 
 ```shell
-# Init / update git-submodule
-[ ! -d "edc" ] && git submodule add https://github.com/eclipse-dataspaceconnector/DataSpaceConnector.git edc
 git submodule update --init
-git -C edc fetch --all
-git -C edc checkout milestone-3
-
-# build edc 0.0.1-SNAPSHOT artifacts
 cd edc && ./gradlew publishToMavenLocal
 ```
 
