@@ -1,65 +1,72 @@
-{{- if .Values.ingress.enabled }}
+{{- $fullName := include "edc-controlplane.fullname" . }}
+{{- $labels := include "edc-controlplane.labels" . | nindent 4 }}
+{{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
+{{- $edcEndpoints := .Values.edc.endpoints }}
+{{- range .Values.ingresses }}
+{{- if and .enabled .endpoints }}
+{{- $ingressName := printf "%s-%s" $fullName .hostname }}
 ---
-{{- $fullName := include "edc-controlplane.fullname" . -}}
-{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
-  {{- end }}
-{{- end }}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
+{{- else if semverCompare ">=1.14-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1beta1
 {{- else }}
 apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $ingressName }}
   labels:
-    {{- include "edc-controlplane.labels" . | nindent 4 }}
+    {{- $labels | nindent 2 }}
   annotations:
-    {{- with .Values.ingress.annotations }}
+    {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
+    {{- if not (hasKey .annotations "kubernetes.io/ingress.class") }}
+    {{- $_ := set .annotations "kubernetes.io/ingress.class" .className}}
+    {{- end }}
+    {{- end }}
+    {{- if .certManager }}
+    {{- if .certManager.issuer }}
+    {{- $_ := set .annotations "cert-manager.io/issuer" .certManager.issuer}}
+    {{- end }}
+    {{- if .certManager.clusterIssuer }}
+    {{- $_ := set .annotations "cert-manager.io/cluster-issuer" .certManager.clusterIssuer}}
+    {{- end }}
+    {{- end }}
+    {{- with .annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-    {{- if .Values.ingress.certManager }}
-    {{- if .Values.ingress.certManager.issuer }}
-    cert-manager.io/issuer: {{ .Values.ingress.certManager.issuer }}
-    {{- end }}
-    {{- if .Values.ingress.certManager.clusterIssuer }}
-    cert-manager.io/cluster-issuer: {{ .Values.ingress.certManager.clusterIssuer }}
-    {{- end }}
-    {{- end }}
 spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.className }}
+  {{- if and .className (semverCompare ">=1.18-0" $gitVersion) }}
+  ingressClassName: {{ .className }}
   {{- end }}
-  {{- if .Values.ingress.hostname }}
-  {{- if .Values.ingress.tls }}
+  {{- if .hostname }}
+  {{- if .tls }}
   tls:
     - hosts:
-        - {{ .Values.ingress.hostname }}
-      secretName: {{ $fullName }}-tls
+        - {{ .hostname }}
+      secretName: {{ $ingressName }}-tls
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.hostname }}
+    - host: {{ .hostname }}
       http:
         paths:
-        {{- range  $name, $mapping := .Values.edc.endpoints }}
-        {{- if $mapping.ingress }}
-        - path: {{ $mapping.path }}
-          pathType: Prefix
-          backend:
-            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-            service:
-              name: {{ $fullName }}
-              port:
-                number: {{ $mapping.port }}
-            {{- else }}
-            serviceName: {{ $fullName }}
-            servicePort: {{ $mapping.port }}
-            {{- end }}
-        {{- end }}
+          {{- $ingressEdcEndpoints := .endpoints }}
+          {{- range  $name, $mapping := $edcEndpoints }}
+          {{- if (has $name $ingressEdcEndpoints) }}
+          - path: {{ $mapping.path }}
+            pathType: Prefix
+            backend:
+              {{- if semverCompare ">=1.19-0" $gitVersion }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $mapping.port }}
+              {{- else }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $mapping.port }}
+              {{- end }}
         {{- end }}
   {{- end }}
-{{- end }}
+  {{- end }}
+{{- end }}{{- /* end: if .enabled */}}
+{{- end }}{{- /* end: range .Values.ingresses */}}

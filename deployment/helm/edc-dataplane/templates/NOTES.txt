@@ -6,15 +6,23 @@ APP VERSION: {{ .Chart.AppVersion }}
 Logs can be accessed by running this command:
 
   kubectl logs --tail 100 -f \
-    --namespace {{ .Release.Namespace }}
+    --namespace {{ .Release.Namespace }} \
     -l "app.kubernetes.io/name={{ include "edc-dataplane.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
 
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingresses }}
 
 Following ingress URLS are available:
-  {{- range  $name, $mapping := .Values.edc.endpoints }}
-  {{- if $mapping.ingress }}
-  Visit http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $.Values.ingress.hostname }}{{ $mapping.path }} to access the {{ $name }} api
+  {{- $edcEndpoints := .Values.edc.endpoints }}
+  {{- range .Values.ingresses }}
+  {{- if .enabled }}
+  {{- $ingressEdcEndpoints := .endpoints }}
+  {{- $hostname := .hostname }}
+  {{- $tls := .tls }}
+  {{- range  $name, $mapping := $edcEndpoints }}
+  {{- if (has $name $ingressEdcEndpoints) }}
+  Visit http{{ if $tls }}s{{ end }}://{{ $hostname }}{{ $mapping.path }} to access the {{ $name }} api
+  {{- end }}
+  {{- end }}
   {{- end }}
   {{- end }}
 
