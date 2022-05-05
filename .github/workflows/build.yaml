@@ -55,7 +55,7 @@ jobs:
     -
       name: edc-dataplane Docker Metadata
       id: edc_dataplane_meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ghcr.io/catenax-ng/product-edc/edc-dataplane
@@ -119,7 +119,7 @@ jobs:
     -
       name: edc-controlplane-memory Docker Metadata
       id: edc_controlplane_memory_meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ghcr.io/catenax-ng/product-edc/edc-controlplane-memory
@@ -183,7 +183,7 @@ jobs:
     -
       name: edc-controlplane-cosmosdb Docker Metadata
       id: edc_controlplane_cosmosdb_meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ghcr.io/catenax-ng/product-edc/edc-controlplane-cosmosdb
@@ -247,7 +247,7 @@ jobs:
     -
       name: edc-controlplane-postgresql Docker Metadata
       id: edc_controlplane_postgresql_meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql
