@@ -20,6 +20,10 @@ spec:
       targetPort: data
       protocol: TCP
       name: data
+    - port: {{ .Values.edc.endpoints.validation.port }}
+      targetPort: validation
+      protocol: TCP
+      name: validation
     - port: {{ .Values.edc.endpoints.ids.port }}
       targetPort: ids
       protocol: TCP
