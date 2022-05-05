@@ -116,6 +116,13 @@ edc:
       port: "9090"
       path: /metrics
       ingress: false
+  vault:
+    # Certificate based vault access
+    certificate:
+      enabled: false
+      secretName:
+      # File name and secret key
+      fileName: cert.pfx
 
 ##
 ## Service to expose the running application on a set of Pods as a network service.

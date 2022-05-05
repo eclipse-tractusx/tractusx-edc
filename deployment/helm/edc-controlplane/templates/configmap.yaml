@@ -18,6 +18,10 @@ data:
     web.http.ids.port={{ .Values.edc.endpoints.ids.port }}
     web.http.ids.path={{ .Values.edc.endpoints.ids.path }}
     {{- .Values.configuration.properties | nindent 4 }}
+    {{- if .Values.edc.vault.certificate.enabled }}
+    edc.vault.certificate=/app/{{ .Values.edc.vault.certificate.fileName }}
+    {{- end }}
+    {{- .Values.configuration.properties | nindent 4 }}
 
   opentelemetry.properties: |-
     {{- .Values.opentelemetry.properties | nindent 4 }}
