@@ -111,44 +111,44 @@ service:
   type: ClusterIP
 
 ##
-## Ingress declaration to publicly expose the network service.
+## Ingress declaration to expose the network service.
 ##
-ingress:
-  ##
-  ## Set to true to enable ingress record generation
-  ##
-  enabled: false
-  ##
-  ## Defines the ingress class to use https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
-  ##
-  className: ""
-  ##
-  ## Enables TLS on the ingress resource
-  ##
-  tls: false
-
-  ##
-  ## Adds cert-manager annotations to the ingress
-  ##
-  certManager:
+ingresses:
+  ## Public / Internet facing Ingress
+  - enabled: true
     ##
-    ## If preset enables certificate generation via cert-manager namespace scoped issuer
+    ## The hostname to be used to precisely map incoming traffic onto the underlying network service
     ##
-    issuer: ""
+    hostname: "edc-dataplane.local"
     ##
-    ## If preset enables certificate generation via cert-manager cluster-wide issuer
+    ## Additional ingress annotations to add
     ##
-    clusterIssuer: ""
-
-  ##
-  ## Additional ingress annotations to add
-  ##
-  annotations: {}
-
-  ##
-  ## The hostname to be used to precisely map incoming traffic onto the underlying network service
-  ##
-  hostname: "edc-dataplane.local"
+    annotations: {}
+    ##
+    ## EDC endpoints exposed by this ingress resource
+    ##
+    endpoints:
+      - public
+    ##
+    ## Defines the ingress class to use https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
+    ##
+    className: ""
+    ##
+    ## Enables TLS on the ingress resource
+    ##
+    tls: false
+    ##
+    ## Adds cert-manager annotations to the ingress
+    ##
+    certManager:
+      ##
+      ## If preset enables certificate generation via cert-manager namespace scoped issuer
+      ##
+      issuer: ""
+      ##
+      ## If preset enables certificate generation via cert-manager cluster-wide issuer
+      ##
+      clusterIssuer: ""
 
 resources:
   {}
@@ -161,7 +161,7 @@ resources:
   #   memory: 128Mi
   # requests:
   #   cpu: 100m
-#   memory: 128Mi
+  #   memory: 128Mi
 
 autoscaling:
   enabled: false
