@@ -24,9 +24,12 @@ import org.eclipse.dataspaceconnector.policy.model.Permission;
 import org.eclipse.dataspaceconnector.policy.model.Prohibition;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.policy.PolicyEngine;
+import org.eclipse.dataspaceconnector.spi.policy.RuleBindingRegistry;
+import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
+@Requires({RuleBindingRegistry.class, PolicyEngine.class})
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
   /**
@@ -38,14 +41,14 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
    * <pre>
    * {
    *     "constraint": {
-   *         "leftOperand": "BusinessPartner",
+   *         "leftOperand": "BusinessPartnerNumber",
    *         "operator": "EQ",
    *         "rightOperand": "BPNLCDQ90000X42KU"
    *     }
    * }
    * </pre>
    */
-  private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartner";
+  public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
 
   @Override
   public String name() {
@@ -57,12 +60,16 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     final Monitor monitor = context.getMonitor();
     final PolicyEngine policyEngine = context.getService(PolicyEngine.class);
+    final RuleBindingRegistry ruleBindingRegistry = context.getService(RuleBindingRegistry.class);
 
     final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor);
     final BusinessPartnerPermissionFunction permissionFunction =
         new BusinessPartnerPermissionFunction(monitor);
     final BusinessPartnerProhibitionFunction prohibitionFunction =
         new BusinessPartnerProhibitionFunction(monitor);
+
+    ruleBindingRegistry.bind("USE", ALL_SCOPES);
+    ruleBindingRegistry.bind("BusinessPartnerNumber", ALL_SCOPES);
 
     policyEngine.registerFunction(
         ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
