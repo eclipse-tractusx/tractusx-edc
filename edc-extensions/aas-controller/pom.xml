@@ -40,10 +40,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contract-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>dataloading</artifactId>
         </dependency>
 
