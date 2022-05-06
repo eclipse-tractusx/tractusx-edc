@@ -87,6 +87,11 @@ spec:
             - name: configuration
               mountPath: /app/logging.properties
               subPath: logging.properties
+            {{- if .Values.edc.vault.certificate.enabled }}
+            - name: vault-secret
+              mountPath: /app/{{ .Values.edc.vault.certificate.fileName }}
+              subPath: {{ .Values.edc.vault.certificate.fileName }}
+            {{- end }}
       volumes:
         - name: configuration
           configMap:
@@ -98,6 +103,14 @@ spec:
                 path: opentelemetry.properties
               - key: logging.properties
                 path: logging.properties
+        {{- if .Values.edc.vault.certificate.enabled }}
+        - name: vault-secret
+          secret:
+            secretName: {{ .Values.edc.vault.certificate.secretName }}
+            items:
+              - key: {{ .Values.edc.vault.certificate.fileName }}
+                path: {{ .Values.edc.vault.certificate.fileName }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
