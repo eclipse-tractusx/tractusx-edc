@@ -335,8 +335,6 @@ configuration:
     # edc.ion.crawler.did-type=
     # edc.ion.crawler.interval-minutes=
     # edc.ion.crawler.ion.url=
-    # edc.keystore=
-    # edc.keystore.password=
     # edc.metrics.enabled=
     # edc.metrics.executor.enabled=
     # edc.metrics.jersey.enabled=
