@@ -538,3 +538,10 @@ https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1251
 
 **Workaround:**
 The DataManagement API can also initiate a contract negotiation using the actual policy object.
+
+## Non-IDS-Transformable-ContractDefinition causes connector to be unable to send out self-descriptions/catalogs
+
+https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1265
+
+**Solution**
+Delete non-transformable ContractDefinition or Policy.
