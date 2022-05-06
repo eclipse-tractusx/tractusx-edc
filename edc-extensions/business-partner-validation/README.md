@@ -70,3 +70,79 @@ Management API.
 
 The business partner number of another connector is part of the DAPS token. Once a BPN constraint is used in an access
 policy the connector checks the token before sending out contract offers.
+
+# Important: EDC Policies are input sensitive
+
+Please be aware that the EDC ignores all Rules and Constraint it does not understand. This could cause your constrained policies to be public.
+
+---
+
+Example 1 for accidentially public:
+
+```json
+{
+  "uid": "1",
+  "prohibitions": [],
+  "obligations": [],
+  "permissions": [
+    {
+      "edctype": "dataspaceconnector:permission",
+      "action": {
+        "type": "MY-USE"
+      },
+      "constraints": [
+        {
+          "edctype": "AtomicConstraint",
+          "leftExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": "BusinessPartnerNumber"
+          },
+          "rightExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": "BPNLCDQ90000X42KU"
+          },
+          "operator": "EQ"
+        }
+      ]
+    }
+  ]
+}
+```
+
+This policy is public available, even though the constraint is described correct. The reason is, that this extension only registeres the Policy.Action `USE` within the EDC. Any other Action Type will have the EDC ignore the corresponding permission, hence interpret the polics as public policy.
+
+---
+
+Example 2 for accidentially public:
+
+```json
+{
+  "uid": "1",
+  "prohibitions": [],
+  "obligations": [],
+  "permissions": [
+    {
+      "edctype": "dataspaceconnector:permission",
+      "action": {
+        "type": "USE"
+      },
+      "constraints": [
+        {
+          "edctype": "AtomicConstraint",
+          "leftExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": "BusinesPartnerNumber"
+          },
+          "rightExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": "BPNLCDQ90000X42KU"
+          },
+          "operator": "EQ"
+        }
+      ]
+    }
+  ]
+}
+```
+
+This policy is public available, too. The cause is a typo in the left-expression of the constraint. This extension only registeres the Constraint.LeftExpression `BusinessPartnerNumber` within the EDC. Any other term will have the EDC ignore the corresponding constraint, hence interpret the polics as public policy.
