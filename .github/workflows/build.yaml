@@ -84,7 +84,7 @@ jobs:
           type=sha
     -
       name: Build edc-dataplane Docker Image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: edc-dataplane/src/main/docker/Dockerfile
@@ -168,7 +168,7 @@ jobs:
           type=sha
     -
       name: Build edc-controlplane-memory Docker Image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
@@ -252,7 +252,7 @@ jobs:
           type=sha
     -
       name: Build edc-controlplane-cosmosdb Docker Image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: edc-controlplane/edc-controlplane-cosmosdb/src/main/docker/Dockerfile
@@ -336,7 +336,7 @@ jobs:
           type=sha
     -
       name: Build edc-controlplane-postgresql Docker Image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: edc-controlplane/edc-controlplane-postgresql/src/main/docker/Dockerfile
