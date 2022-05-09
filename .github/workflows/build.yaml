@@ -42,7 +42,7 @@ jobs:
       with:
         submodules: recursive
     -
-      name: Login to Github Packages
+      name: Login to GitHub Container Registry
       if: |
         needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
@@ -103,6 +103,7 @@ jobs:
           refs/heads/release/
           refs/tags/
           refs/heads/main', github.ref)
+      continue-on-error: true
       with:
         appname: 'product-edc/edc-dataplane'
         createprofile: true
@@ -125,7 +126,7 @@ jobs:
       with:
         submodules: recursive
     -
-      name: Login to Github Packages
+      name: Login to GitHub Container Registry
       if: |
         needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
@@ -186,6 +187,7 @@ jobs:
           refs/heads/release/
           refs/tags/
           refs/heads/main', github.ref)
+      continue-on-error: true
       with:
         appname: 'product-edc/edc-controlplane-memory'
         createprofile: true
@@ -208,7 +210,7 @@ jobs:
       with:
         submodules: recursive
     -
-      name: Login to Github Packages
+      name: Login to GitHub Container Registry
       if: |
         needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
@@ -269,6 +271,7 @@ jobs:
           refs/heads/release/
           refs/tags/
           refs/heads/main', github.ref)
+      continue-on-error: true
       with:
         appname: 'product-edc/edc-controlplane-cosmosdb'
         createprofile: true
@@ -352,6 +355,7 @@ jobs:
           refs/heads/release/
           refs/tags/
           refs/heads/main', github.ref)
+      continue-on-error: true
       with:
         appname: 'product-edc/edc-controlplane-postgresql'
         createprofile: true
