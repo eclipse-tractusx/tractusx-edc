@@ -91,7 +91,7 @@ jobs:
         build-args: |
           JAR=edc-dataplane/target/edc-dataplane.jar
         push: |
-          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
+          ${{ needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
         labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
     -
@@ -174,7 +174,7 @@ jobs:
         build-args: |
           JAR=edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
         push: |
-          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
+          ${{ needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_memory_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
     -
@@ -257,7 +257,7 @@ jobs:
         build-args: |
           JAR=edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
         push: |
-          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
+          ${{ needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
     -
@@ -340,7 +340,7 @@ jobs:
         build-args: |
           JAR=edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
         push: |
-          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
+          ${{ needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_postgresql_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
     -
