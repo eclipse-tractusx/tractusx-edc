@@ -13,10 +13,26 @@ on:
       - '*'
 
 jobs:
+  secret-presence:
+    runs-on: ubuntu-latest
+    outputs:
+      CXNG_GHCR_PAT: ${{ steps.secret-present.outputs.CXNG_GHCR_PAT }}
+      VERACODE_ID: ${{ steps.secret-present.outputs.VERACODE_ID }}
+      VERACODE_SECRET_KEY: ${{ steps.secret-present.outputs.VERACODE_SECRET_KEY }}
+    steps:
+      - name: Check whether secrets exist
+        id: secret-present
+        run: |
+          [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
+          [ ! -z "${{ secrets.VERACODE_ID }}" ] && echo "::set-output name=VERACODE_ID::true"
+          [ ! -z "${{ secrets.VERACODE_SECRET_KEY }}" ] && echo "::set-output name=VERACODE_SECRET_KEY::true"
+
+          exit 0
   #####################
   ### edc-dataplane ###
   #####################
   build-edc-dataplane:
+    needs: [ secret-presence ]
     runs-on: ubuntu-latest
     steps:
     # Set-Up
@@ -27,7 +43,8 @@ jobs:
         submodules: recursive
     -
       name: Login to Github Packages
-      if: github.event_name != 'pull_request'
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -58,7 +75,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/catenax-ng/product-edc/edc-dataplane
+          ghcr.io/${{ github.repository }}/edc-dataplane
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -73,14 +90,32 @@ jobs:
         file: edc-dataplane/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-dataplane/target/edc-dataplane.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository_owner == 'product-edc' }}
+        push: |
+          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
         labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@0.2.1
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      with:
+        appname: 'product-edc/edc-dataplane'
+        createprofile: true
+        version: ${{ github.ref }}
+        filepath: edc-dataplane/target/edc-dataplane.jar
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
 
   #################################
   ### edc-controlplane-memory ###
   #################################
   build-edc-controlplane-memory:
+    needs: [ secret-presence ]
     runs-on: ubuntu-latest
     steps:
     # Set-Up
@@ -91,7 +126,8 @@ jobs:
         submodules: recursive
     -
       name: Login to Github Packages
-      if: github.event_name != 'pull_request'
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -122,7 +158,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/catenax-ng/product-edc/edc-controlplane-memory
+          ghcr.io/${{ github.repository }}/edc-controlplane-memory
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -137,14 +173,32 @@ jobs:
         file: edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
+        push: |
+          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_memory_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@0.2.1
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      with:
+        appname: 'product-edc/edc-controlplane-memory'
+        createprofile: true
+        version: ${{ github.ref }}
+        filepath: edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
 
   #################################
   ### edc-controlplane-cosmosdb ###
   #################################
   build-edc-controlplane-cosmosdb:
+    needs: [ secret-presence ]
     runs-on: ubuntu-latest
     steps:
     # Set-Up
@@ -155,7 +209,8 @@ jobs:
         submodules: recursive
     -
       name: Login to Github Packages
-      if: github.event_name != 'pull_request'
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -186,7 +241,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/catenax-ng/product-edc/edc-controlplane-cosmosdb
+          ghcr.io/${{ github.repository }}/edc-controlplane-cosmosdb
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -201,14 +256,32 @@ jobs:
         file: edc-controlplane/edc-controlplane-cosmosdb/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
+        push: |
+          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@0.2.1
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      with:
+        appname: 'product-edc/edc-controlplane-cosmosdb'
+        createprofile: true
+        filepath: edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
+        version: ${{ github.ref }}
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
 
   ###################################
   ### edc-controlplane-postgresql ###
   ###################################
   build-edc-controlplane-postgresql:
+    needs: [ secret-presence ]
     runs-on: ubuntu-latest
     steps:
     # Set-Up
@@ -219,7 +292,8 @@ jobs:
         submodules: recursive
     -
       name: Login to Github Packages
-      if: github.event_name != 'pull_request'
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -250,7 +324,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql
+          ghcr.io/${{ github.repository }}/edc-controlplane-postgresql
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -265,6 +339,23 @@ jobs:
         file: edc-controlplane/edc-controlplane-postgresql/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
-        push: ${{ github.event_name != 'pull_request' && github.repository == 'catenax-ng/product-edc' }}
+        push: |
+          ${{ secrets.CXNG_GHCR_PAT && github.event_name != 'pull_request' }}
         tags: ${{ steps.edc_controlplane_postgresql_meta.outputs.tags }}
         labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@0.2.1
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      with:
+        appname: 'product-edc/edc-controlplane-postgresql'
+        createprofile: true
+        filepath: edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
+        version: ${{ github.ref }}
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
