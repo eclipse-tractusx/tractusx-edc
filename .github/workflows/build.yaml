@@ -16,12 +16,12 @@ jobs:
   secret-presence:
     runs-on: ubuntu-latest
     outputs:
-      CXNG_GHCR_PAT: ${{ steps.secret-present.outputs.CXNG_GHCR_PAT }}
-      VERACODE_ID: ${{ steps.secret-present.outputs.VERACODE_ID }}
-      VERACODE_SECRET_KEY: ${{ steps.secret-present.outputs.VERACODE_SECRET_KEY }}
+      CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
+      VERACODE_ID: ${{ steps.secret-presence.outputs.VERACODE_ID }}
+      VERACODE_SECRET_KEY: ${{ steps.secret-presence.outputs.VERACODE_SECRET_KEY }}
     steps:
       - name: Check whether secrets exist
-        id: secret-present
+        id: secret-presence
         run: |
           [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
           [ ! -z "${{ secrets.VERACODE_ID }}" ] && echo "::set-output name=VERACODE_ID::true"
