@@ -96,7 +96,7 @@ jobs:
         labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
     -
       name: Veracode Upload And Scan
-      uses: veracode/veracode-uploadandscan-action@0.2.1
+      uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
         needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
           refs/heads/develop
@@ -180,7 +180,7 @@ jobs:
         labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
     -
       name: Veracode Upload And Scan
-      uses: veracode/veracode-uploadandscan-action@0.2.1
+      uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
         needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
           refs/heads/develop
@@ -264,7 +264,7 @@ jobs:
         labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
     -
       name: Veracode Upload And Scan
-      uses: veracode/veracode-uploadandscan-action@0.2.1
+      uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
         needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
           refs/heads/develop
@@ -348,7 +348,7 @@ jobs:
         labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
     -
       name: Veracode Upload And Scan
-      uses: veracode/veracode-uploadandscan-action@0.2.1
+      uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
         needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
           refs/heads/develop
