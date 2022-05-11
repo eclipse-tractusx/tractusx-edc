@@ -93,6 +93,12 @@
             <artifactId>filesystem-configuration</artifactId>
         </dependency>
 
+        <!-- Security -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>auth-tokenbased</artifactId>
+        </dependency>
+
         <!-- Vault -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>

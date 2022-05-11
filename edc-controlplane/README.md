@@ -517,7 +517,17 @@ curl -G -X GET $__connectorUrl/$__defaultApiPath/control/catalog --header "$__ap
 | $__targetConnectorUrl     | URL of the Connector of the target connector with the IDS API port configured in `web.http.ids.port`(in the configuration of the other connector) |
 | $__targetConnectorIdsPath | The IDS Path as configured in `web.http.ids.path` (in the configuration of the other connector)                                                   |
 
+# Secure your connector
 
+## API Security
+
+The only API that is protected by some kind of security mechanism is the Data Management API. At the time of writing this is done by a simple API key.
+The key value must be configured in `edc.api.auth.key`. All requests to the Data Management API must have `X-Api-Key` header with the key value.
+
+Example:
+```bash
+curl -X GET <URL> --header "X-Api-Key: <edc.api.auth.key>"
+```
 
 # Known Control Plane Issues
 
