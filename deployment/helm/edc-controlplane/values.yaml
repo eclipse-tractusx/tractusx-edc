@@ -264,6 +264,7 @@ opentelemetry:
 ##
 configuration:
   properties: |-
+    # edc.api.auth.key=
     # edc.api.control.auth.apikey.key=
     # edc.api.control.auth.apikey.value=
     # edc.assetindex.cosmos.account-name=
