@@ -545,10 +545,3 @@ https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1265
 
 **Solution**
 Delete non-transformable ContractDefinition or Policy.
-
-## Contract Negotatiation broken for SQL Control Plane
-
-https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1270
-
-**Solution**
-No solution. Please use another control plane.

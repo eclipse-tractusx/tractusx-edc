@@ -8,9 +8,9 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
 --  Contributors:
---       Mercedes-Benz Tech Innovation GmbH - Migrate edc_contract_negotiation to contain agreement_id
+--       Mercedes-Benz Tech Innovation GmbH -  contract agreement id column rename, negotiation correlation id nullable
 --
 
--- Add new agreement_id
-ALTER TABLE edc_contract_agreement ADD agreement_id VARCHAR(255) DEFAULT NULL;
-ALTER TABLE edc_contract_negotiation ALTER COLUMN correlation_id DROP NOT NULL;
+-- RENAME id column and make correlation_id nullable
+ALTER TABLE IF EXISTS edc_contract_agreement RENAME COLUMN id to agreement_id;
+ALTER TABLE IF EXISTS edc_contract_negotiation ALTER COLUMN correlation_id DROP NOT NULL;
