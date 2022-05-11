@@ -9,7 +9,7 @@
 ### Key Vault Setup
 
 The connector will lookup a secret in the key vault, that has the same alias as the `account-name` setting for CosmosDB (e.g. `edc.assetindex.cosmos.account-name`).
-This secret must contain the the primary or secondard CosmosDB Read-write key.
+This secret must contain the primary or the secondard CosmosDB Read-write key.
 
 ### Configuration
 
