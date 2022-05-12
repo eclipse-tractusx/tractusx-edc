@@ -32,7 +32,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- plugins -->
-        <com.diffplug.spotless.maven.plugin.version>2.22.4</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.22.5</com.diffplug.spotless.maven.plugin.version>
         <org.apache.maven.plugins.shade.version>3.3.0</org.apache.maven.plugins.shade.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.0.0</org.codehaus.mojo.exec.maven.plugin.version>
 
