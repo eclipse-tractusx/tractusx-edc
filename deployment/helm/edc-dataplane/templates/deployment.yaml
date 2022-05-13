@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,16 +14,23 @@ spec:
       {{- include "edc-dataplane.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/env-config: {{ include (print $.Template.BasePath "/configmap-env.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "edc-dataplane.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.imagePullSecret.dockerconfigjson }}
+      imagePullSecrets:
+        - name: {{ include "edc-dataplane.fullname" . }}-imagepullsecret
+      {{- else }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
       serviceAccountName: {{ include "edc-dataplane.serviceAccountName" . }}
       securityContext:
@@ -33,26 +41,54 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: CONFIGURATION_PROPERTIES
-              value: "/etc/edc/configuration.properties"
           ports:
-            - name: http
-              containerPort: 80
+            - name: default
+              containerPort: {{ .Values.edc.endpoints.default.port }}
               protocol: TCP
+            - name: public
+              containerPort: {{ .Values.edc.endpoints.public.port }}
+              protocol: TCP
+            - name: control
+              containerPort: {{ .Values.edc.endpoints.control.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.edc.endpoints.metrics.port }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{ .Values.edc.endpoints.default.path }}/check/liveness
+              port: default
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{ .Values.edc.endpoints.default.path }}/check/readiness
+              port: default
+          {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.edc.endpoints.default.path }}/check/startup
+              port: default
+            failureThreshold: 12
+            initialDelaySeconds: 10
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "edc-dataplane.fullname" . }}-env
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: configuration
-              mountPath: /etc/edc
+              mountPath: /app/configuration.properties
+              subPath: configuration.properties
+            - name: configuration
+              mountPath: /app/opentelemetry.properties
+              subPath: opentelemetry.properties
+            - name: configuration
+              mountPath: /app/logging.properties
+              subPath: logging.properties
       volumes:
         - name: configuration
           configMap:
@@ -60,6 +96,10 @@ spec:
             items:
               - key: configuration.properties
                 path: configuration.properties
+              - key: opentelemetry.properties
+                path: opentelemetry.properties
+              - key: logging.properties
+                path: logging.properties
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

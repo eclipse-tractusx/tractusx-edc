@@ -8,6 +8,10 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.vscode/**
+
+# Macbooks
+**/.DS_STORE
 
 # Generated files
 .idea/**/contentModel.xml
