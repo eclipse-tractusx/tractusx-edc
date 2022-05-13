@@ -24,51 +24,35 @@
     <packaging>jar</packaging>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>
+                            org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
+                        </mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}</finalName>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>module-info.class</exclude>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
-                                    </mainClass>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>
-                                        META-INF/services/org.eclipse.dataspaceconnector.spi.system.ServiceExtension
-                                    </resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>
-                                        META-INF/services/org.eclipse.dataspaceconnector.spi.system.VaultExtension
-                                    </resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>
-                                        META-INF/services/org.eclipse.dataspaceconnector.spi.system.ConfigurationExtension
-                                    </resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                            </transformers>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -263,6 +247,8 @@
                                         <argument>src/main/docker/Dockerfile</argument>
                                         <argument>--build-arg</argument>
                                         <argument>JAR=target/${project.artifactId}.jar</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>LIB=target/lib</argument>
                                         <argument>-t</argument>
                                         <argument>${project.artifactId}:${project.version}</argument>
                                         <argument>.</argument>

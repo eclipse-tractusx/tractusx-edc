@@ -18,11 +18,13 @@ RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
 FROM gcr.io/distroless/java11-debian11
 ARG JAR
+ARG LIB
 
 WORKDIR /app
 
 COPY --from=otel /tmp/opentelemetry-javaagent.jar .
-COPY $JAR edc-dataplane.jar
+COPY ${JAR} edc-dataplane.jar
+COPY ${LIB} ./lib/
 
 CMD ["-javaagent:/app/opentelemetry-javaagent.jar", \
      "-Dedc.fs.config=/app/configuration.properties", \
