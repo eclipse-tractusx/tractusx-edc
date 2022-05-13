@@ -25,6 +25,22 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>../../</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>NOTICE.md</include>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
 
         <plugins>
             <plugin>
@@ -221,6 +237,9 @@
 
     <profiles>
         <profile>
+            <!--
+                mvn package -Pwith-docker-image
+            -->
             <id>with-docker-image</id>
             <build>
                 <plugins>

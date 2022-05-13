@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="utf-8"?>
+<license-lookup xmlns="https://source.jasig.org/schemas/maven-notice-plugin/license-lookup"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="https://source.jasig.org/schemas/maven-notice-plugin/license-lookup https://source.jasig.org/schemas/maven-notice-plugin/license-lookup/license-lookup-v1.0.xsd">
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>apache-commons-pool-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>api-configuration</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>api-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>asset-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>assetindex-cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>asset-index-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>auth-basic</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>auth-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>auth-tokenbased</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>aws-s3</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>aws-test</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>azure-eventgrid</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>azure-eventgrid-config</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>azure-test</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>azure-vault</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>blob-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>blob-operator</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>blob-provision</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>blobstorage</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>catalog</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>catalog-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>catalog-cache</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>catalog-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>common-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>common-util</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contract</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contractagreement-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contractdefinition-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contract-definition-store-cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contractdefinition-store-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contractnegotiation-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contract-negotiation-store-cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contractnegotiation-store-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>contract-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>control-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core-base</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core-boot</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core-defaults</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core-micrometer</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core-policy</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>core-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>cosmos-common</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>dataloading</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-management-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-azure-storage</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-framework</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-http</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-s3</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-selector-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-selector-client</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-selector-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-selector-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-selector-store</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-transfer</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-transfer-client</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-transfer-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>data-plane-transfer-sync</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>decentralized-identity</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>dummy-credentials-verifier</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>fcc-node-directory-cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>federated-catalog-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>filesystem-configuration</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>filesystem-vault</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>http</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>http-provisioner</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>http-receiver</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>iam-daps</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>iam-mock</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>identity-common-test</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>identity-did-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>identity-did-crypto</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>identity-did-service</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>identity-did-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>identity-did-web</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-api-configuration</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-api-multipart-dispatcher-v1</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-api-multipart-endpoint-v1</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-api-transform-v1</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-policy</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>ids-token-validation</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>jdk-logger-monitor</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>jersey</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>jersey-micrometer</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>jetty</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>jetty-micrometer</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>lease-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>oauth2-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>oauth2-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>observability-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>policydefinition-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>policy-engine</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>policy-evaluator</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>policy-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>policy-store-cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>policy-store-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>registration-service</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>registration-service-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>s3-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>s3-operator</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>s3-provision</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>state-machine-lib</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>token-generation-lib</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>token-validation-lib</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transaction-atomikos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transaction-datasource-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transaction-local</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transaction-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transfer</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transfer-functions-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transfer-functions-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transferprocess-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transfer-process-store-cosmos</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transfer-process-store-sql</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transfer-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>transport-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+    <artifact>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>web-spi</artifactId>
+        <license>Apache License, Version 2.0</license>
+        <version>0.0.1-SNAPSHOT</version>
+    </artifact>
+</license-lookup>
