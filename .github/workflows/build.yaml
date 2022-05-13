@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - develop
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
@@ -12,35 +13,46 @@ on:
       - '*'
 
 jobs:
-  build:
+  secret-presence:
+    runs-on: ubuntu-latest
+    outputs:
+      CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
+      VERACODE_ID: ${{ steps.secret-presence.outputs.VERACODE_ID }}
+      VERACODE_SECRET_KEY: ${{ steps.secret-presence.outputs.VERACODE_SECRET_KEY }}
+    steps:
+      - name: Check whether secrets exist
+        id: secret-presence
+        run: |
+          [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
+          [ ! -z "${{ secrets.VERACODE_ID }}" ] && echo "::set-output name=VERACODE_ID::true"
+          [ ! -z "${{ secrets.VERACODE_SECRET_KEY }}" ] && echo "::set-output name=VERACODE_SECRET_KEY::true"
+
+          exit 0
+  #####################
+  ### edc-dataplane ###
+  #####################
+  build-edc-dataplane:
+    needs: [ secret-presence ]
     runs-on: ubuntu-latest
     steps:
-
-    ##############
-    ### Set-Up ###
-    ##############
+    # Set-Up
     -
       name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
     -
-      name: Login to Github Packages
-      if: github.event_name != 'pull_request'
-      uses: docker/login-action@v1
+      name: Login to GitHub Container Registry
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.CXNG_GHCR_PAT }}
     -
-      name: Use specific edc version via git submodule # due to lack of release versions in maven central
-      run: |-
-        [ ! -d "edc" ] && git submodule add https://github.com/eclipse-dataspaceconnector/DataSpaceConnector.git edc
-        git submodule update --init
-        git -C edc checkout d429b6cd5e81e0fc79e8f9a0cb1b31888d0900a4
-    -
       name: Set up JDK 11
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3.3.0
       with:
         java-version: '11'
         distribution: 'adopt'
@@ -49,45 +61,7 @@ jobs:
       name: Build edc with Gradle to get latest snapshots
       run: ./gradlew publishToMavenLocal
       working-directory: edc
-
-    #################################
-    ### edc-controlplane-cosmosdb ###
-    #################################
-    -
-      name: Build edc-controlplane-cosmosdb
-      run: |-
-        ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-cosmosdb -am verify
-      env:
-        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
-    -
-      name: Docker Metadata
-      id: edc_controlplane_cosmosdb_meta
-      uses: docker/metadata-action@v3
-      with:
-        images: |
-          ghcr.io/catenax-ng/catena-x-edc/edc-controlplane-cosmosdb
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{raw}}
-          type=match,pattern=\d.\d.\d
-          type=sha
-    -
-      name: Build Docker Image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: edc-controlplane/edc-controlplane-cosmosdb/src/main/docker/Dockerfile
-        build-args: |
-          JAR=edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
-        push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.tags }}
-        labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
-
-    #####################
-    ### edc-dataplane ###
-    #####################
+    # Build
     -
       name: Build edc-dataplane
       run: |-
@@ -96,12 +70,12 @@ jobs:
         GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
         GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
     -
-      name: Docker Metadata
+      name: edc-dataplane Docker Metadata
       id: edc_dataplane_meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/catenax-ng/catena-x-edc/edc-dataplane
+          ghcr.io/${{ github.repository }}/edc-dataplane
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -109,13 +83,287 @@ jobs:
           type=match,pattern=\d.\d.\d
           type=sha
     -
-      name: Build Docker Image
-      uses: docker/build-push-action@v2
+      name: Build edc-dataplane Docker Image
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: edc-dataplane/src/main/docker/Dockerfile
         build-args: |
           JAR=edc-dataplane/target/edc-dataplane.jar
-        push: ${{ github.event_name != 'pull_request' }}
+          LIB=edc-dataplane/target/lib
+        push: |
+          ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
         tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
         labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@v1.0
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      continue-on-error: true
+      with:
+        appname: 'product-edc/edc-dataplane'
+        createprofile: true
+        version: ${{ github.ref }}
+        filepath: edc-dataplane/target/edc-dataplane.jar
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+
+  #################################
+  ### edc-controlplane-memory ###
+  #################################
+  build-edc-controlplane-memory:
+    needs: [ secret-presence ]
+    runs-on: ubuntu-latest
+    steps:
+    # Set-Up
+    -
+      name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    -
+      name: Login to GitHub Container Registry
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: Set up JDK 11
+      uses: actions/setup-java@v3.3.0
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: 'maven'
+    -
+      name: Build edc with Gradle to get latest snapshots
+      run: ./gradlew publishToMavenLocal
+      working-directory: edc
+    # Build
+    -
+      name: Build edc-controlplane-memory
+      run: |-
+        ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-memory -am verify
+      env:
+        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: edc-controlplane-memory Docker Metadata
+      id: edc_controlplane_memory_meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}/edc-controlplane-memory
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{raw}}
+          type=match,pattern=\d.\d.\d
+          type=sha
+    -
+      name: Build edc-controlplane-memory Docker Image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
+        build-args: |
+          JAR=edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
+          LIB=edc-controlplane/edc-controlplane-memory/target/lib
+        push: |
+          ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
+        tags: ${{ steps.edc_controlplane_memory_meta.outputs.tags }}
+        labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@v1.0
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      continue-on-error: true
+      with:
+        appname: 'product-edc/edc-controlplane-memory'
+        createprofile: true
+        version: ${{ github.ref }}
+        filepath: edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+
+  #################################
+  ### edc-controlplane-cosmosdb ###
+  #################################
+  build-edc-controlplane-cosmosdb:
+    needs: [ secret-presence ]
+    runs-on: ubuntu-latest
+    steps:
+    # Set-Up
+    -
+      name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    -
+      name: Login to GitHub Container Registry
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: Set up JDK 11
+      uses: actions/setup-java@v3.3.0
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: 'maven'
+    -
+      name: Build edc with Gradle to get latest snapshots
+      run: ./gradlew publishToMavenLocal
+      working-directory: edc
+    # Build
+    -
+      name: Build edc-controlplane-cosmosdb
+      run: |-
+        ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-cosmosdb -am verify
+      env:
+        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: edc-controlplane-cosmosdb Docker Metadata
+      id: edc_controlplane_cosmosdb_meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}/edc-controlplane-cosmosdb
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{raw}}
+          type=match,pattern=\d.\d.\d
+          type=sha
+    -
+      name: Build edc-controlplane-cosmosdb Docker Image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: edc-controlplane/edc-controlplane-cosmosdb/src/main/docker/Dockerfile
+        build-args: |
+          JAR=edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
+          LIB=edc-controlplane/edc-controlplane-cosmosdb/target/lib
+        push: |
+          ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
+        tags: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.tags }}
+        labels: ${{ steps.edc_controlplane_cosmosdb_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@v1.0
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      continue-on-error: true
+      with:
+        appname: 'product-edc/edc-controlplane-cosmosdb'
+        createprofile: true
+        filepath: edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
+        version: ${{ github.ref }}
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+
+  ###################################
+  ### edc-controlplane-postgresql ###
+  ###################################
+  build-edc-controlplane-postgresql:
+    needs: [ secret-presence ]
+    runs-on: ubuntu-latest
+    steps:
+    # Set-Up
+    -
+      name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    -
+      name: Login to Github Packages
+      if: |
+        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: Set up JDK 11
+      uses: actions/setup-java@v3.3.0
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: 'maven'
+    -
+      name: Build edc with Gradle to get latest snapshots
+      run: ./gradlew publishToMavenLocal
+      working-directory: edc
+    # Build
+    -
+      name: Build edc-controlplane-postgresql
+      run: |-
+        ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-postgresql -am verify
+      env:
+        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+    -
+      name: edc-controlplane-postgresql Docker Metadata
+      id: edc_controlplane_postgresql_meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}/edc-controlplane-postgresql
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{raw}}
+          type=match,pattern=\d.\d.\d
+          type=sha
+    -
+      name: Build edc-controlplane-postgresql Docker Image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: edc-controlplane/edc-controlplane-postgresql/src/main/docker/Dockerfile
+        build-args: |
+          JAR=edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
+          LIB=edc-controlplane/edc-controlplane-postgresql/target/lib
+        push: |
+          ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
+        tags: ${{ steps.edc_controlplane_postgresql_meta.outputs.tags }}
+        labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
+    -
+      name: Veracode Upload And Scan
+      uses: veracode/veracode-uploadandscan-action@v1.0
+      if: |
+        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+          refs/heads/develop
+          refs/heads/release/
+          refs/tags/
+          refs/heads/main', github.ref)
+      continue-on-error: true
+      with:
+        appname: 'product-edc/edc-controlplane-postgresql'
+        createprofile: true
+        filepath: edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
+        version: ${{ github.ref }}
+        vid: ${{ secrets.VERACODE_ID }}
+        vkey: ${{ secrets.VERACODE_SECRET_KEY }}

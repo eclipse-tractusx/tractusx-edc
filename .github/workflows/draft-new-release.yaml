@@ -13,7 +13,7 @@ jobs:
     name: "Draft a new release"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       -
         name: Create release branch
         run: git checkout -b release/${{ github.event.inputs.version }}
@@ -29,7 +29,7 @@ jobs:
           git config user.email noreply@github.com
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3.3.0
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -43,7 +43,7 @@ jobs:
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Bump version in deployment/helm
-        uses: mikefarah/yq@v4.24.2
+        uses: mikefarah/yq@v4.25.1
         with:
           cmd: |-
             find deployment/helm -name Chart.yaml | xargs -n1 yq -i '.appVersion = "${{ github.event.inputs.version }}" | .version = "${{ github.event.inputs.version }}"'

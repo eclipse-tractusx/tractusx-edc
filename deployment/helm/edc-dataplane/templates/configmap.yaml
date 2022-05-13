@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +7,16 @@ metadata:
     {{- include "edc-dataplane.labels" . | nindent 4 }}
 data:
   configuration.properties: |-
-    {{ .Values.configuration.properties | nindent 4 }}
+    web.http.default.port={{ .Values.edc.endpoints.default.port }}
+    web.http.default.path={{ .Values.edc.endpoints.default.path }}
+    web.http.public.port={{ .Values.edc.endpoints.public.port }}
+    web.http.public.path={{ .Values.edc.endpoints.public.path }}
+    web.http.control.port={{ .Values.edc.endpoints.control.port }}
+    web.http.control.path={{ .Values.edc.endpoints.control.path }}
+    {{- .Values.configuration.properties | nindent 4 }}
+
+  opentelemetry.properties: |-
+    {{- .Values.opentelemetry.properties | nindent 4 }}
+
+  logging.properties: |-
+    {{- .Values.logging.properties | nindent 4 }}

@@ -2,6 +2,15 @@
 version: 2
 updates:
   -
+    package-ecosystem: "gitsubmodule"
+    target-branch: develop
+    directory: "/"
+    labels:
+      - "dependabot"
+      - "edc"
+    schedule:
+      interval: "daily"
+  -
     package-ecosystem: "github-actions"
     target-branch: develop
     directory: "/"
@@ -29,9 +38,27 @@ updates:
     schedule:
       interval: "daily"
   -
+    package-ecosystem: "docker"
+    target-branch: develop
+    directory: "edc-controlplane/edc-controlplane-memory/src/main/docker"
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "daily"
+  -
+    package-ecosystem: "docker"
+    target-branch: develop
+    directory: "edc-controlplane/edc-controlplane-postgresql/src/main/docker"
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "daily"
+  -
     package-ecosystem: "maven"
     target-branch: develop
-    directory: "edc-controlplane/edc-controlplane-cosmosdb/src/main/docker"
+    directory: /
     labels:
       - "dependabot"
       - "dependencies"
