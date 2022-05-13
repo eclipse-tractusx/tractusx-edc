@@ -12,7 +12,8 @@
        Mercedes-Benz Tech Innovation GmbH - Initial POM
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.catenax.edc</groupId>
@@ -26,6 +27,15 @@
         <module>edc-dataplane</module>
     </modules>
 
+    <inceptionYear>2022</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -36,6 +46,7 @@
         <org.apache.maven.plugins.maven.jar.plugin.version>3.2.2</org.apache.maven.plugins.maven.jar.plugin.version>
         <com.diffplug.spotless.maven.plugin.version>2.22.5</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.0.0</org.codehaus.mojo.exec.maven.plugin.version>
+        <org.codehaus.mojo.license.maven.plugin>1.5</org.codehaus.mojo.license.maven.plugin>
 
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
@@ -69,19 +80,6 @@
             <name>Fraunhofer IAIS</name>
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
         </repository>
-        <repository>
-            <id>github-edc</id>
-            <name>EDC: Github Packages</name>
-            <url>https://maven.pkg.github.com/eclipse-dataspaceconnector/DataSpaceConnector</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>github-catenax-ng</id>
-            <name>Catena-X NG: Github Packages</name>
-            <url>https://maven.pkg.github.com/catenax-ng/product-edc</url>
-        </repository>
     </repositories>
 
     <build>
@@ -91,6 +89,16 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${org.codehaus.mojo.exec.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-build-plugin</artifactId>
+                    <version>1.12</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>2.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -127,6 +135,75 @@
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${org.codehaus.mojo.license.maven.plugin}</version>
+                    <configuration>
+                        <licenseResolver>${project.basedir}/LICENSE</licenseResolver>
+                        <useMissingFile>true</useMissingFile>
+                        <licenseMerges>
+                            <licenseMerge>
+                                Apache License 2.0|Apache License v2.0|
+                                Apache License, 2.0|
+                                Apache License, Version 2.0|
+                                Apache License, version 2.0|
+                                Apache Software License - Version 2.0|
+                                The Apache License, Version 2.0|
+                                The Apache Software License, Version 2.0
+                            </licenseMerge>
+                            <licenseMerge>
+                                BSD 2-Clause|
+                                BSD-2-Clause
+                            </licenseMerge>
+                            <licenseMerge>
+                                Eclipse Distribution License - v 1.0|
+                                EDL 1.0
+                            </licenseMerge>
+                            <licenseMerge>
+                                Eclipse Public License - Version 1.0|
+                                EPL 1.0|
+                                EPL-1.0
+                            </licenseMerge>
+                            <licenseMerge>
+                                Eclipse Public License - Version 2.0|
+                                EPL 2.0|
+                                EPL-2.0
+                            </licenseMerge>
+                            <licenseMerge>
+                                GPL-2.0-with-classpath-exception|
+                                GPL2 w/ CPE|
+                                GPL-2.0-with-classpath-exception
+                            </licenseMerge>
+                            <licenseMerge>
+                                LGPL 2.1|
+                                LGPL, version 2.1
+                            </licenseMerge>
+                            <licenseMerge>
+                                MIT License|
+                                MIT license|
+                                The MIT License (MIT)
+                            </licenseMerge>
+                            <licenseMerge>
+                                BSD-3-Clause|
+                                Modified BSD
+                            </licenseMerge>
+                            <licenseMerge>
+                                GNU Lesser General Public License, version 2.1|
+                                LGPL 2.1
+                            </licenseMerge>
+                        </licenseMerges>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>create-license-list</id>
+                            <goals>
+                                <goal>aggregate-add-third-party</goal>
+                            </goals>
+                            <phase>generate-resources</phase>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -844,4 +921,44 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>generate-notice</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!--
+                            mvn notice:generate -Pgenerate-notice
+                        -->
+                        <groupId>org.jasig.maven</groupId>
+                        <artifactId>maven-notice-plugin</artifactId>
+                        <version>1.1.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>jakarta.xml.bind</groupId>
+                                <artifactId>jakarta.xml.bind-api</artifactId>
+                                <version>4.0.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.glassfish.jaxb</groupId>
+                                <artifactId>jaxb-runtime</artifactId>
+                                <version>2.3.6</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <noticeTemplate>${project.basedir}/misc/NOTICE.md.template</noticeTemplate>
+                            <generateChildNotices>false</generateChildNotices>
+                            <noticeMessage>* {0} under {1}</noticeMessage>
+                            <fileName>NOTICE.md</fileName>
+                            <noticeTemplatePlaceholder>@{GENERATED_NOTICES}</noticeTemplatePlaceholder>
+                            <licenseMapping>
+                                <param>${project.basedir}/misc/license-mappings.xml</param>
+                            </licenseMapping>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

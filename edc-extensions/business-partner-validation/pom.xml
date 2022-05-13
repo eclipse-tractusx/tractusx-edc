@@ -23,6 +23,25 @@
     <artifactId>business-partner-validation</artifactId>
     <packaging>jar</packaging>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>../../</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>NOTICE.md</include>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
     <dependencies>
         <!-- EDC Depencencies -->
         <dependency>
@@ -52,5 +71,4 @@
             <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
-
 </project>
