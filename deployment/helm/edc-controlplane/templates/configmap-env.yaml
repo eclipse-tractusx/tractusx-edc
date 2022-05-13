@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edc-controlplane.fullname" . }}-env
+  labels:
+    {{- include "edc-controlplane.labels" . | nindent 4 }}
+data:
+  {{- toYaml .Values.env | nindent 2 }}
