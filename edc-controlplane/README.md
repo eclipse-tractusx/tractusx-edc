@@ -101,6 +101,17 @@ the EDC connector to retrieve its identity token and prove its identity to other
 When writing this guidance these step were tested out using the open source omejdn DAPS of the Fraunhofer
 AISEC ([GitHub](https://github.com/International-Data-Spaces-Association/omejdn-daps)).
 
+---
+**Client Unknown Issue:**
+</br>
+Pleaste know that, in the past there were some DAPS issues with the client certificate. If you see this error, please contact the DAPS Team so that they can support you.
+
+```json
+{ "error":"invalid_client","error_description":"Client unknown"}
+```
+---
+
+
 ### (optional) 1. Key / Certificate Generation
 
 In the first step generate a PKSC8 Key and the corresponding certificate. This step is optional, because it might be possible that this key is provided by the DAPS maintainers.
@@ -160,7 +171,6 @@ edc.oauth.provider.jwks.url=http://localhost:4567/.well-known/jwks.json
 edc.oauth.private.key.alias=<key-alias>
 edc.oauth.public.key.alias=<cert-alias>
 ```
-
 
 ## Dataplane Setup
 
