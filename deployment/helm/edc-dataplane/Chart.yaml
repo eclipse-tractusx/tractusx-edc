@@ -4,6 +4,6 @@ name: edc-dataplane
 description: EDC Data-Plane
 home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-dataplane
 type: application
-appVersion: "0.0.1"
-version: 0.0.1
+appVersion: "0.0.0"
+version: 0.0.0
 maintainers: []

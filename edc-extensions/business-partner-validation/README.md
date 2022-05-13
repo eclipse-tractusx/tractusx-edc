@@ -1,3 +1,7 @@
+# Important for Milestone 3!
+
+Please note, that with the start of the **Milestone 3** release (v0.0.1) there exists an issue, where the BPN number cannot be retrieved from the DAPS token. The missing token BPN makes offers, protected by a BPN constraint, unavailable to all connectors.
+
 # Business Partner Validation Extension
 
 Using the Business Partner Validation Extension it's possible to add configurable validation against
