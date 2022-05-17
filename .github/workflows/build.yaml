@@ -20,15 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
-      VERACODE_ID: ${{ steps.secret-presence.outputs.VERACODE_ID }}
-      VERACODE_SECRET_KEY: ${{ steps.secret-presence.outputs.VERACODE_SECRET_KEY }}
+      ORG_VERACODE_API_ID: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_ID }}
+      ORG_VERACODE_API_KEY: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_KEY }}
     steps:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
-          [ ! -z "${{ secrets.VERACODE_ID }}" ] && echo "::set-output name=VERACODE_ID::true"
-          [ ! -z "${{ secrets.VERACODE_SECRET_KEY }}" ] && echo "::set-output name=VERACODE_SECRET_KEY::true"
+          [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
+          [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
 
           exit 0
   #####################
@@ -102,7 +102,7 @@ jobs:
       name: Veracode Upload And Scan
       uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
-        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+        needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
           refs/heads/develop
           refs/heads/release/
           refs/tags/
@@ -111,10 +111,10 @@ jobs:
       with:
         appname: 'product-edc/edc-dataplane'
         createprofile: true
-        version: ${{ github.ref }}
+        version: ${{ github.ref }}-${{ github.sha }}
         filepath: edc-dataplane/target/edc-dataplane.jar
-        vid: ${{ secrets.VERACODE_ID }}
-        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+        vid: ${{ secrets.ORG_VERACODE_API_ID }}
+        vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
   #################################
   ### edc-controlplane-memory ###
@@ -187,7 +187,7 @@ jobs:
       name: Veracode Upload And Scan
       uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
-        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+        needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
           refs/heads/develop
           refs/heads/release/
           refs/tags/
@@ -196,10 +196,10 @@ jobs:
       with:
         appname: 'product-edc/edc-controlplane-memory'
         createprofile: true
-        version: ${{ github.ref }}
+        version: ${{ github.ref }}-${{ github.sha }}
         filepath: edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
-        vid: ${{ secrets.VERACODE_ID }}
-        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+        vid: ${{ secrets.ORG_VERACODE_API_ID }}
+        vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
   #################################
   ### edc-controlplane-cosmosdb ###
@@ -272,7 +272,7 @@ jobs:
       name: Veracode Upload And Scan
       uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
-        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+        needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
           refs/heads/develop
           refs/heads/release/
           refs/tags/
@@ -282,9 +282,9 @@ jobs:
         appname: 'product-edc/edc-controlplane-cosmosdb'
         createprofile: true
         filepath: edc-controlplane/edc-controlplane-cosmosdb/target/edc-controlplane-cosmosdb.jar
-        version: ${{ github.ref }}
-        vid: ${{ secrets.VERACODE_ID }}
-        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+        version: ${{ github.ref }}-${{ github.sha }}
+        vid: ${{ secrets.ORG_VERACODE_API_ID }}
+        vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
   ###################################
   ### edc-controlplane-postgresql ###
@@ -357,7 +357,7 @@ jobs:
       name: Veracode Upload And Scan
       uses: veracode/veracode-uploadandscan-action@v1.0
       if: |
-        needs.secret-presence.outputs.VERACODE_ID && needs.secret-presence.outputs.VERACODE_SECRET_KEY && contains('
+        needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
           refs/heads/develop
           refs/heads/release/
           refs/tags/
@@ -367,6 +367,6 @@ jobs:
         appname: 'product-edc/edc-controlplane-postgresql'
         createprofile: true
         filepath: edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
-        version: ${{ github.ref }}
-        vid: ${{ secrets.VERACODE_ID }}
-        vkey: ${{ secrets.VERACODE_SECRET_KEY }}
+        version: ${{ github.ref_name }}-${{ github.sha }}
+        vid: ${{ secrets.ORG_VERACODE_API_ID }}
+        vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
