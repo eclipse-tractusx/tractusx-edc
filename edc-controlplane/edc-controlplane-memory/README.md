@@ -94,7 +94,7 @@ edc.oauth.client.id=daps-oauth-client-id
 edc.vault.clientid=00000000-1111-2222-3333-444444444444
 edc.vault.tenantid=55555555-6666-7777-8888-999999999999
 edc.vault.name=my-vault-name
-edc.vault.clientsecret=34-chars-secret=34-chars-secret
+edc.vault.clientsecret=34-chars-secret
 
 # Control- / Data- Plane configuration
 edc.transfer.proxy.endpoint=http://dataplane-public-endpoint/public
