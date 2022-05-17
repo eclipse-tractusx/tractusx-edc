@@ -36,6 +36,14 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.api.control.auth.apikey.key                       |           | X-Api-Key | |
 | edc.api.control.auth.apikey.value                     |           | super-strong-api-key | |
 | edc.hostname                                          |           | localhost | |
+| edc.oauth.token.url                                   | X         | https://daps.catena-x.net | |
+| edc.oauth.public.key.alias                            | X         | key-to-daps-certificate-in-keyvault | |
+| edc.oauth.private.key.alias                           | X         | key-to-private-key-in-keyvault | |
+| edc.oauth.client.id                                   | X         | daps-oauth-client-id | |
+| edc.vault.clientid                                    | X         | 00000000-1111-2222-3333-444444444444 | | 
+| edc.vault.tenantid                                    | X         | 55555555-6666-7777-8888-999999999999 | |
+| edc.vault.name                                        | X         | my-vault-name | |
+| edc.vault.clientsecret                                | X         | 34-chars-secret | |
 | edc.transfer.proxy.endpoint                  | X         | | |
 | edc.transfer.proxy.token.signer.privatekey.alias  | X         | | |
 
@@ -76,6 +84,11 @@ edc.api.control.auth.apikey.value=pass
 
 edc.hostname=localhost
 
+# OAuth / DAPS related configuration
+edc.oauth.token.url=https://daps.catena-x.net
+edc.oauth.public.key.alias=key-to-daps-certificate-in-keyvault
+edc.oauth.private.key.alias=key-to-private-key-in-keyvault
+edc.oauth.client.id=daps-oauth-client-id
 
 # Azure vault related configuration
 edc.vault.clientid=00000000-1111-2222-3333-444444444444
