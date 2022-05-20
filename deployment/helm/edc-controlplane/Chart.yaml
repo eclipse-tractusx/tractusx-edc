@@ -1,7 +1,9 @@
 ---
 apiVersion: v2
 name: edc-controlplane
-description: EDC Control-Plane
+description: >-
+  EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with
+  responsibility of resource management and govern contracts and data transfers
 home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-controlplane
 type: application
 appVersion: "0.0.1"
