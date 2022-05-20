@@ -2,8 +2,21 @@ apiVersion: v1
 entries:
   edc-controlplane:
   - apiVersion: v2
+    appVersion: 0.0.2
+    created: "2022-05-20T08:25:13.727632445Z"
+    description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
+      layer with responsibility of resource management and govern contracts and data
+      transfers
+    digest: 81933df64b1521c0fea274e6689d7766b85c722d86bc3322800e1b96549c830c
+    home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-controlplane
+    name: edc-controlplane
+    type: application
+    urls:
+    - https://catenax-ng.github.io/product-edc/helm-charts/edc-controlplane-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     appVersion: 0.0.1
-    created: "2022-05-19T15:44:54.508279222+02:00"
+    created: "2022-05-20T08:25:13.725884567Z"
     description: EDC Control-Plane
     digest: 84a8bb290fb255569d34625cfdf18416b6019841a9906ce9f709fa645da09f98
     home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-controlplane
@@ -14,8 +27,20 @@ entries:
     version: 0.0.1
   edc-dataplane:
   - apiVersion: v2
+    appVersion: 0.0.2
+    created: "2022-05-20T08:25:13.729540121Z"
+    description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
+      of transferring and receiving data streams
+    digest: 5e082daf13b8058fb17ccd93c64c5b2f7d3c2e5151df6e77b57b24b8c5f8fae3
+    home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-dataplane
+    name: edc-dataplane
+    type: application
+    urls:
+    - https://catenax-ng.github.io/product-edc/helm-charts/edc-dataplane-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     appVersion: 0.0.1
-    created: "2022-05-19T15:44:54.509069647+02:00"
+    created: "2022-05-20T08:25:13.728471334Z"
     description: EDC Data-Plane
     digest: 896ebe268b417b4ddef663c30e296f228aca0528d4a1ebf4d8eba9ed02b63222
     home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-dataplane
@@ -24,4 +49,4 @@ entries:
     urls:
     - https://catenax-ng.github.io/product-edc/helm-charts/edc-dataplane-0.0.1.tgz
     version: 0.0.1
-generated: "2022-05-19T15:44:54.507184001+02:00"
+generated: "2022-05-20T08:25:13.723845693Z"
