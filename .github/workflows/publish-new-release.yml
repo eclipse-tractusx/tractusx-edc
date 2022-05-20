@@ -10,6 +10,7 @@ on:
 
 jobs:
   secret-presence:
+    name: Determine secret presence
     runs-on: ubuntu-latest
     outputs:
       CXNG_RELEASE_PAT: ${{ steps.secret-presence.outputs.CXNG_RELEASE_PAT }}
@@ -20,16 +21,13 @@ jobs:
           [ ! -z "${{ secrets.CXNG_RELEASE_PAT }}" ] && echo "::set-output name=CXNG_RELEASE_PAT::true"
 
           exit 0
-  release:
-    name: Publish new release
-    needs: [ secret-presence ]
+
+  release-version:
+    name: Determine release version
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && needs.secret-presence.outputs.CXNG_RELEASE_PAT
+    outputs:
+      RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          # 0 to fetch the full history due to upcoming merge of main into develop branch
-          fetch-depth: 0
       -
         name: Extract version from branch name (for release branches)
         if: startsWith(github.event.pull_request.head.ref, 'release/')
@@ -47,12 +45,34 @@ jobs:
 
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
       -
+        name: Output release version
+        id: release-version
+        run: |
+          echo "::set-output name=RELEASE_VERSION::${{ env.RELEASE_VERSION }}"
+
+  github-release:
+    name: Publish new github release
+    needs: [ secret-presence, release-version ]
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && needs.secret-presence.outputs.CXNG_RELEASE_PAT && needs.release-version.outputs.RELEASE_VERSION
+    steps:
+      -
+        name: Export RELEASE_VERSION env
+        run: |
+          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # 0 to fetch the full history due to upcoming merge of main into develop branch
+          fetch-depth: 0
+      -
         name: Create Release Tag
         id: create_release_tag
         run: |
           # Prepare git env
-          git config user.name "GitHub actions"
-          git config user.email noreply@github.com
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
           # informative
           git branch -a
@@ -104,3 +124,45 @@ jobs:
           git commit --message "Introduce new snapshot version $SNAPSHOT_VERSION"
 
           git push origin develop
+
+  helm-release:
+    name: Publish new helm release
+    needs: [ release-version ]
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
+    steps:
+      -
+        name: Export RELEASE_VERSION env
+        run: |
+          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.8.1
+      -
+        name: Package helm, update index.yaml and push to gh-pages
+        run: |
+          # Prepare git env
+          git config user.name "GitHub actions"
+          git config user.email noreply@github.com
+
+          # Package all charts
+          find -name Chart.yaml | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
+
+          git checkout gh-pages || git checkout -b gh-pages
+          git pull --rebase origin gh-pages
+
+          # Generate helm repo index.yaml
+          helm repo index . --merge index.yaml --url https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/
+
+          # Commit and push to gh-pages
+          git add index.yaml helm-charts
+          git commit -s -m "Release ${{ env.RELEASE_VERSION }}"
+
+          git push origin gh-pages
