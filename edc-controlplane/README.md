@@ -494,23 +494,6 @@ __targetConnectorIdsPath=api/v1/ids
 __defaultApiPath=api
 __apiKey=X-Api-Key
 __apiKeyValue=pwd
-__contractDefinitionId=1
-__policyId=1
-__assetId=1
-
-__publicContractDefinition="
-        {
-            \"id\": \"$__contractDefinitionId\",
-            \"accessPolicyId\": \"$__policyId\",
-            \"contractPolicyId\": \"$__policyId\",
-            \"criteria\": [
-                {
-                    \"left\": \"asset:prop:id\",
-                    \"op\": \"=\",
-                    \"right\": \"$__assetId\"
-                }
-            ]
-        }"
 
 # Call Control API
 curl -G -X GET $__connectorUrl/$__defaultApiPath/control/catalog --header "$__apiKey: $__apiKeyValue" --data-urlencode "provider=$__targetConnectorUrl/$__targetConnectorIdsPath/data" --header "Content-Type: application/json" -s | jq
