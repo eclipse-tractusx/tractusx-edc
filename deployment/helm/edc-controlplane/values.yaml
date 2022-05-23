@@ -243,6 +243,7 @@ configuration:
     # edc.contractnegotiationstore.cosmos.container-name=
     # edc.contractnegotiationstore.cosmos.database-name=
     # edc.contractnegotiationstore.cosmos.preferred-region=
+    # edc.contractnegotiationstore.cosmos.allow.sproc.autoupload=
     # edc.controlplane.validation-endpoint=
     # edc.core.retry.backoff.max=
     # edc.core.retry.backoff.min=
@@ -322,6 +323,7 @@ configuration:
     # edc.transfer-process-store.cosmos.account.name=
     # edc.transfer-process-store.cosmos.container-name=
     # edc.transfer-process-store.cosmos.preferred-region=
+    # edc.transfer-process-store.cosmos.allow.sproc.autoupload=
     # edc.transfer-process-store.database.name=
     # edc.transfer.state-machine.batch-size=
     # edc.vault=
