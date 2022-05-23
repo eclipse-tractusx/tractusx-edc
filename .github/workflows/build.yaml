@@ -116,9 +116,9 @@ jobs:
         vid: ${{ secrets.ORG_VERACODE_API_ID }}
         vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
-  #################################
+  ###############################
   ### edc-controlplane-memory ###
-  #################################
+  ###############################
   build-edc-controlplane-memory:
     needs: [ secret-presence ]
     runs-on: ubuntu-latest
