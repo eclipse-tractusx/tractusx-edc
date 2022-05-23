@@ -46,7 +46,10 @@
         <org.apache.maven.plugins.maven.jar.plugin.version>3.2.2</org.apache.maven.plugins.maven.jar.plugin.version>
         <com.diffplug.spotless.maven.plugin.version>2.22.5</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.0.0</org.codehaus.mojo.exec.maven.plugin.version>
-        <org.codehaus.mojo.license.maven.plugin>1.5</org.codehaus.mojo.license.maven.plugin>
+        <org.apache.maven.plugins.javadoc.version>3.4.0</org.apache.maven.plugins.javadoc.version>
+        <org.codehaus.mojo.license.maven.plugin>2.0.0</org.codehaus.mojo.license.maven.plugin>
+        <org.apache.maven.plugins.deploy.version>3.0.0-M2</org.apache.maven.plugins.deploy.version>
+        <org.apache.maven.plugins.source.version>3.2.1</org.apache.maven.plugins.source.version>
 
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
@@ -60,14 +63,6 @@
         <junit.platform.version>1.8.2</junit.platform.version>
         <mockito.version>1.10.19</mockito.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>github-catenax-ng</id>
-            <name>Catena-X NG: Github Packages</name>
-            <url>https://maven.pkg.github.com/catenax-ng/product-edc</url>
-        </repository>
-    </distributionManagement>
 
     <repositories>
         <repository>
@@ -86,6 +81,19 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.javadoc.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${org.codehaus.mojo.exec.maven.plugin.version}</version>
@@ -96,11 +104,6 @@
                     <version>1.12</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>2.0.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${org.apache.maven.plugins.maven.jar.plugin.version}</version>
@@ -109,6 +112,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${org.apache.maven.plugins.maven.dependency.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.deploy.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
@@ -131,6 +139,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.source.version}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
