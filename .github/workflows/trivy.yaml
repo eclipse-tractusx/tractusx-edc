@@ -28,7 +28,7 @@ jobs:
         name: Resolve git 7-chars sha
         id: git-sha7
         run: |
-          echo "::set-output name=SHA7::$(git rev-parse --short HEAD)"
+          echo "::set-output name=SHA7::${GITHUB_SHA::7}"
 
   analyze-config:
     runs-on: ubuntu-latest
@@ -37,6 +37,9 @@ jobs:
       contents: read
       security-events: write
     steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
       -
         name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@master
@@ -67,6 +70,9 @@ jobs:
       security-events: write
     steps:
       -
+        name: Checkout repository
+        uses: actions/checkout@v2
+      -
         name: Run Trivy vulnerability scanner
         if: always()
         uses: aquasecurity/trivy-action@master
@@ -94,6 +100,9 @@ jobs:
       contents: read
       security-events: write
     steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
       -
         name: Run Trivy vulnerability scanner
         if: always()
@@ -123,6 +132,9 @@ jobs:
       security-events: write
     steps:
       -
+        name: Checkout repository
+        uses: actions/checkout@v2
+      -
         name: Run Trivy vulnerability scanner
         if: always()
         uses: aquasecurity/trivy-action@master
@@ -150,6 +162,9 @@ jobs:
       contents: read
       security-events: write
     steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
       -
         name: Run Trivy vulnerability scanner
         if: always()
