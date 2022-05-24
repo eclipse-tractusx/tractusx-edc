@@ -12,6 +12,8 @@ on:
     types:
       - released
   pull_request:
+    paths-ignore:
+      - 'deployment/helm/**'
     branches:
       - '*'
 
