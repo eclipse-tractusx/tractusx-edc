@@ -323,7 +323,7 @@ __apiKey=X-Api-Key
 __apiKeyValue=pwd
 __assetId=1
 __assetDescription="Demo Asset"
-__assetDataEndpoint=https://github.com/eclipse-dataspaceconnector
+__assetDataEndpoint="https://jsonplaceholder.typicode.com/todos/3"
 
 __asset="{
         \"asset\": {
