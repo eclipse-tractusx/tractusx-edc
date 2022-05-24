@@ -1,7 +1,4 @@
 ---
-# Depending on the location of your Docker container
-# you need to change the path to the specific Docker registry.
-#
 name: "Trivy"
 
 on:
