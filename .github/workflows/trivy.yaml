@@ -50,7 +50,7 @@ jobs:
           severity: "CRITICAL,HIGH"
       -
         name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
           sarif_file: "trivy-results-config.sarif"
@@ -82,7 +82,7 @@ jobs:
       -
         name: Upload Trivy scan results to GitHub Security tab
         if: always()
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results-edc-controlplane-cosmosdb.sarif"
 
@@ -113,7 +113,7 @@ jobs:
       -
         name: Upload Trivy scan results to GitHub Security tab
         if: always()
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results-edc-controlplane-memory.sarif"
 
@@ -144,7 +144,7 @@ jobs:
       -
         name: Upload Trivy scan results to GitHub Security tab
         if: always()
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results-edc-controlplane-postgresql.sarif"
 
@@ -175,6 +175,6 @@ jobs:
       -
         name: Upload Trivy scan results to GitHub Security tab
         if: always()
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results-edc-dataplane.sarif"
