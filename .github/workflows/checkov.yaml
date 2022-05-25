@@ -46,7 +46,7 @@ jobs:
           # baseline: cloudformation/.checkov.baseline # optional: Path to a generated baseline file. Will only report results not in the baseline.
       -
         name: Upload Checkov scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
           sarif_file: "results.sarif"
