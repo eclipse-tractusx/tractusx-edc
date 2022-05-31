@@ -48,10 +48,18 @@ jobs:
           cmd: |-
             find deployment/helm -name Chart.yaml | xargs -n1 yq -i '.appVersion = "${{ github.event.inputs.version }}" | .version = "${{ github.event.inputs.version }}"'
       -
+        name: Update Chart READMEs
+        uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/deployment/helm:/helm-docs
+          run: |
+            helm-docs --log-level debug
+      -
         name: Commit changelog and manifest files
         id: make-commit
         run: |
-          git add CHANGELOG.md $(find -name pom.xml) $(find deployment/helm -name Chart.yaml)
+          git add CHANGELOG.md $(find -name pom.xml) $(find deployment/helm -name Chart.yaml) $(find deployment/helm -name README.md)
           git commit --message "Prepare release ${{ github.event.inputs.version }}"
 
           echo "::set-output name=commit::$(git rev-parse HEAD)"

@@ -11,7 +11,7 @@
 ## TL;DR
 ```shell
 $ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install my-release catenax-ng-product-edc/edc-controlplane
+$ helm install my-release catenax-ng-product-edc/edc-controlplane --version {{ .Version }}
 ```
 
 {{ template "chart.maintainersSection" . }}
