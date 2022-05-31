@@ -1,0 +1,9 @@
+---
+skip-check:
+  - CKV_K8S_10 # CPU requests should be set, https://docs.bridgecrew.io/docs/bc_k8s_9
+  - CKV_K8S_11 # CPU limits should be set, https://docs.bridgecrew.io/docs/bc_k8s_10
+  - CKV_K8S_12 # Memory requests should be set, https://docs.bridgecrew.io/docs/bc_k8s_11
+  - CKV_K8S_13 # Memory limits should be set, https://docs.bridgecrew.io/docs/bc_k8s_12
+  - CKV_K8S_15 # Image Pull Policy should be Always, https://docs.bridgecrew.io/docs/bc_k8s_14
+  - CKV_K8S_21 # The default namespace should not be used, https://docs.bridgecrew.io/docs/bc_k8s_20
+  - CKV_K8S_43 # Image should use digest, https://docs.bridgecrew.io/docs/bc_k8s_39
