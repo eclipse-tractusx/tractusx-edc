@@ -27,7 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mockito;
 
-public class AbstractBusinessPartnerValidationTest {
+class AbstractBusinessPartnerValidationTest {
 
   private AbstractBusinessPartnerValidation validation;
 
@@ -37,7 +37,7 @@ public class AbstractBusinessPartnerValidationTest {
   private ParticipantAgent participantAgent;
 
   @BeforeEach
-  public void BeforeEach() {
+  void BeforeEach() {
     this.monitor = Mockito.mock(Monitor.class);
     this.policyContext = Mockito.mock(PolicyContext.class);
     this.participantAgent = Mockito.mock(ParticipantAgent.class);
@@ -49,7 +49,7 @@ public class AbstractBusinessPartnerValidationTest {
 
   @ParameterizedTest
   @EnumSource(Operator.class)
-  public void testThrowsOnUnsupportedOperations(Operator operator) {
+  void testThrowsOnUnsupportedOperations(Operator operator) {
 
     if (operator == Operator.EQ) { // only allowed operator
       return;
@@ -66,7 +66,7 @@ public class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  public void testThrowsOnUnsupportedRightValue() {
+  void testThrowsOnUnsupportedRightValue() {
 
     // prepare
     prepareContextProblems(null);
@@ -82,7 +82,7 @@ public class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  public void testValidationFailsWhenClaimMissing() {
+  void testValidationFailsWhenClaimMissing() {
 
     // prepare
     prepareContextProblems(null);
@@ -95,7 +95,7 @@ public class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  public void testValidationSuccedesWhenClaimContainsNumber() {
+  void testValidationSuccedesWhenClaimContainsNumber() {
 
     // prepare
     prepareContextProblems(null);
@@ -114,7 +114,7 @@ public class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  public void testValidationWhenParticipantHasProblems() {
+  void testValidationWhenParticipantHasProblems() {
 
     // prepare
     prepareContextProblems(Collections.singletonList("big problem"));
@@ -128,7 +128,7 @@ public class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  public void testValidationWhenParticipantIsValid() {
+  void testValidationWhenParticipantIsValid() {
 
     // prepare
     prepareContextProblems(null);

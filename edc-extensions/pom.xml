@@ -26,8 +26,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>business-partner-validation</module>
         <module>aas-controller</module>
+        <module>business-partner-validation</module>
         <module>postgresql-migration</module>
     </modules>
 
