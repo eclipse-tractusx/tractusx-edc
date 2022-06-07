@@ -55,37 +55,6 @@ jobs:
         with:
           sarif_file: "trivy-results-config.sarif"
 
-  #################################
-  ### edc-controlplane-cosmosdb ###
-  #################################
-  analyze-edc-controlplane-cosmosdb:
-    needs: [ git-sha7 ]
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v2
-      -
-        name: Run Trivy vulnerability scanner
-        if: always()
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository }}/edc-controlplane-cosmosdb:sha-${{ needs.git-sha7.outputs.value }}"
-          format: "sarif"
-          output: "trivy-results-edc-controlplane-cosmosdb.sarif"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-edc-controlplane-cosmosdb.sarif"
-
   ###############################
   ### edc-controlplane-memory ###
   ###############################

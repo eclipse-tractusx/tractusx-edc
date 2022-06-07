@@ -9,7 +9,7 @@ replicaCount: 1
 
 image:
   # -- Which derivate of the edc controlplane to use.
-  # One of: [ghcr.io/catenax-ng/product-edc/edc-controlplane-memory, , ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql, ghcr.io/catenax-ng/product-edc/edc-controlplane-cosmosdb]
+  # One of: [ghcr.io/catenax-ng/product-edc/edc-controlplane-memory, ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql]
   repository: ghcr.io/catenax-ng/product-edc/edc-controlplane-memory
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
@@ -240,10 +240,6 @@ configuration:
     # edc.api.auth.key=
     # edc.api.control.auth.apikey.key=
     # edc.api.control.auth.apikey.value=
-    # edc.assetindex.cosmos.account-name=
-    # edc.assetindex.cosmos.container-name=
-    # edc.assetindex.cosmos.database-name=
-    # edc.assetindex.cosmos.preferred-region=
     # edc.atomikos.checkpoint.interval=
     # edc.atomikos.directory=
     # edc.atomikos.logging=
@@ -254,15 +250,6 @@ configuration:
     # edc.aws.provision.role.duration.session.max=
     # edc.aws.secret.access.key=
     # edc.blobstore.endpoint=
-    # edc.contractdefinitionstore.cosmos.account-name=
-    # edc.contractdefinitionstore.cosmos.container-name=
-    # edc.contractdefinitionstore.cosmos.database-name=
-    # edc.contractdefinitionstore.cosmos.preferred-region=
-    # edc.contractnegotiationstore.cosmos.account-name=
-    # edc.contractnegotiationstore.cosmos.container-name=
-    # edc.contractnegotiationstore.cosmos.database-name=
-    # edc.contractnegotiationstore.cosmos.preferred-region=
-    # edc.contractnegotiationstore.cosmos.allow.sproc.autoupload=
     # edc.controlplane.validation-endpoint=
     # edc.core.retry.backoff.max=
     # edc.core.retry.backoff.min=
@@ -271,8 +258,6 @@ configuration:
     # edc.core.system.health.check.readiness-period=
     # edc.core.system.health.check.startup-period=
     # edc.core.system.health.check.threadpool-size=
-    # edc.cosmos.partition-key=
-    # edc.cosmos.query-metrics-enabled=
     # edc.dataplane.queue.capacity=
     # edc.dataplane.wait=
     # edc.dataplane.workers=
@@ -318,10 +303,6 @@ configuration:
     # edc.metrics.system.enabled=
     # edc.negotiation.consumer.state-machine.batch-size=
     # edc.negotiation.provider.state-machine.batch-size=
-    # edc.node.directory.cosmos.account.name=
-    # edc.node.directory.cosmos.container.name=
-    # edc.node.directory.cosmos.database.name=
-    # edc.node.directory.cosmos.preferred.region=
     # edc.oauth.client.id=
     # edc.oauth.private.key.alias=
     # edc.oauth.provider.audience=
@@ -339,10 +320,6 @@ configuration:
     # edc.transfer.functions.check.endpoint=
     # edc.transfer.functions.enabled.protocols=
     # edc.transfer.functions.transfer.endpoint=
-    # edc.transfer-process-store.cosmos.account.name=
-    # edc.transfer-process-store.cosmos.container-name=
-    # edc.transfer-process-store.cosmos.preferred-region=
-    # edc.transfer-process-store.cosmos.allow.sproc.autoupload=
     # edc.transfer-process-store.database.name=
     # edc.transfer.state-machine.batch-size=
     # edc.vault=

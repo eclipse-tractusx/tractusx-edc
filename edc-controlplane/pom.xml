@@ -25,7 +25,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>edc-controlplane-cosmosdb</module>
         <module>edc-controlplane-memory</module>
         <module>edc-controlplane-postgresql</module>
     </modules>
