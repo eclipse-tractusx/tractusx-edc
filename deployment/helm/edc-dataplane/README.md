@@ -71,6 +71,8 @@ $ helm install my-release catenax-ng-product-edc/edc-dataplane --version 0.0.3
 | serviceAccount.create | bool | `true` | Specifies whether a [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) should be created per release |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the release's fullname template |
 | startupProbe.enabled | bool | `true` | Whether to enable kubernetes startup-probes |
+| startupProbe.failureThreshold | int | `12` | Minimum consecutive failures for the probe to be considered failed after having succeeded |
+| startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before liveness probes are initiated. |
 | tolerations | list | `[]` | [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) are applied to Pods to schedule onto nodes with matching taints. |
 
 ----------------------------------------------

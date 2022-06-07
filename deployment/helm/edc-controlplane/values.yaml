@@ -85,6 +85,10 @@ readinessProbe:
 startupProbe:
   # -- Whether to enable kubernetes startup-probes
   enabled: true
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 12
+  # -- Number of seconds after the container has started before liveness probes are initiated.
+  initialDelaySeconds: 10
 
 ## EDC endpoints exposed by the control-plane
 edc:
