@@ -54,7 +54,6 @@
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
-        <jakarta.ws.rs.api.version>3.1.0</jakarta.ws.rs.api.version>
         <org.postgresql.version>42.3.6</org.postgresql.version>
         <org.flywaydb.version>8.5.12</org.flywaydb.version>
 
@@ -234,11 +233,6 @@
             <!-- CX Extensions -->
             <dependency>
                 <groupId>net.catenax.edc.extensions</groupId>
-                <artifactId>aas-controller</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
                 <artifactId>business-partner-validation</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -249,11 +243,6 @@
             </dependency>
 
             <!-- Common Dependencies -->
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>${jakarta.ws.rs.api.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
