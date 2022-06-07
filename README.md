@@ -10,7 +10,6 @@ The Data-Plane does the heavy lifting of transferring and receiving data streams
 
 Depending on your environment there are different derivatives of the control-plane prepared:
 
-* [edc-controlplane-cosmosdb](edc-controlplane/edc-controlplane-cosmosdb)
 * [edc-controlplane-memory](edc-controlplane/edc-controlplane-memory)
 * [edc-controlplane-postgresql](edc-controlplane/edc-controlplane-postgresql)
 
