@@ -73,8 +73,8 @@ spec:
             httpGet:
               path: {{ .Values.edc.endpoints.default.path }}/check/startup
               port: default
-            failureThreshold: 12
-            initialDelaySeconds: 10
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
           {{- end }}
           envFrom:
             - configMapRef:
