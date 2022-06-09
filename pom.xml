@@ -55,7 +55,7 @@
         <org.apache.maven.plugins.compiler.version>3.10.1</org.apache.maven.plugins.compiler.version>
         <org.apache.maven.plugins.resources.version>3.2.0</org.apache.maven.plugins.resources.version>
         <org.projectlombok.lombok.maven.plugin.version>1.18.20.0</org.projectlombok.lombok.maven.plugin.version>
-        <org.jasig.maven.notice.plugin.version>1.0.6.1</org.jasig.maven.notice.plugin.version>
+        <org.jasig.maven.notice.plugin.version>1.1.0</org.jasig.maven.notice.plugin.version>
 
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
