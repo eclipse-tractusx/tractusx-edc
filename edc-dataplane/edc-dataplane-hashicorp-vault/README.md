@@ -1,18 +1,18 @@
-# EDC Data-Plane
+# EDC Data-Plane [Hashicorp Vault](https://www.vaultproject.io/)
 
 ### Building
 
 ```shell
-./mvnw -pl .,edc-dataplane -am package -Pwith-docker-image
+./mvnw -pl .,edc-dataplane/edc-dataplane-hashicorp-vault -am package -Pwith-docker-image
 ```
 
 ### Configuration
 
-Listed below are configuration keys needed to get the `edc-dataplane` up and running.
+Listed below are configuration keys needed to get the `edc-dataplane-hashicorp-vault` up and running.
 Details regarding each configuration property can be found at the [documentary section of the EDC](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/docs).
 
-| Key  	                                                | Required  | Example | Description |
-|---	                                                |---        |---	  |---          |
+| Key                                                   | Required  | Example | Description |
+|---                                                    |---        |---      |---          |
 | web.http.default.port                                 | X         | 8080    | |
 | web.http.default.path                                 | X         | /api    | |
 | web.http.public.port                                  | X         | 8181    | |
@@ -22,11 +22,10 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.receiver.http.endpoint                            | X         | http://backend-service | |
 | edc.hostname                                          |           | localhost | |
 | edc.oauth.client.id                                   | X         | daps-oauth-client-id | |
-| edc.vault.clientid                                    | X         | 00000000-1111-2222-3333-444444444444 | | 
-| edc.vault.tenantid                                    | X         | 55555555-6666-7777-8888-999999999999 | |
-| edc.vault.name                                        | X         | my-vault-name | |
-| edc.vault.clientsecret                                | X         | 34-chars-secret | |
-| edc.controlplane.validation-endpoint                  | X         | http://controlplane:8182/validation/token | | 
+| edc.vault.hashicorp.url                               | X         | http://vault | |
+| edc.vault.hashicorp.token                             | X         | 55555555-6666-7777-8888-999999999999 | |
+| edc.vault.hashicorp.timeout.seconds                   |           | 30 | |
+| edc.controlplane.validation-endpoint                  | X         | http://controlplane:8182/validation/token | |
 
 #### Example configuration.properties
 
@@ -50,11 +49,10 @@ edc.controlplane.validation-endpoint=http://controlplane:8182/validation/token
 # EDC hostname
 edc.hostname=localhost
 
-# Azure vault related configuration
-edc.vault.clientid=00000000-1111-2222-3333-444444444444
-edc.vault.tenantid=55555555-6666-7777-8888-999999999999
-edc.vault.name=my-vault-name
-edc.vault.clientsecret=34-chars-secret
+# HashiCorp vault related configuration
+edc.vault.hashicorp.url=http://vault
+edc.vault.hashicorp.token=55555555-6666-7777-8888-999999999999
+edc.vault.hashicorp.timeout.seconds=30
 EOF
 ```
 
@@ -90,5 +88,5 @@ docker run \
   -v ${CONFIGURATION_PROPERTIES_FILE:-/dev/null}:/app/configuration.properties \
   -v ${LOGGING_PROPERTIES_FILE:-/dev/null}:/app/logging.properties \
   -v ${OPENTELEMETRY_PROPERTIES_FILE:-/dev/null}:/app/opentelemetry.properties \
-  -i edc-dataplane:latest
+  -i edc-dataplane-hashicorp-vault:latest
 ```

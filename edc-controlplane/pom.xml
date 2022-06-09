@@ -12,14 +12,14 @@
        Mercedes-Benz Tech Innovation GmbH - Initial POM
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>edc-controlplane</artifactId>
     <packaging>pom</packaging>
@@ -27,5 +27,6 @@
     <modules>
         <module>edc-controlplane-memory</module>
         <module>edc-controlplane-postgresql</module>
+        <module>edc-controlplane-postgresql-hashicorp-vault</module>
     </modules>
 </project>
