@@ -26,7 +26,7 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.vault.tenantid                                    | X         | 55555555-6666-7777-8888-999999999999 | |
 | edc.vault.name                                        | X         | my-vault-name | |
 | edc.vault.clientsecret                                | X         | 34-chars-secret | |
-| edc.controlplane.validation-endpoint                  | X         | http://controlplane:8182/validation | | 
+| edc.controlplane.validation-endpoint                  | X         | http://controlplane:8182/validation/token | | 
 
 #### Example configuration.properties
 
@@ -45,7 +45,7 @@ web.http.control.port=9999
 web.http.control.path=/api/dataplane/control
 
 # Validation endpoint of controlplane
-edc.controlplane.validation-endpoint=http://controlplane:8182/validation
+edc.controlplane.validation-endpoint=http://controlplane:8182/validation/token
 
 # EDC hostname
 edc.hostname=localhost
