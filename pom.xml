@@ -61,7 +61,7 @@
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
         <org.postgresql.version>42.4.0</org.postgresql.version>
-        <org.flywaydb.version>8.5.12</org.flywaydb.version>
+        <org.flywaydb.version>8.5.13</org.flywaydb.version>
 
         <!-- test dependency version -->
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
