@@ -25,6 +25,8 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>edc-dataplane-base</module>
+
         <module>edc-dataplane-azure-vault</module>
         <module>edc-dataplane-hashicorp-vault</module>
     </modules>

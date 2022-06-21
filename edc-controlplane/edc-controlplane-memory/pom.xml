@@ -77,22 +77,10 @@
     </build>
 
     <dependencies>
-        <!-- CX Extensions -->
+        <!-- Base Control-Plane -->
         <dependency>
-            <groupId>net.catenax.edc.extensions</groupId>
-            <artifactId>business-partner-validation</artifactId>
-        </dependency>
-
-        <!-- Config -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>filesystem-configuration</artifactId>
-        </dependency>
-
-        <!-- Security -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>auth-tokenbased</artifactId>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-controlplane-base</artifactId>
         </dependency>
 
         <!-- Vault -->
@@ -111,74 +99,6 @@
             </exclusions>
         </dependency>
 
-        <!-- APIs -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>control-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-management-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>observability-api</artifactId>
-        </dependency>
-
-        <!-- IDS -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-api-configuration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-api-multipart-dispatcher-v1</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-api-multipart-endpoint-v1</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-api-transform-v1</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-token-validation</artifactId>
-        </dependency>
-
-        <!-- Core -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-boot</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contract</artifactId>
-        </dependency>
-
-        <!-- Data-Plane -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-transfer-sync</artifactId>
-        </dependency>
-
         <!-- IAM -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -187,40 +107,6 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>iam-daps</artifactId>
-        </dependency>
-
-        <!-- Telemetry -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-micrometer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jersey-micrometer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jetty-micrometer</artifactId>
-        </dependency>
-
-        <!-- Logging -->
-        <dependency>
-            <!-- http-posts EndpointDataReference to configured external service -->
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jdk-logger-monitor</artifactId>
-        </dependency>
-
-        <!-- Supportive -->
-        <dependency>
-            <!-- includes jetty and jersey -->
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>http</artifactId>
-        </dependency>
-
-        <dependency>
-            <!-- http-posts EndpointDataReference to configured external service -->
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>http-receiver</artifactId>
         </dependency>
 
         <!-- Other -->
