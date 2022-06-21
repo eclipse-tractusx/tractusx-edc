@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>edc-dataplane</artifactId>
+        <groupId>net.catenax.edc</groupId>
+        <version>0.0.4-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>edc-dataplane-base</artifactId>
+    <packaging>jar</packaging>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>../../</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>NOTICE.md</include>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <!-- Config -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>filesystem-configuration</artifactId>
+        </dependency>
+
+        <!-- APIs -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>observability-api</artifactId>
+        </dependency>
+
+        <!-- Core -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-boot</artifactId>
+        </dependency>
+
+        <!-- Telemetry -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-micrometer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jersey-micrometer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jetty-micrometer</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jdk-logger-monitor</artifactId>
+        </dependency>
+
+        <!-- Supportive -->
+        <dependency>
+            <!-- includes jetty and jersey -->
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>http</artifactId>
+        </dependency>
+    </dependencies>
+</project>

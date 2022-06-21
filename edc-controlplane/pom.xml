@@ -25,7 +25,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>edc-controlplane-base</module>
+
         <module>edc-controlplane-memory</module>
+
         <module>edc-controlplane-postgresql</module>
         <module>edc-controlplane-postgresql-hashicorp-vault</module>
     </modules>

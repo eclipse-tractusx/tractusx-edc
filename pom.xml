@@ -71,8 +71,7 @@
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
         <org.testcontainers.version>1.17.2</org.testcontainers.version>
-        <org.slf4j.version>2.0.0-alpha7</org.slf4j.version>
-        <ch.qos.logback.logback-classic.version>1.2.11</ch.qos.logback.logback-classic.version>
+        <org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
         <ch.qos.logback.logback-core.version>1.2.11</ch.qos.logback.logback-core.version>
     </properties>
 
@@ -281,6 +280,23 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <!-- CX Control-/Data-Plane modules -->
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-controlplane-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-controlplane-postgresql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- Common Dependencies -->
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -316,11 +332,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
                 <version>${org.slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${ch.qos.logback.logback-classic.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
