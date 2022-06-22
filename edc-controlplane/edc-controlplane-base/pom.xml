@@ -54,10 +54,6 @@
         <!-- APIs -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>control-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>data-management-api</artifactId>
         </dependency>
         <dependency>

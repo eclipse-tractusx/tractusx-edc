@@ -471,45 +471,6 @@ Get Contract Definition
 curl -X GET "$__connectorUrl/$__dataMgmtPath/contractdefinitions/$__contractDefinitionId" --header "$__apiKey: $__apiKeyValue" --header "Content-Type: application/json" | jq
 ```
 
-### 4. Get Contract Offer Catalog
-
-The last call is not (yet) part of the Data Management API. Instead, the deprecated Control API is used. The extension
-for the control API is part of the Catena-X images and usable.
-
-----
-
-**Please Note**
-
-Don't confuse the deprecated Control API with another Control API of the connector, that is not deprecated.
-
-----
-
-#### Bash Script
-
-```bash
-# Variables
-__connectorUrl=http://localhost:8181
-__targetConnectorUrl=http://localhost:9292
-__targetConnectorIdsPath=api/v1/ids
-__defaultApiPath=api
-__apiKey=X-Api-Key
-__apiKeyValue=pwd
-
-# Call Control API
-curl -G -X GET $__connectorUrl/$__defaultApiPath/control/catalog --header "$__apiKey: $__apiKeyValue" --data-urlencode "provider=$__targetConnectorUrl/$__targetConnectorIdsPath/data" --header "Content-Type: application/json" -s | jq
-```
-
-#### Bash Parameters
-
-| Name                      | Description                                                                                                                                       |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| $__connectorUrl           | URL of the Connector with the Control API port configured in `web.http.default.port`                                                              |
-| $__defaultApiPath         | Path of the Control API as configured in `web.http.default.path`                                                                                  |
-| $__apiKey                 | The API Key as configured in `edc.api.control.auth.apikey.key`                                                                                    |
-| $__apiKeyValue            | The API Key Value as configured in `edc.api.control.auth.apikey.value`                                                                            |
-| $__targetConnectorUrl     | URL of the Connector of the target connector with the IDS API port configured in `web.http.ids.port`(in the configuration of the other connector) |
-| $__targetConnectorIdsPath | The IDS Path as configured in `web.http.ids.path` (in the configuration of the other connector)                                                   |
-
 # Secure your connector
 
 ## API Security

@@ -204,8 +204,6 @@ opentelemetry:
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
   properties: |-
-    # edc.api.control.auth.apikey.key=
-    # edc.api.control.auth.apikey.value=
     # edc.atomikos.checkpoint.interval=
     # edc.atomikos.directory=
     # edc.atomikos.logging=
