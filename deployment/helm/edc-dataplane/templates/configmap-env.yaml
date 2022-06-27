@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "edc-dataplane.fullname" . }}-env
+  namespace: {{ .Release.Namespace | default "default" | quote }}
   labels:
     {{- include "edc-dataplane.labels" . | nindent 4 }}
 data:

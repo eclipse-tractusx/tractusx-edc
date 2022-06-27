@@ -18,7 +18,7 @@
 
     <groupId>net.catenax.edc</groupId>
     <artifactId>product-edc-parent</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -44,30 +44,36 @@
         <!-- plugins -->
         <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0</org.apache.maven.plugins.maven.dependency.plugin.version>
         <org.apache.maven.plugins.maven.jar.plugin.version>3.2.2</org.apache.maven.plugins.maven.jar.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>2.22.5</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.22.8</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.0.0</org.codehaus.mojo.exec.maven.plugin.version>
-        <org.codehaus.mojo.license.maven.plugin>1.5</org.codehaus.mojo.license.maven.plugin>
+        <org.apache.maven.plugins.javadoc.version>3.4.0</org.apache.maven.plugins.javadoc.version>
+        <org.codehaus.mojo.license.maven.plugin>2.0.0</org.codehaus.mojo.license.maven.plugin>
+        <org.apache.maven.plugins.failsafe.version>2.22.2</org.apache.maven.plugins.failsafe.version>
+        <org.apache.maven.plugins.deploy.version>3.0.0-M2</org.apache.maven.plugins.deploy.version>
+        <org.apache.maven.plugins.source.version>3.2.1</org.apache.maven.plugins.source.version>
+        <org.apache.maven.plugins.surefire.version>3.0.0-M7</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.compiler.version>3.10.1</org.apache.maven.plugins.compiler.version>
+        <org.apache.maven.plugins.resources.version>3.2.0</org.apache.maven.plugins.resources.version>
+        <org.projectlombok.lombok.maven.plugin.version>1.18.20.0</org.projectlombok.lombok.maven.plugin.version>
+        <org.jasig.maven.notice.plugin.version>1.1.0</org.jasig.maven.notice.plugin.version>
 
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
-        <com.azure.sdk.bom.version>1.2.1</com.azure.sdk.bom.version>
-        <jakarta.ws.rs.api.version>3.1.0</jakarta.ws.rs.api.version>
-        <org.postgresql.version>42.3.5</org.postgresql.version>
-        <org.flywaydb.version>8.5.11</org.flywaydb.version>
+        <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
+        <org.postgresql.version>42.4.0</org.postgresql.version>
+        <org.flywaydb.version>8.5.13</org.flywaydb.version>
 
         <!-- test dependency version -->
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
-        <mockito.version>1.10.19</mockito.version>
+        <mockito.version>4.6.1</mockito.version>
+        <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
+        <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
+        <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
+        <org.testcontainers.version>1.17.2</org.testcontainers.version>
+        <org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
+        <ch.qos.logback.logback-core.version>1.2.11</ch.qos.logback.logback-core.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>github-catenax-ng</id>
-            <name>Catena-X NG: Github Packages</name>
-            <url>https://maven.pkg.github.com/catenax-ng/product-edc</url>
-        </repository>
-    </distributionManagement>
 
     <repositories>
         <repository>
@@ -86,6 +92,19 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.javadoc.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${org.codehaus.mojo.exec.maven.plugin.version}</version>
@@ -96,19 +115,24 @@
                     <version>1.12</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>2.0.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${org.apache.maven.plugins.maven.jar.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.resources.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${org.apache.maven.plugins.maven.dependency.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.deploy.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
@@ -117,7 +141,7 @@
                     <configuration>
                         <java>
                             <googleJavaFormat>
-                                <version>1.8</version>
+                                <version>1.15.0</version>
                                 <style>GOOGLE</style>
                             </googleJavaFormat>
                         </java>
@@ -133,8 +157,29 @@
                     </executions>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.source.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.compiler.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok-maven-plugin</artifactId>
+                    <version>${org.projectlombok.lombok.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.failsafe.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>${org.apache.maven.plugins.surefire.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -221,11 +266,6 @@
             <!-- CX Extensions -->
             <dependency>
                 <groupId>net.catenax.edc.extensions</groupId>
-                <artifactId>aas-controller</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
                 <artifactId>business-partner-validation</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -234,13 +274,30 @@
                 <artifactId>postgresql-migration</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>hashicorp-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- CX Control-/Data-Plane modules -->
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-controlplane-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-controlplane-postgresql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Common Dependencies -->
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>${jakarta.ws.rs.api.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
@@ -250,6 +307,36 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
                 <version>${org.flywaydb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${org.projectlombok.lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${org.bouncycastle.bcpkix-jdk15on.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${com.squareup.okhttp3.okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${ch.qos.logback.logback-core.version}</version>
             </dependency>
 
             <!-- EDC Extensions -->
@@ -878,6 +965,17 @@
                 <artifactId>web-spi</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>junit-extension</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>junit-extension</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <classifier>test-fixtures</classifier>
+            </dependency>
 
             <!-- BOMs -->
             <dependency>
@@ -887,36 +985,26 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- Test Dependencies -->
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
                 <version>${junit.jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit.jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit.jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-suite</artifactId>
-                <version>${junit.platform.version}</version>
-                <scope>test</scope>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
+                <artifactId>mockito-bom</artifactId>
                 <version>${mockito.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Test Dependencies -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${org.testcontainers.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -933,7 +1021,7 @@
                         -->
                         <groupId>org.jasig.maven</groupId>
                         <artifactId>maven-notice-plugin</artifactId>
-                        <version>1.1.0</version>
+                        <version>${org.jasig.maven.notice.plugin.version}</version>
                         <dependencies>
                             <dependency>
                                 <groupId>jakarta.xml.bind</groupId>
@@ -943,7 +1031,7 @@
                             <dependency>
                                 <groupId>org.glassfish.jaxb</groupId>
                                 <artifactId>jaxb-runtime</artifactId>
-                                <version>3.0.2</version>
+                                <version>2.3.3</version>
                             </dependency>
                         </dependencies>
                         <configuration>
