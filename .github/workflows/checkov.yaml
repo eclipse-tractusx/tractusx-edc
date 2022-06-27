@@ -1,0 +1,51 @@
+---
+name: "Checkov"
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+    paths-ignore:
+      - '**'
+      - '!deployment/helm/**'
+  pull_request:
+    branches:
+      - '*'
+    paths-ignore:
+      - '**'
+      - '!deployment/helm/**'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    name: checkov-action
+    steps:
+      -
+        name: Checkout repo
+        uses: actions/checkout@master
+      -
+        name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: deployment/helm
+          quiet: true # optional: display only failed checks
+          soft_fail: false # optional: do not return an error code if there are failed checks
+          framework: helm # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
+          output_format: sarif # optional: the output format, one of: cli, json, junitxml, github_failed_only, or sarif. Default: sarif
+          download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
+          log_level: DEBUG # optional: set log level. Default WARNING
+          config_file: checkov.yaml
+      -
+        name: Upload Checkov scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "results.sarif"

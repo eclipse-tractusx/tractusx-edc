@@ -11,7 +11,7 @@
         </server>
         <!-- Catena-X NG: Github Packages -->
         <server>
-            <id>github-catenax-ng</id>
+            <id>github</id>
             <username>${env.GITHUB_PACKAGE_USERNAME}</username>
             <password>${env.GITHUB_PACKAGE_PASSWORD}</password>
         </server>

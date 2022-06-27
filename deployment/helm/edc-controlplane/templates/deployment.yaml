@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "edc-controlplane.fullname" . }}
+  namespace: {{ .Release.Namespace | default "default" | quote }}
   labels:
     {{- include "edc-controlplane.labels" . | nindent 4 }}
 spec:
@@ -33,6 +34,7 @@ spec:
       {{- end }}
       {{- end }}
       serviceAccountName: {{ include "edc-controlplane.serviceAccountName" . }}
+      automountServiceAccountToken: {{ if .Values.automountServiceAccountToken }}true{{ else }}false{{ end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -77,8 +79,8 @@ spec:
             httpGet:
               path: {{ .Values.edc.endpoints.default.path }}/check/startup
               port: default
-            failureThreshold: 12
-            initialDelaySeconds: 10
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
           {{- end }}
           envFrom:
             - configMapRef:
