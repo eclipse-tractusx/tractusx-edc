@@ -13,6 +13,7 @@ Details regarding each configuration property can be found at the [documentary s
 
 | Key  	                                                | Required  | Example | Description |
 |---	                                                |---	    |---	  |---          |
+| edc.api.auth.key                                      |           | password | default value: random UUID |
 | web.http.default.port                                 | X         | 8080    | |
 | web.http.default.path                                 | X         | /api    | |
 | web.http.data.port                                    | X         | 8181    | |
@@ -33,8 +34,6 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.ids.curator                                       |           | http://localhost | |
 | edc.ids.catalog.id                                    |           | urn:catalog:default | |
 | ids.webhook.address                                   |           | http://localhost:8282/api/v1/ids | |
-| edc.api.control.auth.apikey.key                       |           | X-Api-Key | |
-| edc.api.control.auth.apikey.value                     |           | super-strong-api-key | |
 | edc.hostname                                          |           | localhost | |
 | edc.oauth.token.url                                   | X         | https://daps.catena-x.net | |
 | edc.oauth.public.key.alias                            | X         | key-to-daps-certificate-in-keyvault | |
@@ -79,10 +78,9 @@ edc.ids.curator=http://localhost
 edc.ids.catalog.id=urn:catalog:default
 ids.webhook.address=http://localhost:8282/api/v1/ids
 
-edc.api.control.auth.apikey.key=X-Api-Key
-edc.api.control.auth.apikey.value=pass
-
 edc.hostname=localhost
+
+edc.api.auth.key=password
 
 # OAuth / DAPS related configuration
 edc.oauth.token.url=https://daps.catena-x.net

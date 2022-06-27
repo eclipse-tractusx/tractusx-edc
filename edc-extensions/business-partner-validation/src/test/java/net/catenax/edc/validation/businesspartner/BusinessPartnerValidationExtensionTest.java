@@ -25,20 +25,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class BusinessPartnerValidationExtensionTest {
+class BusinessPartnerValidationExtensionTest {
 
   private BusinessPartnerValidationExtension extension;
 
   // mocks
   private ServiceExtensionContext serviceExtensionContext;
   private PolicyEngine policyEngine;
-  private RuleBindingRegistry ruleBindingRegistry;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
 
     policyEngine = Mockito.mock(PolicyEngine.class);
-    ruleBindingRegistry = Mockito.mock(RuleBindingRegistry.class);
+    RuleBindingRegistry ruleBindingRegistry = Mockito.mock(RuleBindingRegistry.class);
 
     final Monitor monitor = Mockito.mock(Monitor.class);
     serviceExtensionContext = Mockito.mock(ServiceExtensionContext.class);
@@ -52,7 +51,7 @@ public class BusinessPartnerValidationExtensionTest {
   }
 
   @Test
-  public void testRegisterDutyFunction() {
+  void testRegisterDutyFunction() {
 
     // invoke
     extension.initialize(serviceExtensionContext);
@@ -67,7 +66,7 @@ public class BusinessPartnerValidationExtensionTest {
   }
 
   @Test
-  public void testRegisterPermissionFunction() {
+  void testRegisterPermissionFunction() {
 
     // invoke
     extension.initialize(serviceExtensionContext);
@@ -82,7 +81,7 @@ public class BusinessPartnerValidationExtensionTest {
   }
 
   @Test
-  public void testRegisterProhibitionFunction() {
+  void testRegisterProhibitionFunction() {
 
     // invoke
     extension.initialize(serviceExtensionContext);
