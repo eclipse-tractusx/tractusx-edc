@@ -1,0 +1,514 @@
+---
+# Default values for all-in-one deployment.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+ids-daps:
+  fullnameOverride: "ids-daps"
+  connectors:
+    - id: &sokratesDapsClientId E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
+      name: sokrates
+      # Must be the same certificate that is stores in section 'sokrates-vault'
+      certificate: |-
+        -----BEGIN CERTIFICATE-----
+        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
+        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
+        DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
+        DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
+        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
+        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
+        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
+        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
+        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
+        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
+        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
+        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
+        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
+        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
+        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
+        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        -----END CERTIFICATE-----
+    - id: &platoDapsClientId 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
+      name: plato
+      # Must be the same certificate that is stores in section 'plato-vault'
+      certificate: |-
+        -----BEGIN CERTIFICATE-----
+        MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
+        BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIy
+        MDQyNTEwMjgwMloXDTIzMDQyNTEwMjgwMlowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
+        VQQIDAZCZXJsaW4xDzANBgNVBAcMBkJlcmxpbjEMMAoGA1UECgwDQk1XMSAwHgYD
+        VQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRj
+        LmRlbW8uY2F0ZW5hLXgubmV0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+        AQEAm1/UvHXuRU1peEGHULZBP8j8gorXAQvUz8Znb1iVNtldI29GCSXkTHxph66x
+        TcegdF8aeaoU1mPf3LzMQUU1koZHUq6sRC+50uFcZJ2AjF5IXKQlDPNWR5tPXP56
+        RZyqXxjPFHeuTA+YsYyrzEVhzEieOiNaxJDM3uV5pv+FTRHz+xMOgNBonR1QyMh6
+        tcwB+EQagoeFl0DjEXAel9WG4hOG/rDiXArTMaVjnTG/ycmF0HeSnbRC+3/+fh/C
+        hzQJyEbviX67ymyYRJTyynt/Mtrqg5/ssdISexjw3ZmiFNemZIOhIdepoSwnJHFM
+        4Jj8B5lq0a1jY5Rc9lDj710RXQIDAQABo1MwUTAdBgNVHQ4EFgQUmYOnF4b/mJPO
+        oN2h8Tb69g91CiMwHwYDVR0jBBgwFoAUmYOnF4b/mJPOoN2h8Tb69g91CiMwDwYD
+        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAKxv/MTIEKNkzReOqrzpt
+        LM00X6JsDdfxa3rZ0Uq17PjO0R63IPsqzexhfZUML0e/Dwpe97xpvftCOEuICMBA
+        wOHhQc77MgwyF4dqgRgfJysxw37ACZxU6GI/K2JpKXQLgEhP14oHUIWOzCAbgDhR
+        jwOx3ZP176Vjxx90pW3hOphRVnq/BRqqEDtFwRzKtGnGvP8ecmC2iY4dXEA3QEp1
+        gzg03eglvZSoedEPY5o5y/4n6TplaDmaeoo0QrvAiWik1gY85Lg21aBWVsP45wVS
+        tFn3m1FCCV8XYIj/EEUAh8VEhphLVEViE6m9Mm4deFDavXcGBb63BCiOQtnjd3eY
+        zQ==
+        -----END CERTIFICATE-----
+
+#########
+# PLATO #
+#########
+plato-backend-application:
+  fullnameOverride: "plato-backend-application"
+  service:
+    port: 80
+plato-postgresql:
+  fullnameOverride: "plato-postgresql"
+  auth:
+    username: &psqlUsername "postgresql_sandbox_user"
+    password: &psqlPassword "psql_password"
+    database: &psqlDatabase "edc"
+  persistence:
+    enabled: false
+plato-vault:
+  fullnameOverride: "plato-vault"
+  injector:
+    enabled: false
+  server:
+    dev:
+      enabled: true
+      devRootToken: &platoVaultToken "root"
+
+    # Must be the same certificate that is configured in section 'ids-daps'
+    postStart:
+      - "sh"
+      - "-c"
+      - |
+        { 
+        
+        sleep 1
+        
+        cat << EOF | /bin/vault kv put secret/my-plato-daps-key content=-
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX9S8de5FTWl4
+        QYdQtkE/yPyCitcBC9TPxmdvWJU22V0jb0YJJeRMfGmHrrFNx6B0Xxp5qhTWY9/c
+        vMxBRTWShkdSrqxEL7nS4VxknYCMXkhcpCUM81ZHm09c/npFnKpfGM8Ud65MD5ix
+        jKvMRWHMSJ46I1rEkMze5Xmm/4VNEfP7Ew6A0GidHVDIyHq1zAH4RBqCh4WXQOMR
+        cB6X1YbiE4b+sOJcCtMxpWOdMb/JyYXQd5KdtEL7f/5+H8KHNAnIRu+JfrvKbJhE
+        lPLKe38y2uqDn+yx0hJ7GPDdmaIU16Zkg6Eh16mhLCckcUzgmPwHmWrRrWNjlFz2
+        UOPvXRFdAgMBAAECggEAN2yd5IRk9I/CucUWUfJRoEE/4glI3PSte1iY+R0uTRyI
+        nuVIpGbB447VzjLAyLAXSqvKM/A58qg56PHoIrhffd8sfhAVH1WvAcymOrX8bxYK
+        1hEvrkj3VB/Q1alpUH+sPrQI2pI+uJ8vptY5SmrNkiOtXavS6x+EFVbiaHHpyS26
+        ASaCoRpdBoNTm0SAiDBTK6MqTs4vRpqKseGdC76F+jKimYrTJY19ZctSIAMjrnqd
+        qzRL+jfob5vMqKC22AjInkZ8BZWll1ZoTnv37bq2NAb9lvdY73REm42Wpm5S7PET
+        Eixe69gvi/IwaSe27S36+kcrQoYHnxbb31+Xt+0pQQKBgQDJfA2ZnYmcA3yvVQhi
+        e76I3rq6AEfcG4EDhf+JRO2QHKMMXLwfFAdSR8QflxNUWy1y6q/783EpgLJ1Kv8h
+        uNkTH6JyV7kFhwfvxWreAWx2jRQRACqnuaLnJ/28vd8Il0kc3/BQsWzbg6YTERrq
+        0Au2RW/c9blrKS0MyurtOtZsiQKBgQDFaezSCWUspeNci5lrdvMiHBLOUgR2guQm
+        Gtf9RdBmzvtBqpdkP8AEMhRW7oSGcKpDldd0Klyml7s/CDYTL7sflHtKRiTQmWuJ
+        +p3uvyylAxr/Swfw56hj5Y4/Oj2CLIuUlglewo40JnvvM5icT7RGvbyaIIhYzIsR
+        HTv3t8eRNQKBgA4l8eaJk3IrJIRDWlVgDx8ZVM9e2azxGXwf2rPO7UejWyexE1yz
+        UVhLxc/aEfdod6aMKFNu4tFhQibMICJEEqovHH8e/dUPiFUj7b8tJmqkuXYAJv6k
+        IHZO7phkVNcLmIy4hO2Fp/k6I11PZC588XWZJqPDdYO63nj5fsmtygTRAoGBAJ72
+        YH/wmMuO+Ll4n51tNvJscKg6WuWjGFumme2T3fArEx8ZYraSruex+7bUcVpgNnod
+        mlQsGFb9LwXecsyYTrFrOqvgN5zRLUr5x1qMDkMBcSfJHyfZIjruidBX8Vd0zyBi
+        gEERoLhVlM5UWbrkY2HjPo9NSv1WF1U8mSErl0NRAoGAYC3RxEfGxD9+Qi08nQgg
+        s/48hLdD2k2q4t3FrDsIGPAIEs52CGp9JWil9RyIQxBXWejETwDz+PgmD6U86Mhh
+        Qf5css6pcP/w1XF8vsyXfPnecgPSyOE4CgLtnQLxNriMiy5pfALELLyxoBQ+nquz
+        fMNLPC4K85ps/Uu9uzSatl0=
+        -----END PRIVATE KEY-----
+        EOF
+        
+        cat << EOF | /bin/vault kv put secret/my-plato-daps-crt content=-
+        -----BEGIN CERTIFICATE-----
+        MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
+        BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIy
+        MDQyNTEwMjgwMloXDTIzMDQyNTEwMjgwMlowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
+        VQQIDAZCZXJsaW4xDzANBgNVBAcMBkJlcmxpbjEMMAoGA1UECgwDQk1XMSAwHgYD
+        VQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRj
+        LmRlbW8uY2F0ZW5hLXgubmV0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+        AQEAm1/UvHXuRU1peEGHULZBP8j8gorXAQvUz8Znb1iVNtldI29GCSXkTHxph66x
+        TcegdF8aeaoU1mPf3LzMQUU1koZHUq6sRC+50uFcZJ2AjF5IXKQlDPNWR5tPXP56
+        RZyqXxjPFHeuTA+YsYyrzEVhzEieOiNaxJDM3uV5pv+FTRHz+xMOgNBonR1QyMh6
+        tcwB+EQagoeFl0DjEXAel9WG4hOG/rDiXArTMaVjnTG/ycmF0HeSnbRC+3/+fh/C
+        hzQJyEbviX67ymyYRJTyynt/Mtrqg5/ssdISexjw3ZmiFNemZIOhIdepoSwnJHFM
+        4Jj8B5lq0a1jY5Rc9lDj710RXQIDAQABo1MwUTAdBgNVHQ4EFgQUmYOnF4b/mJPO
+        oN2h8Tb69g91CiMwHwYDVR0jBBgwFoAUmYOnF4b/mJPOoN2h8Tb69g91CiMwDwYD
+        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAKxv/MTIEKNkzReOqrzpt
+        LM00X6JsDdfxa3rZ0Uq17PjO0R63IPsqzexhfZUML0e/Dwpe97xpvftCOEuICMBA
+        wOHhQc77MgwyF4dqgRgfJysxw37ACZxU6GI/K2JpKXQLgEhP14oHUIWOzCAbgDhR
+        jwOx3ZP176Vjxx90pW3hOphRVnq/BRqqEDtFwRzKtGnGvP8ecmC2iY4dXEA3QEp1
+        gzg03eglvZSoedEPY5o5y/4n6TplaDmaeoo0QrvAiWik1gY85Lg21aBWVsP45wVS
+        tFn3m1FCCV8XYIj/EEUAh8VEhphLVEViE6m9Mm4deFDavXcGBb63BCiOQtnjd3eY
+        zQ==
+        -----END CERTIFICATE-----
+        EOF
+        }
+
+  ui:
+    enabled: true
+    externalPort: 8200
+    targetPort: 8200
+plato-edc-dataplane:
+  fullnameOverride: "plato-edc-dataplane"
+  image:
+    repository: &edcDataPlaneImage  ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
+    tag: &edcDataPlaneImageTag develop
+  edc:
+    endpoints:
+      public:
+        port: 8185
+        path: /api/public
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
+  env:
+    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+    #############
+    ## GENERAL ##
+    #############
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
+    EDC_CONTROLPLANE_VALIDATION-ENDPOINT: http://plato-edc-controlplane:8182/validation/token
+
+    ###############
+    ## KEY VAULT ##
+    ###############
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    EDC_VAULT_HASHICORP_URL: http://plato-vault
+    EDC_VAULT_HASHICORP_TOKEN: *platoVaultToken
+plato-edc-controlplane:
+  fullnameOverride: "plato-edc-controlplane"
+  service:
+    type: NodePort
+  image:
+    repository: &edcControlPlaneImage  ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
+    tag: &edcControlPlaneImageTag develop
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
+  env:
+    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+    ########################
+    ## DAPS CONFIGURATION ##
+    ########################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
+    EDC_OAUTH_CLIENT_ID: *platoDapsClientId
+    EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/.well-known/jwks.json"
+    EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
+    EDC_OAUTH_PRIVATE_KEY_ALIAS: my-plato-daps-key
+    EDC_OAUTH_PUBLIC_KEY_ALIAS: my-plato-daps-crt
+    EDC_OAUTH_PROVIDER_AUDIENCE: &edcControlPlaneOauthAudience idsc:IDS_CONNECTORS_ALL
+
+    #############
+    ## GENERAL ##
+    #############
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/data-protocols/ids/ids-api-multipart-dispatcher-v1
+    IDS_WEBHOOK_ADDRESS: http://plato-edc-controlplane:8282
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/data-protocols/ids/ids-core
+    EDC_IDS_ENDPOINT: http://plato-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_DESCRIPTION: "Plato Control Plane"
+
+    #########################
+    ## DATA MANAGEMENT API ##
+    #########################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/api/auth-tokenbased
+    EDC_API_AUTH_KEY: &edcControlPlaneAuthKey "password"
+
+    ################
+    ## POSTGRESQL ##
+    ################
+
+    # the psql is configured in section 'plato-postgresql'
+    # password and username are taken from there
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    EDC_DATASOURCE_ASSET_NAME: asset
+    EDC_DATASOURCE_ASSET_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_ASSET_USER: *psqlUsername
+    EDC_DATASOURCE_ASSET_URL: &platoPsqlConStr "jdbc:postgresql://plato-postgresql:5432/edc"
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
+    EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
+    EDC_DATASOURCE_CONTRACTDEFINITION_URL: *platoPsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *platoPsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    EDC_DATASOURCE_POLICY_NAME: policy
+    EDC_DATASOURCE_POLICY_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_POLICY_USER: *psqlUsername
+    EDC_DATASOURCE_POLICY_URL: *platoPsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
+    EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
+    EDC_DATASOURCE_TRANSFERPROCESS_URL: *platoPsqlConStr
+
+    ################
+    ## DATA PLANE ##
+    ################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
+    EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public
+    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-plato-daps-key # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-plato-daps-crt # for simplicity this example re-uses the DAPS keys.
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    EDC_RECEIVER_HTTP_ENDPOINT: http://plato-backend-application
+
+    ###############
+    ## KEY VAULT ##
+    ###############
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
+    EDC_VAULT_HASHICORP_TOKEN: *platoVaultToken
+
+############
+# SOKRATES #
+############
+sokrates-backend-application:
+  fullnameOverride: "sokrates-backend-application"
+  service:
+    port: 80
+sokrates-postgresql:
+  fullnameOverride: "sokrates-postgresql"
+  auth:
+    username: *psqlUsername
+    password: *psqlPassword
+    database: *psqlDatabase
+sokrates-vault:
+  fullnameOverride: "sokrates-vault"
+  injector:
+    enabled: false
+  server:
+    dev:
+      enabled: true
+      devRootToken: &sokratesVaultToken "root"
+
+    # Must be the same certificate that is configured in section 'ids-daps'
+    postStart:
+      - "sh"
+      - "-c"
+      - |
+        { 
+        
+        sleep 1
+
+        cat << EOF | /bin/vault kv put secret/my-sokrates-daps-key content=-
+        -----BEGIN PRIVATE KEY-----
+        MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCv+NUvK7ppJPiM
+        wZPaQQxE745T5pV38O/Mkay5m82nnd5BoMoCdhhRTy3Efy79FhvBfGruFBLLGzsQ
+        FOEUY53Albeumo2gmpZSKjJR/M2ifK4MTaRniVOWL5mEcZSKPhsItKpxdLaiYfB6
+        8uzqkqNICtmAQRSclYKzLBM9xHLEtxDWCbnzYFCHoOELGi+PTNIFsUnsT3QuKaJ/
+        ejb47vdA/EZbwCQdtTyJ6i54jGhZUp0WMwq1Go2uhzJsygPmT2da/ZZZc7BNNEQE
+        sUSMZSpMH807TG/TunstotrzO4ShhpV4zbJ2FV/VlxH7yuCawmnR84F/KnXs9fUc
+        RSrQfuYBAgMBAAECggEAO+KjsjTgcG3bhBNQnMLsSP15Y0Yicbn18ZlVvaivGS7Z
+        d14fwSytY+ZdPfTGaey/L16HCVSdfK9cr0Fbw9OO2P5ajzobnp9dLsMbctlkpbpm
+        hNtbarzKTF8QkIkSsuUl0BWjt46vpJ1N+Jl5VO7oUFkY4dPEDvG2lAEY3zlekWDm
+        cQeOC/YgpoW4xfRwPPS6QE0w3Q+H5NfNjfz+mSHeItTlVfTKDRliWQLPWeRZFuXh
+        FlRFUQnTmEE/9wpIe3Hn7WXJ3fQqcYDzxU7/zwwY9I7bB15SgVHlR0ENDPAD5X8F
+        MVZ3EcLlqGBy+WvTWALp6pc8YfhW3fiTWyuamXtNrQKBgQDonsIzBKEOOKdKGW0e
+        uyw79ErmnmzkY5nuMrMxrmTA4WKCfJ/YRRA+4sxiltWsIJ3UkHe3OBCSSCdj79hb
+        ugb/+UzE70hOdgrct2NUQqbrj3gvsVvU8ZRQgTRMqKpmC0zY7KOMx6NU85z3IvS1
+        z5fjszcUv4kLQlldYGSAuqPy+wKBgQDBqIkc8p/wcw7ygo1q/GerNeszfoxiIFp8
+        h4RWLVhkwrcXFz30wBlUWuv5/kxU8tmJcmXxe72EmUstd6wvNOAnYwCiile6zQiJ
+        vsr1axavZnGOtNGUp6DUAsd2iviBl7IZ7kAcqCrQo4ivGhfHmahH3hmg8wuAMjYB
+        8f+FSPgaMwKBgQC7W4tMrjDOFIFhJEOIWfcRvvxI7VcFSNelS76aiDzsQVwnfxr7
+        hPzFucQmsBgfUBHvMADMWGK4f1cCnh5kGtwidXgIsjVJxLeQ+EAPkLOCzQZfW3l8
+        dKshgD9QcxTzpaxal5ZPAEikVqaZQtVYToCmzCTUGETYBbOWitnH+Qut2wKBgQC6
+        Y6DcSLUhc0xOotLDxv1sbu/aVxF8nFEbDD+Vxf0Otc4MnmUWPRHj+8KlkVkcZcR0
+        IrP1kThd+EDAGS+TG9wmbIY+6tH3S8HM+eJUBWcHGJ1xUZ1p61DC3Y3nDWiTKlLT
+        3Fi+fCkBOHSku4Npq/2odh7Kp0JJd4o9oxJg0VNhuwKBgQDSFn7dqFE0Xmwc40Vr
+        0wJH8cPWXKGt7KJENpj894buk2DniLD4w2x874dzTjrOFi6fKxEzbBNA9Rq9UPo8
+        u9gKvl/IyWmV0c4zFCNMjRwVdnkMEte/lXcJZ67T4FXZByqAZlhrr/v0FD442Z9B
+        AjWFbUiBCFOo+gpAFcQGrkOQHA==
+        -----END PRIVATE KEY-----
+        EOF
+        
+        cat << EOF | /bin/vault kv put secret/my-sokrates-daps-crt content=-
+        -----BEGIN CERTIFICATE-----
+        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
+        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
+        DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
+        DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
+        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
+        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
+        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
+        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
+        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
+        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
+        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
+        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
+        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
+        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
+        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
+        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        -----END CERTIFICATE-----
+        EOF
+        }
+
+  ui:
+    enabled: true
+    externalPort: 8200
+    targetPort: 8200
+sokrates-edc-dataplane:
+  fullnameOverride: "sokrates-edc-dataplane"
+  image:
+    repository: *edcDataPlaneImage
+    tag: *edcDataPlaneImageTag
+  edc:
+    endpoints:
+      public:
+        port: 8185
+        path: /api/public
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
+  env:
+    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+    #############
+    ## GENERAL ##
+    #############
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
+    EDC_CONTROLPLANE_VALIDATION-ENDPOINT: http://sokrates-edc-controlplane:8182/validation/token
+
+    ###############
+    ## KEY VAULT ##
+    ###############
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    EDC_VAULT_HASHICORP_URL: http://sokrates-vault-0
+    EDC_VAULT_HASHICORP_TOKEN: *sokratesVaultToken
+sokrates-edc-controlplane:
+  fullnameOverride: "sokrates-edc-controlplane"
+  service:
+    type: NodePort
+  image:
+    repository: *edcControlPlaneImage
+    tag: *edcControlPlaneImageTag
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
+  env:
+    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+    ########################
+    ## DAPS CONFIGURATION ##
+    ########################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
+    EDC_OAUTH_CLIENT_ID: *sokratesDapsClientId
+    EDC_OAUTH_PROVIDER_JWKS_URL: *edcControlPlaneOauthJwksUrl
+    EDC_OAUTH_TOKEN_URL: *edcControlPlaneOauthTokenUrl
+    EDC_OAUTH_PRIVATE_KEY_ALIAS: my-sokrates-daps-key
+    EDC_OAUTH_PUBLIC_KEY_ALIAS: my-sokrates-daps-crt
+    EDC_OAUTH_PROVIDER_AUDIENCE: *edcControlPlaneOauthAudience
+
+    #############
+    ## GENERAL ##
+    #############
+    IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
+    EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
+
+    #########################
+    ## DATA MANAGEMENT API ##
+    #########################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/api/auth-tokenbased
+    EDC_API_AUTH_KEY: *edcControlPlaneAuthKey
+
+    ################
+    ## POSTGRESQL ##
+    ################
+
+    # the psql is configured in section 'sokrates-postgresql'
+    # password and username are taken from there
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    EDC_DATASOURCE_ASSET_NAME: asset
+    EDC_DATASOURCE_ASSET_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_ASSET_USER: *psqlUsername
+    EDC_DATASOURCE_ASSET_URL: &SokratesPsqlConStr "jdbc:postgresql://sokrates-postgresql:5432/edc"
+    
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
+    EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
+    EDC_DATASOURCE_CONTRACTDEFINITION_URL: *SokratesPsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *SokratesPsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    EDC_DATASOURCE_POLICY_NAME: policy
+    EDC_DATASOURCE_POLICY_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_POLICY_USER: *psqlUsername
+    EDC_DATASOURCE_POLICY_URL: *SokratesPsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
+    EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
+    EDC_DATASOURCE_TRANSFERPROCESS_URL: *SokratesPsqlConStr
+
+    ################
+    ## DATA PLANE ##
+    ################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
+    EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public
+    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    EDC_RECEIVER_HTTP_ENDPOINT: http://sokrates-backend-application
+
+    ###############
+    ## KEY VAULT ##
+    ###############
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
+    EDC_VAULT_HASHICORP_TOKEN: *sokratesVaultToken

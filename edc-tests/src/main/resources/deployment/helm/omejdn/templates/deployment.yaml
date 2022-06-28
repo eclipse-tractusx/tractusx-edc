@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "omejdn.fullname" . }}
+  labels:
+    {{- include "omejdn.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "omejdn.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "omejdn.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.imagePullSecret.dockerconfigjson }}
+      imagePullSecrets:
+        - name: {{ include "omejdn.fullname" . }}-imagepullsecret
+      {{- else }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ include "omejdn.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: init-daps-pvc
+          image: alpine
+          command:
+            - "sh"
+            - "-c"
+          args:
+            - |
+              cp /opt/config/omejdn.yml /etc/daps/omejdn.yml
+              cp /opt/config/clients.yml /etc/daps/clients.yml
+          volumeMounts:
+            - name: config-dir
+              mountPath: /etc/daps
+            - mountPath: /opt/config/omejdn.yml
+              name: omejdn-config
+              subPath: omejdn.yml
+            - mountPath: /opt/config/clients.yml
+              name: clients-config
+              subPath: clients.yml
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /opt/config/omejdn.yml
+              name: config-dir
+              subPath: omejdn.yml
+            - mountPath: /opt/config/clients.yml
+              name: config-dir
+              subPath: clients.yml
+            - mountPath: /opt/keys/
+              name: client-certificates
+          ports:
+            - name: http
+              containerPort: 4567
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /.well-known/jwks.json
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /.well-known/jwks.json
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: OMEJDN_JWT_AUD_OVERRIDE
+            value: "idsc:IDS_CONNECTORS_ALL"
+      volumes:
+      - name: config-dir
+        emptyDir: {}
+      - name: omejdn-config
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+            - key: omejdn.yml
+              path: omejdn.yml
+      - name: clients-config
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: clients.yml
+            path: clients.yml
+      - name: client-certificates
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+            {{- range $i, $val :=  .Values.connectors }}
+            - key: {{ $val.name }}
+              path: {{ $val.id | b64enc }}.cert
+            {{- end }}

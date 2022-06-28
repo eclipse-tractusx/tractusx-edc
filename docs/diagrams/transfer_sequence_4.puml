@@ -1,0 +1,44 @@
+@startuml
+
+!define sokratesColor 66CCFF
+!define platoColor CCFF99
+!define dapsColor FFFF99
+!define noteColor 9999FF
+
+actor User as "User"
+
+box Sokrates
+    participant SokratesControlPlane as "Control Plane" #sokratesColor
+    participant SokratesBackendService as "Backend Application" #sokratesColor
+    participant SokratesDataPlane as "Data Plane" #sokratesColor
+end box
+
+box Plato
+    participant PlatoControlPlane as "Control Plane" #platoColor
+    participant PlatoDataPlane as "Data Plane" #platoColor
+end box
+
+participant JsonPlaceHolder as "JsonPlaceHolder"
+
+User -> SokratesControlPlane ++ : Request Negotiation by ID
+return Contract Negotiation\n(containing Contract Agreement ID)
+
+User -> SokratesControlPlane ++ : Initiate Transfer with Agreement ID
+SokratesControlPlane --> User : Transfer Process ID
+    SokratesControlPlane -> PlatoControlPlane ++ : IDS Data Transfer (simplified)
+return
+SokratesControlPlane -> SokratesBackendService ++ : Data Plane Endpoint + Token
+    SokratesBackendService -> SokratesDataPlane ++ : Request Data with Token
+        SokratesDataPlane -> PlatoDataPlane ++ : Request Data
+            PlatoDataPlane -> JsonPlaceHolder ++ : Request Data
+            return data
+        return data
+    return data
+    SokratesBackendService -> SokratesBackendService : Write Data to File
+return ok
+deactivate SokratesControlPlane
+
+User -> SokratesControlPlane ++ : Request Transfer Process by ID
+return Transfer Process
+
+@enduml
