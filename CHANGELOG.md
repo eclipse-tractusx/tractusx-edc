@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- BusinessPartnerNumber constraint supports List structure
+
 ## [0.0.4] - 2022-06-27
 
 ### Added

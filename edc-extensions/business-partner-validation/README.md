@@ -42,6 +42,7 @@ The most simple BPN policy would allow the usage of certain data to a single Bus
 shown below. In this example the `edctype` properties are added, so that this policy may even be sent to the Data
 Management API.
 
+**Example 1 for single BPN:**
 ```json
 {
   "uid": "<PolicyId>",
@@ -72,6 +73,37 @@ Management API.
 }
 ```
 
+**Example 2 for multiple BPN:**
+```json
+{
+  "uid": "<PolicyId>",
+  "prohibitions": [],
+  "obligations": [],
+  "permissions": [
+    {
+      "edctype": "dataspaceconnector:permission",
+      "action": {
+        "type": "USE"
+      },
+      "constraints": [
+        {
+          "edctype": "AtomicConstraint",
+          "leftExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": "BusinessPartnerNumber"
+          },
+          "rightExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": [ "<BPN1>", "<BPN2>" ]
+          },
+          "operator": "IN"
+        }
+      ]
+    }
+  ]
+}
+```
+
 The business partner number of another connector is part of the DAPS token. Once a BPN constraint is used in an access
 policy the connector checks the token before sending out contract offers.
 
@@ -81,8 +113,7 @@ Please be aware that the EDC ignores all Rules and Constraint it does not unders
 
 ---
 
-Example 1 for accidentially public:
-
+**Example 3 for accidentially public:**
 ```json
 {
   "uid": "1",
@@ -117,7 +148,7 @@ This policy is public available, even though the constraint is described correct
 
 ---
 
-Example 2 for accidentially public:
+**Example 4 for accidentially public:**
 
 ```json
 {
