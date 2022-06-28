@@ -1,0 +1,76 @@
+---
+apiVersion: v2
+name: all-in-one
+description: A Helm chart for Kubernetes
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.16.0"
+
+dependencies:
+  # IDS DAPS
+  - name: ids-daps
+    version: 0.0.1
+    repository: "file://../omejdn"
+    alias: ids-daps
+
+  # PLATO CONNECTOR
+  - name: edc-controlplane
+    version: 0.0.3
+    repository: "file://../../../../../../../deployment/helm/edc-controlplane"
+    alias: plato-edc-controlplane
+  - name: edc-dataplane
+    version: 0.0.3
+    repository: "file://../../../../../../../deployment/helm/edc-dataplane"
+    alias: plato-edc-dataplane
+  - name: backend-application
+    version: 0.0.1
+    repository: "file://../backend-application"
+    alias: plato-backend-application
+  - name: vault
+    version: 0.20.0
+    repository: https://helm.releases.hashicorp.com
+    alias: plato-vault
+  - name: postgresql
+    version: 11.2.4
+    repository: https://charts.bitnami.com/bitnami
+    alias: plato-postgresql
+
+  # SOKRATES CONNECTOR
+  - name: edc-controlplane
+    version: 0.0.3
+    repository: "file://../../../../../../../deployment/helm/edc-controlplane"
+    alias: sokrates-edc-controlplane
+  - name: edc-dataplane
+    version: 0.0.3
+    repository: "file://../../../../../../../deployment/helm/edc-dataplane"
+    alias: sokrates-edc-dataplane
+  - name: backend-application
+    version: 0.0.1
+    repository: "file://../backend-application"
+    alias: sokrates-backend-application
+  - name: vault
+    version: 0.20.0
+    repository: https://helm.releases.hashicorp.com
+    alias: sokrates-vault
+  - name: postgresql
+    version: 11.2.4
+    repository: https://charts.bitnami.com/bitnami
+    alias: sokrates-postgresql

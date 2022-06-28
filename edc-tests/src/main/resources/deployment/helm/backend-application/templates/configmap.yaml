@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "backend-application.fullname" . }}
+  labels:
+    {{- include "backend-application.labels" . | nindent 4 }}
+data:
+  handler.sh: |-
+    {{- .Values.script.content | nindent 4 }}

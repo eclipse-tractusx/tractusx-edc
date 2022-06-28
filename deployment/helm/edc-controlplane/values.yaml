@@ -334,3 +334,4 @@ configuration:
     # edc.web.rest.cors.headers=
     # edc.web.rest.cors.methods=
     # edc.web.rest.cors.origins=
+    # ids.webhook.address=

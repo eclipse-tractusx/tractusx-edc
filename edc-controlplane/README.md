@@ -111,7 +111,6 @@ Pleaste know that, in the past there were some DAPS issues with the client certi
 ```
 ---
 
-
 ### (optional) 1. Key / Certificate Generation
 
 In the first step generate a PKSC8 Key and the corresponding certificate. This step is optional, because it might be possible that this key is provided by the DAPS maintainers.
@@ -222,8 +221,7 @@ az keyvault secret set --name my-data-plane-public-key --vault-name tree512 --fi
 edc.transfer.proxy.token.verifier.publickey.alias=my-data-plane-public-key
 ```
 
-
-# Short Overview of the EDC Domain
+# EDC Domain
 
 This chapter gives a short overview of the EDC domain. The idea is to get a basic understanding of the domain objects and their roles.</br>
 The complete EDC documentation can be found in the official open source [EDC GitHub Repository](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector).
@@ -488,6 +486,13 @@ curl -X GET <URL> --header "X-Api-Key: <edc.api.auth.key>"
 Please have look at all the open issues in the open source repository. The list below might not be maintained well and
 only contains the most important issues.
 EDC Github Repository https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues
+
+---
+
+**Please note** that some of these issues might already be fixed on the EDC main branch, but are not part of the specific
+EDC commit the Product-EDC uses.
+
+---
 
 ## Contract negotiation not working when `web.http.ids.path` is configured/changed
 
