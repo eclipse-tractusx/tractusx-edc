@@ -33,15 +33,15 @@ dependencies:
 
   # PLATO CONNECTOR
   - name: edc-controlplane
-    version: 0.0.4
+    version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-controlplane"
     alias: plato-edc-controlplane
   - name: edc-dataplane
-    version: 0.0.4
+    version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-dataplane"
     alias: plato-edc-dataplane
   - name: backend-application
-    version: 0.0.1
+    version: ">=0.0.1"
     repository: "file://../backend-application"
     alias: plato-backend-application
   - name: vault
@@ -55,15 +55,15 @@ dependencies:
 
   # SOKRATES CONNECTOR
   - name: edc-controlplane
-    version: 0.0.4
+    version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-controlplane"
     alias: sokrates-edc-controlplane
   - name: edc-dataplane
-    version: 0.0.4
+    version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-dataplane"
     alias: sokrates-edc-dataplane
   - name: backend-application
-    version: 0.0.1
+    version: ">=0.0.1"
     repository: "file://../backend-application"
     alias: sokrates-backend-application
   - name: vault
