@@ -33,6 +33,7 @@ $ helm install my-release catenax-ng-product-edc/edc-dataplane --version 0.0.4
 | edc.endpoints.public.path | string | `"/api/public"` | The path mapping the "public" api is going to be exposed by |
 | edc.endpoints.public.port | string | `"8185"` | The network port, which the "public" api is going to be exposed by the container, pod and service |
 | env | object | `{}` | Container environment variables e.g. for configuring [JAVA_TOOL_OPTIONS](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/envvars002.html) Ex.:   JAVA_TOOL_OPTIONS: >     -Dhttp.proxyHost=proxy -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts="localhost|127.*|[::1]" -Dhttps.proxyHost=proxy -Dhttps.proxyPort=443 |
+| envSecretName | string | `nil` | [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) name to load environment variables from |
 | fullnameOverride | string | `""` | Overrides the releases full name |
 | image.pullPolicy | string | `"IfNotPresent"` | [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use |
 | image.repository | string | `"ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault"` | Which derivate of the edc data-plane to use. One of: [ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault] |
