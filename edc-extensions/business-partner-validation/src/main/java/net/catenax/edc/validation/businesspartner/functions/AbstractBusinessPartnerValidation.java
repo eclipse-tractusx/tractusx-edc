@@ -32,13 +32,13 @@ public abstract class AbstractBusinessPartnerValidation {
   // Problems reported to the policy context are not logged. Therefore, everything
   // that is reported to the policy context should be logged, too.
 
-  private static final String SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING_S =
-      "Skipping evaluation of iterable value in BusinessPartnerNumber constraint. Right values used in an iterable must be of type 'String'. Unsupported Type: '%s'";
-  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING_S =
-      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'EQ' right value must be of type 'String'. Unsupported Type: '%s'";
-  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE_S =
-      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'IN' right value must be of type 'Iterable'. Unsupported Type: '%s'";
-  private static final String FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR_S =
+  private static final String SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING =
+      "Skipping evaluation of iterable value in BusinessPartnerNumber constraint. Right values used in an iterable must be of type 'String'. Unsupported type: '%s'";
+  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING =
+      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'EQ' right value must be of type 'String'. Unsupported type: '%s'";
+  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE =
+      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'IN' right value must be of type 'Iterable'. Unsupported type: '%s'";
+  private static final String FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR =
       "Failing evaluation because of invalid BusinessPartnerNumber constraint. As operator only 'EQ' or 'IN' are supported. Unsupported operator: '%s'";
 
   private final Monitor monitor;
@@ -95,8 +95,7 @@ public abstract class AbstractBusinessPartnerValidation {
     } else if (operator == Operator.IN) {
       return containsBusinessPartnerNumber(referringConnectorClaim, rightValue, policyContext);
     } else {
-      final String message =
-          String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR_S, operator);
+      final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
@@ -113,7 +112,7 @@ public abstract class AbstractBusinessPartnerValidation {
       String referingConnectorClaim, Object businessPartnerNumbers, PolicyContext policyContext) {
     if (businessPartnerNumbers == null) {
       final String message =
-          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE_S, "null");
+          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
@@ -121,7 +120,7 @@ public abstract class AbstractBusinessPartnerValidation {
     if (!(businessPartnerNumbers instanceof Iterable)) {
       final String message =
           String.format(
-              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE_S,
+              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE,
               businessPartnerNumbers.getClass().getName());
       monitor.warning(message);
       policyContext.reportProblem(message);
@@ -131,7 +130,7 @@ public abstract class AbstractBusinessPartnerValidation {
     for (Object businessPartnerNumber : (Iterable) businessPartnerNumbers) {
       if (businessPartnerNumber == null) {
         final String message =
-            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING_S, "null");
+            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
         monitor.warning(message);
         policyContext.reportProblem(message);
         continue;
@@ -139,7 +138,7 @@ public abstract class AbstractBusinessPartnerValidation {
       if (!(businessPartnerNumber instanceof String)) {
         final String message =
             String.format(
-                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING_S,
+                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING,
                 businessPartnerNumber.getClass().getName());
         monitor.warning(message);
         policyContext.reportProblem(message);
@@ -161,8 +160,7 @@ public abstract class AbstractBusinessPartnerValidation {
   private boolean isBusinessPartnerNumber(
       String referingConnectorClaim, Object businessPartnerNumber, PolicyContext policyContext) {
     if (businessPartnerNumber == null) {
-      final String message =
-          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING_S, "null");
+      final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
@@ -170,7 +168,7 @@ public abstract class AbstractBusinessPartnerValidation {
     if (!(businessPartnerNumber instanceof String)) {
       final String message =
           String.format(
-              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING_S,
+              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING,
               businessPartnerNumber.getClass().getName());
       monitor.warning(message);
       policyContext.reportProblem(message);
