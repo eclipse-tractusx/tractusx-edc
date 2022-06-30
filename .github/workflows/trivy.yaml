@@ -66,6 +66,7 @@ jobs:
       security-events: write
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # continue scanning other images although if the other has been vulnerable
       matrix:
         image:
           - edc-controlplane-memory
