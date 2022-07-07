@@ -1,12 +1,13 @@
 # Transfer Data
 
-This document will showcase a data transfer between two connectors.
+This document will showcase a data transfer between two connectors. It uses two connectors from the *All-in-one deployment* of this repository.
 
 ---
 
-Before running the commands setup the all-in-one deployment from the. This is documented in it's [README.md](../edc-tests/src/main/resources/deployment/helm/all-in-one/README.md#Setup).
+Before running the commands setup the all-in-one deployment from the. This is documented in it's
+[README.md](../../edc-tests/src/main/resources/deployment/helm/all-in-one/README.md).
 
-Please install [Bash jq](https://linuxhint.com/bash_jq_command/), as it is used in the bash calls of this document.
+Please install [jq](https://stedolan.github.io/jq/), as it is used in the bash calls of this document.
 
 ---
 
@@ -53,16 +54,16 @@ export SOKRATES_DATAMGMT_URL=$(minikube service sokrates-edc-controlplane -n edc
 
 Set up a data offer in **Plato**, so that **Sokrates** has something to consume.
 
-In case you are unfamiliar with the EDC terms `Asset`, `Policy` or `ContractDefinition` please have a look  the official open
+In case you are unfamiliar with the EDC terms `Asset`, `Policy` or `ContractDefinition` please have a look at the official open
 source documentation ([link](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/docs/architecture/domain-model.md)).
 
-![Sequence 1](./diagrams/transfer_sequence_1.png)
+![Sequence 1](diagrams/transfer_sequence_1.png)
 
 **Run**
 
 The following commands will create an Asset, a Policy and a Contract Definition.
 For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data source of the asset, but could be any
-other API, that is reachable from the Data Plane.
+other API, that is reachable from the Provider Data Plane.
 
 ```bash
 curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"endpoint\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
@@ -84,7 +85,7 @@ then request the catalog over IDS messaging.
 For IDS messaging connectors will identify each other using the configured IDS DAPS. Therefore, it is important that
 connectors, that intent to send messages to each other, have the same DAPS instance configured.
 
-![Sequence 1](./diagrams/transfer_sequence_2.png)
+![Sequence 1](diagrams/transfer_sequence_2.png)
 
 **Run**
 
@@ -103,7 +104,7 @@ during contract negotiation. But the inter-controlplane communication is not in 
 After the negotiation is initiated ensure that is has concluded. This is done by requesting the negotiation from the API
 and checking whether the `contractAgreementId` is set. This might take a few seconds.
 
-![Sequence 1](./diagrams/transfer_sequence_3.png)
+![Sequence 1](diagrams/transfer_sequence_3.png)
 
 **Run**
 
@@ -118,10 +119,9 @@ curl -X GET "$SOKRATES_DATAMGMT_URL/data/contractnegotiations/$NEGOTIATION_ID" -
 ## 4. Transfer Data
 
 Initiate a data transfer using the contract agreement from the negotiation (from step 3). Then wait until the state of
-the
-transfer process is `COMPLETED`.
+the transfer process is `COMPLETED`.
 
-![Sequence 1](./diagrams/transfer_sequence_4.png)
+![Sequence 1](diagrams/transfer_sequence_4.png)
 
 **Run**
 
@@ -143,7 +143,7 @@ curl -X GET "$SOKRATES_DATAMGMT_URL/data/transferprocess/$TRANSFER_ID" --header 
 After the transfer is complete the Backend Application has downloaded the data. The Backend Application stores the data
 locally. In this demo the transfer can be verified by executing a simple `cat` call in the Pod.
 
-![Sequence 1](./diagrams/transfer_sequence_5.png)
+![Sequence 1](diagrams/transfer_sequence_5.png)
 
 ```bash
 echo $(kubectl exec -n edc-all-in-one --stdin --tty `kubectl get pod -n edc-all-in-one -l app.kubernetes.io/name=sokrates-backend-application --template "{{ with index .items ${POD_INDEX:-0} }}{{ .metadata.name }}{{ end }}"` -- /usr/bin/cat /tmp/data/${TRANSFER_PROCESS_ID}) | jq
