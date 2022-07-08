@@ -29,48 +29,48 @@ dependencies:
   - name: ids-daps
     version: 0.0.1
     repository: "file://../omejdn"
-    alias: ids-daps
+    alias: idsdaps
 
   # PLATO CONNECTOR
   - name: edc-controlplane
     version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-controlplane"
-    alias: plato-edc-controlplane
+    alias: platoedccontrolplane
   - name: edc-dataplane
     version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-dataplane"
-    alias: plato-edc-dataplane
+    alias: platoedcdataplane
   - name: backend-application
     version: ">=0.0.1"
     repository: "file://../backend-application"
-    alias: plato-backend-application
+    alias: platobackendapplication
   - name: vault
     version: 0.20.0
     repository: https://helm.releases.hashicorp.com
-    alias: plato-vault
+    alias: platovault
   - name: postgresql
     version: 11.2.4
     repository: https://charts.bitnami.com/bitnami
-    alias: plato-postgresql
+    alias: platopostgresql
 
   # SOKRATES CONNECTOR
   - name: edc-controlplane
     version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-controlplane"
-    alias: sokrates-edc-controlplane
+    alias: sokratesedccontrolplane
   - name: edc-dataplane
     version: ">=0.0.1"
     repository: "file://../../../../../../../deployment/helm/edc-dataplane"
-    alias: sokrates-edc-dataplane
+    alias: sokratesedcdataplane
   - name: backend-application
     version: ">=0.0.1"
     repository: "file://../backend-application"
-    alias: sokrates-backend-application
+    alias: sokratesbackendapplication
   - name: vault
     version: 0.20.0
     repository: https://helm.releases.hashicorp.com
-    alias: sokrates-vault
+    alias: sokratesvault
   - name: postgresql
     version: 11.2.4
     repository: https://charts.bitnami.com/bitnami
-    alias: sokrates-postgresql
+    alias: sokratespostgresql
