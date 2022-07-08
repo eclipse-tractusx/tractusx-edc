@@ -281,9 +281,6 @@ configuration:
     # edc.receiver.http.auth-code=
     # edc.receiver.http.auth-key=
     # edc.receiver.http.endpoint=
-    # edc.transfer.proxy.endpoint=
-    # edc.transfer.dataplane.sync.token.validity=
-    # edc.transfer.proxy.token.signer.privatekey.alias=
     # edc.transfer.functions.check.endpoint=
     # edc.transfer.functions.enabled.protocols=
     # edc.transfer.functions.transfer.endpoint=
