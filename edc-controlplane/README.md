@@ -15,6 +15,19 @@ Example:
 curl -X GET <URL> --header "X-Api-Key: <edc.api.auth.key>"
 ```
 
+## Security
+
+### Confidential Settings
+
+Please be aware that there are several confidential settings, that should not be part of the actual EDC configuration file.
+
+Some of these confidential settings are
+- Vault credentials
+- Data Management API key
+- Database credentials
+
+As it is possible to configure EDC settings via environment variables, one way to do it would be via Kubernetes Secrets. For other deployment scenarios than Kubernetes equivalent measures should be taken.
+
 # Known Control Plane Issues
 
 Please have a look at the open issues in the open source repository. The list below might not be maintained well and
@@ -51,5 +64,3 @@ EDC commit the Product-EDC uses.
 **Security**
 - DataAddress is passed unencrypted from DataProvider to DataConsumer ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1504))
   - **Workaround:** Use only test data!
-
-
