@@ -55,6 +55,7 @@ spec:
             - |
               cp /opt/config/omejdn.yml /etc/daps/omejdn.yml
               cp /opt/config/clients.yml /etc/daps/clients.yml
+              cp /opt/config/plugins.yml /etc/daps/plugins.yml
           volumeMounts:
             - name: config-dir
               mountPath: /etc/daps
@@ -64,6 +65,9 @@ spec:
             - mountPath: /opt/config/clients.yml
               name: clients-config
               subPath: clients.yml
+            - mountPath: /opt/config/plugins.yml
+              name: plugins-config
+              subPath: plugins.yml
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -77,7 +81,10 @@ spec:
             - mountPath: /opt/config/clients.yml
               name: config-dir
               subPath: clients.yml
-            - mountPath: /opt/keys/
+            - mountPath: /opt/config/plugins.yml
+              name: config-dir
+              subPath: plugins.yml
+            - mountPath: /opt/keys/clients/
               name: client-certificates
           ports:
             - name: http
@@ -85,17 +92,19 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /.well-known/jwks.json
+              path: /jwks.json
               port: http
           readinessProbe:
             httpGet:
-              path: /.well-known/jwks.json
+              path: /jwks.json
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
           - name: OMEJDN_JWT_AUD_OVERRIDE
             value: "idsc:IDS_CONNECTORS_ALL"
+          - name: OMEJDN_PLUGINS
+            value: "config/plugins.yml"
       volumes:
       - name: config-dir
         emptyDir: {}
@@ -103,19 +112,25 @@ spec:
         configMap:
           name: {{ include "omejdn.fullname" . }}
           items:
-            - key: omejdn.yml
-              path: omejdn.yml
+          - key: omejdn.yml
+            path: omejdn.yml
       - name: clients-config
         configMap:
           name: {{ include "omejdn.fullname" . }}
           items:
           - key: clients.yml
             path: clients.yml
+      - name: plugins-config
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: plugins.yml
+            path: plugins.yml
       - name: client-certificates
         configMap:
           name: {{ include "omejdn.fullname" . }}
           items:
             {{- range $i, $val :=  .Values.connectors }}
             - key: {{ $val.name }}
-              path: {{ $val.id | b64enc }}.cert
+              path: {{ $val.id }}.cert
             {{- end }}
