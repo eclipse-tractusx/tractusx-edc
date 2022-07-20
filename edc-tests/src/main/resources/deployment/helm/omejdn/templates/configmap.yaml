@@ -7,66 +7,51 @@ metadata:
 data:
   omejdn.yml:  |-
     ---
-    host: http://localhost:4567
+    host: http://ids-daps:4567/
     path_prefix: ''
     bind_to: 0.0.0.0
     allow_origin: "*"
     app_env: debug
-    openid: true
-    token:
-      expiration: 3600
-      signing_key: omejdn_priv.pem
-      jwks_additions:
-        - omejdn_priv.pem.cert
-      algorithm: RS256
-      audience: idsc:IDS_CONNECTORS_ALL
-      issuer: http://localhost:4567
-    id_token:
-      expiration: 3600
-      signing_key: omejdn_priv.pem
-      jwks_additions:
-        - omejdn_priv.pem.cert
-      algorithm: RS256
-      issuer: http://localhost:4567
+    openid: false
     user_backend:
       - yaml
     user_backend_default: yaml
-    user_selfservice:
-      enabled: true
-      allow_deletion: true
-      allow_password_change: true
-      editable_attributes:
-        - name
-        - family_name
-        - given_name
-        - middle_name
-        - nickname
-        - preferred_username
-        - profile
-        - picture
-        - website
-        - gender
-        - birthdate
-        - zoneinfo
-        - locale
-        - updated_at
-        - email
-        - email_verified
-        - address
-        - phone_number
-        - phone_number_verified
     accept_audience: idsc:IDS_CONNECTORS_ALL
+    issuer: http://ids-daps:4567/
+    environment: development
+    default_audience:
+      - idsc:IDS_CONNECTORS_ALL
+    access_token:
+      expiration: 3600
+      algorithm: RS256
+    id_token:
+      expiration: 3600
+      algorithm: RS256
+
+  plugins.yml: |-
+    ---
+    plugins:
+      token_user_attributes:
 
   clients.yml: |-
       ---
 {{- range $i, $val := .Values.connectors }}
       - client_id: {{ quote $val.id }}
         name: {{ quote $val.name }}
-        allowed_scopes:
+        token_endpoint_auth_method: private_key_jwt
+        grant_types:
+        - client_credentials
+        scope:
         - idsc:IDS_CONNECTOR_ATTRIBUTES_ALL
         attributes:
+        - key: idsc
+          value: IDS_CONNECTOR_ATTRIBUTES_ALL
         - key: securityProfile
-        value: idsc:BASE_SECURITY_PROFILE
+          value: idsc:BASE_SECURITY_PROFILE
+        {{- range $j, $attribute := $val.attributes }}
+        - key: {{ $j }}
+          value: {{ $attribute }}
+        {{- end }}
         redirect_uri: http://localhost:4200
 {{ end -}}
 

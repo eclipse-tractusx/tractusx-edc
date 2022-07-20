@@ -9,6 +9,8 @@ idsdaps:
   connectors:
     - id: &sokratesDapsClientId E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
       name: sokrates
+      attributes:
+        issuerConnector: http://sokrates-edc-controlplane/BPNSOKRATES
       # Must be the same certificate that is stores in section 'sokrates-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
@@ -37,6 +39,8 @@ idsdaps:
         -----END CERTIFICATE-----
     - id: &platoDapsClientId 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
       name: plato
+      attributes:
+        issuerConnector: http://plato-edc-controlplane/BPNPLATO
       # Must be the same certificate that is stores in section 'plato-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
@@ -212,7 +216,7 @@ platoedccontrolplane:
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
     EDC_OAUTH_CLIENT_ID: *platoDapsClientId
-    EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/.well-known/jwks.json"
+    EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/jwks.json"
     EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
     EDC_OAUTH_PRIVATE_KEY_ALIAS: my-plato-daps-key
     EDC_OAUTH_PUBLIC_KEY_ALIAS: my-plato-daps-crt

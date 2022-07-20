@@ -13,7 +13,7 @@ image:
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
-  tag: "1.4.2"
+  tag: "1.7.1"
 
 imagePullSecret:
   # -- Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
@@ -82,6 +82,8 @@ affinity: {}
 # Example Connector:
 # - id: grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
 #   name: my-connector
+#   attributes:
+#     issuerConnector: http://localhost:8080/
 #   certificate: |-
 #     -----BEGIN CERTIFICATE-----
 #     foo
