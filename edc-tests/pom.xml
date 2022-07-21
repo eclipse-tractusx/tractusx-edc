@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
+
+  This program and the accompanying materials are made available under the
+  terms of the Apache License, Version 2.0 which is available at
+  https://www.apache.org/licenses/LICENSE-2.0
+
+  SPDX-License-Identifier: Apache-2.0
+
+  Contributors:
+       Mercedes-Benz Tech Innovation GmbH - Initial POM
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.catenax.edc</groupId>
+        <artifactId>product-edc-parent</artifactId>
+        <version>0.0.5-SNAPSHOT</version>
+    </parent>
+
+    <groupId>net.catenax.edc.tests</groupId>
+    <artifactId>edc-tests</artifactId>
+
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
+    <dependencies>
+        <!--
+            Note: Needs to list all (!) modules desired to be included into the test coverage report
+        -->
+
+        <!-- edc-extensions -->
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>business-partner-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>hashicorp-vault</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>postgresql-migration</artifactId>
+        </dependency>
+
+        <!-- edc-controlplane -->
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-controlplane-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-controlplane-memory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-controlplane-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
+        </dependency>
+
+        <!-- edc-dataplane -->
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-dataplane-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-dataplane-azure-vault</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc</groupId>
+            <artifactId>edc-dataplane-hashicorp-vault</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report-aggregate</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

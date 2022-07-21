@@ -25,6 +25,10 @@
     <artifactId>edc-extensions</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <modules>
         <module>business-partner-validation</module>
         <module>postgresql-migration</module>

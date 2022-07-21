@@ -24,6 +24,10 @@
     <artifactId>postgresql-migration</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <build>
         <resources>
             <resource>

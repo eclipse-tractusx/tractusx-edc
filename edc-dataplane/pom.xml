@@ -24,6 +24,10 @@
     <artifactId>edc-dataplane</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <modules>
         <module>edc-dataplane-base</module>
 
