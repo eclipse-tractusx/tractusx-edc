@@ -25,6 +25,7 @@
         <module>edc-extensions</module>
         <module>edc-controlplane</module>
         <module>edc-dataplane</module>
+        <module>edc-tests</module>
     </modules>
 
     <inceptionYear>2022</inceptionYear>
@@ -55,7 +56,9 @@
         <org.apache.maven.plugins.compiler.version>3.10.1</org.apache.maven.plugins.compiler.version>
         <org.apache.maven.plugins.resources.version>3.2.0</org.apache.maven.plugins.resources.version>
         <org.projectlombok.lombok.maven.plugin.version>1.18.20.0</org.projectlombok.lombok.maven.plugin.version>
+        <org.jacoco.maven.plugin.version>0.8.8</org.jacoco.maven.plugin.version>
         <org.jasig.maven.notice.plugin.version>1.1.0</org.jasig.maven.notice.plugin.version>
+        <org.sonarsource.scanner.maven.plugin.version>3.9.1.2184</org.sonarsource.scanner.maven.plugin.version>
 
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
@@ -73,6 +76,11 @@
         <org.testcontainers.version>1.17.3</org.testcontainers.version>
         <org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
         <ch.qos.logback.logback-core.version>1.2.11</ch.qos.logback.logback-core.version>
+
+        <!-- TODO: parametrize so that forks can utilize sonar also -->
+        <sonar.organization>catenax-ng</sonar.organization>
+        <sonar.projectKey>catenax-ng_product-edc</sonar.projectKey>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
     </properties>
 
     <repositories>
@@ -180,6 +188,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${org.apache.maven.plugins.surefire.version}</version>
+                    <configuration>
+                        <parallel>all</parallel>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -250,6 +261,16 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${org.jacoco.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${org.sonarsource.scanner.maven.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -288,12 +309,36 @@
             </dependency>
             <dependency>
                 <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- CX edc-controlplane -->
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-controlplane-memory</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
                 <artifactId>edc-controlplane-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.catenax.edc</groupId>
-                <artifactId>edc-dataplane-base</artifactId>
+                <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- CX edc-dataplane -->
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-azure-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-hashicorp-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -1010,7 +1055,31 @@
         </dependencies>
     </dependencyManagement>
 
+
     <profiles>
+        <profile>
+            <id>failsafe</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <parallel>all</parallel>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>generate-notice</id>
             <build>
@@ -1044,6 +1113,26 @@
                                 <param>${project.basedir}/misc/license-mappings.xml</param>
                             </licenseMapping>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

@@ -23,6 +23,10 @@
     <artifactId>edc-controlplane-memory</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>

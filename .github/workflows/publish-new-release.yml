@@ -84,7 +84,7 @@ jobs:
         name: Deploy
         run: |-
           ./mvnw -s settings.xml \
-            -Pdelombok -pl '!edc-controlplane,!edc-controlplane/edc-controlplane-memory,!edc-controlplane/edc-controlplane-postgresql,!edc-controlplane/edc-controlplane-postgresql-hashicorp-vault,!edc-dataplane/edc-dataplane-azure-vault,!edc-dataplane/edc-dataplane-hashicorp-vault' \
+            -Pdelombok -pl '!edc-controlplane,!edc-controlplane/edc-controlplane-memory,!edc-controlplane/edc-controlplane-postgresql,!edc-controlplane/edc-controlplane-postgresql-hashicorp-vault,!edc-dataplane/edc-dataplane-azure-vault,!edc-dataplane/edc-dataplane-hashicorp-vault,!edc-tests' \
             -DaltReleaseDeploymentRepository=github::https://maven.pkg.github.com/${{ github.repository }} \
             -Dmaven.test.skip=true -B package deploy:deploy
         env:

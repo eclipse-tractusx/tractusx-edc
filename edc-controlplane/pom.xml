@@ -24,6 +24,10 @@
     <artifactId>edc-controlplane</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <modules>
         <module>edc-controlplane-base</module>
 
