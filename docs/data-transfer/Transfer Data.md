@@ -146,7 +146,7 @@ locally. In this demo the transfer can be verified by executing a simple `cat` c
 ![Sequence 1](diagrams/transfer_sequence_5.png)
 
 ```bash
-echo $(kubectl exec -n edc-all-in-one --stdin --tty `kubectl get pod -n edc-all-in-one -l app.kubernetes.io/name=sokrates-backend-application --template "{{ with index .items ${POD_INDEX:-0} }}{{ .metadata.name }}{{ end }}"` -- /usr/bin/cat /tmp/data/${TRANSFER_PROCESS_ID}) | jq
+echo $(kubectl exec -n edc-all-in-one --stdin --tty `kubectl get pod -n edc-all-in-one -l app.kubernetes.io/name=sokratesbackendapplication --template "{{ with index .items ${POD_INDEX:-0} }}{{ .metadata.name }}{{ end }}"` -- /usr/bin/cat /tmp/data/${TRANSFER_PROCESS_ID}) | jq
 ```
 
 # Delete All Data
