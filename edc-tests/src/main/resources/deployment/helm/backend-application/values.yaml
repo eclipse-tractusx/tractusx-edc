@@ -105,6 +105,16 @@ tolerations: []
 # -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) constrains which nodes the Pod can be scheduled on based on node labels.
 affinity: {}
 
+persistence:
+  # -- Whether to enable persistence via [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reserving-a-persistentvolume)
+  enabled: false
+  # -- [PersistentVolume Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) Access mode to use. One of (ReadOnlyMany, ReadWriteOnce, ReadWriteMany, ReadWriteOncePod)
+  accessMode:
+  # -- Storage class to use together with the claimed [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+  storageClassName:
+  # -- Capacity given to the claimed [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+  capacity: 100M
+
 # -- script invoked on http calls
 script:
   path: /opt/tcpserver/handler.sh
