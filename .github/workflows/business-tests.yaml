@@ -41,7 +41,7 @@ jobs:
         uses: azure/setup-kubectl@v2.0
       -
         name: Helm Set-Up
-        uses: azure/setup-helm@v2.1
+        uses: azure/setup-helm@v3.3
         with:
           version: v3.8.1
       -
