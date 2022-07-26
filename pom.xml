@@ -71,6 +71,9 @@
         <!-- test dependency version -->
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
+        <cucumber.version>7.3.2</cucumber.version>
+        <io.rest.assured.version>5.0.1</io.rest.assured.version>
+        <org.junit.platform.surefire.provider.version>1.1.0</org.junit.platform.surefire.provider.version>
         <mockito.version>4.6.1</mockito.version>
         <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
@@ -1052,6 +1055,23 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${org.testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>${cucumber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-junit-platform-engine</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${io.rest.assured.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

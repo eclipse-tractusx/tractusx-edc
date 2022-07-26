@@ -138,7 +138,7 @@ jobs:
     -
       name: Build edc-dataplane-azure-vault
       run: |-
-        ./mvnw -Pfailsafe -s settings.xml -B -pl .,edc-dataplane/edc-dataplane-azure-vault -am verify
+        ./mvnw -s settings.xml -B -pl .,edc-dataplane/edc-dataplane-azure-vault -am package
       env:
         GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
         GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}

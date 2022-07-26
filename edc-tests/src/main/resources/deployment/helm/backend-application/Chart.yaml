@@ -1,7 +1,8 @@
 ---
 apiVersion: v2
 name: backend-application
-description: A Helm chart for Kubernetes
+description: >-
+  The Eclipse Dataspace Connector requires the Backend Application to transfer data using the HTTP-TransferMethod.
 
 # A chart can be either an 'application' or a 'library' chart.
 #

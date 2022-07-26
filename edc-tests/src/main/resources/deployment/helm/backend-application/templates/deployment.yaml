@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -50,6 +51,8 @@ spec:
             - name: configmap
               mountPath: {{ .Values.script.path }}
               subPath: handler.sh
+            - name: data
+              mountPath: /tmp/data
           env:
             - name: TCP_SERVER_SCRIPT_PATH
               value: {{ .Values.script.path | quote }}
@@ -67,6 +70,14 @@ spec:
               - key: handler.sh
                 path: handler.sh
             defaultMode: 0744
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "backend-application.fullname" . }}-pvc
+          {{ else }}
+          emptyDir:
+            {}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

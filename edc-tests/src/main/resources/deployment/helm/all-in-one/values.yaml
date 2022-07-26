@@ -5,6 +5,7 @@
 # Declare variables to be passed into your templates.
 
 idsdaps:
+  enabled: true
   fullnameOverride: "ids-daps"
   connectors:
     - id: &sokratesDapsClientId E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
@@ -72,10 +73,12 @@ idsdaps:
 # PLATO #
 #########
 platobackendapplication:
+  enabled: true
   fullnameOverride: "plato-backend-application"
   service:
     port: 80
 platopostgresql:
+  enabled: true
   fullnameOverride: "plato-postgresql"
   auth:
     password: &psqlPassword "psql_password"
@@ -84,6 +87,7 @@ platopostgresql:
   persistence:
     enabled: false
 platovault:
+  enabled: true
   fullnameOverride: "plato-vault"
   injector:
     enabled: false
@@ -165,6 +169,7 @@ platovault:
     externalPort: 8200
     targetPort: 8200
 platoedcdataplane:
+  enabled: true
   fullnameOverride: "plato-edc-dataplane"
   image:
     repository: &edcDataPlaneImage  ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
@@ -196,6 +201,7 @@ platoedcdataplane:
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://plato-vault
 platoedccontrolplane:
+  enabled: true
   fullnameOverride: "plato-edc-controlplane"
   service:
     type: NodePort
@@ -285,16 +291,19 @@ platoedccontrolplane:
 # SOKRATES #
 ############
 sokratesbackendapplication:
+  enabled: true
   fullnameOverride: "sokrates-backend-application"
   service:
     port: 80
 sokratespostgresql:
+  enabled: true
   fullnameOverride: "sokrates-postgresql"
   auth:
     password: *psqlPassword
     username: *psqlUsername
     database: *psqlDatabase
 sokratesvault:
+  enabled: true
   fullnameOverride: "sokrates-vault"
   injector:
     enabled: false
@@ -376,6 +385,7 @@ sokratesvault:
     externalPort: 8200
     targetPort: 8200
 sokratesedcdataplane:
+  enabled: true
   fullnameOverride: "sokrates-edc-dataplane"
   image:
     repository: *edcDataPlaneImage
@@ -408,6 +418,7 @@ sokratesedcdataplane:
     EDC_VAULT_HASHICORP_URL: http://sokrates-vault-0
     EDC_VAULT_HASHICORP_TOKEN: *sokratesVaultToken
 sokratesedccontrolplane:
+  enabled: true
   fullnameOverride: "sokrates-edc-controlplane"
   service:
     type: NodePort
