@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - docs/**
     branches:
-      - develop/**
+      - develop
       - release/**
       - main
   workflow_dispatch:
