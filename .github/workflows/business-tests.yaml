@@ -38,7 +38,7 @@ jobs:
           key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
       -
         name: Set-Up Kubectl
-        uses: azure/setup-kubectl@v2.0
+        uses: azure/setup-kubectl@v3.0
       -
         name: Helm Set-Up
         uses: azure/setup-helm@v3.3
