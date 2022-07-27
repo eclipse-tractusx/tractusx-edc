@@ -39,13 +39,14 @@ class HashicorpVaultTest {
 
   @Test
   @SneakyThrows
-  void getSecret() {
+  void getSecretSuccess() {
     // prepare
     String value = UUID.randomUUID().toString();
     Result<String> result = Mockito.mock(Result.class);
     Mockito.when(vaultClient.getSecretValue(key)).thenReturn(result);
     Mockito.when(result.getContent()).thenReturn(value);
     Mockito.when(result.succeeded()).thenReturn(true);
+    Mockito.when(result.failed()).thenReturn(false);
 
     // invoke
     String returnValue = vault.resolveSecret(key);
@@ -57,12 +58,30 @@ class HashicorpVaultTest {
 
   @Test
   @SneakyThrows
-  void setSecret() {
+  void getSecretFailure() {
+    // prepare
+    Result<String> result = Mockito.mock(Result.class);
+    Mockito.when(vaultClient.getSecretValue(key)).thenReturn(result);
+    Mockito.when(result.succeeded()).thenReturn(false);
+    Mockito.when(result.failed()).thenReturn(true);
+
+    // invoke
+    String returnValue = vault.resolveSecret(key);
+
+    // verify
+    Mockito.verify(vaultClient, Mockito.times(1)).getSecretValue(key);
+    Assertions.assertNull(returnValue);
+  }
+
+  @Test
+  @SneakyThrows
+  void setSecretSuccess() {
     // prepare
     String value = UUID.randomUUID().toString();
     Result<HashicorpVaultCreateEntryResponsePayload> result = Mockito.mock(Result.class);
     Mockito.when(vaultClient.setSecret(key, value)).thenReturn(result);
     Mockito.when(result.succeeded()).thenReturn(true);
+    Mockito.when(result.failed()).thenReturn(false);
 
     // invoke
     Result<Void> returnValue = vault.storeSecret(key, value);
@@ -74,11 +93,30 @@ class HashicorpVaultTest {
 
   @Test
   @SneakyThrows
-  void destroySecret() {
+  void setSecretFailure() {
+    // prepare
+    String value = UUID.randomUUID().toString();
+    Result<HashicorpVaultCreateEntryResponsePayload> result = Mockito.mock(Result.class);
+    Mockito.when(vaultClient.setSecret(key, value)).thenReturn(result);
+    Mockito.when(result.succeeded()).thenReturn(false);
+    Mockito.when(result.failed()).thenReturn(true);
+
+    // invoke
+    Result<Void> returnValue = vault.storeSecret(key, value);
+
+    // verify
+    Mockito.verify(vaultClient, Mockito.times(1)).setSecret(key, value);
+    Assertions.assertTrue(returnValue.failed());
+  }
+
+  @Test
+  @SneakyThrows
+  void destroySecretSuccess() {
     // prepare
     Result<Void> result = Mockito.mock(Result.class);
     Mockito.when(vaultClient.destroySecret(key)).thenReturn(result);
     Mockito.when(result.succeeded()).thenReturn(true);
+    Mockito.when(result.failed()).thenReturn(false);
 
     // invoke
     Result<Void> returnValue = vault.deleteSecret(key);
@@ -86,5 +124,22 @@ class HashicorpVaultTest {
     // verify
     Mockito.verify(vaultClient, Mockito.times(1)).destroySecret(key);
     Assertions.assertTrue(returnValue.succeeded());
+  }
+
+  @Test
+  @SneakyThrows
+  void destroySecretFailure() {
+    // prepare
+    Result<Void> result = Mockito.mock(Result.class);
+    Mockito.when(vaultClient.destroySecret(key)).thenReturn(result);
+    Mockito.when(result.succeeded()).thenReturn(false);
+    Mockito.when(result.failed()).thenReturn(true);
+
+    // invoke
+    Result<Void> returnValue = vault.deleteSecret(key);
+
+    // verify
+    Mockito.verify(vaultClient, Mockito.times(1)).destroySecret(key);
+    Assertions.assertTrue(returnValue.failed());
   }
 }

@@ -18,14 +18,24 @@ import static net.catenax.edc.hashicorpvault.HashicorpVaultClient.VAULT_DATA_ENT
 import static net.catenax.edc.hashicorpvault.HashicorpVaultExtension.VAULT_TOKEN;
 import static net.catenax.edc.hashicorpvault.HashicorpVaultExtension.VAULT_URL;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.eclipse.dataspaceconnector.junit.launcher.EdcExtension;
 import org.eclipse.dataspaceconnector.spi.security.CertificateResolver;
 import org.eclipse.dataspaceconnector.spi.security.Vault;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckResult;
+import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckService;
+import org.eclipse.dataspaceconnector.spi.system.health.HealthStatus;
+import org.eclipse.dataspaceconnector.spi.system.health.LivenessProvider;
+import org.eclipse.dataspaceconnector.spi.system.health.ReadinessProvider;
+import org.eclipse.dataspaceconnector.spi.system.health.StartupStatusProvider;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,17 +72,21 @@ class AbstractHashicorpIT {
 
   @BeforeEach
   final void beforeEach(EdcExtension extension) {
-    extension.setConfiguration(
-        new HashMap<>() {
-          {
-            put(
-                VAULT_URL,
-                String.format(
-                    "http://%s:%s", vaultContainer.getHost(), vaultContainer.getFirstMappedPort()));
-            put(VAULT_TOKEN, TOKEN);
-          }
-        });
+    extension.setConfiguration(getConfig());
+    extension.registerServiceMock(HealthCheckService.class, new MyHealthCheckService());
     extension.registerSystemExtension(ServiceExtension.class, testExtension);
+  }
+
+  protected Map<String, String> getConfig() {
+    return new HashMap<>() {
+      {
+        put(
+            VAULT_URL,
+            String.format(
+                "http://%s:%s", vaultContainer.getHost(), vaultContainer.getFirstMappedPort()));
+        put(VAULT_TOKEN, TOKEN);
+      }
+    };
   }
 
   @Getter
@@ -84,6 +98,62 @@ class AbstractHashicorpIT {
     public void initialize(ServiceExtensionContext context) {
       vault = context.getService(Vault.class);
       certificateResolver = context.getService(CertificateResolver.class);
+    }
+  }
+
+  private static class MyHealthCheckService implements HealthCheckService {
+    private final List<LivenessProvider> livenessProviders = new ArrayList<>();
+    private final List<ReadinessProvider> readinessProviders = new ArrayList<>();
+    private final List<StartupStatusProvider> startupStatusProviders = new ArrayList<>();
+
+    @Override
+    public void addLivenessProvider(LivenessProvider provider) {
+      livenessProviders.add(provider);
+    }
+
+    @Override
+    public void addReadinessProvider(ReadinessProvider provider) {
+      readinessProviders.add(provider);
+    }
+
+    @Override
+    public void addStartupStatusProvider(StartupStatusProvider provider) {
+      startupStatusProviders.add(provider);
+    }
+
+    @Override
+    public HealthStatus isLive() {
+      return new HealthStatus(
+          livenessProviders.stream()
+              .map(
+                  p ->
+                      p.get().failed() ? HealthCheckResult.failed("") : HealthCheckResult.success())
+              .collect(Collectors.toList()));
+    }
+
+    @Override
+    public HealthStatus isReady() {
+      return new HealthStatus(
+          readinessProviders.stream()
+              .map(
+                  p ->
+                      p.get().failed() ? HealthCheckResult.failed("") : HealthCheckResult.success())
+              .collect(Collectors.toList()));
+    }
+
+    @Override
+    public HealthStatus getStartupStatus() {
+      return new HealthStatus(
+          startupStatusProviders.stream()
+              .map(
+                  p ->
+                      p.get().failed() ? HealthCheckResult.failed("") : HealthCheckResult.success())
+              .collect(Collectors.toList()));
+    }
+
+    @Override
+    public void refresh() {
+      // why?
     }
   }
 }
