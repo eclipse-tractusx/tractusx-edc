@@ -21,7 +21,7 @@ rules:
     require-starting-space: true
     min-spaces-from-content: 1
   document-end: disable
-  document-start: true           # No --- to start a file
+  document-start: enable           # No --- to start a file
   empty-lines:
     max: 2
     max-start: 0

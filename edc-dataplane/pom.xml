@@ -18,11 +18,15 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
 
     <artifactId>edc-dataplane</artifactId>
     <packaging>pom</packaging>
+
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
 
     <modules>
         <module>edc-dataplane-base</module>

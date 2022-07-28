@@ -49,9 +49,9 @@ class AbstractBusinessPartnerValidationTest {
 
   @ParameterizedTest
   @EnumSource(Operator.class)
-  void testThrowsOnUnsupportedOperations(Operator operator) {
+  void testFailsOnUnsupportedOperations(Operator operator) {
 
-    if (operator == Operator.EQ) { // only allowed operator
+    if (operator == Operator.EQ || operator == Operator.IN) { // only allowed operator
       return;
     }
 
@@ -60,25 +60,19 @@ class AbstractBusinessPartnerValidationTest {
     prepareBusinessPartnerClaim("yes");
 
     // invoke & assert
-    Assertions.assertThrows(
-        UnsupportedOperationException.class,
-        () -> validation.evaluate(operator, "null", policyContext));
+    Assertions.assertFalse(validation.evaluate(operator, "foo", policyContext));
   }
 
   @Test
-  void testThrowsOnUnsupportedRightValue() {
+  void testFailsOnUnsupportedRightValue() {
 
     // prepare
     prepareContextProblems(null);
     prepareBusinessPartnerClaim("yes");
 
     // invoke & assert
-    Assertions.assertThrows(
-        UnsupportedOperationException.class,
-        () -> validation.evaluate(Operator.EQ, 1, policyContext));
-    Assertions.assertThrows(
-        UnsupportedOperationException.class,
-        () -> validation.evaluate(Operator.EQ, new Object(), policyContext));
+    Assertions.assertFalse(validation.evaluate(Operator.EQ, 1, policyContext));
+    Assertions.assertFalse(validation.evaluate(Operator.IN, "foo", policyContext));
   }
 
   @Test
@@ -95,7 +89,7 @@ class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  void testValidationSuccedesWhenClaimContainsNumber() {
+  void testValidationSucceedsWhenClaimContainsValue() {
 
     // prepare
     prepareContextProblems(null);
@@ -128,7 +122,7 @@ class AbstractBusinessPartnerValidationTest {
   }
 
   @Test
-  void testValidationWhenParticipantIsValid() {
+  void testValidationWhenSingleParticipantIsValid() {
 
     // prepare
     prepareContextProblems(null);
@@ -139,6 +133,19 @@ class AbstractBusinessPartnerValidationTest {
 
     // Mockito.verify(monitor.debug(Mockito.anyString());
     Assertions.assertTrue(isContainedTrue);
+  }
+
+  @Test
+  void testValidationForMultipleParticipants() {
+
+    // prepare
+    prepareContextProblems(null);
+    prepareBusinessPartnerClaim("foo");
+
+    // invoke & verify
+    Assertions.assertTrue(validation.evaluate(Operator.IN, List.of("foo", "bar"), policyContext));
+    Assertions.assertTrue(validation.evaluate(Operator.IN, List.of(1, "foo"), policyContext));
+    Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("bar", "bar"), policyContext));
   }
 
   private void prepareContextProblems(List<String> problems) {

@@ -85,6 +85,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "edc-controlplane.fullname" . }}-env
+            {{- if .Values.envSecretName }}
+            - secretRef:
+                name: {{ .Values.envSecretName | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
