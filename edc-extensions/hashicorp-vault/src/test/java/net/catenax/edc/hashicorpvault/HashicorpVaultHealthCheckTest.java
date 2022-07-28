@@ -50,10 +50,13 @@ class HashicorpVaultHealthCheckTest {
 
     final HealthCheckResult result = healthCheck.get();
 
-    if (code == 200) Assertions.assertTrue(result.succeeded());
-    else Assertions.assertTrue(result.failed());
-
-    Mockito.verify(monitor, Mockito.times(1)).debug(Mockito.anyString());
+    if (code == 200) {
+      Mockito.verify(monitor, Mockito.times(1)).debug(Mockito.anyString());
+      Assertions.assertTrue(result.succeeded());
+    } else {
+      Assertions.assertTrue(result.failed());
+      Mockito.verify(monitor, Mockito.times(1)).warning(Mockito.anyString());
+    }
   }
 
   @Test
