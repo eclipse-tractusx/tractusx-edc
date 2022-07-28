@@ -101,182 +101,16 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=${GITHUB_WORKSPACE}/edc-tests/target/site/jacoco-aggregate/jacoco.xml \
             -Dsonar.verbose=true
 
-  #################################
-  ### edc-dataplane-azure-vault ###
-  #################################
-  build-edc-dataplane-azure-vault:
-    needs: [ secret-presence, verify-formatting ]
+  build-controlplane:
     runs-on: ubuntu-latest
-    steps:
-    # Set-Up
-    -
-      name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    -
-      name: Login to GitHub Container Registry
-      if: |
-        needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.CXNG_GHCR_PAT }}
-    -
-      name: Set up JDK 11
-      uses: actions/setup-java@v3.4.1
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: 'maven'
-    -
-      name: Build edc with Gradle to get latest snapshots
-      run: ./gradlew publishToMavenLocal
-      working-directory: edc
-    # Build
-    -
-      name: Build edc-dataplane-azure-vault
-      run: |-
-        ./mvnw -s settings.xml -B -pl .,edc-dataplane/edc-dataplane-azure-vault -am package
-      env:
-        GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-        GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
-    -
-      name: edc-dataplane-azure-vault Docker Metadata
-      id: edc_dataplane_azure_vault_meta
-      uses: docker/metadata-action@v4
-      with:
-        images: |
-          ghcr.io/${{ github.repository }}/edc-dataplane-azure-vault
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{raw}}
-          type=match,pattern=\d.\d.\d
-          type=sha
-    -
-      name: Build edc-dataplane-azure-vault Docker Image
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        file: edc-dataplane/edc-dataplane-azure-vault/src/main/docker/Dockerfile
-        build-args: |
-          JAR=edc-dataplane/edc-dataplane-azure-vault/target/edc-dataplane-azure-vault.jar
-          LIB=edc-dataplane/edc-dataplane-azure-vault/target/lib
-        push: |
-          ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
-        tags: ${{ steps.edc_dataplane_azure_vault_meta.outputs.tags }}
-        labels: ${{ steps.edc_dataplane_azure_vault_meta.outputs.labels }}
-    -
-      name: Veracode Upload And Scan
-      uses: veracode/veracode-uploadandscan-action@v1.0
-      if: |
-        needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-          refs/heads/develop
-          refs/heads/release/
-          refs/tags/
-          refs/heads/main', github.ref)
-      continue-on-error: true
-      with:
-        appname: 'product-edc/edc-dataplane-azure-vault'
-        createprofile: true
-        version: ${{ github.ref }}-${{ github.sha }}
-        filepath: edc-dataplane/edc-dataplane-azure-vault/target/edc-dataplane-azure-vault.jar
-        vid: ${{ secrets.ORG_VERACODE_API_ID }}
-        vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
-
-  #####################################
-  ### edc-dataplane-hashicorp-vault ###
-  #####################################
-  build-edc-dataplane-hashicorp-vault:
     needs: [ secret-presence, verify-formatting ]
-    runs-on: ubuntu-latest
-    steps:
-      # Set-Up
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      -
-        name: Login to GitHub Container Registry
-        if: |
-          needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.CXNG_GHCR_PAT }}
-      -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.4.1
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'maven'
-      -
-        name: Build edc with Gradle to get latest snapshots
-        run: ./gradlew publishToMavenLocal
-        working-directory: edc
-      # Build
-      -
-        name: Build edc-dataplane-hashicorp-vault
-        run: |-
-          ./mvnw -s settings.xml -B -pl .,edc-dataplane/edc-dataplane-hashicorp-vault -am package
-        env:
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
-      -
-        name: edc-dataplane-hashicorp-vault Docker Metadata
-        id: edc_dataplane_hashicorp_vault_metadata
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ghcr.io/${{ github.repository }}/edc-dataplane-hashicorp-vault
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{raw}}
-            type=match,pattern=\d.\d.\d
-            type=sha
-      -
-        name: Build edc-dataplane-hashicorp-vault Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: edc-dataplane/edc-dataplane-hashicorp-vault/src/main/docker/Dockerfile
-          build-args: |
-            JAR=edc-dataplane/edc-dataplane-hashicorp-vault/target/edc-dataplane-hashicorp-vault.jar
-            LIB=edc-dataplane/edc-dataplane-hashicorp-vault/target/lib
-          push: |
-            ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
-          tags: ${{ steps.edc_dataplane_hashicorp_vault_metadata.outputs.tags }}
-          labels: ${{ steps.edc_dataplane_hashicorp_vault_metadata.outputs.labels }}
-      -
-        name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-            refs/heads/develop
-            refs/heads/release/
-            refs/tags/
-            refs/heads/main', github.ref)
-        continue-on-error: true
-        with:
-          appname: 'product-edc/edc-dataplane-hashicorp-vault'
-          createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
-          filepath: edc-dataplane/edc-dataplane-hashicorp-vault/target/edc-dataplane-hashicorp-vault.jar
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
-
-  ###############################
-  ### edc-controlplane-memory ###
-  ###############################
-  build-edc-controlplane-memory:
-    needs: [ secret-presence, verify-formatting ]
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - edc-controlplane-memory
+          - edc-controlplane-postgresql
+          - edc-controlplane-postgresql-hashicorp-vault
     steps:
       # Set-Up
       -
@@ -306,19 +140,19 @@ jobs:
         working-directory: edc
       # Build
       -
-        name: Build edc-controlplane-memory
+        name: Build Controlplane
         run: |-
-          ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-memory -am package
+          ./mvnw -s settings.xml -B -pl .,edc-controlplane/${{ matrix.name }} -am package
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
-        name: edc-controlplane-memory Docker Metadata
-        id: edc_controlplane_memory_meta
+        name: edc-controlplane Docker Metadata
+        id: edc_controlplane_meta
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/${{ github.repository }}/edc-controlplane-memory
+            ghcr.io/${{ github.repository }}/${{ matrix.name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -326,18 +160,18 @@ jobs:
             type=match,pattern=\d.\d.\d
             type=sha
       -
-        name: Build edc-controlplane-memory Docker Image
+        name: Build Docker Image
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
+          file: edc-controlplane/${{ matrix.name }}/src/main/docker/Dockerfile
           build-args: |
-            JAR=edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
-            LIB=edc-controlplane/edc-controlplane-memory/target/lib
+            JAR=edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
+            LIB=edc-controlplane/${{ matrix.name }}/target/lib
           push: |
             ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
-          tags: ${{ steps.edc_controlplane_memory_meta.outputs.tags }}
-          labels: ${{ steps.edc_controlplane_memory_meta.outputs.labels }}
+          tags: ${{ steps.edc_controlplane_meta.outputs.tags }}
+          labels: ${{ steps.edc_controlplane_meta.outputs.labels }}
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -349,19 +183,22 @@ jobs:
             refs/heads/main', github.ref)
         continue-on-error: true
         with:
-          appname: 'product-edc/edc-controlplane-memory'
+          appname: product-edc/${{ matrix.name }}
           createprofile: true
           version: ${{ github.ref }}-${{ github.sha }}
-          filepath: edc-controlplane/edc-controlplane-memory/target/edc-controlplane-memory.jar
+          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
-  ###################################
-  ### edc-controlplane-postgresql ###
-  ###################################
-  build-edc-controlplane-postgresql:
-    needs: [ secret-presence, verify-formatting ]
+  build-dataplane:
     runs-on: ubuntu-latest
+    needs: [ secret-presence, verify-formatting ]
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - edc-dataplane-azure-vault
+          - edc-dataplane-hashicorp-vault
     steps:
       # Set-Up
       -
@@ -370,92 +207,7 @@ jobs:
         with:
           submodules: recursive
       -
-        name: Login to Github Packages
-        if: |
-          needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.CXNG_GHCR_PAT }}
-      -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.4.0
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'maven'
-      -
-        name: Build edc with Gradle to get latest snapshots
-        run: ./gradlew publishToMavenLocal
-        working-directory: edc
-      # Build
-      -
-        name: Build edc-controlplane-postgresql
-        run: |-
-          ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-postgresql -am package
-        env:
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
-      -
-        name: edc-controlplane-postgresql Docker Metadata
-        id: edc_controlplane_postgresql_meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ghcr.io/${{ github.repository }}/edc-controlplane-postgresql
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{raw}}
-            type=match,pattern=\d.\d.\d
-            type=sha
-      -
-        name: Build edc-controlplane-postgresql Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: edc-controlplane/edc-controlplane-postgresql/src/main/docker/Dockerfile
-          build-args: |
-            JAR=edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
-            LIB=edc-controlplane/edc-controlplane-postgresql/target/lib
-          push: |
-            ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
-          tags: ${{ steps.edc_controlplane_postgresql_meta.outputs.tags }}
-          labels: ${{ steps.edc_controlplane_postgresql_meta.outputs.labels }}
-      -
-        name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-            refs/heads/develop
-            refs/heads/release/
-            refs/tags/
-            refs/heads/main', github.ref)
-        continue-on-error: true
-        with:
-          appname: 'product-edc/edc-controlplane-postgresql'
-          createprofile: true
-          filepath: edc-controlplane/edc-controlplane-postgresql/target/edc-controlplane-postgresql.jar
-          version: ${{ github.ref_name }}-${{ github.sha }}
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
-
-  ###################################################
-  ### edc-controlplane-postgresql-hashicorp-vault ###
-  ###################################################
-  build-edc-controlplane-postgresql-hashicorp-vault:
-    needs: [ secret-presence, verify-formatting ]
-    runs-on: ubuntu-latest
-    steps:
-      # Set-Up
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      -
-        name: Login to Github Packages
+        name: Login to GitHub Container Registry
         if: |
           needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
         uses: docker/login-action@v2
@@ -476,19 +228,19 @@ jobs:
         working-directory: edc
       # Build
       -
-        name: Build edc-controlplane-postgresql-hashicorp-vault
+        name: Build Dataplane
         run: |-
-          ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-postgresql-hashicorp-vault -am package
+          ./mvnw -s settings.xml -B -pl .,edc-dataplane/${{ matrix.name }} -am package
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
-        name: edc-controlplane-postgresql-hashicorp-vault Docker Metadata
-        id: edc_controlplane_postgresql_hashicorp_vault_meta
+        name: edc-dataplane Docker Metadata
+        id: edc_dataplane_meta
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/${{ github.repository }}/edc-controlplane-postgresql-hashicorp-vault
+            ghcr.io/${{ github.repository }}/${{ matrix.name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -496,18 +248,18 @@ jobs:
             type=match,pattern=\d.\d.\d
             type=sha
       -
-        name: Build edc-controlplane-postgresql-hashicorp-vault Docker Image
+        name: Build Docker Image
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/src/main/docker/Dockerfile
+          file: edc-dataplane/${{ matrix.name }}/src/main/docker/Dockerfile
           build-args: |
-            JAR=edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/target/edc-controlplane-postgresql-hashicorp-vault.jar
-            LIB=edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/target/lib
+            JAR=edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
+            LIB=edc-dataplane/${{ matrix.name }}/target/lib
           push: |
             ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
-          tags: ${{ steps.edc_controlplane_postgresql_hashicorp_vault_meta.outputs.tags }}
-          labels: ${{ steps.edc_controlplane_postgresql_hashicorp_vault_meta.outputs.labels }}
+          tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
+          labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -519,9 +271,9 @@ jobs:
             refs/heads/main', github.ref)
         continue-on-error: true
         with:
-          appname: 'product-edc/edc-controlplane-postgresql-hashicorp-vault'
+          appname: product-edc/${{ matrix.name }}
           createprofile: true
-          filepath: edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/target/edc-controlplane-postgresql-hashicorp-vault.jar
-          version: ${{ github.ref_name }}-${{ github.sha }}
+          version: ${{ github.ref }}-${{ github.sha }}
+          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
