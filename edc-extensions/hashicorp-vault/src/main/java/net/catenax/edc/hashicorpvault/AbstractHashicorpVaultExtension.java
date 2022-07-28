@@ -23,7 +23,7 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
  * Temporary solution as long as the Vault components needs to be loaded as dedicated vault
  * extension. Will be changed from EDC milestone 5.
  */
-public class AbstractHashiCorpVaultExtension {
+public class AbstractHashicorpVaultExtension {
 
   @EdcSetting(required = true)
   public static final String VAULT_URL = "edc.vault.hashicorp.url";

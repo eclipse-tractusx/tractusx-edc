@@ -22,7 +22,7 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckService;
 
 @Requires(HealthCheckService.class)
-public class HashicorpVaultHealthExtension extends AbstractHashiCorpVaultExtension
+public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtension
     implements ServiceExtension {
 
   @EdcSetting
