@@ -19,6 +19,9 @@ corresponding documentation can
 be found in the [EDC GitHub Repository](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector). For a
 simplified overview of the EDC domain please have a look at the Catena-X Control Plane documentation.
 
+The business partner number of another connector is part of the DAPS token. Once a BPN constraint is used in an access
+policy the connector checks the token before sending out contract offers.
+
 Example of business partner constraint:
 
 ```json
@@ -35,13 +38,13 @@ Example of business partner constraint:
 
 The `leftExpression` must always contain 'BusinessPartner', so that the policy functions of this extension are invoked.
 Additionally, the only `operator` that is supported by these policy functions is 'EQ'. Finally, the `rightExpression`
-must contain
-the Business Partner Number.
+must contain the Business Partner Number.
 
 The most simple BPN policy would allow the usage of certain data to a single Business Partner. An example `Policy` is
 shown below. In this example the `edctype` properties are added, so that this policy may even be sent to the Data
 Management API.
 
+**Example 1 for single BPN:**
 ```json
 {
   "uid": "<PolicyId>",
@@ -72,8 +75,36 @@ Management API.
 }
 ```
 
-The business partner number of another connector is part of the DAPS token. Once a BPN constraint is used in an access
-policy the connector checks the token before sending out contract offers.
+**Example 2 for multiple BPN:**
+```json
+{
+  "uid": "<PolicyId>",
+  "prohibitions": [],
+  "obligations": [],
+  "permissions": [
+    {
+      "edctype": "dataspaceconnector:permission",
+      "action": {
+        "type": "USE"
+      },
+      "constraints": [
+        {
+          "edctype": "AtomicConstraint",
+          "leftExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": "BusinessPartnerNumber"
+          },
+          "rightExpression": {
+            "edctype": "dataspaceconnector:literalexpression",
+            "value": [ "<BPN1>", "<BPN2>" ]
+          },
+          "operator": "IN"
+        }
+      ]
+    }
+  ]
+}
+```
 
 # Important: EDC Policies are input sensitive
 
@@ -81,8 +112,7 @@ Please be aware that the EDC ignores all Rules and Constraint it does not unders
 
 ---
 
-Example 1 for accidentially public:
-
+**Example 3 for accidentially public:**
 ```json
 {
   "uid": "1",
@@ -117,7 +147,7 @@ This policy is public available, even though the constraint is described correct
 
 ---
 
-Example 2 for accidentially public:
+**Example 4 for accidentially public:**
 
 ```json
 {

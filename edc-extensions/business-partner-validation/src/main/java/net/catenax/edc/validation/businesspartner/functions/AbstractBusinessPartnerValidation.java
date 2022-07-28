@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
+ *       Mercedes-Benz Tech Innovation GmbH - Right value of constraint can now contain iterable of BPNs
  *
  */
 
@@ -27,6 +28,19 @@ import org.eclipse.dataspaceconnector.spi.policy.PolicyContext;
  */
 public abstract class AbstractBusinessPartnerValidation {
 
+  // Developer Note:
+  // Problems reported to the policy context are not logged. Therefore, everything
+  // that is reported to the policy context should be logged, too.
+
+  private static final String SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING =
+      "Skipping evaluation of iterable value in BusinessPartnerNumber constraint. Right values used in an iterable must be of type 'String'. Unsupported type: '%s'";
+  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING =
+      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'EQ' right value must be of type 'String'. Unsupported type: '%s'";
+  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE =
+      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'IN' right value must be of type 'Iterable'. Unsupported type: '%s'";
+  private static final String FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR =
+      "Failing evaluation because of invalid BusinessPartnerNumber constraint. As operator only 'EQ' or 'IN' are supported. Unsupported operator: '%s'";
+
   private final Monitor monitor;
 
   protected AbstractBusinessPartnerValidation(Monitor monitor) {
@@ -40,7 +54,7 @@ public abstract class AbstractBusinessPartnerValidation {
    * number is part of the 'referringConnector' claim in the IDS DAT token. This will probably
    * change for the next release.
    */
-  private static final String BUSINESS_PARTNER_NUMBER_CLAIM_KEY = "referringConnector";
+  private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
 
   /**
    * Evaluation funtion to decide whether a claim belongs to a specific business partner.
@@ -48,7 +62,7 @@ public abstract class AbstractBusinessPartnerValidation {
    * @param operator operator of the constraint
    * @param rightValue right value fo the constraint, that contains the business partner number
    *     (e.g. BPNLCDQ90000X42KU)
-   * @param claims claims of the participant / business partner
+   * @param policyContext context of the policy with claims
    * @return true if claims are from the constrained business partner
    */
   protected boolean evaluate(
@@ -56,37 +70,127 @@ public abstract class AbstractBusinessPartnerValidation {
 
     if (policyContext.hasProblems() && policyContext.getProblems().size() > 0) {
       String problems = String.join(", ", policyContext.getProblems());
-      String logMessage =
+      String message =
           String.format(
               "BusinessPartnerNumberValidation: Rejecting PolicyContext with problems. Problems: %s",
               problems);
-      monitor.debug(logMessage);
+      monitor.debug(message);
       return false;
     }
 
     final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
     final Map<String, String> claims = participantAgent.getClaims();
-    if (!claims.containsKey(BUSINESS_PARTNER_NUMBER_CLAIM_KEY)) {
+
+    if (!claims.containsKey(REFERRING_CONNECTOR_CLAIM)) {
       return false;
     }
 
-    if (operator != Operator.EQ) {
-      throw new UnsupportedOperationException(
-          "Operator for BusinessPartnerNumber must always be 'EQ'");
+    String referringConnectorClaim = claims.get(REFERRING_CONNECTOR_CLAIM);
+    if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
+      return false;
     }
 
-    if (!(rightValue instanceof String)) {
-      throw new UnsupportedOperationException(
-          "Right value of BusinessPartnerNumber constraint must be of type 'String'");
+    if (operator == Operator.EQ) {
+      return isBusinessPartnerNumber(referringConnectorClaim, rightValue, policyContext);
+    } else if (operator == Operator.IN) {
+      return containsBusinessPartnerNumber(referringConnectorClaim, rightValue, policyContext);
+    } else {
+      final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
+      monitor.warning(message);
+      policyContext.reportProblem(message);
+      return false;
+    }
+  }
+
+  /**
+   * @param referingConnectorClaim of the participant
+   * @param businessPartnerNumber object
+   * @return true if object is an iterable and constains a string that is successfully evaluated
+   *     against the claim
+   */
+  private boolean containsBusinessPartnerNumber(
+      String referingConnectorClaim, Object businessPartnerNumbers, PolicyContext policyContext) {
+    if (businessPartnerNumbers == null) {
+      final String message =
+          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
+      monitor.warning(message);
+      policyContext.reportProblem(message);
+      return false;
+    }
+    if (!(businessPartnerNumbers instanceof Iterable)) {
+      final String message =
+          String.format(
+              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE,
+              businessPartnerNumbers.getClass().getName());
+      monitor.warning(message);
+      policyContext.reportProblem(message);
+      return false;
     }
 
-    String claimValue = claims.get(BUSINESS_PARTNER_NUMBER_CLAIM_KEY);
+    for (Object businessPartnerNumber : (Iterable) businessPartnerNumbers) {
+      if (businessPartnerNumber == null) {
+        final String message =
+            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
+        monitor.warning(message);
+        policyContext.reportProblem(message);
+        continue;
+      }
+      if (!(businessPartnerNumber instanceof String)) {
+        final String message =
+            String.format(
+                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING,
+                businessPartnerNumber.getClass().getName());
+        monitor.warning(message);
+        policyContext.reportProblem(message);
+        continue;
+      }
+      if (isCorrectBusinessPartner(referingConnectorClaim, (String) businessPartnerNumber)) {
+        return true; // iterable does contain at least one matching value
+      }
+    }
 
-    // At the time of writing the business partner number is part of the
-    // 'referingConnector' claim, which contains a connector URL.
-    // As the CX projects are not further alligned about the URL formatting, the
-    // enforcement can only be done by checking whether the URL _contains_ the
-    // number.
-    return claimValue.contains((String) rightValue);
+    return false;
+  }
+
+  /**
+   * @param referingConnectorClaim of the participant
+   * @param businessPartnerNumber object
+   * @return true if object is string and successfully evaluated against the claim
+   */
+  private boolean isBusinessPartnerNumber(
+      String referingConnectorClaim, Object businessPartnerNumber, PolicyContext policyContext) {
+    if (businessPartnerNumber == null) {
+      final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
+      monitor.warning(message);
+      policyContext.reportProblem(message);
+      return false;
+    }
+    if (!(businessPartnerNumber instanceof String)) {
+      final String message =
+          String.format(
+              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING,
+              businessPartnerNumber.getClass().getName());
+      monitor.warning(message);
+      policyContext.reportProblem(message);
+      return false;
+    }
+
+    return isCorrectBusinessPartner(referingConnectorClaim, (String) businessPartnerNumber);
+  }
+
+  /**
+   * At the time of writing (11. April 2022) the business partner number is part of the
+   * 'referingConnector' claim, which contains a connector URL. As the CX projects are not further
+   * alligned about the URL formatting, the enforcement can only be done by checking whether the URL
+   * _contains_ the number. As this introduces some insecurities when validation business partner
+   * numbers, this should be addresses in the long term.
+   *
+   * @param referingConnectorClaim describing URL with business partner number
+   * @param businessPartnerNumber of the constraint
+   * @return true if claim contains the business partner number
+   */
+  private static boolean isCorrectBusinessPartner(
+      String referingConnectorClaim, String businessPartnerNumber) {
+    return referingConnectorClaim.contains(businessPartnerNumber);
   }
 }
