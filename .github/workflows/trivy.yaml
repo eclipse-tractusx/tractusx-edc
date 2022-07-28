@@ -2,6 +2,9 @@
 name: "Trivy"
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
   workflow_run:
     workflows: ["Build"]
     branches:
@@ -27,7 +30,7 @@ jobs:
         run: |
           echo "::set-output name=SHA7::${GITHUB_SHA::7}"
 
-  analyze-config:
+  trivy-analyze-config:
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -55,28 +58,34 @@ jobs:
         with:
           sarif_file: "trivy-results-config.sarif"
 
-  ###############################
-  ### edc-controlplane-memory ###
-  ###############################
-  analyze-edc-controlplane-memory:
+  trivy:
     needs: [ git-sha7 ]
-    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # continue scanning other images although if the other has been vulnerable
+      matrix:
+        image:
+          - edc-controlplane-memory
+          - edc-controlplane-postgresql
+          - edc-controlplane-postgresql-hashicorp-vault
+          - edc-dataplane-azure-vault
+          - edc-dataplane-hashicorp-vault
     steps:
       -
-        name: Checkout repository
-        uses: actions/checkout@v2
+        name: Checkout
+        uses: actions/checkout@v3
       -
         name: Run Trivy vulnerability scanner
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository }}/edc-controlplane-memory:sha-${{ needs.git-sha7.outputs.value }}"
+          image-ref: "ghcr.io/${{ github.repository }}/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
           format: "sarif"
-          output: "trivy-results-edc-controlplane-memory.sarif"
+          output: "trivy-results-${{ matrix.image }}.sarif"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
       -
@@ -84,128 +93,4 @@ jobs:
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: "trivy-results-edc-controlplane-memory.sarif"
-
-  ###################################
-  ### edc-controlplane-postgresql ###
-  ###################################
-  analyze-edc-controlplane-postgresql:
-    needs: [ git-sha7 ]
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v2
-      -
-        name: Run Trivy vulnerability scanner
-        if: always()
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository }}/edc-controlplane-postgresql:sha-${{ needs.git-sha7.outputs.value }}"
-          format: "sarif"
-          output: "trivy-results-edc-controlplane-postgresql.sarif"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-edc-controlplane-postgresql.sarif"
-
-  ###################################################
-  ### edc-controlplane-postgresql-hashicorp-vault ###
-  ###################################################
-  analyze-edc-controlplane-postgresql-hashicorp-vault:
-    needs: [ git-sha7 ]
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v2
-      -
-        name: Run Trivy vulnerability scanner
-        if: always()
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository }}/edc-controlplane-postgresql-hashicorp-vault:sha-${{ needs.git-sha7.outputs.value }}"
-          format: "sarif"
-          output: "trivy-results-edc-controlplane-postgresql-hashicorp-vault.sarif"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-edc-controlplane-postgresql-hashicorp-vault.sarif"
-
-  #################################
-  ### edc-dataplane-azure-vault ###
-  #################################
-  analyze-edc-dataplane-azure-vault:
-    needs: [ git-sha7 ]
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v2
-      -
-        name: Run Trivy vulnerability scanner
-        if: always()
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository }}/edc-dataplane-azure-vault:sha-${{ needs.git-sha7.outputs.value }}"
-          format: "sarif"
-          output: "trivy-results-edc-dataplane-azure-vault.sarif"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-edc-dataplane-azure-vault.sarif"
-
-  #####################################
-  ### edc-dataplane-hashicorp-vault ###
-  #####################################
-  analyze-edc-dataplane-hashicorp-vault:
-    needs: [ git-sha7 ]
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v2
-      -
-        name: Run Trivy vulnerability scanner
-        if: always()
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository }}/edc-dataplane-hashicorp-vault:sha-${{ needs.git-sha7.outputs.value }}"
-          format: "sarif"
-          output: "trivy-results-edc-dataplane-hashicorp-vault.sarif"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-edc-dataplane-hashicorp-vault.sarif"
+          sarif_file: "trivy-results-${{ matrix.image }}.sarif"

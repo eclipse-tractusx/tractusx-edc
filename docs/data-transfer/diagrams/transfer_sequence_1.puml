@@ -1,0 +1,34 @@
+@startuml
+
+!define sokratesColor 66CCFF
+!define platoColor CCFF99
+!define dapsColor FFFF99
+!define noteColor 9999FF
+
+actor User as "User"
+
+box Sokrates
+    participant SokratesControlPlane as "Control Plane" #sokratesColor
+    participant SokratesBackendService as "Backend Application" #sokratesColor
+    participant SokratesDataPlane as "Data Plane" #sokratesColor
+end box
+
+box Plato
+    participant PlatoControlPlane as "Control Plane" #platoColor
+    participant PlatoDataPlane as "Data Plane" #platoColor
+end box
+
+participant JsonPlaceHolder as "JsonPlaceHolder"
+
+
+User -> PlatoControlPlane ++ : Create Asset
+return 204
+
+User -> PlatoControlPlane ++ : Create Policy
+return 204
+
+User -> PlatoControlPlane ++ : Create Contract Definition
+return 204
+
+
+@enduml

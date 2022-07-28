@@ -17,6 +17,7 @@ package net.catenax.edc.hashicorpvault;
 import java.security.cert.X509Certificate;
 import lombok.SneakyThrows;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -48,5 +49,18 @@ class HashicorpCertificateResolverTest {
 
     // verify
     Mockito.verify(vault, Mockito.times(1)).resolveSecret(key);
+  }
+
+  @Test
+  @SneakyThrows
+  void nullIfVaultEmpty() {
+    // prepare
+    Mockito.when(vault.resolveSecret(key)).thenReturn(null);
+
+    // invoke
+    final X509Certificate certificate = certificateResolver.resolveCertificate(key);
+
+    // verify
+    Assertions.assertNull(certificate);
   }
 }

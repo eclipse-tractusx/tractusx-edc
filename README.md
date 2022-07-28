@@ -49,8 +49,6 @@ cd edc && ./gradlew publishToMavenLocal
 
 ### Milestone 3
 
-The Catena-X milestone 3 release can be found in the `release/0.0.1` branch.
-You can download the container image from our [repository](https://github.com/catenax-ng/product-edc/pkgs/container/product-edc%2Fedc-controlplane-postgresql).
-```bash
-docker pull ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql:0.0.1
-```
+The Catena-X milestone 3 release can be found in the `release/0.0.4` branch.
+
+https://github.com/catenax-ng/product-edc/releases/tag/0.0.4

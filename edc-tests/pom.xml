@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
+
+  This program and the accompanying materials are made available under the
+  terms of the Apache License, Version 2.0 which is available at
+  https://www.apache.org/licenses/LICENSE-2.0
+
+  SPDX-License-Identifier: Apache-2.0
+
+  Contributors:
+       Mercedes-Benz Tech Innovation GmbH - Initial POM
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.catenax.edc</groupId>
+        <artifactId>product-edc-parent</artifactId>
+        <version>0.0.5</version>
+    </parent>
+
+    <groupId>net.catenax.edc.tests</groupId>
+    <artifactId>edc-tests</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+        <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
+        <org.apache.httpcomponents.httpclient.version>4.5.13</org.apache.httpcomponents.httpclient.version>
+        <ch.qos.logback.version>1.2.11</ch.qos.logback.version>
+        <org.slf4j.api.version>1.7.36</org.slf4j.api.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${com.google.code.gson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${org.apache.httpcomponents.httpclient.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j.api.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>business-tests</id>
+            <properties>
+                <skipTests>false</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>coverage</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report-aggregate</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <!--
+                    Note: Needs to list all (!) modules desired to be included into the test coverage report
+                -->
+                <!-- edc-extensions -->
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>business-partner-validation</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>hashicorp-vault</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>postgresql-migration</artifactId>
+                </dependency>
+                <!-- edc-controlplane -->
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-controlplane-base</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-controlplane-memory</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-controlplane-postgresql</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
+                </dependency>
+                <!-- edc-dataplane -->
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-dataplane-base</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-dataplane-azure-vault</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc</groupId>
+                    <artifactId>edc-dataplane-hashicorp-vault</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

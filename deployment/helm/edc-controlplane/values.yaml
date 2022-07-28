@@ -218,6 +218,9 @@ affinity: {}
 #     -Dhttp.proxyHost=proxy -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts="localhost|127.*|[::1]" -Dhttps.proxyHost=proxy -Dhttps.proxyPort=443
 env: {}
 
+# -- [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) name to load environment variables from
+envSecretName:
+
 logging:
   # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
   properties: |-
@@ -313,7 +316,7 @@ configuration:
     # edc.receiver.http.auth-key=
     # edc.receiver.http.endpoint=
     # edc.transfer.proxy.endpoint=
-    # edc.transfer.dataplane.sync.token.validity=
+    # edc.transfer.proxy.token.validity.seconds=
     # edc.transfer.proxy.token.signer.privatekey.alias=
     # edc.transfer.functions.check.endpoint=
     # edc.transfer.functions.enabled.protocols=
@@ -334,3 +337,4 @@ configuration:
     # edc.web.rest.cors.headers=
     # edc.web.rest.cors.methods=
     # edc.web.rest.cors.origins=
+    # ids.webhook.address=

@@ -1,0 +1,33 @@
+@startuml
+
+!define sokratesColor 66CCFF
+!define platoColor CCFF99
+!define dapsColor FFFF99
+!define noteColor 9999FF
+
+actor User as "User"
+
+box Sokrates
+    participant SokratesControlPlane as "Control Plane" #sokratesColor
+    participant SokratesBackendService as "Backend Application" #sokratesColor
+    participant SokratesDataPlane as "Data Plane" #sokratesColor
+end box
+
+box Plato
+    participant PlatoControlPlane as "Control Plane" #platoColor
+    participant PlatoDataPlane as "Data Plane" #platoColor
+end box
+
+participant JsonPlaceHolder as "JsonPlaceHolder"
+
+
+User -> SokratesControlPlane ++ : Negotiate Contract for Offer X
+SokratesControlPlane --> User: Negotiation ID
+    SokratesControlPlane -> PlatoControlPlane ++ : IDS Contract Negotiation (simplified)
+    return Contract Agreement
+deactivate SokratesControlPlane
+
+User -> SokratesControlPlane ++ : Request Negotiation by ID
+return Contract Negotiation
+
+@enduml
