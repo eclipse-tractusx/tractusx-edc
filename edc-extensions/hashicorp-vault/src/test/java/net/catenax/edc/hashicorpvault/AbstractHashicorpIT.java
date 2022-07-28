@@ -15,8 +15,8 @@
 package net.catenax.edc.hashicorpvault;
 
 import static net.catenax.edc.hashicorpvault.HashicorpVaultClient.VAULT_DATA_ENTRY_NAME;
-import static net.catenax.edc.hashicorpvault.HashicorpVaultExtension.VAULT_TOKEN;
-import static net.catenax.edc.hashicorpvault.HashicorpVaultExtension.VAULT_URL;
+import static net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_TOKEN;
+import static net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_URL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,8 +152,6 @@ class AbstractHashicorpIT {
     }
 
     @Override
-    public void refresh() {
-      // why?
-    }
+    public void refresh() {}
   }
 }

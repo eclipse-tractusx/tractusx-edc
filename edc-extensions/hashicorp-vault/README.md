@@ -11,15 +11,15 @@ Therefore, the HashiCorp vault extension **only** checks the '**content**' data 
 
 ## Configuration
 
-| Key                                         | Description                                                                                                                          | Mandatory | Default |
-|:--------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------|-----------|---------|
+| Key                                         | Description                                                                                                                          | Mandatory | Default          |
+|:--------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------|-----------|------------------|
 | edc.vault.hashicorp.url                     | URL to connect to the HashiCorp Vault                                                                                                | X         ||
 | edc.vault.hashicorp.token                   | Value for [Token Authentication](https://www.vaultproject.io/docs/auth/token) with the vault                                         | X         ||
-| edc.vault.hashicorp.timeout.seconds         | Request timeout in seconds when contacting the vault                                                                                 |           | `30` |
-| edc.vault.hashicorp.health.check.enabled    | Enable health checks to ensure vault is initialized, unsealed and active (default: _true_)                                           |           | `true` |
-| edc.vault.hashicorp.health.check.standby.ok | Specifies if a vault in standby is healthy. This is useful when Vault is behind a non-configurable load balancer. (default: _false_) |           | `false` |
-| edc.vault.hashicorp.api.secret.path         | Path to the [secret api](https://www.vaultproject.io/api-docs/secret/kv/kv-v1) (default: _/v1/secret_)                               |           | `/v1/secret` |
-| edc.vault.hashicorp.api.health.check.path         | Path to the [health api](https://www.vaultproject.io/api-docs/system/health) (default: _/sys/health_)                          |           | `/sys/health` |
+| edc.vault.hashicorp.timeout.seconds         | Request timeout in seconds when contacting the vault                                                                                 |           | `30`             |
+| edc.vault.hashicorp.health.check.enabled    | Enable health checks to ensure vault is initialized, unsealed and active (default: _true_)                                           |           | `true`           |
+| edc.vault.hashicorp.health.check.standby.ok | Specifies if a vault in standby is healthy. This is useful when Vault is behind a non-configurable load balancer. (default: _false_) |           | `false`          |
+| edc.vault.hashicorp.api.secret.path         | Path to the [secret api](https://www.vaultproject.io/api-docs/secret/kv/kv-v1) (default: _/v1/secret_)                               |           | `/v1/secret`     |
+| edc.vault.hashicorp.api.health.check.path         | Path to the [health api](https://www.vaultproject.io/api-docs/system/health) (default: _/sys/health_)                          |           | `/v1/sys/health` |
 
 ## Example: Create & Configure DAPS Key
 

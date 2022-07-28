@@ -27,7 +27,7 @@ public class HashicorpVaultHealthCheck
     implements ReadinessProvider, LivenessProvider, StartupStatusProvider {
 
   private static final String HEALTH_CHECK_ERROR_TEMPLATE =
-      "HashiCorp Vault HealthCheck unsuccessful: %s %s";
+      "HashiCorp Vault HealthCheck unsuccessful. %s %s";
 
   private final HashicorpVaultClient client;
   private final Monitor monitor;
@@ -46,13 +46,13 @@ public class HashicorpVaultHealthCheck
           final String standbyMsg =
               String.format(
                   HEALTH_CHECK_ERROR_TEMPLATE, "Vault is in standby", response.getPayload());
-          monitor.debug(standbyMsg);
+          monitor.warning(standbyMsg);
           return HealthCheckResult.failed(standbyMsg);
         case DISASTER_RECOVERY_MODE_REPLICATION_SECONDARY_AND_ACTIVE:
           final String recoveryModeMsg =
               String.format(
                   HEALTH_CHECK_ERROR_TEMPLATE, "Vault is in recovery mode", response.getPayload());
-          monitor.debug(recoveryModeMsg);
+          monitor.warning(recoveryModeMsg);
           return HealthCheckResult.failed(recoveryModeMsg);
         case PERFORMANCE_STANDBY:
           final String performanceStandbyMsg =
@@ -60,18 +60,18 @@ public class HashicorpVaultHealthCheck
                   HEALTH_CHECK_ERROR_TEMPLATE,
                   "Vault is in performance standby",
                   response.getPayload());
-          monitor.debug(performanceStandbyMsg);
+          monitor.warning(performanceStandbyMsg);
           return HealthCheckResult.failed(performanceStandbyMsg);
         case NOT_INITIALIZED:
           final String notInitializedMsg =
               String.format(
                   HEALTH_CHECK_ERROR_TEMPLATE, "Vault is not initialized", response.getPayload());
-          monitor.debug(notInitializedMsg);
+          monitor.warning(notInitializedMsg);
           return HealthCheckResult.failed(notInitializedMsg);
         case SEALED:
           final String sealedMsg =
               String.format(HEALTH_CHECK_ERROR_TEMPLATE, "Vault is sealed", response.getPayload());
-          monitor.debug(sealedMsg);
+          monitor.warning(sealedMsg);
           return HealthCheckResult.failed(sealedMsg);
         case UNSPECIFIED:
         default:
@@ -80,14 +80,14 @@ public class HashicorpVaultHealthCheck
                   HEALTH_CHECK_ERROR_TEMPLATE,
                   "Unspecified response from vault. Code: " + response.getCode(),
                   response.getPayload());
-          monitor.debug(unspecifiedMsg);
+          monitor.warning(unspecifiedMsg);
           return HealthCheckResult.failed(unspecifiedMsg);
       }
 
     } catch (IOException e) {
       final String exceptionMsg =
           String.format(HEALTH_CHECK_ERROR_TEMPLATE, "IOException: " + e.getMessage(), "");
-      monitor.debug(exceptionMsg);
+      monitor.severe(exceptionMsg);
       return HealthCheckResult.failed(exceptionMsg);
     }
   }

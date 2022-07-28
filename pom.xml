@@ -81,6 +81,8 @@
         <org.testcontainers.version>1.17.3</org.testcontainers.version>
         <org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
         <ch.qos.logback.logback-core.version>1.2.11</ch.qos.logback.logback-core.version>
+        <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
+        <net.jodah.failsafe.version>2.4.3</net.jodah.failsafe.version>
 
         <!-- TODO: parametrize so that forks can utilize sonar also -->
         <sonar.organization>catenax-ng</sonar.organization>
@@ -1074,6 +1076,21 @@
                 <version>${io.rest.assured.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- Integration Test Dependencies -->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${org.hamcrest.hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.jodah</groupId>
+                <artifactId>failsafe</artifactId>
+                <version>${net.jodah.failsafe.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -199,7 +199,7 @@ platoedcdataplane:
     ###############
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
-    EDC_VAULT_HASHICORP_URL: http://plato-vault
+    EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
 platoedccontrolplane:
   enabled: true
   fullnameOverride: "plato-edc-controlplane"
@@ -415,7 +415,7 @@ sokratesedcdataplane:
     ###############
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
-    EDC_VAULT_HASHICORP_URL: http://sokrates-vault-0
+    EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
     EDC_VAULT_HASHICORP_TOKEN: *sokratesVaultToken
 sokratesedccontrolplane:
   enabled: true
