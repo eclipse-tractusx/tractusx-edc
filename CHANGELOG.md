@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- EDC Health Checks for HashiCorp Vault 
+
 ### Changed
 - BusinessPartnerNumber constraint supports List structure
-- Confidential EDC settings can be set using K8 secrets
-- DAPS of All-In-One-Deployment supports BusinessPartnerNumbers
+- Helm: Confidential EDC settings can be set using k8s secrets
+- HashiCorp Vault API path configurable
 
 ## [0.0.4] - 2022-06-27
 

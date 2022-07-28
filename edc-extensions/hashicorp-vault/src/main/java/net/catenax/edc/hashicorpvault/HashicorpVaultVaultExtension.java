@@ -24,7 +24,7 @@ import org.eclipse.dataspaceconnector.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.system.VaultExtension;
 
-public class HashicorpVaultVaultExtension extends AbstractHashiCorpVaultExtension
+public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtension
     implements VaultExtension {
 
   private Vault vault;
