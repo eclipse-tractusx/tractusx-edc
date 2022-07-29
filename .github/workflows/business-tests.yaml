@@ -92,7 +92,9 @@ jobs:
       -
         name: Load images into KinD
         run: |-
-          kind get clusters | xargs -n1 kind load docker-image edc-controlplane-postgresql-hashicorp-vault:latest edc-dataplane-hashicorp-vault:latest --name
+          docker tag edc-controlplane-postgresql-hashicorp-vault:latest edc-controlplane-postgresql-hashicorp-vault:business-test
+          docker tag edc-dataplane-hashicorp-vault:latest edc-dataplane-hashicorp-vault:business-test
+          kind get clusters | xargs -n1 kind load docker-image edc-controlplane-postgresql-hashicorp-vault:business-test edc-dataplane-hashicorp-vault:business-test --name
 
       ############################################
       ### Prepare And Install Test Environment ###
@@ -115,10 +117,14 @@ jobs:
 
           # Install the all-in-one supporting infrastructure environment (daps, vault, pgsql)
           helm install test-environment edc-tests/src/main/resources/deployment/helm/all-in-one \
-            --set platoedccontrolplane.image.tag=latest \
-            --set sokratesedccontrolplane.image.tag=latest \
-            --set platoedcdataplane.image.tag=latest \
-            --set sokratesedcdataplane.image.tag=latest \
+            --set platoedccontrolplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
+            --set platoedccontrolplane.image.tag=business-test \
+            --set sokratesedccontrolplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
+            --set sokratesedccontrolplane.image.tag=business-test \
+            --set platoedcdataplane.image.repository=edc-dataplane-hashicorp-vault \
+            --set platoedcdataplane.image.tag=business-test \
+            --set sokratesedcdataplane.image.repository=edc-dataplane-hashicorp-vault \
+            --set sokratesedcdataplane.image.tag=business-test \
             --set idsdaps.enabled=true \
             --set platovault.enabled=true \
             --set platopostgresql.enabled=true \
@@ -146,10 +152,14 @@ jobs:
 
           # Install the all-in-one Control-/DataPlanes and backend-services
           helm upgrade --install test-environment edc-tests/src/main/resources/deployment/helm/all-in-one \
-            --set platoedccontrolplane.image.tag=latest \
-            --set sokratesedccontrolplane.image.tag=latest \
-            --set platoedcdataplane.image.tag=latest \
-            --set sokratesedcdataplane.image.tag=latest \
+            --set platoedccontrolplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
+            --set platoedccontrolplane.image.tag=business-test \
+            --set sokratesedccontrolplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
+            --set sokratesedccontrolplane.image.tag=business-test \
+            --set platoedcdataplane.image.repository=edc-dataplane-hashicorp-vault \
+            --set platoedcdataplane.image.tag=business-test \
+            --set sokratesedcdataplane.image.repository=edc-dataplane-hashicorp-vault \
+            --set sokratesedcdataplane.image.tag=business-test \
             --set idsdaps.enabled=true \
             --set platovault.enabled=true \
             --set platopostgresql.enabled=true \
