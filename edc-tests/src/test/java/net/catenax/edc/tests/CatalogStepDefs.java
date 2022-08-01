@@ -20,7 +20,6 @@ import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import net.catenax.edc.tests.data.ContractOffer;
 import org.junit.jupiter.api.Assertions;
 
@@ -34,25 +33,43 @@ public class CatalogStepDefs {
     final DataManagementAPI dataManagementAPI = sender.getDataManagementAPI();
     final String receiverIdsUrl = receiver.getEnvironment().getIdsUrl() + "/data";
 
-    lastRequestedOffers =
-        dataManagementAPI.requestCatalogFrom(receiverIdsUrl).collect(Collectors.toList());
+    lastRequestedOffers = dataManagementAPI.requestCatalogFrom(receiverIdsUrl);
   }
 
   @Then("the catalog contains the following offers")
-  public void verifyCatalog(DataTable table) {
+  public void verifyCatalogContains(DataTable table) {
     for (Map<String, String> map : table.asMaps()) {
       final String sourceContractDefinitionId = map.get("source definition");
       final String assetId = map.get("asset");
 
-      final boolean isInCatalog =
-          lastRequestedOffers.stream()
-              .anyMatch(
-                  c ->
-                      c.getAssetId().equals(assetId)
-                          && c.getId().startsWith(sourceContractDefinitionId));
+      final boolean isInCatalog = isInCatalog(assetId, sourceContractDefinitionId);
 
       Assertions.assertTrue(
-          isInCatalog, "The catalog does not contain the offer for asset " + assetId);
+          isInCatalog,
+          String.format(
+              "Expected the catalog to contain offer for definition '%s' and asset '%s' ",
+              sourceContractDefinitionId, assetId));
     }
+  }
+
+  @Then("the catalog does not contain the following offers")
+  public void verifyCatalogContainsNot(DataTable table) {
+    for (Map<String, String> map : table.asMaps()) {
+      final String sourceContractDefinitionId = map.get("source definition");
+      final String assetId = map.get("asset");
+
+      final boolean isInCatalog = isInCatalog(assetId, sourceContractDefinitionId);
+
+      Assertions.assertFalse(
+          isInCatalog,
+          String.format(
+              "Expected the catalog to not contain offer for definition '%s' and asset '%s' ",
+              sourceContractDefinitionId, assetId));
+    }
+  }
+
+  private boolean isInCatalog(String assetId, String definitionId) {
+    return lastRequestedOffers.stream()
+        .anyMatch(c -> c.getAssetId().equals(assetId) && c.getId().startsWith(definitionId));
   }
 }

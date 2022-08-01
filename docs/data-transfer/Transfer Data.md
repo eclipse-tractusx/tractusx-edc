@@ -70,7 +70,7 @@ curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/policies" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/policies" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [ { \"edctype\": \"AtomicConstraint\", \"leftExpression\": { \"edctype\": \"dataspaceconnector:literalexpression\", \"value\": \"BusinessPartnerNumber\" }, \"rightExpression\": { \"edctype\": \"dataspaceconnector:literalexpression\", \"value\": \"BPNSOKRATES\" }, \"operator\": \"EQ\" } ] } ] }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
