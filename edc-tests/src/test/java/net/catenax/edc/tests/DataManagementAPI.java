@@ -27,6 +27,8 @@ import java.util.stream.Stream;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.catenax.edc.tests.data.Asset;
+import net.catenax.edc.tests.data.BusinessPartnerNumberConstraint;
+import net.catenax.edc.tests.data.Constraint;
 import net.catenax.edc.tests.data.ContractDefinition;
 import net.catenax.edc.tests.data.ContractOffer;
 import net.catenax.edc.tests.data.Permission;
@@ -59,7 +61,7 @@ public class DataManagementAPI {
     this.dataMgmtUrl = dataManagementUrl;
   }
 
-  public Stream<ContractOffer> requestCatalogFrom(String receivingConnectorUrl) throws IOException {
+  public List<ContractOffer> requestCatalogFrom(String receivingConnectorUrl) throws IOException {
     final String encodedUrl =
         URLEncoder.encode(receivingConnectorUrl, StandardCharsets.UTF_8.toString());
     final DataManagementApiContractOfferCatalog catalog =
@@ -70,7 +72,7 @@ public class DataManagementAPI {
 
     log.debug("Received " + catalog.contractOffers.size() + " offers");
 
-    return catalog.contractOffers.stream().map(this::mapOffer);
+    return catalog.contractOffers.stream().map(this::mapOffer).collect(Collectors.toList());
   }
 
   public Asset getAsset(String id) throws IOException {
@@ -158,11 +160,11 @@ public class DataManagementAPI {
   private <T> T get(String path, TypeToken<?> typeToken) throws IOException {
 
     final HttpGet get = new HttpGet(dataMgmtUrl + path);
-
     final HttpResponse response = sendRequest(get);
     final byte[] json = response.getEntity().getContent().readAllBytes();
 
-    return new Gson().fromJson(new String(json), typeToken.getType());
+    log.debug("Received response: {}", new String(json, StandardCharsets.UTF_8));
+    return new Gson().fromJson(new String(json, StandardCharsets.UTF_8), typeToken.getType());
   }
 
   private void delete(String path) throws IOException {
@@ -231,7 +233,6 @@ public class DataManagementAPI {
   private DataManagementApiPolicy mapPolicy(Policy policy) {
     final List<DataManagementApiPermission> permission =
         policy.getPermission().stream().map(this::mapPermission).collect(Collectors.toList());
-
     final DataManagementApiPolicy apiObject = new DataManagementApiPolicy();
     apiObject.uid = policy.getId();
     apiObject.permissions = permission;
@@ -241,8 +242,7 @@ public class DataManagementAPI {
   private Permission mapPermission(DataManagementApiPermission dataManagementApiPermission) {
     final String target = dataManagementApiPermission.target;
     final String action = dataManagementApiPermission.action.type;
-
-    return new Permission(action, target);
+    return new Permission(action, target, new ArrayList<>());
   }
 
   private DataManagementApiPermission mapPermission(Permission permission) {
@@ -252,10 +252,39 @@ public class DataManagementAPI {
     final DataManagementApiRuleAction apiAction = new DataManagementApiRuleAction();
     apiAction.type = action;
 
+    final List<DataManagementApiConstraint> constraints =
+        permission.getConstraints().stream().map(this::mapConstraint).collect(Collectors.toList());
+
     final DataManagementApiPermission apiObject = new DataManagementApiPermission();
     apiObject.target = target;
     apiObject.action = apiAction;
+    apiObject.constraints = constraints;
     return apiObject;
+  }
+
+  private DataManagementApiConstraint mapConstraint(Constraint constraint) {
+    if (!(constraint instanceof BusinessPartnerNumberConstraint))
+      throw new UnsupportedOperationException(
+          "Unsupported constraint type: " + constraint.getClass().getName());
+
+    final BusinessPartnerNumberConstraint businessPartnerNumberConstraint =
+        (BusinessPartnerNumberConstraint) constraint;
+
+    final DataManagementApiLiteralExpression leftExpression =
+        new DataManagementApiLiteralExpression();
+    leftExpression.value = "BusinessPartnerNumber";
+
+    final DataManagementApiLiteralExpression rightExpression =
+        new DataManagementApiLiteralExpression();
+    rightExpression.value = businessPartnerNumberConstraint.getBusinessPartnerNumber();
+
+    final DataManagementApiConstraint dataManagementApiConstraint =
+        new DataManagementApiConstraint();
+    dataManagementApiConstraint.leftExpression = leftExpression;
+    dataManagementApiConstraint.rightExpression = rightExpression;
+    dataManagementApiConstraint.operator = "EQ";
+
+    return dataManagementApiConstraint;
   }
 
   private ContractOffer mapOffer(DataManagementApiContractOffer dataManagementApiContractOffer) {
@@ -278,16 +307,15 @@ public class DataManagementAPI {
     final String contractPolicy = dataManagementContractDefinition.contractPolicyId;
 
     final List<String> assetIds;
-    if (dataManagementContractDefinition == null
-        || dataManagementContractDefinition.getCriteria() == null) assetIds = new ArrayList<>();
-    else
-      assetIds =
-          dataManagementContractDefinition.getCriteria().stream()
-              .filter(c -> c.left.equals(DataManagementApiAsset.ID))
-              .filter(c -> c.op.equals("="))
-              .map(c -> c.getRight())
-              .map(c -> (String) c)
-              .collect(Collectors.toList());
+    assetIds =
+        dataManagementContractDefinition.getCriteria() == null
+            ? new ArrayList<>()
+            : dataManagementContractDefinition.getCriteria().stream()
+                .filter(c -> c.left.equals(DataManagementApiAsset.ID))
+                .filter(c -> c.op.equals("="))
+                .map(DataManagementApiCriterion::getRight)
+                .map(c -> (String) c)
+                .collect(Collectors.toList());
 
     return new ContractDefinition(id, contractPolicy, accessPolicy, assetIds);
   }
@@ -342,8 +370,23 @@ public class DataManagementAPI {
   @Data
   private class DataManagementApiPermission {
     private String edctype = "dataspaceconnector:permission";
-    private String target;
     private DataManagementApiRuleAction action;
+    private String target;
+    private List<DataManagementApiConstraint> constraints;
+  }
+
+  @Data
+  private class DataManagementApiConstraint {
+    private String edctype = "AtomicConstraint";
+    private DataManagementApiLiteralExpression leftExpression;
+    private DataManagementApiLiteralExpression rightExpression;
+    private String operator;
+  }
+
+  @Data
+  private class DataManagementApiLiteralExpression {
+    private String edctype = "dataspaceconnector:literalexpression";
+    private String value;
   }
 
   @Data

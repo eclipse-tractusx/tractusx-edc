@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import net.catenax.edc.tests.data.BusinessPartnerNumberConstraint;
+import net.catenax.edc.tests.data.Constraint;
 import net.catenax.edc.tests.data.Permission;
 import net.catenax.edc.tests.data.Policy;
 
@@ -50,7 +52,13 @@ public class PolicyStepDefs {
     for (Map<String, String> map : table.asMaps()) {
       final String id = map.get("id");
       final String action = map.get("action");
-      final List<Permission> permission = List.of(new Permission(action, null));
+
+      List<Constraint> accessConstraints = new ArrayList<>();
+      final String businessPartnerNumber = map.get("businessPartnerNumber");
+      if (businessPartnerNumber != null && !businessPartnerNumber.isBlank())
+        accessConstraints.add(new BusinessPartnerNumberConstraint(businessPartnerNumber));
+
+      final List<Permission> permission = List.of(new Permission(action, null, accessConstraints));
 
       policies.add(new Policy(id, permission));
     }

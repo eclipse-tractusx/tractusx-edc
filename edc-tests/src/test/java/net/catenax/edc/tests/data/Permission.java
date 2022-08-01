@@ -13,6 +13,7 @@
  */
 package net.catenax.edc.tests.data;
 
+import java.util.List;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -20,4 +21,6 @@ import lombok.Value;
 public class Permission {
   @NonNull String action;
   String target;
+
+  List<Constraint> constraints;
 }
