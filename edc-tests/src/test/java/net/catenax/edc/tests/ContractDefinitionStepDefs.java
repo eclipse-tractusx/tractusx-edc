@@ -52,9 +52,11 @@ public class ContractDefinitionStepDefs {
       String id = map.get("id");
       String accessPolicyId = map.get("access policy");
       String contractPolicyId = map.get("contract policy");
-      String assetid = map.get("asset");
+      String assetId = map.get("asset");
+      List<String> assetIds = assetId == null ? new ArrayList<>() : List.of(assetId);
+
       contractDefinitions.add(
-          new ContractDefinition(id, contractPolicyId, accessPolicyId, List.of(assetid)));
+          new ContractDefinition(id, contractPolicyId, accessPolicyId, assetIds));
     }
 
     return contractDefinitions;
