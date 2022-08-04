@@ -68,6 +68,17 @@ public class CatalogStepDefs {
     }
   }
 
+  @Then("the catalog contains '{int}' offers")
+  public void verifyCatalogContainsXOffers(int offerCount) {
+
+    Assertions.assertEquals(
+        offerCount,
+        lastRequestedOffers.size(),
+        String.format(
+            "Expected the catalog to contain '%s' offers, but got '%s'.",
+            offerCount, lastRequestedOffers.size()));
+  }
+
   private boolean isInCatalog(String assetId, String definitionId) {
     return lastRequestedOffers.stream()
         .anyMatch(c -> c.getAssetId().equals(assetId) && c.getId().startsWith(definitionId));
