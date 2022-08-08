@@ -172,8 +172,9 @@ platoedcdataplane:
   enabled: true
   fullnameOverride: "plato-edc-dataplane"
   image:
-    repository: &edcDataPlaneImage  ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
+    repository: &edcDataPlaneImage ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
     tag: &edcDataPlaneImageTag develop
+    pullPolicy: &pullPolicy Always
   envSecretName: "aio-plato-data-secret"
   edc:
     endpoints:
@@ -192,7 +193,7 @@ platoedcdataplane:
     #############
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
-    EDC_CONTROLPLANE_VALIDATION-ENDPOINT: http://plato-edc-controlplane:8182/validation/token
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://plato-edc-controlplane:8182/validation/token
 
     ###############
     ## KEY VAULT ##
@@ -206,8 +207,9 @@ platoedccontrolplane:
   service:
     type: NodePort
   image:
-    repository: &edcControlPlaneImage  ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
+    repository: &edcControlPlaneImage ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
     tag: &edcControlPlaneImageTag develop
+    pullPolicy: *pullPolicy
   opentelemetry:
     properties: |-
       otel.javaagent.enabled=false
@@ -271,6 +273,15 @@ platoedccontrolplane:
     ################
     ## DATA PLANE ##
     ################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_PROPERTIES: >-
+      { 
+        "publicApiUrl": "http://plato-edc-dataplane:8185/api/public"
+      }
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
     EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public
@@ -390,6 +401,7 @@ sokratesedcdataplane:
   image:
     repository: *edcDataPlaneImage
     tag: *edcDataPlaneImageTag
+    pullPolicy: *pullPolicy
   envSecretName: "aio-plato-data-secret"
   edc:
     endpoints:
@@ -408,7 +420,7 @@ sokratesedcdataplane:
     #############
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
-    EDC_CONTROLPLANE_VALIDATION-ENDPOINT: http://sokrates-edc-controlplane:8182/validation/token
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://sokrates-edc-controlplane:8182/validation/token
 
     ###############
     ## KEY VAULT ##
@@ -426,6 +438,7 @@ sokratesedccontrolplane:
   image:
     repository: *edcControlPlaneImage
     tag: *edcControlPlaneImageTag
+    pullPolicy: *pullPolicy
   opentelemetry:
     properties: |-
       otel.javaagent.enabled=false
@@ -485,7 +498,17 @@ sokratesedccontrolplane:
     ## DATA PLANE ##
     ################
 
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: http://sokrates-edc-dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >- 
+      { 
+        "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public"
+      }
+
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
+    # TODO Can this be removed?
     EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.

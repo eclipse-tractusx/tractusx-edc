@@ -167,7 +167,7 @@ The project maintains the following source code repositoriy:
 * JUnit Jupiter Params under Eclipse Public License v2.0
 * JUnit Platform Commons under Eclipse Public License v2.0
 * JUnit Platform Engine API under Eclipse Public License v2.0
-* junit-extension under Apache License, Version 2.0
+* junit under Apache License, Version 2.0
 * LatencyUtils under Public Domain, per Creative Commons CC0
 * lease-sql under Apache License, Version 2.0
 * Logback Classic Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License

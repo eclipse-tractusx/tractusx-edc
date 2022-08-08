@@ -114,12 +114,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>junit-extension</artifactId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>junit-extension</artifactId>
+            <artifactId>junit</artifactId>
             <classifier>test-fixtures</classifier>
             <scope>test</scope>
         </dependency>
@@ -185,6 +185,7 @@
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <profiles>

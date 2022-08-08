@@ -11,3 +11,4 @@
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
 net.catenax.edc.hashicorpvault.HashicorpVaultHealthExtension
+net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension

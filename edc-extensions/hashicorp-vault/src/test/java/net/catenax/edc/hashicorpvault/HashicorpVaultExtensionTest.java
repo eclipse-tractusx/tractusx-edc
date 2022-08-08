@@ -71,8 +71,7 @@ class HashicorpVaultExtensionTest {
   void throwsHashicorpVaultExceptionOnVaultUrlUndefined() {
     Mockito.when(context.getSetting(HashicorpVaultVaultExtension.VAULT_URL, null)).thenReturn(null);
 
-    Assertions.assertThrows(
-        HashicorpVaultException.class, () -> extension.initializeVault(context));
+    Assertions.assertThrows(HashicorpVaultException.class, () -> extension.initialize(context));
   }
 
   @Test
@@ -80,7 +79,6 @@ class HashicorpVaultExtensionTest {
     Mockito.when(context.getSetting(HashicorpVaultVaultExtension.VAULT_TOKEN, null))
         .thenReturn(null);
 
-    Assertions.assertThrows(
-        HashicorpVaultException.class, () -> extension.initializeVault(context));
+    Assertions.assertThrows(HashicorpVaultException.class, () -> extension.initialize(context));
   }
 }

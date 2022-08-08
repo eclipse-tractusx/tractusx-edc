@@ -152,6 +152,7 @@ script:
 
     mkdir -p /tmp/data/
     echo "${AUTH_KEY}: ${AUTH_CODE}" >| header.txt
+    echo "$PAYLOAD" > /tmp/data/${ID}.payload
 
     curl -L -H @header.txt -o "/tmp/data/${ID}" ${ENDPOINT}
     if [ ! $? -eq 0 ]; then

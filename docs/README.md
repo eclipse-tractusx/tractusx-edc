@@ -37,6 +37,7 @@ The three supported setups are.
 
 **This Repository**
 
+- [Update EDC Version from 0.0.x - 0.1.x](migration/Version_0.0.x_0.1.x.md)
 - [Application: Control Plane](../edc-controlplane)
 - [Application: Data Plane](../edc-dataplane)
 - [Extension: Business Partner Numbers](../edc-extensions/business-partner-validation/README.md)

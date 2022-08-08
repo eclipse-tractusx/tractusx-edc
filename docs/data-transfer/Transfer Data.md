@@ -66,15 +66,15 @@ For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data so
 other API, that is reachable from the Provider Data Plane.
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"endpoint\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/policies" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [ { \"edctype\": \"AtomicConstraint\", \"leftExpression\": { \"edctype\": \"dataspaceconnector:literalexpression\", \"value\": \"BusinessPartnerNumber\" }, \"rightExpression\": { \"edctype\": \"dataspaceconnector:literalexpression\", \"value\": \"BPNSOKRATES\" }, \"operator\": \"EQ\" } ] } ] }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/policydefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"policy\": { \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/contractdefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"criteria\": [ { \"left\": \"asset:prop:id\", \"op\": \"=\", \"right\": \"1\" } ], \"accessPolicyId\": \"1\", \"contractPolicyId\": \"1\" }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/contractdefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"criteria\": [ { \"operandLeft\": \"asset:prop:id\", \"operator\": \"=\", \"operandRight\": \"1\" } ], \"accessPolicyId\": \"1\", \"contractPolicyId\": \"1\" }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ## 2. Request Contract Offer Catalog

@@ -79,13 +79,19 @@ public abstract class AbstractBusinessPartnerValidation {
     }
 
     final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
-    final Map<String, String> claims = participantAgent.getClaims();
+    final Map<String, Object> claims = participantAgent.getClaims();
 
     if (!claims.containsKey(REFERRING_CONNECTOR_CLAIM)) {
       return false;
     }
 
-    String referringConnectorClaim = claims.get(REFERRING_CONNECTOR_CLAIM);
+    Object referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
+    String referringConnectorClaim = null;
+
+    if (referringConnectorClaimObject instanceof String) {
+      referringConnectorClaim = (String) referringConnectorClaimObject;
+    }
+
     if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
       return false;
     }

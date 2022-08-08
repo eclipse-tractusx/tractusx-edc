@@ -47,7 +47,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 public class DataManagementAPI {
 
   private static final String ASSET_PATH = "/assets";
-  private static final String POLICY_PATH = "/policies";
+  private static final String POLICY_PATH = "/policydefinitions";
   private static final String CONTRACT_DEFINITIONS_PATH = "/contractdefinitions";
   private static final String CATALOG_PATH = "/catalog";
 
@@ -82,9 +82,9 @@ public class DataManagementAPI {
   }
 
   public Policy getPolicy(String id) throws IOException {
-    final DataManagementApiPolicy policy =
-        get(POLICY_PATH + "/" + id, new TypeToken<DataManagementApiPolicy>() {});
-    return mapPolicy(policy);
+    final DataManagementApiPolicyDefinition policyDefinition =
+        get(POLICY_PATH + "/" + id, new TypeToken<DataManagementApiPolicyDefinition>() {});
+    return mapPolicyDefinition(policyDefinition);
   }
 
   public ContractDefinition getContractDefinition(String id)
@@ -102,7 +102,7 @@ public class DataManagementAPI {
         Map.of(
             DataManagementApiDataAddress.TYPE,
             "HttpData",
-            "endpoint",
+            "baseUrl",
             "https://jsonplaceholder.typicode.com/todos/1");
 
     final DataManagementApiAssetCreate assetCreate = new DataManagementApiAssetCreate();
@@ -113,7 +113,7 @@ public class DataManagementAPI {
   }
 
   public void createPolicy(Policy policy) throws ClientProtocolException, IOException {
-    post(POLICY_PATH, mapPolicy(policy));
+    post(POLICY_PATH, mapPolicyDefinition(policy));
   }
 
   public void createContractDefinition(ContractDefinition contractDefinition) throws IOException {
@@ -127,9 +127,12 @@ public class DataManagementAPI {
   }
 
   public Stream<Policy> getAllPolicies() throws IOException {
-    final List<DataManagementApiPolicy> policies =
-        get(POLICY_PATH, PARAM_NO_LIMIT, new TypeToken<ArrayList<DataManagementApiPolicy>>() {});
-    return policies.stream().map(this::mapPolicy);
+    final List<DataManagementApiPolicyDefinition> policyDefinitions =
+        get(
+            POLICY_PATH,
+            PARAM_NO_LIMIT,
+            new TypeToken<ArrayList<DataManagementApiPolicyDefinition>>() {});
+    return policyDefinitions.stream().map(this::mapPolicyDefinition);
   }
 
   public Stream<ContractDefinition> getAllContractDefinitions() throws IOException {
@@ -230,12 +233,24 @@ public class DataManagementAPI {
     return new Policy(id, permissions);
   }
 
-  private DataManagementApiPolicy mapPolicy(Policy policy) {
-    final List<DataManagementApiPermission> permission =
+  private Policy mapPolicyDefinition(DataManagementApiPolicyDefinition policyDefinition) {
+    final DataManagementApiPolicy policy = policyDefinition.getPolicy();
+    final List<Permission> permission =
+        policy.getPermissions().stream().map(this::mapPermission).collect(Collectors.toList());
+
+    return new Policy(policyDefinition.uid, permission);
+  }
+
+  private DataManagementApiPolicyDefinition mapPolicyDefinition(Policy policy) {
+
+    final List<DataManagementApiPermission> permissions =
         policy.getPermission().stream().map(this::mapPermission).collect(Collectors.toList());
-    final DataManagementApiPolicy apiObject = new DataManagementApiPolicy();
+    final DataManagementApiPolicy p = new DataManagementApiPolicy();
+    p.permissions = permissions;
+
+    final DataManagementApiPolicyDefinition apiObject = new DataManagementApiPolicyDefinition();
     apiObject.uid = policy.getId();
-    apiObject.permissions = permission;
+    apiObject.policy = p;
     return apiObject;
   }
 
@@ -311,9 +326,9 @@ public class DataManagementAPI {
         dataManagementContractDefinition.getCriteria() == null
             ? new ArrayList<>()
             : dataManagementContractDefinition.getCriteria().stream()
-                .filter(c -> c.left.equals(DataManagementApiAsset.ID))
-                .filter(c -> c.op.equals("="))
-                .map(DataManagementApiCriterion::getRight)
+                .filter(c -> c.operandLeft.equals(DataManagementApiAsset.ID))
+                .filter(c -> c.operator.equals("="))
+                .map(DataManagementApiCriterion::getOperandRight)
                 .map(c -> (String) c)
                 .collect(Collectors.toList());
 
@@ -331,9 +346,9 @@ public class DataManagementAPI {
 
     for (final String assetId : contractDefinition.getAssetIds()) {
       DataManagementApiCriterion criterion = new DataManagementApiCriterion();
-      criterion.left = DataManagementApiAsset.ID;
-      criterion.op = "=";
-      criterion.right = assetId;
+      criterion.operandLeft = DataManagementApiAsset.ID;
+      criterion.operator = "=";
+      criterion.operandRight = assetId;
 
       apiObject.criteria.add(criterion);
     }
@@ -362,9 +377,15 @@ public class DataManagementAPI {
   }
 
   @Data
+  private class DataManagementApiPolicyDefinition {
+    private String uid;
+    private DataManagementApiPolicy policy;
+  }
+
+  @Data
   private class DataManagementApiPolicy {
     private String uid;
-    private List<DataManagementApiPermission> permissions;
+    private List<DataManagementApiPermission> permissions = new ArrayList<>();
   }
 
   @Data
@@ -372,7 +393,7 @@ public class DataManagementAPI {
     private String edctype = "dataspaceconnector:permission";
     private DataManagementApiRuleAction action;
     private String target;
-    private List<DataManagementApiConstraint> constraints;
+    private List<DataManagementApiConstraint> constraints = new ArrayList<>();
   }
 
   @Data
@@ -399,14 +420,14 @@ public class DataManagementAPI {
     private String id;
     private String accessPolicyId;
     private String contractPolicyId;
-    private List<DataManagementApiCriterion> criteria;
+    private List<DataManagementApiCriterion> criteria = new ArrayList<>();
   }
 
   @Data
   private class DataManagementApiCriterion {
-    private Object left;
-    private String op;
-    private Object right;
+    private Object operandLeft;
+    private String operator;
+    private Object operandRight;
   }
 
   @Data
@@ -420,6 +441,6 @@ public class DataManagementAPI {
   @Data
   private class DataManagementApiContractOfferCatalog {
     private String id;
-    private List<DataManagementApiContractOffer> contractOffers;
+    private List<DataManagementApiContractOffer> contractOffers = new ArrayList<>();
   }
 }
