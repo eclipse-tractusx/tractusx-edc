@@ -14,7 +14,7 @@
 
 package net.catenax.edc.postgresql.migration;
 
-import org.eclipse.dataspaceconnector.sql.asset.index.ConfigurationKeys;
+import org.eclipse.dataspaceconnector.sql.assetindex.ConfigurationKeys;
 
 public class AssetPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
   private static final String NAME_SUBSYSTEM = "asset";

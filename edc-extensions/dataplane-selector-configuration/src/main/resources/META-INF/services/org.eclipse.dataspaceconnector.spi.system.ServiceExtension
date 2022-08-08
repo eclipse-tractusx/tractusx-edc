@@ -10,4 +10,6 @@
 #  Contributors:
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
-net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension
+#
+
+net.catenax.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension
