@@ -43,14 +43,20 @@
             <artifactId>filesystem-configuration</artifactId>
         </dependency>
 
-        <!-- APIs -->
+        <!-- Transfer -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-framework</artifactId>
+            <artifactId>data-plane-s3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>data-plane-http</artifactId>
+        </dependency>
+
+        <!-- APIs -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-framework</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -69,6 +75,10 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>core-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>s3-core</artifactId>
         </dependency>
 
         <!-- Telemetry -->
