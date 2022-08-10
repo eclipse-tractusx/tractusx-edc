@@ -12,9 +12,12 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Added
 
-- control plane
-  extension ([data-plane-selector-client](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+- control plane extension ([data-plane-selector-client](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+  - run the EDC with multiple data planes at once
 - control plane extension([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
+  - add data plane instances to the control plane by configuration
+- data plane extension ([s3-data-plane](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/aws/data-plane-s3))
+  - transfer from and to AWS S3 buckets
 
 ### Changed
 
