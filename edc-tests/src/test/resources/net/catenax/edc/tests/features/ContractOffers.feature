@@ -14,9 +14,8 @@
 Feature: Contract Offers
 
   Background: The Connector State
-    Given 'Plato' has no contract definitions
-    Given 'Plato' has no policies
-    Given 'Plato' has no assets
+    Given 'Plato' has an empty database
+    Given 'Sokrates' has an empty database
 
   Scenario: Catalog Request
     Given 'Plato' has the following assets

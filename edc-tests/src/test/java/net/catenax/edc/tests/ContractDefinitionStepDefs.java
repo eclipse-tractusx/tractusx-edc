@@ -19,22 +19,9 @@ import io.cucumber.java.en.Given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import net.catenax.edc.tests.data.ContractDefinition;
 
 public class ContractDefinitionStepDefs {
-
-  @Given("'{connector}' has no contract definitions")
-  public void hasNoContractDefinitions(Connector connector) throws Exception {
-
-    final DataManagementAPI api = connector.getDataManagementAPI();
-
-    Stream<ContractDefinition> contractDefinitions = api.getAllContractDefinitions();
-    for (ContractDefinition contractDefinition :
-        contractDefinitions.toArray(ContractDefinition[]::new)) {
-      api.deleteContractDefinition(contractDefinition.getId());
-    }
-  }
 
   @Given("'{connector}' has the following contract definitions")
   public void hasPolicies(Connector connector, DataTable table) throws Exception {

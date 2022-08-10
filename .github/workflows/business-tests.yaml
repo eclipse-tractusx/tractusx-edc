@@ -97,12 +97,20 @@ jobs:
         name: Define test environment variables
         run: |-
           # Define endpoints
+          echo "SOKRATES_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATA_MANAGEMENT_URL=http://sokrates-edc-controlplane:8181/data" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_IDS_URL=http://sokrates-edc-controlplane:8282/api/v1/ids" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATA_PLANE_URL=http://sokrates-edc-dataplane:8185/api/public" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_DATABASE_USER=postgresql_sandbox_user" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_DATABASE_PASSWORD=psql_password" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_MANAGEMENT_URL=http://plato-edc-controlplane:8181/data" | tee -a ${GITHUB_ENV}
           echo "PLATO_IDS_URL=http://plato-edc-controlplane:8282/api/v1/ids" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_PLANE_URL=http://plato-edc-dataplane:8185/api/public" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATABASE_USER=postgresql_sandbox_user" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATABASE_PASSWORD=psql_password" | tee -a ${GITHUB_ENV}
       -
         name: Install test environment via Helm
         run: |-
@@ -142,11 +150,11 @@ jobs:
           sleep 5s
 
           # Wait for supporting infrastructure to become ready (control-/data-plane, backend service)
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=idsdaps --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=idsdaps && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesvault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratesvault && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platovault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platovault && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratespostgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratespostgresql && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platopostgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platopostgresql && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=idsdaps --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=idsdaps --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesvault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratesvault --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platovault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platovault --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratespostgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratespostgresql --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platopostgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platopostgresql --tail 500 && exit 1 )
 
           # Install the all-in-one Control-/DataPlanes and backend-services
           helm upgrade --install test-environment edc-tests/src/main/resources/deployment/helm/all-in-one \
@@ -181,12 +189,12 @@ jobs:
           sleep 5s
 
           # Wait for Control-/DataPlane and backend-service to become ready
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesbackendapplication --timeout=120s || ( kubectl logs -since=0 -l app.kubernetes.io/name=sokratesbackendapplication && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platobackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platobackendapplication && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesedcdataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratesedcdataplane && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platoedcdataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platoedcdataplane && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesedccontrolplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/name=sokratesedccontrolplane && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platoedccontrolplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/name=platoedccontrolplane && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesbackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratesbackendapplication --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platobackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platobackendapplication --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesedcdataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratesedcdataplane --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platoedcdataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platoedcdataplane --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesedccontrolplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/name=sokratesedccontrolplane --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platoedccontrolplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/name=platoedccontrolplane --tail 500 && exit 1 )
 
       ##############################################
       ### Run Business Tests inside kind cluster ###
@@ -220,7 +228,13 @@ jobs:
                     {"name": "SOKRATES_DATA_PLANE_URL", "value": "${SOKRATES_DATA_PLANE_URL}"},
                     {"name": "PLATO_DATA_MANAGEMENT_URL", "value": "${PLATO_DATA_MANAGEMENT_URL}"},
                     {"name": "PLATO_IDS_URL", "value": "${PLATO_IDS_URL}"},
-                    {"name": "PLATO_DATA_PLANE_URL", "value": "${PLATO_DATA_PLANE_URL}"}
+                    {"name": "PLATO_DATA_PLANE_URL", "value": "${PLATO_DATA_PLANE_URL}"},
+                    {"name": "PLATO_DATABASE_URL", "value": "${PLATO_DATABASE_URL}"},
+                    {"name": "PLATO_DATABASE_USER", "value": "${PLATO_DATABASE_USER}"},
+                    {"name": "PLATO_DATABASE_PASSWORD", "value": "${PLATO_DATABASE_PASSWORD}"},
+                    {"name": "SOKRATES_DATABASE_URL", "value": "${SOKRATES_DATABASE_URL}"},
+                    {"name": "SOKRATES_DATABASE_USER", "value": "${SOKRATES_DATABASE_USER}"},
+                    {"name": "SOKRATES_DATABASE_PASSWORD", "value": "${SOKRATES_DATABASE_PASSWORD}"}
                   ],
           EOF
 
