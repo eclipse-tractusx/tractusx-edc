@@ -8,19 +8,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
+ *       Mercedes-Benz Tech Innovation GmbH - Initial Implementation
  *
  */
-package net.catenax.edc.tests.data;
 
-import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+package net.catenax.edc.tests.util;
 
-@Value
-public class Permission {
-  @NonNull String action;
-  String target;
+import java.time.Duration;
 
-  @NonNull List<Constraint> constraints;
+public class Timeouts {
+  private Timeouts() {}
+
+  public static final Duration CONTRACT_NEGOTIATION = Duration.ofSeconds(90);
 }

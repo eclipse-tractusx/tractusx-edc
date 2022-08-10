@@ -8,19 +8,18 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
+ *       Mercedes-Benz Tech Innovation GmbH - Initial Implementation
  *
  */
+
 package net.catenax.edc.tests.data;
 
-import java.util.List;
 import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class Permission {
-  @NonNull String action;
-  String target;
-
-  @NonNull List<Constraint> constraints;
+public class ContractNegotiation {
+  @NonNull String id;
+  String agreementId;
+  @NonNull ContractNegotiationState state;
 }

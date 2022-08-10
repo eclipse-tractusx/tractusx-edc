@@ -61,6 +61,7 @@
         <org.jacoco.maven.plugin.version>0.8.8</org.jacoco.maven.plugin.version>
         <org.jasig.maven.notice.plugin.version>1.1.0</org.jasig.maven.notice.plugin.version>
         <org.sonarsource.scanner.maven.plugin.version>3.9.1.2184</org.sonarsource.scanner.maven.plugin.version>
+        <org.awaitility.awaitility.version>4.2.0</org.awaitility.awaitility.version>
 
         <!-- dependency version -->
         <org.eclipse.dataspaceconnector.version>0.0.1-milestone-5</org.eclipse.dataspaceconnector.version>
@@ -1078,6 +1079,12 @@
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${io.rest.assured.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${org.awaitility.awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
 
