@@ -43,9 +43,9 @@ dependencies:
     repository: "file://../../../../../../../deployment/helm/edc-dataplane"
     alias: platoedcdataplane
     condition: platoedcdataplane.enabled
-  - name: backend-application
-    version: ">=0.0.1"
-    repository: "file://../backend-application"
+  - name: backend-service
+    version: "0.0.5"
+    repository: https://denisneuling.github.io/cx-backend-service
     alias: platobackendapplication
     condition: platobackendapplication.enabled
   - name: vault
@@ -70,9 +70,9 @@ dependencies:
     repository: "file://../../../../../../../deployment/helm/edc-dataplane"
     alias: sokratesedcdataplane
     condition: sokratesedcdataplane.enabled
-  - name: backend-application
-    version: ">=0.0.1"
-    repository: "file://../backend-application"
+  - name: backend-service
+    version: "0.0.5"
+    repository: https://denisneuling.github.io/cx-backend-service
     alias: sokratesbackendapplication
     condition: sokratesbackendapplication.enabled
   - name: vault

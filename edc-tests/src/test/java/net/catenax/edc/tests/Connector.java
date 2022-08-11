@@ -30,6 +30,9 @@ public class Connector {
   private final DataManagementAPI dataManagementAPI = loadDataManagementAPI();
 
   @Getter(lazy = true)
+  private final BackendServiceBackendAPI backendServiceBackendAPI = loadBackendServiceBackendAPI();
+
+  @Getter(lazy = true)
   private final DatabaseCleaner databaseCleaner = loadDatabaseCleaner();
 
   private DataManagementAPI loadDataManagementAPI() {
@@ -42,5 +45,9 @@ public class Connector {
         environment.getDatabaseUrl(),
         environment.getDatabaseUser(),
         environment.getDatabasePassword());
+  }
+
+  private BackendServiceBackendAPI loadBackendServiceBackendAPI() {
+    return new BackendServiceBackendAPI(environment.getBackendServiceBackendApiUrl());
   }
 }

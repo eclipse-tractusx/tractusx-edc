@@ -14,6 +14,7 @@
 
 package net.catenax.edc.tests;
 
+import static net.catenax.edc.tests.Constants.BACKEND_SERVICE_BACKEND_API_URL;
 import static net.catenax.edc.tests.Constants.DATABASE_PASSWORD;
 import static net.catenax.edc.tests.Constants.DATABASE_URL;
 import static net.catenax.edc.tests.Constants.DATABASE_USER;
@@ -35,6 +36,7 @@ class Environment {
   @NonNull private final String dataManagementUrl;
   @NonNull private final String idsUrl;
   @NonNull private final String dataPlaneUrl;
+  @NonNull private final String backendServiceBackendApiUrl;
   @NonNull private final String databaseUrl;
   @NonNull private final String databaseUser;
   @NonNull private final String databasePassword;
@@ -47,6 +49,8 @@ class Environment {
         .dataManagementAuthKey(System.getenv(String.join("_", name, DATA_MANAGEMENT_API_AUTH_KEY)))
         .idsUrl(System.getenv(String.join("_", name, IDS_URL)))
         .dataPlaneUrl(System.getenv(String.join("_", name, DATA_PLANE_URL)))
+        .backendServiceBackendApiUrl(
+            System.getenv(String.join("_", name, BACKEND_SERVICE_BACKEND_API_URL)))
         .databaseUrl(System.getenv(String.join("_", name, DATABASE_URL)))
         .databaseUser(System.getenv(String.join("_", name, DATABASE_USER)))
         .databasePassword(System.getenv(String.join("_", name, DATABASE_PASSWORD)))
