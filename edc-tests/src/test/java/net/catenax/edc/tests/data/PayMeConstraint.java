@@ -14,13 +14,15 @@
 
 package net.catenax.edc.tests.data;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * The PayMe constraint should be used when no constraint validation/enforcement in the EDC is
  * intended.
  */
-@Value
+@Data
+@AllArgsConstructor
 public class PayMeConstraint implements Constraint {
   double amount;
 }

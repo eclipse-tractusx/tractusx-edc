@@ -14,4 +14,13 @@
 
 package net.catenax.edc.tests.data;
 
-public interface Constraint {}
+import java.util.List;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class Catalog {
+  private String id;
+  private List<ContractOffer> contractOffers;
+}

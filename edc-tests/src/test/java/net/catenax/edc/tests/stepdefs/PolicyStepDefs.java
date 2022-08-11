@@ -12,13 +12,17 @@
  *
  */
 
-package net.catenax.edc.tests;
+package net.catenax.edc.tests.stepdefs;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
+import net.catenax.edc.tests.Connector;
+import net.catenax.edc.tests.api.datamanagement.DataManagementApiClient;
 import net.catenax.edc.tests.data.BusinessPartnerNumberConstraint;
 import net.catenax.edc.tests.data.Constraint;
 import net.catenax.edc.tests.data.PayMeConstraint;
@@ -28,32 +32,37 @@ import net.catenax.edc.tests.data.Policy;
 public class PolicyStepDefs {
 
   @Given("'{connector}' has the following policies")
-  public void hasPolicies(Connector connector, DataTable table) throws Exception {
-    final DataManagementAPI api = connector.getDataManagementAPI();
-    final List<Policy> policies = parseDataTable(table);
-
-    for (Policy policy : policies) api.createPolicy(policy);
+  public void hasPolicies(@NonNull final Connector connector, @NonNull final DataTable table) {
+    final DataManagementApiClient api = connector.getDataManagementApiClient();
+    parseDataTable(table).forEach(api::createPolicy);
   }
 
-  private List<Policy> parseDataTable(DataTable table) {
+  private List<Policy> parseDataTable(final DataTable table) {
     final List<Policy> policies = new ArrayList<>();
 
     for (Map<String, String> map : table.asMaps()) {
       final String id = map.get("id");
       final String action = map.get("action");
 
-      List<Constraint> constraints = new ArrayList<>();
+      final List<Constraint> constraints = new ArrayList<>();
       final String businessPartnerNumber = map.get("businessPartnerNumber");
-      if (businessPartnerNumber != null && !businessPartnerNumber.isBlank())
-        constraints.add(new BusinessPartnerNumberConstraint(businessPartnerNumber));
+      if (businessPartnerNumber != null && !businessPartnerNumber.isBlank()) {
+        constraints.add(
+            BusinessPartnerNumberConstraint.builder()
+                .businessPartnerNumber(businessPartnerNumber)
+                .build());
+      }
 
       final String payMe = map.get("payMe");
-      if (payMe != null && !payMe.isBlank())
+      if (payMe != null && !payMe.isBlank()) {
         constraints.add(new PayMeConstraint(Double.parseDouble(payMe)));
+      }
 
-      final List<Permission> permission = List.of(new Permission(action, null, constraints));
+      final List<Permission> permission =
+          Collections.singletonList(
+              Permission.builder().action(action).target(null).constraints(constraints).build());
 
-      policies.add(new Policy(id, permission));
+      policies.add(Policy.builder().id(id).permission(permission).build());
     }
 
     return policies;

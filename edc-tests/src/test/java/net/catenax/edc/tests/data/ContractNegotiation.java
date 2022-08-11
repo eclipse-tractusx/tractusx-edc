@@ -14,12 +14,13 @@
 
 package net.catenax.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
+@Data
+@Builder
 public class ContractNegotiation {
-  @NonNull String id;
-  String agreementId;
-  @NonNull ContractNegotiationState state;
+  private String id;
+  private String agreementId;
+  private ContractNegotiationState state;
 }

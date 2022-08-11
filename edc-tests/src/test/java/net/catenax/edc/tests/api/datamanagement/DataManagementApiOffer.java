@@ -12,6 +12,13 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.datamanagement;
 
-public interface Constraint {}
+import lombok.Data;
+
+@Data
+class DataManagementApiOffer {
+  private String offerId;
+  private String assetId;
+  private DataManagementApiPolicy policy;
+}

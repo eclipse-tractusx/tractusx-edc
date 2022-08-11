@@ -11,14 +11,15 @@
  *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
  *
  */
+
 package net.catenax.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
+@Data
+@Builder
 public class Asset {
-  @NonNull String Id;
-
-  @NonNull String description;
+  private String id;
+  private String description;
 }

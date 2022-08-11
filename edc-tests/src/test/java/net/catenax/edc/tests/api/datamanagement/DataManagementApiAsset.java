@@ -12,6 +12,15 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.datamanagement;
 
-public interface Constraint {}
+import java.util.Map;
+import lombok.Data;
+
+@Data
+class DataManagementApiAsset {
+  public static final String ID = "asset:prop:id";
+  public static final String DESCRIPTION = "asset:prop:description";
+
+  private Map<String, Object> properties;
+}

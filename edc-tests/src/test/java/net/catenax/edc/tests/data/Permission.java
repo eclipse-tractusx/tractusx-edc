@@ -11,16 +11,18 @@
  *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
  *
  */
+
 package net.catenax.edc.tests.data;
 
 import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
+@Data
+@Builder
 public class Permission {
-  @NonNull String action;
-  String target;
+  private String action;
+  private String target;
 
-  @NonNull List<Constraint> constraints;
+  private List<Constraint> constraints;
 }

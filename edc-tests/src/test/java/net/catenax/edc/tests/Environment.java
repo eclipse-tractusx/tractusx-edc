@@ -14,24 +14,26 @@
 
 package net.catenax.edc.tests;
 
-import static net.catenax.edc.tests.Constants.BACKEND_SERVICE_BACKEND_API_URL;
-import static net.catenax.edc.tests.Constants.DATABASE_PASSWORD;
-import static net.catenax.edc.tests.Constants.DATABASE_URL;
-import static net.catenax.edc.tests.Constants.DATABASE_USER;
-import static net.catenax.edc.tests.Constants.DATA_MANAGEMENT_API_AUTH_KEY;
-import static net.catenax.edc.tests.Constants.DATA_MANAGEMENT_URL;
-import static net.catenax.edc.tests.Constants.DATA_PLANE_URL;
-import static net.catenax.edc.tests.Constants.IDS_URL;
-
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-class Environment {
+@ToString
+public class Environment {
+  private static final String DATA_MANAGEMENT_URL = "DATA_MANAGEMENT_URL";
+  private static final String DATA_MANAGEMENT_API_AUTH_KEY = "DATA_MANAGEMENT_API_AUTH_KEY";
+  private static final String IDS_URL = "IDS_URL";
+  private static final String DATA_PLANE_URL = "DATA_PLANE_URL";
+  private static final String BACKEND_SERVICE_BACKEND_API_URL = "BACKEND_SERVICE_BACKEND_API_URL";
+  private static final String DATABASE_URL = "DATABASE_URL";
+  private static final String DATABASE_USER = "DATABASE_USER";
+  private static final String DATABASE_PASSWORD = "DATABASE_PASSWORD";
+
   @NonNull private final String dataManagementAuthKey;
   @NonNull private final String dataManagementUrl;
   @NonNull private final String idsUrl;
@@ -41,19 +43,20 @@ class Environment {
   @NonNull private final String databaseUser;
   @NonNull private final String databasePassword;
 
-  public static Environment byName(String name) {
-    name = name.toUpperCase(Locale.ROOT);
+  public static Environment byName(@NonNull final String name) {
+    final String prefix = name.toUpperCase(Locale.ROOT);
 
     return Environment.builder()
-        .dataManagementUrl(System.getenv(String.join("_", name, DATA_MANAGEMENT_URL)))
-        .dataManagementAuthKey(System.getenv(String.join("_", name, DATA_MANAGEMENT_API_AUTH_KEY)))
-        .idsUrl(System.getenv(String.join("_", name, IDS_URL)))
-        .dataPlaneUrl(System.getenv(String.join("_", name, DATA_PLANE_URL)))
+        .dataManagementUrl(System.getenv(String.join("_", prefix, DATA_MANAGEMENT_URL)))
+        .dataManagementAuthKey(
+            System.getenv(String.join("_", prefix, DATA_MANAGEMENT_API_AUTH_KEY)))
+        .idsUrl(System.getenv(String.join("_", prefix, IDS_URL)))
+        .dataPlaneUrl(System.getenv(String.join("_", prefix, DATA_PLANE_URL)))
         .backendServiceBackendApiUrl(
-            System.getenv(String.join("_", name, BACKEND_SERVICE_BACKEND_API_URL)))
-        .databaseUrl(System.getenv(String.join("_", name, DATABASE_URL)))
-        .databaseUser(System.getenv(String.join("_", name, DATABASE_USER)))
-        .databasePassword(System.getenv(String.join("_", name, DATABASE_PASSWORD)))
+            System.getenv(String.join("_", prefix, BACKEND_SERVICE_BACKEND_API_URL)))
+        .databaseUrl(System.getenv(String.join("_", prefix, DATABASE_URL)))
+        .databaseUser(System.getenv(String.join("_", prefix, DATABASE_USER)))
+        .databasePassword(System.getenv(String.join("_", prefix, DATABASE_PASSWORD)))
         .build();
   }
 }

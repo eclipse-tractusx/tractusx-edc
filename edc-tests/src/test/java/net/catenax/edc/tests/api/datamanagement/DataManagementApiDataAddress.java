@@ -12,6 +12,13 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.datamanagement;
 
-public interface Constraint {}
+import java.util.Map;
+import lombok.Data;
+
+@Data
+class DataManagementApiDataAddress {
+  public static final String TYPE = "type";
+  private Map<String, Object> properties;
+}

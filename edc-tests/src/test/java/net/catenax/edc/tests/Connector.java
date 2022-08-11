@@ -14,40 +14,70 @@
 
 package net.catenax.edc.tests;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.catenax.edc.tests.util.DatabaseCleaner;
+import lombok.extern.slf4j.Slf4j;
+import net.catenax.edc.tests.api.backendservice.BackendServiceBackendApiClient;
+import net.catenax.edc.tests.api.backendservice.BackendServiceBackendApiClientImpl;
+import net.catenax.edc.tests.api.datamanagement.DataManagementApiClient;
+import net.catenax.edc.tests.api.datamanagement.DataManagementApiClientImpl;
+import net.catenax.edc.tests.util.Database;
 
+@Slf4j
 @RequiredArgsConstructor
-public class Connector {
+public class Connector implements AutoCloseable {
 
   @NonNull @Getter private final String name;
 
-  @Getter @NonNull private final Environment environment;
+  @NonNull @Getter private final Environment environment;
 
   @Getter(lazy = true)
-  private final DataManagementAPI dataManagementAPI = loadDataManagementAPI();
+  private final DataManagementApiClient dataManagementApiClient = loadDataManagementApiClient();
 
   @Getter(lazy = true)
-  private final BackendServiceBackendAPI backendServiceBackendAPI = loadBackendServiceBackendAPI();
+  private final BackendServiceBackendApiClient backendServiceBackendApiClient =
+      loadBackendServiceBackendApiClient();
 
   @Getter(lazy = true)
-  private final DatabaseCleaner databaseCleaner = loadDatabaseCleaner();
+  private final Database database = loadDatabase();
 
-  private DataManagementAPI loadDataManagementAPI() {
-    return new DataManagementAPI(
+  @Override
+  public void close() {
+    Stream.of(getDataManagementApiClient(), getBackendServiceBackendApiClient())
+        .filter(e -> e instanceof Closeable)
+        .map(e -> (Closeable) e)
+        .forEach(this::closeSilently);
+  }
+
+  private DataManagementApiClient loadDataManagementApiClient() {
+    return new DataManagementApiClientImpl(
         environment.getDataManagementUrl(), environment.getDataManagementAuthKey());
   }
 
-  private DatabaseCleaner loadDatabaseCleaner() {
-    return new DatabaseCleaner(
+  private Database loadDatabase() {
+    return new Database(
         environment.getDatabaseUrl(),
         environment.getDatabaseUser(),
         environment.getDatabasePassword());
   }
 
-  private BackendServiceBackendAPI loadBackendServiceBackendAPI() {
-    return new BackendServiceBackendAPI(environment.getBackendServiceBackendApiUrl());
+  private BackendServiceBackendApiClient loadBackendServiceBackendApiClient() {
+    return new BackendServiceBackendApiClientImpl(environment.getBackendServiceBackendApiUrl());
+  }
+
+  private void closeSilently(Closeable closeable) {
+    if (closeable == null) {
+      return;
+    }
+
+    try {
+      closeable.close();
+    } catch (IOException e) {
+      log.warn("Error closing closeable: {}", e.getMessage(), e);
+    }
   }
 }

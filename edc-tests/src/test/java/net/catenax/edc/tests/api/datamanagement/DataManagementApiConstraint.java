@@ -12,6 +12,14 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.datamanagement;
 
-public interface Constraint {}
+import lombok.Data;
+
+@Data
+class DataManagementApiConstraint {
+  private String edctype = "AtomicConstraint";
+  private DataManagementApiLiteralExpression leftExpression;
+  private DataManagementApiLiteralExpression rightExpression;
+  private String operator;
+}

@@ -12,15 +12,17 @@
  *
  */
 
-package net.catenax.edc.tests;
+package net.catenax.edc.tests.stepdefs;
 
 import io.cucumber.java.en.Given;
 import java.sql.SQLException;
+import lombok.NonNull;
+import net.catenax.edc.tests.Connector;
 
-public class ConnectorSteps {
+public class ConnectorStepDefs {
 
   @Given("'{connector}' has an empty database")
-  public void cleanDatabase(Connector connector) throws SQLException {
-    connector.getDatabaseCleaner().run();
+  public void cleanDatabase(@NonNull final Connector connector) throws SQLException {
+    connector.getDatabase().clean();
   }
 }

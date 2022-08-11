@@ -12,6 +12,15 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.backendservice;
 
-public interface Constraint {}
+import com.google.gson.reflect.TypeToken;
+import java.util.List;
+
+class ListResponseHandler extends GsonResponseHandler<List<String>> {
+  public static final ListResponseHandler INSTANCE = new ListResponseHandler();
+
+  private ListResponseHandler() {
+    super(new TypeToken<List<String>>() {}); // JVM type erasure: Keep generic args!
+  }
+}

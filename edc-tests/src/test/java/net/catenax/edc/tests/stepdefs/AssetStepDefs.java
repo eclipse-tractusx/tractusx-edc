@@ -12,7 +12,7 @@
  *
  */
 
-package net.catenax.edc.tests;
+package net.catenax.edc.tests.stepdefs;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -20,24 +20,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import lombok.NonNull;
+import net.catenax.edc.tests.Connector;
+import net.catenax.edc.tests.api.datamanagement.DataManagementApiClient;
 import net.catenax.edc.tests.data.Asset;
 
 public class AssetStepDefs {
 
   @Given("'{connector}' has the following assets")
-  public void hasAssets(Connector connector, DataTable table) throws Exception {
-    final DataManagementAPI api = connector.getDataManagementAPI();
-    final List<Asset> assets = parseDataTable(table);
+  public void hasAssets(@NonNull final Connector connector, @NonNull final DataTable table)
+      throws Exception {
+    final DataManagementApiClient api = connector.getDataManagementApiClient();
 
-    for (Asset asset : assets) api.createAsset(asset);
+    parseDataTable(table).forEach(api::createAsset);
   }
 
   @Given("'{connector}' has '{int}' assets")
-  public void hasAssets(Connector connector, int assetCount) throws Exception {
-    final DataManagementAPI api = connector.getDataManagementAPI();
+  public void hasAssets(@NonNull final Connector connector, int assetCount) throws Exception {
+    final DataManagementApiClient api = connector.getDataManagementApiClient();
 
     for (var i = 0; i < assetCount; i++)
-      api.createAsset(new Asset(UUID.randomUUID().toString(), i + 1 + " / " + assetCount));
+      api.createAsset(
+          Asset.builder()
+              .id(UUID.randomUUID().toString())
+              .description(i + 1 + " / " + assetCount)
+              .build());
   }
 
   private List<Asset> parseDataTable(DataTable table) {
@@ -46,7 +53,7 @@ public class AssetStepDefs {
     for (Map<String, String> map : table.asMaps()) {
       String id = map.get("id");
       String description = map.get("description");
-      assets.add(new Asset(id, description));
+      assets.add(Asset.builder().id(id).description(description).build());
     }
 
     return assets;

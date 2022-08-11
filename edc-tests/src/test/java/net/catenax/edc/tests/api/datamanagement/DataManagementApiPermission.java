@@ -12,6 +12,15 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.datamanagement;
 
-public interface Constraint {}
+import java.util.List;
+import lombok.Data;
+
+@Data
+class DataManagementApiPermission {
+  private String edctype = "dataspaceconnector:permission";
+  private DataManagementApiRuleAction action;
+  private String target;
+  private List<DataManagementApiConstraint> constraints;
+}

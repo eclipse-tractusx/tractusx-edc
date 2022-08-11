@@ -15,11 +15,12 @@
 package net.catenax.edc.tests.data;
 
 import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
+@Data
+@Builder
 public class Policy {
-  String id;
-  @NonNull List<Permission> Permission;
+  private String id;
+  private List<Permission> permission;
 }

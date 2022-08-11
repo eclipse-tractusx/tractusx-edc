@@ -12,6 +12,13 @@
  *
  */
 
-package net.catenax.edc.tests.data;
+package net.catenax.edc.tests.api.datamanagement;
 
-public interface Constraint {}
+import java.util.List;
+import lombok.Data;
+
+@Data
+class DataManagementApiContractOfferCatalog {
+  private String id;
+  private List<DataManagementApiContractOffer> contractOffers;
+}
