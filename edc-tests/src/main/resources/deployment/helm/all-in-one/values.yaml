@@ -76,7 +76,8 @@ platobackendapplication:
   enabled: true
   fullnameOverride: "plato-backend-application"
   service:
-    port: 80
+    frontend:
+      port: 80
 platopostgresql:
   enabled: true
   fullnameOverride: "plato-postgresql"
@@ -103,7 +104,7 @@ platovault:
       - |
         { 
         
-        sleep 1
+        sleep 5
         
         cat << EOF | /bin/vault kv put secret/my-plato-daps-key content=-
         -----BEGIN PRIVATE KEY-----
@@ -305,7 +306,8 @@ sokratesbackendapplication:
   enabled: true
   fullnameOverride: "sokrates-backend-application"
   service:
-    port: 80
+    frontend:
+      port: 80
 sokratespostgresql:
   enabled: true
   fullnameOverride: "sokrates-postgresql"
@@ -330,7 +332,7 @@ sokratesvault:
       - |
         { 
         
-        sleep 1
+        sleep 5
 
         cat << EOF | /bin/vault kv put secret/my-sokrates-daps-key content=-
         -----BEGIN PRIVATE KEY-----

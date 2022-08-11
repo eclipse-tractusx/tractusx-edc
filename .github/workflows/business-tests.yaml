@@ -226,15 +226,17 @@ jobs:
                     {"name": "SOKRATES_DATA_MANAGEMENT_URL", "value": "${SOKRATES_DATA_MANAGEMENT_URL}"},
                     {"name": "SOKRATES_IDS_URL", "value": "${SOKRATES_IDS_URL}"},
                     {"name": "SOKRATES_DATA_PLANE_URL", "value": "${SOKRATES_DATA_PLANE_URL}"},
+                    {"name": "SOKRATES_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://sokrates-backend-application:8081" },
+                    {"name": "SOKRATES_DATABASE_URL", "value": "${SOKRATES_DATABASE_URL}"},
+                    {"name": "SOKRATES_DATABASE_USER", "value": "${SOKRATES_DATABASE_USER}"},
+                    {"name": "SOKRATES_DATABASE_PASSWORD", "value": "${SOKRATES_DATABASE_PASSWORD}"},
                     {"name": "PLATO_DATA_MANAGEMENT_URL", "value": "${PLATO_DATA_MANAGEMENT_URL}"},
                     {"name": "PLATO_IDS_URL", "value": "${PLATO_IDS_URL}"},
                     {"name": "PLATO_DATA_PLANE_URL", "value": "${PLATO_DATA_PLANE_URL}"},
+                    {"name": "PLATO_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://plato-backend-application:8081"},
                     {"name": "PLATO_DATABASE_URL", "value": "${PLATO_DATABASE_URL}"},
                     {"name": "PLATO_DATABASE_USER", "value": "${PLATO_DATABASE_USER}"},
-                    {"name": "PLATO_DATABASE_PASSWORD", "value": "${PLATO_DATABASE_PASSWORD}"},
-                    {"name": "SOKRATES_DATABASE_URL", "value": "${SOKRATES_DATABASE_URL}"},
-                    {"name": "SOKRATES_DATABASE_USER", "value": "${SOKRATES_DATABASE_USER}"},
-                    {"name": "SOKRATES_DATABASE_PASSWORD", "value": "${SOKRATES_DATABASE_PASSWORD}"}
+                    {"name": "PLATO_DATABASE_PASSWORD", "value": "${PLATO_DATABASE_PASSWORD}"}
                   ],
           EOF
 
