@@ -15,6 +15,7 @@
 package net.catenax.edc.tests.api.datamanagement;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import net.catenax.edc.tests.data.Catalog;
 import net.catenax.edc.tests.data.ContractDefinition;
 import net.catenax.edc.tests.data.ContractNegotiation;
 import net.catenax.edc.tests.data.Policy;
+import net.catenax.edc.tests.data.TransferProcess;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -52,6 +54,7 @@ public class DataManagementApiClientImpl implements DataManagementApiClient, Aut
   private static final String CONTRACT_DEFINITIONS_PATH = "/contractdefinitions";
   private static final String CATALOG_PATH = "/catalog";
   private static final String NEGOTIATIONS_PATH = "/contractnegotiations";
+  private static final String TRANSFER_PROCESS_PATH = "/transferprocess";
   private static final String QUERY_PARAM_PROVIDER_URL = "providerUrl";
   private static final Gson GSON = new Gson();
   @NonNull private final String dataManagementUrl;
@@ -221,6 +224,24 @@ public class DataManagementApiClientImpl implements DataManagementApiClient, Aut
     }
 
     getHttpClient().execute(post, new StatusCodeResponseHandler(HttpStatus.SC_NO_CONTENT));
+  }
+
+  @Override
+  @SneakyThrows
+  public String initiateTransferProcess(@NonNull final TransferProcess transferProcess) {
+    final DataManagementApiTransferProcess dataManagementApiTransferProcess =
+        DataManagementApiTransferProcessMapper.INSTANCE.map(transferProcess);
+
+    final URI uri = uri(TRANSFER_PROCESS_PATH);
+    final HttpPost post = post(uri);
+    post.setEntity(entity(dataManagementApiTransferProcess));
+
+    // TODO refactoring
+    Map<String, String> response =
+        getHttpClient()
+            .execute(post, new GsonResponseHandler<>(new TypeToken<Map<String, String>>() {}));
+
+    return response.get("id");
   }
 
   @Override

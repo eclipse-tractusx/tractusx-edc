@@ -29,3 +29,9 @@ Feature: Data Transfer
     And 'Plato' has the following contract definitions
       | id                    | access policy | contract policy | asset   |
       | contract-definition-1 | policy-1      | policy-1        | asset-1 |
+    When 'Sokrates' sends 'Plato' a counter offer without constraints
+      | definition id              | asset id  |
+      | contract-definition-1      | asset-1   |
+    Then the negotiation is confirmed
+    Then 'Sokrates' starts the transfer process with 'Plato' of asset 'asset-1'
+    Then 'Sokrates' has file transferred to its backend

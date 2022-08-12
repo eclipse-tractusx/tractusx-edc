@@ -16,6 +16,8 @@ package net.catenax.edc.tests;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,6 +27,7 @@ import net.catenax.edc.tests.api.backendservice.BackendServiceBackendApiClient;
 import net.catenax.edc.tests.api.backendservice.BackendServiceBackendApiClientImpl;
 import net.catenax.edc.tests.api.datamanagement.DataManagementApiClient;
 import net.catenax.edc.tests.api.datamanagement.DataManagementApiClientImpl;
+import net.catenax.edc.tests.data.Catalog;
 import net.catenax.edc.tests.util.Database;
 
 @Slf4j
@@ -34,6 +37,8 @@ public class Connector implements AutoCloseable {
   @NonNull @Getter private final String name;
 
   @NonNull @Getter private final Environment environment;
+
+  @Getter private final Context context = new Context();
 
   @Getter(lazy = true)
   private final DataManagementApiClient dataManagementApiClient = loadDataManagementApiClient();
@@ -78,6 +83,18 @@ public class Connector implements AutoCloseable {
       closeable.close();
     } catch (IOException e) {
       log.warn("Error closing closeable: {}", e.getMessage(), e);
+    }
+  }
+
+  public static class Context {
+    private final Map<Connector, Catalog> catalogsReceived = new HashMap<>();
+
+    public void setCatalogFrom(@NonNull final Connector connector, @NonNull final Catalog catalog) {
+      catalogsReceived.put(connector, catalog);
+    }
+
+    public Catalog getCatalogFrom(@NonNull final Connector connector) {
+      return catalogsReceived.get(connector);
     }
   }
 }

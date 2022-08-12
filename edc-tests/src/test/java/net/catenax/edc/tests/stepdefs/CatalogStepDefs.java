@@ -31,8 +31,6 @@ import org.junit.jupiter.api.Assertions;
 
 public class CatalogStepDefs {
 
-  private Catalog catalog;
-
   @When("'{connector}' requests the catalog from '{connector}'")
   public void requestCatalog(@NonNull final Connector sender, @NonNull final Connector receiver)
       throws IOException {
@@ -40,16 +38,24 @@ public class CatalogStepDefs {
     final DataManagementApiClient dataManagementAPI = sender.getDataManagementApiClient();
     final String receiverIdsUrl = receiver.getEnvironment().getIdsUrl() + "/data";
 
-    catalog = dataManagementAPI.getCatalog(receiverIdsUrl);
+    final Catalog catalog = dataManagementAPI.getCatalog(receiverIdsUrl);
+
+    sender.getContext().setCatalogFrom(receiver, catalog);
   }
 
-  @Then("the catalog contains the following offers")
-  public void verifyCatalogContains(@NonNull final DataTable table) {
+  @Then(
+      "the catalog of connector '{connector}' received from '{connector}' contains the following offers")
+  public void verifyCatalogContains(
+      @NonNull final Connector sender,
+      @NonNull final Connector receiver,
+      @NonNull final DataTable table) {
+    final Catalog catalog = sender.getContext().getCatalogFrom(receiver);
+
     for (Map<String, String> map : table.asMaps()) {
       final String sourceContractDefinitionId = map.get("source definition");
       final String assetId = map.get("asset");
 
-      final boolean isInCatalog = isInCatalog(assetId, sourceContractDefinitionId);
+      final boolean isInCatalog = isInCatalog(catalog, assetId, sourceContractDefinitionId);
 
       Assertions.assertTrue(
           isInCatalog,
@@ -59,13 +65,19 @@ public class CatalogStepDefs {
     }
   }
 
-  @Then("the catalog does not contain the following offers")
-  public void verifyCatalogContainsNot(@NonNull final DataTable table) {
+  @Then(
+      "the catalog of connector '{connector}' received from '{connector}' does not contain the following offers")
+  public void verifyCatalogContainsNot(
+      @NonNull final Connector sender,
+      @NonNull final Connector receiver,
+      @NonNull final DataTable table) {
+    final Catalog catalog = sender.getContext().getCatalogFrom(receiver);
+
     for (Map<String, String> map : table.asMaps()) {
       final String sourceContractDefinitionId = map.get("source definition");
       final String assetId = map.get("asset");
 
-      final boolean isInCatalog = isInCatalog(assetId, sourceContractDefinitionId);
+      final boolean isInCatalog = isInCatalog(catalog, assetId, sourceContractDefinitionId);
 
       Assertions.assertFalse(
           isInCatalog,
@@ -75,8 +87,12 @@ public class CatalogStepDefs {
     }
   }
 
-  @Then("the catalog contains '{int}' offers")
-  public void verifyCatalogContainsXOffers(int offerCount) {
+  @Then(
+      "the catalog of connector '{connector}' received from '{connector}' contains '{int}' offers")
+  public void verifyCatalogContainsXOffers(
+      @NonNull final Connector sender, @NonNull final Connector receiver, int offerCount) {
+    final Catalog catalog = sender.getContext().getCatalogFrom(receiver);
+
     Assertions.assertEquals(
         offerCount,
         getContractOffers(catalog).size(),
@@ -91,7 +107,8 @@ public class CatalogStepDefs {
         .orElseGet(Collections::emptyList);
   }
 
-  private boolean isInCatalog(final String assetId, final String definitionId) {
+  private boolean isInCatalog(
+      final Catalog catalog, final String assetId, final String definitionId) {
     return getContractOffers(catalog).stream()
         .anyMatch(c -> c.getAssetId().equals(assetId) && c.getId().startsWith(definitionId));
   }

@@ -19,6 +19,7 @@ import net.catenax.edc.tests.data.Catalog;
 import net.catenax.edc.tests.data.ContractDefinition;
 import net.catenax.edc.tests.data.ContractNegotiation;
 import net.catenax.edc.tests.data.Policy;
+import net.catenax.edc.tests.data.TransferProcess;
 
 public interface DataManagementApiClient {
   Catalog getCatalog(String receivingConnectorUrl);
@@ -33,4 +34,6 @@ public interface DataManagementApiClient {
   void createPolicy(Policy policy);
 
   void createContractDefinition(ContractDefinition contractDefinition);
+
+  String initiateTransferProcess(TransferProcess transferProcess);
 }

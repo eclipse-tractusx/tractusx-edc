@@ -23,15 +23,18 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.catenax.edc.tests.Connector;
+import net.catenax.edc.tests.api.backendservice.BackendServiceBackendApiClient;
 import net.catenax.edc.tests.api.datamanagement.DataManagementApiClient;
 import net.catenax.edc.tests.data.ContractNegotiation;
 import net.catenax.edc.tests.data.ContractNegotiationState;
 import net.catenax.edc.tests.data.Permission;
 import net.catenax.edc.tests.data.Policy;
+import net.catenax.edc.tests.data.TransferProcess;
 import net.catenax.edc.tests.util.Timeouts;
 import org.junit.jupiter.api.Assertions;
 
@@ -39,6 +42,7 @@ import org.junit.jupiter.api.Assertions;
 public class NegotiationStepDefs {
 
   private ContractNegotiation lastInitiatedNegotiation;
+  private String transferId;
 
   @When("'{connector}' sends '{connector}' a counter offer without constraints")
   public void sendOfferWithoutConstraints(
@@ -70,9 +74,53 @@ public class NegotiationStepDefs {
     }
   }
 
+  @Then("the negotiation is confirmed")
+  public void assertLastNegotiationAccepted() {
+    Assertions.assertEquals(
+        ContractNegotiationState.CONFIRMED, lastInitiatedNegotiation.getState());
+  }
+
+  @Then("'{connector}' starts the transfer process with '{connector}' of asset '{word}'")
+  public void startTransferProcess(
+      @NonNull final Connector sender,
+      @NonNull final Connector receiver,
+      @NonNull final String assetId) {
+    final DataManagementApiClient dataManagementAPI = sender.getDataManagementApiClient();
+
+    final String receiverIdsUrl = receiver.getEnvironment().getIdsUrl() + "/data";
+
+    final TransferProcess transferProcess =
+        TransferProcess.builder()
+            .assetId(assetId)
+            .contractId(lastInitiatedNegotiation.getAgreementId())
+            .id(UUID.randomUUID().toString())
+            .type("HttpProxy")
+            .connectorAddress(receiverIdsUrl)
+            .build();
+
+    transferId = dataManagementAPI.initiateTransferProcess(transferProcess);
+  }
+
+  @Then("'{connector}' has file transferred to its backend")
+  public void hasFile(@NonNull final Connector sender) {
+    final BackendServiceBackendApiClient client = sender.getBackendServiceBackendApiClient();
+
+    // wait for negotiation to complete
+    await()
+        .pollDelay(Duration.ofMillis(500))
+        .atMost(Timeouts.CONTRACT_NEGOTIATION)
+        .until(() -> hasFile(client, transferId));
+  }
+
   @Then("the negotiation is declined")
   public void assertLastNegotiationDeclined() {
     Assertions.assertEquals(ContractNegotiationState.DECLINED, lastInitiatedNegotiation.getState());
+  }
+
+  private boolean hasFile(
+      @NonNull final BackendServiceBackendApiClient backendServiceBackendApiClient,
+      @NonNull final String transferId) {
+    return backendServiceBackendApiClient.exists("/" + transferId);
   }
 
   private boolean isNegotiationComplete(

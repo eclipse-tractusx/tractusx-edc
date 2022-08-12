@@ -1,0 +1,11 @@
+{
+  "id": "${TRANSFER_PROCESS_ID}",
+  "connectorId": "foo",
+  "connectorAddress": "${PLATO_IDS_URL}/api/v1/ids/data",
+  "contractId": "${CONTRACT_AGREEMENT_ID}",
+  "assetId": "1",
+  "managedResources": "false",
+  "dataDestination": {
+    "type": "HttpProxy"
+  }
+}
