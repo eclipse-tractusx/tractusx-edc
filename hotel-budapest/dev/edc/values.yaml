@@ -20,7 +20,6 @@ dataplane:
     repository: ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
     tag: latest
     pullPolicy: Always
-  envSecretName: "{{ .Release.Name }}-dataplane-secret"
   edc:
     endpoints:
       default:
@@ -51,7 +50,6 @@ dataplane:
       otel.javaagent.enabled=false
       otel.javaagent.debug=false
   env:
-    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
     EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://controlplane:8182/validation/token
     EDC_VAULT_HASHICORP_URL: http://vault:8200
@@ -98,7 +96,6 @@ controlplane:
     properties: |-
       otel.javaagent.enabled=false
       otel.javaagent.debug=false
-  envSecretName: "{{ .Release.Name }}-controlplane-secret"
   env:
     EDC_OAUTH_CLIENT_ID: oauth client id
     EDC_OAUTH_PROVIDER_JWKS_URL: "http://daps:4567/jwks.json"
