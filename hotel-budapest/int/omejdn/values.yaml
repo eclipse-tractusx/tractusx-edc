@@ -1,0 +1,62 @@
+---
+daps:
+  enabled: true
+  connectors:
+    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
+      name: sokrates
+      attributes:
+        referringConnector: http://sokrates-edc-controlplane/BPNSOKRATES
+      certificate: |-
+        -----BEGIN CERTIFICATE-----
+        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
+        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
+        DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
+        DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
+        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
+        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
+        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
+        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
+        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
+        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
+        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
+        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
+        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
+        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
+        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
+        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        -----END CERTIFICATE-----
+    - id: 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
+      name: plato
+      attributes:
+        referringConnector: http://plato-edc-controlplane/BPNPLATO
+      certificate: |-
+        -----BEGIN CERTIFICATE-----
+        MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
+        BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIy
+        MDQyNTEwMjgwMloXDTIzMDQyNTEwMjgwMlowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
+        VQQIDAZCZXJsaW4xDzANBgNVBAcMBkJlcmxpbjEMMAoGA1UECgwDQk1XMSAwHgYD
+        VQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRj
+        LmRlbW8uY2F0ZW5hLXgubmV0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+        AQEAm1/UvHXuRU1peEGHULZBP8j8gorXAQvUz8Znb1iVNtldI29GCSXkTHxph66x
+        TcegdF8aeaoU1mPf3LzMQUU1koZHUq6sRC+50uFcZJ2AjF5IXKQlDPNWR5tPXP56
+        RZyqXxjPFHeuTA+YsYyrzEVhzEieOiNaxJDM3uV5pv+FTRHz+xMOgNBonR1QyMh6
+        tcwB+EQagoeFl0DjEXAel9WG4hOG/rDiXArTMaVjnTG/ycmF0HeSnbRC+3/+fh/C
+        hzQJyEbviX67ymyYRJTyynt/Mtrqg5/ssdISexjw3ZmiFNemZIOhIdepoSwnJHFM
+        4Jj8B5lq0a1jY5Rc9lDj710RXQIDAQABo1MwUTAdBgNVHQ4EFgQUmYOnF4b/mJPO
+        oN2h8Tb69g91CiMwHwYDVR0jBBgwFoAUmYOnF4b/mJPOoN2h8Tb69g91CiMwDwYD
+        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAKxv/MTIEKNkzReOqrzpt
+        LM00X6JsDdfxa3rZ0Uq17PjO0R63IPsqzexhfZUML0e/Dwpe97xpvftCOEuICMBA
+        wOHhQc77MgwyF4dqgRgfJysxw37ACZxU6GI/K2JpKXQLgEhP14oHUIWOzCAbgDhR
+        jwOx3ZP176Vjxx90pW3hOphRVnq/BRqqEDtFwRzKtGnGvP8ecmC2iY4dXEA3QEp1
+        gzg03eglvZSoedEPY5o5y/4n6TplaDmaeoo0QrvAiWik1gY85Lg21aBWVsP45wVS
+        tFn3m1FCCV8XYIj/EEUAh8VEhphLVEViE6m9Mm4deFDavXcGBb63BCiOQtnjd3eY
+        zQ==
+        -----END CERTIFICATE-----

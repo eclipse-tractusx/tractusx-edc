@@ -1,0 +1,6 @@
+dependencies:
+- name: ids-daps
+  repository: file://../../../edc-tests/src/main/resources/deployment/helm/omejdn
+  version: 0.0.1
+digest: sha256:1e63edda40e7e06854afaa46162117a93adb476994268c6ec934e84f23a17a41
+generated: "2022-08-16T08:47:32.240372133+02:00"
