@@ -1,7 +1,7 @@
 # Data Plane Selector Configuration Exception
 
-This control-plane extension makes it possible configure one or more data planes. After a data transfer is
-triggered at the control plane will look for a data plane with matching capabilities.
+This control-plane extension makes it possible configure one or more Data Plane Instances. During a transfer the control
+plane will look for an instance with matching capabilities to transfer data.
 
 ## Configuration
 
@@ -15,3 +15,14 @@ Per data plane instance the following settings must be configured. As `<data-pla
 | edc.dataplane.selector.<data-plane-id>.properties       | Additional properties of the Data Plane Instance. | (X)       | { "publicApiUrl:": "http://plato-edc-dataplane:8185/api/public" } |
 
 The property `publicApiUrl` is mandatory for Data Plane Instances with destination type `HttpProxy`.
+
+**Helm Example Configuration using environment variables**
+```yaml
+EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control
+EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData
+EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy
+EDC_DATAPLANE_SELECTOR_PLATOPLANE_PROPERTIES: >-
+  { 
+    "publicApiUrl": "http://plato-edc-dataplane:8185/api/public"
+  }
+```
