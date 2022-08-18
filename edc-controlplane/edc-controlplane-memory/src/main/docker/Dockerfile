@@ -17,7 +17,6 @@ ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-in
 RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
 FROM gcr.io/distroless/java11-debian11
-USER edc
 ARG JAR
 ARG LIB
 
