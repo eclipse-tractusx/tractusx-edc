@@ -1,16 +1,5 @@
 ---
 version: 2
-
-registries:
-  # EDC snapshot "releases"
-  sonatype-snapshots:
-    type: maven-repository
-    url: https://oss.sonatype.org/content/repositories/snapshots/
-  # All other maven dependencies
-  maven-central:
-    type: maven-repository
-    url: https://repo.maven.apache.org/maven2/
-
 updates:
   # Maven
   -

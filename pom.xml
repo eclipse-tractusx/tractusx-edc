@@ -45,7 +45,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- plugins -->
-        <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0</org.apache.maven.plugins.maven.dependency.plugin.version>
+        <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0
+        </org.apache.maven.plugins.maven.dependency.plugin.version>
         <org.apache.maven.plugins.maven.jar.plugin.version>3.2.2</org.apache.maven.plugins.maven.jar.plugin.version>
         <com.diffplug.spotless.maven.plugin.version>2.24.1</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.1.0</org.codehaus.mojo.exec.maven.plugin.version>
@@ -96,7 +97,17 @@
             <name>Maven Central</name>
             <url>https://repo1.maven.org/maven2</url>
         </repository>
-        <repository>
+        <repository> <!-- To be able to use edc snapshot "releases" -->
+            <id>sonatype-snapshots</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository> <!-- IDS infomodel -->
             <id>fraunhofer-iais-eis</id>
             <name>Fraunhofer IAIS</name>
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
