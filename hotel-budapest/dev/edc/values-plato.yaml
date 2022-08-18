@@ -1,0 +1,55 @@
+---
+dataplane:
+  image:
+    tag: latest
+    pullPolicy: Always
+  ingresses:
+    - hostname: "plato.dev.catena-x.net"
+  logging:
+    properties: |-
+      .level=INFO
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+  env:
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: "http://plato-controlplane:8182/validation/token"
+    EDC_VAULT_HASHICORP_URL: https://vault.demo.catena-x.net
+    EDC_VAULT_HASHICORP_API_SECRET_PATH: /v1/edc
+
+controlplane:
+  enabled: true
+  image:
+    tag: latest
+    pullPolicy: Always
+  ingresses:
+    - hostname: "plato.dev.catena-x.net"
+  logging:
+    properties: |-
+      .level=INFO
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+  env:
+    EDC_OAUTH_CLIENT_ID: dev-plato-EDC_OAUTH_CLIENT_ID
+    EDC_OAUTH_PRIVATE_KEY_ALIAS: dev-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS
+    EDC_OAUTH_PUBLIC_KEY_ALIAS: dev-plato-EDC_OAUTH_PUBLIC_KEY_ALIAS
+    IDS_WEBHOOK_ADDRESS: "https://plato.dev.catena-x.net/api/v1/ids"
+    EDC_IDS_ENDPOINT: "https://plato.dev.catena-x.net/api/v1/ids"
+    EDC_IDS_DESCRIPTION: "plato EDC Control Plane"
+    EDC_DATASOURCE_ASSET_URL: &psqlJdbcUrl "jdbc:postgresql://plato-postgres:5432/edc"
+    EDC_DATASOURCE_CONTRACTDEFINITION_URL: *psqlJdbcUrl
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *psqlJdbcUrl
+    EDC_DATASOURCE_POLICY_URL: *psqlJdbcUrl
+    EDC_DATASOURCE_TRANSFERPROCESS_URL: *psqlJdbcUrl
+    EDC_DATAPLANE_SELECTOR_HTTPPROXY_URL: http://plato-dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_HTTPPROXY_PROPERTIES: >-
+      {
+        "publicApiUrl": "https://plato.dev.catena-x.net/dataplane/api/public"
+      }
+    EDC_TRANSFER_PROXY_ENDPOINT: http://plato-dataplane:8185/dataplane/api/public
+    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: dev-plato-EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
+    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: dev-plato-EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
+    EDC_VAULT_HASHICORP_URL: https://vault.demo.catena-x.net
+    EDC_VAULT_HASHICORP_API_SECRET_PATH: /v1/edc
