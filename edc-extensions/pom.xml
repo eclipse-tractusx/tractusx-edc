@@ -43,6 +43,7 @@
         <module>data-encryption</module>
         <module>cx-oauth2</module>
         <module>control-plane-adapter</module>
+        <module>transferprocess-sftp</module>
     </modules>
 
 </project>
