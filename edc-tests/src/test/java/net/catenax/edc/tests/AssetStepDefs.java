@@ -19,20 +19,10 @@ import io.cucumber.java.en.Given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.UUID;
 import net.catenax.edc.tests.data.Asset;
 
 public class AssetStepDefs {
-
-  @Given("'{connector}' has no assets")
-  public void hasNoAssets(Connector connector) throws Exception {
-    final DataManagementAPI api = connector.getDataManagementAPI();
-
-    Stream<Asset> assets = api.getAllAssets();
-    for (Asset asset : assets.toArray(Asset[]::new)) {
-      api.deleteAsset(asset.getId());
-    }
-  }
 
   @Given("'{connector}' has the following assets")
   public void hasAssets(Connector connector, DataTable table) throws Exception {
@@ -40,6 +30,14 @@ public class AssetStepDefs {
     final List<Asset> assets = parseDataTable(table);
 
     for (Asset asset : assets) api.createAsset(asset);
+  }
+
+  @Given("'{connector}' has '{int}' assets")
+  public void hasAssets(Connector connector, int assetCount) throws Exception {
+    final DataManagementAPI api = connector.getDataManagementAPI();
+
+    for (var i = 0; i < assetCount; i++)
+      api.createAsset(new Asset(UUID.randomUUID().toString(), i + 1 + " / " + assetCount));
   }
 
   private List<Asset> parseDataTable(DataTable table) {

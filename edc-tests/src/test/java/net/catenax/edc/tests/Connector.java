@@ -17,6 +17,7 @@ package net.catenax.edc.tests;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.tests.util.DatabaseCleaner;
 
 @RequiredArgsConstructor
 public class Connector {
@@ -28,7 +29,25 @@ public class Connector {
   @Getter(lazy = true)
   private final DataManagementAPI dataManagementAPI = loadDataManagementAPI();
 
+  @Getter(lazy = true)
+  private final BackendServiceBackendAPI backendServiceBackendAPI = loadBackendServiceBackendAPI();
+
+  @Getter(lazy = true)
+  private final DatabaseCleaner databaseCleaner = loadDatabaseCleaner();
+
   private DataManagementAPI loadDataManagementAPI() {
-    return new DataManagementAPI(environment.getDataManagementUrl());
+    return new DataManagementAPI(
+        environment.getDataManagementUrl(), environment.getDataManagementAuthKey());
+  }
+
+  private DatabaseCleaner loadDatabaseCleaner() {
+    return new DatabaseCleaner(
+        environment.getDatabaseUrl(),
+        environment.getDatabaseUser(),
+        environment.getDatabasePassword());
+  }
+
+  private BackendServiceBackendAPI loadBackendServiceBackendAPI() {
+    return new BackendServiceBackendAPI(environment.getBackendServiceBackendApiUrl());
   }
 }

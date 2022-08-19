@@ -17,7 +17,7 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
-        <version>0.0.6</version>
+        <version>0.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -33,6 +33,8 @@
         <module>business-partner-validation</module>
         <module>postgresql-migration</module>
         <module>hashicorp-vault</module>
+        <module>dataplane-selector-configuration</module>
+        <module>data-encryption</module>
     </modules>
 
 </project>

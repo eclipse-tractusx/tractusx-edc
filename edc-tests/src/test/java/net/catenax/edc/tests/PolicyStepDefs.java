@@ -19,22 +19,13 @@ import io.cucumber.java.en.Given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import net.catenax.edc.tests.data.BusinessPartnerNumberConstraint;
+import net.catenax.edc.tests.data.Constraint;
+import net.catenax.edc.tests.data.PayMeConstraint;
 import net.catenax.edc.tests.data.Permission;
 import net.catenax.edc.tests.data.Policy;
 
 public class PolicyStepDefs {
-
-  @Given("'{connector}' has no policies")
-  public void hasNoPolicies(Connector connector) throws Exception {
-
-    final DataManagementAPI api = connector.getDataManagementAPI();
-
-    Stream<Policy> policies = api.getAllPolicies();
-    for (Policy policy : policies.toArray(Policy[]::new)) {
-      api.deletePolicy(policy.getId());
-    }
-  }
 
   @Given("'{connector}' has the following policies")
   public void hasPolicies(Connector connector, DataTable table) throws Exception {
@@ -50,7 +41,17 @@ public class PolicyStepDefs {
     for (Map<String, String> map : table.asMaps()) {
       final String id = map.get("id");
       final String action = map.get("action");
-      final List<Permission> permission = List.of(new Permission(action, null));
+
+      List<Constraint> constraints = new ArrayList<>();
+      final String businessPartnerNumber = map.get("businessPartnerNumber");
+      if (businessPartnerNumber != null && !businessPartnerNumber.isBlank())
+        constraints.add(new BusinessPartnerNumberConstraint(businessPartnerNumber));
+
+      final String payMe = map.get("payMe");
+      if (payMe != null && !payMe.isBlank())
+        constraints.add(new PayMeConstraint(Double.parseDouble(payMe)));
+
+      final List<Permission> permission = List.of(new Permission(action, null, constraints));
 
       policies.add(new Policy(id, permission));
     }
