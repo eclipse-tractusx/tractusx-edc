@@ -1,6 +1,6 @@
 # edc-dataplane
 
-![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.6](https://img.shields.io/badge/AppVersion-0.0.6-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
 
@@ -9,7 +9,7 @@ EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility o
 ## TL;DR
 ```shell
 $ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install my-release catenax-ng-product-edc/edc-dataplane --version 0.0.6
+$ helm install my-release catenax-ng-product-edc/edc-dataplane --version 0.1.0
 ```
 
 ## Values

@@ -18,7 +18,7 @@
 
     <groupId>net.catenax.edc</groupId>
     <artifactId>product-edc-parent</artifactId>
-    <version>0.0.7-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <name>product-edc</name>
