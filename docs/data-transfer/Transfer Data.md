@@ -48,6 +48,7 @@ Initialize the following environment variables, that are used in the upcoming AP
 export PLATO_DATAMGMT_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
 export PLATO_IDS_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 5p)
 export SOKRATES_DATAMGMT_URL=$(minikube service sokrates-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
+export SOKRATES_BACKEND_URL=$(minikube service sokrates-backend-application -n edc-all-in-one --url | sed -n 2p)
 ```
 
 ## 1. Setup Data Offer
@@ -66,15 +67,15 @@ For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data so
 other API, that is reachable from the Provider Data Plane.
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"endpoint\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/policies" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/policydefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"policy\": { \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/contractdefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"criteria\": [ { \"left\": \"asset:prop:id\", \"op\": \"=\", \"right\": \"1\" } ], \"accessPolicyId\": \"1\", \"contractPolicyId\": \"1\" }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/contractdefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"criteria\": [ { \"operandLeft\": \"asset:prop:id\", \"operator\": \"=\", \"operandRight\": \"1\" } ], \"accessPolicyId\": \"1\", \"contractPolicyId\": \"1\" }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ## 2. Request Contract Offer Catalog
@@ -146,7 +147,7 @@ locally. In this demo the transfer can be verified by executing a simple `cat` c
 ![Sequence 1](diagrams/transfer_sequence_5.png)
 
 ```bash
-echo $(kubectl exec -n edc-all-in-one --stdin --tty `kubectl get pod -n edc-all-in-one -l app.kubernetes.io/name=sokratesbackendapplication --template "{{ with index .items ${POD_INDEX:-0} }}{{ .metadata.name }}{{ end }}"` -- /usr/bin/cat /tmp/data/${TRANSFER_PROCESS_ID}) | jq
+curl -X GET ${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID} -H "Accept: application/octet-stream" -s | jq
 ```
 
 # Delete All Data

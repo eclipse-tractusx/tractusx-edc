@@ -23,18 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.catenax.edc.tests.data.Asset;
+import net.catenax.edc.tests.data.BusinessPartnerNumberConstraint;
+import net.catenax.edc.tests.data.Constraint;
 import net.catenax.edc.tests.data.ContractDefinition;
+import net.catenax.edc.tests.data.ContractNegotiation;
+import net.catenax.edc.tests.data.ContractNegotiationState;
 import net.catenax.edc.tests.data.ContractOffer;
+import net.catenax.edc.tests.data.PayMeConstraint;
 import net.catenax.edc.tests.data.Permission;
 import net.catenax.edc.tests.data.Policy;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -45,23 +47,23 @@ import org.apache.http.impl.client.HttpClientBuilder;
 public class DataManagementAPI {
 
   private static final String ASSET_PATH = "/assets";
-  private static final String POLICY_PATH = "/policies";
+  private static final String POLICY_PATH = "/policydefinitions";
   private static final String CONTRACT_DEFINITIONS_PATH = "/contractdefinitions";
   private static final String CATALOG_PATH = "/catalog";
-
-  private static final String PARAM_NO_LIMIT = "limit=" + Integer.MAX_VALUE;
+  private static final String NEGOTIATIONS_PATH = "/contractnegotiations";
 
   private final String dataMgmtUrl;
+  private final String dataMgmtAuthKey;
   private final HttpClient httpClient;
 
-  public DataManagementAPI(String dataManagementUrl) {
+  public DataManagementAPI(String dataManagementUrl, String dataMgmtAuthKey) {
     this.httpClient = HttpClientBuilder.create().build();
     this.dataMgmtUrl = dataManagementUrl;
+    this.dataMgmtAuthKey = dataMgmtAuthKey;
   }
 
-  public Stream<ContractOffer> requestCatalogFrom(String receivingConnectorUrl) throws IOException {
-    final String encodedUrl =
-        URLEncoder.encode(receivingConnectorUrl, StandardCharsets.UTF_8.toString());
+  public List<ContractOffer> requestCatalogFrom(String receivingConnectorUrl) throws IOException {
+    final String encodedUrl = URLEncoder.encode(receivingConnectorUrl, StandardCharsets.UTF_8);
     final DataManagementApiContractOfferCatalog catalog =
         get(
             CATALOG_PATH,
@@ -70,28 +72,42 @@ public class DataManagementAPI {
 
     log.debug("Received " + catalog.contractOffers.size() + " offers");
 
-    return catalog.contractOffers.stream().map(this::mapOffer);
+    return catalog.contractOffers.stream().map(this::mapOffer).collect(Collectors.toList());
   }
 
-  public Asset getAsset(String id) throws IOException {
-    final DataManagementApiAsset asset =
-        get(ASSET_PATH + "/" + id, new TypeToken<DataManagementApiAsset>() {});
-    return mapAsset(asset);
+  public String initiateNegotiation(
+      String receivingConnectorUrl, String definitionId, String assetId, Policy policy)
+      throws IOException {
+    final DataManagementApiOffer offer = new DataManagementApiOffer();
+    offer.offerId = definitionId + ":foo";
+    offer.assetId = assetId;
+    offer.policy = mapPolicy(policy);
+    offer.policy.permissions.forEach(p -> p.target = assetId);
+
+    final DataManagementApiNegotiationPayload negotiationPayload =
+        new DataManagementApiNegotiationPayload();
+    negotiationPayload.connectorAddress = receivingConnectorUrl;
+    negotiationPayload.offer = offer;
+
+    final DataManagementApiNegotiationResponse response =
+        post(
+            NEGOTIATIONS_PATH,
+            negotiationPayload,
+            new TypeToken<DataManagementApiNegotiationResponse>() {});
+
+    if (response == null)
+      throw new RuntimeException(
+          "Initiated negotiation. Connector did not answer with negotiation ID.");
+
+    log.debug("Initiated negotiation ( id= " + response.getId() + " )");
+
+    return response.getId();
   }
 
-  public Policy getPolicy(String id) throws IOException {
-    final DataManagementApiPolicy policy =
-        get(POLICY_PATH + "/" + id, new TypeToken<DataManagementApiPolicy>() {});
-    return mapPolicy(policy);
-  }
-
-  public ContractDefinition getContractDefinition(String id)
-      throws IOException, ClientProtocolException {
-    final DataManagementApiContractDefinition contractDefinition =
-        get(
-            CONTRACT_DEFINITIONS_PATH + "/" + id,
-            new TypeToken<DataManagementApiContractDefinition>() {});
-    return mapContractDefinition(contractDefinition);
+  public ContractNegotiation getNegotiation(String id) throws IOException {
+    final DataManagementApiNegotiation negotiation =
+        get(NEGOTIATIONS_PATH + "/" + id, new TypeToken<DataManagementApiNegotiation>() {});
+    return mapNegotiation(negotiation);
   }
 
   public void createAsset(Asset asset) throws IOException {
@@ -100,7 +116,7 @@ public class DataManagementAPI {
         Map.of(
             DataManagementApiDataAddress.TYPE,
             "HttpData",
-            "endpoint",
+            "baseUrl",
             "https://jsonplaceholder.typicode.com/todos/1");
 
     final DataManagementApiAssetCreate assetCreate = new DataManagementApiAssetCreate();
@@ -110,45 +126,12 @@ public class DataManagementAPI {
     post(ASSET_PATH, assetCreate);
   }
 
-  public void createPolicy(Policy policy) throws ClientProtocolException, IOException {
-    post(POLICY_PATH, mapPolicy(policy));
+  public void createPolicy(Policy policy) throws IOException {
+    post(POLICY_PATH, mapPolicyDefinition(policy));
   }
 
   public void createContractDefinition(ContractDefinition contractDefinition) throws IOException {
     post(CONTRACT_DEFINITIONS_PATH, mapContractDefinition(contractDefinition));
-  }
-
-  public Stream<Asset> getAllAssets() throws IOException, ClientProtocolException {
-    final List<DataManagementApiAsset> assets =
-        get(ASSET_PATH, PARAM_NO_LIMIT, new TypeToken<ArrayList<DataManagementApiAsset>>() {});
-    return assets.stream().map(this::mapAsset);
-  }
-
-  public Stream<Policy> getAllPolicies() throws IOException {
-    final List<DataManagementApiPolicy> policies =
-        get(POLICY_PATH, PARAM_NO_LIMIT, new TypeToken<ArrayList<DataManagementApiPolicy>>() {});
-    return policies.stream().map(this::mapPolicy);
-  }
-
-  public Stream<ContractDefinition> getAllContractDefinitions() throws IOException {
-    final List<DataManagementApiContractDefinition> contractDefinitions =
-        get(
-            CONTRACT_DEFINITIONS_PATH,
-            PARAM_NO_LIMIT,
-            new TypeToken<ArrayList<DataManagementApiContractDefinition>>() {});
-    return contractDefinitions.stream().map(this::mapContractDefinition);
-  }
-
-  public void deleteAsset(String id) throws IOException {
-    delete(ASSET_PATH + "/" + id);
-  }
-
-  public void deletePolicy(String id) throws IOException {
-    delete(POLICY_PATH + "/" + id);
-  }
-
-  public void deleteContractDefinition(String id) throws IOException {
-    delete(CONTRACT_DEFINITIONS_PATH + "/" + id);
   }
 
   private <T> T get(String path, String params, TypeToken<?> typeToken) throws IOException {
@@ -158,20 +141,18 @@ public class DataManagementAPI {
   private <T> T get(String path, TypeToken<?> typeToken) throws IOException {
 
     final HttpGet get = new HttpGet(dataMgmtUrl + path);
-
     final HttpResponse response = sendRequest(get);
     final byte[] json = response.getEntity().getContent().readAllBytes();
 
-    return new Gson().fromJson(new String(json), typeToken.getType());
-  }
-
-  private void delete(String path) throws IOException {
-    final HttpDelete delete = new HttpDelete(dataMgmtUrl + path);
-
-    sendRequest(delete);
+    log.debug("Received response: {}", new String(json, StandardCharsets.UTF_8));
+    return new Gson().fromJson(new String(json, StandardCharsets.UTF_8), typeToken.getType());
   }
 
   private void post(String path, Object object) throws IOException {
+    post(path, object, new TypeToken<Void>() {});
+  }
+
+  private <T> T post(String path, Object object, TypeToken<?> typeToken) throws IOException {
     final String url = String.format("%s%s", dataMgmtUrl, path);
     final HttpPost post = new HttpPost(url);
     post.addHeader("Content-Type", "application/json");
@@ -181,11 +162,18 @@ public class DataManagementAPI {
     log.debug("POST Payload: " + json);
 
     post.setEntity(new StringEntity(json));
-    sendRequest(post);
+
+    final HttpResponse response = sendRequest(post);
+
+    if (typeToken.equals(new TypeToken<Void>() {})) return null;
+
+    final byte[] responseJson = response.getEntity().getContent().readAllBytes();
+    return new Gson()
+        .fromJson(new String(responseJson, StandardCharsets.UTF_8), typeToken.getType());
   }
 
   private HttpResponse sendRequest(HttpRequestBase request) throws IOException {
-    request.addHeader("X-Api-Key", "password");
+    request.addHeader("X-Api-Key", dataMgmtAuthKey);
 
     log.debug(String.format("Send %-6s %s", request.getMethod(), request.getURI()));
 
@@ -199,12 +187,28 @@ public class DataManagementAPI {
     return response;
   }
 
-  private Asset mapAsset(DataManagementApiAsset DataManagementApiAsset) {
-    final String id = (String) DataManagementApiAsset.properties.get(DataManagementApiAsset.ID);
-    final String description =
-        (String) DataManagementApiAsset.properties.get(DataManagementApiAsset.DESCRIPTION);
+  private ContractNegotiation mapNegotiation(DataManagementApiNegotiation negotiation) {
 
-    return new Asset(id, description);
+    ContractNegotiationState state;
+
+    switch (negotiation.state) {
+      case "ERROR":
+        state = ContractNegotiationState.ERROR;
+        break;
+      case "INITIAL":
+        state = ContractNegotiationState.INITIAL;
+        break;
+      case "DECLINED":
+        state = ContractNegotiationState.DECLINED;
+        break;
+      case "CONFIRMED":
+        state = ContractNegotiationState.CONFIRMED;
+        break;
+      default:
+        state = ContractNegotiationState.UNKNOWN;
+    }
+
+    return new ContractNegotiation(negotiation.id, negotiation.agreementId, state);
   }
 
   private DataManagementApiAsset mapAsset(Asset asset) {
@@ -229,20 +233,25 @@ public class DataManagementAPI {
   }
 
   private DataManagementApiPolicy mapPolicy(Policy policy) {
-    final List<DataManagementApiPermission> permission =
+    final List<DataManagementApiPermission> permissions =
         policy.getPermission().stream().map(this::mapPermission).collect(Collectors.toList());
+    final DataManagementApiPolicy dataManagementApiPolicy = new DataManagementApiPolicy();
+    dataManagementApiPolicy.permissions = permissions;
 
-    final DataManagementApiPolicy apiObject = new DataManagementApiPolicy();
+    return dataManagementApiPolicy;
+  }
+
+  private DataManagementApiPolicyDefinition mapPolicyDefinition(Policy policy) {
+    final DataManagementApiPolicyDefinition apiObject = new DataManagementApiPolicyDefinition();
     apiObject.uid = policy.getId();
-    apiObject.permissions = permission;
+    apiObject.policy = mapPolicy(policy);
     return apiObject;
   }
 
   private Permission mapPermission(DataManagementApiPermission dataManagementApiPermission) {
     final String target = dataManagementApiPermission.target;
     final String action = dataManagementApiPermission.action.type;
-
-    return new Permission(action, target);
+    return new Permission(action, target, new ArrayList<>());
   }
 
   private DataManagementApiPermission mapPermission(Permission permission) {
@@ -252,10 +261,62 @@ public class DataManagementAPI {
     final DataManagementApiRuleAction apiAction = new DataManagementApiRuleAction();
     apiAction.type = action;
 
+    final List<DataManagementApiConstraint> constraints =
+        permission.getConstraints().stream().map(this::mapConstraint).collect(Collectors.toList());
+
     final DataManagementApiPermission apiObject = new DataManagementApiPermission();
     apiObject.target = target;
     apiObject.action = apiAction;
+    apiObject.constraints = constraints;
     return apiObject;
+  }
+
+  private DataManagementApiConstraint mapConstraint(Constraint constraint) {
+
+    if (BusinessPartnerNumberConstraint.class.equals(constraint.getClass())) {
+      return mapConstraint((BusinessPartnerNumberConstraint) constraint);
+    } else if (PayMeConstraint.class.equals(constraint.getClass())) {
+      return mapConstraint((PayMeConstraint) constraint);
+    } else {
+      throw new UnsupportedOperationException(
+          "Unsupported constraint type: " + constraint.getClass().getName());
+    }
+  }
+
+  private DataManagementApiConstraint mapConstraint(PayMeConstraint constraint) {
+    final DataManagementApiLiteralExpression leftExpression =
+        new DataManagementApiLiteralExpression();
+    leftExpression.value = "PayMe";
+
+    final DataManagementApiLiteralExpression rightExpression =
+        new DataManagementApiLiteralExpression();
+    rightExpression.value = String.valueOf(constraint.getAmount());
+
+    final DataManagementApiConstraint dataManagementApiConstraint =
+        new DataManagementApiConstraint();
+    dataManagementApiConstraint.leftExpression = leftExpression;
+    dataManagementApiConstraint.rightExpression = rightExpression;
+    dataManagementApiConstraint.operator = "EQ";
+
+    return dataManagementApiConstraint;
+  }
+
+  private DataManagementApiConstraint mapConstraint(BusinessPartnerNumberConstraint constraint) {
+    final DataManagementApiLiteralExpression leftExpression =
+        new DataManagementApiLiteralExpression();
+    leftExpression.value = "BusinessPartnerNumber";
+
+    final DataManagementApiLiteralExpression rightExpression =
+        new DataManagementApiLiteralExpression();
+    rightExpression.value = constraint.getBusinessPartnerNumber();
+
+    final DataManagementApiConstraint dataManagementApiConstraint =
+        new DataManagementApiConstraint();
+    dataManagementApiConstraint.leftExpression = leftExpression;
+    dataManagementApiConstraint.rightExpression = rightExpression;
+    dataManagementApiConstraint.operator = "EQ";
+
+    return dataManagementApiConstraint;
   }
 
   private ContractOffer mapOffer(DataManagementApiContractOffer dataManagementApiContractOffer) {
@@ -271,27 +332,6 @@ public class DataManagementAPI {
     return new ContractOffer(id, policy, assetId);
   }
 
-  private ContractDefinition mapContractDefinition(
-      DataManagementApiContractDefinition dataManagementContractDefinition) {
-    final String id = dataManagementContractDefinition.id;
-    final String accessPolicy = dataManagementContractDefinition.accessPolicyId;
-    final String contractPolicy = dataManagementContractDefinition.contractPolicyId;
-
-    final List<String> assetIds;
-    if (dataManagementContractDefinition == null
-        || dataManagementContractDefinition.getCriteria() == null) assetIds = new ArrayList<>();
-    else
-      assetIds =
-          dataManagementContractDefinition.getCriteria().stream()
-              .filter(c -> c.left.equals(DataManagementApiAsset.ID))
-              .filter(c -> c.op.equals("="))
-              .map(c -> c.getRight())
-              .map(c -> (String) c)
-              .collect(Collectors.toList());
-
-    return new ContractDefinition(id, contractPolicy, accessPolicy, assetIds);
-  }
-
   private DataManagementApiContractDefinition mapContractDefinition(
       ContractDefinition contractDefinition) {
 
@@ -303,9 +343,9 @@ public class DataManagementAPI {
 
     for (final String assetId : contractDefinition.getAssetIds()) {
       DataManagementApiCriterion criterion = new DataManagementApiCriterion();
-      criterion.left = DataManagementApiAsset.ID;
-      criterion.op = "=";
-      criterion.right = assetId;
+      criterion.operandLeft = DataManagementApiAsset.ID;
+      criterion.operator = "=";
+      criterion.operandRight = assetId;
 
       apiObject.criteria.add(criterion);
     }
@@ -314,13 +354,39 @@ public class DataManagementAPI {
   }
 
   @Data
-  private class DataManagementApiAssetCreate {
+  private static class DataManagementApiNegotiationResponse {
+    private String id;
+  }
+
+  @Data
+  private static class DataManagementApiNegotiationPayload {
+    private String connectorId = "foo";
+    private String connectorAddress;
+    private DataManagementApiOffer offer;
+  }
+
+  @Data
+  private static class DataManagementApiNegotiation {
+    private String id;
+    private String state;
+    private String agreementId;
+  }
+
+  @Data
+  private static class DataManagementApiOffer {
+    private String offerId;
+    private String assetId;
+    private DataManagementApiPolicy policy;
+  }
+
+  @Data
+  private static class DataManagementApiAssetCreate {
     private DataManagementApiAsset asset;
     private DataManagementApiDataAddress dataAddress;
   }
 
   @Data
-  private class DataManagementApiAsset {
+  private static class DataManagementApiAsset {
     public static final String ID = "asset:prop:id";
     public static final String DESCRIPTION = "asset:prop:description";
 
@@ -328,46 +394,67 @@ public class DataManagementAPI {
   }
 
   @Data
-  private class DataManagementApiDataAddress {
+  private static class DataManagementApiDataAddress {
     public static final String TYPE = "type";
     private Map<String, Object> properties;
   }
 
   @Data
-  private class DataManagementApiPolicy {
+  private static class DataManagementApiPolicyDefinition {
     private String uid;
-    private List<DataManagementApiPermission> permissions;
+    private DataManagementApiPolicy policy;
   }
 
   @Data
-  private class DataManagementApiPermission {
+  private static class DataManagementApiPolicy {
+    private String uid;
+    private List<DataManagementApiPermission> permissions = new ArrayList<>();
+  }
+
+  @Data
+  private static class DataManagementApiPermission {
     private String edctype = "dataspaceconnector:permission";
-    private String target;
     private DataManagementApiRuleAction action;
+    private String target;
+    private List<DataManagementApiConstraint> constraints = new ArrayList<>();
   }
 
   @Data
-  private class DataManagementApiRuleAction {
+  private static class DataManagementApiConstraint {
+    private String edctype = "AtomicConstraint";
+    private DataManagementApiLiteralExpression leftExpression;
+    private DataManagementApiLiteralExpression rightExpression;
+    private String operator;
+  }
+
+  @Data
+  private static class DataManagementApiLiteralExpression {
+    private String edctype = "dataspaceconnector:literalexpression";
+    private String value;
+  }
+
+  @Data
+  private static class DataManagementApiRuleAction {
     private String type;
   }
 
   @Data
-  private class DataManagementApiContractDefinition {
+  private static class DataManagementApiContractDefinition {
     private String id;
     private String accessPolicyId;
     private String contractPolicyId;
-    private List<DataManagementApiCriterion> criteria;
+    private List<DataManagementApiCriterion> criteria = new ArrayList<>();
   }
 
   @Data
-  private class DataManagementApiCriterion {
-    private Object left;
-    private String op;
-    private Object right;
+  private static class DataManagementApiCriterion {
+    private Object operandLeft;
+    private String operator;
+    private Object operandRight;
   }
 
   @Data
-  private class DataManagementApiContractOffer {
+  private static class DataManagementApiContractOffer {
     private String id;
     private DataManagementApiPolicy policy;
     private DataManagementApiAsset asset;
@@ -375,8 +462,8 @@ public class DataManagementAPI {
   }
 
   @Data
-  private class DataManagementApiContractOfferCatalog {
+  private static class DataManagementApiContractOfferCatalog {
     private String id;
-    private List<DataManagementApiContractOffer> contractOffers;
+    private List<DataManagementApiContractOffer> contractOffers = new ArrayList<>();
   }
 }
