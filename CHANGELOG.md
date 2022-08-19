@@ -12,16 +12,25 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Added
 
-- control plane extension ([data-plane-selector-client](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+- Control-Plane extension ([data-plane-selector-client](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
   - run the EDC with multiple data planes at once
-- control plane extension([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
+- Control-Plane extension ([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
   - add data plane instances to the control plane by configuration
-- data plane extension ([s3-data-plane](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/aws/data-plane-s3))
+- Data-Plane extension ([s3-data-plane](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/aws/data-plane-s3))
   - transfer from and to AWS S3 buckets
+- Control-Plane extension ([data-encryption](edc-extensions/data-encryption))
+  - Data-Plane authentication attribute transmitted during data-plane-transfer can be encrypted symmetrically (AES)
 
 ### Changed
 
-- update setting name (`edc.dataplane.token.validation.endpoint` -> `edc.dataplane.token.validation.endpoint`)
+- Update setting name (`edc.dataplane.token.validation.endpoint` -> `edc.dataplane.token.validation.endpoint`)
+- EDC has been updated to version [0.0.1-20220818-SNAPSHOT](https://oss.sonatype.org/#nexus-search;gav~org.eclipse.dataspaceconnector~~0.0.1-20220818-SNAPSHOT~~) - implications to the behavior of the connector have been covered in the [corresponding migration guide](docs/migration/Version_0.0.x_0.1.x.md)
+
+### Fixed
+
+- Contract-Offer-Receiving-Connectors must also pass the ContractPolicy of the ContractDefinition before receiving offers([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1331))
+- Deletion of Asset becomes impossible when Contract Negotiation exists([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1403))
+- Deletion of Policy becomes impossible when Contract Definition exists([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1410))
 
 ## [0.0.6] - 2022-07-29
 
