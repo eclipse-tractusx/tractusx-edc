@@ -76,6 +76,7 @@ platobackendapplication:
   enabled: true
   fullnameOverride: "plato-backend-application"
   service:
+    type: NodePort
     frontend:
       port: 80
 platopostgresql:
@@ -105,7 +106,9 @@ platovault:
         { 
         
         sleep 5
-        
+
+        /bin/vault kv put secret/data-encryption-aes-keys content=H7j47H6vVQQOv/hbdAYz+w==
+
         cat << EOF | /bin/vault kv put secret/my-plato-daps-key content=-
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX9S8de5FTWl4
@@ -207,6 +210,15 @@ platoedccontrolplane:
   fullnameOverride: "plato-edc-controlplane"
   service:
     type: NodePort
+  logging:
+    # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
+    properties: |-
+      .level=DEBUG
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.ConsoleHandler.level=ALL
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   image:
     repository: &edcControlPlaneImage ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
     tag: &edcControlPlaneImageTag develop
@@ -281,11 +293,11 @@ platoedccontrolplane:
     EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy
     EDC_DATAPLANE_SELECTOR_PLATOPLANE_PROPERTIES: >-
       { 
-        "publicApiUrl": "http://plato-edc-dataplane:8185/api/public"
+        "publicApiUrl": "http://plato-edc-dataplane:8185/api/public/"
       }
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
-    EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public
+    EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public/
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-plato-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-plato-daps-crt # for simplicity this example re-uses the DAPS keys.
 
@@ -299,6 +311,14 @@ platoedccontrolplane:
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
 
+    #####################
+    ## DATA ENCRYPTION ##
+    #####################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_ALGORITHM: AES
+
 ############
 # SOKRATES #
 ############
@@ -306,6 +326,7 @@ sokratesbackendapplication:
   enabled: true
   fullnameOverride: "sokrates-backend-application"
   service:
+    type: NodePort
     frontend:
       port: 80
 sokratespostgresql:
@@ -333,6 +354,8 @@ sokratesvault:
         { 
         
         sleep 5
+
+        /bin/vault kv put secret/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
 
         cat << EOF | /bin/vault kv put secret/my-sokrates-daps-key content=-
         -----BEGIN PRIVATE KEY-----
@@ -436,6 +459,15 @@ sokratesedccontrolplane:
   fullnameOverride: "sokrates-edc-controlplane"
   service:
     type: NodePort
+  logging:
+    # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
+    properties: |-
+      .level=DEBUG
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.ConsoleHandler.level=ALL
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   envSecretName: "aio-sokrates-control-secret"
   image:
     repository: *edcControlPlaneImage
@@ -506,12 +538,12 @@ sokratesedccontrolplane:
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >- 
       { 
-        "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public"
+        "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public/"
       }
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
     # TODO Can this be removed?
-    EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public
+    EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public/
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
 
@@ -524,3 +556,11 @@ sokratesedccontrolplane:
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
+
+    #####################
+    ## DATA ENCRYPTION ##
+    #####################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_ALGORITHM: AES

@@ -100,14 +100,14 @@ jobs:
           echo "SOKRATES_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATA_MANAGEMENT_URL=http://sokrates-edc-controlplane:8181/data" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_IDS_URL=http://sokrates-edc-controlplane:8282/api/v1/ids" | tee -a ${GITHUB_ENV}
-          echo "SOKRATES_DATA_PLANE_URL=http://sokrates-edc-dataplane:8185/api/public" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_DATA_PLANE_URL=http://sokrates-edc-dataplane:8185/api/public/" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_USER=postgresql_sandbox_user" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_PASSWORD=psql_password" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_MANAGEMENT_URL=http://plato-edc-controlplane:8181/data" | tee -a ${GITHUB_ENV}
           echo "PLATO_IDS_URL=http://plato-edc-controlplane:8282/api/v1/ids" | tee -a ${GITHUB_ENV}
-          echo "PLATO_DATA_PLANE_URL=http://plato-edc-dataplane:8185/api/public" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATA_PLANE_URL=http://plato-edc-dataplane:8185/api/public/" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_USER=postgresql_sandbox_user" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_PASSWORD=psql_password" | tee -a ${GITHUB_ENV}

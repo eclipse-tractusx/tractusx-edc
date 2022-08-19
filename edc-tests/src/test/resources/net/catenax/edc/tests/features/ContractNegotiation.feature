@@ -22,13 +22,13 @@ Feature: Contract Negotiation
       | id      | description   |
       | asset-1 | Example Asset |
     And 'Plato' has the following policies
-      | id            | action | payMe      |
-      | policy-1      | USE    |            |
-      | policy-pay-me | USE    | 1000 |
+      | id            | action | payMe |
+      | policy-1      | USE    |       |
+      | policy-pay-me | USE    | 1000  |
     And 'Plato' has the following contract definitions
       | id                    | access policy | contract policy | asset   |
       | contract-definition-1 | policy-1      | policy-pay-me   | asset-1 |
     When 'Sokrates' sends 'Plato' a counter offer without constraints
-      | definition id              | asset id  |
-      | contract-definition-1      | asset-1   |
-    # Then the negotiation is declined # Issue https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1791
+      | definition id         | asset id |
+      | contract-definition-1 | asset-1  |
+    Then the negotiation is declined

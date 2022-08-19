@@ -280,15 +280,23 @@ curl -X POST "${DATA_MGMT_ENDPOINT}/data/contractdefinitions" --header "X-Api-Ke
 
 </details>
 
+### 2.4 Data Address
+
+When using a Data Address of type `HttpData` please notice that the property `endpoint` changed to `baseUrl`. This property is mostly used when creating assets.
+
+<details>
+
+<summary>Example Call</summary>
+
+```bash
+curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+```
+
+</details>
+
 ## 3. Connector Configuration
 
 ### 3.1 Token Validation Endpoint Setting
 
 In the past the token validation endpoint was configured in `edc.controlplane.validation-endpoint`. This setting key
 must be renamed to `edc.dataplane.token.validation.endpoint`.
-
-
-
-# TODO
-- changed HttpData endpoint to baseUrl
-- 

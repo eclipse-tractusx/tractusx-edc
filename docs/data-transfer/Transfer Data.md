@@ -48,6 +48,7 @@ Initialize the following environment variables, that are used in the upcoming AP
 export PLATO_DATAMGMT_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
 export PLATO_IDS_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 5p)
 export SOKRATES_DATAMGMT_URL=$(minikube service sokrates-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
+export SOKRATES_BACKEND_URL=$(minikube service sokrates-backend-application -n edc-all-in-one --url | sed -n 2p)
 ```
 
 ## 1. Setup Data Offer
@@ -146,7 +147,7 @@ locally. In this demo the transfer can be verified by executing a simple `cat` c
 ![Sequence 1](diagrams/transfer_sequence_5.png)
 
 ```bash
-echo $(kubectl exec -n edc-all-in-one --stdin --tty `kubectl get pod -n edc-all-in-one -l app.kubernetes.io/name=sokratesbackendapplication --template "{{ with index .items ${POD_INDEX:-0} }}{{ .metadata.name }}{{ end }}"` -- /usr/bin/cat /tmp/data/${TRANSFER_PROCESS_ID}) | jq
+curl -X GET ${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID} -H "Accept: application/octet-stream" -s | jq
 ```
 
 # Delete All Data

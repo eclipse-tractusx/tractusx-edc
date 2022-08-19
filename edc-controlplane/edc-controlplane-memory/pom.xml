@@ -58,6 +58,7 @@
                             <mainClass>
                             org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
                         </mainClass>
+                        <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
                 </configuration>
