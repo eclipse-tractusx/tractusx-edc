@@ -11,8 +11,10 @@ This document contains a list of breaking changes that are introduced in version
    1. Policy Path
    2. Policy Payload
    3. Criteria in Payload of Contract Definitions and Policies
+   4. Data Address
 3. Connector Configuration
    1. Token Validation Endpoint Setting
+   2. DataPlane Selector
 
 ## 1. PostgreSQL Database
 
@@ -282,7 +284,44 @@ curl -X POST "${DATA_MGMT_ENDPOINT}/data/contractdefinitions" --header "X-Api-Ke
 
 ### 2.4 Data Address
 
-When using a Data Address of type `HttpData` please notice that the property `endpoint` changed to `baseUrl`. This property is mostly used when creating assets.
+When using a Data Address of type `HttpData` please notice that the property `endpoint` changed to `baseUrl`. This
+property is mostly used when creating assets.
+
+
+<details>
+
+<summary>DataAddress Comparison</summary>
+
+**Old Asset format**:
+```json
+{
+  "asset": {
+    ...
+  },
+  "dataAddress": {
+    "properties": {
+      "endpoint": "http://provider-backend-service:8080/data/asset-1",
+      "type": "HttpData"
+    }
+  }
+}
+```
+
+**New Asset format**:
+```json
+{
+  "asset": {
+    ...
+  },
+  "dataAddress": {
+    "properties": {
+      "baseUrl": "http://provider-backend-service:8080/data/asset-1",
+      "type": "HttpData"
+    }
+  }
+}
+```
+</details>
 
 <details>
 
@@ -300,3 +339,11 @@ curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --
 
 In the past the token validation endpoint was configured in `edc.controlplane.validation-endpoint`. This setting key
 must be renamed to `edc.dataplane.token.validation.endpoint`.
+
+### 3.2 DataPlane Selector
+
+With this version a new feature was introduced which allows to have separate DataPlane instances for different
+transfer-flows (HttpProxy, S3, etc.). The Catena-X EDC team has additionally a new extension created which allows a
+simpler registration of additional dataplanes. Therefor some changes needs to be applied. Further documentation can
+be found in the extension folder:
+[dataplane-selector-configuration](/edc-extensions/dataplane-selector-configuration/README.md)
