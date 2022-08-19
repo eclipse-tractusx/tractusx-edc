@@ -217,7 +217,7 @@ configuration:
     # edc.aws.provision.role.duration.session.max=
     # edc.aws.secret.access.key=
     # edc.blobstore.endpoint=
-    # edc.controlplane.validation-endpoint=
+    # edc.dataplane.token.validation.endpoint=
     # edc.core.retry.backoff.max=
     # edc.core.retry.backoff.min=
     # edc.core.retry.retries.max=

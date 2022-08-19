@@ -14,11 +14,14 @@
 
 package net.catenax.edc.tests;
 
+import static net.catenax.edc.tests.Constants.BACKEND_SERVICE_BACKEND_API_URL;
+import static net.catenax.edc.tests.Constants.DATABASE_PASSWORD;
+import static net.catenax.edc.tests.Constants.DATABASE_URL;
+import static net.catenax.edc.tests.Constants.DATABASE_USER;
+import static net.catenax.edc.tests.Constants.DATA_MANAGEMENT_API_AUTH_KEY;
 import static net.catenax.edc.tests.Constants.DATA_MANAGEMENT_URL;
 import static net.catenax.edc.tests.Constants.DATA_PLANE_URL;
 import static net.catenax.edc.tests.Constants.IDS_URL;
-import static net.catenax.edc.tests.Constants.PLATO;
-import static net.catenax.edc.tests.Constants.SOKRATES;
 
 import java.util.Locale;
 import lombok.AccessLevel;
@@ -29,25 +32,28 @@ import lombok.NonNull;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 class Environment {
+  @NonNull private final String dataManagementAuthKey;
   @NonNull private final String dataManagementUrl;
   @NonNull private final String idsUrl;
   @NonNull private final String dataPlaneUrl;
-
-  public static Environment plato() {
-    return byName(PLATO);
-  }
-
-  public static Environment sokrates() {
-    return byName(SOKRATES);
-  }
+  @NonNull private final String backendServiceBackendApiUrl;
+  @NonNull private final String databaseUrl;
+  @NonNull private final String databaseUser;
+  @NonNull private final String databasePassword;
 
   public static Environment byName(String name) {
     name = name.toUpperCase(Locale.ROOT);
 
     return Environment.builder()
         .dataManagementUrl(System.getenv(String.join("_", name, DATA_MANAGEMENT_URL)))
+        .dataManagementAuthKey(System.getenv(String.join("_", name, DATA_MANAGEMENT_API_AUTH_KEY)))
         .idsUrl(System.getenv(String.join("_", name, IDS_URL)))
         .dataPlaneUrl(System.getenv(String.join("_", name, DATA_PLANE_URL)))
+        .backendServiceBackendApiUrl(
+            System.getenv(String.join("_", name, BACKEND_SERVICE_BACKEND_API_URL)))
+        .databaseUrl(System.getenv(String.join("_", name, DATABASE_URL)))
+        .databaseUser(System.getenv(String.join("_", name, DATABASE_USER)))
+        .databasePassword(System.getenv(String.join("_", name, DATABASE_PASSWORD)))
         .build();
   }
 }

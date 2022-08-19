@@ -28,27 +28,8 @@ Derivatives of the Data-Plane can be found here
 
 ## Prerequisites
 
-#### EDC artifacts
-
-Since the [EDC](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) does 
-not yet publish artifacts to a maven repository, which this project relies on, it needs 
-to be built upfront to be used:
-
-```shell
-git submodule update --init
-cd edc && ./gradlew publishToMavenLocal
-```
-
 ## Build
 
 ```shell
 ./mvnw package -Pwith-docker-image
 ```
-
-## Releases
-
-### Milestone 3
-
-The Catena-X milestone 3 release can be found in the `release/0.0.4` branch.
-
-https://github.com/catenax-ng/product-edc/releases/tag/0.0.4

@@ -31,7 +31,7 @@ public class HashicorpVaultHealthResponse {
       case 200:
         return HashicorpVaultHealthResponse.HashiCorpVaultHealthResponseCode
             .INITIALIZED_UNSEALED_AND_ACTIVE;
-      case 409:
+      case 429:
         return HashicorpVaultHealthResponse.HashiCorpVaultHealthResponseCode.UNSEALED_AND_STANDBY;
       case 472:
         return HashicorpVaultHealthResponse.HashiCorpVaultHealthResponseCode

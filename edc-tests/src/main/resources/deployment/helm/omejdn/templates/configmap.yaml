@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "omejdn.labels" . | nindent 4 }}
 data:
+  scope_mapping.yml: |-
+    ---
+    idsc:IDS_CONNECTOR_ATTRIBUTES_ALL:
+    - referringConnector
+
   omejdn.yml:  |-
     ---
     host: http://ids-daps:4567/
@@ -48,9 +53,9 @@ data:
           value: IDS_CONNECTOR_ATTRIBUTES_ALL
         - key: securityProfile
           value: idsc:BASE_SECURITY_PROFILE
-        {{- range $j, $attribute := $val.attributes }}
-        - key: {{ $j }}
-          value: {{ $attribute }}
+        {{- range $key, $value := $val.attributes }}
+        - key: {{ $key }}
+          value: {{ $value }}
         {{- end }}
         redirect_uri: http://localhost:4200
 {{ end -}}

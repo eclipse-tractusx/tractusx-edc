@@ -754,7 +754,7 @@
     </artifact>
     <artifact>
         <groupId>org.eclipse.dataspaceconnector</groupId>
-        <artifactId>junit-extension</artifactId>
+        <artifactId>junit</artifactId>
         <license>Apache License, Version 2.0</license>
         <version>0.0.1-SNAPSHOT</version>
     </artifact>
