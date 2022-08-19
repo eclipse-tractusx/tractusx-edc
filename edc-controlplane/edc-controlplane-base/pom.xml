@@ -46,6 +46,10 @@
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>dataplane-selector-configuration</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>data-encryption</artifactId>
+        </dependency>
 
         <!-- Config -->
         <dependency>

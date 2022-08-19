@@ -44,7 +44,7 @@ dependencies:
     alias: platoedcdataplane
     condition: platoedcdataplane.enabled
   - name: backend-service
-    version: "0.0.5"
+    version: "0.0.6"
     repository: https://denisneuling.github.io/cx-backend-service
     alias: platobackendapplication
     condition: platobackendapplication.enabled
@@ -71,7 +71,7 @@ dependencies:
     alias: sokratesedcdataplane
     condition: sokratesedcdataplane.enabled
   - name: backend-service
-    version: "0.0.5"
+    version: "0.0.6"
     repository: https://denisneuling.github.io/cx-backend-service
     alias: sokratesbackendapplication
     condition: sokratesbackendapplication.enabled

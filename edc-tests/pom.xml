@@ -162,6 +162,10 @@
                     <groupId>net.catenax.edc.extensions</groupId>
                     <artifactId>postgresql-migration</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>data-encryption</artifactId>
+                </dependency>
                 <!-- edc-controlplane -->
                 <dependency>
                     <groupId>net.catenax.edc</groupId>

@@ -65,7 +65,7 @@
         <org.awaitility.awaitility.version>4.2.0</org.awaitility.awaitility.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-milestone-5</org.eclipse.dataspaceconnector.version>
+        <org.eclipse.dataspaceconnector.version>0.0.1-20220818-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
         <org.postgresql.version>42.4.2</org.postgresql.version>
         <org.flywaydb.version>9.1.5</org.flywaydb.version>
@@ -321,6 +321,11 @@
             <dependency>
                 <groupId>net.catenax.edc.extensions</groupId>
                 <artifactId>dataplane-selector-configuration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>data-encryption</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

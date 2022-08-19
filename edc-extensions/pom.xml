@@ -34,6 +34,7 @@
         <module>postgresql-migration</module>
         <module>hashicorp-vault</module>
         <module>dataplane-selector-configuration</module>
+        <module>data-encryption</module>
     </modules>
 
 </project>
