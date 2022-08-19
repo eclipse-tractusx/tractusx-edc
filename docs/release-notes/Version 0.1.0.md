@@ -33,7 +33,7 @@ The following extensions are now included in the base image of the connector.
 
 > **Introduces new mandatory settings**
 
-New extension to add data plane instances by configuration. Each data plane instance must be registered at the control plane.
+New extension to add data plane instances by configuration. All data plane instances must be registered at the control plane.
 
 [Documentation](../../edc-extensions/dataplane-selector-configuration/README.md)
 
@@ -41,7 +41,7 @@ New extension to add data plane instances by configuration. Each data plane inst
 
 > **Introduces new mandatory settings**
 
-New extension to protect possibly confidential data, that may be send out to other connectors as transfer tokens.
+New extension to protect possibly confidential data, that may be sent out to other connectors as transfer tokens.
 
 [Documentation](../../edc-extensions/data-encryption/README.md)
 
