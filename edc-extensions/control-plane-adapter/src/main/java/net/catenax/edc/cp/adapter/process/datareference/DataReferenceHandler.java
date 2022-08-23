@@ -23,8 +23,7 @@ public class DataReferenceHandler implements Listener, EndpointDataReferenceRece
   @Override
   public void process(Message message) {
     String contractAgreementId = message.getPayload().getContractAgreementId();
-    monitor.info(
-        String.format("[%s] DataReferenceHandler: message received.", message.getTraceId()));
+    monitor.info(String.format("[%s] DataReference message received.", message.getTraceId()));
 
     EndpointDataReference dataReference = dataStore.getDataReference(contractAgreementId);
     if (isNull(dataReference)) {
@@ -35,8 +34,7 @@ public class DataReferenceHandler implements Listener, EndpointDataReferenceRece
     message.getPayload().setEndpointDataReference(dataReference);
     messageService.send(Channel.RESULT, message);
     dataStore.removeDataReference(contractAgreementId);
-    monitor.info(
-        String.format("[%s] DataReferenceHandler: message processed.", message.getTraceId()));
+    monitor.info(String.format("[%s] DataReference message processed.", message.getTraceId()));
   }
 
   @Override

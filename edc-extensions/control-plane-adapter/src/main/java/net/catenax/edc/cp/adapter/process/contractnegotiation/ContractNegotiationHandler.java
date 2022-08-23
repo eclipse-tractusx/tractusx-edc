@@ -1,6 +1,10 @@
 package net.catenax.edc.cp.adapter.process.contractnegotiation;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +15,8 @@ import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
 import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
+import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -25,11 +31,24 @@ public class ContractNegotiationHandler implements Listener {
   private final MessageService messageService;
   private final ContractNegotiationService contractNegotiationService;
   private final CatalogService catalogService;
+  private final ContractDataStore contractDataStore;
 
   @Override
   public void process(Message message) {
     monitor.debug("RequestHandler: input request: " + message.getPayload());
     ProcessData processData = message.getPayload();
+
+    ContractAgreementData contractData = contractDataStore.get(
+            message.getPayload().getAssetId(),
+            message.getPayload().getProvider());
+    if (Objects.nonNull(contractData) && isContractValid(contractData)) {
+      monitor.info(String.format("[%s] ContractAgreement taken from cache.", message.getTraceId()));
+      message.getPayload().setContractAgreementId(contractData.getId());
+      message.getPayload().setContractConfirmed(true);
+      messageService.send(Channel.CONTRACT_CONFIRMATION, message);
+      return;
+    }
+
     ContractOffer contractOffer =
         findContractOffer(processData.getAssetId(), processData.getProvider());
 
@@ -41,14 +60,21 @@ public class ContractNegotiationHandler implements Listener {
     messageService.send(Channel.CONTRACT_CONFIRMATION, message);
   }
 
+  private boolean isContractValid(ContractAgreementData contractAgreement) {
+    long now = Instant.now().getEpochSecond();
+    return Objects.nonNull(contractAgreement) &&
+            contractAgreement.getContractStartDate() < now &&
+            contractAgreement.getContractEndDate() > now;
+  }
+
   private ContractOffer findContractOffer(String assetId, String providerUrl) {
     Catalog catalog = getCatalog(providerUrl);
     return Optional.ofNullable(catalog.getContractOffers()).orElse(Collections.emptyList()).stream()
-        .filter(it -> it.getAsset().getId().equals(assetId))
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new ResourceNotFoundException("Could not find Contract Offer for given Asset Id"));
+            .filter(it -> it.getAsset().getId().equals(assetId))
+            .findFirst()
+            .orElseThrow(
+                    () ->
+                            new ResourceNotFoundException("Could not find Contract Offer for given Asset Id"));
   }
 
   private Catalog getCatalog(String providerUrl) {

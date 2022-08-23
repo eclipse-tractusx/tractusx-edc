@@ -7,7 +7,9 @@ import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.InMemoryMessageService;
 import net.catenax.edc.cp.adapter.messaging.ListenerService;
 import net.catenax.edc.cp.adapter.process.contractconfirmation.ContractConfirmationHandler;
+import net.catenax.edc.cp.adapter.process.contractconfirmation.DataStoreLock;
 import net.catenax.edc.cp.adapter.process.contractconfirmation.InMemoryDataStore;
+import net.catenax.edc.cp.adapter.process.contractdatastore.InMemoryContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractnegotiation.ContractNegotiationHandler;
 import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
 import net.catenax.edc.cp.adapter.service.ResultService;
@@ -89,7 +91,8 @@ public class ApiAdapterExtension implements ServiceExtension {
             monitor,
             messageService,
             contractNegotiationService,
-            new CatalogServiceImpl(dispatcher)));
+            new CatalogServiceImpl(dispatcher),
+            new InMemoryContractDataStore()));
   }
 
   private void initContractConfirmationHandler(
@@ -103,10 +106,11 @@ public class ApiAdapterExtension implements ServiceExtension {
         new ContractConfirmationHandler(
             monitor,
             messageService,
-            new InMemoryDataStore(),
+            new InMemoryDataStore(new DataStoreLock()),
             contractNegotiationService,
             new TransferProcessServiceImpl(
-                transferProcessStore, transferProcessManager, getTransactionContext(monitor)));
+                transferProcessStore, transferProcessManager, getTransactionContext(monitor)),
+            new InMemoryContractDataStore());
 
     listenerService.addListener(Channel.CONTRACT_CONFIRMATION, contractConfirmationHandler);
     if (nonNull(negotiationObservable)) {

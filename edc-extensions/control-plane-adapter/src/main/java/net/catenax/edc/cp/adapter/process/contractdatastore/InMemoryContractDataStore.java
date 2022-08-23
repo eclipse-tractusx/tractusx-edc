@@ -9,8 +9,8 @@ public class InMemoryContractDataStore implements ContractDataStore{
     private final static Map<String, ContractAgreementData> contractMap = new HashMap<>();
 
     @Override
-    public void add(String assetId, String provider, String negotiationId, ContractAgreement agreement) {
-        contractMap.put(getKey(assetId, provider), ContractAgreementData.from(agreement, negotiationId));
+    public void add(String assetId, String provider, ContractAgreement agreement) {
+        contractMap.put(getKey(assetId, provider), ContractAgreementData.from(agreement));
     }
 
     @Override

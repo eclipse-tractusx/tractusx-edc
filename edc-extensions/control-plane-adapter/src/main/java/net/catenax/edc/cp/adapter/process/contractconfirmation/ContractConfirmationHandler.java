@@ -8,6 +8,7 @@ import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
 import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
 import org.eclipse.dataspaceconnector.api.result.ServiceResult;
@@ -26,6 +27,7 @@ public class ContractConfirmationHandler implements Listener, ContractNegotiatio
   private final DataStore dataStore;
   private final ContractNegotiationService contractNegotiationService;
   private final TransferProcessService transferProcessService;
+  private final ContractDataStore contractDataStore;
 
   @Override
   public void process(Message message) {
@@ -33,8 +35,15 @@ public class ContractConfirmationHandler implements Listener, ContractNegotiatio
         String.format("[%s] ContractConfirmationHandler: received message.", message.getTraceId()));
     String contractNegotiationId = message.getPayload().getContractNegotiationId();
 
-    if (isContractConfirmed(contractNegotiationId)) {
-      initiateDataTransfer(message); // TODO  - contractAgreementID may be missing
+    if (message.getPayload().isContractConfirmed()) {
+      initiateDataTransfer(message);
+      return;
+    }
+
+    ContractNegotiation contractNegotiation = contractNegotiationService.findbyId(contractNegotiationId);
+    if (contractNegotiation.getState() == ContractNegotiationStates.CONFIRMED.code()) {
+      message.getPayload().setContractAgreementId(contractNegotiation.getContractAgreement().getId());
+      initiateDataTransfer(message);
       return;
     }
 
@@ -61,13 +70,10 @@ public class ContractConfirmationHandler implements Listener, ContractNegotiatio
     }
     message.getPayload().setContractAgreementId(contractAgreementId);
     initiateDataTransfer(message);
+    contractDataStore.add(message.getPayload().getAssetId(),
+            message.getPayload().getProvider(),
+            negotiation.getContractAgreement());
     dataStore.removeMessage(contractNegotiationId);
-  }
-
-  private boolean isContractConfirmed(String contractNegotiationId) {
-    return contractNegotiationService
-        .getState(contractNegotiationId)
-        .equals(ContractNegotiationStates.CONFIRMED.name());
   }
 
   private void initiateDataTransfer(Message message) {
