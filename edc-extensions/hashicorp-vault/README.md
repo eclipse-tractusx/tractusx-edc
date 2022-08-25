@@ -85,5 +85,29 @@ cat << EOF | /bin/vault kv put secret/my-daps-key content=-
 or
 
 ```bash
- edc.oauth.private.key.alias=my-daps-key
+edc.oauth.private.key.alias=my-daps-key
+```
+
+## Example: Catena-X Argo CD Vault Configuration
+
+
+```
+
+#########
+# Vault #
+#########
+
+edc.vault.hashicorp.url=https://vault.demo.catena-x.net
+# or even better configure token as k8 secret
+edc.vault.hashicorp.token=<token>
+edc.vault.hashicorp.api.secret.path=/v1/<tenant>/
+edc.vault.hashicorp.health.check.standby.ok=true
+
+########################
+# E.g. OAuth Extension #
+########################
+
+# from UI: secret stored in https://vault.demo.catena-x.net/ui/vault/secrets/<tenant>/show/my-daps-key
+edc.oauth.private.key.alias=my-daps-key
+
 ```
