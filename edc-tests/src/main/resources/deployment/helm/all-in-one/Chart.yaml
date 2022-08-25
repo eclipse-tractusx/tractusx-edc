@@ -85,3 +85,30 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     alias: sokratespostgresql
     condition: sokratespostgresql.enabled
+
+  # ARISTOTLE CONNECTOR
+  - name: edc-controlplane
+    version: ">=0.0.1"
+    repository: "file://../../../../../../../deployment/helm/edc-controlplane"
+    alias: aristotleedccontrolplane
+    condition: aristotleedccontrolplane.enabled
+  - name: edc-dataplane
+    version: ">=0.0.1"
+    repository: "file://../../../../../../../deployment/helm/edc-dataplane"
+    alias: aristotleedcdataplane
+    condition: aristotleedcdataplane.enabled
+  - name: backend-service
+    version: "0.0.6"
+    repository: https://denisneuling.github.io/cx-backend-service
+    alias: aristotlebackendapplication
+    condition: aristotlebackendapplication.enabled
+  - name: vault
+    version: 0.20.0
+    repository: https://helm.releases.hashicorp.com
+    alias: aristotlevault
+    condition: aristotlevault.enabled
+  - name: postgresql
+    version: 11.2.4
+    repository: https://charts.bitnami.com/bitnami
+    alias: aristotlepostgresql
+    condition: aristotlepostgresql.enabled

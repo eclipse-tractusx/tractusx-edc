@@ -68,6 +68,35 @@ idsdaps:
         tFn3m1FCCV8XYIj/EEUAh8VEhphLVEViE6m9Mm4deFDavXcGBb63BCiOQtnjd3eY
         zQ==
         -----END CERTIFICATE-----
+    - id: &aristotleDapsClientId aristotle
+      name: aristotle
+      attributes:
+        referringConnector: http://aristotle-edc-controlplane/BPNARISTOTLE
+      # Must be the same certificate that is stores in section 'aristotle-vault'
+      certificate: |-
+        -----BEGIN CERTIFICATE-----
+        MIIDvzCCAqegAwIBAgIUFd4dUwKfem8eKnI0tEsmiRE8pAMwDQYJKoZIhvcNAQEL
+        BQAwbzELMAkGA1UEBhMCR0IxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVy
+        bGluMRAwDgYDVQQKDAdEZXZlbG9wMRYwFAYDVQQLDA1JVCBEZXBhcnRtZW50MRQw
+        EgYDVQQDDAtleGFtcGxlLmNvbTAeFw0yMjA4MjUyMDAwMzFaFw0yMzA4MjUyMDAw
+        MzFaMG8xCzAJBgNVBAYTAkdCMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEQMA4GA1UECgwHRGV2ZWxvcDEWMBQGA1UECwwNSVQgRGVwYXJ0bWVudDEU
+        MBIGA1UEAwwLZXhhbXBsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+        AoIBAQCg389WzBxelZ2HEwTkOPG7f+ZYCShvX2ri68Fk0LfrwSsZ1mwhMDwuBCac
+        8a0QY1wvpCVietwyg1KLBw7ko0CmsOEyg/tpbqAcA7noRJuGP31mpaWCTiW//yfw
+        A9eU7gMjC8QjZFy0LtRGp08HMvGuR+bDLKws3IPHcgY6+hh4j76CBQhbUl5YAx1Q
+        bgPq+k8wvosQ5Hrx4Sgmj2rgTdOs83zAaM2X7Pb7+4J4JVuuTI3pLRPW3fQWWQkG
+        cyCtn5nJZ05F1tVMpXnA/BpsdDhmue7JARJXl5sIfOc08yAb4lyFfLmL3yI6oLO7
+        c/0aMlgwPRzqvx5TrzvdQvDu063dAgMBAAGjUzBRMB0GA1UdDgQWBBTw3LNbsYzF
+        K3EHCtlTUmOK8IpDYDAfBgNVHSMEGDAWgBTw3LNbsYzFK3EHCtlTUmOK8IpDYDAP
+        BgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQBes7LEWgJFLV7nhzTT
+        mP3WjnBDJBPmzaNCqtOZqp8aOL8TdiK2EGaaxyxsHyYk+13ITea62XBGutnxD7YS
+        ERGJYoXB9f2dS3I8wx9clPfW0zhnlbRNF8/yVJ/P1reFDMsDlWsEAasgOk1CmriN
+        Sn3W7BMSs/Z2ndA4CLBzJDH0I6cr0auQ4ZXDtqTkgCqfTVCedOURb1t/MYjYlyu0
+        MF1aevCExKoWlK6xUmc4QaFhHoLxQaF3FvLuVXtEmCAYPFZON7SuyXdn11JioZ7N
+        n6fljkXipoB7JoryGfso4JW0mCaB7tD3SlTVaGuerZ8Q/9U6Af/wAEJW/+YcXubD
+        j+t0
+        -----END CERTIFICATE-----
 
 #########
 # PLATO #
@@ -556,6 +585,252 @@ sokratesedccontrolplane:
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
+
+    #####################
+    ## DATA ENCRYPTION ##
+    #####################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_ALGORITHM: AES
+
+
+#############
+# ARISTOTLE #
+#############
+aristotlebackendapplication:
+  enabled: true
+  fullnameOverride: "aristotle-backend-application"
+  service:
+    type: NodePort
+    frontend:
+      port: 80
+aristotlepostgresql:
+  enabled: true
+  fullnameOverride: "aristotle-postgresql"
+  auth:
+    password: *psqlPassword
+    username: *psqlUsername
+    database: *psqlDatabase
+aristotlevault:
+  enabled: true
+  fullnameOverride: "aristotle-vault"
+  injector:
+    enabled: false
+  server:
+    dev:
+      enabled: true
+      devRootToken: &aristotleVaultToken "root"
+
+    # Must be the same certificate that is configured in section 'ids-daps'
+    postStart:
+      - "sh"
+      - "-c"
+      - |
+        { 
+        
+        sleep 5
+
+        /bin/vault kv put secret/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
+
+        cat << EOF | /bin/vault kv put secret/my-aristotle-daps-key content=-
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCg389WzBxelZ2H
+        EwTkOPG7f+ZYCShvX2ri68Fk0LfrwSsZ1mwhMDwuBCac8a0QY1wvpCVietwyg1KL
+        Bw7ko0CmsOEyg/tpbqAcA7noRJuGP31mpaWCTiW//yfwA9eU7gMjC8QjZFy0LtRG
+        p08HMvGuR+bDLKws3IPHcgY6+hh4j76CBQhbUl5YAx1QbgPq+k8wvosQ5Hrx4Sgm
+        j2rgTdOs83zAaM2X7Pb7+4J4JVuuTI3pLRPW3fQWWQkGcyCtn5nJZ05F1tVMpXnA
+        /BpsdDhmue7JARJXl5sIfOc08yAb4lyFfLmL3yI6oLO7c/0aMlgwPRzqvx5Trzvd
+        QvDu063dAgMBAAECggEAD6oraNLAMm+UIrp13/kxhKXsGodtwgaDBGybbMMsHY82
+        MLJh3gtx2LM7xU19Ihrit5rerwuylFKYP4Rk7Vt+KJ0RmJckbHxCp+eu+xBvKm/V
+        OKEJkDomz967F1JwdAaHFKsJIr8bjcn/jo+tENDjmqpSrI+VhlrElC+krqp6poaF
+        CjjJVBzax/dAmUH3dLhmrIstAU0dw9Tk3NRC8XjVOSf4xDKG4Pf3ak3IlvYL22K7
+        EPRQF3Cs4Qmlydn6ReR08PT7QTPx7KTmwru87W7lDt84VdphkfiSb9jaENaopB9y
+        Wgze9x+p2YgTzx8UlWczCJS3rpRmuuj4yhV9r/69cQKBgQC7KvqCFoFKHCb7w0Us
+        ON2rLvXLH9olztJr5Xel7T+TnKBhg2m5eUvw6nKENknXEGK5e/YrIOLHEL0WPglE
+        k3mgXlyvk21adS+tASQhvrHbQ2qWxAh5VE1H07uatWs8M3FX62o65xMQpx4xDVlo
+        7qWkc+o5IyCQFyg3se0BSObNdQKBgQDcCWdUq2LI0rHOXtz0ZCb5iVJtALNmDEPr
+        3OsW21sqLlLUJWBbU14dbNnkLAyMCoD39kFlwyDkYifW9mVSWWHGF904X69WMS+9
+        uHZc4a0pstVsUK5oBGNH5YjWz3Pu8tkZkAOmsyIomE58iMzn8/Ulg2jDMZUTaK/d
+        y87vXi5JyQKBgQCYfFZlP5KL302/VYJ4mce23GZx23xtywdR0jxdWWGvkC5144ty
+        CSlemJM9tcEIzxeviBexYXSAu9lhUp9YWFIB3n7iqFiyFsEF0OUv/N2IBm/Dbuh8
+        eLsRZqX0UBOSk1KnT2tXm8TDj3OggQCz5aHbzngnnr+7xLIGVhYCMvOetQKBgFBZ
+        rr4gh8ZGCmAODCnCmOju2IathtVxDSyIU+DY4YWZvO1zaKhw3SFpqnfEDiDlhQsH
+        hgIfK1e68ElzWLSlpyqrdEEtz91twL1LKw3n61Aa2gzfuZCKaabLjxjCUNelHtpS
+        2MJ7D7I7TA319r2NPKwiPJNq+8FGrVIVJtAKWGThAoGARKXckDWrAysdIVClT2/Q
+        K1qwRwyVdaOM64Rj3fmYOX7yuo3LNUdR/Rn+XTMn4SM1Cdzwt0skkOgi/G/GucNu
+        /Ht54nTxUSJ7G6EK5zkJJ7lC1FZkjLX2dYyFnTPfph2HtJajR9Ds25G+JypfX0ad
+        VgX5Rwpvc+oFqLx9M9l0TKc=
+        -----END PRIVATE KEY-----
+        EOF
+        
+        cat << EOF | /bin/vault kv put secret/my-aristotle-daps-crt content=-
+        -----BEGIN CERTIFICATE-----
+        MIIDvzCCAqegAwIBAgIUFd4dUwKfem8eKnI0tEsmiRE8pAMwDQYJKoZIhvcNAQEL
+        BQAwbzELMAkGA1UEBhMCR0IxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVy
+        bGluMRAwDgYDVQQKDAdEZXZlbG9wMRYwFAYDVQQLDA1JVCBEZXBhcnRtZW50MRQw
+        EgYDVQQDDAtleGFtcGxlLmNvbTAeFw0yMjA4MjUyMDAwMzFaFw0yMzA4MjUyMDAw
+        MzFaMG8xCzAJBgNVBAYTAkdCMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEQMA4GA1UECgwHRGV2ZWxvcDEWMBQGA1UECwwNSVQgRGVwYXJ0bWVudDEU
+        MBIGA1UEAwwLZXhhbXBsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+        AoIBAQCg389WzBxelZ2HEwTkOPG7f+ZYCShvX2ri68Fk0LfrwSsZ1mwhMDwuBCac
+        8a0QY1wvpCVietwyg1KLBw7ko0CmsOEyg/tpbqAcA7noRJuGP31mpaWCTiW//yfw
+        A9eU7gMjC8QjZFy0LtRGp08HMvGuR+bDLKws3IPHcgY6+hh4j76CBQhbUl5YAx1Q
+        bgPq+k8wvosQ5Hrx4Sgmj2rgTdOs83zAaM2X7Pb7+4J4JVuuTI3pLRPW3fQWWQkG
+        cyCtn5nJZ05F1tVMpXnA/BpsdDhmue7JARJXl5sIfOc08yAb4lyFfLmL3yI6oLO7
+        c/0aMlgwPRzqvx5TrzvdQvDu063dAgMBAAGjUzBRMB0GA1UdDgQWBBTw3LNbsYzF
+        K3EHCtlTUmOK8IpDYDAfBgNVHSMEGDAWgBTw3LNbsYzFK3EHCtlTUmOK8IpDYDAP
+        BgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQBes7LEWgJFLV7nhzTT
+        mP3WjnBDJBPmzaNCqtOZqp8aOL8TdiK2EGaaxyxsHyYk+13ITea62XBGutnxD7YS
+        ERGJYoXB9f2dS3I8wx9clPfW0zhnlbRNF8/yVJ/P1reFDMsDlWsEAasgOk1CmriN
+        Sn3W7BMSs/Z2ndA4CLBzJDH0I6cr0auQ4ZXDtqTkgCqfTVCedOURb1t/MYjYlyu0
+        MF1aevCExKoWlK6xUmc4QaFhHoLxQaF3FvLuVXtEmCAYPFZON7SuyXdn11JioZ7N
+        n6fljkXipoB7JoryGfso4JW0mCaB7tD3SlTVaGuerZ8Q/9U6Af/wAEJW/+YcXubD
+        j+t0
+        -----END CERTIFICATE-----
+        EOF
+        }
+
+  ui:
+    enabled: true
+    externalPort: 8200
+    targetPort: 8200
+aristotleedcdataplane:
+  enabled: true
+  fullnameOverride: "aristotle-edc-dataplane"
+  image:
+    repository: *edcDataPlaneImage
+    tag: *edcDataPlaneImageTag
+    pullPolicy: *pullPolicy
+  envSecretName: "aio-aristotle-data-secret"
+  edc:
+    endpoints:
+      public:
+        port: 8185
+        path: /api/public
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
+  env:
+    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+    #############
+    ## GENERAL ##
+    #############
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://aristotle-edc-controlplane:8182/validation/token
+
+    ###############
+    ## KEY VAULT ##
+    ###############
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    EDC_VAULT_HASHICORP_URL: http://aristotle-vault:8200
+    EDC_VAULT_HASHICORP_TOKEN: *aristotleVaultToken
+aristotleedccontrolplane:
+  enabled: true
+  fullnameOverride: "aristotle-edc-controlplane"
+  service:
+    type: NodePort
+  logging:
+    # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
+    properties: |-
+      .level=DEBUG
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.ConsoleHandler.level=ALL
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+  envSecretName: "aio-aristotle-control-secret"
+  image:
+    repository: *edcControlPlaneImage
+    tag: *edcControlPlaneImageTag
+    pullPolicy: *pullPolicy
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
+  env:
+    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+    ########################
+    ## DAPS CONFIGURATION ##
+    ########################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
+    EDC_OAUTH_CLIENT_ID: *aristotleDapsClientId
+    EDC_OAUTH_PROVIDER_JWKS_URL: *edcControlPlaneOauthJwksUrl
+    EDC_OAUTH_TOKEN_URL: *edcControlPlaneOauthTokenUrl
+    EDC_OAUTH_PRIVATE_KEY_ALIAS: my-aristotle-daps-key
+    EDC_OAUTH_PUBLIC_KEY_ALIAS: my-aristotle-daps-crt
+    EDC_OAUTH_PROVIDER_AUDIENCE: *edcControlPlaneOauthAudience
+
+    #############
+    ## GENERAL ##
+    #############
+    IDS_WEBHOOK_ADDRESS: http://aristotle-edc-controlplane:8282
+    EDC_IDS_ENDPOINT: http://aristotle-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_DESCRIPTION: "Aristotle Control Plane"
+
+    ################
+    ## POSTGRESQL ##
+    ################
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    EDC_DATASOURCE_ASSET_NAME: asset
+    EDC_DATASOURCE_ASSET_USER: *psqlUsername
+    EDC_DATASOURCE_ASSET_URL: &aristotlePsqlConStr "jdbc:postgresql://aristotle-postgresql:5432/edc"
+    
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
+    EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
+    EDC_DATASOURCE_CONTRACTDEFINITION_URL: *aristotlePsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *aristotlePsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    EDC_DATASOURCE_POLICY_NAME: policy
+    EDC_DATASOURCE_POLICY_USER: *psqlUsername
+    EDC_DATASOURCE_POLICY_URL: *aristotlePsqlConStr
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
+    EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
+    EDC_DATASOURCE_TRANSFERPROCESS_URL: *aristotlePsqlConStr
+
+    ################
+    ## DATA PLANE ##
+    ################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    EDC_DATAPLANE_SELECTOR_ARISTOTLEPLANE_URL: http://aristotle-edc-dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_ARISTOTLEPLANE_SOURCETYPES : HttpData
+    EDC_DATAPLANE_SELECTOR_ARISTOTLEPLANE_DESTINATIONTYPES: HttpProxy
+    EDC_DATAPLANE_SELECTOR_ARISTOTLEPLANE_PROPERTIES: >- 
+      { 
+        "publicApiUrl": "http://aristotle-edc-dataplane:8185/api/public/"
+      }
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
+    # TODO Can this be removed?
+    EDC_TRANSFER_PROXY_ENDPOINT: http://aristotle-edc-dataplane:8185/api/public/
+    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-aristotle-daps-key # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-aristotle-daps-crt # for simplicity this example re-uses the DAPS keys.
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    EDC_RECEIVER_HTTP_ENDPOINT: http://aristotle-backend-application
+
+    ###############
+    ## KEY VAULT ##
+    ###############
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    EDC_VAULT_HASHICORP_URL: http://aristotle-vault:8200
 
     #####################
     ## DATA ENCRYPTION ##
