@@ -12,11 +12,11 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp;
+package net.catenax.edc.transferprocess.sftp.provisioner;
 
-public interface SftpProvisioner {
-    void createUser();
-    void deleteUser();
-    void createBucket();
-    void deleteBucket();
+public interface SftpProvider {
+    void createUser(SftpUser user);
+    void deleteUser(SftpUser user);
+    void createLocation(SftpLocation location);
+    void deleteLocation(SftpLocation location);
 }

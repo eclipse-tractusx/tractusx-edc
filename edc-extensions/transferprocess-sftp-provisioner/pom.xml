@@ -22,7 +22,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>transferprocess-sftp</artifactId>
+    <artifactId>transferprocess-sftp-provisioner</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -43,7 +43,7 @@
                 </includes>
             </resource>
             <resource>
-                <directory>../../</directory>
+                <directory>../..</directory>
                 <targetPath>META-INF</targetPath>
                 <includes>
                     <include>NOTICE.md</include>
@@ -115,6 +115,18 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>core-policy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>transfer-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
@@ -129,6 +141,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hierynomus</groupId>
+            <artifactId>sshj</artifactId>
         </dependency>
 
         <!-- Test Dependencies -->

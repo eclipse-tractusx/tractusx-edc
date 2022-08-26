@@ -12,26 +12,18 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp;
+package net.catenax.edc.transferprocess.sftp.provisioner;
 
-public class SftpProvisionerImpl implements SftpProvisioner {
-    @Override
-    public void createUser() {
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-    }
-
-    @Override
-    public void deleteUser() {
-
-    }
-
-    @Override
-    public void createBucket() {
-
-    }
-
-    @Override
-    public void deleteBucket() {
-
-    }
+@Builder
+@Getter
+@ToString(of = "name")
+@EqualsAndHashCode
+public class SftpUser {
+    private final String name;
+    private final byte[] key;
 }

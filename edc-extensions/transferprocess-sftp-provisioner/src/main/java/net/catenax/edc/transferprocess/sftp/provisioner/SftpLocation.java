@@ -12,17 +12,19 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp;
+package net.catenax.edc.transferprocess.sftp.provisioner;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Builder
 @Getter
-@Data
-public class SftpBucket {
-    @JsonProperty("url")
-    private final String url;
+@ToString
+@EqualsAndHashCode
+public class SftpLocation {
+    private final String host;
+    private final Integer port;
+    private final String path;
 }

@@ -42,8 +42,9 @@
         <module>dataplane-selector-configuration</module>
         <module>data-encryption</module>
         <module>cx-oauth2</module>
-        <module>control-plane-adapter</module>
-        <module>transferprocess-sftp</module>
+        <module>transferprocess-sftp-common</module>
+        <module>transferprocess-sftp-client</module>
+        <module>transferprocess-sftp-provisioner</module>
     </modules>
 
 </project>
