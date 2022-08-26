@@ -19,9 +19,8 @@ import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class DataEncrypterConfiguration {
-  @NonNull String algorithm;
+public class AesDataEncrypterConfiguration {
   @NonNull String keySetAlias;
   boolean cachingEnabled;
-  Duration cachingDuration;
+  @NonNull Duration cachingDuration;
 }
