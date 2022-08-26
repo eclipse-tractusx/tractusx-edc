@@ -36,7 +36,7 @@ public class HttpController {
     String traceId = initiateProcess(assetId, providerUrl);
 
     try {
-      return Response.status(Response.Status.OK).entity(resultService.poll(traceId)).build();
+      return Response.status(Response.Status.OK).entity(resultService.pull(traceId)).build();
     } catch (InterruptedException e) {
       monitor.severe("InterruptedException", e);
       return Response.status(Response.Status.NOT_FOUND).build();

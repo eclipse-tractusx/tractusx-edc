@@ -2,7 +2,6 @@ package net.catenax.edc.cp.adapter.process.contractconfirmation;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import net.catenax.edc.cp.adapter.messaging.Message;
 
 public class InMemoryDataStore implements DataStore {

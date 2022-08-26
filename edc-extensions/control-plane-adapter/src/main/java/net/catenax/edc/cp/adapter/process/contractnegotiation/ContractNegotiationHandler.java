@@ -1,8 +1,6 @@
 package net.catenax.edc.cp.adapter.process.contractnegotiation;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,9 +36,9 @@ public class ContractNegotiationHandler implements Listener {
     monitor.debug("RequestHandler: input request: " + message.getPayload());
     ProcessData processData = message.getPayload();
 
-    ContractAgreementData contractData = contractDataStore.get(
-            message.getPayload().getAssetId(),
-            message.getPayload().getProvider());
+    ContractAgreementData contractData =
+        contractDataStore.get(
+            message.getPayload().getAssetId(), message.getPayload().getProvider());
     if (Objects.nonNull(contractData) && isContractValid(contractData)) {
       monitor.info(String.format("[%s] ContractAgreement taken from cache.", message.getTraceId()));
       message.getPayload().setContractAgreementId(contractData.getId());
@@ -62,19 +60,19 @@ public class ContractNegotiationHandler implements Listener {
 
   private boolean isContractValid(ContractAgreementData contractAgreement) {
     long now = Instant.now().getEpochSecond();
-    return Objects.nonNull(contractAgreement) &&
-            contractAgreement.getContractStartDate() < now &&
-            contractAgreement.getContractEndDate() > now;
+    return Objects.nonNull(contractAgreement)
+        && contractAgreement.getContractStartDate() < now
+        && contractAgreement.getContractEndDate() > now;
   }
 
   private ContractOffer findContractOffer(String assetId, String providerUrl) {
     Catalog catalog = getCatalog(providerUrl);
     return Optional.ofNullable(catalog.getContractOffers()).orElse(Collections.emptyList()).stream()
-            .filter(it -> it.getAsset().getId().equals(assetId))
-            .findFirst()
-            .orElseThrow(
-                    () ->
-                            new ResourceNotFoundException("Could not find Contract Offer for given Asset Id"));
+        .filter(it -> it.getAsset().getId().equals(assetId))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException("Could not find Contract Offer for given Asset Id"));
   }
 
   private Catalog getCatalog(String providerUrl) {

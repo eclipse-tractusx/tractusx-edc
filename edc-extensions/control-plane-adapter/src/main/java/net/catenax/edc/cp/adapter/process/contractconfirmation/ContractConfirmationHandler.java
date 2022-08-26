@@ -2,6 +2,7 @@ package net.catenax.edc.cp.adapter.process.contractconfirmation;
 
 import static java.util.Objects.isNull;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import net.catenax.edc.cp.adapter.exception.DataReferenceAccessException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
@@ -40,9 +41,13 @@ public class ContractConfirmationHandler implements Listener, ContractNegotiatio
       return;
     }
 
-    ContractNegotiation contractNegotiation = contractNegotiationService.findbyId(contractNegotiationId);
-    if (contractNegotiation.getState() == ContractNegotiationStates.CONFIRMED.code()) {
-      message.getPayload().setContractAgreementId(contractNegotiation.getContractAgreement().getId());
+    ContractNegotiation contractNegotiation =
+        contractNegotiationService.findbyId(contractNegotiationId);
+    if (Objects.nonNull(contractNegotiation)
+        && contractNegotiation.getState() == ContractNegotiationStates.CONFIRMED.code()) {
+      message
+          .getPayload()
+          .setContractAgreementId(contractNegotiation.getContractAgreement().getId());
       initiateDataTransfer(message);
       return;
     }
@@ -70,9 +75,10 @@ public class ContractConfirmationHandler implements Listener, ContractNegotiatio
     }
     message.getPayload().setContractAgreementId(contractAgreementId);
     initiateDataTransfer(message);
-    contractDataStore.add(message.getPayload().getAssetId(),
-            message.getPayload().getProvider(),
-            negotiation.getContractAgreement());
+    contractDataStore.add(
+        message.getPayload().getAssetId(),
+        message.getPayload().getProvider(),
+        negotiation.getContractAgreement());
     dataStore.removeMessage(contractNegotiationId);
   }
 

@@ -59,7 +59,7 @@ public class ApiAdapterExtension implements ServiceExtension {
         new ContractNegotiationServiceImpl(store, manager, getTransactionContext(monitor));
     ListenerService listenerService = new ListenerService();
     InMemoryMessageService messageService = new InMemoryMessageService(monitor, listenerService);
-    ResultService resultService = new ResultService(monitor);
+    ResultService resultService = new ResultService();
     listenerService.addListener(Channel.RESULT, resultService);
 
     initHttpController(monitor, messageService, resultService);

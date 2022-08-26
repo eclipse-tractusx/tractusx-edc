@@ -7,23 +7,23 @@ import org.eclipse.dataspaceconnector.spi.types.domain.contract.agreement.Contra
 @Getter
 @Setter
 public class ContractAgreementData {
-    private String id;
-    private String providerAgentId;
-    private String consumerAgentId;
-    private long contractSigningDate;
-    private long contractStartDate;
-    private long contractEndDate;
-    private String assetId;
-    private String policyId;
+  private String id;
+  private String providerAgentId;
+  private String consumerAgentId;
+  private long contractSigningDate;
+  private long contractStartDate;
+  private long contractEndDate;
+  private String assetId;
+  private String policyId;
 
-    public static ContractAgreementData from(ContractAgreement agreement){
-        ContractAgreementData data = new ContractAgreementData();
-        data.setId(agreement.getId());
-        data.setAssetId(agreement.getAssetId());
-        data.setPolicyId(agreement.getPolicyId());
-        data.setContractStartDate(agreement.getContractStartDate());
-        data.setContractEndDate(agreement.getContractEndDate());
-        data.setContractSigningDate(agreement.getContractSigningDate());
-        return data;
-    }
+  public static ContractAgreementData from(ContractAgreement agreement) {
+    ContractAgreementData data = new ContractAgreementData();
+    data.setId(agreement.getId());
+    data.setAssetId(agreement.getAssetId());
+    data.setPolicyId(agreement.getPolicyId());
+    data.setContractStartDate(agreement.getContractStartDate());
+    data.setContractEndDate(agreement.getContractEndDate());
+    data.setContractSigningDate(agreement.getContractSigningDate());
+    return data;
+  }
 }
