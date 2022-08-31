@@ -135,8 +135,12 @@ ingresses:
       - public
     # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
     className: ""
-    # -- Enables TLS on the ingress resource
-    tls: false
+    # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+    tls:
+      # -- Enables TLS on the ingress resource
+      enabled: false
+      # -- If present overwrites the default secret name
+      secretName: ""
     ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
     certManager:
       # -- If preset enables certificate generation via cert-manager namespace scoped issuer

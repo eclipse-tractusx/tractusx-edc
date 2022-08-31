@@ -42,11 +42,15 @@ spec:
   ingressClassName: {{ .className }}
   {{- end }}
   {{- if .hostname }}
-  {{- if .tls }}
+  {{- if .tls.enabled }}
   tls:
     - hosts:
         - {{ .hostname }}
+      {{- if .tls.secretName }}
+      secretName: {{ .tls.secretName }}
+      {{- else }}
       secretName: {{ $ingressName }}-tls
+      {{- end }}
   {{- end }}
   rules:
     - host: {{ .hostname }}
