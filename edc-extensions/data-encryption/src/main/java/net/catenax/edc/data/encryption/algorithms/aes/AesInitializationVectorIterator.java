@@ -13,23 +13,22 @@
  */
 package net.catenax.edc.data.encryption.algorithms.aes;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import lombok.SneakyThrows;
 import net.catenax.edc.data.encryption.util.ArrayUtil;
 
 public class AesInitializationVectorIterator implements Iterator<byte[]> {
 
-  public static final int VECTOR_SIZE = 12;
-  public static final int NONCE_SIZE = 4;
-  public static final int SIZE = VECTOR_SIZE + NONCE_SIZE;
+  public static final int RANDOM_SIZE = 12;
+  public static final int COUNTER_SIZE = 4;
+  public static final int VECTOR_SIZE = RANDOM_SIZE + COUNTER_SIZE;
 
   private final ByteCounter counter;
-  private byte[] vector;
 
   public AesInitializationVectorIterator() {
-    counter = new ByteCounter(NONCE_SIZE);
+    counter = new ByteCounter(COUNTER_SIZE);
   }
 
   public AesInitializationVectorIterator(ByteCounter byteCounter) {
@@ -43,25 +42,21 @@ public class AesInitializationVectorIterator implements Iterator<byte[]> {
 
   @Override
   public byte[] next() {
-    if (vector == null) {
-      throw new IllegalStateException(getClass().getSimpleName() + " has not been initialized");
-    }
     if (counter.isMaxed()) {
       throw new NoSuchElementException(getClass().getSimpleName() + " has no more elements");
     }
 
+    byte[] random = getNextRandom();
     counter.increment();
-    return ArrayUtil.concat(vector, counter.getBytes());
+
+    return ArrayUtil.concat(random, counter.getBytes());
   }
 
-  public void initialize() throws NoSuchAlgorithmException {
+  @SneakyThrows
+  public byte[] getNextRandom() {
     SecureRandom random = SecureRandom.getInstanceStrong();
-    byte[] newVector = new byte[VECTOR_SIZE];
+    byte[] newVector = new byte[RANDOM_SIZE];
     random.nextBytes(newVector);
-    vector = newVector;
-  }
-
-  public boolean isInitialized() {
-    return vector != null;
+    return newVector;
   }
 }

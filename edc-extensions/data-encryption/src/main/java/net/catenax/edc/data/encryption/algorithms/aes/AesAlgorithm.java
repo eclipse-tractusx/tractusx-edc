@@ -55,9 +55,6 @@ public class AesAlgorithm implements CryptoAlgorithm<AesKey> {
       if (!initializationVectorIterator.hasNext()) {
         initializationVectorIterator = new AesInitializationVectorIterator();
       }
-      if (!initializationVectorIterator.isInitialized()) {
-        initializationVectorIterator.initialize();
-      }
 
       initializationVector = initializationVectorIterator.next();
     }
