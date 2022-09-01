@@ -68,7 +68,7 @@ public class SftpProvisionerExtension implements ServiceExtension {
         final byte[] sftpKey = context.getSetting(SFTP_USER_KEY, "key").getBytes(StandardCharsets.UTF_8);
         SftpUserFactory userFactory = new ConfigBackedSftpUserFactory(sftpName, sftpKey);
 
-        SftpProvider sftpProvider = new GenericSftpProvider();
+        SftpProvider sftpProvider = new NoopSftpProvider();
         sftpProvisioner = new SftpProvisioner(policyEngine, locationFactory, userFactory, sftpProvider);
         provisionManager.register(sftpProvisioner);
         context.getMonitor().info("SftpProvisionerExtension: authentication/initialization complete.");

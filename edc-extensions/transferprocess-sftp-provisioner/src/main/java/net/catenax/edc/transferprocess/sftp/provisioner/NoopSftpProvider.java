@@ -14,12 +14,7 @@
 
 package net.catenax.edc.transferprocess.sftp.provisioner;
 
-import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.sftp.SFTPClient;
-
-import java.io.IOException;
-
-public class GenericSftpProvider implements SftpProvider {
+public class NoopSftpProvider implements SftpProvider {
     @Override
     public void createUser(SftpUser user) {
 
@@ -32,19 +27,6 @@ public class GenericSftpProvider implements SftpProvider {
 
     @Override
     public void createLocation(SftpLocation location) {
-        String remotePath = String.format("sfpt://%s:%d/%s",
-                location.getHost(),
-                location.getPort(),
-                location.getPath());
-
-        SSHClient sshClient = new SSHClient();
-        try {
-            sshClient.loadKnownHosts();
-            sshClient.connect(remotePath);
-            SFTPClient sftpClient = sshClient.newSFTPClient();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
