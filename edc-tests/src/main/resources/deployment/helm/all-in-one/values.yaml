@@ -235,7 +235,7 @@ platoedccontrolplane:
     ## DAPS CONFIGURATION ##
     ########################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/cx-oauth2
     EDC_OAUTH_CLIENT_ID: *platoDapsClientId
     EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/jwks.json"
     EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
@@ -258,27 +258,27 @@ platoedccontrolplane:
     ## POSTGRESQL ##
     ################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/asset-index-sql
     EDC_DATASOURCE_ASSET_NAME: asset
     EDC_DATASOURCE_ASSET_USER: *psqlUsername
     EDC_DATASOURCE_ASSET_URL: &platoPsqlConStr "jdbc:postgresql://plato-postgresql:5432/edc"
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
     EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
     EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTDEFINITION_URL: *platoPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
     EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
     EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *platoPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
     EDC_DATASOURCE_POLICY_NAME: policy
     EDC_DATASOURCE_POLICY_USER: *psqlUsername
     EDC_DATASOURCE_POLICY_URL: *platoPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
     EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
     EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
     EDC_DATASOURCE_TRANSFERPROCESS_URL: *platoPsqlConStr
@@ -296,12 +296,12 @@ platoedccontrolplane:
         "publicApiUrl": "http://plato-edc-dataplane:8185/api/public/"
       }
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
     EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public/
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-plato-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-plato-daps-crt # for simplicity this example re-uses the DAPS keys.
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
     EDC_RECEIVER_HTTP_ENDPOINT: http://plato-backend-application
 
     ###############
@@ -503,27 +503,27 @@ sokratesedccontrolplane:
     ## POSTGRESQL ##
     ################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/asset-index-sql
     EDC_DATASOURCE_ASSET_NAME: asset
     EDC_DATASOURCE_ASSET_USER: *psqlUsername
     EDC_DATASOURCE_ASSET_URL: &SokratesPsqlConStr "jdbc:postgresql://sokrates-postgresql:5432/edc"
     
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
     EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
     EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTDEFINITION_URL: *SokratesPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
     EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
     EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *SokratesPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
     EDC_DATASOURCE_POLICY_NAME: policy
     EDC_DATASOURCE_POLICY_USER: *psqlUsername
     EDC_DATASOURCE_POLICY_URL: *SokratesPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
     EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
     EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
     EDC_DATASOURCE_TRANSFERPROCESS_URL: *SokratesPsqlConStr
@@ -541,13 +541,12 @@ sokratesedccontrolplane:
         "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public/"
       }
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
-    # TODO Can this be removed?
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
     EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public/
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
     EDC_RECEIVER_HTTP_ENDPOINT: http://sokrates-backend-application
 
     ###############
