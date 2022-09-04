@@ -18,7 +18,7 @@
     <parent>
         <groupId>net.catenax.edc.extensions</groupId>
         <artifactId>edc-extensions</artifactId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -148,7 +148,6 @@
         <dependency>
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>transferprocess-sftp-provisioner</artifactId>
-            <version>0.0.7-SNAPSHOT</version>
         </dependency>
 
         <!-- External Dependencies -->
@@ -184,9 +183,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>vault</artifactId>
-            <version>${org.testcontainers.version}</version>
-            <scope>test</scope>
+            <artifactId>testcontainers</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
