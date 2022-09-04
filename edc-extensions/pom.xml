@@ -35,6 +35,7 @@
         <module>hashicorp-vault</module>
         <module>dataplane-selector-configuration</module>
         <module>data-encryption</module>
+        <module>cx-oauth2</module>
     </modules>
 
 </project>

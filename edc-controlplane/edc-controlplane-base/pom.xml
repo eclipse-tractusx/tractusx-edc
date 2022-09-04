@@ -63,6 +63,10 @@
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>data-encryption</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.catenax.edc.extensions</groupId>
+            <artifactId>cx-oauth2</artifactId>
+        </dependency>
 
         <!-- Config -->
         <dependency>
@@ -111,10 +115,6 @@
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>ids-spi</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-token-validation</artifactId>
-        </dependency>
 
         <!-- Core -->
         <dependency>
@@ -133,6 +133,16 @@
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>contract</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jwt-spi</artifactId>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jwt-core</artifactId>
+        </dependency>
+        -->
 
         <!-- Data-Plane -->
         <dependency>
@@ -149,7 +159,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-selector-store</artifactId>
+            <artifactId>data-plane-selector-spi</artifactId>
         </dependency>
 
         <!-- Telemetry -->

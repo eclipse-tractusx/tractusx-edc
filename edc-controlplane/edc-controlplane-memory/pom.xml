@@ -104,16 +104,6 @@
             </exclusions>
         </dependency>
 
-        <!-- IAM -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>oauth2-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-daps</artifactId>
-        </dependency>
-
         <!-- Other -->
         <dependency>
             <groupId>com.azure</groupId>

@@ -22,7 +22,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>data-encryption</artifactId>
+    <artifactId>cx-oauth2</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -89,7 +89,6 @@
     </build>
 
     <dependencies>
-
         <!-- SPI -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -97,8 +96,19 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-transfer-spi</artifactId>
+            <artifactId>oauth2-spi</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.dataspaceconnector</groupId>
+                    <artifactId>jwt-spi</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>jwt-spi</artifactId>
+        </dependency>
+
 
         <!-- External Dependencies -->
         <dependency>
@@ -106,9 +116,17 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${org.bouncycastle.bcpkix-jdk15on.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>8.23</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
         </dependency>
 
         <!-- Test Dependencies -->

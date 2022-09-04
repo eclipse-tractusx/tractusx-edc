@@ -258,6 +258,7 @@ configuration:
     # edc.ids.curator=
     # edc.ids.description=
     # edc.ids.endpoint=
+    # edc.ids.endpoint.audience=
     # edc.ids.id=
     # edc.ids.maintainer=
     # edc.ids.security.profile=
@@ -276,7 +277,6 @@ configuration:
     # edc.negotiation.provider.state-machine.batch-size=
     # edc.oauth.client.id=
     # edc.oauth.private.key.alias=
-    # edc.oauth.provider.audience=
     # edc.oauth.provider.jwks.refresh=
     # edc.oauth.provider.jwks.url=
     # edc.oauth.public.key.alias=

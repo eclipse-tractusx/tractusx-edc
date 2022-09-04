@@ -46,10 +46,12 @@ Initialize the following environment variables, that are used in the upcoming AP
 
 ```bash
 export PLATO_DATAMGMT_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
-export PLATO_IDS_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 5p)
+export PLATO_IDS_URL="http://plato-edc-controlplane:8282"
 export SOKRATES_DATAMGMT_URL=$(minikube service sokrates-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
 export SOKRATES_BACKEND_URL=$(minikube service sokrates-backend-application -n edc-all-in-one --url | sed -n 2p)
 ```
+
+Please note: The IDS URL is used for DAPS Token Audience validation. Therefore it must be the internal IDS url, that is configured inside the connector.
 
 ## 1. Setup Data Offer
 
@@ -71,7 +73,7 @@ curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/policydefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"uid\": \"1\", \"policy\": { \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/policydefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"policy\": { \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
@@ -147,7 +149,7 @@ locally. In this demo the transfer can be verified by executing a simple `cat` c
 ![Sequence 1](diagrams/transfer_sequence_5.png)
 
 ```bash
-curl -X GET ${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID} -H "Accept: application/octet-stream" -s | jq
+curl -X GET "${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID}" -H "Accept: application/octet-stream" -s | jq
 ```
 
 # Delete All Data

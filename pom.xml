@@ -65,7 +65,7 @@
         <org.awaitility.awaitility.version>4.2.0</org.awaitility.awaitility.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-20220818-SNAPSHOT</org.eclipse.dataspaceconnector.version>
+        <org.eclipse.dataspaceconnector.version>0.0.1-20220902-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
         <org.postgresql.version>42.5.0</org.postgresql.version>
         <org.flywaydb.version>9.2.2</org.flywaydb.version>
@@ -326,6 +326,11 @@
             <dependency>
                 <groupId>net.catenax.edc.extensions</groupId>
                 <artifactId>data-encryption</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>cx-oauth2</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -690,11 +695,6 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-selector-store</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>data-plane-spi</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -886,6 +886,16 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>oauth2-spi</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>jwt-spi</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>jwt-core</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>

@@ -243,7 +243,7 @@ public class DataManagementAPI {
 
   private DataManagementApiPolicyDefinition mapPolicyDefinition(Policy policy) {
     final DataManagementApiPolicyDefinition apiObject = new DataManagementApiPolicyDefinition();
-    apiObject.uid = policy.getId();
+    apiObject.id = policy.getId();
     apiObject.policy = mapPolicy(policy);
     return apiObject;
   }
@@ -401,7 +401,7 @@ public class DataManagementAPI {
 
   @Data
   private static class DataManagementApiPolicyDefinition {
-    private String uid;
+    private String id;
     private DataManagementApiPolicy policy;
   }
 
