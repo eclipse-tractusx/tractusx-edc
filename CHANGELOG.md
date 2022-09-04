@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1] - 2022-09-04
 
+**Important Note**: Please consolidate the migration documentation before updating your connector. [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
+
+### Added
+
+-  Control-Plane Extension ([cx-oauth2](/edc-extensions/cx-oauth2/README.md))
+
+### Changed
+
+- Introduced git submodule to import EDC dependencies (instead of snapshot- or milestone artifact)
+- Helm Charts: TLS secret name is now configurable
+
+### Fixed
+
+- Connectors with Azure Vault extension are now starting again [link](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1892)
+
 ## [0.1.0] - 2022-08-19
 
 **Important Note**: Version 0.1.0 introduces multiple breaking changes. Before updating **always** consolidate the
