@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2022-09-04
+
 ## [0.1.0] - 2022-08-19
 
 **Important Note**: Version 0.1.0 introduces multiple breaking changes. Before updating **always** consolidate the
@@ -48,20 +50,20 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Changed
 
-- BusinessPartnerNumber constraint supports List structure
-- Helm: Confidential EDC settings can be set using k8s secrets
-- HashiCorp Vault API path configurable
+-   BusinessPartnerNumber constraint supports List structure
+-   Helm: Confidential EDC settings can be set using k8s secrets
+-   HashiCorp Vault API path configurable
 
 ## [0.0.4] - 2022-06-27
 
 ### Added
 
-- HashiCorp Vault Extension
-- Control Plane with HashiCorp Vault and PostgreSQL support
+-   HashiCorp Vault Extension
+-   Control Plane with HashiCorp Vault and PostgreSQL support
 
 ### Changed
 
-- Release Worklow now publishes Product EDC Extensions as Maven Artifacts
+-   Release Worklow now publishes Product EDC Extensions as Maven Artifacts
 
 ### Fixed
 
@@ -70,8 +72,8 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Removed
 
-- CosmosDB Control Plane
-- Control API Extension for all Control Planes
+-   CosmosDB Control Plane
+-   Control API Extension for all Control Planes
 
 ## [0.0.3] - 2022-05-23
 
@@ -79,7 +81,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.1...HEAD
+
+[0.1.1]: https://github.com/catenax-ng/product-edc/compare/0.1.0...0.1.1
 
 [0.1.0]: https://github.com/catenax-ng/product-edc/compare/0.0.6...0.1.0
 
