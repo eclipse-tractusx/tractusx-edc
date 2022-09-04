@@ -166,6 +166,10 @@
                     <groupId>net.catenax.edc.extensions</groupId>
                     <artifactId>data-encryption</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>cx-oauth2</artifactId>
+                </dependency>
                 <!-- edc-controlplane -->
                 <dependency>
                     <groupId>net.catenax.edc</groupId>

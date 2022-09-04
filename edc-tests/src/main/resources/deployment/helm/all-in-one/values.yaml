@@ -241,7 +241,6 @@ platoedccontrolplane:
     EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
     EDC_OAUTH_PRIVATE_KEY_ALIAS: my-plato-daps-key
     EDC_OAUTH_PUBLIC_KEY_ALIAS: my-plato-daps-crt
-    EDC_OAUTH_PROVIDER_AUDIENCE: &edcControlPlaneOauthAudience idsc:IDS_CONNECTORS_ALL
 
     #############
     ## GENERAL ##
@@ -252,6 +251,7 @@ platoedccontrolplane:
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/data-protocols/ids/ids-core
     EDC_IDS_ENDPOINT: http://plato-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_ENDPOINT_AUDIENCE: http://plato-edc-controlplane:8282/api/v1/ids/data
     EDC_IDS_DESCRIPTION: "Plato Control Plane"
 
     ################
@@ -490,13 +490,13 @@ sokratesedccontrolplane:
     EDC_OAUTH_TOKEN_URL: *edcControlPlaneOauthTokenUrl
     EDC_OAUTH_PRIVATE_KEY_ALIAS: my-sokrates-daps-key
     EDC_OAUTH_PUBLIC_KEY_ALIAS: my-sokrates-daps-crt
-    EDC_OAUTH_PROVIDER_AUDIENCE: *edcControlPlaneOauthAudience
 
     #############
     ## GENERAL ##
     #############
     IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
     EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
     EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
 
     ################
