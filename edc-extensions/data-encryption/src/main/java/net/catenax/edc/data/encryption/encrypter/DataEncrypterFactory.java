@@ -14,9 +14,7 @@
 
 package net.catenax.edc.data.encryption.encrypter;
 
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
-import net.catenax.edc.data.encryption.DataEncryptionExtension;
 import net.catenax.edc.data.encryption.algorithms.CryptoAlgorithm;
 import net.catenax.edc.data.encryption.algorithms.aes.AesAlgorithm;
 import net.catenax.edc.data.encryption.data.CryptoDataFactory;
@@ -40,38 +38,6 @@ public class DataEncrypterFactory {
   private final Monitor monitor;
   private final CryptoKeyFactory keyFactory;
 
-  public DataEncrypter create(DataEncrypterConfiguration configuration) {
-    if (configuration.getAlgorithm().equalsIgnoreCase(AES_ALGORITHM)) {
-      return createAesEncrypter(configuration);
-    } else if (configuration.getAlgorithm().equalsIgnoreCase(NONE)) {
-      return createNoneEncrypter();
-    } else {
-      final String msg =
-          String.format(
-              DataEncryptionExtension.NAME
-                  + ": Unsupported encryption algorithm '%s'. Supported algorithms are '%s',  %s.",
-              configuration.getAlgorithm(),
-              AES_ALGORITHM,
-              NONE);
-      throw new NoSuchElementException(msg);
-    }
-  }
-
-  public DataEncrypter createAesEncrypter(DataEncrypterConfiguration configuration) {
-
-    KeyProvider<AesKey> keyProvider =
-        new AesKeyProvider(vault, configuration.getKeySetAlias(), keyFactory);
-
-    if (configuration.isCachingEnabled()) {
-      keyProvider = new CachingKeyProvider<>(keyProvider, configuration.getCachingDuration());
-    }
-
-    final CryptoDataFactory cryptoDataFactory = new CryptoDataFactoryImpl();
-    final CryptoAlgorithm<AesKey> algorithm = new AesAlgorithm(cryptoDataFactory);
-
-    return new AesDataEncrypterImpl(algorithm, monitor, keyProvider, algorithm, cryptoDataFactory);
-  }
-
   public DataEncrypter createNoneEncrypter() {
     return new DataEncrypter() {
       @Override
@@ -84,5 +50,19 @@ public class DataEncrypterFactory {
         return data;
       }
     };
+  }
+
+  public DataEncrypter createAesEncrypter(AesDataEncrypterConfiguration configuration) {
+    KeyProvider<AesKey> keyProvider =
+        new AesKeyProvider(vault, configuration.getKeySetAlias(), keyFactory);
+
+    if (configuration.isCachingEnabled()) {
+      keyProvider = new CachingKeyProvider<>(keyProvider, configuration.getCachingDuration());
+    }
+
+    final CryptoDataFactory cryptoDataFactory = new CryptoDataFactoryImpl();
+    final CryptoAlgorithm<AesKey> algorithm = new AesAlgorithm(cryptoDataFactory);
+
+    return new AesDataEncrypterImpl(algorithm, monitor, keyProvider, algorithm, cryptoDataFactory);
   }
 }

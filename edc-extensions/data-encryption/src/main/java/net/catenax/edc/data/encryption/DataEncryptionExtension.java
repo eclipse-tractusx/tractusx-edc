@@ -16,7 +16,7 @@ package net.catenax.edc.data.encryption;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
-import net.catenax.edc.data.encryption.encrypter.DataEncrypterConfiguration;
+import net.catenax.edc.data.encryption.encrypter.AesDataEncrypterConfiguration;
 import net.catenax.edc.data.encryption.encrypter.DataEncrypterFactory;
 import net.catenax.edc.data.encryption.key.AesKey;
 import net.catenax.edc.data.encryption.key.CryptoKeyFactory;
@@ -53,7 +53,7 @@ public class DataEncryptionExtension implements ServiceExtension {
 
   private Monitor monitor;
   private Vault vault;
-  private DataEncrypterConfiguration configuration;
+  private ServiceExtensionContext context;
 
   @Override
   public String name() {
@@ -62,16 +62,24 @@ public class DataEncryptionExtension implements ServiceExtension {
 
   @Override
   public void start() {
-    final String keyAlias = configuration.getKeySetAlias();
-    final String keySecret = vault.resolveSecret(keyAlias);
-    if (keySecret == null || keySecret.isEmpty()) {
-      throw new EdcException(NAME + ": No vault key secret found for alias " + keyAlias);
+
+    final String algorithm = context.getSetting(ENCRYPTION_ALGORITHM, ENCRYPTION_ALGORITHM_DEFAULT);
+
+    if (DataEncrypterFactory.NONE.equalsIgnoreCase(algorithm)) {
+      return; // no start-up checks for NONE algorithm
     }
 
-    if (configuration.getAlgorithm().equals(DataEncrypterFactory.AES_ALGORITHM)) {
+    if (DataEncrypterFactory.AES_ALGORITHM.equals(algorithm)) {
+
+      final AesDataEncrypterConfiguration configuration = createAesConfiguration(context);
+      final String keyAlias = configuration.getKeySetAlias();
+      final String keySecret = vault.resolveSecret(keyAlias);
+      if (keySecret == null || keySecret.isEmpty()) {
+        throw new EdcException(NAME + ": No vault key secret found for alias " + keyAlias);
+      }
+
       try {
-        final AesKeyProvider aesKeyProvider =
-            createAesKeyProvider(vault, configuration.getKeySetAlias());
+        final AesKeyProvider aesKeyProvider = new AesKeyProvider(vault, keyAlias, cryptoKeyFactory);
         final List<AesKey> keys = aesKeyProvider.getDecryptionKeySet().collect(Collectors.toList());
         monitor.debug(
             String.format(
@@ -85,32 +93,43 @@ public class DataEncryptionExtension implements ServiceExtension {
 
   @Override
   public void initialize(ServiceExtensionContext context) {
-    monitor = context.getMonitor();
-    configuration = getConfiguration(context);
-    vault = context.getService(Vault.class);
-
+    this.context = context;
+    this.monitor = context.getMonitor();
+    this.vault = context.getService(Vault.class);
     final DataEncrypterFactory factory = new DataEncrypterFactory(vault, monitor, cryptoKeyFactory);
 
-    final DataEncrypter dataEncrypter = factory.create(configuration);
+    final DataEncrypter dataEncrypter;
+    final String algorithm = context.getSetting(ENCRYPTION_ALGORITHM, ENCRYPTION_ALGORITHM_DEFAULT);
+    if (DataEncrypterFactory.NONE.equalsIgnoreCase(algorithm)) {
+      dataEncrypter = factory.createNoneEncrypter();
+    } else if (DataEncrypterFactory.AES_ALGORITHM.equalsIgnoreCase(algorithm)) {
+      final AesDataEncrypterConfiguration configuration = createAesConfiguration(context);
+      dataEncrypter = factory.createAesEncrypter(configuration);
+    } else {
+      final String msg =
+          String.format(
+              DataEncryptionExtension.NAME
+                  + ": Unsupported encryption algorithm '%s'. Supported algorithms are '%s',  '%s'.",
+              algorithm,
+              DataEncrypterFactory.AES_ALGORITHM,
+              DataEncrypterFactory.NONE);
+      throw new EdcException(msg);
+    }
+
     context.registerService(DataEncrypter.class, dataEncrypter);
   }
 
-  private static DataEncrypterConfiguration getConfiguration(ServiceExtensionContext context) {
+  private static AesDataEncrypterConfiguration createAesConfiguration(
+      ServiceExtensionContext context) {
     final String key = context.getSetting(ENCRYPTION_KEY_SET, null);
     if (key == null) {
       throw new EdcException(NAME + ": Missing setting " + ENCRYPTION_KEY_SET);
     }
 
-    final String encryptionStrategy =
-        context.getSetting(ENCRYPTION_ALGORITHM, ENCRYPTION_ALGORITHM_DEFAULT);
     final boolean cachingEnabled = context.getSetting(CACHING_ENABLED, CACHING_ENABLED_DEFAULT);
     final int cachingSeconds = context.getSetting(CACHING_SECONDS, CACHING_SECONDS_DEFAULT);
 
-    return new DataEncrypterConfiguration(
-        encryptionStrategy, key, cachingEnabled, Duration.ofSeconds(cachingSeconds));
-  }
-
-  private static AesKeyProvider createAesKeyProvider(Vault vault, String vaultKeySetAlias) {
-    return new AesKeyProvider(vault, vaultKeySetAlias, cryptoKeyFactory);
+    return new AesDataEncrypterConfiguration(
+        key, cachingEnabled, Duration.ofSeconds(cachingSeconds));
   }
 }

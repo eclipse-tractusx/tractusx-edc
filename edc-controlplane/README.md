@@ -41,12 +41,20 @@ EDC commit the Product-EDC uses.
 
 ---
 
+**Persistence**
+- ContractDefinition-AssetSelector of InMemory Connector selects 50 Asset max.([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1779))
+
+**Transfer**
+- Transfer Process remains 'InProgress' on provider side ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1287))
+
 **Configuration**
 - Contract negotiation not working when `web.http.ids.path` is configured/changed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1249))
   - **Workaround:** Don't configure `web.http.ids.path`, so that the default path is used.
 
 - HttpProxy Transfer: Provider Control Plane spams Consumer Control Plane + HttpProxy Backend Application with requests([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1840))
   - **Possible Workaround:** Reconfigure data plane URL from `http://dataplane:8185/api/public` to `http://dataplane:8185/api/public/`
+
+- Non-telling logs when `edc.transfer.proxy.token.verifier.publickey.alias` setting is missing([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1889))
 
 **Data Management API**
 - Contract negotiation not working when initiated with policy id ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1251))
