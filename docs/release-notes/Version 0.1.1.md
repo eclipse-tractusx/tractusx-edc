@@ -33,7 +33,7 @@ Using the open source OAuth Extension it is possible for a connector to re-use a
 **New Audience Configuration**
 
 ```
-edc.oauth.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
+edc.ids.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
 ```
 
 ## 3. Bug Fixes
