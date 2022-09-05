@@ -85,7 +85,9 @@ class DataEncryptionExtensionTest {
   @Test
   void testStartExceptionOnStartWithWrongKeySetAlias() {
     final String keySetAlias = "foo";
-    Mockito.when(context.getSetting(DataEncryptionExtension.ENCRYPTION_ALGORITHM, null))
+    Mockito.when(
+            context.getSetting(
+                DataEncryptionExtension.ENCRYPTION_ALGORITHM, DataEncrypterFactory.AES_ALGORITHM))
         .thenReturn(DataEncrypterFactory.AES_ALGORITHM);
     Mockito.when(context.getSetting(DataEncryptionExtension.ENCRYPTION_KEY_SET, null))
         .thenReturn(keySetAlias);
@@ -94,5 +96,20 @@ class DataEncryptionExtensionTest {
     extension.initialize(context);
 
     Assertions.assertThrows(EdcException.class, () -> extension.start());
+  }
+
+  @Test
+  void testNonEncrypterRequiresNoOtherSetting() {
+    final String keySetAlias = "foo";
+    Mockito.when(
+            context.getSetting(
+                DataEncryptionExtension.ENCRYPTION_ALGORITHM, DataEncrypterFactory.AES_ALGORITHM))
+        .thenReturn(DataEncrypterFactory.NONE);
+    Mockito.when(context.getSetting(DataEncryptionExtension.ENCRYPTION_KEY_SET, null))
+        .thenReturn(null);
+    Mockito.when(vault.resolveSecret(keySetAlias)).thenReturn(null);
+
+    Assertions.assertDoesNotThrow(() -> extension.initialize(context));
+    Assertions.assertDoesNotThrow(() -> extension.start());
   }
 }

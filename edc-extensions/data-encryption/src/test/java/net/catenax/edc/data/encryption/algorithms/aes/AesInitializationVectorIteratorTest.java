@@ -29,7 +29,6 @@ class AesInitializationVectorIteratorTest {
   void testDistinctVectors() {
     final int vectorCount = 100;
     AesInitializationVectorIterator iterator = new AesInitializationVectorIterator();
-    iterator.initialize();
 
     List<byte[]> vectors = new ArrayList<>();
     for (var i = 0; i < vectorCount; i++) {
@@ -45,7 +44,6 @@ class AesInitializationVectorIteratorTest {
   void testHasNextTrueOnCounterContinuing() {
     ByteCounter counter = Mockito.mock(ByteCounter.class);
     AesInitializationVectorIterator iterator = new AesInitializationVectorIterator(counter);
-    iterator.initialize();
 
     Mockito.when(counter.isMaxed()).thenReturn(false);
     Assertions.assertTrue(iterator.hasNext());
@@ -56,7 +54,6 @@ class AesInitializationVectorIteratorTest {
   void testHasNextFalseOnCounterEnd() {
     ByteCounter counter = Mockito.mock(ByteCounter.class);
     AesInitializationVectorIterator iterator = new AesInitializationVectorIterator(counter);
-    iterator.initialize();
 
     Mockito.when(counter.isMaxed()).thenReturn(true);
     Assertions.assertFalse(iterator.hasNext());
@@ -67,16 +64,8 @@ class AesInitializationVectorIteratorTest {
   void testNoSuchElementExceptionOnCounterEnd() {
     ByteCounter counter = Mockito.mock(ByteCounter.class);
     AesInitializationVectorIterator iterator = new AesInitializationVectorIterator(counter);
-    iterator.initialize();
 
     Mockito.when(counter.isMaxed()).thenReturn(true);
     Assertions.assertThrows(NoSuchElementException.class, iterator::next);
-  }
-
-  @Test
-  @SneakyThrows
-  void testIllegalStateExceptionOnUninitialized() {
-    AesInitializationVectorIterator iterator = new AesInitializationVectorIterator();
-    Assertions.assertThrows(IllegalStateException.class, iterator::next);
   }
 }
