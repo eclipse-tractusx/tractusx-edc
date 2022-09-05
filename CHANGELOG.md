@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1] - 2022-09-04
 
-**Important Note**: Please consolidate the migration documentation before updating your connector. [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
+**Important Note**: Please consolidate the migration documentation before updating your connector. [documentation](/docs/migration/Version_0.1.0_0.1.1.md).
 
 ### Added
 
