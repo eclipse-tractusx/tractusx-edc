@@ -16,7 +16,7 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>edc-controlplane</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
