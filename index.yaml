@@ -2,8 +2,21 @@ apiVersion: v1
 entries:
   edc-controlplane:
   - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2022-09-05T00:06:00.577821343Z"
+    description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
+      layer with responsibility of resource management and govern contracts and data
+      transfers
+    digest: 714242103cf33324de2c36a10ee7ad786b54be061fcb48bf89e7bccdebc46e82
+    home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-controlplane
+    name: edc-controlplane
+    type: application
+    urls:
+    - https://catenax-ng.github.io/product-edc/helm-charts/edc-controlplane-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
-    created: "2022-08-19T09:50:48.958334158Z"
+    created: "2022-09-05T00:06:00.576485419Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
       layer with responsibility of resource management and govern contracts and data
       transfers
@@ -16,7 +29,7 @@ entries:
     version: 0.1.0
   - apiVersion: v2
     appVersion: 0.0.6
-    created: "2022-08-19T09:50:48.957221766Z"
+    created: "2022-09-05T00:06:00.575197796Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
       layer with responsibility of resource management and govern contracts and data
       transfers
@@ -29,7 +42,7 @@ entries:
     version: 0.0.6
   - apiVersion: v2
     appVersion: 0.0.5
-    created: "2022-08-19T09:50:48.954664082Z"
+    created: "2022-09-05T00:06:00.573966074Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
       layer with responsibility of resource management and govern contracts and data
       transfers
@@ -42,7 +55,7 @@ entries:
     version: 0.0.5
   - apiVersion: v2
     appVersion: 0.0.4
-    created: "2022-08-19T09:50:48.953537989Z"
+    created: "2022-09-05T00:06:00.571136623Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
       layer with responsibility of resource management and govern contracts and data
       transfers
@@ -55,7 +68,7 @@ entries:
     version: 0.0.4
   - apiVersion: v2
     appVersion: 0.0.3
-    created: "2022-08-19T09:50:48.952473296Z"
+    created: "2022-09-05T00:06:00.569450793Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
       layer with responsibility of resource management and govern contracts and data
       transfers
@@ -68,7 +81,7 @@ entries:
     version: 0.0.3
   - apiVersion: v2
     appVersion: 0.0.2
-    created: "2022-08-19T09:50:48.951409803Z"
+    created: "2022-09-05T00:06:00.568247972Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
       layer with responsibility of resource management and govern contracts and data
       transfers
@@ -81,7 +94,7 @@ entries:
     version: 0.0.2
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2022-08-19T09:50:48.95031571Z"
+    created: "2022-09-05T00:06:00.567064351Z"
     description: EDC Control-Plane
     digest: 84a8bb290fb255569d34625cfdf18416b6019841a9906ce9f709fa645da09f98
     home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-controlplane
@@ -92,8 +105,20 @@ entries:
     version: 0.0.1
   edc-dataplane:
   - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2022-09-05T00:06:00.588085426Z"
+    description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
+      of transferring and receiving data streams
+    digest: b8f4b16d2c3a57d4f8889cf297445ac9bafdae4660b0f0e396e29b7e55e8ed32
+    home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-dataplane
+    name: edc-dataplane
+    type: application
+    urls:
+    - https://catenax-ng.github.io/product-edc/helm-charts/edc-dataplane-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
-    created: "2022-08-19T09:50:48.965584412Z"
+    created: "2022-09-05T00:06:00.586964306Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
       of transferring and receiving data streams
     digest: e960f1e836f9d71728805256a642dcb7e61d3365de1861097ddd7f8c2f1d4baf
@@ -105,7 +130,7 @@ entries:
     version: 0.1.0
   - apiVersion: v2
     appVersion: 0.0.6
-    created: "2022-08-19T09:50:48.964064422Z"
+    created: "2022-09-05T00:06:00.58550738Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
       of transferring and receiving data streams
     digest: 295b89369c7358a0fb796afffb5ce1c14e7a7b64177f5c783d47b532c59fb2db
@@ -117,7 +142,7 @@ entries:
     version: 0.0.6
   - apiVersion: v2
     appVersion: 0.0.5
-    created: "2022-08-19T09:50:48.963055328Z"
+    created: "2022-09-05T00:06:00.58385395Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
       of transferring and receiving data streams
     digest: b3fa7dcc84f14d55e510b48f2a784c5872f4e1fa4aca574ef845382dda70b37f
@@ -129,7 +154,7 @@ entries:
     version: 0.0.5
   - apiVersion: v2
     appVersion: 0.0.4
-    created: "2022-08-19T09:50:48.962047735Z"
+    created: "2022-09-05T00:06:00.58274433Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
       of transferring and receiving data streams
     digest: 8bf547cde303a242a9b732f6114a85e9d01b07480dfa7e682c0e0827d984fe29
@@ -141,7 +166,7 @@ entries:
     version: 0.0.4
   - apiVersion: v2
     appVersion: 0.0.3
-    created: "2022-08-19T09:50:48.961007941Z"
+    created: "2022-09-05T00:06:00.581542609Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
       of transferring and receiving data streams
     digest: 6eb3eeba1989083f1ed4376bfc72b0c2ade3e45bd1feeb1759be1e079312af3f
@@ -153,7 +178,7 @@ entries:
     version: 0.0.3
   - apiVersion: v2
     appVersion: 0.0.2
-    created: "2022-08-19T09:50:48.960052247Z"
+    created: "2022-09-05T00:06:00.580412689Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
       of transferring and receiving data streams
     digest: 5e082daf13b8058fb17ccd93c64c5b2f7d3c2e5151df6e77b57b24b8c5f8fae3
@@ -165,7 +190,7 @@ entries:
     version: 0.0.2
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2022-08-19T09:50:48.959096054Z"
+    created: "2022-09-05T00:06:00.578734959Z"
     description: EDC Data-Plane
     digest: 896ebe268b417b4ddef663c30e296f228aca0528d4a1ebf4d8eba9ed02b63222
     home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-dataplane
@@ -174,4 +199,4 @@ entries:
     urls:
     - https://catenax-ng.github.io/product-edc/helm-charts/edc-dataplane-0.0.1.tgz
     version: 0.0.1
-generated: "2022-08-19T09:50:48.949163317Z"
+generated: "2022-09-05T00:06:00.565783828Z"
