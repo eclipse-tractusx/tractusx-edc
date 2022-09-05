@@ -1,4 +1,4 @@
-package net.catenax.edc.cp.adapter.process.contractconfirmation;
+package net.catenax.edc.cp.adapter.process.contractnotification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import net.catenax.edc.cp.adapter.messaging.Message;
 
 public class InMemoryDataStore implements DataStore {
   private final Map<String, Message> messages = new HashMap<>();
-  private final Map<String, String> confirmedContracts = new HashMap<>();
+  private final Map<String, ContractInfo> confirmedContracts = new HashMap<>();
   private final DataStoreLock lock;
 
   public InMemoryDataStore(DataStoreLock lock) {
@@ -16,16 +16,30 @@ public class InMemoryDataStore implements DataStore {
   @Override
   public void storeConfirmedContract(String contractNegotiationId, String contractAgreementId) {
     lock.writeLock(contractNegotiationId);
-    confirmedContracts.put(contractNegotiationId, contractAgreementId);
+    confirmedContracts.put(contractNegotiationId, new ContractInfo(contractAgreementId, ContractInfo.ContractState.CONFIRMED));
     lock.writeUnlock(contractNegotiationId);
   }
 
   @Override
-  public String getConfirmedContract(String contractNegotiationId) {
+  public void storeDeclinedContract(String contractNegotiationId) {
+    lock.writeLock(contractNegotiationId);
+    confirmedContracts.put(contractNegotiationId, new ContractInfo(ContractInfo.ContractState.DECLINED));
+    lock.writeUnlock(contractNegotiationId);
+  }
+
+  @Override
+  public void storeErrorContract(String contractNegotiationId) {
+    lock.writeLock(contractNegotiationId);
+    confirmedContracts.put(contractNegotiationId, new ContractInfo(ContractInfo.ContractState.ERROR));
+    lock.writeUnlock(contractNegotiationId);
+  }
+
+  @Override
+  public ContractInfo getContractInfo(String contractNegotiationId) {
     lock.readLock(contractNegotiationId);
-    String confirmedContract = confirmedContracts.get(contractNegotiationId);
+    ContractInfo contractInfo = confirmedContracts.get(contractNegotiationId);
     lock.readUnlock(contractNegotiationId);
-    return confirmedContract;
+    return contractInfo;
   }
 
   @Override

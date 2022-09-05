@@ -6,12 +6,13 @@ import static java.util.Optional.ofNullable;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.InMemoryMessageService;
 import net.catenax.edc.cp.adapter.messaging.ListenerService;
-import net.catenax.edc.cp.adapter.process.contractconfirmation.ContractConfirmationHandler;
-import net.catenax.edc.cp.adapter.process.contractconfirmation.DataStoreLock;
-import net.catenax.edc.cp.adapter.process.contractconfirmation.InMemoryDataStore;
+import net.catenax.edc.cp.adapter.process.contractnotification.ContractNotificationHandler;
+import net.catenax.edc.cp.adapter.process.contractnotification.DataStoreLock;
+import net.catenax.edc.cp.adapter.process.contractnotification.InMemoryDataStore;
 import net.catenax.edc.cp.adapter.process.contractdatastore.InMemoryContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractnegotiation.ContractNegotiationHandler;
 import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
+import net.catenax.edc.cp.adapter.service.ErrorResultService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogServiceImpl;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
@@ -61,6 +62,8 @@ public class ApiAdapterExtension implements ServiceExtension {
     InMemoryMessageService messageService = new InMemoryMessageService(monitor, listenerService);
     ResultService resultService = new ResultService();
     listenerService.addListener(Channel.RESULT, resultService);
+    ErrorResultService errorResultService = new ErrorResultService(monitor, messageService);
+    listenerService.addListener(Channel.DLQ, errorResultService);
 
     initHttpController(monitor, messageService, resultService);
     initContractNegotiationHandler(
@@ -102,8 +105,8 @@ public class ApiAdapterExtension implements ServiceExtension {
       InMemoryMessageService messageService,
       ListenerService listenerService) {
 
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
             monitor,
             messageService,
             new InMemoryDataStore(new DataStoreLock()),
@@ -112,9 +115,9 @@ public class ApiAdapterExtension implements ServiceExtension {
                 transferProcessStore, transferProcessManager, getTransactionContext(monitor)),
             new InMemoryContractDataStore());
 
-    listenerService.addListener(Channel.CONTRACT_CONFIRMATION, contractConfirmationHandler);
+    listenerService.addListener(Channel.CONTRACT_CONFIRMATION, contractNotificationHandler);
     if (nonNull(negotiationObservable)) {
-      negotiationObservable.registerListener(contractConfirmationHandler);
+      negotiationObservable.registerListener(contractNotificationHandler);
     }
   }
 

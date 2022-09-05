@@ -30,18 +30,24 @@ public class InMemoryMessageService implements MessageService {
   protected boolean run(Channel name, Message message) {
     try {
       listenerService.getListener(name).process(message);
-      message.succeeded();
+      message.clearErrors();
       return true;
     } catch (Exception e) {
       monitor.warning(String.format("[%s] Message processing error.", message.getTraceId()), e);
       if (!message.canRetry()) {
         monitor.warning(String.format("[%s] Message reached retry limit!", message.getTraceId()));
-        // TODO move to DLQ
+        sendMessageToDlq(message, e);
         return true;
       }
       long delayTime = message.unsucceeded();
-      executorService.schedule(() -> run(name, message), delayTime, TimeUnit.MILLISECONDS);
+      executorService.schedule(() -> send(name, message), delayTime, TimeUnit.MILLISECONDS);
       return false;
     }
+  }
+
+  private void sendMessageToDlq(Message message, Exception finalException) {
+    message.clearErrors();
+    message.setFinalException(finalException);
+    run(Channel.DLQ, message);
   }
 }

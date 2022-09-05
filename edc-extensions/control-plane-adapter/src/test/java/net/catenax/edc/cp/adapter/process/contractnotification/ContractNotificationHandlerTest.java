@@ -1,8 +1,9 @@
-package net.catenax.edc.cp.adapter.process.contractconfirmation;
+package net.catenax.edc.cp.adapter.process.contractnotification;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import jakarta.ws.rs.core.Response;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Message;
@@ -15,16 +16,19 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.agreement.ContractAgreement;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiationStates;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class ContractConfirmationHandlerTest {
+public class ContractNotificationHandlerTest {
   @Mock Monitor monitor;
   @Mock MessageService messageService;
   @Mock ContractNegotiationService contractNegotiationService;
-  @Mock DataStore dataStore;
+  @Mock
+  DataStore dataStore;
   @Mock ContractDataStore contractDataStore;
   @Mock TransferProcessService transferProcessService;
 
@@ -34,11 +38,11 @@ public class ContractConfirmationHandlerTest {
   }
 
   @Test
-  public void process_shouldSaveMessageWhenContractNotConfirmed() {
+  public void process_shouldSaveMessageWhenNoContractNotification() {
     // given
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
             monitor,
             messageService,
             dataStore,
@@ -48,7 +52,7 @@ public class ContractConfirmationHandlerTest {
     Message message = new Message(new ProcessData("assetId", "providerUrl"));
 
     // when
-    contractConfirmationHandler.process(message);
+    contractNotificationHandler.process(message);
 
     // then
     verify(dataStore, times(1)).storeMessage(any());
@@ -60,8 +64,8 @@ public class ContractConfirmationHandlerTest {
   public void process_shouldInitiateTransferWhenContractConfirmedFromCache() {
     // given
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
             monitor,
             messageService,
             dataStore,
@@ -72,7 +76,7 @@ public class ContractConfirmationHandlerTest {
     message.getPayload().setContractConfirmed(true);
 
     // when
-    contractConfirmationHandler.process(message);
+    contractNotificationHandler.process(message);
 
     // then
     verify(transferProcessService, times(1)).initiateTransfer(any());
@@ -80,12 +84,12 @@ public class ContractConfirmationHandlerTest {
   }
 
   @Test
-  public void process_shouldInitiateTransferWhenAlreadyContractConfirmedAtProvider() {
+  public void process_shouldInitiateTransferWhenContractAlreadyConfirmedAtProvider() {
     // given
     when(contractNegotiationService.findbyId(any())).thenReturn(getConfirmedContractNegotiation());
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
             monitor,
             messageService,
             dataStore,
@@ -95,7 +99,7 @@ public class ContractConfirmationHandlerTest {
     Message message = new Message(new ProcessData("assetId", "providerUrl"));
 
     // when
-    contractConfirmationHandler.process(message);
+    contractNotificationHandler.process(message);
 
     // then
     verify(dataStore, times(0)).storeMessage(any());
@@ -106,10 +110,10 @@ public class ContractConfirmationHandlerTest {
   @Test
   public void process_shouldInitiateTransferWhenContractConfirmedByNotification() {
     // given
-    when(dataStore.getConfirmedContract(any())).thenReturn("confirmedContractAgreementId");
+    when(dataStore.getContractInfo(any())).thenReturn(new ContractInfo("confirmedContractAgreementId", ContractInfo.ContractState.CONFIRMED));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
             monitor,
             messageService,
             dataStore,
@@ -119,7 +123,7 @@ public class ContractConfirmationHandlerTest {
     Message message = new Message(new ProcessData("assetId", "providerUrl"));
 
     // when
-    contractConfirmationHandler.process(message);
+    contractNotificationHandler.process(message);
 
     // then
     verify(dataStore, times(0)).storeMessage(any());
@@ -131,8 +135,8 @@ public class ContractConfirmationHandlerTest {
   @Test
   public void preConfirmed_shouldSaveInfoAboutContractConfirmationIfMessageNotAvailable() {
     // given
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
             monitor,
             messageService,
             dataStore,
@@ -142,7 +146,7 @@ public class ContractConfirmationHandlerTest {
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
-    contractConfirmationHandler.preConfirmed(contractNegotiation);
+    contractNotificationHandler.preConfirmed(contractNegotiation);
 
     // then
     verify(dataStore, times(1)).storeConfirmedContract(any(), any());
@@ -154,25 +158,75 @@ public class ContractConfirmationHandlerTest {
   public void preConfirmed_shouldInitiateTransferIfMessageIsAvailable() {
     // given
     when(dataStore.getMessage(any()))
-        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+            .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
-    ContractConfirmationHandler contractConfirmationHandler =
-        new ContractConfirmationHandler(
-            monitor,
-            messageService,
-            dataStore,
-            contractNegotiationService,
-            transferProcessService,
-            contractDataStore);
+    ContractNotificationHandler contractNotificationHandler =
+            new ContractNotificationHandler(
+                    monitor,
+                    messageService,
+                    dataStore,
+                    contractNegotiationService,
+                    transferProcessService,
+                    contractDataStore);
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
-    contractConfirmationHandler.preConfirmed(contractNegotiation);
+    contractNotificationHandler.preConfirmed(contractNegotiation);
 
     // then
     verify(dataStore, times(0)).storeConfirmedContract(any(), any());
     verify(transferProcessService, times(1)).initiateTransfer(any());
     verify(messageService, times(1)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
+  }
+
+  @Test
+  public void preDeclined_shouldSendErrorResultIfMessageIsAvailable() {
+    // given
+    when(dataStore.getMessage(any()))
+            .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    ContractNotificationHandler contractNotificationHandler =
+            new ContractNotificationHandler(
+                    monitor,
+                    messageService,
+                    dataStore,
+                    contractNegotiationService,
+                    transferProcessService,
+                    contractDataStore);
+    ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
+
+    // when
+    contractNotificationHandler.preDeclined(contractNegotiation);
+
+    // then
+    ArgumentCaptor<Message> messageArg = ArgumentCaptor.forClass(Message.class);
+    verify(dataStore, times(0)).storeConfirmedContract(any(), any());
+    verify(messageService, times(1)).send(eq(Channel.RESULT), messageArg.capture());
+    Assertions.assertEquals(Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
+  }
+
+  @Test
+  public void preError_shouldSendErrorResultIfMessageIsAvailable() {
+    // given
+    when(dataStore.getMessage(any()))
+            .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    ContractNotificationHandler contractNotificationHandler =
+            new ContractNotificationHandler(
+                    monitor,
+                    messageService,
+                    dataStore,
+                    contractNegotiationService,
+                    transferProcessService,
+                    contractDataStore);
+    ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
+
+    // when
+    contractNotificationHandler.preError(contractNegotiation);
+
+    // then
+    ArgumentCaptor<Message> messageArg = ArgumentCaptor.forClass(Message.class);
+    verify(dataStore, times(0)).storeConfirmedContract(any(), any());
+    verify(messageService, times(1)).send(eq(Channel.RESULT), messageArg.capture());
+    Assertions.assertEquals(Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
   }
 
   private ContractNegotiation getConfirmedContractNegotiation() {

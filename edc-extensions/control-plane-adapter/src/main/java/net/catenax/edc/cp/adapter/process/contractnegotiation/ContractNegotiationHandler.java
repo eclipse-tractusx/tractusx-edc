@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
-import net.catenax.edc.cp.adapter.exception.ContractOfferNotAvailable;
+import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
 import net.catenax.edc.cp.adapter.exception.ResourceNotFoundException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
@@ -33,7 +33,9 @@ public class ContractNegotiationHandler implements Listener {
 
   @Override
   public void process(Message message) {
-    monitor.debug("RequestHandler: input request: " + message.getPayload());
+    monitor.info(String.format("[%s] RequestHandler: input request: [%s]",
+            message.getTraceId(),
+            message.getPayload()));
     ProcessData processData = message.getPayload();
 
     ContractAgreementData contractData =
@@ -79,7 +81,7 @@ public class ContractNegotiationHandler implements Listener {
     try {
       return catalogService.getByProviderUrl(providerUrl).get();
     } catch (InterruptedException | ExecutionException e) {
-      throw new ContractOfferNotAvailable(e);
+      throw new ExternalRequestException("Could not retrieve contract offer.", e);
     }
   }
 

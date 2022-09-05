@@ -1,4 +1,4 @@
-package net.catenax.edc.cp.adapter.process.contractconfirmation;
+package net.catenax.edc.cp.adapter.process.contractnotification;
 
 import java.util.HashMap;
 import java.util.Map;

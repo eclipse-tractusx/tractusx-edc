@@ -10,15 +10,16 @@ public class Message {
   @Getter private final ProcessData payload;
   private final AtomicInteger errorNumber = new AtomicInteger();
   private int retryLimit = 3; // TODO configure
+  @Getter private Exception finalException;
 
-  public Message(String id, ProcessData payload, int retryLimit) {
-    this(id, payload);
+  public Message(String traceId, ProcessData payload, int retryLimit) {
+    this(traceId, payload);
     this.retryLimit = retryLimit;
   }
 
-  public Message(String id, ProcessData payload) {
+  public Message(String traceId, ProcessData payload) {
     this.payload = payload;
-    this.traceId = id;
+    this.traceId = traceId;
   }
 
   public Message(ProcessData payload, int retryLimit) {
@@ -36,7 +37,7 @@ public class Message {
     return getDelayTime();
   }
 
-  protected void succeeded() {
+  protected void clearErrors() {
     errorNumber.set(0);
   }
 
@@ -44,7 +45,10 @@ public class Message {
     return errorNumber.get() < retryLimit;
   }
 
-  // TODO external configuration? extract to other class implements BackoffPolicy - strategy
+  protected void setFinalException(Exception e) {
+    this.finalException = e;
+  }
+
   private int getDelayTime() {
     return errorNumber.get() < 5
         ? errorNumber.get() * 750

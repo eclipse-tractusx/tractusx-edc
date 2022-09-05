@@ -13,6 +13,8 @@ import net.catenax.edc.cp.adapter.messaging.MessageService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 
+import java.util.Objects;
+
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 @Path("/adapter/asset")
@@ -36,7 +38,29 @@ public class HttpController {
     String traceId = initiateProcess(assetId, providerUrl);
 
     try {
-      return Response.status(Response.Status.OK).entity(resultService.pull(traceId)).build();
+      ProcessData processData = resultService.pull(traceId);
+
+      if (Objects.isNull(processData)) {
+        return Response.status(Response.Status.NOT_FOUND)
+                .entity(Response.Status.NOT_FOUND.getReasonPhrase())
+                .build();
+      }
+
+      if (Objects.nonNull(processData.getErrorStatus())) {
+        return Response.status(processData.getErrorStatus())
+                .entity(processData.getErrorMessage())
+                .build();
+      }
+
+      if (Objects.nonNull(processData.getEndpointDataReference())) {
+        return Response.status(Response.Status.OK)
+                .entity(processData.getEndpointDataReference())
+                .build();
+      }
+
+      return Response.status(Response.Status.REQUEST_TIMEOUT)
+              .entity(Response.Status.REQUEST_TIMEOUT.getReasonPhrase())
+              .build();
     } catch (InterruptedException e) {
       monitor.severe("InterruptedException", e);
       return Response.status(Response.Status.NOT_FOUND).build();

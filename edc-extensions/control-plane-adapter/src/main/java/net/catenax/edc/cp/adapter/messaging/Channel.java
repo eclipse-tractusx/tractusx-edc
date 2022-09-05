@@ -4,5 +4,6 @@ public enum Channel {
   INITIAL,
   CONTRACT_CONFIRMATION,
   DATA_REFERENCE,
-  RESULT
+  RESULT,
+  DLQ
 }

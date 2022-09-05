@@ -17,14 +17,14 @@ public class ResultServiceTest {
     ResultService resultService = new ResultService();
     String endpointDataRefId = "456";
     Message message = getMessage(endpointDataRefId);
-    EndpointDataReference dataReference;
+    ProcessData processData;
 
     // when
     resultService.process(message);
-    dataReference = resultService.pull(message.getTraceId(), 200, TimeUnit.MILLISECONDS);
+    processData = resultService.pull(message.getTraceId(), 200, TimeUnit.MILLISECONDS);
 
     // then
-    Assertions.assertEquals(endpointDataRefId, dataReference.getId());
+    Assertions.assertEquals(endpointDataRefId, processData.getEndpointDataReference().getId());
   }
 
   @Test
@@ -33,14 +33,14 @@ public class ResultServiceTest {
     ResultService resultService = new ResultService();
     String endpointDataRefId = "456";
     Message message = getMessage(endpointDataRefId);
-    EndpointDataReference dataReference;
+    ProcessData processData;
 
     // when
     processMessageWithDelay(resultService, message);
-    dataReference = resultService.pull(message.getTraceId(), 1000, TimeUnit.MILLISECONDS);
+    processData = resultService.pull(message.getTraceId(), 1000, TimeUnit.MILLISECONDS);
 
     // then
-    Assertions.assertEquals(endpointDataRefId, dataReference.getId());
+    Assertions.assertEquals(endpointDataRefId, processData.getEndpointDataReference().getId());
   }
 
   private void processMessageWithDelay(ResultService resultService, Message message) {
@@ -58,17 +58,17 @@ public class ResultServiceTest {
     ResultService resultService = new ResultService();
 
     // when
-    EndpointDataReference dataReference = resultService.pull("123", 500, TimeUnit.MILLISECONDS);
+    ProcessData processData = resultService.pull("123", 500, TimeUnit.MILLISECONDS);
 
     // then
-    Assertions.assertNull(dataReference);
+    Assertions.assertNull(processData);
   }
 
   @Test
-  public void process_shouldThrowIllegalArgumentExceptionIfNoDataReference() {
+  public void process_shouldThrowIllegalArgumentExceptionIfNoDataPayload() {
     // given
     ResultService resultService = new ResultService();
-    Message message = new Message(new ProcessData("123", "providerUrl"));
+    Message message = new Message(null);
 
     // when then
     try {
