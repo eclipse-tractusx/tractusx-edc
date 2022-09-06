@@ -1,6 +1,61 @@
-# Catena-X specific edc apps
+<a name="readme-top"></a>
 
-This project provides pre-built Control-Plane and Data-Plane [docker](https://www.docker.com/) images and [helm](https://helm.sh/) charts of the [Eclipse DataSpaceConnector Project](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector).
+<!-- Project Shields -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Apache 2.0 License][license-shield]][license-url]
+[![Latest Release][release-shield]][release-url]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector">
+    <img src="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/raw/main/docs/_media/icon.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">Product Eclipse Dataspace Connector</h3>
+  <h4 align="center">Catena-X</h4>
+
+  <p align="center">
+    Container images and deployments of the Eclipse Dataspace Connector open source project.
+    <br />
+    <a href="https://github.com/catenax-ng/product-edc/tree/feature/update-readme-md/docs"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector">View Eclipse Dataspace Connector</a>
+    ·
+    <a href="https://github.com/catenax-ng/product-edc/releases">Releases</a>
+    ·
+    <a href="https://jira.catena-x.net/projects/A1IDSC/summary">Report Bug / Request Feature</a>
+  </p>
+</div>
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+    </li>
+    <li>
+      <a href="#inventory">Inventory</a>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#build">Build</a></li>
+      </ul>
+    </li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
+## About The Project
+
+The project provides pre-built control- and data-plane [docker](https://www.docker.com/) images and [helm](https://helm.sh/) charts of the [Eclipse DataSpaceConnector Project](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Inventory
 
@@ -26,10 +81,41 @@ Derivatives of the Data-Plane can be found here
 * [edc-dataplane-hashicorp-vault](edc-dataplane/edc-dataplane-hashicorp-vault) with dependency onto
     * [Hashicorp Vault](https://www.vaultproject.io/)
 
-## Prerequisites
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Build
+## Getting Started
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+### Build
+
+1. Build EDC Submodule Dependencies
+```shell
+git submodule update --init
+cd edc && ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT && cd ..
+```
+
+2. Build Product-EDC Container Images
 ```shell
 ./mvnw package -Pwith-docker-image
 ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## License
+
+Distributed under the Apache 2.0 License. See [LICENSE](https://github.com/catenax-ng/product-edc/blob/main/LICENSE) for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/catenax-ng/product-edc.svg?style=for-the-badge
+[contributors-url]: https://github.com/catenax-ng/product-edc/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/catenax-ng/product-edc.svg?style=for-the-badge
+[stars-url]: https://github.com/catenax-ng/product-edc/stargazers
+[license-shield]: https://img.shields.io/github/license/catenax-ng/product-edc.svg?style=for-the-badge
+[license-url]: https://github.com/catenax-ng/product-edc/blob/main/LICENSE
+[release-shield]: https://img.shields.io/github/v/release/catenax-ng/product-edc.svg?style=for-the-badge
+[release-url]: https://github.com/catenax-ng/product-edc/releases
