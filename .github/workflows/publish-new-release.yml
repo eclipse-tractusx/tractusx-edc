@@ -121,7 +121,7 @@ jobs:
           git config user.email noreply@github.com
 
           # Package all charts
-          find deployment/helm -name Chart.yaml -not -path "./edc-tests/*" | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
+          find charts -name Chart.yaml -not -path "./edc-tests/*" | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
 
           git checkout gh-pages || git checkout -b gh-pages
           git pull --rebase origin gh-pages

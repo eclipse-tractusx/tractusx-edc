@@ -35,12 +35,12 @@ dependencies:
   # PLATO CONNECTOR
   - name: edc-controlplane
     version: ">=0.0.1"
-    repository: "file://../../../../../../../deployment/helm/edc-controlplane"
+    repository: "file://../../../../../../../charts/edc-controlplane"
     alias: platoedccontrolplane
     condition: platoedccontrolplane.enabled
   - name: edc-dataplane
     version: ">=0.0.1"
-    repository: "file://../../../../../../../deployment/helm/edc-dataplane"
+    repository: "file://../../../../../../../charts/edc-dataplane"
     alias: platoedcdataplane
     condition: platoedcdataplane.enabled
   - name: backend-service
@@ -62,12 +62,12 @@ dependencies:
   # SOKRATES CONNECTOR
   - name: edc-controlplane
     version: ">=0.0.1"
-    repository: "file://../../../../../../../deployment/helm/edc-controlplane"
+    repository: "file://../../../../../../../charts/edc-controlplane"
     alias: sokratesedccontrolplane
     condition: sokratesedccontrolplane.enabled
   - name: edc-dataplane
     version: ">=0.0.1"
-    repository: "file://../../../../../../../deployment/helm/edc-dataplane"
+    repository: "file://../../../../../../../charts/edc-dataplane"
     alias: sokratesedcdataplane
     condition: sokratesedcdataplane.enabled
   - name: backend-service
