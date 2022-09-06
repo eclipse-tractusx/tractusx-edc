@@ -611,6 +611,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>control-plane-core</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>core</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>

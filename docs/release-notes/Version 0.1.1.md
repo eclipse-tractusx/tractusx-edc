@@ -6,6 +6,10 @@
 > 
 > Please consolidate the migration documentation ([link](../migration/Version_0.1.0_0.1.1.md)).
 
+> **Important Notice**
+>
+> The **InMemoryControlPlane** image is broken. Please use another control plane instead.
+
 ## 0. Summary
 
 - 1. Eclipse Dataspace Connector Update
