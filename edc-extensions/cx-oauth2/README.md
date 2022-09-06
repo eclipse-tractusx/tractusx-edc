@@ -23,3 +23,11 @@ The reason IDS did this is to prevent the IDS DAPS to know, which connectors tal
 | edc.oauth.provider.jwks.refresh | Time between refresh of the DAPS json web key set | | 5 minutes |
 | edc.ids.endpoint.audience | The audience the connector requests from the DAPS. Should be the IDS URL of the connector, e.g. `http://plato-edc-controlplane:8282/api/v1/ids/data` | X | |
 | edc.ids.validation.referringconnector | Adds checks to the DAPS token. Validation that the `referringConnector` equals the `issuerConnector` and the `securityProfile` of the token is equal to the profile of the IDS message | | false |
+
+## Audience Validation
+
+Instead of the `idsc:IDS_CONNECTORS_ALL` the connector requests a specific audience from the DAPS. This audience will be the IDS URL, the connector intends to call.
+
+When a connector receives a message, it will checks the token audience is equal to the configured value in `edc.ids.endpoint.audience`.
+
+![sequence diagram](./diagrams/sequence.png)
