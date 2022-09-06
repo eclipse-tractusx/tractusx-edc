@@ -3,7 +3,7 @@ apiVersion: v2
 name: edc-dataplane
 description: >-
   EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
-home: https://github.com/catenax-ng/product-edc/deployment/helm/edc-dataplane
+home: https://github.com/catenax-ng/product-edc/charts/edc-dataplane
 type: application
 appVersion: "0.1.1"
 version: 0.1.1
