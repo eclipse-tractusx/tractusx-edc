@@ -25,9 +25,8 @@ public class DataReferenceHandler implements Listener, EndpointDataReferenceRece
     String contractAgreementId = message.getPayload().getContractAgreementId();
     monitor.info(String.format("[%s] DataReference message received.", message.getTraceId()));
 
-    EndpointDataReference dataReference = dataStore.getDataReference(contractAgreementId);
+    EndpointDataReference dataReference = dataStore.exchangeMessage(message, contractAgreementId);
     if (isNull(dataReference)) {
-      dataStore.storeMessage(message);
       return;
     }
 
@@ -42,9 +41,8 @@ public class DataReferenceHandler implements Listener, EndpointDataReferenceRece
     String contractAgreementId = dataReference.getProperties().get("cid");
     monitor.info(String.format("DataReference received, contractAgr.: %s", contractAgreementId));
 
-    Message message = dataStore.getMessage(contractAgreementId);
+    Message message = dataStore.exchangeDataReference(dataReference, contractAgreementId);
     if (isNull(message)) {
-      dataStore.storeDataReference(contractAgreementId, dataReference);
       return CompletableFuture.completedFuture(Result.success());
     }
     message.getPayload().setEndpointDataReference(dataReference);

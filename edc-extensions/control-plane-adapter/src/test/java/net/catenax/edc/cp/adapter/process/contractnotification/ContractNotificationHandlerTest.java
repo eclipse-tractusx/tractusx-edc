@@ -27,8 +27,7 @@ public class ContractNotificationHandlerTest {
   @Mock Monitor monitor;
   @Mock MessageService messageService;
   @Mock ContractNegotiationService contractNegotiationService;
-  @Mock
-  DataStore dataStore;
+  @Mock DataStore dataStore;
   @Mock ContractDataStore contractDataStore;
   @Mock TransferProcessService transferProcessService;
 
@@ -38,7 +37,7 @@ public class ContractNotificationHandlerTest {
   }
 
   @Test
-  public void process_shouldSaveMessageWhenNoContractNotification() {
+  public void process_shouldNotInitiateTransferWhenNoContractNotification() {
     // given
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
     ContractNotificationHandler contractNotificationHandler =
@@ -55,7 +54,7 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.process(message);
 
     // then
-    verify(dataStore, times(1)).storeMessage(any());
+    verify(dataStore, times(1)).exchangeMessage(any());
     verify(transferProcessService, times(0)).initiateTransfer(any());
     verify(messageService, times(0)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -102,7 +101,7 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.process(message);
 
     // then
-    verify(dataStore, times(0)).storeMessage(any());
+    verify(dataStore, times(0)).exchangeMessage(any());
     verify(transferProcessService, times(1)).initiateTransfer(any());
     verify(messageService, times(1)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -110,7 +109,9 @@ public class ContractNotificationHandlerTest {
   @Test
   public void process_shouldInitiateTransferWhenContractConfirmedByNotification() {
     // given
-    when(dataStore.getContractInfo(any())).thenReturn(new ContractInfo("confirmedContractAgreementId", ContractInfo.ContractState.CONFIRMED));
+    when(dataStore.exchangeMessage(any()))
+        .thenReturn(
+            new ContractInfo("confirmedContractAgreementId", ContractInfo.ContractState.CONFIRMED));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
@@ -126,14 +127,13 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.process(message);
 
     // then
-    verify(dataStore, times(0)).storeMessage(any());
     verify(transferProcessService, times(1)).initiateTransfer(any());
     verify(messageService, times(1)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
-    verify(dataStore, times(1)).removeConfirmedContract(any());
+    verify(dataStore, times(1)).removeContractInfo(any());
   }
 
   @Test
-  public void preConfirmed_shouldSaveInfoAboutContractConfirmationIfMessageNotAvailable() {
+  public void preConfirmed_shouldNotInitiateTransferIfMessageNotAvailable() {
     // given
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
@@ -149,7 +149,7 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.preConfirmed(contractNegotiation);
 
     // then
-    verify(dataStore, times(1)).storeConfirmedContract(any(), any());
+    verify(dataStore, times(1)).exchangeConfirmedContract(any(), any());
     verify(transferProcessService, times(0)).initiateTransfer(any());
     verify(messageService, times(0)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -157,24 +157,23 @@ public class ContractNotificationHandlerTest {
   @Test
   public void preConfirmed_shouldInitiateTransferIfMessageIsAvailable() {
     // given
-    when(dataStore.getMessage(any()))
-            .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    when(dataStore.exchangeConfirmedContract(any(), any()))
+        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
     ContractNotificationHandler contractNotificationHandler =
-            new ContractNotificationHandler(
-                    monitor,
-                    messageService,
-                    dataStore,
-                    contractNegotiationService,
-                    transferProcessService,
-                    contractDataStore);
+        new ContractNotificationHandler(
+            monitor,
+            messageService,
+            dataStore,
+            contractNegotiationService,
+            transferProcessService,
+            contractDataStore);
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
     contractNotificationHandler.preConfirmed(contractNegotiation);
 
     // then
-    verify(dataStore, times(0)).storeConfirmedContract(any(), any());
     verify(transferProcessService, times(1)).initiateTransfer(any());
     verify(messageService, times(1)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -182,16 +181,16 @@ public class ContractNotificationHandlerTest {
   @Test
   public void preDeclined_shouldSendErrorResultIfMessageIsAvailable() {
     // given
-    when(dataStore.getMessage(any()))
-            .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    when(dataStore.exchangeDeclinedContract(any()))
+        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
     ContractNotificationHandler contractNotificationHandler =
-            new ContractNotificationHandler(
-                    monitor,
-                    messageService,
-                    dataStore,
-                    contractNegotiationService,
-                    transferProcessService,
-                    contractDataStore);
+        new ContractNotificationHandler(
+            monitor,
+            messageService,
+            dataStore,
+            contractNegotiationService,
+            transferProcessService,
+            contractDataStore);
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
@@ -199,24 +198,24 @@ public class ContractNotificationHandlerTest {
 
     // then
     ArgumentCaptor<Message> messageArg = ArgumentCaptor.forClass(Message.class);
-    verify(dataStore, times(0)).storeConfirmedContract(any(), any());
     verify(messageService, times(1)).send(eq(Channel.RESULT), messageArg.capture());
-    Assertions.assertEquals(Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
+    Assertions.assertEquals(
+        Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
   }
 
   @Test
   public void preError_shouldSendErrorResultIfMessageIsAvailable() {
     // given
-    when(dataStore.getMessage(any()))
-            .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    when(dataStore.exchangeErrorContract(any()))
+        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
     ContractNotificationHandler contractNotificationHandler =
-            new ContractNotificationHandler(
-                    monitor,
-                    messageService,
-                    dataStore,
-                    contractNegotiationService,
-                    transferProcessService,
-                    contractDataStore);
+        new ContractNotificationHandler(
+            monitor,
+            messageService,
+            dataStore,
+            contractNegotiationService,
+            transferProcessService,
+            contractDataStore);
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
@@ -224,9 +223,9 @@ public class ContractNotificationHandlerTest {
 
     // then
     ArgumentCaptor<Message> messageArg = ArgumentCaptor.forClass(Message.class);
-    verify(dataStore, times(0)).storeConfirmedContract(any(), any());
     verify(messageService, times(1)).send(eq(Channel.RESULT), messageArg.capture());
-    Assertions.assertEquals(Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
+    Assertions.assertEquals(
+        Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
   }
 
   private ContractNegotiation getConfirmedContractNegotiation() {

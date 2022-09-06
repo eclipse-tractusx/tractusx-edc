@@ -26,7 +26,7 @@ public class DataReferenceHandlerTest {
   }
 
   @Test
-  public void process_shouldSaveMessageWhenDataReferenceNotAvailable() {
+  public void process_shouldNotSendResultWhenDataReferenceNotAvailable() {
     // given
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, dataStore);
@@ -36,14 +36,14 @@ public class DataReferenceHandlerTest {
     dataReferenceHandler.process(message);
 
     // then
-    verify(dataStore, times(1)).storeMessage(eq(message));
+    verify(dataStore, times(1)).exchangeMessage(eq(message), any());
     verify(messageService, times(0)).send(eq(Channel.RESULT), any(Message.class));
   }
 
   @Test
   public void process_shouldSendResultWhenDataReferenceIsAvailable() {
     // given
-    when(dataStore.getDataReference(any())).thenReturn(getEndpointDataReference());
+    when(dataStore.exchangeMessage(any(), any())).thenReturn(getEndpointDataReference());
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, dataStore);
     Message message = new Message(new ProcessData("assetId", "providerUrl"));
@@ -52,13 +52,12 @@ public class DataReferenceHandlerTest {
     dataReferenceHandler.process(message);
 
     // then
-    verify(dataStore, times(0)).storeMessage(eq(message));
     verify(messageService, times(1)).send(eq(Channel.RESULT), any(Message.class));
     verify(dataStore, times(1)).removeDataReference(any());
   }
 
   @Test
-  public void send_shouldSaveDataReferenceWhenMessageNotAvailable() {
+  public void send_shouldNotSendResultWhenMessageNotAvailable() {
     // given
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, dataStore);
@@ -67,7 +66,6 @@ public class DataReferenceHandlerTest {
     dataReferenceHandler.send(getEndpointDataReference());
 
     // then
-    verify(dataStore, times(1)).storeDataReference(any(), any(EndpointDataReference.class));
     verify(messageService, times(0)).send(eq(Channel.RESULT), any(Message.class));
   }
 
@@ -75,7 +73,7 @@ public class DataReferenceHandlerTest {
   public void send_shouldSendResultWhenMessageIsAvailable() {
     // given
     Message message = new Message(new ProcessData("assetId", "providerUrl"));
-    when(dataStore.getMessage(any())).thenReturn(message);
+    when(dataStore.exchangeDataReference(any(), any())).thenReturn(message);
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, dataStore);
 
@@ -83,7 +81,6 @@ public class DataReferenceHandlerTest {
     dataReferenceHandler.send(getEndpointDataReference());
 
     // then
-    verify(dataStore, times(0)).storeDataReference(any(), any(EndpointDataReference.class));
     verify(messageService, times(1)).send(eq(Channel.RESULT), any(Message.class));
     verify(dataStore, times(1)).removeMessage(any());
   }

@@ -1,73 +1,83 @@
 package net.catenax.edc.cp.adapter.process.contractnotification;
 
+import static java.util.Objects.isNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import net.catenax.edc.cp.adapter.messaging.Message;
+import net.catenax.edc.cp.adapter.util.LockMap;
 
 public class InMemoryDataStore implements DataStore {
   private final Map<String, Message> messages = new HashMap<>();
-  private final Map<String, ContractInfo> confirmedContracts = new HashMap<>();
-  private final DataStoreLock lock;
+  private final Map<String, ContractInfo> contractInfoMap = new HashMap<>();
+  private final LockMap locks;
 
-  public InMemoryDataStore(DataStoreLock lock) {
-    this.lock = lock;
+  public InMemoryDataStore(LockMap locks) {
+    this.locks = locks;
   }
 
   @Override
-  public void storeConfirmedContract(String contractNegotiationId, String contractAgreementId) {
-    lock.writeLock(contractNegotiationId);
-    confirmedContracts.put(contractNegotiationId, new ContractInfo(contractAgreementId, ContractInfo.ContractState.CONFIRMED));
-    lock.writeUnlock(contractNegotiationId);
-  }
-
-  @Override
-  public void storeDeclinedContract(String contractNegotiationId) {
-    lock.writeLock(contractNegotiationId);
-    confirmedContracts.put(contractNegotiationId, new ContractInfo(ContractInfo.ContractState.DECLINED));
-    lock.writeUnlock(contractNegotiationId);
-  }
-
-  @Override
-  public void storeErrorContract(String contractNegotiationId) {
-    lock.writeLock(contractNegotiationId);
-    confirmedContracts.put(contractNegotiationId, new ContractInfo(ContractInfo.ContractState.ERROR));
-    lock.writeUnlock(contractNegotiationId);
-  }
-
-  @Override
-  public ContractInfo getContractInfo(String contractNegotiationId) {
-    lock.readLock(contractNegotiationId);
-    ContractInfo contractInfo = confirmedContracts.get(contractNegotiationId);
-    lock.readUnlock(contractNegotiationId);
-    return contractInfo;
-  }
-
-  @Override
-  public void removeConfirmedContract(String contractNegotiationId) {
-    confirmedContracts.remove(contractNegotiationId);
-    lock.removeLock(contractNegotiationId);
-  }
-
-  @Override
-  public void storeMessage(Message message) {
-    String contractNegotiationId = message.getPayload().getContractNegotiationId();
-
-    lock.writeLock(contractNegotiationId);
-    messages.put(contractNegotiationId, message);
-    lock.writeUnlock(contractNegotiationId);
-  }
-
-  @Override
-  public Message getMessage(String contractNegotiationId) {
-    lock.readLock(contractNegotiationId);
-    Message message = messages.get(contractNegotiationId);
-    lock.readUnlock(contractNegotiationId);
+  public Message exchangeConfirmedContract(String negotiationId, String agreementId) {
+    locks.lock(negotiationId);
+    Message message = messages.get(negotiationId);
+    if (isNull(message)) {
+      contractInfoMap.put(negotiationId,
+          new ContractInfo(agreementId, ContractInfo.ContractState.CONFIRMED));
+    }
+    locks.unlock(negotiationId);
     return message;
   }
 
   @Override
-  public void removeMessage(String contractNegotiationId) {
-    messages.remove(contractNegotiationId);
-    lock.removeLock(contractNegotiationId);
+  public Message exchangeDeclinedContract(String negotiationId) {
+    locks.lock(negotiationId);
+    Message message = messages.get(negotiationId);
+    if (isNull(message)) {
+      contractInfoMap.put(
+          negotiationId,
+          new ContractInfo(ContractInfo.ContractState.DECLINED));
+    }
+    locks.unlock(negotiationId);
+    return message;
+  }
+
+  @Override
+  public Message exchangeErrorContract(String negotiationId) {
+    locks.lock(negotiationId);
+    Message message = messages.get(negotiationId);
+    if (isNull(message)) {
+      contractInfoMap.put(
+          negotiationId,
+          new ContractInfo(ContractInfo.ContractState.ERROR));
+    }
+
+    locks.unlock(negotiationId);
+    return message;
+  }
+
+  @Override
+  public ContractInfo exchangeMessage(Message message) {
+    String negotiationId = message.getPayload().getContractNegotiationId();
+
+    locks.lock(negotiationId);
+    ContractInfo contractInfo = contractInfoMap.get(negotiationId);
+    if (isNull(contractInfo)) {
+      messages.put(negotiationId, message);
+    }
+
+    locks.unlock(negotiationId);
+    return contractInfo;
+  }
+
+  @Override
+  public void removeContractInfo(String negotiationId) {
+    contractInfoMap.remove(negotiationId);
+    locks.removeLock(negotiationId);
+  }
+
+  @Override
+  public void removeMessage(String negotiationId) {
+    messages.remove(negotiationId);
+    locks.removeLock(negotiationId);
   }
 }

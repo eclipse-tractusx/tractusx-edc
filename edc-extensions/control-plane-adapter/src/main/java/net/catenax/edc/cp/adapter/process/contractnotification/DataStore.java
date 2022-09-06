@@ -3,19 +3,15 @@ package net.catenax.edc.cp.adapter.process.contractnotification;
 import net.catenax.edc.cp.adapter.messaging.Message;
 
 public interface DataStore {
-  void storeConfirmedContract(String contractNegotiationId, String contractAgreementId);
+  Message exchangeConfirmedContract(String contractNegotiationId, String contractAgreementId);
 
-  void storeDeclinedContract(String contractNegotiationId);
+  Message exchangeDeclinedContract(String contractNegotiationId);
 
-  void storeErrorContract(String contractNegotiationId);
+  Message exchangeErrorContract(String contractNegotiationId);
 
-  ContractInfo getContractInfo(String contractNegotiationId);
+  ContractInfo exchangeMessage(Message message);
 
-  void removeConfirmedContract(String key);
-
-  void storeMessage(Message message);
-
-  Message getMessage(String key);
+  void removeContractInfo(String key);
 
   void removeMessage(String key);
 }

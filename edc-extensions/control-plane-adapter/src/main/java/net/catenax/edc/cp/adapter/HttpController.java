@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Channel;
@@ -12,8 +13,6 @@ import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-
-import java.util.Objects;
 
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
@@ -42,25 +41,25 @@ public class HttpController {
 
       if (Objects.isNull(processData)) {
         return Response.status(Response.Status.NOT_FOUND)
-                .entity(Response.Status.NOT_FOUND.getReasonPhrase())
-                .build();
+            .entity(Response.Status.NOT_FOUND.getReasonPhrase())
+            .build();
       }
 
       if (Objects.nonNull(processData.getErrorStatus())) {
         return Response.status(processData.getErrorStatus())
-                .entity(processData.getErrorMessage())
-                .build();
+            .entity(processData.getErrorMessage())
+            .build();
       }
 
       if (Objects.nonNull(processData.getEndpointDataReference())) {
         return Response.status(Response.Status.OK)
-                .entity(processData.getEndpointDataReference())
-                .build();
+            .entity(processData.getEndpointDataReference())
+            .build();
       }
 
       return Response.status(Response.Status.REQUEST_TIMEOUT)
-              .entity(Response.Status.REQUEST_TIMEOUT.getReasonPhrase())
-              .build();
+          .entity(Response.Status.REQUEST_TIMEOUT.getReasonPhrase())
+          .build();
     } catch (InterruptedException e) {
       monitor.severe("InterruptedException", e);
       return Response.status(Response.Status.NOT_FOUND).build();

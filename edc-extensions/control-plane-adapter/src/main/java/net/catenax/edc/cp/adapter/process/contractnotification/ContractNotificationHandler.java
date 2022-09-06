@@ -1,9 +1,9 @@
 package net.catenax.edc.cp.adapter.process.contractnotification;
 
+import static jakarta.ws.rs.core.Response.Status;
 import static java.util.Objects.isNull;
 
 import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
@@ -21,8 +21,6 @@ import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.Cont
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiationStates;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.TransferType;
-
-import static jakarta.ws.rs.core.Response.Status;
 
 @RequiredArgsConstructor
 public class ContractNotificationHandler implements Listener, ContractNegotiationListener {
@@ -55,9 +53,8 @@ public class ContractNotificationHandler implements Listener, ContractNegotiatio
       return;
     }
 
-    ContractInfo contractInfo = dataStore.getContractInfo(contractNegotiationId);
+    ContractInfo contractInfo = dataStore.exchangeMessage(message);
     if (isNull(contractInfo)) {
-      dataStore.storeMessage(message);
       return;
     }
 
@@ -67,37 +64,34 @@ public class ContractNotificationHandler implements Listener, ContractNegotiatio
     } else {
       sendErrorResult(message, Status.BAD_GATEWAY, contractInfo.isDeclined()
               ? CONTRACT_DECLINED_MESSAGE
-              : CONTRACT_ERROR_MESSAGE);
-    }
-    dataStore.removeConfirmedContract(contractNegotiationId);
+              : CONTRACT_ERROR_MESSAGE);    }
+    dataStore.removeContractInfo(contractNegotiationId);
   }
 
   @Override
   public void preConfirmed(ContractNegotiation negotiation) {
     monitor.info("ContractConfirmationHandler: received ContractConfirmation event");
-    String contractNegotiationId = negotiation.getId();
-    String contractAgreementId = negotiation.getContractAgreement().getId();
-    Message message = dataStore.getMessage(contractNegotiationId);
+    String negotiationId = negotiation.getId();
+    String agreementId = negotiation.getContractAgreement().getId();
+    Message message = dataStore.exchangeConfirmedContract(negotiationId, agreementId);
     if (isNull(message)) {
-      dataStore.storeConfirmedContract(contractNegotiationId, contractAgreementId);
       return;
     }
-    message.getPayload().setContractAgreementId(contractAgreementId);
+    message.getPayload().setContractAgreementId(agreementId);
     initiateDataTransfer(message);
     contractDataStore.add(
         message.getPayload().getAssetId(),
         message.getPayload().getProvider(),
         negotiation.getContractAgreement());
-    dataStore.removeMessage(contractNegotiationId);
+    dataStore.removeMessage(negotiationId);
   }
 
   @Override
   public void preDeclined(ContractNegotiation negotiation) {
     monitor.info("ContractConfirmationHandler: received ContractDeclined event");
     String contractNegotiationId = negotiation.getId();
-    Message message = dataStore.getMessage(contractNegotiationId);
+    Message message = dataStore.exchangeDeclinedContract(contractNegotiationId);
     if (isNull(message)) {
-      dataStore.storeDeclinedContract(contractNegotiationId);
       return;
     }
     sendErrorResult(message, Status.BAD_GATEWAY, CONTRACT_DECLINED_MESSAGE);
@@ -108,9 +102,8 @@ public class ContractNotificationHandler implements Listener, ContractNegotiatio
   public void preError(ContractNegotiation negotiation) {
     monitor.info("ContractConfirmationHandler: received ContractError event");
     String contractNegotiationId = negotiation.getId();
-    Message message = dataStore.getMessage(contractNegotiationId);
+    Message message = dataStore.exchangeErrorContract(contractNegotiationId);
     if (isNull(message)) {
-      dataStore.storeErrorContract(contractNegotiationId);
       return;
     }
     sendErrorResult(message, Status.BAD_GATEWAY, CONTRACT_ERROR_MESSAGE);
@@ -158,9 +151,9 @@ public class ContractNotificationHandler implements Listener, ContractNegotiatio
   }
 
   private void throwDataRefRequestException(Message message) {
-    throw new ExternalRequestException(
-            String.format("Data reference initial request failed! AssetId: %s",
-                    message.getPayload().getAssetId()));
+    throw new ExternalRequestException(String.format(
+            "Data reference initial request failed! AssetId: %s",
+            message.getPayload().getAssetId()));
   }
 
   private void sendErrorResult(Message message, Status status, String errorMessage) {
@@ -171,6 +164,6 @@ public class ContractNotificationHandler implements Listener, ContractNegotiatio
 
   private boolean isContractConfirmed(ContractNegotiation contractNegotiation) {
     return Objects.nonNull(contractNegotiation)
-            && contractNegotiation.getState() == ContractNegotiationStates.CONFIRMED.code();
+        && contractNegotiation.getState() == ContractNegotiationStates.CONFIRMED.code();
   }
 }

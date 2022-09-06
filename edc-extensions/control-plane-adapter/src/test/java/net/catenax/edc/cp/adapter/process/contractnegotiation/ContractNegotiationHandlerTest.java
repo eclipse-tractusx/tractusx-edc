@@ -39,8 +39,7 @@ public class ContractNegotiationHandlerTest {
   @Test
   public void process_shouldNotInitializeContractNegotiationWhenCachedContractAlreadyAvailable() {
     // given
-    ContractNegotiationHandler contractNegotiationHandler =
-        new ContractNegotiationHandler(
+    ContractNegotiationHandler contractNegotiationHandler = new ContractNegotiationHandler(
             monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
 
     when(contractDataStore.get(anyString(), anyString()))
@@ -57,8 +56,7 @@ public class ContractNegotiationHandlerTest {
   @Test
   public void process_shouldInitializeContractNegotiationWhenCachedContractExpired() {
     // given
-    ContractNegotiationHandler contractNegotiationHandler =
-        new ContractNegotiationHandler(
+    ContractNegotiationHandler contractNegotiationHandler = new ContractNegotiationHandler(
             monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
 
     when(contractDataStore.get(anyString(), anyString()))

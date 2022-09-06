@@ -16,15 +16,13 @@ import net.catenax.edc.cp.adapter.messaging.Message;
 public class ResultService implements Listener {
   private final int CAPACITY = 1;
   private final int DEFAULT_TIMEOUT = 15; // TODO move to config
-  private final Map<String, ArrayBlockingQueue<ProcessData>> results =
-      new ConcurrentHashMap<>();
+  private final Map<String, ArrayBlockingQueue<ProcessData>> results = new ConcurrentHashMap<>();
 
   public ProcessData pull(String id) throws InterruptedException {
     return pull(id, DEFAULT_TIMEOUT, SECONDS);
   }
 
-  public ProcessData pull(String id, long timeout, TimeUnit unit)
-      throws InterruptedException {
+  public ProcessData pull(String id, long timeout, TimeUnit unit) throws InterruptedException {
     if (!results.containsKey(id)) {
       initiate(id);
     }

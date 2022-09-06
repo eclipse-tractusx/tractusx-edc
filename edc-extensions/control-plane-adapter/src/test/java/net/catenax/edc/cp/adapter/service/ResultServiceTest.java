@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Message;
 import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -80,14 +79,15 @@ public class ResultServiceTest {
 
   private Message getMessage(String endpointDataRefId) {
     Message message = new Message(new ProcessData("123", "providerUrl"));
-    message.getPayload()
-            .setEndpointDataReference(
-                    EndpointDataReference.Builder.newInstance()
-                            .id(endpointDataRefId)
-                            .endpoint("e")
-                            .authCode("c")
-                            .authKey("k")
-                            .build());
+    message
+        .getPayload()
+        .setEndpointDataReference(
+            EndpointDataReference.Builder.newInstance()
+                .id(endpointDataRefId)
+                .endpoint("e")
+                .authCode("c")
+                .authKey("k")
+                .build());
     return message;
   }
 
