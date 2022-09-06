@@ -1,0 +1,24 @@
+@startuml
+
+title CX-DAPS Audience Validation
+
+participant ConnectorA as "Connector A"
+participant DAPS as "IDS DAPS"
+participant ConnectorB as "Connector B"
+
+== Configuration ==
+
+ConnectorB <-? : Configure //edc.ids.endpoint.audience//\nto //<connector-b>/api/v1/ids/data//
+
+== Request ==
+
+?-> ConnectorA ++: Initiate Catalog Request\n/data/catalog?providerUrl=//<connector-b>/api/v1/ids/data//
+    ConnectorA -> DAPS ++: Request Token for audience\n//<connector-b>/api/v1/ids/data//
+    return DAPS Token
+    ConnectorA -> ConnectorB ++ : Send Request with Token
+        ConnectorB -> ConnectorB : Check Audience equals\n<connector-b>/api/v1/ids/data
+        ... continue request processing ...
+    return Catalog Response
+return Catalog
+
+@enduml
