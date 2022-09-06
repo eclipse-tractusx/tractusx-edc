@@ -87,6 +87,10 @@
             <groupId>net.catenax.edc</groupId>
             <artifactId>edc-controlplane-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>control-plane-core</artifactId>
+        </dependency>
 
         <!-- Vault -->
         <dependency>
