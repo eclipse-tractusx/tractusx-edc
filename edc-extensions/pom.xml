@@ -17,7 +17,7 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
-        <version>0.0.5-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,10 +25,17 @@
     <artifactId>edc-extensions</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <modules>
         <module>business-partner-validation</module>
         <module>postgresql-migration</module>
         <module>hashicorp-vault</module>
+        <module>dataplane-selector-configuration</module>
+        <module>data-encryption</module>
+        <module>cx-oauth2</module>
     </modules>
 
 </project>

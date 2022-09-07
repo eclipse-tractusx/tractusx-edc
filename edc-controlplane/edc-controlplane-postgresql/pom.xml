@@ -17,13 +17,17 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>edc-controlplane</artifactId>
-        <version>0.0.5-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>edc-controlplane-postgresql</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+    
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>
@@ -55,6 +59,7 @@
                             <mainClass>
                             org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
                         </mainClass>
+                        <useUniqueVersions>false</useUniqueVersions> 
                         </manifest>
                     </archive>
                 </configuration>
@@ -76,7 +81,6 @@
             </plugin>
         </plugins>
     </build>
-
 
     <dependencies>
         <!-- Base Control-Plane -->
@@ -128,17 +132,6 @@
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>policy-store-sql</artifactId>
         </dependency>
-
-        <!-- IAM -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>oauth2-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-daps</artifactId>
-        </dependency>
-
 
         <!-- Supportive -->
         <dependency>

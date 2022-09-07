@@ -41,26 +41,25 @@ EDC commit the Product-EDC uses.
 
 ---
 
+**Persistence**
+- ContractDefinition-AssetSelector of InMemory Connector selects 50 Asset max.([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1779))
+
+**Transfer**
+- Transfer Process remains 'InProgress' on provider side ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1287))
+
 **Configuration**
 - Contract negotiation not working when `web.http.ids.path` is configured/changed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1249))
   - **Workaround:** Don't configure `web.http.ids.path`, so that the default path is used.
+
+- HttpProxy Transfer: Provider Control Plane spams Consumer Control Plane + HttpProxy Backend Application with requests([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1840))
+  - **Possible Workaround:** Reconfigure data plane URL from `http://dataplane:8185/api/public` to `http://dataplane:8185/api/public/`
+
+- Non-telling logs when `edc.transfer.proxy.token.verifier.publickey.alias` setting is missing([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1889))
 
 **Data Management API**
 - Contract negotiation not working when initiated with policy id ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1251))
   - **Workaround:** The DataManagement API can also initiate a contract negotiation using the actual policy object.
 
-- Contract-Offer-Receiving-Connectors must also pass the ContractPolicy of the ContractDefinition before receiving offers([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1331))
-
-- Deletion of Asset becomes impossible when Contract Negotiation exists([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1403))
-  - **Workaround:** Delete Asset from DB manually. Be aware that deleting Assets, that are part of a ContractNegotiation or ContractAgreement, may corrupt the connector instance!
-
-- Deletion of Policy becomes impossible when Contract Definition exists([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1410))
-  - **Workaround:** Delete Policy from DB manually. Be aware that deleting Policies, that are part of a ContractDefinition, ContractNegotiation or ContractAgreement, may corrupt the connector instance!
-
 **Other**
 - Non-IDS-Transformable-ContractDefinition causes connector to be unable to send out self-descriptions/catalogs([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1265))
   - **Workaround:** Delete non-transformable ContractDefinition or Policy.
-
-**Security**
-- DataAddress is passed unencrypted from DataProvider to DataConsumer ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1504))
-  - **Workaround:** Use only test data!

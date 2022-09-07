@@ -16,12 +16,16 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>edc-controlplane</artifactId>
-        <version>0.0.5-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>edc-controlplane-memory</artifactId>
     <packaging>jar</packaging>
+
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -54,6 +58,7 @@
                             <mainClass>
                             org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
                         </mainClass>
+                        <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
                 </configuration>
@@ -82,6 +87,10 @@
             <groupId>net.catenax.edc</groupId>
             <artifactId>edc-controlplane-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>control-plane-core</artifactId>
+        </dependency>
 
         <!-- Vault -->
         <dependency>
@@ -97,16 +106,6 @@
                     <artifactId>azure-identity</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- IAM -->
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>oauth2-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-daps</artifactId>
         </dependency>
 
         <!-- Other -->

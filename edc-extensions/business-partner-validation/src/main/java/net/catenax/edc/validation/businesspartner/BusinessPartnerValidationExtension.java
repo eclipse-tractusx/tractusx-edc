@@ -69,7 +69,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         new BusinessPartnerProhibitionFunction(monitor);
 
     ruleBindingRegistry.bind("USE", ALL_SCOPES);
-    ruleBindingRegistry.bind("BusinessPartnerNumber", ALL_SCOPES);
+    ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, ALL_SCOPES);
 
     policyEngine.registerFunction(
         ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);

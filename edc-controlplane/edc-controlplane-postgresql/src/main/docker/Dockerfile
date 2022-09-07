@@ -10,13 +10,13 @@
 #  Contributors:
 #       Mercedes-Benz Tech Innovation GmbH - Initial Dockerfile
 #
-FROM alpine:3.16.1 as otel
+FROM alpine:3.16.2 as otel
 
 ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.1/opentelemetry-javaagent.jar"
 
 RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
-FROM gcr.io/distroless/java11-debian11
+FROM gcr.io/distroless/java11-debian11@sha256:dee9240c64471f1776a6b37f315890aba14ff4bc89ad247eeb34ec79fdeb24f4
 ARG JAR
 ARG LIB
 

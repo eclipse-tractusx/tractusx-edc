@@ -5,12 +5,13 @@
 # Declare variables to be passed into your templates.
 
 idsdaps:
+  enabled: true
   fullnameOverride: "ids-daps"
   connectors:
     - id: &sokratesDapsClientId E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
       name: sokrates
       attributes:
-        issuerConnector: http://sokrates-edc-controlplane/BPNSOKRATES
+        referringConnector: http://sokrates-edc-controlplane/BPNSOKRATES
       # Must be the same certificate that is stores in section 'sokrates-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
@@ -40,7 +41,7 @@ idsdaps:
     - id: &platoDapsClientId 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
       name: plato
       attributes:
-        issuerConnector: http://plato-edc-controlplane/BPNPLATO
+        referringConnector: http://plato-edc-controlplane/BPNPLATO
       # Must be the same certificate that is stores in section 'plato-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
@@ -72,10 +73,14 @@ idsdaps:
 # PLATO #
 #########
 platobackendapplication:
+  enabled: true
   fullnameOverride: "plato-backend-application"
   service:
-    port: 80
+    type: NodePort
+    frontend:
+      port: 80
 platopostgresql:
+  enabled: true
   fullnameOverride: "plato-postgresql"
   auth:
     password: &psqlPassword "psql_password"
@@ -84,6 +89,7 @@ platopostgresql:
   persistence:
     enabled: false
 platovault:
+  enabled: true
   fullnameOverride: "plato-vault"
   injector:
     enabled: false
@@ -99,8 +105,10 @@ platovault:
       - |
         { 
         
-        sleep 1
-        
+        sleep 5
+
+        /bin/vault kv put secret/data-encryption-aes-keys content=H7j47H6vVQQOv/hbdAYz+w==
+
         cat << EOF | /bin/vault kv put secret/my-plato-daps-key content=-
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX9S8de5FTWl4
@@ -165,10 +173,12 @@ platovault:
     externalPort: 8200
     targetPort: 8200
 platoedcdataplane:
+  enabled: true
   fullnameOverride: "plato-edc-dataplane"
   image:
-    repository: &edcDataPlaneImage  ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
+    repository: &edcDataPlaneImage ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
     tag: &edcDataPlaneImageTag develop
+    pullPolicy: &pullPolicy Always
   envSecretName: "aio-plato-data-secret"
   edc:
     endpoints:
@@ -187,21 +197,32 @@ platoedcdataplane:
     #############
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
-    EDC_CONTROLPLANE_VALIDATION-ENDPOINT: http://plato-edc-controlplane:8182/validation/token
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://plato-edc-controlplane:8182/validation/token
 
     ###############
     ## KEY VAULT ##
     ###############
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
-    EDC_VAULT_HASHICORP_URL: http://plato-vault
+    EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
 platoedccontrolplane:
+  enabled: true
   fullnameOverride: "plato-edc-controlplane"
   service:
     type: NodePort
+  logging:
+    # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
+    properties: |-
+      .level=DEBUG
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.ConsoleHandler.level=ALL
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   image:
-    repository: &edcControlPlaneImage  ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
+    repository: &edcControlPlaneImage ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
     tag: &edcControlPlaneImageTag develop
+    pullPolicy: *pullPolicy
   opentelemetry:
     properties: |-
       otel.javaagent.enabled=false
@@ -214,13 +235,12 @@ platoedccontrolplane:
     ## DAPS CONFIGURATION ##
     ########################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/cx-oauth2
     EDC_OAUTH_CLIENT_ID: *platoDapsClientId
     EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/jwks.json"
     EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
     EDC_OAUTH_PRIVATE_KEY_ALIAS: my-plato-daps-key
     EDC_OAUTH_PUBLIC_KEY_ALIAS: my-plato-daps-crt
-    EDC_OAUTH_PROVIDER_AUDIENCE: &edcControlPlaneOauthAudience idsc:IDS_CONNECTORS_ALL
 
     #############
     ## GENERAL ##
@@ -231,33 +251,34 @@ platoedccontrolplane:
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/data-protocols/ids/ids-core
     EDC_IDS_ENDPOINT: http://plato-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_ENDPOINT_AUDIENCE: http://plato-edc-controlplane:8282/api/v1/ids/data
     EDC_IDS_DESCRIPTION: "Plato Control Plane"
 
     ################
     ## POSTGRESQL ##
     ################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/asset-index-sql
     EDC_DATASOURCE_ASSET_NAME: asset
     EDC_DATASOURCE_ASSET_USER: *psqlUsername
     EDC_DATASOURCE_ASSET_URL: &platoPsqlConStr "jdbc:postgresql://plato-postgresql:5432/edc"
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
     EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
     EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTDEFINITION_URL: *platoPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
     EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
     EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *platoPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
     EDC_DATASOURCE_POLICY_NAME: policy
     EDC_DATASOURCE_POLICY_USER: *psqlUsername
     EDC_DATASOURCE_POLICY_URL: *platoPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
     EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
     EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
     EDC_DATASOURCE_TRANSFERPROCESS_URL: *platoPsqlConStr
@@ -266,12 +287,21 @@ platoedccontrolplane:
     ## DATA PLANE ##
     ################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
-    EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_PROPERTIES: >-
+      { 
+        "publicApiUrl": "http://plato-edc-dataplane:8185/api/public/"
+      }
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
+    EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public/
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-plato-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-plato-daps-crt # for simplicity this example re-uses the DAPS keys.
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
     EDC_RECEIVER_HTTP_ENDPOINT: http://plato-backend-application
 
     ###############
@@ -281,20 +311,33 @@ platoedccontrolplane:
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
 
+    #####################
+    ## DATA ENCRYPTION ##
+    #####################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_ALGORITHM: AES
+
 ############
 # SOKRATES #
 ############
 sokratesbackendapplication:
+  enabled: true
   fullnameOverride: "sokrates-backend-application"
   service:
-    port: 80
+    type: NodePort
+    frontend:
+      port: 80
 sokratespostgresql:
+  enabled: true
   fullnameOverride: "sokrates-postgresql"
   auth:
     password: *psqlPassword
     username: *psqlUsername
     database: *psqlDatabase
 sokratesvault:
+  enabled: true
   fullnameOverride: "sokrates-vault"
   injector:
     enabled: false
@@ -310,7 +353,9 @@ sokratesvault:
       - |
         { 
         
-        sleep 1
+        sleep 5
+
+        /bin/vault kv put secret/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
 
         cat << EOF | /bin/vault kv put secret/my-sokrates-daps-key content=-
         -----BEGIN PRIVATE KEY-----
@@ -376,10 +421,12 @@ sokratesvault:
     externalPort: 8200
     targetPort: 8200
 sokratesedcdataplane:
+  enabled: true
   fullnameOverride: "sokrates-edc-dataplane"
   image:
     repository: *edcDataPlaneImage
     tag: *edcDataPlaneImageTag
+    pullPolicy: *pullPolicy
   envSecretName: "aio-plato-data-secret"
   edc:
     endpoints:
@@ -398,23 +445,34 @@ sokratesedcdataplane:
     #############
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
-    EDC_CONTROLPLANE_VALIDATION-ENDPOINT: http://sokrates-edc-controlplane:8182/validation/token
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://sokrates-edc-controlplane:8182/validation/token
 
     ###############
     ## KEY VAULT ##
     ###############
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
-    EDC_VAULT_HASHICORP_URL: http://sokrates-vault-0
+    EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
     EDC_VAULT_HASHICORP_TOKEN: *sokratesVaultToken
 sokratesedccontrolplane:
+  enabled: true
   fullnameOverride: "sokrates-edc-controlplane"
   service:
     type: NodePort
+  logging:
+    # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
+    properties: |-
+      .level=DEBUG
+      org.eclipse.dataspaceconnector.level=ALL
+      handlers=java.util.logging.ConsoleHandler
+      java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+      java.util.logging.ConsoleHandler.level=ALL
+      java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   envSecretName: "aio-sokrates-control-secret"
   image:
     repository: *edcControlPlaneImage
     tag: *edcControlPlaneImageTag
+    pullPolicy: *pullPolicy
   opentelemetry:
     properties: |-
       otel.javaagent.enabled=false
@@ -432,40 +490,40 @@ sokratesedccontrolplane:
     EDC_OAUTH_TOKEN_URL: *edcControlPlaneOauthTokenUrl
     EDC_OAUTH_PRIVATE_KEY_ALIAS: my-sokrates-daps-key
     EDC_OAUTH_PUBLIC_KEY_ALIAS: my-sokrates-daps-crt
-    EDC_OAUTH_PROVIDER_AUDIENCE: *edcControlPlaneOauthAudience
 
     #############
     ## GENERAL ##
     #############
     IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
     EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
+    EDC_IDS_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
     EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
 
     ################
     ## POSTGRESQL ##
     ################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/asset-index-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/asset-index-sql
     EDC_DATASOURCE_ASSET_NAME: asset
     EDC_DATASOURCE_ASSET_USER: *psqlUsername
     EDC_DATASOURCE_ASSET_URL: &SokratesPsqlConStr "jdbc:postgresql://sokrates-postgresql:5432/edc"
     
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-definition-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
     EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
     EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTDEFINITION_URL: *SokratesPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/contract-negotiation-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
     EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
     EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *SokratesPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/policy-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
     EDC_DATASOURCE_POLICY_NAME: policy
     EDC_DATASOURCE_POLICY_USER: *psqlUsername
     EDC_DATASOURCE_POLICY_URL: *SokratesPsqlConStr
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/sql/transfer-process-store-sql
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
     EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
     EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
     EDC_DATASOURCE_TRANSFERPROCESS_URL: *SokratesPsqlConStr
@@ -474,12 +532,21 @@ sokratesedccontrolplane:
     ## DATA PLANE ##
     ################
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane-transfer
-    EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: http://sokrates-edc-dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >- 
+      { 
+        "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public/"
+      }
+
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
+    EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public/
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
 
-    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/http-receiver
+    # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
     EDC_RECEIVER_HTTP_ENDPOINT: http://sokrates-backend-application
 
     ###############
@@ -488,3 +555,11 @@ sokratesedccontrolplane:
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
+
+    #####################
+    ## DATA ENCRYPTION ##
+    #####################
+
+    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_ALGORITHM: AES

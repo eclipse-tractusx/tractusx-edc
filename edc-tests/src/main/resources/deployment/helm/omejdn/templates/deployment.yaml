@@ -56,12 +56,21 @@ spec:
               cp /opt/config/omejdn.yml /etc/daps/omejdn.yml
               cp /opt/config/clients.yml /etc/daps/clients.yml
               cp /opt/config/plugins.yml /etc/daps/plugins.yml
+              cp /opt/config/scope_mapping.yml /etc/daps/scope_mapping.yml
+              apk add --update openssl
+              openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/keys/omejdn/omejdn.key \
+                -subj "/C=DE/ST=Berlin/L=Berlin/O=Product-EDC-Test, Inc./OU=DE"
           volumeMounts:
-            - name: config-dir
-              mountPath: /etc/daps
+            - mountPath: /etc/daps
+              name: config-dir
+            - mountPath: /etc/keys/omejdn
+              name: omejdn-key-dir
             - mountPath: /opt/config/omejdn.yml
               name: omejdn-config
               subPath: omejdn.yml
+            - mountPath: /opt/config/scope_mapping.yml
+              name: scope-mapping
+              subPath: scope_mapping.yml
             - mountPath: /opt/config/clients.yml
               name: clients-config
               subPath: clients.yml
@@ -75,15 +84,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /opt/config/omejdn.yml
+            - mountPath: /opt/config/
               name: config-dir
-              subPath: omejdn.yml
-            - mountPath: /opt/config/clients.yml
-              name: config-dir
-              subPath: clients.yml
-            - mountPath: /opt/config/plugins.yml
-              name: config-dir
-              subPath: plugins.yml
+            - mountPath: /opt/keys/omejdn/omejdn.key
+              name: omejdn-key-dir
+              subPath: omejdn.key
             - mountPath: /opt/keys/clients/
               name: client-certificates
           ports:
@@ -108,12 +113,20 @@ spec:
       volumes:
       - name: config-dir
         emptyDir: {}
+      - name: omejdn-key-dir
+        emptyDir: {}
       - name: omejdn-config
         configMap:
           name: {{ include "omejdn.fullname" . }}
           items:
           - key: omejdn.yml
             path: omejdn.yml
+      - name: scope-mapping
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: scope_mapping.yml
+            path: scope_mapping.yml
       - name: clients-config
         configMap:
           name: {{ include "omejdn.fullname" . }}

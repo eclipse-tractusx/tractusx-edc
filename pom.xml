@@ -18,13 +18,16 @@
 
     <groupId>net.catenax.edc</groupId>
     <artifactId>product-edc-parent</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>product-edc</name>
 
     <modules>
         <module>edc-extensions</module>
         <module>edc-controlplane</module>
         <module>edc-dataplane</module>
+        <module>edc-tests</module>
     </modules>
 
     <inceptionYear>2022</inceptionYear>
@@ -42,37 +45,51 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- plugins -->
-        <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0</org.apache.maven.plugins.maven.dependency.plugin.version>
+        <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0
+        </org.apache.maven.plugins.maven.dependency.plugin.version>
         <org.apache.maven.plugins.maven.jar.plugin.version>3.2.2</org.apache.maven.plugins.maven.jar.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>2.23.0</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.25.0</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.1.0</org.codehaus.mojo.exec.maven.plugin.version>
-        <org.apache.maven.plugins.javadoc.version>3.4.0</org.apache.maven.plugins.javadoc.version>
+        <org.apache.maven.plugins.javadoc.version>3.4.1</org.apache.maven.plugins.javadoc.version>
         <org.codehaus.mojo.license.maven.plugin>2.0.0</org.codehaus.mojo.license.maven.plugin>
         <org.apache.maven.plugins.failsafe.version>2.22.2</org.apache.maven.plugins.failsafe.version>
-        <org.apache.maven.plugins.deploy.version>3.0.0-M2</org.apache.maven.plugins.deploy.version>
+        <org.apache.maven.plugins.deploy.version>3.0.0</org.apache.maven.plugins.deploy.version>
         <org.apache.maven.plugins.source.version>3.2.1</org.apache.maven.plugins.source.version>
         <org.apache.maven.plugins.surefire.version>3.0.0-M7</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.compiler.version>3.10.1</org.apache.maven.plugins.compiler.version>
-        <org.apache.maven.plugins.resources.version>3.2.0</org.apache.maven.plugins.resources.version>
+        <org.apache.maven.plugins.resources.version>3.3.0</org.apache.maven.plugins.resources.version>
         <org.projectlombok.lombok.maven.plugin.version>1.18.20.0</org.projectlombok.lombok.maven.plugin.version>
+        <org.jacoco.maven.plugin.version>0.8.8</org.jacoco.maven.plugin.version>
         <org.jasig.maven.notice.plugin.version>1.1.0</org.jasig.maven.notice.plugin.version>
+        <org.sonarsource.scanner.maven.plugin.version>3.9.1.2184</org.sonarsource.scanner.maven.plugin.version>
+        <org.awaitility.awaitility.version>4.2.0</org.awaitility.awaitility.version>
+        <org.eclipse.dash.license.tool.plugin.version>0.0.1-SNAPSHOT</org.eclipse.dash.license.tool.plugin.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-SNAPSHOT</org.eclipse.dataspaceconnector.version>
+        <org.eclipse.dataspaceconnector.version>0.0.1-20220902-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
-        <org.postgresql.version>42.4.0</org.postgresql.version>
-        <org.flywaydb.version>8.5.13</org.flywaydb.version>
+        <org.postgresql.version>42.5.0</org.postgresql.version>
+        <org.flywaydb.version>9.2.2</org.flywaydb.version>
 
         <!-- test dependency version -->
-        <junit.jupiter.version>5.8.2</junit.jupiter.version>
+        <junit.jupiter.version>5.9.0</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
-        <mockito.version>4.6.1</mockito.version>
+        <cucumber.version>7.6.0</cucumber.version>
+        <io.rest.assured.version>5.1.1</io.rest.assured.version>
+        <org.junit.platform.surefire.provider.version>1.1.0</org.junit.platform.surefire.provider.version>
+        <mockito.version>4.7.0</mockito.version>
         <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
         <org.testcontainers.version>1.17.3</org.testcontainers.version>
-        <org.slf4j.version>2.0.0-alpha1</org.slf4j.version>
-        <ch.qos.logback.logback-core.version>1.2.11</ch.qos.logback.logback-core.version>
+        <org.slf4j.version>2.0.0-beta1</org.slf4j.version>
+        <ch.qos.logback.logback-core.version>1.4.0</ch.qos.logback.logback-core.version>
+        <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
+
+        <!-- TODO: parametrize so that forks can utilize sonar also -->
+        <sonar.organization>catenax-ng</sonar.organization>
+        <sonar.projectKey>catenax-ng_product-edc</sonar.projectKey>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
     </properties>
 
     <repositories>
@@ -81,10 +98,30 @@
             <name>Maven Central</name>
             <url>https://repo1.maven.org/maven2</url>
         </repository>
-        <repository>
+        <repository> <!-- To be able to use edc snapshot "releases" -->
+            <id>sonatype-snapshots</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository> <!-- IDS infomodel -->
             <id>fraunhofer-iais-eis</id>
             <name>Fraunhofer IAIS</name>
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
+        </repository>
+        <repository>
+            <id>dash-licenses-snapshots</id> <!-- Eclipse Dash Tool to generate DEPENDENCIES file -->
+            <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 
@@ -167,6 +204,11 @@
                     <version>${org.apache.maven.plugins.compiler.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.eclipse.dash</groupId>
+                    <artifactId>license-tool-plugin</artifactId>
+                    <version>${org.eclipse.dash.license.tool.plugin.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.projectlombok</groupId>
                     <artifactId>lombok-maven-plugin</artifactId>
                     <version>${org.projectlombok.lombok.maven.plugin.version}</version>
@@ -180,6 +222,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${org.apache.maven.plugins.surefire.version}</version>
+                    <configuration>
+                        <parallel>all</parallel>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -250,6 +295,16 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${org.jacoco.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${org.sonarsource.scanner.maven.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -279,6 +334,21 @@
                 <artifactId>hashicorp-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>dataplane-selector-configuration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>data-encryption</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>cx-oauth2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- CX Control-/Data-Plane modules -->
             <dependency>
@@ -288,12 +358,36 @@
             </dependency>
             <dependency>
                 <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- CX edc-controlplane -->
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-controlplane-memory</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
                 <artifactId>edc-controlplane-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.catenax.edc</groupId>
-                <artifactId>edc-dataplane-base</artifactId>
+                <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- CX edc-dataplane -->
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-azure-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc</groupId>
+                <artifactId>edc-dataplane-hashicorp-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -517,6 +611,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>control-plane-core</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>core</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -613,11 +712,6 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>data-plane-selector-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-selector-store</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -817,6 +911,16 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>jwt-spi</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>jwt-core</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>observability-api</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -967,12 +1071,12 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>junit-extension</artifactId>
+                <artifactId>junit</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>junit-extension</artifactId>
+                <artifactId>junit</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
                 <classifier>test-fixtures</classifier>
             </dependency>
@@ -1007,10 +1111,65 @@
                 <version>${org.testcontainers.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>${cucumber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-junit-platform-engine</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${io.rest.assured.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${org.awaitility.awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Integration Test Dependencies -->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${org.hamcrest.hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
+
     <profiles>
+        <profile>
+            <id>failsafe</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <parallel>all</parallel>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>generate-notice</id>
             <build>
@@ -1048,5 +1207,26 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 </project>

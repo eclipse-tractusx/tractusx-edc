@@ -17,18 +17,20 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
-        <version>0.0.5-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>edc-controlplane</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <modules>
         <module>edc-controlplane-base</module>
-
         <module>edc-controlplane-memory</module>
-
         <module>edc-controlplane-postgresql</module>
         <module>edc-controlplane-postgresql-hashicorp-vault</module>
     </modules>
