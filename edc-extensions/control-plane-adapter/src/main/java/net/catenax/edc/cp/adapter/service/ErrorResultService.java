@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2022 ZF Friedrichshafen AG
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ * ZF Friedrichshafen AG - Initial API and Implementation
+ *
+ */
+
 package net.catenax.edc.cp.adapter.service;
 
 import jakarta.ws.rs.core.Response;
@@ -28,9 +42,11 @@ public class ErrorResultService implements Listener {
   @Override
   public void process(Message message) {
     message.getPayload().setErrorMessage(getErrorMessage(message));
-    message.getPayload().setErrorStatus(statusOfException.getOrDefault(
-            message.getFinalException().getClass(),
-            Response.Status.INTERNAL_SERVER_ERROR));
+    message
+        .getPayload()
+        .setErrorStatus(
+            statusOfException.getOrDefault(
+                message.getFinalException().getClass(), Response.Status.INTERNAL_SERVER_ERROR));
     log(message);
     messageService.send(Channel.RESULT, message);
   }
@@ -42,7 +58,9 @@ public class ErrorResultService implements Listener {
   }
 
   private void log(Message message) {
-    monitor.info(String.format("[%s] Sending ERROR message to RESULT channel: %s / %s ",
+    monitor.info(
+        String.format(
+            "[%s] Sending ERROR message to RESULT channel: %s / %s ",
             message.getTraceId(),
             message.getPayload().getErrorMessage(),
             message.getPayload().getErrorStatus()));

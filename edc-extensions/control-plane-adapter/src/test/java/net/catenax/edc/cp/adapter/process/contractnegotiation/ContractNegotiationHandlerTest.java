@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2022 ZF Friedrichshafen AG
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ * ZF Friedrichshafen AG - Initial API and Implementation
+ *
+ */
+
 package net.catenax.edc.cp.adapter.process.contractnegotiation;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +53,8 @@ public class ContractNegotiationHandlerTest {
   @Test
   public void process_shouldNotInitializeContractNegotiationWhenCachedContractAlreadyAvailable() {
     // given
-    ContractNegotiationHandler contractNegotiationHandler = new ContractNegotiationHandler(
+    ContractNegotiationHandler contractNegotiationHandler =
+        new ContractNegotiationHandler(
             monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
 
     when(contractDataStore.get(anyString(), anyString()))
@@ -56,7 +71,8 @@ public class ContractNegotiationHandlerTest {
   @Test
   public void process_shouldInitializeContractNegotiationWhenCachedContractExpired() {
     // given
-    ContractNegotiationHandler contractNegotiationHandler = new ContractNegotiationHandler(
+    ContractNegotiationHandler contractNegotiationHandler =
+        new ContractNegotiationHandler(
             monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
 
     when(contractDataStore.get(anyString(), anyString()))
@@ -77,7 +93,8 @@ public class ContractNegotiationHandlerTest {
   @Test
   public void process_shouldInitiateContractNegotiationAndSendMessageFurtherIfCacheEmpty() {
     // given
-    ContractNegotiationHandler contractNegotiationHandler = new ContractNegotiationHandler(
+    ContractNegotiationHandler contractNegotiationHandler =
+        new ContractNegotiationHandler(
             monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
 
     when(contractDataStore.get(anyString(), anyString())).thenReturn(null);
