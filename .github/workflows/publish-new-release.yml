@@ -15,13 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
-      CXNG_RELEASE_PAT: ${{ steps.secret-presence.outputs.CXNG_RELEASE_PAT }}
     steps:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
-          [ ! -z "${{ secrets.CXNG_RELEASE_PAT }}" ] && echo "::set-output name=CXNG_RELEASE_PAT::true"
 
           exit 0
   # Gate: Check release version presence
@@ -140,7 +138,7 @@ jobs:
     name: Publish new github release
     needs: [ secret-presence, release-version ]
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && needs.secret-presence.outputs.CXNG_RELEASE_PAT && needs.release-version.outputs.RELEASE_VERSION
+    if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
       -
         name: Export RELEASE_VERSION env
@@ -172,7 +170,7 @@ jobs:
         id: create_release
         uses: thomaseizinger/create-release@1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.CXNG_RELEASE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
           tag_name: ${{ env.RELEASE_VERSION }}
