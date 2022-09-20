@@ -14,18 +14,30 @@
 
 package net.catenax.edc.transferprocess.sftp.provisioner;
 
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.eclipse.dataspaceconnector.core.base.policy.PolicyEngineImpl;
 import org.eclipse.dataspaceconnector.core.base.policy.RuleBindingRegistryImpl;
 import org.eclipse.dataspaceconnector.core.base.policy.ScopeFilter;
+import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.policy.PolicyEngine;
-import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transfer.provision.ProvisionManager;
 
-import java.nio.charset.StandardCharsets;
+import java.io.FileReader;
+import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
 
 @Provides(SftpProvisioner.class)
 public class SftpProvisionerExtension implements ServiceExtension {
@@ -42,10 +54,15 @@ public class SftpProvisionerExtension implements ServiceExtension {
     @EdcSetting(required = true)
     public static final String SFTP_USER_NAME = "edc.transfer.sftp.user.name";
 
-    @EdcSetting(required = true)
-    public static final String SFTP_USER_KEY = "edc.transfer.sftp.user.key";
+    @EdcSetting
+    public static final String SFTP_USER_PASSWORD = "edc.transfer.sftp.user.password";
 
-    @Inject
+    @EdcSetting
+    public static final String SFTP_USER_KEY_PATH = "edc.transfer.sftp.user.key.path";
+
+    @EdcSetting
+    public static final String SFTP_USER_KEY_PASSPHRASE = "edc.transfer.sftp.user.key.passphrase";
+
     ProvisionManager provisionManager;
 
     @Override
@@ -57,6 +74,7 @@ public class SftpProvisionerExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+        provisionManager = context.getService(ProvisionManager.class);
         PolicyEngine policyEngine = new PolicyEngineImpl(new ScopeFilter(new RuleBindingRegistryImpl()));
 
         final String sftpHost = context.getSetting(SFTP_HOST, "localhost");
@@ -65,12 +83,38 @@ public class SftpProvisionerExtension implements ServiceExtension {
         SftpLocationFactory locationFactory = new ConfigBackedSftpLocationFactory(sftpHost, sftpPort, sftpPath);
 
         final String sftpName = context.getSetting(SFTP_USER_NAME, "user");
-        final byte[] sftpKey = context.getSetting(SFTP_USER_KEY, "key").getBytes(StandardCharsets.UTF_8);
-        SftpUserFactory userFactory = new ConfigBackedSftpUserFactory(sftpName, sftpKey);
+        final String sftpKeyPath = context.getSetting(SFTP_USER_KEY_PATH, null);
+        final String sftpKeyPassphrase = context.getSetting(SFTP_USER_KEY_PASSPHRASE, null);
+        final KeyPair sftpKeyPair = readPrivateKey(sftpKeyPath, sftpKeyPassphrase);
+        final String sftpPassword = context.getSetting(SFTP_USER_PASSWORD, null);
+        SftpUserFactory userFactory = ConfigBackedSftpUserFactory.builder().sftpUserName(sftpName).sftpUserKeyPair(sftpKeyPair).sftpUserPassword(sftpPassword).build();
 
         SftpProvider sftpProvider = new NoopSftpProvider();
         sftpProvisioner = new SftpProvisioner(policyEngine, locationFactory, userFactory, sftpProvider);
         provisionManager.register(sftpProvisioner);
         context.getMonitor().info("SftpProvisionerExtension: authentication/initialization complete.");
+    }
+
+    private KeyPair readPrivateKey(String sftpKeyPath, String sftpKeyPassphrase) {
+        if (sftpKeyPath == null) {
+            return null;
+        }
+
+        try (FileReader keyReader = new FileReader(sftpKeyPath)) {
+            PEMParser pemParser = new PEMParser(keyReader);
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+
+            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(pemParser.readObject());
+            PrivateKey privateKey = converter.getPrivateKey(privateKeyInfo);
+            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(rsaPrivateKey.getModulus(), rsaPrivateKey.getPublicExponent());
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = factory.generatePublic(publicKeySpec);
+
+            return new KeyPair(publicKey, privateKey);
+        } catch (InvalidKeySpecException | IOException | NoSuchAlgorithmException e) {
+            throw new EdcException(String.format("Unable for read key stored at %s", sftpKeyPath));
+        }
     }
 }

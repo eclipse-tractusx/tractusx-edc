@@ -22,7 +22,9 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 public class SftpClientExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
-        SftpClient sftpClient = new SftpClientImpl();
+        SftpClientImpl sftpClient = new SftpClientImpl();
+        //TODO: not here!
+        sftpClient.setDisableHostVerification(true);
         context.registerService(SftpClient.class, sftpClient);
     }
 }

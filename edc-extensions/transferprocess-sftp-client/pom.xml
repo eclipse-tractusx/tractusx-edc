@@ -127,12 +127,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer</artifactId>
-            <scope>test</scope>
+            <artifactId>data-plane-spi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-spi</artifactId>
+            <artifactId>policy-spi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -148,6 +147,7 @@
         <dependency>
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>transferprocess-sftp-provisioner</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- External Dependencies -->
@@ -183,7 +183,9 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${org.testcontainers.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
