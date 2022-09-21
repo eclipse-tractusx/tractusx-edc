@@ -64,7 +64,6 @@ source documentation ([link](https://github.com/eclipse-dataspaceconnector/DataS
 
 **Run**
 
-
 The following commands will create an Asset, a Policy and a Contract Definition.
 For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data source of the asset, but could be any
 other API, that is reachable from the Provider Data Plane.
@@ -174,9 +173,20 @@ export NEGOTIATION_ID=$( \
         --data "{
                     \"connectorId\": \"foo\",
                     \"connectorAddress\": \"${PLATO_IDS_URL}/api/v1/ids/data\",
+                    \"provider\": \"urn:connector:provider\",
+                    \"consumer\": \"urn:connector:consumer\",
                     \"offer\": {
                         \"offerId\": \"1:foo\",
-                        \"assetId\": \"1\",
+                        \"asset\": {
+                            \"id\": "1",
+                            \"createdAt\": 1663623007747,
+                            \"properties\": {
+                                \"asset:prop:byteSize\": null,
+                                \"asset:prop:description\": \"Product EDC Demo Asset\",
+                                \"asset:prop:id\": \"1\",
+                                \"asset:prop:fileName\": null
+                            }
+                        },
                         \"policy\": {
                             \"uid\": \"1\",
                             \"prohibitions\": [],
@@ -213,7 +223,11 @@ the transfer process is `COMPLETED`.
 **Run**
 
 ```bash
-;tt
+export CONTRACT_AGREEMENT_ID=$( \
+    curl -X GET "$SOKRATES_DATAMGMT_URL/data/contractnegotiations/$NEGOTIATION_ID" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    -s | jq -r '.contractAgreementId')
 ```
 
 ```bash
