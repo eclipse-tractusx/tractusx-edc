@@ -74,7 +74,7 @@ import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerEx
 @ExtendWith(EdcExtension.class)
 public class SftpClientIT {
     static final String DOCKER_IMAGE_NAME = "atmoz/sftp:alpine-3.6";
-    static final Map<String, String> DOCKER_ENV = Map.of("SFTP_USERS", "user:password:::upload");
+    static final Map<String, String> DOCKER_ENV = Map.of("SFTP_USERS", "user:password:::transfer");
     static final Path dockerVolumeDirectory;
     static final Path fileGeneratorDirectory;
     static final Path downloadDirectory;
@@ -107,13 +107,15 @@ public class SftpClientIT {
                     .withEnv(DOCKER_ENV)
                     .withExposedPorts(22)
                     .waitingFor(Wait.forListeningPort())
-                    .withFileSystemBind(dockerVolumeDirectory.toAbsolutePath().toString(), "/home/user/upload");
+                    .withFileSystemBind(dockerVolumeDirectory.toAbsolutePath().toString(), "/home/user/transfer");
 
     private ProvisionManager provisionManager;
     private TestExtension testExtension;
 
     @BeforeEach
+    @SneakyThrows
     void setup(EdcExtension extension) {
+        sftpContainer.execInContainer("mkdir /home/user/transfer/upload /home/user/transfer/download");
         extension.setConfiguration(getSftpConfig());
         provisionManager = Mockito.mock(ProvisionManager.class);
         testExtension = new TestExtension(provisionManager);
@@ -137,7 +139,6 @@ public class SftpClientIT {
     @ParameterizedTest
     @SneakyThrows
     @ArgumentsSource(FilesProvider.class)
-    @Order(0)
     void uploadFile(File file) {
         final SftpUser sftpUser = SftpUser.builder()
                 .name(getSftpConfig().get(SFTP_USER_NAME))
@@ -146,7 +147,7 @@ public class SftpClientIT {
         final SftpLocation sftpLocation = SftpLocation.builder()
                 .host(getSftpConfig().get(SFTP_HOST))
                 .port(Integer.parseInt(getSftpConfig().get(SFTP_PORT)))
-                .path(String.format("%s/%s", getSftpConfig().get(SFTP_PATH), file.getName()))
+                .path(String.format("%s/%s/%s", getSftpConfig().get(SFTP_PATH), "upload", file.getName()))
                 .build();
 
         @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
@@ -163,7 +164,6 @@ public class SftpClientIT {
     @ParameterizedTest
     @SneakyThrows
     @ArgumentsSource(FilesProvider.class)
-    @Order(1)
     void downloadFile(File file) {
         final SftpUser sftpUser = SftpUser.builder()
                 .name(getSftpConfig().get(SFTP_USER_NAME))
@@ -172,12 +172,16 @@ public class SftpClientIT {
         final SftpLocation sftpLocation = SftpLocation.builder()
                 .host(getSftpConfig().get(SFTP_HOST))
                 .port(Integer.parseInt(getSftpConfig().get(SFTP_PORT)))
-                .path(String.format("%s/%s", getSftpConfig().get(SFTP_PATH), file.getName()))
+                .path(String.format("%s/%s/%s", getSftpConfig().get(SFTP_PATH), "download", file.getName()))
                 .build();
+
+        final Path remoteFilePath = Path.of(String.format("%s/%s/%s", getSftpConfig().get(SFTP_PATH), "download", file.getName()));
+
+        @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
+        Files.copy(fileToUpload, remoteFilePath, StandardCopyOption.REPLACE_EXISTING);
 
         @Cleanup final InputStream source = Files.newInputStream(file.toPath());
         @Cleanup final InputStream downloadedFileStream = testExtension.getSftpClient().downloadFile(sftpUser, sftpLocation);
-
 
         final Path downloadedFilePath = downloadDirectory.resolve(file.getName());
         Files.copy(downloadedFileStream, downloadedFilePath, StandardCopyOption.REPLACE_EXISTING);
@@ -190,7 +194,7 @@ public class SftpClientIT {
         return Map.of(
                 SFTP_HOST, "127.0.0.1",
                 SFTP_PORT, sftpContainer.getFirstMappedPort().toString(),
-                SFTP_PATH, "upload",
+                SFTP_PATH, "transfer",
                 SFTP_USER_NAME, "user",
                 SFTP_USER_PASSWORD, "password");
     }
