@@ -2,6 +2,8 @@ maven/mavencentral/com.azure/azure-core-http-netty/1.12.0, MIT, approved, clearl
 maven/mavencentral/com.azure/azure-core/1.28.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.5.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.4.2, MIT, approved, clearlydefined
+maven/mavencentral/com.electronwill.night-config/core/3.6.6, , restricted, clearlydefined
+maven/mavencentral/com.electronwill.night-config/toml/3.6.6, , restricted, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.3, Apache-2.0, approved, CQ24135
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.13.3, Apache-2.0, approved, CQ24134
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.13.3, Apache-2.0, approved, CQ24136
@@ -16,7 +18,7 @@ maven/mavencentral/com.nimbusds/lang-tag/1.6, Apache-2.0, approved, clearlydefin
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.21, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.24.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/9.32, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0, restricted, clearlydefined
+maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
 maven/mavencentral/com.squareup.okio/okio/2.8.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/de.fraunhofer.iais.eis.ids.infomodel/java/4.1.3, , restricted, clearlydefined
 maven/mavencentral/de.fraunhofer.iais.eis.infomodel/util/4.1.3, , restricted, clearlydefined
@@ -84,6 +86,7 @@ maven/mavencentral/org.eclipse.dataspaceconnector/contractdefinition-api/0.0.1-2
 maven/mavencentral/org.eclipse.dataspaceconnector/contractdefinition-store-sql/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/contractnegotiation-api/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/contractnegotiation-store-sql/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
+maven/mavencentral/org.eclipse.dataspaceconnector/control-plane-core/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/control-plane-spi/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/core-base/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/core-boot/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
@@ -132,13 +135,13 @@ maven/mavencentral/org.eclipse.dataspaceconnector/transfer/0.0.1-20220902-SNAPSH
 maven/mavencentral/org.eclipse.dataspaceconnector/transferprocess-api/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/transport-spi/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
 maven/mavencentral/org.eclipse.dataspaceconnector/web-spi/0.0.1-20220902-SNAPSHOT, Apache-2.0, approved, technology.dataspaceconnector
-maven/mavencentral/org.flywaydb/flyway-core/9.2.2, NOASSERTION, restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/9.3.1, , restricted, clearlydefined
 maven/mavencentral/org.hdrhistogram/HdrHistogram/2.1.12, , approved, CQ13192
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-common/1.4.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.4.10, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/15.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.ow2.asm/asm/9.2, BSD-3-Clause, approved, CQ23635
-maven/mavencentral/org.postgresql/postgresql/42.5.0, BSD-2-Clause, restricted, clearlydefined
+maven/mavencentral/org.postgresql/postgresql/42.5.0, BSD-2-Clause, approved, #3416
 maven/mavencentral/org.projectlombok/lombok/1.18.24, MIT AND LicenseRef-Public-Domain, approved, CQ23907
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.3, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.slf4j/slf4j-api/2.0.0-beta1, MIT, approved, CQ24150
