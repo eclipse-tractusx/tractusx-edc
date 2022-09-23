@@ -33,7 +33,6 @@ import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,8 +75,10 @@ public class SftpClientIT {
     static final String DOCKER_IMAGE_NAME = "atmoz/sftp:alpine-3.6";
     static final Map<String, String> DOCKER_ENV = Map.of("SFTP_USERS", "user:password:::transfer");
     static final Path dockerVolumeDirectory;
-    static final Path fileGeneratorDirectory;
-    static final Path downloadDirectory;
+    static final Path remoteUploadDirectory;
+    static final Path remoteDownloadDirectory;
+    static final Path localUploadAndGeneratorDirectory;
+    static final Path localDownloadDirectory;
 
     static {
         try {
@@ -91,10 +92,16 @@ public class SftpClientIT {
             fullPermission.add(PosixFilePermission.OTHERS_EXECUTE);
             fullPermission.add(PosixFilePermission.OTHERS_READ);
             fullPermission.add(PosixFilePermission.OTHERS_WRITE);
-            dockerVolumeDirectory = Files.createTempDirectory(SftpClientIT.class.getName(), PosixFilePermissions.asFileAttribute(fullPermission));
-            fileGeneratorDirectory = Files.createTempDirectory(SftpClientIT.class.getName());
-            downloadDirectory = Files.createTempDirectory(SftpClientIT.class.getName());
-            Files.setPosixFilePermissions(dockerVolumeDirectory,fullPermission);
+
+            dockerVolumeDirectory = Files.createTempDirectory(SftpClientIT.class.getName());
+            localUploadAndGeneratorDirectory = Files.createTempDirectory(SftpClientIT.class.getName());
+            localDownloadDirectory = Files.createTempDirectory(SftpClientIT.class.getName());
+            remoteUploadDirectory = Files.createDirectory(dockerVolumeDirectory.resolve("upload"));
+            remoteDownloadDirectory = Files.createDirectory(dockerVolumeDirectory.resolve("download"));
+
+            Files.setPosixFilePermissions(dockerVolumeDirectory, fullPermission);
+            Files.setPosixFilePermissions(remoteUploadDirectory, fullPermission);
+            Files.setPosixFilePermissions(remoteDownloadDirectory, fullPermission);
         } catch (IOException e) {
             throw new RuntimeException();
         }
@@ -115,7 +122,6 @@ public class SftpClientIT {
     @BeforeEach
     @SneakyThrows
     void setup(EdcExtension extension) {
-        sftpContainer.execInContainer("mkdir /home/user/transfer/upload /home/user/transfer/download");
         extension.setConfiguration(getSftpConfig());
         provisionManager = Mockito.mock(ProvisionManager.class);
         testExtension = new TestExtension(provisionManager);
@@ -128,11 +134,11 @@ public class SftpClientIT {
         if (Files.exists(dockerVolumeDirectory)) {
             Files.walk(dockerVolumeDirectory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         }
-        if (Files.exists(fileGeneratorDirectory)) {
-            Files.walk(fileGeneratorDirectory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        if (Files.exists(localUploadAndGeneratorDirectory)) {
+            Files.walk(localUploadAndGeneratorDirectory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         }
-        if (Files.exists(downloadDirectory)) {
-            Files.walk(downloadDirectory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        if (Files.exists(localDownloadDirectory)) {
+            Files.walk(localDownloadDirectory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         }
     }
 
@@ -154,7 +160,7 @@ public class SftpClientIT {
 
         testExtension.getSftpClient().uploadFile(sftpUser, sftpLocation, fileStream);
 
-        final Path uploadedFilePath = dockerVolumeDirectory.resolve(file.getName());
+        final Path uploadedFilePath = remoteUploadDirectory.resolve(file.getName());
         Assertions.assertTrue(Files.exists(uploadedFilePath));
         @Cleanup final InputStream source = Files.newInputStream(file.toPath());
         @Cleanup final InputStream target = Files.newInputStream(uploadedFilePath);
@@ -178,12 +184,12 @@ public class SftpClientIT {
         final Path remoteFilePath = Path.of(String.format("%s/%s/%s", getSftpConfig().get(SFTP_PATH), "download", file.getName()));
 
         @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
-        Files.copy(fileToUpload, remoteFilePath, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(fileToUpload, remoteDownloadDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
 
         @Cleanup final InputStream source = Files.newInputStream(file.toPath());
         @Cleanup final InputStream downloadedFileStream = testExtension.getSftpClient().downloadFile(sftpUser, sftpLocation);
 
-        final Path downloadedFilePath = downloadDirectory.resolve(file.getName());
+        final Path downloadedFilePath = localDownloadDirectory.resolve(file.getName());
         Files.copy(downloadedFileStream, downloadedFilePath, StandardCopyOption.REPLACE_EXISTING);
 
         @Cleanup final InputStream target = Files.newInputStream(downloadedFilePath);
@@ -244,7 +250,7 @@ public class SftpClientIT {
         }
         @SneakyThrows
         private File generateFile(final int byteSize) {
-            Path path = fileGeneratorDirectory.resolve(String.format("%s.bin" ,byteSize));
+            Path path = localUploadAndGeneratorDirectory.resolve(String.format("%s.bin" ,byteSize));
             if (!Files.exists(path)) {
                 Files.createFile(path);
                 try (final OutputStream outputStream = Files.newOutputStream(path)) {

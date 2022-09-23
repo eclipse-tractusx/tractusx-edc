@@ -134,7 +134,7 @@ public class SftpClientImpl implements SftpClient {
             long remoteFileLength = getRemoteFileLength();
             int bufferSize = BUFFER_SIZE_DEFAULT;
 
-            if () {
+            if (bufferIndex >= bufferSize-1 || remoteFileBytesAlreadyRead == 0) {
                 if (remoteFileBytesAlreadyRead + BUFFER_SIZE_DEFAULT < remoteFileLength) {
                     buffer = new byte[bufferSize];
                     remoteFileBytesAlreadyRead += nextChunkToBuffer(buffer, remoteFileBytesAlreadyRead);
@@ -145,6 +145,7 @@ public class SftpClientImpl implements SftpClient {
                 } else {
                     throw new EOFException();
                 }
+                bufferIndex = 0;
             }
 
             int data = buffer[bufferIndex];
