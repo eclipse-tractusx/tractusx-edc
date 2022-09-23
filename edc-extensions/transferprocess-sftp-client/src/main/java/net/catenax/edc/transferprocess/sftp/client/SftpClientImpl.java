@@ -123,19 +123,17 @@ public class SftpClientImpl implements SftpClient {
 
         private byte[] buffer;
         private int bufferIndex = 0;
-        private int receivedBytesOfChunk = bufferIndex;
-        private long remoteFileIndex = 0;
         private long remoteFileBytesAlreadyRead = 0;
+        private int bufferSize = BUFFER_SIZE_DEFAULT;
         @Getter(lazy = true, value = AccessLevel.PRIVATE)
         private final long remoteFileLength = getRemoteFileLengthLazy();
 
         @Override
         public int read() throws IOException {
             long remoteFileLength = getRemoteFileLength();
-            int bufferSize = BUFFER_SIZE_DEFAULT;
 
-            if (bufferIndex >= bufferSize-1 || remoteFileBytesAlreadyRead == 0) {
-                if (remoteFileBytesAlreadyRead + BUFFER_SIZE_DEFAULT < remoteFileLength) {
+            if (bufferIndex >= bufferSize || remoteFileBytesAlreadyRead == 0) {
+                if (remoteFileBytesAlreadyRead + BUFFER_SIZE_DEFAULT <= remoteFileLength) {
                     buffer = new byte[bufferSize];
                     remoteFileBytesAlreadyRead += nextChunkToBuffer(buffer, remoteFileBytesAlreadyRead);
                 } else if (remoteFileBytesAlreadyRead < remoteFileLength) {
@@ -143,40 +141,23 @@ public class SftpClientImpl implements SftpClient {
                     buffer = new byte[bufferSize];
                     remoteFileBytesAlreadyRead += nextChunkToBuffer(buffer, remoteFileBytesAlreadyRead);
                 } else {
-                    throw new EOFException();
+                    return EOF;
                 }
                 bufferIndex = 0;
             }
 
-            int data = buffer[bufferIndex];
+            int data = Byte.toUnsignedInt(buffer[bufferIndex]);
             bufferIndex++;
             return data;
         }
-        /*public int read() throws IOException {
-            if (bufferIndex >= receivedBytesOfChunk) {
-                long remoteFileLength = getRemoteFileLength();
-                long previouslyReceivedBytes = remoteFileIndex * BUFFER_SIZE_DEFAULT;
-                int bufferSize = BUFFER_SIZE_DEFAULT;
-                if (remoteFileLength < BUFFER_SIZE_DEFAULT) {
-                    bufferSize = (int) remoteFileLength;
-                } else if (remoteFileLength - previouslyReceivedBytes < BUFFER_SIZE_DEFAULT) {
-                    bufferSize = (int) (remoteFileLength - previouslyReceivedBytes);
-                }
-                bufferIndex = 0;
-                buffer = new byte[bufferSize];
-                receivedBytesOfChunk = nextChunkToBuffer(buffer);
-            }
-            int data = buffer[bufferIndex];
-            bufferIndex++;
-            return data;
-        }*/
 
         private int nextChunkToBuffer(byte[] buffer, long fileOffset) throws IOException {
             return remoteFile.read(fileOffset, buffer, 0, buffer.length);
         }
 
+        @Override
         public int available() {
-            return (int) getRemoteFileLength();
+            return (int) (getRemoteFileLength() - remoteFileBytesAlreadyRead);
         }
 
         @Override

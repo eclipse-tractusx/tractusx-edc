@@ -56,7 +56,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
@@ -162,8 +161,10 @@ public class SftpClientIT {
 
         final Path uploadedFilePath = remoteUploadDirectory.resolve(file.getName());
         Assertions.assertTrue(Files.exists(uploadedFilePath));
+
         @Cleanup final InputStream source = Files.newInputStream(file.toPath());
         @Cleanup final InputStream target = Files.newInputStream(uploadedFilePath);
+
         Assertions.assertTrue(IOUtils.contentEquals(source, target), String.format("File %s should have same content as file %s", file.toPath(), uploadedFilePath));
     }
 
@@ -181,19 +182,19 @@ public class SftpClientIT {
                 .path(String.format("%s/%s/%s", getSftpConfig().get(SFTP_PATH), "download", file.getName()))
                 .build();
 
-        final Path remoteFilePath = Path.of(String.format("%s/%s/%s", getSftpConfig().get(SFTP_PATH), "download", file.getName()));
-
         @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
         Files.copy(fileToUpload, remoteDownloadDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
 
         @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-        @Cleanup final InputStream downloadedFileStream = testExtension.getSftpClient().downloadFile(sftpUser, sftpLocation);
+        @Cleanup final InputStream target = testExtension.getSftpClient().downloadFile(sftpUser, sftpLocation);
 
-        final Path downloadedFilePath = localDownloadDirectory.resolve(file.getName());
-        Files.copy(downloadedFileStream, downloadedFilePath, StandardCopyOption.REPLACE_EXISTING);
+        for (int i = 0; i <= source.available(); i++) {
+            int sourceInt = source.read();
+            int targetInt = target.read();
+            Assertions.assertEquals(sourceInt, targetInt, String.format("Difference in byte %d, should be %d, is %d", i, sourceInt, targetInt));
+        }
 
-        @Cleanup final InputStream target = Files.newInputStream(downloadedFilePath);
-        Assertions.assertTrue(IOUtils.contentEquals(source, target));
+        //Assertions.assertTrue(IOUtils.contentEquals(source, target));
     }
 
     private Map<String, String> getSftpConfig() {
