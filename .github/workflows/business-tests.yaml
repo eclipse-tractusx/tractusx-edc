@@ -62,7 +62,7 @@ jobs:
           EOF
       -
         name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.3.0
+        uses: helm/kind-action@v1.4.0
         with:
           config: kind.config.yaml
 
