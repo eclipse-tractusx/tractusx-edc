@@ -13,17 +13,20 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
+import java.util.Map;
 import java.util.UUID;
-import lombok.NonNull;
 import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
 
 public class JtiJwtDecorator implements JwtDecorator {
 
   @Override
-  public void decorate(
-      @NonNull final JWSHeader.Builder header, @NonNull final JWTClaimsSet.Builder claimsSet) {
-    claimsSet.jwtID(UUID.randomUUID().toString());
+  public Map<String, Object> claims() {
+    return Map.of(JWTClaimNames.JWT_ID, UUID.randomUUID().toString());
+  }
+
+  @Override
+  public Map<String, Object> headers() {
+    return Map.of();
   }
 }

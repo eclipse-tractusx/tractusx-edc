@@ -13,12 +13,10 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class SubJwtDecoratorTest {
 
@@ -27,13 +25,8 @@ class SubJwtDecoratorTest {
     final String expectedSubject = UUID.randomUUID().toString();
     final SubJwtDecorator decorator = new SubJwtDecorator(expectedSubject);
 
-    final JWSHeader.Builder jwsHeaderBuilder = Mockito.mock(JWSHeader.Builder.class);
-    final JWTClaimsSet.Builder claimsSetBuilder = Mockito.mock(JWTClaimsSet.Builder.class);
-
-    decorator.decorate(jwsHeaderBuilder, claimsSetBuilder);
-
-    Mockito.verify(claimsSetBuilder, Mockito.times(1)).subject(expectedSubject);
-    Mockito.verifyNoMoreInteractions(jwsHeaderBuilder, claimsSetBuilder);
+    Assertions.assertTrue(decorator.claims().containsKey(JWTClaimNames.SUBJECT));
+    Assertions.assertEquals(expectedSubject, decorator.claims().get(JWTClaimNames.SUBJECT));
   }
 
   @Test

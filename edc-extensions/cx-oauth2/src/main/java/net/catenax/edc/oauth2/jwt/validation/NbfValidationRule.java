@@ -15,9 +15,7 @@ package net.catenax.edc.oauth2.jwt.validation;
 
 import static java.time.ZoneOffset.UTC;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import java.text.ParseException;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -28,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.jwt.TokenValidationRule;
 import org.eclipse.dataspaceconnector.spi.result.Result;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
@@ -46,31 +45,27 @@ public class NbfValidationRule implements TokenValidationRule {
    * @param additional No more additional information needed for this validation, can be null.
    */
   @Override
-  public Result<SignedJWT> checkRule(
-      final SignedJWT toVerify, @Nullable final Map<String, Object> additional) {
-    try {
-      final JWTClaimsSet claimsSet = toVerify.getJWTClaimsSet();
-      final List<String> errors = new ArrayList<>();
+  public Result<Void> checkRule(
+      @NotNull ClaimToken toVerify, @Nullable Map<String, Object> additional) {
+    final List<String> errors = new ArrayList<>();
 
-      final Instant now = clock.instant();
-      final Instant leewayNow = now.plusSeconds(notBeforeValidationLeeway.toSeconds());
-      final Date notBefore = claimsSet.getNotBeforeTime();
-      if (notBefore == null) {
-        errors.add("Required not before (nbf) claim is missing in token");
-      } else if (leewayNow.isBefore(dateToInstant(notBefore))) {
+    final Instant now = clock.instant();
+    final Instant leewayNow = now.plusSeconds(notBeforeValidationLeeway.toSeconds());
+
+    final Object claim = toVerify.getClaims().get(JWTClaimNames.NOT_BEFORE);
+    if (!(claim instanceof Date)) {
+      errors.add("Required not before (nbf) claim is missing in token");
+    } else {
+      final Date notBefore = (Date) claim;
+      if (leewayNow.isBefore(dateToInstant(notBefore))) {
         errors.add("Current date/time with leeway before the not before (nbf) claim in token");
       }
+    }
 
-      if (errors.isEmpty()) {
-        return Result.success(toVerify);
-      } else {
-        return Result.failure(errors);
-      }
-    } catch (final ParseException parseException) {
-      throw new EdcException(
-          String.format(
-              "%s: unable to parse SignedJWT (%s)",
-              this.getClass().getSimpleName(), parseException.getMessage()));
+    if (errors.isEmpty()) {
+      return Result.success();
+    } else {
+      return Result.failure(errors);
     }
   }
 

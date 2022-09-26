@@ -14,10 +14,10 @@
 
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
+import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class IdsAudJwtDecoratorTest {
 
@@ -26,12 +26,8 @@ class IdsAudJwtDecoratorTest {
     final String expectedAudience = "idsc:IDS_CONNECTORS_ALL";
     final IdsAudJwtDecorator decorator = new IdsAudJwtDecorator();
 
-    final JWSHeader.Builder jwsHeaderBuilder = Mockito.mock(JWSHeader.Builder.class);
-    final JWTClaimsSet.Builder claimsSetBuilder = Mockito.mock(JWTClaimsSet.Builder.class);
-
-    decorator.decorate(jwsHeaderBuilder, claimsSetBuilder);
-
-    Mockito.verify(claimsSetBuilder, Mockito.times(1)).audience(expectedAudience);
-    Mockito.verifyNoMoreInteractions(jwsHeaderBuilder, claimsSetBuilder);
+    Assertions.assertTrue(decorator.claims().containsKey(JWTClaimNames.AUDIENCE));
+    Assertions.assertEquals(
+        List.of(expectedAudience), decorator.claims().get(JWTClaimNames.AUDIENCE));
   }
 }

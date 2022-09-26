@@ -13,10 +13,10 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.time.Clock;
 import java.util.Date;
+import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
@@ -27,7 +27,12 @@ public class IatJwtDecorator implements JwtDecorator {
   @NonNull private final Clock clock;
 
   @Override
-  public void decorate(final JWSHeader.Builder header, final JWTClaimsSet.Builder claimsSet) {
-    claimsSet.issueTime(Date.from(clock.instant()));
+  public Map<String, Object> claims() {
+    return Map.of(JWTClaimNames.ISSUED_AT, Date.from(clock.instant()));
+  }
+
+  @Override
+  public Map<String, Object> headers() {
+    return Map.of();
   }
 }

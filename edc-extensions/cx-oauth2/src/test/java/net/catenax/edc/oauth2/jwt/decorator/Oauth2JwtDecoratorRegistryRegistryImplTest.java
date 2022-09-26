@@ -13,9 +13,8 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
 import java.util.Arrays;
+import java.util.Map;
 import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -72,16 +71,37 @@ class Oauth2JwtDecoratorRegistryRegistryImplTest {
 
   private static class A_JwtDecorator implements JwtDecorator {
     @Override
-    public void decorate(JWSHeader.Builder header, JWTClaimsSet.Builder claimsSet) {}
+    public Map<String, Object> claims() {
+      return null;
+    }
+
+    @Override
+    public Map<String, Object> headers() {
+      return null;
+    }
   }
 
   private static class B_JwtDecorator implements JwtDecorator {
     @Override
-    public void decorate(JWSHeader.Builder header, JWTClaimsSet.Builder claimsSet) {}
+    public Map<String, Object> claims() {
+      return null;
+    }
+
+    @Override
+    public Map<String, Object> headers() {
+      return null;
+    }
   }
 
   private static class C_JwtDecorator implements JwtDecorator {
     @Override
-    public void decorate(JWSHeader.Builder header, JWTClaimsSet.Builder claimsSet) {}
+    public Map<String, Object> claims() {
+      return null;
+    }
+
+    @Override
+    public Map<String, Object> headers() {
+      return null;
+    }
   }
 }
