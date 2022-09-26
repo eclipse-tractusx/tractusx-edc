@@ -13,8 +13,7 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -32,15 +31,11 @@ class ExpJwtDecoratorTest {
 
     final ExpJwtDecorator decorator = new ExpJwtDecorator(clock, expiration);
 
-    final JWSHeader.Builder jwsHeaderBuilder = Mockito.mock(JWSHeader.Builder.class);
-    final JWTClaimsSet.Builder claimsSetBuilder = new JWTClaimsSet.Builder();
-
     Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
-    decorator.decorate(jwsHeaderBuilder, claimsSetBuilder);
 
-    JWTClaimsSet jwtClaimsSet = claimsSetBuilder.build();
-    Assertions.assertNotNull(jwtClaimsSet.getExpirationTime());
-    Assertions.assertEquals(new Date(100000), jwtClaimsSet.getExpirationTime());
+    Assertions.assertTrue(decorator.claims().containsKey(JWTClaimNames.EXPIRATION_TIME));
+    Assertions.assertEquals(
+        new Date(100000), decorator.claims().get(JWTClaimNames.EXPIRATION_TIME));
   }
 
   @Test

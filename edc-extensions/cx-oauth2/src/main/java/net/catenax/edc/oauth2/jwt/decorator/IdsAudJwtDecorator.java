@@ -13,8 +13,9 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
+import java.util.Collections;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
 
@@ -22,7 +23,12 @@ import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
 public class IdsAudJwtDecorator implements JwtDecorator {
 
   @Override
-  public void decorate(final JWSHeader.Builder header, final JWTClaimsSet.Builder claimsSet) {
-    claimsSet.audience("idsc:IDS_CONNECTORS_ALL");
+  public Map<String, Object> claims() {
+    return Map.of(JWTClaimNames.AUDIENCE, Collections.singletonList("idsc:IDS_CONNECTORS_ALL"));
+  }
+
+  @Override
+  public Map<String, Object> headers() {
+    return Map.of();
   }
 }

@@ -13,8 +13,7 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
@@ -30,15 +29,10 @@ class IatJwtDecoratorTest {
 
     final IatJwtDecorator decorator = new IatJwtDecorator(clock);
 
-    final JWSHeader.Builder jwsHeaderBuilder = Mockito.mock(JWSHeader.Builder.class);
-    final JWTClaimsSet.Builder claimsSetBuilder = new JWTClaimsSet.Builder();
-
     Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
-    decorator.decorate(jwsHeaderBuilder, claimsSetBuilder);
 
-    JWTClaimsSet jwtClaimsSet = claimsSetBuilder.build();
-    Assertions.assertNotNull(jwtClaimsSet.getIssueTime());
-    Assertions.assertEquals(new Date(0), jwtClaimsSet.getIssueTime());
+    Assertions.assertTrue(decorator.claims().containsKey(JWTClaimNames.ISSUED_AT));
+    Assertions.assertEquals(new Date(0), decorator.claims().get(JWTClaimNames.ISSUED_AT));
   }
 
   @Test

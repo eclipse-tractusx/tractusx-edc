@@ -74,7 +74,7 @@ jobs:
         run: git submodule update --init
       -
         name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT
+        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT -xjavadoc
         working-directory: edc
       -
         name: Build edc-controlplane-postgresql-hashicorp-vault

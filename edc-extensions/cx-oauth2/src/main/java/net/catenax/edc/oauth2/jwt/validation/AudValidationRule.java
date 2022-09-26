@@ -13,19 +13,18 @@
  */
 package net.catenax.edc.oauth2.jwt.validation;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import java.text.ParseException;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.jwt.TokenValidationRule;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.result.Result;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
@@ -42,12 +41,15 @@ public class AudValidationRule implements TokenValidationRule {
    */
   @Override
   @SneakyThrows
-  public Result<SignedJWT> checkRule(SignedJWT toVerify, @Nullable Map<String, Object> additional) {
-    try {
-      final JWTClaimsSet claimsSet = toVerify.getJWTClaimsSet();
-      final List<String> errors = new ArrayList<>();
+  public Result<Void> checkRule(
+      @NotNull ClaimToken toVerify, @Nullable Map<String, Object> additional) {
+    final List<String> errors = new ArrayList<>();
 
-      final List<String> audiences = claimsSet.getAudience();
+    final Object claim = toVerify.getClaims().get(JWTClaimNames.AUDIENCE);
+    if (!(claim instanceof List)) {
+      errors.add("Audience claim is not a list");
+    } else {
+      final List<?> audiences = (List<?>) claim;
       audiences.forEach(a -> monitor.info("RECEIVED DAP AUDIENCE TO VERIFY: " + a));
 
       if (audiences.isEmpty()) {
@@ -55,17 +57,12 @@ public class AudValidationRule implements TokenValidationRule {
       } else if (!audiences.contains(audience)) {
         errors.add("Token audience (aud) claim did not contain connector audience: " + audience);
       }
+    }
 
-      if (errors.isEmpty()) {
-        return Result.success(toVerify);
-      } else {
-        return Result.failure(errors);
-      }
-    } catch (final ParseException parseException) {
-      throw new EdcException(
-          String.format(
-              "%s: unable to parse SignedJWT (%s)",
-              this.getClass().getSimpleName(), parseException.getMessage()));
+    if (errors.isEmpty()) {
+      return Result.success();
+    } else {
+      return Result.failure(errors);
     }
   }
 }

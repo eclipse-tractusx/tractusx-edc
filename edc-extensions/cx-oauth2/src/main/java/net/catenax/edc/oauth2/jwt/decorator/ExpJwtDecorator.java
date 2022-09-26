@@ -13,11 +13,11 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimNames;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
@@ -29,7 +29,14 @@ public class ExpJwtDecorator implements JwtDecorator {
   @NonNull private final Duration expiration;
 
   @Override
-  public void decorate(final JWSHeader.Builder header, final JWTClaimsSet.Builder claimsSet) {
-    claimsSet.expirationTime(Date.from(clock.instant().plusSeconds(expiration.toSeconds())));
+  public Map<String, Object> claims() {
+    return Map.of(
+        JWTClaimNames.EXPIRATION_TIME,
+        Date.from(clock.instant().plusSeconds(expiration.toSeconds())));
+  }
+
+  @Override
+  public Map<String, Object> headers() {
+    return Map.of();
   }
 }
