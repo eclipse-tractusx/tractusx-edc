@@ -213,7 +213,11 @@ the transfer process is `COMPLETED`.
 **Run**
 
 ```bash
-;tt
+export CONTRACT_AGREEMENT_ID=$( \
+    curl -X GET "$SOKRATES_DATAMGMT_URL/data/contractnegotiations/$NEGOTIATION_ID" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    -s | jq -r '.contractAgreementId')
 ```
 
 ```bash
