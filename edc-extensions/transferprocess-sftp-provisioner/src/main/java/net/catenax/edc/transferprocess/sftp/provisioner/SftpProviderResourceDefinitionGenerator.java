@@ -14,14 +14,21 @@
 
 package net.catenax.edc.transferprocess.sftp.provisioner;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.dataspaceconnector.policy.model.Policy;
+import org.eclipse.dataspaceconnector.spi.transfer.provision.ProviderResourceDefinitionGenerator;
+import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
+import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefinition;
+import org.jetbrains.annotations.Nullable;
 
-@Getter
 @RequiredArgsConstructor
-public class SftpProviderResourceDefinition extends ResourceDefinition {
+public class SftpProviderResourceDefinitionGenerator implements ProviderResourceDefinitionGenerator {
     @NonNull
-    private String dataAddressType;
+    private final String dataAddressType;
+    @Override
+    public @Nullable ResourceDefinition generate(DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
+        return null;
+    }
 }

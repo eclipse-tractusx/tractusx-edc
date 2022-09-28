@@ -23,11 +23,14 @@ import org.eclipse.dataspaceconnector.core.base.policy.RuleBindingRegistryImpl;
 import org.eclipse.dataspaceconnector.core.base.policy.ScopeFilter;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.EdcSetting;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.policy.PolicyEngine;
+import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transfer.provision.ProvisionManager;
+import org.eclipse.dataspaceconnector.spi.transfer.provision.ResourceManifestGenerator;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,6 +41,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
+
+import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerConfiguration.ProvisionerType.PROVIDER;
 
 @Provides(SftpProvisioner.class)
 public class SftpProvisionerExtension implements ServiceExtension {
@@ -64,6 +69,9 @@ public class SftpProvisionerExtension implements ServiceExtension {
     public static final String SFTP_USER_KEY_PASSPHRASE = "edc.transfer.sftp.user.key.passphrase";
 
     ProvisionManager provisionManager;
+    ResourceManifestGenerator manifestGenerator;
+    @Inject
+    Monitor monitor;
 
     @Override
     public String name() {
@@ -75,6 +83,8 @@ public class SftpProvisionerExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         provisionManager = context.getService(ProvisionManager.class);
+        manifestGenerator = context.getService(ResourceManifestGenerator.class);
+
         PolicyEngine policyEngine = new PolicyEngineImpl(new ScopeFilter(new RuleBindingRegistryImpl()));
 
         final String sftpHost = context.getSetting(SFTP_HOST, "localhost");
@@ -90,8 +100,23 @@ public class SftpProvisionerExtension implements ServiceExtension {
         SftpUserFactory userFactory = ConfigBackedSftpUserFactory.builder().sftpUserName(sftpName).sftpUserKeyPair(sftpKeyPair).sftpUserPassword(sftpPassword).build();
 
         SftpProvider sftpProvider = new NoopSftpProvider();
-        sftpProvisioner = new SftpProvisioner(policyEngine, locationFactory, userFactory, sftpProvider);
-        provisionManager.register(sftpProvisioner);
+
+        var configurations = SftpConfigParser.parseConfigurations(context.getConfig());
+        for (var configuration : configurations) {
+            sftpProvisioner = new SftpProvisioner(policyEngine, locationFactory, userFactory, sftpProvider);
+
+            if (configuration.getProvisionerType() == PROVIDER) {
+                var generator = new SftpProviderResourceDefinitionGenerator(configuration.getDataAddressType());
+                manifestGenerator.registerGenerator(generator);
+                monitor.info(String.format("Registering provider provisioner: %s [%s]", configuration.getName(), configuration.getEndpoint()));
+            } else {
+                monitor.warning(String.format("Client-side provisioning not yet supported by the %s. Skipping configuration for %s", name(), configuration.getName()));
+            }
+
+            provisionManager.register(sftpProvisioner);
+        }
+
+
         context.getMonitor().info("SftpProvisionerExtension: authentication/initialization complete.");
     }
 
