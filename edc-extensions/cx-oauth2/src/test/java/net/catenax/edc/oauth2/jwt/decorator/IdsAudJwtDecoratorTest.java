@@ -14,7 +14,6 @@
 
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jwt.JWTClaimNames;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

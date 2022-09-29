@@ -13,7 +13,6 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jwt.JWTClaimNames;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
