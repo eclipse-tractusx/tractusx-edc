@@ -70,6 +70,7 @@
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
         <org.postgresql.version>42.5.0</org.postgresql.version>
         <org.flywaydb.version>9.3.1</org.flywaydb.version>
+        <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
 
         <!-- test dependency version -->
         <junit.jupiter.version>5.9.1</junit.jupiter.version>
@@ -392,6 +393,11 @@
             </dependency>
 
             <!-- Common Dependencies -->
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${com.nimbus.jose.jwt.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>

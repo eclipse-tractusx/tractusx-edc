@@ -15,7 +15,6 @@ package net.catenax.edc.oauth2.jwt.validation;
 
 import static java.time.ZoneOffset.UTC;
 
-import com.nimbusds.jwt.JWTClaimNames;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.oauth2.jwt.decorator.JWTClaimNames;
 import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.jwt.TokenValidationRule;
 import org.eclipse.dataspaceconnector.spi.result.Result;
