@@ -1,0 +1,44 @@
+@startuml
+
+
+participant ConnectorA as "Connector A"
+
+participant ConnectorB as "Connector B"
+participant WalletB as "Wallet B"
+
+actor OwnerB as "Owner B"
+
+
+== Connector Setup ==
+
+OwnerB -> ConnectorB ++ : Configure trusted membership issuer to\n <i>did:sov:indy:<authority-company/catena-x></i>
+return
+
+== Messaging ==
+
+ConnectorA -> ConnectorB ++ : IDS Request Message with w3c:VerifiablePresentation
+
+    note right #efefef
+    **Connector B receives the new Security Token**
+    **with each IDS message**
+    
+    "securityToken" : {
+        "@type" : "w3c:VerifiablePresentation",
+        "base64" : "jA0EAwMCxamDRMfOGPOQAE4BHbh7PfTDIn..."
+    }
+    end note
+
+    ConnectorB -> WalletB ++: Structural Presentation Validation
+    return ok
+
+    ConnectorB -> ConnectorB ++ : Check Audience Credential subject is Connector B
+    return ok
+
+    ConnectorB -> ConnectorB ++ : Check Membership Credential Issuer is Catena-X Authority Waller
+    return ok
+
+    ... process IDS Message ...
+
+return IDS Response MEssage
+
+@enduml
