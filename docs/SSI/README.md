@@ -120,3 +120,15 @@ New SSI Security Token Value
   }
 }
 ```
+
+
+
+
+
+## EDC
+
+### Policy
+
+Example Policy for BPN enforcement using verifiable credentials
+
+see [credentials_policy](examples/credentials_policy.json)

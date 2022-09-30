@@ -14,111 +14,42 @@ actor OwnerB as "Owner B"
 OwnerB -> ConnectorB ++ : Configure trusted membership issuer to\n <i>did:sov:indy:<authority-company/catena-x></i>
 return
 
-OwnerB -> ConnectorB ++ : Create Data Offer for <i>BPN00001111</i>
+OwnerB -> ConnectorB ++ : Create Data Offer for <i>BPN00001111</i>\nand regions <i>Germany, Spain, Netherlands or Italy</i>
 
     note right
-        {
-            "id": "0748a12b-3182-4fa2-a5ff-8e5cc8c7b648",
-            "policy": {
-                "prohibitions": [],
-                "obligations": [],
-                "permissions": [
-                    {
-                        "edctype": "dataspaceconnector:permission",
-                        "action": {
-                            "type": "USE"
-                        },
-                        "constraints": [
-                            {
-                                "edctype": "AndConstraint",
-                                "constraints": [
-                                    {
-                                        "edctype": "AtomicConstraint",
-                                        "leftExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": "verifiableCredential/credentialSubject/type"
-                                        },
-                                        "rightExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": [
-                                                "MembershipCredential"
-                                            ]
-                                        },
-                                        "operator": "IN"
-                                    },
-                                    {
-                                        "edctype": "AtomicConstraint",
-                                        "leftExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": "verifiableCredential/credentialSubject/status"
-                                        },
-                                        "rightExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": "Active"
-                                        },
-                                        "operator": "EQ"
-                                    },
-                                    {
-                                        "edctype": "AtomicConstraint",
-                                        "leftExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": "verifiableCredential/issuer"
-                                        },
-                                        "rightExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": "did:siv:indy:<authority-company/catena-x>"
-                                        },
-                                        "operator": "EQ"
-                                    },
-                                    {
-                                        "edctype": "AtomicConstraint",
-                                        "leftExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": "verifiableCredential/holderIdentifier"
-                                        },
-                                        "rightExpression": {
-                                            "edctype": "dataspaceconnector:literalexpression",
-                                            "value": [
-                                                "did:sov:indy:<connector-a>",
-                                                "did:sov:indy:<connector-abc>",
-                                            ]
-                                        },
-                                        "operator": "IN"
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
+        see for example policy
+        [[./../examples/credentials_policy.json]]
     end note
 
 return
-
 
 
 == Messaging ==
 
 ConnectorA -> ConnectorB ++ : IDS Catalog Request Message with w3c:VerifiablePresentation
 
-    note right #efefef
-    **Connector B receives the new Security Token**
-    **with each IDS message**
-    
-    "securityToken" : {
-        "@type" : "w3c:VerifiablePresentation",
-        "base64" : "jA0EAwMCxamDRMfOGPOQAE4BHbh7PfTDIn..."
-    }
-    end note
-
-    ConnectorB -> WalletB ++: Structural Presentation Validation
+    ConnectorB -> ConnectorB ++ : **Validate Membership**
+        ConnectorB -> WalletB ++: Structural Presentation Validation
+        return ok
+        ConnectorB -> ConnectorB ++ : Check Audience Credential subject is Connector B
+        return ok
+        ConnectorB -> ConnectorB ++ : Check Membership Credential Issuer is Catena-X Authority Wallet
+        return ok
     return ok
 
-    ConnectorB -> ConnectorB ++ : Check Audience Credential subject is Connector B
-    return ok
+    ... process IDS Message ...
 
-    ConnectorB -> ConnectorB ++ : Check Membership Credential Issuer is Catena-X Authority Waller
+    ConnectorB -> ConnectorB ++ : **Validate Policies**
+
+        ConnectorB -> ConnectorB ++ : Search presentation cache for Membership Credential of Connector A
+        return found
+
+        ConnectorB -> ConnectorB ++ : Search presentation cache for Address Credential of Connector A
+        return not found
+
+        ConnectorB -> ConnectorA ++ : IDS Credential Request Message \nfor AddressCredential
+        return VP with Address Credential & Audience Credential
+
     return ok
 
     ... process IDS Message ...
