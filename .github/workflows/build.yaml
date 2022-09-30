@@ -46,7 +46,7 @@ jobs:
           fetch-depth: 0
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -69,7 +69,7 @@ jobs:
           fetch-depth: 0
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -113,7 +113,7 @@ jobs:
         uses: actions/checkout@v3
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -160,7 +160,7 @@ jobs:
           password: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -249,7 +249,7 @@ jobs:
           password: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
