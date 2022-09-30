@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.eclipse.dataspaceconnector.spi.agent.ParticipantAgent;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.policy.PolicyContext;
+import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

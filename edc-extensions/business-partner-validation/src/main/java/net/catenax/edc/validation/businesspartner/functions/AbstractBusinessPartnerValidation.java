@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.eclipse.dataspaceconnector.spi.agent.ParticipantAgent;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.policy.PolicyContext;
+import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
 
 /**
  * Abstract class for BusinessPartnerNumber validation. This class may be inherited from the EDC

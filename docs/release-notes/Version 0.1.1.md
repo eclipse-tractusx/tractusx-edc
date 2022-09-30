@@ -6,6 +6,10 @@
 > 
 > Please consolidate the migration documentation ([link](../migration/Version_0.1.0_0.1.1.md)).
 
+> **Important Notice**
+>
+> The **InMemoryControlPlane** image is broken. Please use another control plane instead.
+
 ## 0. Summary
 
 - 1. Eclipse Dataspace Connector Update
@@ -33,7 +37,7 @@ Using the open source OAuth Extension it is possible for a connector to re-use a
 **New Audience Configuration**
 
 ```
-edc.oauth.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
+edc.ids.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
 ```
 
 ## 3. Bug Fixes

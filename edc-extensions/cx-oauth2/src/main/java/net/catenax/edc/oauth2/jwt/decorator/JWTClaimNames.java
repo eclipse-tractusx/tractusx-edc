@@ -13,19 +13,12 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import java.util.Map;
-import java.util.UUID;
-import org.eclipse.dataspaceconnector.spi.jwt.JwtDecorator;
-
-public class JtiJwtDecorator implements JwtDecorator {
-
-  @Override
-  public Map<String, Object> claims() {
-    return Map.of(JWTClaimNames.JWT_ID, UUID.randomUUID().toString());
-  }
-
-  @Override
-  public Map<String, Object> headers() {
-    return Map.of();
-  }
+public final class JWTClaimNames {
+  public static final String ISSUER = "iss";
+  public static final String SUBJECT = "sub";
+  public static final String AUDIENCE = "aud";
+  public static final String EXPIRATION_TIME = "exp";
+  public static final String NOT_BEFORE = "nbf";
+  public static final String ISSUED_AT = "iat";
+  public static final String JWT_ID = "jti";
 }

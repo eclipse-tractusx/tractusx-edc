@@ -28,11 +28,11 @@ import net.catenax.edc.oauth2.jwk.PublicKeyReader;
 import net.catenax.edc.oauth2.jwk.RsaPublicKeyReader;
 import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.iam.oauth2.spi.Oauth2ValidationRulesRegistry;
-import org.eclipse.dataspaceconnector.spi.EdcSetting;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
 import org.eclipse.dataspaceconnector.spi.jwt.TokenValidationService;
-import org.eclipse.dataspaceconnector.spi.system.Inject;
-import org.eclipse.dataspaceconnector.spi.system.Provides;
-import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 

@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v3
       -
         name: Set-Up JDK 11
-        uses: actions/setup-java@v3.4.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -62,7 +62,7 @@ jobs:
           EOF
       -
         name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.3.0
+        uses: helm/kind-action@v1.4.0
         with:
           config: kind.config.yaml
 
@@ -74,7 +74,7 @@ jobs:
         run: git submodule update --init
       -
         name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT
+        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
         working-directory: edc
       -
         name: Build edc-controlplane-postgresql-hashicorp-vault

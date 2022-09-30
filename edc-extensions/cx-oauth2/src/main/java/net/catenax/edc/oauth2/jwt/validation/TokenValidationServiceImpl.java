@@ -63,10 +63,11 @@ public class TokenValidationServiceImpl implements TokenValidationService {
       }
 
       claimsSet = signedJwt.getJWTClaimsSet();
+      var claimToken = ClaimToken.Builder.newInstance().claims(claimsSet.getClaims()).build();
 
       final List<String> errors =
           rulesRegistry.getRules().stream()
-              .map(r -> r.checkRule(signedJwt, additional))
+              .map(r -> r.checkRule(claimToken, additional))
               .filter(Result::failed)
               .map(Result::getFailureMessages)
               .flatMap(Collection::stream)

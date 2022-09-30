@@ -13,12 +13,11 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.JWTClaimsSet;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.spi.EdcException;
@@ -30,12 +29,6 @@ public class X5tJwtDecorator implements JwtDecorator {
 
   @NonNull private final byte[] encodedCertificate;
 
-  @Override
-  public void decorate(
-      @NonNull final JWSHeader.Builder header, @NonNull final JWTClaimsSet.Builder claimsSet) {
-    header.x509CertThumbprint(new Base64URL(sha1Base64Fingerprint(encodedCertificate)));
-  }
-
   public static String sha1Base64Fingerprint(final byte[] bytes) {
     try {
       final MessageDigest messageDigest = MessageDigest.getInstance(SHA_1);
@@ -44,5 +37,15 @@ public class X5tJwtDecorator implements JwtDecorator {
     } catch (NoSuchAlgorithmException e) {
       throw new EdcException(e);
     }
+  }
+
+  @Override
+  public Map<String, Object> claims() {
+    return Map.of();
+  }
+
+  @Override
+  public Map<String, Object> headers() {
+    return Map.of("x5t", new Base64URL(sha1Base64Fingerprint(encodedCertificate)));
   }
 }

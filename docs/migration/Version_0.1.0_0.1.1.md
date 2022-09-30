@@ -75,7 +75,7 @@ New call
 ## 2. Connector Configuration
 ### 2.1. CX OAuth Extension
 
-All connectors are now shipped with a new OAuth extension. This extension has an additional mandatory setting called `edc.oauth.endpoint.audience`, that must be set to the IDS path.
+All connectors are now shipped with a new OAuth extension. This extension has an additional mandatory setting called `edc.ids.endpoint.audience`, that must be set to the IDS path.
 
 [Documentation](/edc-extensions/cx-oauth2/README.md)
 
@@ -85,7 +85,7 @@ All connectors are now shipped with a new OAuth extension. This extension has an
 <summary>Example</summary>
 
 ```
-edc.oauth.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
+edc.ids.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
 ```
 
 </details>

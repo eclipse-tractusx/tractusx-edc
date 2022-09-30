@@ -64,20 +64,71 @@ source documentation ([link](https://github.com/eclipse-dataspaceconnector/DataS
 
 **Run**
 
+
 The following commands will create an Asset, a Policy and a Contract Definition.
 For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data source of the asset, but could be any
 other API, that is reachable from the Provider Data Plane.
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/assets" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data '{
+             "asset": {
+                "properties": {
+                        "asset:prop:id": "1",
+                        "asset:prop:description": "Product EDC Demo Asset"
+                    }
+                },
+                "dataAddress": {
+                    "properties": {
+                        "type": "HttpData",
+                        "baseUrl": "https://jsonplaceholder.typicode.com/todos/1"
+                    }
+                }
+            }' \
+    -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/policydefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"policy\": { \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"constraints\": [] } ] } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "${PLATO_DATAMGMT_URL}/data/policydefinitions" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data '{
+               "id": "1",
+                "policy": {
+                    "prohibitions": [],
+                    "obligations": [],
+                    "permissions": [
+                        {
+                            "edctype": "dataspaceconnector:permission",
+                            "action": { "type": "USE" },
+                            "constraints": []
+                        }
+                    ]
+                }
+            }' \
+    -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
+
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/contractdefinitions" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"criteria\": [ { \"operandLeft\": \"asset:prop:id\", \"operator\": \"=\", \"operandRight\": \"1\" } ], \"accessPolicyId\": \"1\", \"contractPolicyId\": \"1\" }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "${PLATO_DATAMGMT_URL}/data/contractdefinitions" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data '{
+                "id": "1",
+                "criteria": [
+                    {
+                        "operandLeft": "asset:prop:id",
+                        "operator": "=",
+                        "operandRight": "1"
+                    }
+                ],
+                "accessPolicyId": "1",
+                "contractPolicyId": "1"
+            }' \
+    -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ## 2. Request Contract Offer Catalog
@@ -93,7 +144,11 @@ connectors, that intent to send messages to each other, have the same DAPS insta
 **Run**
 
 ```bash
-curl -G -X GET "$SOKRATES_DATAMGMT_URL/data/catalog" --data-urlencode "providerUrl=$PLATO_IDS_URL/api/v1/ids/data" --header "X-Api-Key: password" --header "Content-Type: application/json" -s | jq
+curl -G -X GET "${SOKRATES_DATAMGMT_URL}/data/catalog" \
+    --data-urlencode "providerUrl=${PLATO_IDS_URL}/api/v1/ids/data" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    -s | jq
 ```
 
 ## 3. Negotiate Contract
@@ -112,11 +167,40 @@ and checking whether the `contractAgreementId` is set. This might take a few sec
 **Run**
 
 ```bash
-export NEGOTIATION_ID=$(curl -X POST "$SOKRATES_DATAMGMT_URL/data/contractnegotiations" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"connectorId\": \"foo\", \"connectorAddress\": \"$PLATO_IDS_URL/api/v1/ids/data\", \"offer\": { \"offerId\": \"1:foo\", \"assetId\": \"1\", \"policy\": { \"uid\": \"1\", \"prohibitions\": [], \"obligations\": [], \"permissions\": [ { \"edctype\": \"dataspaceconnector:permission\", \"action\": { \"type\": \"USE\" }, \"target\": \"1\", \"constraints\": [] } ] } } }" -s | jq -r '.id')
+export NEGOTIATION_ID=$( \
+    curl -X POST "${SOKRATES_DATAMGMT_URL}/data/contractnegotiations" \
+        --header "X-Api-Key: password" \
+        --header "Content-Type: application/json" \
+        --data "{
+                    \"connectorId\": \"foo\",
+                    \"connectorAddress\": \"${PLATO_IDS_URL}/api/v1/ids/data\",
+                    \"offer\": {
+                        \"offerId\": \"1:foo\",
+                        \"assetId\": \"1\",
+                        \"policy\": {
+                            \"uid\": \"1\",
+                            \"prohibitions\": [],
+                            \"obligations\": [],
+                            \"permissions\": [
+                                {
+                                    \"edctype\": \"dataspaceconnector:permission\",
+                                    \"action\": { \"type\": \"USE\" },
+                                    \"target\": \"1\",
+                                    \"constraints\": []
+                                }
+                            ]
+                        }
+                    }
+                }" \
+    -s | jq -r '.id')
 ```
 
+
 ```bash
-curl -X GET "$SOKRATES_DATAMGMT_URL/data/contractnegotiations/$NEGOTIATION_ID" --header "X-Api-Key: password" --header "Content-Type: application/json" -s | jq
+curl -X GET "${SOKRATES_DATAMGMT_URL}/data/contractnegotiations/${NEGOTIATION_ID}" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    -s | jq
 ```
 
 ## 4. Transfer Data
@@ -129,16 +213,36 @@ the transfer process is `COMPLETED`.
 **Run**
 
 ```bash
-export CONTRACT_AGREEMENT_ID=$(curl -X GET "$SOKRATES_DATAMGMT_URL/data/contractnegotiations/$NEGOTIATION_ID" --header "X-Api-Key: password" --header "Content-Type: application/json" -s | jq -r '.contractAgreementId')
+export CONTRACT_AGREEMENT_ID=$( \
+    curl -X GET "$SOKRATES_DATAMGMT_URL/data/contractnegotiations/$NEGOTIATION_ID" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    -s | jq -r '.contractAgreementId')
 ```
 
 ```bash
 export TRANSFER_PROCESS_ID=$(tr -dc '[:alnum:]' < /dev/urandom | head -c20)
-export TRANSFER_ID=$(curl -X POST "$SOKRATES_DATAMGMT_URL/data/transferprocess" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"id\": \"${TRANSFER_PROCESS_ID}\", \"connectorId\": \"foo\", \"connectorAddress\": \"${PLATO_IDS_URL}/api/v1/ids/data\", \"contractId\": \"${CONTRACT_AGREEMENT_ID}\", \"assetId\": \"1\", \"managedResources\": \"false\", \"dataDestination\": { \"type\": \"HttpProxy\" } }" -s | jq -r '.id')
+export TRANSFER_ID=$( \
+    curl -X POST "${SOKRATES_DATAMGMT_URL}/data/transferprocess" \
+    --header "X-Api-Key: password" \
+    --header "Content-Type: application/json" \
+    --data "{
+                \"id\": \"${TRANSFER_PROCESS_ID}\", 
+                \"connectorId\": \"foo\", 
+                \"connectorAddress\": \"${PLATO_IDS_URL}/api/v1/ids/data\", 
+                \"contractId\": \"${CONTRACT_AGREEMENT_ID}\", 
+                \"assetId\": \"1\", 
+                \"managedResources\": \"false\", 
+                \"dataDestination\": { \"type\": \"HttpProxy\" }
+            }" \
+     -s | jq -r '.id')
 ```
 
 ```bash
-curl -X GET "$SOKRATES_DATAMGMT_URL/data/transferprocess/$TRANSFER_ID" --header "X-Api-Key: password" --header "Content-Type: application/json" -s | jq
+curl -X GET "$SOKRATES_DATAMGMT_URL/data/transferprocess/$TRANSFER_ID" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    -s | jq
 ```
 
 ## 5. Verify Data Transfer
@@ -149,7 +253,9 @@ locally. In this demo the transfer can be verified by executing a simple `cat` c
 ![Sequence 1](diagrams/transfer_sequence_5.png)
 
 ```bash
-curl -X GET "${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID}" -H "Accept: application/octet-stream" -s | jq
+curl -X GET "${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID}" \
+    --header 'Accept: application/octet-stream' \
+    -s | jq
 ```
 
 # Delete All Data

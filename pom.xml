@@ -18,7 +18,7 @@
 
     <groupId>net.catenax.edc</groupId>
     <artifactId>product-edc-parent</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>pom</packaging>
 
     <name>product-edc</name>
@@ -47,8 +47,8 @@
         <!-- plugins -->
         <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0
         </org.apache.maven.plugins.maven.dependency.plugin.version>
-        <org.apache.maven.plugins.maven.jar.plugin.version>3.2.2</org.apache.maven.plugins.maven.jar.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>2.25.0</com.diffplug.spotless.maven.plugin.version>
+        <org.apache.maven.plugins.maven.jar.plugin.version>3.3.0</org.apache.maven.plugins.maven.jar.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.27.1</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.1.0</org.codehaus.mojo.exec.maven.plugin.version>
         <org.apache.maven.plugins.javadoc.version>3.4.1</org.apache.maven.plugins.javadoc.version>
         <org.codehaus.mojo.license.maven.plugin>2.0.0</org.codehaus.mojo.license.maven.plugin>
@@ -63,26 +63,28 @@
         <org.jasig.maven.notice.plugin.version>1.1.0</org.jasig.maven.notice.plugin.version>
         <org.sonarsource.scanner.maven.plugin.version>3.9.1.2184</org.sonarsource.scanner.maven.plugin.version>
         <org.awaitility.awaitility.version>4.2.0</org.awaitility.awaitility.version>
+        <org.eclipse.dash.license.tool.plugin.version>0.0.1-SNAPSHOT</org.eclipse.dash.license.tool.plugin.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-20220902-SNAPSHOT</org.eclipse.dataspaceconnector.version>
+        <org.eclipse.dataspaceconnector.version>0.0.1-20220922-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
         <org.postgresql.version>42.5.0</org.postgresql.version>
-        <org.flywaydb.version>9.2.2</org.flywaydb.version>
+        <org.flywaydb.version>9.3.1</org.flywaydb.version>
+        <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
 
         <!-- test dependency version -->
-        <junit.jupiter.version>5.9.0</junit.jupiter.version>
+        <junit.jupiter.version>5.9.1</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
-        <cucumber.version>7.6.0</cucumber.version>
-        <io.rest.assured.version>5.1.1</io.rest.assured.version>
+        <cucumber.version>7.8.0</cucumber.version>
+        <io.rest.assured.version>5.2.0</io.rest.assured.version>
         <org.junit.platform.surefire.provider.version>1.1.0</org.junit.platform.surefire.provider.version>
-        <mockito.version>4.7.0</mockito.version>
+        <mockito.version>4.8.0</mockito.version>
         <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
         <org.testcontainers.version>1.17.3</org.testcontainers.version>
         <org.slf4j.version>2.0.0-beta1</org.slf4j.version>
-        <ch.qos.logback.logback-core.version>1.4.0</ch.qos.logback.logback-core.version>
+        <ch.qos.logback.logback-core.version>1.4.1</ch.qos.logback.logback-core.version>
         <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
 
         <!-- TODO: parametrize so that forks can utilize sonar also -->
@@ -111,6 +113,16 @@
             <id>fraunhofer-iais-eis</id>
             <name>Fraunhofer IAIS</name>
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
+        </repository>
+        <repository>
+            <id>dash-licenses-snapshots</id> <!-- Eclipse Dash Tool to generate DEPENDENCIES file -->
+            <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 
@@ -191,6 +203,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${org.apache.maven.plugins.compiler.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.dash</groupId>
+                    <artifactId>license-tool-plugin</artifactId>
+                    <version>${org.eclipse.dash.license.tool.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.projectlombok</groupId>
@@ -376,6 +393,11 @@
             </dependency>
 
             <!-- Common Dependencies -->
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${com.nimbus.jose.jwt.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
@@ -591,6 +613,11 @@
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>control-api</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>control-plane-core</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
             <dependency>
@@ -915,6 +942,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>policy-engine-spi</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>policy-evaluator</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
@@ -1169,7 +1201,7 @@
                             <dependency>
                                 <groupId>org.glassfish.jaxb</groupId>
                                 <artifactId>jaxb-runtime</artifactId>
-                                <version>2.3.3</version>
+                                <version>4.0.1</version>
                             </dependency>
                         </dependencies>
                         <configuration>
@@ -1206,5 +1238,6 @@
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 </project>

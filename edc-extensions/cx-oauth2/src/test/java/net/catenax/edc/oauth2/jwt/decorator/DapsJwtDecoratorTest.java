@@ -13,10 +13,8 @@
  */
 package net.catenax.edc.oauth2.jwt.decorator;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class DapsJwtDecoratorTest {
 
@@ -24,17 +22,11 @@ class DapsJwtDecoratorTest {
   void decorate() {
     final DapsJwtDecorator decorator = new DapsJwtDecorator();
 
-    final JWSHeader.Builder jwsHeaderBuilder = Mockito.mock(JWSHeader.Builder.class);
-    final JWTClaimsSet.Builder claimsSetBuilder = Mockito.mock(JWTClaimsSet.Builder.class);
+    Assertions.assertTrue(decorator.claims().containsKey("@context"));
+    Assertions.assertEquals(
+        "https://w3id.org/idsa/contexts/context.jsonld", decorator.claims().get("@context"));
 
-    Mockito.when(claimsSetBuilder.claim(Mockito.anyString(), Mockito.anyString()))
-        .thenReturn(claimsSetBuilder);
-
-    decorator.decorate(jwsHeaderBuilder, claimsSetBuilder);
-
-    Mockito.verify(claimsSetBuilder, Mockito.times(1))
-        .claim("@context", "https://w3id.org/idsa/contexts/context.jsonld");
-    Mockito.verify(claimsSetBuilder, Mockito.times(1)).claim("@type", "ids:DatRequestToken");
-    Mockito.verifyNoMoreInteractions(jwsHeaderBuilder, claimsSetBuilder);
+    Assertions.assertTrue(decorator.claims().containsKey("@type"));
+    Assertions.assertEquals("ids:DatRequestToken", decorator.claims().get("@type"));
   }
 }
