@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Introduced DEPENDENCIES file
+
 ### Changed
+
 - Moved helm charts from `deployment/helm` to `charts`
+- Replaced distroless image with alpine in all docker images
+- Update EDC commit to `740c100ac162bc41b1968c232ad81f7d739aefa9`
 
 ## [0.1.1] - 2022-09-04
 
