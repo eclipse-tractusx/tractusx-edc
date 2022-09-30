@@ -44,8 +44,18 @@ EDC commit the Product-EDC uses.
 **Persistence**
 - ContractDefinition-AssetSelector of InMemory Connector selects 50 Asset max.([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1779))
 
+**Negotiation**
+
+- Connector blocks negotiation when `rightExpression` of a `Constraint` contains multiple elements/an array ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2026))
+
+- Provider must pass its own `ContractPolicy` for the negotiation to succeed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1975))
+
 **Transfer**
 - Transfer Process remains 'InProgress' on provider side ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1287))
+
+**Data Management API**
+
+- Pagination is not correctly applied during catalog request ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2008))
 
 **Configuration**
 - Contract negotiation not working when `web.http.ids.path` is configured/changed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1249))
@@ -55,10 +65,6 @@ EDC commit the Product-EDC uses.
   - **Possible Workaround:** Reconfigure data plane URL from `http://dataplane:8185/api/public` to `http://dataplane:8185/api/public/`
 
 - Non-telling logs when `edc.transfer.proxy.token.verifier.publickey.alias` setting is missing([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1889))
-
-**Data Management API**
-- Contract negotiation not working when initiated with policy id ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1251))
-  - **Workaround:** The DataManagement API can also initiate a contract negotiation using the actual policy object.
 
 **Other**
 - Non-IDS-Transformable-ContractDefinition causes connector to be unable to send out self-descriptions/catalogs([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1265))
