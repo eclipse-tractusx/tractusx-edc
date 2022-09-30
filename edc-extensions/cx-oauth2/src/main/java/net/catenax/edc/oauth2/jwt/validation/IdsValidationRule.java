@@ -14,12 +14,12 @@
 
 package net.catenax.edc.oauth2.jwt.validation;
 
-import com.nimbusds.jwt.SignedJWT;
-import java.text.ParseException;
 import java.util.Map;
 import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.jwt.TokenValidationRule;
 import org.eclipse.dataspaceconnector.spi.result.Result;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IdsValidationRule implements TokenValidationRule {
@@ -31,7 +31,8 @@ public class IdsValidationRule implements TokenValidationRule {
 
   /** Validates the JWT by checking extended IDS rules. */
   @Override
-  public Result<SignedJWT> checkRule(SignedJWT jwt, @Nullable Map<String, Object> additional) {
+  public Result<Void> checkRule(
+      @NotNull ClaimToken toVerify, @Nullable Map<String, Object> additional) {
     if (additional != null) {
       var issuerConnector = additional.get("issuerConnector");
       if (issuerConnector == null) {
@@ -43,44 +44,36 @@ public class IdsValidationRule implements TokenValidationRule {
         securityProfile = additional.get("securityProfile").toString();
       }
 
-      return verifyTokenIds(jwt, issuerConnector.toString(), securityProfile);
+      return verifyTokenIds(additional, issuerConnector.toString(), securityProfile);
 
     } else {
       throw new EdcException("Missing required additional information for IDS token validation");
     }
   }
 
-  private Result<SignedJWT> verifyTokenIds(
-      SignedJWT jwt, String issuerConnector, @Nullable String securityProfile) {
-    try {
-      var claims = jwt.getJWTClaimsSet().getClaims();
+  private Result<Void> verifyTokenIds(
+      Map<String, Object> claims, String issuerConnector, @Nullable String securityProfile) {
 
-      // referringConnector (DAT, optional) vs issuerConnector (Message-Header,
-      // mandatory)
-      var referringConnector = claims.get("referringConnector");
+    // referringConnector (DAT, optional) vs issuerConnector (Message-Header,
+    // mandatory)
+    var referringConnector = claims.get("referringConnector");
 
-      if (validateReferring && !issuerConnector.equals(referringConnector)) {
-        return Result.failure(
-            "referingConnector in token does not match issuerConnector in message");
-      }
-
-      // securityProfile (DAT, mandatory) vs securityProfile (Message-Payload,
-      // optional)
-      try {
-        var tokenSecurityProfile = claims.get("securityProfile");
-
-        if (securityProfile != null && !securityProfile.equals(tokenSecurityProfile)) {
-          return Result.failure(
-              "securityProfile in token does not match securityProfile in payload");
-        }
-      } catch (Exception e) {
-        // Nothing to do, payload mostly no connector instance
-      }
-    } catch (ParseException e) {
-      throw new EdcException(
-          "IdsValidationRule: unable to parse SignedJWT (" + e.getMessage() + ")");
+    if (validateReferring && !issuerConnector.equals(referringConnector)) {
+      return Result.failure("referingConnector in token does not match issuerConnector in message");
     }
 
-    return Result.success(jwt);
+    // securityProfile (DAT, mandatory) vs securityProfile (Message-Payload,
+    // optional)
+    try {
+      var tokenSecurityProfile = claims.get("securityProfile");
+
+      if (securityProfile != null && !securityProfile.equals(tokenSecurityProfile)) {
+        return Result.failure("securityProfile in token does not match securityProfile in payload");
+      }
+    } catch (Exception e) {
+      // Nothing to do, payload mostly no connector instance
+    }
+
+    return Result.success();
   }
 }

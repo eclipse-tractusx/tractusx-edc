@@ -26,7 +26,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
-import java.util.Arrays;
+import java.util.Map.Entry;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.eclipse.dataspaceconnector.spi.EdcException;
@@ -76,11 +76,16 @@ public class JwtTokenGenerationService implements TokenGenerationService {
 
   @Override
   public Result<TokenRepresentation> generate(@NotNull @NonNull final JwtDecorator... decorators) {
+
     final JWSHeader.Builder headerBuilder = new JWSHeader.Builder(jwsAlgorithm);
     final JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
 
-    Arrays.stream(decorators)
-        .forEach(decorator -> decorator.decorate(headerBuilder, claimsBuilder));
+    for (JwtDecorator decorator : decorators) {
+      for (Entry<String, Object> claim : decorator.claims().entrySet()) {
+        claimsBuilder.claim(claim.getKey(), claim.getValue());
+      }
+      headerBuilder.customParams(decorator.headers());
+    }
 
     final JWTClaimsSet jwtClaimSet = claimsBuilder.build();
 

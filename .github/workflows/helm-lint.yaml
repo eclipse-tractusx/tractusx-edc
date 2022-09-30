@@ -10,13 +10,13 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
     paths-ignore:
       - '**'
-      - '!deployment/helm/**'
+      - '!charts/**'
   pull_request:
     branches:
       - '*'
     paths-ignore:
       - '**'
-      - '!deployment/helm/**'
+      - '!charts/**'
 
 jobs:
   helm-lint:
@@ -42,7 +42,7 @@ jobs:
         python-version: 3.7
     -
       name: chart-testing (setup)
-      uses: helm/chart-testing-action@v2.3.0
+      uses: helm/chart-testing-action@v2.3.1
     #####################
     ### Chart Testing ###
     #####################
