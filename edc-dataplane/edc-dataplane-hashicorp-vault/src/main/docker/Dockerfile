@@ -24,7 +24,9 @@ ARG LIB
 ARG APP_USER=docker
 ARG APP_UID=10100
 
-RUN apk add --update openjdk11-jre-headless=11.0.16.1_p1-r0 --no-cache
+RUN apk update && \
+    apk add openjdk11-jre-headless=11.0.16.1_p1-r0 --no-cache && \
+    rm -rf /var/cache/apk/*
 
 RUN addgroup --system "$APP_USER"
 
