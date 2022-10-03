@@ -85,7 +85,7 @@ public class ContractNotificationHandler
   }
 
   @Override
-  public void preConfirmed(ContractNegotiation negotiation) {
+  public void confirmed(ContractNegotiation negotiation) {
     monitor.info("ContractConfirmationHandler: received ContractConfirmation event");
     String negotiationId = negotiation.getId();
     String agreementId = negotiation.getContractAgreement().getId();
@@ -104,7 +104,7 @@ public class ContractNotificationHandler
   }
 
   @Override
-  public void preDeclined(ContractNegotiation negotiation) {
+  public void declined(ContractNegotiation negotiation) {
     monitor.info("ContractConfirmationHandler: received ContractDeclined event");
     String contractNegotiationId = negotiation.getId();
     DataReferenceRetrievalDto dto = syncService.exchangeDeclinedContract(contractNegotiationId);
@@ -116,7 +116,7 @@ public class ContractNotificationHandler
   }
 
   @Override
-  public void preError(ContractNegotiation negotiation) {
+  public void failed(ContractNegotiation negotiation) {
     monitor.info("ContractConfirmationHandler: received ContractError event");
     String contractNegotiationId = negotiation.getId();
     DataReferenceRetrievalDto dto = syncService.exchangeErrorContract(contractNegotiationId);

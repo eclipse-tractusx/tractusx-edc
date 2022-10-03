@@ -165,7 +165,7 @@ public class ContractNotificationHandlerTest {
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
-    contractNotificationHandler.preConfirmed(contractNegotiation);
+    contractNotificationHandler.confirmed(contractNegotiation);
 
     // then
     verify(notificationSyncService, times(1)).exchangeConfirmedContract(any(), any());
@@ -190,7 +190,7 @@ public class ContractNotificationHandlerTest {
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
-    contractNotificationHandler.preConfirmed(contractNegotiation);
+    contractNotificationHandler.confirmed(contractNegotiation);
 
     // then
     verify(transferProcessService, times(1)).initiateTransfer(any());

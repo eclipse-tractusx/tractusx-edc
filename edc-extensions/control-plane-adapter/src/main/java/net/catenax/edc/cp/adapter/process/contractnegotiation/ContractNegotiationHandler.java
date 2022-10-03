@@ -33,6 +33,7 @@ import net.catenax.edc.cp.adapter.util.ExpiringMap;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.dataspaceconnector.spi.query.QuerySpec;
 import org.eclipse.dataspaceconnector.spi.types.domain.catalog.Catalog;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractOfferRequest;
@@ -99,7 +100,7 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
     }
 
     try {
-      catalog = catalogService.getByProviderUrl(providerUrl).get();
+      catalog = catalogService.getByProviderUrl(providerUrl, QuerySpec.max()).get();
       catalogCache.put(providerUrl, catalog);
       return catalog;
     } catch (InterruptedException | ExecutionException e) {
