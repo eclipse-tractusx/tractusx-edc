@@ -34,7 +34,6 @@ public class ContractAgreementData {
     ContractAgreementData data = new ContractAgreementData();
     data.setId(agreement.getId());
     data.setAssetId(agreement.getAssetId());
-    data.setPolicyId(agreement.getPolicyId());
     data.setContractStartDate(agreement.getContractStartDate());
     data.setContractEndDate(agreement.getContractEndDate());
     data.setContractSigningDate(agreement.getContractSigningDate());

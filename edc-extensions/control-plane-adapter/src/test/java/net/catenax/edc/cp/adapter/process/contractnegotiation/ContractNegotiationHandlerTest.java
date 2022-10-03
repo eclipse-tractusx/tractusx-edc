@@ -30,6 +30,7 @@ import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
+import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.catalog.Catalog;
@@ -90,7 +91,7 @@ public class ContractNegotiationHandlerTest {
 
     when(contractDataStore.get(anyString(), anyString()))
         .thenReturn(getExpiredContractAgreementData());
-    when(catalogService.getByProviderUrl(anyString()))
+    when(catalogService.getByProviderUrl(anyString(), any()))
         .thenReturn(CompletableFuture.completedFuture(getCatalog()));
     when(contractNegotiationService.initiateNegotiation(any()))
         .thenReturn(getContractNegotiation());
@@ -117,7 +118,7 @@ public class ContractNegotiationHandlerTest {
             new ExpiringMap<>());
 
     when(contractDataStore.get(anyString(), anyString())).thenReturn(null);
-    when(catalogService.getByProviderUrl(anyString()))
+    when(catalogService.getByProviderUrl(anyString(), any()))
         .thenReturn(CompletableFuture.completedFuture(getCatalog()));
     when(contractNegotiationService.initiateNegotiation(any()))
         .thenReturn(getContractNegotiation());
@@ -149,7 +150,11 @@ public class ContractNegotiationHandlerTest {
 
   private ContractOffer getContractOffer() {
     Asset asset = Asset.Builder.newInstance().id("assetId").build();
-    return ContractOffer.Builder.newInstance().id("id").asset(asset).policyId("policyId").build();
+    return ContractOffer.Builder.newInstance()
+        .id("id")
+        .asset(asset)
+        .policy(Policy.Builder.newInstance().build())
+        .build();
   }
 
   private ContractAgreementData getValidContractAgreementData() {

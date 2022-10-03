@@ -25,8 +25,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
+        <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
     </properties>
 
     <build>

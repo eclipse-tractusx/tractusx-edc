@@ -27,6 +27,7 @@ import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
 import org.eclipse.dataspaceconnector.api.result.ServiceResult;
+import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.agreement.ContractAgreement;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
@@ -213,7 +214,7 @@ public class ContractNotificationHandlerTest {
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
-    contractNotificationHandler.preDeclined(contractNegotiation);
+    contractNotificationHandler.declined(contractNegotiation);
 
     // then
     ArgumentCaptor<DataReferenceRetrievalDto> messageArg =
@@ -239,7 +240,7 @@ public class ContractNotificationHandlerTest {
     ContractNegotiation contractNegotiation = getConfirmedContractNegotiation();
 
     // when
-    contractNotificationHandler.preError(contractNegotiation);
+    contractNotificationHandler.failed(contractNegotiation);
 
     // then
     ArgumentCaptor<DataReferenceRetrievalDto> messageArg =
@@ -262,7 +263,7 @@ public class ContractNotificationHandlerTest {
                 .providerAgentId("providerAgentId")
                 .consumerAgentId("consumerAgentId")
                 .assetId("assetId")
-                .policyId("policyId")
+                .policy(Policy.Builder.newInstance().build())
                 .build())
         .build();
   }
