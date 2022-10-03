@@ -15,13 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
-      CXNG_RELEASE_PAT: ${{ steps.secret-presence.outputs.CXNG_RELEASE_PAT }}
     steps:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
-          [ ! -z "${{ secrets.CXNG_RELEASE_PAT }}" ] && echo "::set-output name=CXNG_RELEASE_PAT::true"
 
           exit 0
   # Gate: Check release version presence
@@ -69,7 +67,7 @@ jobs:
         uses: actions/checkout@v3
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.4.1
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -79,13 +77,13 @@ jobs:
         run: git submodule update --init
       -
         name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT
+        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
         working-directory: edc
       -
         name: Deploy
         run: |-
           ./mvnw -s settings.xml \
-            -Pdelombok -pl '!edc-controlplane/edc-controlplane-memory,!edc-controlplane/edc-controlplane-postgresql,!edc-controlplane/edc-controlplane-postgresql-hashicorp-vault,!edc-dataplane/edc-dataplane-azure-vault,!edc-dataplane/edc-dataplane-hashicorp-vault,!edc-tests' \
+            -Pdelombok -pl '!edc-tests' \
             -DaltReleaseDeploymentRepository=github::https://maven.pkg.github.com/${{ github.repository }} \
             -Dmaven.test.skip=true -B package deploy:deploy
         env:
@@ -140,7 +138,7 @@ jobs:
     name: Publish new github release
     needs: [ secret-presence, release-version ]
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && needs.secret-presence.outputs.CXNG_RELEASE_PAT && needs.release-version.outputs.RELEASE_VERSION
+    if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
       -
         name: Export RELEASE_VERSION env
@@ -172,7 +170,7 @@ jobs:
         id: create_release
         uses: thomaseizinger/create-release@1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.CXNG_RELEASE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
           tag_name: ${{ env.RELEASE_VERSION }}
@@ -181,7 +179,7 @@ jobs:
           prerelease: false
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.4.1
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'

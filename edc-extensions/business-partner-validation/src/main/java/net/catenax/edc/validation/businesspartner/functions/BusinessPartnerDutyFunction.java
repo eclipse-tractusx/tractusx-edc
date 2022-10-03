@@ -17,8 +17,8 @@ package net.catenax.edc.validation.businesspartner.functions;
 import org.eclipse.dataspaceconnector.policy.model.Duty;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.policy.AtomicConstraintFunction;
-import org.eclipse.dataspaceconnector.spi.policy.PolicyContext;
+import org.eclipse.dataspaceconnector.spi.policy.engine.AtomicConstraintFunction;
+import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
 
 /** AtomicConstraintFunction to validate business partner numbers for edc duties. */
 public class BusinessPartnerDutyFunction extends AbstractBusinessPartnerValidation
