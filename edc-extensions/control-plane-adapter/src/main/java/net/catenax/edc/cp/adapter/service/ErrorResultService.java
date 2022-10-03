@@ -19,16 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
 import net.catenax.edc.cp.adapter.exception.ResourceNotFoundException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
-import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 
 @RequiredArgsConstructor
-public class ErrorResultService implements Listener {
+public class ErrorResultService implements Listener<DataReferenceRetrievalDto> {
   private static final Map<Class<?>, Response.Status> statusOfException = new HashMap<>();
 
   static {
@@ -40,29 +40,28 @@ public class ErrorResultService implements Listener {
   private final MessageService messageService;
 
   @Override
-  public void process(Message message) {
-    message.getPayload().setErrorMessage(getErrorMessage(message));
-    message
-        .getPayload()
+  public void process(DataReferenceRetrievalDto dto) {
+    dto.getPayload().setErrorMessage(getErrorMessage(dto));
+    dto.getPayload()
         .setErrorStatus(
             statusOfException.getOrDefault(
-                message.getFinalException().getClass(), Response.Status.INTERNAL_SERVER_ERROR));
-    log(message);
-    messageService.send(Channel.RESULT, message);
+                dto.getFinalException().getClass(), Response.Status.INTERNAL_SERVER_ERROR));
+    log(dto);
+    messageService.send(Channel.RESULT, dto);
   }
 
-  private String getErrorMessage(Message message) {
-    return Objects.nonNull(message.getFinalException())
-        ? message.getFinalException().getMessage()
+  private String getErrorMessage(DataReferenceRetrievalDto dto) {
+    return Objects.nonNull(dto.getFinalException())
+        ? dto.getFinalException().getMessage()
         : "Unrecognized Exception.";
   }
 
-  private void log(Message message) {
+  private void log(DataReferenceRetrievalDto dto) {
     monitor.info(
         String.format(
             "[%s] Sending ERROR message to RESULT channel: %s / %s ",
-            message.getTraceId(),
-            message.getPayload().getErrorMessage(),
-            message.getPayload().getErrorStatus()));
+            dto.getTraceId(),
+            dto.getPayload().getErrorMessage(),
+            dto.getPayload().getErrorStatus()));
   }
 }

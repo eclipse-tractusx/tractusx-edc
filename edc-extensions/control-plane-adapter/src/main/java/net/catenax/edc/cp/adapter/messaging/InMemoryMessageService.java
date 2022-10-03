@@ -31,7 +31,7 @@ public class InMemoryMessageService implements MessageService {
   private final ListenerService listenerService;
 
   @Override
-  public void send(Channel name, Message message) {
+  public void send(Channel name, Message<?> message) {
     if (isNull(message)) {
       monitor.warning(String.format("Message is empty, channel: %s", name));
     } else {
@@ -41,7 +41,7 @@ public class InMemoryMessageService implements MessageService {
   }
 
   /** Returns 'false' if message processing should be retried. * */
-  protected boolean run(Channel name, Message message) {
+  protected boolean run(Channel name, Message<?> message) {
     try {
       listenerService.getListener(name).process(message);
       message.clearErrors();
@@ -59,7 +59,7 @@ public class InMemoryMessageService implements MessageService {
     }
   }
 
-  private void sendMessageToDlq(Message message, Exception finalException) {
+  private void sendMessageToDlq(Message<?> message, Exception finalException) {
     message.clearErrors();
     message.setFinalException(finalException);
     run(Channel.DLQ, message);

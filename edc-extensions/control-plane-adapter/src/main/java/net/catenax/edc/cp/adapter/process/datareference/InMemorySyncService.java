@@ -19,47 +19,47 @@ import static java.util.Objects.isNull;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import net.catenax.edc.cp.adapter.messaging.Message;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.util.LockMap;
 import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference;
 
 @RequiredArgsConstructor
-public class InMemoryDataStore implements DataStore {
-  private final Map<String, Message> messages = new HashMap<>();
-  private final Map<String, EndpointDataReference> dataReferences = new HashMap<>();
+public class InMemorySyncService implements NotificationSyncService {
+  private final Map<String, DataReferenceRetrievalDto> dtoMap = new HashMap<>();
+  private final Map<String, EndpointDataReference> dataReferenceMap = new HashMap<>();
   private final LockMap locks;
 
-  @Override
-  public EndpointDataReference exchangeMessage(Message message, String agreementId) {
+  public EndpointDataReference exchangeDto(DataReferenceRetrievalDto dto, String agreementId) {
     locks.lock(agreementId);
-    EndpointDataReference dataReference = dataReferences.get(agreementId);
+    EndpointDataReference dataReference = dataReferenceMap.get(agreementId);
     if (isNull(dataReference)) {
-      messages.put(agreementId, message);
+      dtoMap.put(agreementId, dto);
     }
     locks.unlock(agreementId);
     return dataReference;
   }
 
   @Override
-  public Message exchangeDataReference(EndpointDataReference dataReference, String agreementId) {
+  public DataReferenceRetrievalDto exchangeDataReference(
+      EndpointDataReference dataReference, String agreementId) {
     locks.lock(agreementId);
-    Message message = messages.get(agreementId);
-    if (isNull(message)) {
-      dataReferences.put(agreementId, dataReference);
+    DataReferenceRetrievalDto dto = dtoMap.get(agreementId);
+    if (isNull(dto)) {
+      dataReferenceMap.put(agreementId, dataReference);
     }
     locks.unlock(agreementId);
-    return message;
+    return dto;
   }
 
   @Override
   public void removeDataReference(String agreementId) {
-    dataReferences.remove(agreementId);
+    dataReferenceMap.remove(agreementId);
     locks.removeLock(agreementId);
   }
 
   @Override
-  public void removeMessage(String agreementId) {
-    messages.remove(agreementId);
+  public void removeDto(String agreementId) {
+    dtoMap.remove(agreementId);
     locks.removeLock(agreementId);
   }
 }

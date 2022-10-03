@@ -37,7 +37,7 @@ public class ProcessData {
   @Setter private String contractAgreementId;
   @Setter private boolean isContractConfirmed = false;
 
-  // result data
+  // result/response data
   @Setter private EndpointDataReference endpointDataReference;
   @Setter private String errorMessage;
   @Setter private Response.Status errorStatus;

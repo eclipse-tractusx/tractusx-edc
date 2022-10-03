@@ -18,9 +18,9 @@ import static java.util.Objects.isNull;
 
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
-import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.result.Result;
@@ -29,25 +29,26 @@ import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
-public class DataReferenceHandler implements Listener, EndpointDataReferenceReceiver {
+public class DataReferenceHandler
+    implements Listener<DataReferenceRetrievalDto>, EndpointDataReferenceReceiver {
   private final Monitor monitor;
   private final MessageService messageService;
-  private final DataStore dataStore;
+  private final NotificationSyncService syncService;
 
   @Override
-  public void process(Message message) {
-    String contractAgreementId = message.getPayload().getContractAgreementId();
-    monitor.info(String.format("[%s] DataReference message received.", message.getTraceId()));
+  public void process(DataReferenceRetrievalDto dto) {
+    String contractAgreementId = dto.getPayload().getContractAgreementId();
+    monitor.info(String.format("[%s] DataReference message received.", dto.getTraceId()));
 
-    EndpointDataReference dataReference = dataStore.exchangeMessage(message, contractAgreementId);
+    EndpointDataReference dataReference = syncService.exchangeDto(dto, contractAgreementId);
     if (isNull(dataReference)) {
       return;
     }
 
-    message.getPayload().setEndpointDataReference(dataReference);
-    messageService.send(Channel.RESULT, message);
-    dataStore.removeDataReference(contractAgreementId);
-    monitor.info(String.format("[%s] DataReference message processed.", message.getTraceId()));
+    dto.getPayload().setEndpointDataReference(dataReference);
+    messageService.send(Channel.RESULT, dto);
+    syncService.removeDataReference(contractAgreementId);
+    monitor.info(String.format("[%s] DataReference message processed.", dto.getTraceId()));
   }
 
   @Override
@@ -55,15 +56,16 @@ public class DataReferenceHandler implements Listener, EndpointDataReferenceRece
     String contractAgreementId = dataReference.getProperties().get("cid");
     monitor.info(String.format("DataReference received, contractAgr.: %s", contractAgreementId));
 
-    Message message = dataStore.exchangeDataReference(dataReference, contractAgreementId);
-    if (isNull(message)) {
+    DataReferenceRetrievalDto dto =
+        syncService.exchangeDataReference(dataReference, contractAgreementId);
+    if (isNull(dto)) {
       return CompletableFuture.completedFuture(Result.success());
     }
-    message.getPayload().setEndpointDataReference(dataReference);
-    messageService.send(Channel.RESULT, message);
-    dataStore.removeMessage(contractAgreementId);
+    dto.getPayload().setEndpointDataReference(dataReference);
+    messageService.send(Channel.RESULT, dto);
+    syncService.removeDto(contractAgreementId);
 
-    monitor.info(String.format("[%s] DataReference processed.", message.getTraceId()));
+    monitor.info(String.format("[%s] DataReference processed.", dto.getTraceId()));
     return CompletableFuture.completedFuture(Result.success());
   }
 }

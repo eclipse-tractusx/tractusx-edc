@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import jakarta.ws.rs.core.Response;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Message;
@@ -41,7 +42,7 @@ public class ContractNotificationHandlerTest {
   @Mock Monitor monitor;
   @Mock MessageService messageService;
   @Mock ContractNegotiationService contractNegotiationService;
-  @Mock DataStore dataStore;
+  @Mock NotificationSyncService notificationSyncService;
   @Mock ContractDataStore contractDataStore;
   @Mock TransferProcessService transferProcessService;
 
@@ -58,17 +59,18 @@ public class ContractNotificationHandlerTest {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    Message message = new Message(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto =
+        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
 
     // when
-    contractNotificationHandler.process(message);
+    contractNotificationHandler.process(dto);
 
     // then
-    verify(dataStore, times(1)).exchangeMessage(any());
+    verify(notificationSyncService, times(1)).exchangeDto(any());
     verify(transferProcessService, times(0)).initiateTransfer(any());
     verify(messageService, times(0)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -81,15 +83,16 @@ public class ContractNotificationHandlerTest {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    Message message = new Message(new ProcessData("assetId", "providerUrl"));
-    message.getPayload().setContractConfirmed(true);
+    DataReferenceRetrievalDto dto =
+        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    dto.getPayload().setContractConfirmed(true);
 
     // when
-    contractNotificationHandler.process(message);
+    contractNotificationHandler.process(dto);
 
     // then
     verify(transferProcessService, times(1)).initiateTransfer(any());
@@ -105,17 +108,18 @@ public class ContractNotificationHandlerTest {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    Message message = new Message(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto =
+        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
 
     // when
-    contractNotificationHandler.process(message);
+    contractNotificationHandler.process(dto);
 
     // then
-    verify(dataStore, times(0)).exchangeMessage(any());
+    verify(notificationSyncService, times(0)).exchangeDto(any());
     verify(transferProcessService, times(1)).initiateTransfer(any());
     verify(messageService, times(1)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -123,7 +127,7 @@ public class ContractNotificationHandlerTest {
   @Test
   public void process_shouldInitiateTransferWhenContractConfirmedByNotification() {
     // given
-    when(dataStore.exchangeMessage(any()))
+    when(notificationSyncService.exchangeDto(any()))
         .thenReturn(
             new ContractInfo("confirmedContractAgreementId", ContractInfo.ContractState.CONFIRMED));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
@@ -131,19 +135,20 @@ public class ContractNotificationHandlerTest {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    Message message = new Message(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto =
+        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
 
     // when
-    contractNotificationHandler.process(message);
+    contractNotificationHandler.process(dto);
 
     // then
     verify(transferProcessService, times(1)).initiateTransfer(any());
     verify(messageService, times(1)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
-    verify(dataStore, times(1)).removeContractInfo(any());
+    verify(notificationSyncService, times(1)).removeContractInfo(any());
   }
 
   @Test
@@ -153,7 +158,7 @@ public class ContractNotificationHandlerTest {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
@@ -163,7 +168,7 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.preConfirmed(contractNegotiation);
 
     // then
-    verify(dataStore, times(1)).exchangeConfirmedContract(any(), any());
+    verify(notificationSyncService, times(1)).exchangeConfirmedContract(any(), any());
     verify(transferProcessService, times(0)).initiateTransfer(any());
     verify(messageService, times(0)).send(eq(Channel.DATA_REFERENCE), any(Message.class));
   }
@@ -171,14 +176,14 @@ public class ContractNotificationHandlerTest {
   @Test
   public void preConfirmed_shouldInitiateTransferIfMessageIsAvailable() {
     // given
-    when(dataStore.exchangeConfirmedContract(any(), any()))
-        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    when(notificationSyncService.exchangeConfirmedContract(any(), any()))
+        .thenReturn(new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl")));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
@@ -195,13 +200,13 @@ public class ContractNotificationHandlerTest {
   @Test
   public void preDeclined_shouldSendErrorResultIfMessageIsAvailable() {
     // given
-    when(dataStore.exchangeDeclinedContract(any()))
-        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    when(notificationSyncService.exchangeDeclinedContract(any()))
+        .thenReturn(new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl")));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
@@ -211,7 +216,8 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.preDeclined(contractNegotiation);
 
     // then
-    ArgumentCaptor<Message> messageArg = ArgumentCaptor.forClass(Message.class);
+    ArgumentCaptor<DataReferenceRetrievalDto> messageArg =
+        ArgumentCaptor.forClass(DataReferenceRetrievalDto.class);
     verify(messageService, times(1)).send(eq(Channel.RESULT), messageArg.capture());
     Assertions.assertEquals(
         Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());
@@ -220,13 +226,13 @@ public class ContractNotificationHandlerTest {
   @Test
   public void preError_shouldSendErrorResultIfMessageIsAvailable() {
     // given
-    when(dataStore.exchangeErrorContract(any()))
-        .thenReturn(new Message(new ProcessData("assetId", "providerUrl")));
+    when(notificationSyncService.exchangeErrorContract(any()))
+        .thenReturn(new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl")));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
             monitor,
             messageService,
-            dataStore,
+            notificationSyncService,
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
@@ -236,7 +242,8 @@ public class ContractNotificationHandlerTest {
     contractNotificationHandler.preError(contractNegotiation);
 
     // then
-    ArgumentCaptor<Message> messageArg = ArgumentCaptor.forClass(Message.class);
+    ArgumentCaptor<DataReferenceRetrievalDto> messageArg =
+        ArgumentCaptor.forClass(DataReferenceRetrievalDto.class);
     verify(messageService, times(1)).send(eq(Channel.RESULT), messageArg.capture());
     Assertions.assertEquals(
         Response.Status.BAD_GATEWAY, messageArg.getValue().getPayload().getErrorStatus());

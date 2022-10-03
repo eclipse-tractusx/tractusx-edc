@@ -20,15 +20,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
 import net.catenax.edc.cp.adapter.exception.ResourceNotFoundException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
-import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
+import net.catenax.edc.cp.adapter.util.ExpiringMap;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -38,29 +39,28 @@ import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.Cont
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.offer.ContractOffer;
 
 @RequiredArgsConstructor
-public class ContractNegotiationHandler implements Listener {
+public class ContractNegotiationHandler implements Listener<DataReferenceRetrievalDto> {
   private final Monitor monitor;
   private final MessageService messageService;
   private final ContractNegotiationService contractNegotiationService;
   private final CatalogService catalogService;
   private final ContractDataStore contractDataStore;
+  private final ExpiringMap<String, Catalog> catalogCache;
 
   @Override
-  public void process(Message message) {
+  public void process(DataReferenceRetrievalDto dto) {
     monitor.info(
         String.format(
-            "[%s] RequestHandler: input request: [%s]",
-            message.getTraceId(), message.getPayload()));
-    ProcessData processData = message.getPayload();
+            "[%s] RequestHandler: input request: [%s]", dto.getTraceId(), dto.getPayload()));
+    ProcessData processData = dto.getPayload();
 
     ContractAgreementData contractData =
-        contractDataStore.get(
-            message.getPayload().getAssetId(), message.getPayload().getProvider());
+        contractDataStore.get(dto.getPayload().getAssetId(), dto.getPayload().getProvider());
     if (Objects.nonNull(contractData) && isContractValid(contractData)) {
-      monitor.info(String.format("[%s] ContractAgreement taken from cache.", message.getTraceId()));
-      message.getPayload().setContractAgreementId(contractData.getId());
-      message.getPayload().setContractConfirmed(true);
-      messageService.send(Channel.CONTRACT_CONFIRMATION, message);
+      monitor.info(String.format("[%s] ContractAgreement taken from cache.", dto.getTraceId()));
+      dto.getPayload().setContractAgreementId(contractData.getId());
+      dto.getPayload().setContractConfirmed(true);
+      messageService.send(Channel.CONTRACT_CONFIRMATION, dto);
       return;
     }
 
@@ -69,10 +69,10 @@ public class ContractNegotiationHandler implements Listener {
 
     String contractNegotiationId =
         initializeContractNegotiation(
-            contractOffer, message.getPayload().getProvider(), message.getTraceId());
-    message.getPayload().setContractNegotiationId(contractNegotiationId);
+            contractOffer, dto.getPayload().getProvider(), dto.getTraceId());
+    dto.getPayload().setContractNegotiationId(contractNegotiationId);
 
-    messageService.send(Channel.CONTRACT_CONFIRMATION, message);
+    messageService.send(Channel.CONTRACT_CONFIRMATION, dto);
   }
 
   private boolean isContractValid(ContractAgreementData contractAgreement) {
@@ -93,8 +93,15 @@ public class ContractNegotiationHandler implements Listener {
   }
 
   private Catalog getCatalog(String providerUrl) {
+    Catalog catalog = catalogCache.get(providerUrl);
+    if (Objects.nonNull(catalog)) {
+      return catalog;
+    }
+
     try {
-      return catalogService.getByProviderUrl(providerUrl).get();
+      catalog = catalogService.getByProviderUrl(providerUrl).get();
+      catalogCache.put(providerUrl, catalog);
+      return catalog;
     } catch (InterruptedException | ExecutionException e) {
       throw new ExternalRequestException("Could not retrieve contract offer.", e);
     }

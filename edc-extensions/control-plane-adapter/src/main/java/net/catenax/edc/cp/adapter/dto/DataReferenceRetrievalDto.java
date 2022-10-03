@@ -12,8 +12,12 @@
  *
  */
 
-package net.catenax.edc.cp.adapter.messaging;
+package net.catenax.edc.cp.adapter.dto;
 
-public interface Listener<P extends Message<?>> {
-  void process(P message);
+import net.catenax.edc.cp.adapter.messaging.Message;
+
+public class DataReferenceRetrievalDto extends Message<ProcessData> {
+  public DataReferenceRetrievalDto(ProcessData payload) {
+    super(payload);
+  }
 }

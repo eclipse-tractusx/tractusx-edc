@@ -18,61 +18,62 @@ import static java.util.Objects.isNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.catenax.edc.cp.adapter.messaging.Message;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.util.LockMap;
 
-public class InMemoryDataStore implements DataStore {
-  private final Map<String, Message> messages = new HashMap<>();
+public class InMemorySyncService implements NotificationSyncService {
+  private final Map<String, DataReferenceRetrievalDto> dtoMap = new HashMap<>();
   private final Map<String, ContractInfo> contractInfoMap = new HashMap<>();
   private final LockMap locks;
 
-  public InMemoryDataStore(LockMap locks) {
+  public InMemorySyncService(LockMap locks) {
     this.locks = locks;
   }
 
   @Override
-  public Message exchangeConfirmedContract(String negotiationId, String agreementId) {
+  public DataReferenceRetrievalDto exchangeConfirmedContract(
+      String negotiationId, String agreementId) {
     locks.lock(negotiationId);
-    Message message = messages.get(negotiationId);
-    if (isNull(message)) {
+    DataReferenceRetrievalDto dto = dtoMap.get(negotiationId);
+    if (isNull(dto)) {
       contractInfoMap.put(
           negotiationId, new ContractInfo(agreementId, ContractInfo.ContractState.CONFIRMED));
     }
     locks.unlock(negotiationId);
-    return message;
+    return dto;
   }
 
   @Override
-  public Message exchangeDeclinedContract(String negotiationId) {
+  public DataReferenceRetrievalDto exchangeDeclinedContract(String negotiationId) {
     locks.lock(negotiationId);
-    Message message = messages.get(negotiationId);
-    if (isNull(message)) {
+    DataReferenceRetrievalDto dto = dtoMap.get(negotiationId);
+    if (isNull(dto)) {
       contractInfoMap.put(negotiationId, new ContractInfo(ContractInfo.ContractState.DECLINED));
     }
     locks.unlock(negotiationId);
-    return message;
+    return dto;
   }
 
   @Override
-  public Message exchangeErrorContract(String negotiationId) {
+  public DataReferenceRetrievalDto exchangeErrorContract(String negotiationId) {
     locks.lock(negotiationId);
-    Message message = messages.get(negotiationId);
-    if (isNull(message)) {
+    DataReferenceRetrievalDto dto = dtoMap.get(negotiationId);
+    if (isNull(dto)) {
       contractInfoMap.put(negotiationId, new ContractInfo(ContractInfo.ContractState.ERROR));
     }
 
     locks.unlock(negotiationId);
-    return message;
+    return dto;
   }
 
   @Override
-  public ContractInfo exchangeMessage(Message message) {
-    String negotiationId = message.getPayload().getContractNegotiationId();
+  public ContractInfo exchangeDto(DataReferenceRetrievalDto dto) {
+    String negotiationId = dto.getPayload().getContractNegotiationId();
 
     locks.lock(negotiationId);
     ContractInfo contractInfo = contractInfoMap.get(negotiationId);
     if (isNull(contractInfo)) {
-      messages.put(negotiationId, message);
+      dtoMap.put(negotiationId, dto);
     }
 
     locks.unlock(negotiationId);
@@ -86,8 +87,8 @@ public class InMemoryDataStore implements DataStore {
   }
 
   @Override
-  public void removeMessage(String negotiationId) {
-    messages.remove(negotiationId);
+  public void removeDto(String negotiationId) {
+    dtoMap.remove(negotiationId);
     locks.removeLock(negotiationId);
   }
 }

@@ -22,12 +22,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Listener;
-import net.catenax.edc.cp.adapter.messaging.Message;
 
 @RequiredArgsConstructor
-public class ResultService implements Listener {
+public class ResultService implements Listener<DataReferenceRetrievalDto> {
   private final int CAPACITY = 1;
   private final int DEFAULT_TIMEOUT = 15; // TODO move to config
   private final Map<String, ArrayBlockingQueue<ProcessData>> results = new ConcurrentHashMap<>();
@@ -46,11 +46,11 @@ public class ResultService implements Listener {
   }
 
   @Override
-  public void process(Message message) {
-    if (isNull(message) || isNull(message.getPayload())) {
+  public void process(DataReferenceRetrievalDto dto) {
+    if (isNull(dto) || isNull(dto.getPayload())) {
       throw new IllegalArgumentException();
     }
-    add(message.getTraceId(), message.getPayload());
+    add(dto.getTraceId(), dto.getPayload());
   }
 
   private void add(String id, ProcessData ProcessData) {

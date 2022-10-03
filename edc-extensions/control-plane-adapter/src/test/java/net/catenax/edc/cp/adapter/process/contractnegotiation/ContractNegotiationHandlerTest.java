@@ -21,11 +21,13 @@ import static org.mockito.Mockito.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Message;
 import net.catenax.edc.cp.adapter.messaging.MessageService;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
+import net.catenax.edc.cp.adapter.util.ExpiringMap;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -55,13 +57,19 @@ public class ContractNegotiationHandlerTest {
     // given
     ContractNegotiationHandler contractNegotiationHandler =
         new ContractNegotiationHandler(
-            monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
+            monitor,
+            messageService,
+            contractNegotiationService,
+            catalogService,
+            contractDataStore,
+            new ExpiringMap<>());
 
     when(contractDataStore.get(anyString(), anyString()))
         .thenReturn(getValidContractAgreementData());
 
     // when
-    contractNegotiationHandler.process(new Message(new ProcessData("asset", "provider")));
+    contractNegotiationHandler.process(
+        new DataReferenceRetrievalDto(new ProcessData("asset", "provider")));
 
     // then
     verify(contractNegotiationService, times(0)).initiateNegotiation(any());
@@ -73,7 +81,12 @@ public class ContractNegotiationHandlerTest {
     // given
     ContractNegotiationHandler contractNegotiationHandler =
         new ContractNegotiationHandler(
-            monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
+            monitor,
+            messageService,
+            contractNegotiationService,
+            catalogService,
+            contractDataStore,
+            new ExpiringMap<>());
 
     when(contractDataStore.get(anyString(), anyString()))
         .thenReturn(getExpiredContractAgreementData());
@@ -83,7 +96,8 @@ public class ContractNegotiationHandlerTest {
         .thenReturn(getContractNegotiation());
 
     // when
-    contractNegotiationHandler.process(new Message(new ProcessData("assetId", "provider")));
+    contractNegotiationHandler.process(
+        new DataReferenceRetrievalDto(new ProcessData("assetId", "provider")));
 
     // then
     verify(contractNegotiationService, times(1)).initiateNegotiation(any());
@@ -91,11 +105,16 @@ public class ContractNegotiationHandlerTest {
   }
 
   @Test
-  public void process_shouldInitiateContractNegotiationAndSendMessageFurtherIfCacheEmpty() {
+  public void process_shouldInitiateContractNegotiationAndSendDtoFurtherIfCacheEmpty() {
     // given
     ContractNegotiationHandler contractNegotiationHandler =
         new ContractNegotiationHandler(
-            monitor, messageService, contractNegotiationService, catalogService, contractDataStore);
+            monitor,
+            messageService,
+            contractNegotiationService,
+            catalogService,
+            contractDataStore,
+            new ExpiringMap<>());
 
     when(contractDataStore.get(anyString(), anyString())).thenReturn(null);
     when(catalogService.getByProviderUrl(anyString()))
@@ -104,7 +123,8 @@ public class ContractNegotiationHandlerTest {
         .thenReturn(getContractNegotiation());
 
     // when
-    contractNegotiationHandler.process(new Message(new ProcessData("assetId", "provider")));
+    contractNegotiationHandler.process(
+        new DataReferenceRetrievalDto(new ProcessData("assetId", "provider")));
 
     // then
     verify(contractNegotiationService, times(1)).initiateNegotiation(any());

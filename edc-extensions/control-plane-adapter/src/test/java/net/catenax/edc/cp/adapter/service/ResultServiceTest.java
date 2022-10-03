@@ -17,8 +17,8 @@ package net.catenax.edc.cp.adapter.service;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.concurrent.TimeUnit;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
-import net.catenax.edc.cp.adapter.messaging.Message;
 import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,12 +29,12 @@ public class ResultServiceTest {
     // given
     ResultService resultService = new ResultService();
     String endpointDataRefId = "456";
-    Message message = getMessage(endpointDataRefId);
+    DataReferenceRetrievalDto dto = getDto(endpointDataRefId);
     ProcessData processData;
 
     // when
-    resultService.process(message);
-    processData = resultService.pull(message.getTraceId(), 200, TimeUnit.MILLISECONDS);
+    resultService.process(dto);
+    processData = resultService.pull(dto.getTraceId(), 200, TimeUnit.MILLISECONDS);
 
     // then
     Assertions.assertEquals(endpointDataRefId, processData.getEndpointDataReference().getId());
@@ -45,22 +45,22 @@ public class ResultServiceTest {
     // given
     ResultService resultService = new ResultService();
     String endpointDataRefId = "456";
-    Message message = getMessage(endpointDataRefId);
+    DataReferenceRetrievalDto dto = getDto(endpointDataRefId);
     ProcessData processData;
 
     // when
-    processMessageWithDelay(resultService, message);
-    processData = resultService.pull(message.getTraceId(), 1000, TimeUnit.MILLISECONDS);
+    processMessageWithDelay(resultService, dto);
+    processData = resultService.pull(dto.getTraceId(), 1000, TimeUnit.MILLISECONDS);
 
     // then
     Assertions.assertEquals(endpointDataRefId, processData.getEndpointDataReference().getId());
   }
 
-  private void processMessageWithDelay(ResultService resultService, Message message) {
+  private void processMessageWithDelay(ResultService resultService, DataReferenceRetrievalDto dto) {
     new Thread(
             () -> {
               sleep(400);
-              resultService.process(message);
+              resultService.process(dto);
             })
         .start();
   }
@@ -81,20 +81,20 @@ public class ResultServiceTest {
   public void process_shouldThrowIllegalArgumentExceptionIfNoDataPayload() {
     // given
     ResultService resultService = new ResultService();
-    Message message = new Message(null);
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(null);
 
     // when then
     try {
-      resultService.process(message);
+      resultService.process(dto);
       fail("Method should throw IllegalArgumentException");
     } catch (IllegalArgumentException ignored) {
     }
   }
 
-  private Message getMessage(String endpointDataRefId) {
-    Message message = new Message(new ProcessData("123", "providerUrl"));
-    message
-        .getPayload()
+  private DataReferenceRetrievalDto getDto(String endpointDataRefId) {
+    DataReferenceRetrievalDto dto =
+        new DataReferenceRetrievalDto(new ProcessData("123", "providerUrl"));
+    dto.getPayload()
         .setEndpointDataReference(
             EndpointDataReference.Builder.newInstance()
                 .id(endpointDataRefId)
@@ -102,7 +102,7 @@ public class ResultServiceTest {
                 .authCode("c")
                 .authKey("k")
                 .build());
-    return message;
+    return dto;
   }
 
   private void sleep(long milisec) {

@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Message;
@@ -43,9 +44,7 @@ public class HttpController {
       @PathParam("assetId") String assetId, @QueryParam("providerUrl") String providerUrl) {
 
     if (invalidParams(assetId, providerUrl)) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("AssetId or providerUrl is empty!")
-          .build();
+      return badRequestResponse();
     }
 
     String traceId = initiateProcess(assetId, providerUrl);
@@ -54,30 +53,25 @@ public class HttpController {
       ProcessData processData = resultService.pull(traceId);
 
       if (Objects.isNull(processData)) {
-        return Response.status(Response.Status.NOT_FOUND)
-            .entity(Response.Status.NOT_FOUND.getReasonPhrase())
-            .build();
+        return notFoundResponse();
       }
-
       if (Objects.nonNull(processData.getErrorStatus())) {
-        return Response.status(processData.getErrorStatus())
-            .entity(processData.getErrorMessage())
-            .build();
+        return errorResponse(processData);
       }
-
       if (Objects.nonNull(processData.getEndpointDataReference())) {
-        return Response.status(Response.Status.OK)
-            .entity(processData.getEndpointDataReference())
-            .build();
+        return okResponse(processData);
       }
-
-      return Response.status(Response.Status.REQUEST_TIMEOUT)
-          .entity(Response.Status.REQUEST_TIMEOUT.getReasonPhrase())
-          .build();
+      return timeoutResponse();
     } catch (InterruptedException e) {
       monitor.severe("InterruptedException", e);
-      return Response.status(Response.Status.NOT_FOUND).build();
+      return notFoundResponse();
     }
+  }
+
+  private Response badRequestResponse() {
+    return Response.status(Response.Status.BAD_REQUEST)
+        .entity("AssetId or providerUrl is empty!")
+        .build();
   }
 
   private boolean invalidParams(String assetId, String providerUrl) {
@@ -86,8 +80,32 @@ public class HttpController {
 
   private String initiateProcess(String assetId, String providerUrl) {
     ProcessData processData = new ProcessData(assetId, providerUrl);
-    Message message = new Message(processData);
+    Message<ProcessData> message = new DataReferenceRetrievalDto(processData);
     messageService.send(Channel.INITIAL, message);
     return message.getTraceId();
+  }
+
+  private Response notFoundResponse() {
+    return Response.status(Response.Status.NOT_FOUND)
+        .entity(Response.Status.NOT_FOUND.getReasonPhrase())
+        .build();
+  }
+
+  private Response errorResponse(ProcessData processData) {
+    return Response.status(processData.getErrorStatus())
+        .entity(processData.getErrorMessage())
+        .build();
+  }
+
+  private Response okResponse(ProcessData processData) {
+    return Response.status(Response.Status.OK)
+        .entity(processData.getEndpointDataReference())
+        .build();
+  }
+
+  private Response timeoutResponse() {
+    return Response.status(Response.Status.REQUEST_TIMEOUT)
+        .entity(Response.Status.REQUEST_TIMEOUT.getReasonPhrase())
+        .build();
   }
 }
