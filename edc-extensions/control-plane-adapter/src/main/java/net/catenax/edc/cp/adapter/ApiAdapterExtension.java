@@ -33,13 +33,13 @@ import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.Catalog
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationServiceImpl;
 import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessServiceImpl;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.ConsumerContractNegotiationManager;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationObservable;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.store.ContractNegotiationStore;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.NoopTransactionContext;
