@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "eclipse-dataspace-connector.fullname" . }}-control-plane
+  labels:
+    {{- include "eclipse-dataspace-connector.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "eclipse-dataspace-connector.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "eclipse-dataspace-connector.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "eclipse-dataspace-connector.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.controlplane.image.repository }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.postgresql.connectionString and .Values.vault.hashicorp }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.postgresql.connectionString and .Values.vault.azure }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-vault:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.vault.hashicorp }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.vault.azure }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          {{- fail "cannot choose control-plane image automatically based on configuration" }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: default
+              containerPort: {{ .Values.controlplane.endpoints.default.port | default 8080 }}
+              protocol: TCP
+            - name: data
+              containerPort: {{ .Values.controlplane.endpoints.data.port | default 8181 }}
+              protocol: TCP
+            - name: validation
+              containerPort: {{ .Values.controlplane.endpoints.validation.port | default 8182 }}
+              protocol: TCP
+            - name: control
+              containerPort: {{ .Values.controlplane.endpoints.control.port | default 9999 }}
+              protocol: TCP
+            - name: ids
+              containerPort: {{ .Values.controlplane.endpoints.ids.port | default 8282 }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.controlplane.endpoints.metrics.port | default 9090 }}
+              protocol: TCP
+          {{- if .Values.controlplane.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+            httpGet:
+              path: {{ .Values.controlplane.endpoints.default.path | default /api }}/check/liveness
+              port: default
+          {{- end }}
+          {{- if .Values.controlplane.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.controlplane.endpoints.default.path | default /api }}/check/readiness
+              port: default
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      env:
+        {{- if .Values.controlplane.debug.enabled and .Values.controlplane.debug.suspendOnStart }}
+        JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="{{ .Values.controlplane.debug.port | default 1044 }}
+        {{- else if .Values.controlplane.debug.enabled }}
+        JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address="{{ .Values.controlplane.debug.port | default 1044 }}
+        {{- end }}
+
+        ########################
+        ## DAPS CONFIGURATION ##
+        ########################
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
+        EDC_OAUTH_CLIENT_ID: *sokratesDapsClientId
+        EDC_OAUTH_PROVIDER_JWKS_URL: *edcControlPlaneOauthJwksUrl
+        EDC_OAUTH_TOKEN_URL: *edcControlPlaneOauthTokenUrl
+        EDC_OAUTH_PRIVATE_KEY_ALIAS: my-sokrates-daps-key
+        EDC_OAUTH_PUBLIC_KEY_ALIAS: my-sokrates-daps-crt
+
+        #############
+        ## GENERAL ##
+        #############
+        IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
+        EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
+        EDC_IDS_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
+        EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
+
+        ################
+        ## POSTGRESQL ##
+        ################
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/asset-index-sql
+        EDC_DATASOURCE_ASSET_NAME: asset
+        EDC_DATASOURCE_ASSET_USER: *psqlUsername
+        EDC_DATASOURCE_ASSET_URL: &SokratesPsqlConStr "jdbc:postgresql://sokrates-postgresql:5432/edc"
+        
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
+        EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
+        EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
+        EDC_DATASOURCE_CONTRACTDEFINITION_URL: *SokratesPsqlConStr
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
+        EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
+        EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: *psqlUsername
+        EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *SokratesPsqlConStr
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
+        EDC_DATASOURCE_POLICY_NAME: policy
+        EDC_DATASOURCE_POLICY_USER: *psqlUsername
+        EDC_DATASOURCE_POLICY_URL: *SokratesPsqlConStr
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
+        EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
+        EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
+        EDC_DATASOURCE_TRANSFERPROCESS_URL: *SokratesPsqlConStr
+
+        ################
+        ## DATA PLANE ##
+        ################
+
+        # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: http://sokrates-edc-dataplane:9999/api/dataplane/control
+        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
+        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
+        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >- 
+          { 
+            "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public/"
+          }
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
+        EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public/
+        EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
+        EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
+
+        # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
+        EDC_RECEIVER_HTTP_ENDPOINT: http://sokrates-backend-application
+
+        ###############
+        ## KEY VAULT ##
+        ###############
+
+        # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+        EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
+
+        #####################
+        ## DATA ENCRYPTION ##
+        #####################
+
+        # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+        EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+        EDC_DATA_ENCRYPTION_ALGORITHM: AES
+

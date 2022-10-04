@@ -34,31 +34,40 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 @Requires(CertificateResolver.class)
 public class JwtDecoratorExtension implements ServiceExtension {
 
+  private static final Provider PROVIDER = new BouncyCastleProvider();
+  private static final JcaX509CertificateConverter X509_CONVERTER = new JcaX509CertificateConverter()
+      .setProvider(PROVIDER);
+
   @EdcSetting
   private static final String TOKEN_EXPIRATION_SECONDS = "edc.oauth.token.expiration.seconds";
 
   private static final Duration DEFAULT_EXPIRATION = Duration.ofMinutes(5);
 
-  @EdcSetting private static final String PUBLIC_KEY_ALIAS = "edc.oauth.public.key.alias";
+  @EdcSetting
+  private static final String PUBLIC_KEY_ALIAS = "edc.oauth.public.key.alias";
+  @EdcSetting
+  private static final String PUBLIC_KEY = "edc.oauth.public.key";
 
-  @EdcSetting private static final String CLIENT_ID = "edc.oauth.client.id";
+  @EdcSetting
+  private static final String CLIENT_ID = "edc.oauth.client.id";
 
-  @Inject @Setter private CertificateResolver certificateResolver;
+  @Inject
+  @Setter
+  private CertificateResolver certificateResolver;
 
   @Override
   public void initialize(@NonNull final ServiceExtensionContext serviceExtensionContext) {
-    final Oauth2JwtDecoratorRegistry oauth2JwtDecoratorRegistry =
-        new Oauth2JwtDecoratorRegistryRegistryImpl();
+    final Oauth2JwtDecoratorRegistry oauth2JwtDecoratorRegistry = new Oauth2JwtDecoratorRegistryRegistryImpl();
 
     Stream.of(
-            audJwtDecorator(),
-            expJwtDecorator(serviceExtensionContext),
-            iatJwtDecorator(serviceExtensionContext),
-            issJwtDecorator(serviceExtensionContext),
-            jtiJwtDecorator(),
-            subJwtDecorator(serviceExtensionContext),
-            x5tJwtDecorator(serviceExtensionContext, certificateResolver),
-            dapsJwtDecorator())
+        audJwtDecorator(),
+        expJwtDecorator(serviceExtensionContext),
+        iatJwtDecorator(serviceExtensionContext),
+        issJwtDecorator(serviceExtensionContext),
+        jtiJwtDecorator(),
+        subJwtDecorator(serviceExtensionContext),
+        x5tJwtDecorator(serviceExtensionContext, certificateResolver),
+        dapsJwtDecorator())
         .forEach(oauth2JwtDecoratorRegistry::register);
 
     serviceExtensionContext.registerService(
@@ -75,11 +84,10 @@ public class JwtDecoratorExtension implements ServiceExtension {
 
   private ExpJwtDecorator expJwtDecorator(
       @NonNull final ServiceExtensionContext serviceExtensionContext) {
-    final Duration expiration =
-        Duration.ofSeconds(
-            serviceExtensionContext
-                .getConfig()
-                .getLong(TOKEN_EXPIRATION_SECONDS, DEFAULT_EXPIRATION.toSeconds()));
+    final Duration expiration = Duration.ofSeconds(
+        serviceExtensionContext
+            .getConfig()
+            .getLong(TOKEN_EXPIRATION_SECONDS, DEFAULT_EXPIRATION.toSeconds()));
 
     return new ExpJwtDecorator(serviceExtensionContext.getClock(), expiration);
   }
@@ -110,17 +118,17 @@ public class JwtDecoratorExtension implements ServiceExtension {
   private X5tJwtDecorator x5tJwtDecorator(
       @NonNull final ServiceExtensionContext serviceExtensionContext,
       @NonNull final CertificateResolver certificateResolver) {
+
+    final String publicKey = serviceExtensionContext.getSetting(PUBLIC_KEY, null);
     final String publicKeyAlias = serviceExtensionContext.getSetting(PUBLIC_KEY_ALIAS, null);
-    if (publicKeyAlias == null) {
-      throw new EdcException("Missing required setting: " + PUBLIC_KEY_ALIAS);
+    if (publicKey == null && publicKeyAlias == null) {
+      throw new EdcException("Missing required setting: " + PUBLIC_KEY + " or " + PUBLIC_KEY_ALIAS);
     }
 
-    final X509Certificate certificate =
-        Optional.ofNullable(certificateResolver.resolveCertificate(publicKeyAlias))
-            .orElseThrow(
-                () ->
-                    new EdcException(
-                        String.format("Public certificate not found: %s", publicKeyAlias)));
+    final X509Certificate certificate = Optional.ofNullable(certificateResolver.resolveCertificate(publicKeyAlias))
+        .orElseThrow(
+            () -> new EdcException(
+                String.format("Public certificate not found: %s", publicKeyAlias)));
 
     final byte[] encodedCertificate;
     try {

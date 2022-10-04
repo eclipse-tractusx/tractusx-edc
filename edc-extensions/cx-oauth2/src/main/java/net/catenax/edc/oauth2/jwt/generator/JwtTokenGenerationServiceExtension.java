@@ -24,14 +24,20 @@ import org.eclipse.dataspaceconnector.spi.jwt.TokenGenerationService;
 import org.eclipse.dataspaceconnector.spi.security.PrivateKeyResolver;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.core.security.DefaultPrivateKeyParseFunction;
 
 @Provides(TokenGenerationService.class)
 @Requires(PrivateKeyResolver.class)
 public class JwtTokenGenerationServiceExtension implements ServiceExtension {
 
-  @EdcSetting private static final String PRIVATE_KEY_ALIAS = "edc.oauth.private.key.alias";
+  @EdcSetting
+  private static final String PRIVATE_KEY_ALIAS = "edc.oauth.private.key.alias";
+  @EdcSetting
+  private static final String PRIVATE_KEY = "edc.oauth.private.key";
 
-  @Inject @Setter private PrivateKeyResolver privateKeyResolver;
+  @Inject
+  @Setter
+  private PrivateKeyResolver privateKeyResolver;
 
   @Override
   public void initialize(@NonNull final ServiceExtensionContext serviceExtensionContext) {
@@ -42,6 +48,13 @@ public class JwtTokenGenerationServiceExtension implements ServiceExtension {
   }
 
   private PrivateKey privateKey(final ServiceExtensionContext serviceExtensionContext) {
+
+    final String privateKey = serviceExtensionContext.getConfig().getString(PRIVATE_KEY, null);
+    if (privateKey != null) {
+      var function = new DefaultPrivateKeyParseFunction();
+      return function.apply(privateKey);
+    }
+
     final String privateKeyAlias = serviceExtensionContext.getConfig().getString(PRIVATE_KEY_ALIAS);
     return privateKeyResolver.resolvePrivateKey(privateKeyAlias, PrivateKey.class);
   }

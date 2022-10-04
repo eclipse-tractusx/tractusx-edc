@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   New Container Image for PostgreSQL in Memory Control Plane
+
+### Changed
+
+-   DAPS Keys can now be set by configuration (additionally to vault)
+
 ## [0.1.2] - 2022-09-30
 
 ### Added
