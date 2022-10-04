@@ -5,7 +5,7 @@ The goal of this extension is to simplify the process of retrieving data out of 
 Additional requirements, that affects the architecture of the extension:
 - can return data both in SYNC and ASYNC mode (currently only SYNC endpoint available)
 - can be persistent, so that process can be restored from the point where it was before application was stopped (not implemented yet)  
-- prepared to scale horizontally (not implemented yet, as EDC itself is not scalable)
+- prepared to scale horizontally (not yet implemented)
 - can retry failed part of the process
 
 The simplified scenario, from the perspective of the client of the extension is as follows:
