@@ -73,13 +73,6 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
       -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
-      -
         name: Deploy
         run: |-
           ./mvnw -s settings.xml \

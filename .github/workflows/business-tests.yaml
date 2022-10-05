@@ -70,13 +70,6 @@ jobs:
       ### Build and load recent images into KinD ###
       ##############################################
       -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
-      -
         name: Build edc-controlplane-postgresql-hashicorp-vault
         run: |-
           ./mvnw -s settings.xml -B -pl .,edc-controlplane/edc-controlplane-postgresql-hashicorp-vault -am package -Dmaven.test.skip=true -Pwith-docker-image
