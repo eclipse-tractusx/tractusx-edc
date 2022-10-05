@@ -13,8 +13,9 @@ ActorCx -- Admin : Onboarding / Membership Credential
 
 Admin -- Wallet : Administrates
 Admin --> Connector : Deploys & Configures
-Connector -> Wallet : Generate Verifiable Credentials
+Connector -> Wallet : Create Verifiable Credentials
+Connector -> Wallet : Request Verifiable Presentations
 Connector -> Wallet : Validate Verfiable Presentation
-User --> Connector : Calls Data Management API
+User --> Connector : Uses Data Management API\nfor Use Case
 
 @enduml
