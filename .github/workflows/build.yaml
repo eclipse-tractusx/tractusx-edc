@@ -16,6 +16,7 @@ on:
       - 'charts/**'
     branches:
       - '*'
+  workflow_dispatch:
 
 jobs:
   secret-presence:
