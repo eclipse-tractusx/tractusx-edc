@@ -1,0 +1,21 @@
+@startuml
+
+component CxWallet as "Catena-X\nManaged Identity Wallet"
+actor ActorCx as "Catena-X Organisation"
+
+component Connector as "Eclipse Dataspace Connector"
+component Wallet as "Managed Identity Wallet"
+actor Admin as "Maintainer /\nAdministrator"
+actor User as "User"
+
+ActorCx - CxWallet : "Generate Verifiable Credential"
+ActorCx -- Admin : Onboarding / Membership Credential
+
+Admin -- Wallet : Administrates
+Admin --> Connector : Deploys & Configures
+Connector -> Wallet : Create Verifiable Credentials
+Connector -> Wallet : Request Verifiable Presentations
+Connector -> Wallet : Validate Verfiable Presentation
+User --> Connector : Uses Data Management API\nfor Use Case
+
+@enduml
