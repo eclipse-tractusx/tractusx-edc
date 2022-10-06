@@ -1,3 +1,6 @@
 [submodule "edc"]
 	path = edc
 	url = https://github.com/eclipse-dataspaceconnector/DataSpaceConnector.git
+[submodule "submodule/product-core-managed-identity-wallets"]
+	path = submodule/product-core-managed-identity-wallets
+	url = https://github.com/catenax-ng/product-core-managed-identity-wallets.git
