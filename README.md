@@ -93,7 +93,11 @@ Derivatives of the Data-Plane can be found here
 1. Build EDC Submodule Dependencies
 ```shell
 git submodule update --init
+
+#Unix
 cd edc && ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT -xjavadoc && cd ..
+#windows
+cd edc && ./gradlew.bat publishToMavenLocal --project-prop skip.signing=true --project-prop edcVersion=0.0.1-20220902-SNAPSHOT && cd..
 ```
 
 2. Build Product-EDC Container Images

@@ -10,12 +10,13 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
   release:
     types:
-      - released
+      - published
   pull_request:
     paths-ignore:
       - 'charts/**'
     branches:
       - '*'
+  workflow_dispatch:
 
 jobs:
   secret-presence:
@@ -75,13 +76,6 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
       -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
-      -
         name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
@@ -119,13 +113,6 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
       # Build
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build Extensions
         run: |-
@@ -166,13 +153,6 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
       # Build
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build Controlplane
         run: |-
@@ -255,13 +235,6 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
       # Build
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build Dataplane
         run: |-

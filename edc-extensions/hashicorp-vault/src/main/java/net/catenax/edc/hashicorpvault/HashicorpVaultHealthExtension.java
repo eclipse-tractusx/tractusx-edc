@@ -15,8 +15,8 @@
 package net.catenax.edc.hashicorpvault;
 
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
+import org.eclipse.dataspaceconnector.spi.EdcSetting;
+import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckService;
