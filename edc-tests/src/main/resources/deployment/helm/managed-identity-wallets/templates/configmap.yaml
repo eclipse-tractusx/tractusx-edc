@@ -1,0 +1,1010 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sql-data-files
+data:
+  01_acapyinit.sql:  |
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    DROP DATABASE "AcapyCatenaX";
+    --
+    -- Name: AcapyCatenaX; Type: DATABASE; Schema: -; Owner: postgres
+    --
+    CREATE DATABASE "AcapyCatenaX" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
+    ALTER DATABASE "AcapyCatenaX" OWNER TO postgres;
+    \c "AcapyCatenaX"
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    SET default_tablespace = '';
+    SET default_table_access_method = heap;
+    --
+    -- Name: items; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items (
+    id bigint NOT NULL,
+    type bytea NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    key bytea NOT NULL
+    );
+    ALTER TABLE public.items OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_id_seq OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+    --
+    -- Name: metadata; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.metadata (
+    id bigint NOT NULL,
+    value bytea NOT NULL
+    );
+    ALTER TABLE public.metadata OWNER TO postgres;
+    --
+    -- Name: metadata_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.metadata_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.metadata_id_seq OWNER TO postgres;
+    --
+    -- Name: metadata_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.metadata_id_seq OWNED BY public.metadata.id;
+    --
+    -- Name: tags_encrypted; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.tags_encrypted (
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    item_id bigint NOT NULL
+    );
+    ALTER TABLE public.tags_encrypted OWNER TO postgres;
+    --
+    -- Name: tags_plaintext; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.tags_plaintext (
+    name bytea NOT NULL,
+    value text NOT NULL,
+    item_id bigint NOT NULL
+    );
+    ALTER TABLE public.tags_plaintext OWNER TO postgres;
+    --
+    -- Name: items id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+    --
+    -- Name: metadata id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.metadata ALTER COLUMN id SET DEFAULT nextval('public.metadata_id_seq'::regclass);
+    --
+    -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.items (id, type, name, value, key) VALUES (1, '\x776369647270586832762f55614c524b4f4868622b76564c6864416432466a757159794b796b67734d3139634748493139757573472f5146755441504d673d3d', '\x624a67614a5a506974794c584c3153415557665137544d5745734c6e4f666b4c6168496e6b6470464f333669795150637669554536773d3d', '\x53aa0c5f5a77eb515b181e0e32495be7ebd5f8bd5328330b74ef5bb7781387ef3fbd1a37741702f0c00d7459bdab4bb7f0229774d3c9b69766fb356b3ead0991bf96fb1f4f95504d4af763bacaffe5609fab20b97a9e05b18d20852e87764987a58eba5077f9a5537edde16b76541393470bb8c33a65da5049ab1cf2', '\x7f04f9823f13f16855a676699b476fdd04a44c9d9670cb0d59ec201db6bc29cca26ec21805b76130651f4ca1cfc1724702c5410b88ebdcb246435f8e');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (3, '\x5168746c74774a324e714b48616f7855474d74325a596d33513555695a68595a3645455941462b7a613559515941497966513d3d', '\x4572774f3139302f3862584d786331357a612f38724a6a484b784e7a56557a4f4c6972736b2b6c7768746a6446526c4248512f3571325879384572504d5944456c496b3d', '\xc95ad69eeead1ff2fc28640b150648d56c75b11d939e0869812c25be7fd78968a9692ad64a2b72e9625b11b8d2d7c2663966f86bd40c8ae69fbcaa387547ecdc79bf997dd6c7c9cd51038c820754c09d653b8a923c4597dffbfb907f2ab80b6c55eba2c2ef7d731e10f6c8ed6e61e11cdf58bea3', '\xe7f64b00863ec949414fd41ff774cd795527e77e7835dc2eb3e0ee24425bc5d5d427d7f3ec581347f898a47c1ae7a770efa89ceddcd74c59a01f467d');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (4, '\x74714c49624142367431313853575a51726346492b43685a7553456f76734464504a787735302b444d506846704b354348673d3d', '\x317556695338423572656d573054565a4d6846304b614f364f77736662573577777445794b414e5830746f45716e737870745a464676336569474d7a59356e593765395a475a3842336c31396e4d54776b4f6756574d63314279366171416952', '\x31da699a0854961ffdf3c21413fb1b8d04c2e380503e7485f99264eafa9262776ecf2ede13fbfc3913715196232ea21e581a6024738469433045cce5a312d3cbb1abca8abc36f14ad02008f7094e7c499bfbf31f8998a0aa206d0f548b209d01efcc707393b08a39b749bb32f6dc7b41a27b7e930086a4715c47379ac2f8688b08c953872eb9e31de04c4241222984b1321525088e3fe2df85d3a04ff4be4df25a5f69b0b4dc329d38ab2a0efc85dbdaf446efe5989629d875', '\x360551e6e94a565838c43303e0cb718d289225a5c5486b161b313b143dabd5f201e2bbc68ed0e8f94823e0f0a0d72be27957e9ac32cd9f86ec2e566f');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (2, '\x56477a76723248585250337356574e395534543951526a52676a44726338695364784842336674723449367368513d3d', '\x4f516957486146327a48306630536e72657062335932634272534b4f654b2b67364a4b5068467a36653146577a666157754b5964586a476f4f64495831773d3d', '\xc41868185c172b0390648e46ee5afefce17d6c8039cda827e659df7928e6aa745f54214fadbe8bf93e5997c943e165d573cdf9360a853f50e4c1105c7a', '\xa3e0230b1bdb96925c64355feeafd391fdcf0910c5861ccb145fa5abfd2e27fe1db511dbc9d26d8f988825078cbbf1acdcb59946490d4c943488efe5');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (9, '\x44615361716b7a63635a544d644852344b7778683869434b6e624b5052557a462f345759636a754e475a616d4164796f584f3945656b343d', '\x752b52736e766f2b2f72394973424b68523750477863522f3573636e54655170587270776f68626a64524354452f326c39414e676f374b4a65524858715a505039594143584d724b4475366e446878306137596d50773d3d', '\x68082763861c478fb30fcd5423da14ae4de7ab8a3b6f8e89079f2ad084610d990364a43a2ee62e5821aa0393b8434b6a8e066482993d157949926c983d05b6b684da84dab1a9757e9c01bdfb32d6462feeedc6eccaf9073fa6050c548e7be414fa5b5445b48f5fbec15596634432abe955b1b16809d93736bcdd69909df7768e74e5b44516d0b53f87b1a3499af7f63916eeca0c8f58322493c39c9031afe87492b15791e1338a9d2fd88492b911dde5ce1c3f912f2d83178f4bc006d97226fb18c8c6c49ecb2022c0e50383df18fdbe52c3aa723901ee9e0673fd00c853c8ba931c2e2a97734a1c2b2f5b627ce13d38436303f3f02b90e0c400554ec7e6f8425371b45c8381195b3ca67343d2c7b7ae8be62d8bbd6693ba0f4a2c3957da423d8dd17974b1581dbd5f7cb1126d88f019974ef78875600dc77b5063779aa7bb1b64c02b1b7cd2c851d3ed990834afb128bc2dd1d5c99158cae16bee6184e8339b9e9b117583cdee170946cfe4c7e87217d7b14583d1011082cd002ab66c7792cc0d2a24064dc849948425b9f2ffef73ece20e7366e596958a57b6964f19167f8224cc2ac981c92773196c5fce34f6181e0694f1ccbe5cc001633b0cb7429bbba9c5096eb21d9fde655987b5a2c0e38ef67ff1165fa2ffe5f0b1309c5d83fd02960b80ef62a37075335f10e157f3b0c711ba8b23892796909745356a8032661a8c50d2d05a20', '\x44d457a0d620362ae5c44aa1e411ccdcb5d7f9af37c17c9b44f79b77e3a367493d1c63280fcf775cdec86e47dc54c878af7fe0550a29e44bb5ecd495');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (10, '\x43645872736459746762796e616e4b692f597156313756384a34346d6a31356a6a507743794b35324b636c626c6a4a4c3352635530776f3d', '\x7150713841346231486451516d4c736e4a36705152486e6e4f356d72753062726c7a43704b72626956376a2b5874544a6f785a6c75756659654442586f464162704b6742706274544f744a757a64534f385a73735a773d3d', '\x5194133c46c112ac78bacf66d414886561a0df7e7abf7083d1e4865f3ddafaf4f7400917e3fd566336f9bdd164b32fbfcc0fa11a6792845e8779f317d23ce662cf0910621d27f7490786fa75246b6618ece4c97ac757ada2f7968e8ce02c91022328ddf46e6626459ccb8b899afc7176362e8db424188fc67451d3e4bd08b73cb775476d2d9ee58a9ccfd7b10bfe5e603fdc9baf4865ac2eae8fc003302a8ec9d48e5d6a307aee41e85bbbfc6eca1d073b16291df30cc84ee6495e290b075b476727542d6327d1882be99a93c259f2c09e614e00a88c71a7980cfe835990e6d32160938fc0e3d573f52d67910c0e0955d2020b8b0b1ae2af7ec679ca7499ad09ce0e1137889433acde78f86cdecacadeb588f6e0', '\xc1d452e71dd775802d15fde5a5f27b1e239dfaf142127ca9c67b6f1380a8428c1b157ee19ab499f63bc82cbf717dde40835df8f1ebd444e8dfe6c3e7');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (6, '\x44615361716b7a63635a544d644852344b7778683869434b6e624b5052557a462f345759636a754e475a616d4164796f584f3945656b343d', '\x7768714852327871386834444d4c3753397755306a735446586c45463765344c4b586261356d7a70687568484a68624930754d6b506e626868682f744d4e70326b59534b65635a504a4f49325a5542612b4d634377673d3d', '\x4f5b740d128f24df7aeba3313276e81eabc0e5ee3335a11ed3c9d67b2deaa8ee8ad2e8a84e24fb98f6e5175bdebb0029f6c90dbacce81018b0a777614ca344ba9adbb53007661932cc4f54213acd89e0436350c9a414a1163976b7a6aacaed0acdd5227d95537d1b6b12314f009ec87d922bef0b63343ef2c9b385d9be790fc1985940043a63da4099dc8a846791ba98beca8a8cd90ba9201768667f7ab857d027f355038295e18247a29bab9e370864e47bee33151c636f56d8d0a47e547cb44c9493d34cf07edfbb5671408d0a16045dfd5dcd6cce937842f74a333b2bac98f7fb18ae9ceb758222d12e09d4a9ba584faa45ce261dabaa9e284a28f5a419863598924d4cf970ff95207715479a2eeb56c6278013377e22770ac3db40f66b4671ea4025cc4999fa225842c39cf2a5075dc8c7e3ea1a49621af905666a46208bbf74205486e8a8ca7194c9f4600f6634bdb4b19d9e9fd860a19c90ebd460a2a59df14253bc4608dd701687ea1d0b96f5a7037888818bee4c693917227a4a33f5f99d6d7cb759c21eaf78857fa1fb694258ddd370f5b75965b41563e23f34732dc672329d77f86391fd90a6761cd18f3e6f90e092c82771dbc6bc10b7162bb4ac56a5ba33556898ff99efb0815e1ec3a6839b935396739d551c04e782aa9325abe775285b3177f0f23a237ac2ba323460a8f04c4f8472f7fe9b70475b2af986', '\xe463722695b32228b912414ad5a2a68a2c1a54ed5c14be956ba1ba4701c6a7664eb96b7534c031fb00a098ce508879eba837aef6ef8fece90e262a4b');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (7, '\x44615361716b7a63635a544d644852344b7778683869434b6e624b5052557a462f345759636a754e475a616d4164796f584f3945656b343d', '\x53335a643730584339774376704e79626a556131514e7a6b5a5a4b50323549744b7241753262676578706641723750656f6242595a74543359576d67315a4f727764495669754165554676357556424e783161344a413d3d', '\x865316f23e85e080e58db722d8066347ddff23779258bdc07ded3dc26a29f78ff345e3f4f4a8a652932b408068a26460e6bfdcb753efde5b5963c2de685ed6b81ae77d69f10f2484b197315dedce2349f10fbf5fd0321875532ee9f63ff7c7cffd9af02988aab9b676958c58b6eb4dafe7564b8491e679caea0baf9a1de9fcc0e88531e9a806d1ecd6eb599ab1507dd2a5381915120c1ef4b123fca543863597c3aeebc33136b62473f93520fe704b49b1e874b163f3ee7a9e12339c7f6bfdb3e408e62af088fad538c30ce6c00bdfd276e6a29fbfd287ab931432b0f73002bdd1b1d0dfecc439f583fe8c6bc1c9f0c955e95ee494611abeb73da6a4ef5b4329e6a36d48312bff01b0efdc8266b010f7ed2a4c9a7d168eeeb3a2a5ab25bdfeeae319a546c760217aac6911491f983cd091c739f9198c8217587bd38a781b579e630ae61f885c661a3604ecfff890a0f9d7920b6abb49ab0156b277b5184abe76f3b1db6e9686ca03e338fa8a809abf7e3785af26cb1bfccb475b32dbe9600780d618a86f8991d05cc3e75349fd847ea2d9ac42382e1f3633a2f5a461a93c152b09c773d0e1f1cd6ac4fd13cfedd8d78625a706e1f539d994364d5ae3fa5659988f3c99a046dbb289e920d371b1b644d0895957199f0bed46621239faa4da83dcdfb3682a94d7a8258a1d41f0ab9a350fdaced84eec8fdc80c3be867407046b', '\x0759ba2e90ae966cb30c7e12b22185cd43ac3e82421b3437e4a0d7e65c5608e92aee358a5e59ff84eeec9f25342f4faae6a19f5a0dc989a05483bf19');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (8, '\x44615361716b7a63635a544d644852344b7778683869434b6e624b5052557a462f345759636a754e475a616d4164796f584f3945656b343d', '\x597543726737472b4b4b4d645a7259655468424f62702f4e6169676f4f4b486b466670316f7643484c2f6531556e4459524153655a2b394a313274587845754a487579746177394b5a475979663546362b507a7657673d3d', '\xcc131743270af7afeb34c9acefc3526bd51c14474910a8bc3129ea2ee46e12245f742b1ac03f2a9ea273f8075cb0d2e4e4284e1759e0e9d3ee4aff6d2241b41ff5669dc9b04d85b2303b98c5dcd7266375d697a1022588772cc04d1126f927a1d5635b3ef254a144ca5056310065aa50020983f128f935ec74e2bf090e43d2b2f063202b9cf648c651ee2316c2ce90d56bd52f68f6cb47dc650e98c6ff3192dd1c1aaf5ab44a5d930dc5318afba47b1012909602304d2ab38e161263525e58474c6deea727eb0c7245c1fee20f02a2a39501b0bad72840ac3423bae82bf1bd5779130465e74923b9c370f1a58ae3f9625c54bc089842441662e52ae2f605ce4176329bd288ed879315dc42e6b6838ae30d26efdb78998394ffba25bf9e5a87d38199d3ba3208702ab6c4cbfb84a368f936681cf4359f69548eddd0f0521e06eafccbc89b5da1615533a45c16a780a1aeae2f830b245029491377487b951765f133a86e6074606fdd3b21e1524455aac8bb4178f1e383078b3ca7e15b91d6052a498e10ba34be9537a30f6e018377c90c875f7d5930600b58f616f32d47a88bf29e7b26b7001e6afc2eb84a4c13594428e17fc6dc4630c7654dc5ae169a2ed07130c6f84b654a33e0d209861b3260f40eb0a319562f88f6d90a7c90ca3c92c3f8f5900770e262f96271f70040623094e6d14ab5879f5c98215a821d7f95ed38', '\x63786c3a63a9c994d582415f6ea73cf8d1143c292b8e8413d74628fe45f27833947f96d52cc6a417f7bf5e3a5de4f82a20111166cfe66086e97cb1cf');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (11, '\x44615361716b7a63635a544d644852344b7778683869434b6e624b5052557a462f345759636a754e475a616d4164796f584f3945656b343d', '\x4275396571687858593137583078376241386877597a446452766c71736c72386543516a6e33792f736f646e68624c4c686c42344b49647a50324179547243365a4b4e4d676a2f2f4562712b2f784a4d3437413662773d3d', '\xeca5caba12434baa3f18df5ef9c35f033b8ce10b06088e01253d1a3e3ab5f3f97b36945d178820a90fdf7478de671935a7f4f7312f76ef6cdafc9ad5f20f0466c65db33d863c24698cc857c98cdc71bfa867ad6afc13113580d8a14ef44cc8f8b59c2a9f90db3fd47b8dee487803f148c4ce0e478fc4062ccb689c9f13de4362a6d148dc14ac3359b8ae39b5543ffd4d9e400193cb8485404ef7b80a972fb36d458dcc07af986232b53924cb97c3ab8675637812ff9bf19bcc0a9af8e2b3f446299fb035f7a926e6ce952f7d202a1aa27ba5403f6831495730b3dd15e3ccffd5d9af3699f36085bcfc5c5382f93f2adde53bded16946de77d7128035668a9012c718791d6c86e26ce1bbd82d4dece4f005dc66559e944e33b8ed90b13b4ed5ac751f0f2f2ad0d816a49f8faf3a0110d3c07c027748ccd2ac397aeb57c20b0436037c8b2f2916079f62c956f2fdb3eb243b75ce7cd1d6f12c532348dd99d0fd53ae97ff2f7ef9ebdd6ddb3d07dd3a643e930ca0dc768b0844c3221807eb4ed1383b1106e12c4f5f2d3776d65a6c15513875d399f57274435bbc409fe7c8a903f950ce1a38d1429e4462778173822738b7e21176e9417a85df5e52246fcbbd38ba49a39bcb1cfb3d0592b0b442664949646cd83e24e9e4e983a9f3e525e9fb945bc4fdefd70a783802902f97662eaea66330e48e8bdb9aafb129f76ad0f56d', '\xdf54e608134f8737d10139f06b6de2ee718d7f992d26189de9de09308d93d58405b8b069e14c49b0c47aa02b547424dfaf90577e2e06667f7c32233b');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (12, '\x44615361716b7a63635a544d644852344b7778683869434b6e624b5052557a462f345759636a754e475a616d4164796f584f3945656b343d', '\x414631765a4d3236745a6c5437416f6c43486f595039487343716b465a364b5639712f58704c3952556a6f315569674c4e722b5761766c6e4e76722f703064762f30523947436b364a744859747066667267584362773d3d', '\x325b8e490f258b33440158d8fb13953ae6dd56c8df93bd55d98c7d4f066232aa0e8a73ba4e3d1afd33d82111557fd1532673a1c14a3a18cf20e4adadc7d6b73614088953bdaa4aef245d908c234b3c296ca7f079a1e8f07c363ed4aac437f757e3ccd005d6d656566aab87cb1ca4d73188063addd42bea7b672e1e1deafa837052bdd5dd7f34756f279c5ba1a6fa9d6f0ecf06476cc670cc1b2806b01c2bfe911f4bbab13d7b62e8680157df3ecaac49122c762589c73acb407bf2b052aa6ff1bfb506ddde5f43b879ce53f38bdd3d5a480672d08879be842fe47debe3e980b066b1f6ae5e018dcb813670d40f148005d0bb5f77babf34900664bc20109ecc05faf46696b6f2cc43ee7b745545e49e2dd26bcf7e1f19e0261ee4d44d8fca2d65c975376975d9e54def2ff74f9cc5978d3b1c7c75acd362ba6aae413cc07be547aafd31fd6bc1791da967f5360f851ec58f6d6caee7def978f9b5a6fd04959a8f2bac3e0b804dac08760c92f8e7d5a5ba77d7d2a95150b754ec6e832b41b9226a35bc55a84708ef2559373f9ca43e18b01d97c3c6602b89a77ac880ceaf22fcf02eb98b95e1729cb0af93a8d137cf9c1de708c3a4cc9106a8e2579ff4b628edab4a8f31d6a51294e58fa877ead335bb9fb6bf6f06c1db33ed29d32a576f298a9733a0953bf4323f703b4929634904b1eaf71f1c376f564cb0f8822ea1d6360e', '\x707ee62feaa01c6ab381fed7924a8a5e140e25ebb250a834867c0d278c8b2d00be9bdb0d61dea33cfa8d403bf37e6b26ab52633fcb9ff5eaa95a2806');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (5, '\x63717333784c30684850576c2b4c6863435a565555594f735636496649635634436e62564e35706f77374d565879622f646d366f6e66784f37514371', '\x4572774f3139302f3862584d786331357a612f38724a6a484b784e7a56557a4f4c6972736b2b6c7768746a6446526c4248512f3571325879384572504d5944456c496b3d', '\x2c93ddf6edb7497a5aef721dff64a0ad58b24b874cf5074a7151279a2637bf4665a27945e735928cc9bc14fab82dbb2dac73df570b768dc19c760da78a4f769aa48c73d754a351d37bb4334023f7db0dbc52e882aa8d1fe65bfa8a9030896ecd9ee798beab6604ff20bb92c478b896c329ad3c166376b44b66c31b6cec02c31aab905dafbf9339507134', '\x56dab240f68a610fbd9670e190c3ccc4317a92b86815b5e6a1f0e748dac09bc5f42b8a45b76574b168be7c447421209d22dce31a4da27a758f3abcf3');
+    --
+    -- Data for Name: metadata; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.metadata (id, value) VALUES (1, '\x65794a725a586c7a496a70624d5455774c44457a4d5377784f4463734e4459734e4445734d5449784c4455354c444d784c4445354f5377794e4377794d4459734d6a51314c44457a4f5377784d7a41734d5377784d6977784e544d734d5467324c4455774c4463784c4445794d7977784f5377784d7a51734d6a41334c4445334d5377784f5455734d5455344c44457a4f4377344d5377304d6977794d4467734d5467774c44457a4d5377794d7a55734d5463344c4459354c4449794e4377324d7977794d4441734d5451324c4451344c4445304e5377784e6a67734d54557a4c4449774e4377784e6977794d4463734d5463304c4449354c44457a4d5377784e4459734f4459734d544d794c4449314d4377784d5451734d546b304c444d324c4445784d5377304f5377784d6a45734d5459304c4449774f5377794d7a51734f5467734d5441734d544d324c444d304c4445784e6977794d7a55734d7a4d734d5445354c4445304e6977794d446b734d6a55314c4445324d6977304e5377794e4463734d5467784c4445314d7977784d43777a4e7977784e5463734e5451734d5449344c4445794e4377784d544d734f4449734d544d354c4445344f5377314f5377784f544d734d5441734e6a51734d6a45334c4445784f4377784d7a67734d6a4d734d5451314c4445774e7977784d4445734d5463344c4449774e5377784d4449734e6977794d6a41734d6a51734d6a4d354c4459344c446b774c44497a4e5377784d6977304e4377794d7a45734d546b304c4445304e7977304e5377304f4377784e5455734e7a4d734d6a49784c4451774c4449794c4445354e79777a4d4377304d7977794d5445734d6a49734e5451734d5459784c4449794d6977794e444d734d5455734d5455324c4449304e7977784e6a4d734f4377784d4377784e6977784d7a4d734d546b774c4451354c4449794f5377794d6a55734d6a4d774c4463784c444d334c4459314c4445334e7977794d5377794d4445734d7a45734d5441314c4445334e4377784f5451734d6a41354c444d784c4445314f4377784d7a67734d6a55734d6a49774c444d734d5441314c4445354e6977784f5455734d5441324c4449314d6977784e5377784e6a59734f446b734f4449734d5455794c4449774d6977784f5445734d5445334c4445794e5377784d6a49734d6a67734d544d7a4c4451334c44677a4c4455344c4455774c44497a4c444d794c4445334e6977304e5377784d6a67734d6a55794c4445344d7977334e5377784e4459734d5455334c4445794d4377334f4377784c4445354e79777a4d4377784d446b734d5445774c44497a4e7977304d5377334c4445324d4377784f5451734e6a51734d6a51344c4449334c4449774d5377784e6977794e4377774c4445324c4445784e6977794d4459734d5467354c446b334c4467794c4445314d4377354d6977784f5451734d5455324c4449304f5377794e4463734d6a45334c4445794d6977354d7977784e5445734f5441734e546b734d4377334f4377794d5463734d544d344c4445314e5377314d7977794e5455734d6a45794c4455314c4455334c4445344d4377784e5459734e4467734d5445784c4445354d7977784e5455734d544d774c4449784d4377784e4445734d544d324c4445314d53777a4f5377314f4377794d7a67734f544d734d6a51794c4445314e4377324e6977794e5455734d5459354c4445304f5377344c4449314d7977784e5451734d6a4d314c444d324c4451794c446777585377696257467a644756795832746c6556397a59577830496a70624d5441774c4445344c4463334c4449774d4377324e5377794d5455734d6a51314c44457a4f5377784e4445734d6a45354c4459794c4455784c4449354c4449774e5377794d7a49734d5445344c4463774c4445334f5377794d4463734d7977794d546b734d7a55734d5467334c4449774f4377784d6a63734d5459734f5467734e4441734d5451314c4449354c44457a4e53777a4e313139');
+    --
+    -- Data for Name: tags_encrypted; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x616a5d0efaab61e8abc45e9c35e3d9c21020fcb40feb7d462aeaa9f8f989e070f0d9c77704bc4b', '\x884e92c47f08cc8b1b921929d004aed3c49bf4ce36d78bcf06d311d060a2355c8a74132b9c8cc998fe082b0bc634ee74ad462fca8ea4020ea55ec5ff02aa', 6);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x616a5d0efaab61e8abc45e9c35e3d9c21020fcb40feb7d462aeaa9f8f989e070f0d9c77704bc4b', '\x5f4ae93e11406d13952cf76de9a3ee391053d3e0fc7d85643bd649d510212b3bbcbadf17cbe9eb9c2a5405e5cc64e1d2f1e8a2e51d0ae0cb078510c068fd', 7);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x616a5d0efaab61e8abc45e9c35e3d9c21020fcb40feb7d462aeaa9f8f989e070f0d9c77704bc4b', '\x66c013f471e3946c3498fcd6bb7d6550f66ba2f40dc431f5536d6c359def244b7fecfc366bfcf5012c2102d855d673150b855402de6bb9e6c48a3e052d7d5f9625', 8);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x616a5d0efaab61e8abc45e9c35e3d9c21020fcb40feb7d462aeaa9f8f989e070f0d9c77704bc4b', '\xab3bb0696985f3bd450e1e44729cf9ead7ab6d68a035e5a101a0629ef86593fb0151cf6c6c5eac72733baef0884e7c327c8700578d9203ee824e6eb5095cc12153', 9);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x2810fa3ea68f30fb34f5dfe3ec505e0d82f3b5ee2e8cafdfbcc14a67e604ed448dd2338d10', '\xe0823756e4f9cd39ac661e037ed990bc30be6bafe00bb770152552ab6ea1928b850121c3ec6aa14b02c6fdad7e71f674f68943c6593184e6ae5e2bdfa0c265e3', 10);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x35bed7ad10ecdea048be5e6393895f0f4f323d864a5b177a786e454e62ad382d3022306b0802204822', '\x7f43bdda23ad0dc79c0c48fcda01dca71be304cbf610232ef1704ba33dc69fb17a0bafae9ef761e2ad730c70b281353c82101e9129c49e81a0604dcdd297d2a1c1d978847449e2', 10);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x0e70ac9e7b1b0cc97165c3fd958b5bd26f2ad782514da843524c6af185e1aa53', '\xc8a2d903318b2b1ee2c18d7c42d17ed33273ce8596097befdd512a542d1192e5c511', 10);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x616a5d0efaab61e8abc45e9c35e3d9c21020fcb40feb7d462aeaa9f8f989e070f0d9c77704bc4b', '\x681eed87daa3d26b3c545af47bda0d0d82a4ed72560ecb2ad687849e15e9de10b20aa4ff16e490ac95b32fc29738a3a69bef1635cc75fc40463725c3dfdacde5bd', 11);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x616a5d0efaab61e8abc45e9c35e3d9c21020fcb40feb7d462aeaa9f8f989e070f0d9c77704bc4b', '\x4db3e15828032a4f6e3740d05dac2924050bc5d50a852ec3876a1d33725986ecc8288fd10d5b995938304b87864518f65cd28e40549fbc3e365f82ce709789e99b', 12);
+    --
+    -- Data for Name: tags_plaintext; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    --
+    -- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_id_seq', 12, true);
+    --
+    -- Name: metadata_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.metadata_id_seq', 1, true);
+    --
+    -- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+    --
+    -- Name: metadata metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.metadata
+    ADD CONSTRAINT metadata_pkey PRIMARY KEY (id);
+    --
+    -- Name: tags_encrypted tags_encrypted_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.tags_encrypted
+    ADD CONSTRAINT tags_encrypted_pkey PRIMARY KEY (name, item_id);
+    --
+    -- Name: tags_plaintext tags_plaintext_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.tags_plaintext
+    ADD CONSTRAINT tags_plaintext_pkey PRIMARY KEY (name, item_id);
+    --
+    -- Name: ix_tags_encrypted_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_tags_encrypted_item_id ON public.tags_encrypted USING btree (item_id);
+    --
+    -- Name: ix_tags_encrypted_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_tags_encrypted_name ON public.tags_encrypted USING btree (name);
+    --
+    -- Name: ix_tags_encrypted_value; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_tags_encrypted_value ON public.tags_encrypted USING btree (md5(value));
+    --
+    -- Name: ix_tags_plaintext_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_tags_plaintext_item_id ON public.tags_plaintext USING btree (item_id);
+    --
+    -- Name: ix_tags_plaintext_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_tags_plaintext_name ON public.tags_plaintext USING btree (name);
+    --
+    -- Name: ix_tags_plaintext_value; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_tags_plaintext_value ON public.tags_plaintext USING btree (value);
+    --
+    -- Name: ux_items_type_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ux_items_type_name ON public.items USING btree (type, name);
+    --
+    -- Name: ux_metadata_values; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ux_metadata_values ON public.metadata USING btree (value);
+    --
+    -- Name: tags_encrypted tags_encrypted_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.tags_encrypted
+    ADD CONSTRAINT tags_encrypted_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    --
+    -- Name: tags_plaintext tags_plaintext_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.tags_plaintext
+    ADD CONSTRAINT tags_plaintext_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+  02_basewallet.sql: |
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    SET default_tablespace = '';
+    SET default_table_access_method = heap;
+    --
+    -- Name: config; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.config (
+    name text NOT NULL,
+    value text
+    );
+    ALTER TABLE public.config OWNER TO postgres;
+    --
+    -- Name: items; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items (
+    id bigint NOT NULL,
+    profile_id bigint NOT NULL,
+    kind smallint NOT NULL,
+    category bytea NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    expiry timestamp without time zone
+    );
+    ALTER TABLE public.items OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_id_seq OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+    --
+    -- Name: items_tags; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items_tags (
+    id bigint NOT NULL,
+    item_id bigint NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    plaintext smallint NOT NULL
+    );
+    ALTER TABLE public.items_tags OWNER TO postgres;
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_tags_id_seq OWNER TO postgres;
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_tags_id_seq OWNED BY public.items_tags.id;
+    --
+    -- Name: profiles; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.profiles (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    reference text,
+    profile_key bytea
+    );
+    ALTER TABLE public.profiles OWNER TO postgres;
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.profiles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.profiles_id_seq OWNER TO postgres;
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.profiles_id_seq OWNED BY public.profiles.id;
+    --
+    -- Name: items id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+    --
+    -- Name: items_tags id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags ALTER COLUMN id SET DEFAULT nextval('public.items_tags_id_seq'::regclass);
+    --
+    -- Name: profiles id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.profiles ALTER COLUMN id SET DEFAULT nextval('public.profiles_id_seq'::regclass);
+    --
+    -- Data for Name: config; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.config VALUES ('default_profile', 'ac356393-2d8a-460f-8808-628494abb78d');
+    INSERT INTO public.config VALUES ('key', 'kdf:argon2i:13:mod?salt=18ec3d7b5f28a256ab6f1acb7477ec8c');
+    INSERT INTO public.config VALUES ('version', '1');
+    --
+    -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    --
+    -- Data for Name: items_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    --
+    -- Data for Name: profiles; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.profiles VALUES (1, 'ac356393-2d8a-460f-8808-628494abb78d', NULL, '\xffb9d4bfed071ca7928df92fbef71bdd41358eddfb8cad7079666700d70f3d1642eef1443d8562035bb40e978a5bfc72e8ce85e47d4cffca1608aa10593f6eeda9b6081c5537a43ed95a627c79182b350fecd5c90c325e99e8da1788b3d0b91f7e1cb78b540845ee74525eedde0ef63fa569eb3997ec841aad4eb88ae34f1d5daa01274dc46f2dd6579b19dea7856c1e412a46a8fb331ab52991df0686c316ffd8df886b823eff0ee8913f160be5fd4ba595c31b6cf3527a22acb0c189ec43c59bbbf558a2f662ad4283b59bb3331f1b9c4e589c588e70f7fe35f26a6f10d9d4da5da69062063870e8beac6b6774a5fc3c7999eda9f52532ed4dbb8871b882d8fdcf30ceae7d7a');
+    --
+    -- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_id_seq', 1, false);
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_tags_id_seq', 1, false);
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.profiles_id_seq', 1, true);
+    --
+    -- Name: config config_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.config
+    ADD CONSTRAINT config_pkey PRIMARY KEY (name);
+    --
+    -- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+    --
+    -- Name: items_tags items_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags
+    ADD CONSTRAINT items_tags_pkey PRIMARY KEY (id);
+    --
+    -- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+    --
+    -- Name: ix_items_tags_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_item_id ON public.items_tags USING btree (item_id);
+    --
+    -- Name: ix_items_tags_name_enc; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_name_enc ON public.items_tags USING btree (name, substr(value, 1, 12)) WHERE (plaintext = 0);
+    --
+    -- Name: ix_items_tags_name_plain; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_name_plain ON public.items_tags USING btree (name, value) WHERE (plaintext = 1);
+    --
+    -- Name: ix_items_uniq; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ix_items_uniq ON public.items USING btree (profile_id, kind, category, name);
+    --
+    -- Name: ix_profile_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ix_profile_name ON public.profiles USING btree (name);
+    --
+    -- Name: items items_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    --
+    -- Name: items_tags items_tags_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags
+    ADD CONSTRAINT items_tags_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+  03_miwdb.sql: |
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    DROP DATABASE postgres;
+    --
+    -- Name: postgres; Type: DATABASE; Schema: -; Owner: postgres
+    --
+    CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
+    ALTER DATABASE postgres OWNER TO postgres;
+    \c postgres
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    --
+    -- Name: DATABASE postgres; Type: COMMENT; Schema: -; Owner: postgres
+    --
+    COMMENT ON DATABASE postgres IS 'default administrative connection database';
+    SET default_tablespace = '';
+    SET default_table_access_method = heap;
+    --
+    -- Name: scheduled_tasks; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.scheduled_tasks (
+    task_name text NOT NULL,
+    task_instance text NOT NULL,
+    task_data bytea,
+    execution_time timestamp without time zone NOT NULL,
+    picked boolean NOT NULL,
+    picked_by text,
+    last_success timestamp without time zone,
+    last_failure timestamp without time zone,
+    consecutive_failures integer,
+    last_heartbeat timestamp without time zone,
+    version bigint NOT NULL
+    );
+    ALTER TABLE public.scheduled_tasks OWNER TO postgres;
+    --
+    -- Name: verifiable_credentials; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.verifiable_credentials (
+    id integer NOT NULL,
+    content text NOT NULL,
+    credential_id character varying(4096),
+    issuer_did character varying(4096) NOT NULL,
+    holder_did character varying(4096) NOT NULL,
+    type character varying(4096) NOT NULL,
+    wallet_id integer NOT NULL
+    );
+    ALTER TABLE public.verifiable_credentials OWNER TO postgres;
+    --
+    -- Name: verifiable_credentials_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.verifiable_credentials_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.verifiable_credentials_id_seq OWNER TO postgres;
+    --
+    -- Name: verifiable_credentials_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.verifiable_credentials_id_seq OWNED BY public.verifiable_credentials.id;
+    --
+    -- Name: wallets; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.wallets (
+    id integer NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    modified_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    name character varying(127) NOT NULL,
+    bpn character varying(36) NOT NULL,
+    did character varying(4096) NOT NULL,
+    wallet_id character varying(4096) NOT NULL,
+    wallet_key character varying(4096) NOT NULL,
+    wallet_token character varying(4096) NOT NULL
+    );
+    ALTER TABLE public.wallets OWNER TO postgres;
+    --
+    -- Name: wallets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.wallets_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.wallets_id_seq OWNER TO postgres;
+    --
+    -- Name: wallets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.wallets_id_seq OWNED BY public.wallets.id;
+    --
+    -- Name: verifiable_credentials id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.verifiable_credentials ALTER COLUMN id SET DEFAULT nextval('public.verifiable_credentials_id_seq'::regclass);
+    --
+    -- Name: wallets id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.wallets ALTER COLUMN id SET DEFAULT nextval('public.wallets_id_seq'::regclass);
+    --
+    -- Data for Name: scheduled_tasks; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.scheduled_tasks (task_name, task_instance, task_data, execution_time, picked, picked_by, last_success, last_failure, consecutive_failures, last_heartbeat, version) VALUES ('bpdm-update', 'recurring', NULL, '2022-10-06 23:00:00', false, NULL, NULL, '2022-10-06 06:29:17.230197', 9, NULL, 19);
+    --
+    -- Data for Name: verifiable_credentials; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.verifiable_credentials (id, content, credential_id, issuer_did, holder_did, type, wallet_id) VALUES (1, '{"id":"9d082ca3-d2b8-4cdc-a0a7-6eccc3053588","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["BpnCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9","issuanceDate":"2022-09-26T14:08:31Z","credentialSubject":{"type":["BpnCredential"],"bpn":"BPNL000000000001","id":"did:indy:idunion:test:VwLtUZahNRA51evoSBrtWj"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-26T14:08:40Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..1VTynJcdcrDj59_JFEOpAshUNNRSt1TOc2ZyrUMx75VDvz3s8UfYXGOC_LCL6ARuzT7INILq0UxmOXbwtRaeBA"}}', '9d082ca3-d2b8-4cdc-a0a7-6eccc3053588', 'did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9', 'did:indy:idunion:test:VwLtUZahNRA51evoSBrtWj', 'BpnCredential', 2);
+    INSERT INTO public.verifiable_credentials (id, content, credential_id, issuer_did, holder_did, type, wallet_id) VALUES (2, '{"id":"0f8252f2-c038-4b54-86c1-e5e1f8372568","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["MembershipCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9","issuanceDate":"2022-09-26T14:08:31Z","credentialSubject":{"type":["MembershipCredential"],"memberOf":"Catena-X","status":"Active","startTime":"2022-09-26T14:08:31Z","id":"did:indy:idunion:test:VwLtUZahNRA51evoSBrtWj"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-26T14:08:37Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..-PvmBHQQ0HIRiGlhwqdMhUGDmKNeE59TvxNp5VrHmvrWg-jdyqS1F67xBWHbXaXwHPmgJ9KQ3OE6fAnaS3-XDg"}}', '0f8252f2-c038-4b54-86c1-e5e1f8372568', 'did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9', 'did:indy:idunion:test:VwLtUZahNRA51evoSBrtWj', 'MembershipCredential', 2);
+    INSERT INTO public.verifiable_credentials (id, content, credential_id, issuer_did, holder_did, type, wallet_id) VALUES (3, '{"id":"41af2b0e-5788-4610-ba49-6b81c67cda14","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["BpnCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9","issuanceDate":"2022-09-26T14:09:27Z","credentialSubject":{"type":["BpnCredential"],"bpn":"BPNL000000000002","id":"did:indy:idunion:test:9czNLpBPC57R4JuvNoMwbQ"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-26T14:09:28Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0.._iXiAeMbDGVAd4g2LjYE8Yi_D9ALHnDWd7jUXB12SwEi2cPlQJiVpxWwZO_pKSWv1GaJBxeJPzO3YNKZ9hKhAg"}}', '41af2b0e-5788-4610-ba49-6b81c67cda14', 'did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9', 'did:indy:idunion:test:9czNLpBPC57R4JuvNoMwbQ', 'BpnCredential', 3);
+    INSERT INTO public.verifiable_credentials (id, content, credential_id, issuer_did, holder_did, type, wallet_id) VALUES (4, '{"id":"bc32765b-8395-452f-8041-0b9db79184b8","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["MembershipCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9","issuanceDate":"2022-09-26T14:09:27Z","credentialSubject":{"type":["MembershipCredential"],"memberOf":"Catena-X","status":"Active","startTime":"2022-09-26T14:09:27Z","id":"did:indy:idunion:test:9czNLpBPC57R4JuvNoMwbQ"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-26T14:09:29Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..84SDuwBvN-TE7hKbUgUIChDdpvV_ZSLReSJ_9fVzXj6JBf_h5ZStYjjrTXUQgXbpw0oor9c6Xju8LavBu7GdAA"}}', 'bc32765b-8395-452f-8041-0b9db79184b8', 'did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9', 'did:indy:idunion:test:9czNLpBPC57R4JuvNoMwbQ', 'MembershipCredential', 3);
+    --
+    -- Data for Name: wallets; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.wallets (id, created_at, modified_at, name, bpn, did, wallet_id, wallet_key, wallet_token) VALUES (1, '2022-09-26 09:10:12.437084', '2022-09-26 09:10:12.648968', 'Authority Wallet', 'BPNL000000000000', 'did:indy:idunion:test:SK7hmSDcRZouNmTi6GDi9', '4e180bc5-8faa-43c4-9ebd-be8d6273a35f', 'A17YIXVjYdC0QhiNYqEFR0nCS', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiI0ZTE4MGJjNS04ZmFhLTQzYzQtOWViZC1iZThkNjI3M2EzNWYiLCJpYXQiOjE2NjQxODM0MTJ9.5KzSWwTNUQUPsTtOWOhiRja75kP30Q-WTBsbeLjWdno');
+    INSERT INTO public.wallets (id, created_at, modified_at, name, bpn, did, wallet_id, wallet_key, wallet_token) VALUES (2, '2022-09-26 14:08:31.149714', '2022-09-26 14:08:31.250684', 'ZF Wallet', 'BPNL000000000001', 'did:indy:idunion:test:VwLtUZahNRA51evoSBrtWj', 'b2b63862-3575-45f6-9384-04520399643a', 'h6w5UAKrjjok5oViVWLIFwtoJ', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiJiMmI2Mzg2Mi0zNTc1LTQ1ZjYtOTM4NC0wNDUyMDM5OTY0M2EiLCJpYXQiOjE2NjQyMDEzMDh9.tsyH0tSQU7ksR2bP_RO8hmLmggMb5_ZI55rNni-Oj2E');
+    INSERT INTO public.wallets (id, created_at, modified_at, name, bpn, did, wallet_id, wallet_key, wallet_token) VALUES (3, '2022-09-26 14:09:27.005166', '2022-09-26 14:09:27.136593', 'BMW Wallet', 'BPNL000000000002', 'did:indy:idunion:test:9czNLpBPC57R4JuvNoMwbQ', '15aca578-ef14-4f0b-bfe2-52b0f10c50b0', '1YErf58bZdhnesUUa4iERG32H', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiIxNWFjYTU3OC1lZjE0LTRmMGItYmZlMi01MmIwZjEwYzUwYjAiLCJpYXQiOjE2NjQyMDEzNjV9.x4CVl8vd6BA_MTvYgYlGBe8Qi1vNYAfX1LxOibPt5zE');
+    --
+    -- Name: verifiable_credentials_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.verifiable_credentials_id_seq', 4, true);
+    --
+    -- Name: wallets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.wallets_id_seq', 3, true);
+    --
+    -- Name: wallets bpn; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.wallets
+    ADD CONSTRAINT bpn UNIQUE (bpn);
+    --
+    -- Name: verifiable_credentials content; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.verifiable_credentials
+    ADD CONSTRAINT content UNIQUE (content);
+    --
+    -- Name: verifiable_credentials credentialid; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.verifiable_credentials
+    ADD CONSTRAINT credentialid UNIQUE (credential_id);
+    --
+    -- Name: wallets did; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.wallets
+    ADD CONSTRAINT did UNIQUE (did);
+    --
+    -- Name: scheduled_tasks pk_scheduler_tasks; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.scheduled_tasks
+    ADD CONSTRAINT pk_scheduler_tasks PRIMARY KEY (task_name, task_instance);
+    --
+    -- Name: verifiable_credentials verifiable_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.verifiable_credentials
+    ADD CONSTRAINT verifiable_credentials_pkey PRIMARY KEY (id);
+    --
+    -- Name: wallets wallets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.wallets
+    ADD CONSTRAINT wallets_pkey PRIMARY KEY (id);
+    --
+    -- Name: verifiable_credentials fk_verifiable_credentials_wallet_id__id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.verifiable_credentials
+    ADD CONSTRAINT fk_verifiable_credentials_wallet_id__id FOREIGN KEY (wallet_id) REFERENCES public.wallets(id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+  04_zfwallet.sql: |
+    --
+    -- PostgreSQL database dump
+    --
+    -- Dumped from database version 14.5
+    -- Dumped by pg_dump version 14.5
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    DROP DATABASE "BPNL000000000001-2022-09-26T14:08:20Z";
+    --
+    -- Name: BPNL000000000001-2022-09-26T14:08:20Z; Type: DATABASE; Schema: -; Owner: postgres
+    --
+    CREATE DATABASE "BPNL000000000001-2022-09-26T14:08:20Z" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
+    ALTER DATABASE "BPNL000000000001-2022-09-26T14:08:20Z" OWNER TO postgres;
+    \c -reuse-previous=on "dbname='BPNL000000000001-2022-09-26T14:08:20Z'"
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    SET default_tablespace = '';
+    SET default_table_access_method = heap;
+    --
+    -- Name: config; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.config (
+    name text NOT NULL,
+    value text
+    );
+    ALTER TABLE public.config OWNER TO postgres;
+    --
+    -- Name: items; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items (
+    id bigint NOT NULL,
+    profile_id bigint NOT NULL,
+    kind smallint NOT NULL,
+    category bytea NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    expiry timestamp without time zone
+    );
+    ALTER TABLE public.items OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_id_seq OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+    --
+    -- Name: items_tags; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items_tags (
+    id bigint NOT NULL,
+    item_id bigint NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    plaintext smallint NOT NULL
+    );
+    ALTER TABLE public.items_tags OWNER TO postgres;
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_tags_id_seq OWNER TO postgres;
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_tags_id_seq OWNED BY public.items_tags.id;
+    --
+    -- Name: profiles; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.profiles (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    reference text,
+    profile_key bytea
+    );
+    ALTER TABLE public.profiles OWNER TO postgres;
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.profiles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.profiles_id_seq OWNER TO postgres;
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.profiles_id_seq OWNED BY public.profiles.id;
+    --
+    -- Name: items id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+    --
+    -- Name: items_tags id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags ALTER COLUMN id SET DEFAULT nextval('public.items_tags_id_seq'::regclass);
+    --
+    -- Name: profiles id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.profiles ALTER COLUMN id SET DEFAULT nextval('public.profiles_id_seq'::regclass);
+    --
+    -- Data for Name: config; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.config (name, value) VALUES ('default_profile', '89971abb-8998-4982-a3bc-1d709696e86e');
+    INSERT INTO public.config (name, value) VALUES ('key', 'kdf:argon2i:13:mod?salt=49876b5038b021f629b39e75b20f62b9');
+    INSERT INTO public.config (name, value) VALUES ('version', '1');
+    --
+    -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.items (id, profile_id, kind, category, name, value, expiry) VALUES (1, 1, 2, '\x58b6894bc3024c8c416782c6568dbad5159392908d726115c1ebe7bf58e4845c4175', '\xf44e0a161e788e29e32ffaf2db12e1fdddb48dfcd335c64ab941fbe56e95b0b60a52b394aaa30c272ff74326ba7a', '\x99c858c34dee21778dde984b9ab560fabba2670c4353e60d99a579129a9cced833f0296518633d6c51', NULL);
+    INSERT INTO public.items (id, profile_id, kind, category, name, value, expiry) VALUES (2, 1, 1, '\x3117f8cc7f65efbe2487d25f1edec3eb9a87d4bfcee9cc1892be73b8fdff4d64b94f5219b2', '\x5cd8e5f423e95c4e9558daba422e223ed49574df72629fb1a0af97d1d2d0850461548d45e1f04c71e2015f1aab07decce7fb691d66c67faf09d02382ad90b3da72c8412a8481a51d', '\xa8b983972c9a5df76c750198932d330908eff79df5713343c7a3c6550de114a2ab9b2e4289a34816e140c52fb149a74e43913019ca6a6ec455a4d313af695845a146db0eceed1ea5dc9338d65e4151ee19fc4147b80a55101c0e0738178026674d2ca36f91de0417f2b431e081d9b8537f599808b23dabecf11016e09eb2f1a9391949417ba772491e3ebb0b405557e9d31beefa0c9f3b49fe4b33f17f24aca69e060a83693f79842dd8880ff0', NULL);
+    INSERT INTO public.items (id, profile_id, kind, category, name, value, expiry) VALUES (3, 1, 2, '\xc27f0182b694c4e367f028845f4fcc2dc118905c40d23202b4862131c6a3c5', '\x7897996a1e7cb1e04751f69ba55be0c349082721a661e65451c6693ade9ec2b4ef0e229c4529918b2f7500cdfcb7898b91d8', '\x58b557f74e669884a3aa8862e4d9208faa868652a2e278a3359bc9647ec698f06a8fa2a0521ac4f86178a33a0e8961d8b33c39d363f870d020ecec75cb2e7e8e20616ba8f0bc9a809d968d6a02dadfa2237edd5a6ff1b958f32d19474d208b94694f83fb2bf46369818cd8b4616d1744d62653eaf8cc5c0c95915f41a81b9fe18033a20459e95a84059b58ab8c9dd105d3769672aab2b721acfcbe6813eebf7ff1f5a485f1ebd4a2048df11d2bf6e74bebf2', NULL);
+    --
+    -- Data for Name: items_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (1, 2, '\x46d5080e283b3d9cd195a63d0c1c651de9e53525c95eaaf94db3399b2b2bc7', '\x9b1bb416054d5dce9dfd9b7e077e52bee9635733238f7f66ce9082c13906cf0d3942a5', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (2, 2, '\xfda1ca20027e1da6790767eba1c4866776555ecf52ad588fe4cd8fb1ca8a7c6c61', '\xa75ad839a7c983d25bbc446da36eeaf5ca45200118cc2872056de39e5a0a0db088f7607d937150f3d79bca7f0e3bf8cad97182235348bf96d356166d39d52a79780ed520232197', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (3, 3, '\xef94d68327f039c8d4031f99958600d3eb579c059322e6ba7908fc231893e071f58e', '\x1fd55b4f93035223aa53cc16cd035a25b0cabd47ee4f5a70ebd0a83c6a9f56', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (4, 3, '\x2b1363fb79ad4a62e26e8ed6969d9150d8b55f3a0095eb7466df21ef894c76023d56', '\x52290853ee7ea8a56d8e33f15b676784cd54fc6804f6746378a2deef89a3ce57c3cb5ac3bb8e381b96cee6f5d31ba0241403ab07e2d53a5754612dac344b9c85a8aae251df84583b', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (5, 3, '\x272feb7f6ede8563d9c525c1c907a6f5ee9213b5027ed2d1438225dd3afefa15931ad75a870294', '\x9b1bb416054d5dce9dfd9b7e077e52bee9635733238f7f66ce9082c13906cf0d3942a5', 0);
+    --
+    -- Data for Name: profiles; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.profiles (id, name, reference, profile_key) VALUES (1, '89971abb-8998-4982-a3bc-1d709696e86e', NULL, '\xd5a62f40714244cd749bb41d125520022d52f4e8e9ce9ba6dd57aebfb28849ecc904d2e77886382605b979e7f62ca683d3e78e08a758182c0486589536ef8af36df7dcb0becbd8fd13d97d49d7969b5ffffdf06a3b74857c37c1bd93162a7dbff035f3e0bdb299d73b7ed19cc89be8f09435f780f6cdf645998aed44616ff1c7ceccf45b33063b5fde9723e3371742f21e1d1923e23837cc7fd90e472385f50a8b91859909e800acce64720f289c7247e8480b6772867df600d40820d24b4d1270a823926776adc5a14d2d112dbbe8b6161ecfbca4ad9f83db07f93c9635dc61087132a2525068a3954334174ecd4e8ed0a857f81f3e2636715df16311489f3007eb1c03f78fe5');
+    --
+    -- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_id_seq', 3, true);
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_tags_id_seq', 5, true);
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.profiles_id_seq', 1, true);
+    --
+    -- Name: config config_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.config
+    ADD CONSTRAINT config_pkey PRIMARY KEY (name);
+    --
+    -- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+    --
+    -- Name: items_tags items_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags
+    ADD CONSTRAINT items_tags_pkey PRIMARY KEY (id);
+    --
+    -- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+    --
+    -- Name: ix_items_tags_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_item_id ON public.items_tags USING btree (item_id);
+    --
+    -- Name: ix_items_tags_name_enc; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_name_enc ON public.items_tags USING btree (name, substr(value, 1, 12)) WHERE (plaintext = 0);
+    --
+    -- Name: ix_items_tags_name_plain; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_name_plain ON public.items_tags USING btree (name, value) WHERE (plaintext = 1);
+    --
+    -- Name: ix_items_uniq; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ix_items_uniq ON public.items USING btree (profile_id, kind, category, name);
+    --
+    -- Name: ix_profile_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ix_profile_name ON public.profiles USING btree (name);
+    --
+    -- Name: items items_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    --
+    -- Name: items_tags items_tags_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags
+    ADD CONSTRAINT items_tags_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+  05_bmwwallet.sql: |
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    DROP DATABASE "BPNL000000000002-2022-09-26T14:09:17Z";
+    --
+    -- Name: BPNL000000000002-2022-09-26T14:09:17Z; Type: DATABASE; Schema: -; Owner: postgres
+    --
+    CREATE DATABASE "BPNL000000000002-2022-09-26T14:09:17Z" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
+    ALTER DATABASE "BPNL000000000002-2022-09-26T14:09:17Z" OWNER TO postgres;
+    \c -reuse-previous=on "dbname='BPNL000000000002-2022-09-26T14:09:17Z'"
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+    SET default_tablespace = '';
+    SET default_table_access_method = heap;
+    --
+    -- Name: config; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.config (
+    name text NOT NULL,
+    value text
+    );
+    ALTER TABLE public.config OWNER TO postgres;
+    --
+    -- Name: items; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items (
+    id bigint NOT NULL,
+    profile_id bigint NOT NULL,
+    kind smallint NOT NULL,
+    category bytea NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    expiry timestamp without time zone
+    );
+    ALTER TABLE public.items OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_id_seq OWNER TO postgres;
+    --
+    -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+    --
+    -- Name: items_tags; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.items_tags (
+    id bigint NOT NULL,
+    item_id bigint NOT NULL,
+    name bytea NOT NULL,
+    value bytea NOT NULL,
+    plaintext smallint NOT NULL
+    );
+    ALTER TABLE public.items_tags OWNER TO postgres;
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.items_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.items_tags_id_seq OWNER TO postgres;
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.items_tags_id_seq OWNED BY public.items_tags.id;
+    --
+    -- Name: profiles; Type: TABLE; Schema: public; Owner: postgres
+    --
+    CREATE TABLE public.profiles (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    reference text,
+    profile_key bytea
+    );
+    ALTER TABLE public.profiles OWNER TO postgres;
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+    CREATE SEQUENCE public.profiles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    ALTER TABLE public.profiles_id_seq OWNER TO postgres;
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+    ALTER SEQUENCE public.profiles_id_seq OWNED BY public.profiles.id;
+    --
+    -- Name: items id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+    --
+    -- Name: items_tags id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags ALTER COLUMN id SET DEFAULT nextval('public.items_tags_id_seq'::regclass);
+    --
+    -- Name: profiles id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.profiles ALTER COLUMN id SET DEFAULT nextval('public.profiles_id_seq'::regclass);
+    --
+    -- Data for Name: config; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.config (name, value) VALUES ('default_profile', '5a4600cc-0176-4330-80b2-04840b0201b2');
+    INSERT INTO public.config (name, value) VALUES ('key', 'kdf:argon2i:13:mod?salt=c0ba50de5ce3552d339a24f108f2733f');
+    INSERT INTO public.config (name, value) VALUES ('version', '1');
+    --
+    -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.items (id, profile_id, kind, category, name, value, expiry) VALUES (1, 1, 2, '\xba7e354264d282b3caddf467dfe65dd465bf0ae713861119ac033039164ec2f79e30', '\xee5af549a9b18c88c9062a892e59c9b2f293afdf3ccf8a387fbaacf5f90164150bbdfe9e453729eeac1ee1ed470f', '\x241e469705a04fd79b41c092eac41ab4a56e36af039c1450c7feb99bf4e8fae9d57ab68006983cbb17', NULL);
+    INSERT INTO public.items (id, profile_id, kind, category, name, value, expiry) VALUES (2, 1, 1, '\xd087b9fdae63bc3629a4a4566befbd2681a50c85b347ad71423f0e0e043cfa38d1e9f77046', '\x7895be796f17973993c63e5e7aa67308bdea61fb85733a2fc5dcaea5b6e07823ca7d42fa09cc947b20884c20efdf22b29e68b5aeb246c34d1a4e81da618869969c353b89c20506d4', '\xa993e6a5c2ea0aa5eb0fdad07f179587043c3f958affc2be269e7fbcd03023cb90140d3581a907eab132a85cd6db7ef663dbbf1d4ad4d0cfcb3a03667cebc056dd317fb9a5ad27d7f7a523dd0a801279ccb74520d1895523a34fb9d6cb52edf56f13012e01ea99c07d730cc50b2952a09aa23079b4dd7931269c94b0ceeecc1bd422b42a48044db6d711a8a47a09625207e73701af92366e85b49a780d3370143d420af36e745fba94d9bd2f3c', NULL);
+    INSERT INTO public.items (id, profile_id, kind, category, name, value, expiry) VALUES (3, 1, 2, '\xfa605c490943acce486cf49a581b126736f482c3a38856ff8eb4f4b2d70234', '\xf5816b9bcdb63c84e567de2c6ad7505795d585d41a9a91858fdf80605de707ed551539a0f51ca06c90a8d61cab1c51ad58ab', '\x7e49022d3bf378e4e24f3e506ddd509c8c5e51672e1acb0e5e4153edb7fe6834b6e3fec9225f19a4a224484c9c3588d8464a643b98768c0adc86709cf27fd64dd2910a4269744477307e452a0a3a5e6af619a108c483e8d53c37d97c4cd0c164468b3e025cd1b78f6d6ef6d6e77a3f1cf5b428bcccdd32eb94598fe1d64bf0491378f9e8b0e01ce4b7a34a9ebdeb1894fdf1b66efa49ed3161a90d5cda7738b583ab93631cba55138210dab2f36e32ab6741', NULL);
+    --
+    -- Data for Name: items_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (1, 2, '\x23ffa2ea0819e51b5a380588055f545f19320e82c6890d9b96a25d8528935c', '\xb9b61ac131d803532bd0b5d7e5bda0a4bb89dcee7ea276c13b576cc9e4c643c16747c6', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (2, 2, '\x75df167e5e7f375d03b3c17aeb24342a72038457ffea1f17b8da000481bcde8a83', '\x5307806327a948d6a82c203407ca4ba6f6ef501ad90e71ac6d27944b5302837ac444a42e9b144a0ce1ce408a2a2a3179126794e12efa26309fa4ba7a50e4d4429d780c131f8a51', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (3, 3, '\x68ffd7aacdd63bbf970a4ea0302a79eabb396c99daa2123c6671e0cf147dcbf79a02', '\x54bcc7b68cb6e724d914ad6402a2200f4201c50a19840a7c5a9e3ac56d94e5', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (4, 3, '\x8c7f5f8e1aba7e6632e162ba50b03984a0e45ef5906f71840bee999cfd82bd3296e9', '\x4b71495d311c890d3b5da1825b168e75032d3c4a8d057ecd77fb04cc8fd5eecc71a8cdbe021e9c093def98c2c5acdebf549b49143a3f9e3fd56fd57a90b041398695bf314137f05a', 0);
+    INSERT INTO public.items_tags (id, item_id, name, value, plaintext) VALUES (5, 3, '\x477fb9f08b0b6fa09defb2f300e93d60a286291581c2207c5009bb78faf6462dd90e9bd155fc27', '\xb9b61ac131d803532bd0b5d7e5bda0a4bb89dcee7ea276c13b576cc9e4c643c16747c6', 0);
+    --
+    -- Data for Name: profiles; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+    INSERT INTO public.profiles (id, name, reference, profile_key) VALUES (1, '5a4600cc-0176-4330-80b2-04840b0201b2', NULL, '\xc1a078b193ee5b5bd428e1eb63a624341fccb0f143a729804ccf8501f99296b45d0609067a87fa84f92b738e98ae73da169b564d67d6842618a0bcabf50f151a5fe753cc581dd3e36cedbbde68ebd5de9d9674094a529e78e84cbbe8e6a6d5e05587fba601f5356c491c0f66d6b6503fba0e0cf17be9f9deeb795fe6f40f494b5a17d88db51a74c325a456de8a189938dc5fc2c6834414b7c9ad12bb0563583530259dc1151cf76d6dc1f6fdba0fe1903a18df5141f802e0a6f28b16abb492eef461025deea7b79642cb01a8e3fc88184a7741628a4bbc3ef2031c8ce335ed9db3f1c45e8c3717107fe0e6479858225779cfa7c393206200375b8940570ea6002bc3c84256e104');
+    --
+    -- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_id_seq', 3, true);
+    --
+    -- Name: items_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.items_tags_id_seq', 5, true);
+    --
+    -- Name: profiles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+    SELECT pg_catalog.setval('public.profiles_id_seq', 1, true);
+    --
+    -- Name: config config_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.config
+    ADD CONSTRAINT config_pkey PRIMARY KEY (name);
+    --
+    -- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+    --
+    -- Name: items_tags items_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags
+    ADD CONSTRAINT items_tags_pkey PRIMARY KEY (id);
+    --
+    -- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+    --
+    -- Name: ix_items_tags_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_item_id ON public.items_tags USING btree (item_id);
+    --
+    -- Name: ix_items_tags_name_enc; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_name_enc ON public.items_tags USING btree (name, substr(value, 1, 12)) WHERE (plaintext = 0);
+    --
+    -- Name: ix_items_tags_name_plain; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE INDEX ix_items_tags_name_plain ON public.items_tags USING btree (name, value) WHERE (plaintext = 1);
+    --
+    -- Name: ix_items_uniq; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ix_items_uniq ON public.items USING btree (profile_id, kind, category, name);
+    --
+    -- Name: ix_profile_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+    CREATE UNIQUE INDEX ix_profile_name ON public.profiles USING btree (name);
+    --
+    -- Name: items items_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    --
+    -- Name: items_tags items_tags_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+    ALTER TABLE ONLY public.items_tags
+    ADD CONSTRAINT items_tags_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;

@@ -1,0 +1,190 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catenax-managed-identity-wallets
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catenax-managed-identity-wallets
+  template:
+    metadata:
+      labels:
+        app: catenax-managed-identity-wallets
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      imagePullSecrets:
+        - name: acr-credentials
+      containers:
+        - name: catenax-managed-identity-wallets
+          {{- if .Values.image.registry }}
+          image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+          {{- else }}
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          {{- end }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_VERSION
+              value: {{ .Values.app.version }}
+            - name: ALLOW_EMPTY_PASSWORD
+              value: {{ .Values.allowEmptyPassword | default "no" }}
+            - name: CX_DB_JDBC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: catenax-managed-identity-wallets-secrets
+                  key: cx-db-jdbc-url
+            - name: CX_DB_JDBC_DRIVER
+              value: {{ .Values.db.jdbcDriver }}
+            - name: CX_AUTH_JWKS_URL
+              value: {{ .Values.auth.jwksUrl }}
+            - name: CX_AUTH_ISSUER_URL
+              value: {{ .Values.auth.issuerUrl }}
+            - name: CX_AUTH_REALM
+              value: {{ .Values.auth.realm }}
+            - name: CX_AUTH_ROLE
+              value: {{ .Values.auth.role }}
+            - name: CX_AUTH_ROLE_MAPPINGS
+              value: {{ .Values.auth.roleMappings }}
+            - name: CX_AUTH_RESOURCE_ID
+              value: {{ .Values.auth.resourceId }}
+            - name: CX_AUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: catenax-managed-identity-wallets-secrets
+                  key: cx-auth-client-id
+            - name: CX_AUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: catenax-managed-identity-wallets-secrets
+                  key: cx-auth-client-secret
+            - name: CX_AUTH_REDIRECT_URL
+              value: {{ .Values.auth.redirectUrl }}
+            - name: BPDM_DATAPOOL_URL
+              value: {{ .Values.datapool.url }}
+            - name: BPDM_AUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: catenax-managed-identity-wallets-secrets
+                  key: bpdm-auth-client-id
+            - name: BPDM_AUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: catenax-managed-identity-wallets-secrets
+                  key: bpdm-auth-client-secret
+            - name: BPDM_AUTH_GRANT_TYPE
+              value: {{ .Values.datapool.grantType }}
+            - name: BPDM_AUTH_SCOPE
+              value: {{ .Values.datapool.scope }}
+            - name: BPDM_AUTH_URL
+              value: {{ .Values.datapool.authUrl }}
+            - name: BPDM_PULL_DATA_AT_HOUR
+              value: {{ .Values.datapool.refreshHour | quote }}
+            - name: ACAPY_API_ADMIN_URL
+              value: {{ .Values.acapy.adminUrl }}
+            - name: ACAPY_NETWORK_IDENTIFIER
+              value: {{ .Values.acapy.networkIdentifier }}
+            - name: ACAPY_ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: catenax-managed-identity-wallets-acapy-secrets
+                  key: acapy-admin-api-key
+            - name: CX_BPN
+              value: {{ .Values.wallet.baseWalletBpn }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+            - containerPort: 8080
+        - name: catenax-acapy
+          image: {{ .Values.acapy.imageName }}:{{ .Values.acapy.tag }}
+          env:
+          - name: WALLET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-wallet-key
+          - name: AGENT_WALLET_SEED
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-agent-wallet-seed
+          - name: LEDGER_URL
+            value: {{ .Values.acapy.ledgerUrl }}
+          - name: LABEL
+            value: {{ .Values.acapy.label }}
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-jwt-secret
+          - name: ACAPY_ADMIN_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-admin-api-key
+          - name: LOG_LEVEL
+            value: {{ .Values.acapy.logLevel }}
+          - name: ACAPY_ENDPOINT_PORT
+            value: {{ .Values.acapy.endpointPort | quote }}
+          - name: ACAPY_ENDPOINT_URL
+            value: {{ .Values.acapy.endpointUrl }}
+          - name: ACAPY_ADMIN_PORT
+            value: {{ .Values.acapy.adminPort | quote }}
+          - name: DB_HOST
+            value: {{ .Values.acapy.databaseHost }}
+          - name: DB_ACCOUNT
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-account
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-password
+          - name: DB_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-admin
+          - name: DB_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-admin-password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          command: ["/bin/bash"]
+          args: ["-c", "aca-py start \
+          -e $(ACAPY_ENDPOINT_URL) \
+          --auto-provision \
+          --inbound-transport http '0.0.0.0' $(ACAPY_ENDPOINT_PORT) \
+          --outbound-transport http \
+          --admin '0.0.0.0' $(ACAPY_ADMIN_PORT) \
+          --wallet-name AcapyCatenaX \
+          --wallet-type indy \
+          --wallet-key $(WALLET_KEY) \
+          --wallet-storage-type postgres_storage
+          --wallet-storage-config '{\"url\":\"$(DB_HOST):5432\",\"max_connections\":5}'
+          --wallet-storage-creds '{\"account\":\"$(DB_ACCOUNT)\",\"password\":\"$(DB_PASSWORD)\",\"admin_account\":\"$(DB_ADMIN_USER)\",\"admin_password\":\"$(DB_ADMIN_PASSWORD)\"}'
+          --seed $(AGENT_WALLET_SEED) \
+          --genesis-url $(LEDGER_URL)/genesis \
+          --label $(LABEL) \
+          --admin-api-key $(ACAPY_ADMIN_API_KEY) \
+          --auto-ping-connection \
+          --jwt-secret $(JWT_SECRET) \
+          --multitenant \
+          --multitenant-admin \
+          --log-level $(LOG_LEVEL)"
+          ]

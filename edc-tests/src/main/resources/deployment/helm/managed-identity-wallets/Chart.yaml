@@ -1,0 +1,23 @@
+apiVersion: v2
+name: catenax-managed-identity-wallets
+description: Catena-X Managed Identity Wallets Services
+
+type: application
+
+# Chart version
+version: 0.4.5
+appVersion: 0.4.5
+
+dependencies:
+  - name: postgresql
+    version: 11.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+    alias: postgresql
+
+  # https://github.com/bitnami/charts/tree/master/bitnami/keycloak/
+  - name: keycloak
+    version: 10.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: cxkeycloak.enabled
+    alias: cxkeycloak
