@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
--   Postman collection under /docs/development/postman
+-   New Postman collection for developers `/docs/development/postman`
+-   New XSUAA Authenticator Extension ([Readme](/edc-extensions/xsuaa-authenticator/README.md))
+
+### Updated
+
+-   Set EDC version to `0.0.1-20221006-SNAPSHOT`
 
 ## [0.1.2] - 2022-09-30
 

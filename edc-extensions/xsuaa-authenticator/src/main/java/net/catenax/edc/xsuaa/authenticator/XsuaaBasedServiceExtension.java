@@ -9,8 +9,8 @@ import com.sap.cloud.security.config.Service;
 import com.sap.cloud.security.config.cf.CFConstants;
 import java.util.Objects;
 import org.eclipse.dataspaceconnector.api.auth.AuthenticationService;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
@@ -26,7 +26,8 @@ public class XsuaaBasedServiceExtension implements ServiceExtension {
     if (Objects.isNull(Environments.getCurrent().getXsuaaConfiguration())) {
       monitor.debug(
           "Service Config from Kubernetes environment could not be loaded. Loading service configs from local env variables");
-      // In case of null, load the service configuration using environment variables(LOCAL TESTING
+      // In case of null, load the service configuration using environment
+      // variables(LOCAL TESTING
       // ONLY)
       serviceConfig = getServiceConfigFromEnvironmentVariables();
     } else serviceConfig = Environments.getCurrent().getXsuaaConfiguration();

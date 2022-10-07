@@ -36,11 +36,12 @@ import net.catenax.edc.tests.data.PayMeConstraint;
 import net.catenax.edc.tests.data.Permission;
 import net.catenax.edc.tests.data.Policy;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 @Slf4j
@@ -54,7 +55,7 @@ public class DataManagementAPI {
 
   private final String dataMgmtUrl;
   private final String dataMgmtAuthKey;
-  private final HttpClient httpClient;
+  private final CloseableHttpClient httpClient;
 
   public DataManagementAPI(String dataManagementUrl, String dataMgmtAuthKey) {
     this.httpClient = HttpClientBuilder.create().build();
@@ -162,22 +163,28 @@ public class DataManagementAPI {
     log.debug("POST Payload: " + json);
 
     post.setEntity(new StringEntity(json));
+    final CloseableHttpResponse response = sendRequest(post);
 
-    final HttpResponse response = sendRequest(post);
+    T responseJson = null;
+    if (!typeToken.equals(new TypeToken<Void>() {})) {
+      final byte[] responseBytes = response.getEntity().getContent().readAllBytes();
+      responseJson =
+          new Gson()
+              .fromJson(new String(responseBytes, StandardCharsets.UTF_8), typeToken.getType());
+    }
 
-    if (typeToken.equals(new TypeToken<Void>() {})) return null;
+    response.close();
 
-    final byte[] responseJson = response.getEntity().getContent().readAllBytes();
-    return new Gson()
-        .fromJson(new String(responseJson, StandardCharsets.UTF_8), typeToken.getType());
+    return responseJson;
   }
 
-  private HttpResponse sendRequest(HttpRequestBase request) throws IOException {
+  private CloseableHttpResponse sendRequest(HttpRequestBase request) throws IOException {
     request.addHeader("X-Api-Key", dataMgmtAuthKey);
 
+    System.out.println(String.format("Send %-6s %s", request.getMethod(), request.getURI()));
     log.debug(String.format("Send %-6s %s", request.getMethod(), request.getURI()));
 
-    final HttpResponse response = httpClient.execute(request);
+    final CloseableHttpResponse response = httpClient.execute(request);
     if (200 > response.getStatusLine().getStatusCode()
         || response.getStatusLine().getStatusCode() >= 300) {
       throw new RuntimeException(
