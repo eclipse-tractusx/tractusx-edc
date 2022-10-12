@@ -84,7 +84,7 @@
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
         <org.testcontainers.version>1.17.4</org.testcontainers.version>
         <org.slf4j.version>2.0.3</org.slf4j.version>
-        <ch.qos.logback.logback-core.version>1.4.3</ch.qos.logback.logback-core.version>
+        <ch.qos.logback.logback-core.version>1.4.4</ch.qos.logback.logback-core.version>
         <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
 
         <!-- TODO: parametrize so that forks can utilize sonar also -->
