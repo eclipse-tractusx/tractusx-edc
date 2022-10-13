@@ -23,8 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
-      ORG_VERACODE_API_ID: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_ID }}
-      ORG_VERACODE_API_KEY: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_KEY }}
       SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
     steps:
       -
@@ -32,8 +30,6 @@ jobs:
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
-          [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
-          [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
           [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "::set-output name=SONAR_TOKEN::true"
           exit 0
 
@@ -186,23 +182,6 @@ jobs:
             ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
           tags: ${{ steps.edc_controlplane_meta.outputs.tags }}
           labels: ${{ steps.edc_controlplane_meta.outputs.labels }}
-      -
-        name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-            refs/heads/develop
-            refs/heads/release/
-            refs/tags/
-            refs/heads/main', github.ref)
-        continue-on-error: true
-        with:
-          appname: product-edc/${{ matrix.name }}
-          createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
-          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
   build-dataplane:
     runs-on: ubuntu-latest
@@ -268,20 +247,3 @@ jobs:
             ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
           tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
           labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
-      -
-        name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-            refs/heads/develop
-            refs/heads/release/
-            refs/tags/
-            refs/heads/main', github.ref)
-        continue-on-error: true
-        with:
-          appname: product-edc/${{ matrix.name }}
-          createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
-          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
