@@ -13,7 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -23,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,6 +57,6 @@ public class SSIDidResolverTest {
     // when
     DidDocumentDto result = didResolver.resolveDid(did);
     // then
-    assertThat(expectedDidDocument.getId()).isEqualTo(result.getId());
+    Assertions.assertEquals(expectedDidDocument.getId(), result.getId());
   }
 }

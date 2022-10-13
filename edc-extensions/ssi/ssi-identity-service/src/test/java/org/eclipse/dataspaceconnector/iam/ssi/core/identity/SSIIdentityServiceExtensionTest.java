@@ -14,6 +14,7 @@
 package org.eclipse.dataspaceconnector.iam.ssi.core.identity;
 
 import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceImpl;
+import org.eclipse.dataspaceconnector.spi.iam.TokenParameters;
 import org.junit.jupiter.api.Test;
 
 public class SSIIdentityServiceExtensionTest {
@@ -23,6 +24,10 @@ public class SSIIdentityServiceExtensionTest {
 
   @Test
   void testNoConfigObtainClientCredentials() {
-    identityService.obtainClientCredentials(VC_SCOPE);
+
+    final TokenParameters tokenParameters =
+        TokenParameters.Builder.newInstance().scope(VC_SCOPE).build();
+
+    identityService.obtainClientCredentials(tokenParameters);
   }
 }

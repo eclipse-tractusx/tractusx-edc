@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
+import org.eclipse.dataspaceconnector.spi.iam.TokenParameters;
 import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 import org.eclipse.dataspaceconnector.spi.result.Result;
 import org.junit.jupiter.api.Test;
@@ -29,12 +30,13 @@ public class SSIIdentityServiceImplTest {
   public void obtainClientCredentialTest() {
     // given
     String scope = "TestCredentials";
+    TokenParameters tokenParameters = TokenParameters.Builder.newInstance().scope(scope).build();
     VerifiablePresentationDto expectedVP = null;
     TokenRepresentation expectedToken =
         TokenRepresentation.Builder.newInstance().token(expectedVP.toString()).build();
     Result<TokenRepresentation> expectedTokenPresentation = Result.success(expectedToken);
     // when
-    Result<TokenRepresentation> result = identityService.obtainClientCredentials(scope);
+    Result<TokenRepresentation> result = identityService.obtainClientCredentials(tokenParameters);
     // then
     assertEquals(expectedTokenPresentation, result);
   }

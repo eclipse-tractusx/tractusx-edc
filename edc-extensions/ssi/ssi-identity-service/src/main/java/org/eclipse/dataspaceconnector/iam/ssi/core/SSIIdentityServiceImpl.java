@@ -19,6 +19,7 @@ import org.eclipse.dataspaceconnector.iam.ssi.core.claims.*;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
+import org.eclipse.dataspaceconnector.spi.iam.TokenParameters;
 import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 import org.eclipse.dataspaceconnector.spi.result.Result;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
@@ -38,12 +39,11 @@ public class SSIIdentityServiceImpl implements IdentityService {
 
   /**
    * @param scope the given type of the needed credential
-   * @return Tokenrepresentation with the Verifiable Presentation as json string
-   *         claim
+   * @return Tokenrepresentation with the Verifiable Presentation as json string claim
    */
   @Override
-  public Result<TokenRepresentation> obtainClientCredentials(String scope) {
-    scope = "MembershipCredential";
+  public Result<TokenRepresentation> obtainClientCredentials(TokenParameters tokenParameters) {
+    var scope = "MembershipCredential";
     TokenRepresentation token;
     try {
       VerifiablePresentationDto vp = claims.getVerifiablePresentation(scope);
@@ -57,19 +57,19 @@ public class SSIIdentityServiceImpl implements IdentityService {
   /**
    * Verifies the token representation of the json verifiable presentation
    *
-   * @param tokenRepresentation A token representation including the token to
-   *                            verify.
+   * @param tokenRepresentation A token representation including the token to verify.
    * @return Result<ClaimToken> with the json VerifiablePresentation of the EDC
    */
   @Override
-  public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation) {
+  public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, String arg1) {
     ObjectMapper mapper = new ObjectMapper();
 
     var token = tokenRepresentation.getToken();
     try {
       VerifiablePresentationDto tokenVP = mapper.readValue(token, VerifiablePresentationDto.class);
       if (verification.verifyPresentation(tokenVP)) {
-        Result<TokenRepresentation> responseToken = obtainClientCredentials("");
+        Result<TokenRepresentation> responseToken =
+            obtainClientCredentials(TokenParameters.Builder.newInstance().build());
         var claimTokenBuilder = ClaimToken.Builder.newInstance();
         claimTokenBuilder.claim("", responseToken.getContent().getToken());
         return Result.success(claimTokenBuilder.build());
@@ -79,10 +79,5 @@ public class SSIIdentityServiceImpl implements IdentityService {
     } catch (JsonProcessingException e) {
       return Result.failure(e.getMessage());
     }
-  }
-
-  @Override
-  public Result<ClaimToken> verifyJwtToken(String token) {
-    return IdentityService.super.verifyJwtToken(token);
   }
 }
