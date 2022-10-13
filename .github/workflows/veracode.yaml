@@ -75,7 +75,7 @@ jobs:
         uses: montudor/action-zip@v1
         with:
           args: >-
-            zip -j -r edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.zip edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-controlplane/${{ matrix.name }}/target/lib/*
+            zip -j -r edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.zip edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-controlplane/${{ matrix.name }}/target/lib/*.jar
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -124,7 +124,7 @@ jobs:
         uses: montudor/action-zip@v1
         with:
           args: >-
-            zip -j -r edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.zip edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-dataplane/${{ matrix.name }}/target/lib/*
+            zip -j -r edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.zip edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-dataplane/${{ matrix.name }}/target/lib/*.jar
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
