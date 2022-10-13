@@ -71,11 +71,9 @@ jobs:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
-        name: Zip files for veracode upload
-        uses: montudor/action-zip@v1
-        with:
-          args: >-
-            zip -j -r edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.zip edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-controlplane/${{ matrix.name }}/target/lib/*.jar
+        name: Tar gzip files for veracode upload
+        run: |-
+          tar -czvf edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-controlplane/${{ matrix.name }}/target/lib/*.jar
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -86,7 +84,7 @@ jobs:
           appname: product-edc/${{ matrix.name }}
           createprofile: true
           version: ${{ matrix.name }}-${{ github.sha }}
-          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.zip
+          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
@@ -120,11 +118,9 @@ jobs:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
-        name: Zip files for veracode upload
-        uses: montudor/action-zip@v1
-        with:
-          args: >-
-            zip -j -r edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.zip edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-dataplane/${{ matrix.name }}/target/lib/*.jar
+        name: Tar gzip files for veracode upload
+        run: |-
+          tar -czvf edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-dataplane/${{ matrix.name }}/target/lib/*.jar
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -135,7 +131,7 @@ jobs:
           appname: product-edc/${{ matrix.name }}
           createprofile: true
           version: ${{ matrix.name }}-${{ github.sha }}
-          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.zip
+          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
