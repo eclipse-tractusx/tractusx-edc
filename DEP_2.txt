@@ -1,0 +1,5 @@
+maven/mavencentral/net.catenax.edc/edc-controlplane-base/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/net.catenax.edc/edc-controlplane-postgresql/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/net.catenax.edc/edc-dataplane-base/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/9.4.0, NOASSERTION, restricted, clearlydefined
+maven/mavencentral/org.json/json/20220320, JSON, restricted, clearlydefined

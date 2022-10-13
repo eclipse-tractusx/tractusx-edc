@@ -1,0 +1,5 @@
+maven/mavencentral/com.sap.cloud.environment.servicebinding.api/java-core-api/0.4.1, , restricted, clearlydefined
+maven/mavencentral/com.sap.cloud.environment.servicebinding/java-sap-service-operator/0.4.1, , restricted, clearlydefined
+maven/mavencentral/com.sap.cloud.security.xsuaa/api/2.13.3, , restricted, clearlydefined
+maven/mavencentral/com.sap.cloud.security.xsuaa/token-client/2.13.3, , restricted, clearlydefined
+maven/mavencentral/com.sap.cloud.security/env/2.13.3, , restricted, clearlydefined

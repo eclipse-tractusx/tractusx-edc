@@ -1,0 +1,5 @@
+maven/mavencentral/net.catenax.edc.extensions/cx-oauth2/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/net.catenax.edc.extensions/data-encryption/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/net.catenax.edc.extensions/dataplane-selector-configuration/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/net.catenax.edc.extensions/hashicorp-vault/0.1.3-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/net.catenax.edc.extensions/postgresql-migration/0.1.3-SNAPSHOT, , restricted, clearlydefined

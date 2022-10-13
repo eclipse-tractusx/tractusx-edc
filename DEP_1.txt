@@ -1,0 +1,5 @@
+maven/mavencentral/com.electronwill.night-config/core/3.6.6, NOASSERTION, restricted, clearlydefined
+maven/mavencentral/com.electronwill.night-config/toml/3.6.6, NOASSERTION, restricted, clearlydefined
+maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.3, Apache-2.0, restricted, clearlydefined
+maven/mavencentral/com.sap.cloud.environment.servicebinding.api/java-access-api/0.4.1, , restricted, clearlydefined
+maven/mavencentral/com.sap.cloud.environment.servicebinding.api/java-consumption-api/0.4.1, , restricted, clearlydefined
