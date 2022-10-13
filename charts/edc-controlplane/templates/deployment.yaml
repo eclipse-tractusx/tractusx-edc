@@ -101,6 +101,9 @@ spec:
             - name: configuration
               mountPath: /app/logging.properties
               subPath: logging.properties
+            {{- with .Values.volumeMounts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
       volumes:
         - name: configuration
           configMap:
@@ -112,6 +115,9 @@ spec:
                 path: opentelemetry.properties
               - key: logging.properties
                 path: logging.properties
+        {{- with .Values.volumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

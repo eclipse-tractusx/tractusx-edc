@@ -142,9 +142,7 @@ class DataPlaneSelectorConfigurationServiceExtensionEdcExtensionTest {
   private class TestExtension implements ServiceExtension {
 
     public void initialize(ServiceExtensionContext context) {
-      context.registerService(
-          org.eclipse.dataspaceconnector.dataplane.selector.DataPlaneSelectorService.class,
-          dataPlaneSelectorService);
+      context.registerService(DataPlaneSelectorService.class, dataPlaneSelectorService);
     }
   }
 }

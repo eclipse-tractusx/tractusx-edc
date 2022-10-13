@@ -20,10 +20,10 @@ jobs:
       ##############
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
       -
         name: Set-Up JDK 11
-        uses: actions/setup-java@v3.5.0
+        uses: actions/setup-java@v3.5.1
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -69,13 +69,6 @@ jobs:
       ##############################################
       ### Build and load recent images into KinD ###
       ##############################################
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build edc-controlplane-postgresql-hashicorp-vault
         run: |-

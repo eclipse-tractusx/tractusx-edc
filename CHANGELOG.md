@@ -9,13 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Introduced DEPENDENCIES file
+-   New Postman collection for developers `/docs/development/postman`
+-   New XSUAA Authenticator Extension ([Readme](/edc-extensions/xsuaa-authenticator/README.md))
+
+### Updated
+
+-   Set EDC version to `0.0.1-20221006-SNAPSHOT`
+
+## [0.1.2] - 2022-09-30
+
+### Added
+
+-   Introduced DEPENDENCIES file
 
 ### Changed
 
-- Moved helm charts from `deployment/helm` to `charts`
-- Replaced distroless image with alpine in all docker images
-- Update EDC commit to `740c100ac162bc41b1968c232ad81f7d739aefa9`
+-   Moved helm charts from `deployment/helm` to `charts`
+-   Replaced distroless image with alpine in all docker images
+-   Update EDC commit to `740c100ac162bc41b1968c232ad81f7d739aefa9`
 
 ## [0.1.1] - 2022-09-04
 
@@ -23,16 +34,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
--  Control-Plane Extension ([cx-oauth2](/edc-extensions/cx-oauth2/README.md))
+-   Control-Plane Extension ([cx-oauth2](/edc-extensions/cx-oauth2/README.md))
 
 ### Changed
 
-- Introduced git submodule to import EDC dependencies (instead of snapshot- or milestone artifact)
-- Helm Charts: TLS secret name is now configurable
+-   Introduced git submodule to import EDC dependencies (instead of snapshot- or milestone artifact)
+-   Helm Charts: TLS secret name is now configurable
 
 ### Fixed
 
-- Connectors with Azure Vault extension are now starting again [link](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1892)
+-   Connectors with Azure Vault extension are now starting again [link](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1892)
 
 ## [0.1.0] - 2022-08-19
 
@@ -106,7 +117,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.2...HEAD
+
+[0.1.2]: https://github.com/catenax-ng/product-edc/compare/0.1.1...0.1.2
 
 [0.1.1]: https://github.com/catenax-ng/product-edc/compare/0.1.0...0.1.1
 

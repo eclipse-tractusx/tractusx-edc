@@ -18,7 +18,7 @@
 
     <groupId>net.catenax.edc</groupId>
     <artifactId>product-edc-parent</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>product-edc</name>
@@ -48,7 +48,7 @@
         <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0
         </org.apache.maven.plugins.maven.dependency.plugin.version>
         <org.apache.maven.plugins.maven.jar.plugin.version>3.3.0</org.apache.maven.plugins.maven.jar.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>2.27.0</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.27.2</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.1.0</org.codehaus.mojo.exec.maven.plugin.version>
         <org.apache.maven.plugins.javadoc.version>3.4.1</org.apache.maven.plugins.javadoc.version>
         <org.codehaus.mojo.license.maven.plugin>2.0.0</org.codehaus.mojo.license.maven.plugin>
@@ -66,16 +66,16 @@
         <org.eclipse.dash.license.tool.plugin.version>0.0.1-SNAPSHOT</org.eclipse.dash.license.tool.plugin.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-20221012-SNAPSHOT</org.eclipse.dataspaceconnector.version>
+        <org.eclipse.dataspaceconnector.version>0.0.1-20221006-SNAPSHOT</org.eclipse.dataspaceconnector.version>
         <com.azure.sdk.bom.version>1.2.6</com.azure.sdk.bom.version>
         <org.postgresql.version>42.5.0</org.postgresql.version>
-        <org.flywaydb.version>9.3.1</org.flywaydb.version>
+        <org.flywaydb.version>9.4.0</org.flywaydb.version>
         <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
 
         <!-- test dependency version -->
         <junit.jupiter.version>5.9.1</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
-        <cucumber.version>7.8.0</cucumber.version>
+        <cucumber.version>7.8.1</cucumber.version>
         <io.rest.assured.version>5.2.0</io.rest.assured.version>
         <org.junit.platform.surefire.provider.version>1.1.0</org.junit.platform.surefire.provider.version>
         <mockito.version>4.8.0</mockito.version>
@@ -83,9 +83,10 @@
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
         <com.squareup.okhttp3.mockwebserver.version>4.10.0</com.squareup.okhttp3.mockwebserver.version>
-        <org.testcontainers.version>1.17.3</org.testcontainers.version>
-        <org.slf4j.version>2.0.0-beta1</org.slf4j.version>
-        <ch.qos.logback.logback-core.version>1.4.1</ch.qos.logback.logback-core.version>
+
+        <org.testcontainers.version>1.17.4</org.testcontainers.version>
+        <org.slf4j.version>2.0.3</org.slf4j.version>
+        <ch.qos.logback.logback-core.version>1.4.4</ch.qos.logback.logback-core.version>
         <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
 
         <!-- TODO: parametrize so that forks can utilize sonar also -->
@@ -350,6 +351,11 @@
             <dependency>
                 <groupId>net.catenax.edc.extensions</groupId>
                 <artifactId>data-encryption</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions</groupId>
+                <artifactId>xsuaa-authenticator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
