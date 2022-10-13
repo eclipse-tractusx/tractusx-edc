@@ -1,0 +1,32 @@
+{
+  "id": "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh",
+  "@context": [
+    "https://www.w3.org/ns/did/v1"
+  ],
+  "verificationMethod": [
+    {
+      "id": "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh#key-1",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh",
+      "publicKeyBase58": "AQNDFkwZnnRdcJE6kxmo5frVcnFKSXX5Q4TKinFvPgiR"
+    }
+  ],
+  "authentication": [
+    "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh#key-1"
+  ],
+  "assertionMethod": [
+    "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh#key-1"
+  ],
+  "service": [
+    {
+      "id": "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh#did-communication",
+      "type": "did-communication",
+      "serviceEndpoint": "https://custodian-dev.germanywestcentral.cloudapp.azure.com:8000/",
+      "recipientKeys": [
+        "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh#key-1"
+      ],
+      "routingKeys": [],
+      "priority": 1
+    }
+  ]
+}

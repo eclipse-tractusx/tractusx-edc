@@ -66,8 +66,8 @@
         <org.eclipse.dash.license.tool.plugin.version>0.0.1-SNAPSHOT</org.eclipse.dash.license.tool.plugin.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-20220902-SNAPSHOT</org.eclipse.dataspaceconnector.version>
-        <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
+        <org.eclipse.dataspaceconnector.version>0.0.1-20221012-SNAPSHOT</org.eclipse.dataspaceconnector.version>
+        <com.azure.sdk.bom.version>1.2.6</com.azure.sdk.bom.version>
         <org.postgresql.version>42.5.0</org.postgresql.version>
         <org.flywaydb.version>9.3.1</org.flywaydb.version>
         <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
@@ -82,6 +82,7 @@
         <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
+        <com.squareup.okhttp3.mockwebserver.version>4.10.0</com.squareup.okhttp3.mockwebserver.version>
         <org.testcontainers.version>1.17.3</org.testcontainers.version>
         <org.slf4j.version>2.0.0-beta1</org.slf4j.version>
         <ch.qos.logback.logback-core.version>1.4.1</ch.qos.logback.logback-core.version>
@@ -98,6 +99,12 @@
             <id>central</id>
             <name>Maven Central</name>
             <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <!-- SSI Repo -->
+        <repository>
+            <id>Danubtech</id>
+            <name>Danubtech</name>
+            <url>https://repo.danubetech.com/repository/maven-public/</url>
         </repository>
         <repository> <!-- To be able to use edc snapshot "releases" -->
             <id>sonatype-snapshots</id>
@@ -1145,7 +1152,13 @@
                 <version>${org.awaitility.awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>mockwebserver</artifactId>
+                <version>${com.squareup.okhttp3.mockwebserver.version}</version>
+                <scope>test</scope>
+            </dependency>
+            
             <!-- Integration Test Dependencies -->
             <dependency>
                 <groupId>org.hamcrest</groupId>

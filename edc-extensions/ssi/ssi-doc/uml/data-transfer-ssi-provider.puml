@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 2022 ZF Friedrichshafen AG
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ *      ZF Friedrichshafen AG - Initial API and Implementation
+ */
+
+@startuml component
+''Provider Data Transfer puml''
+''Shows the overview of how SSI-Extension is verifying a token and obtaining a verifiable credential by scope ''
+participant Consumer_EDC_Contract_Offer_Request[
+    = Consumer EDC
+    ----
+    ""MultipartContractOfferSender""
+]
+
+participant Multipart_Controller_Provider[
+     = Provider EDC
+     ----
+     ""Multipart Controller API""
+]
+
+participant Identity_Service[
+     ""SSI Identity Service""
+]
+
+participant SSI_Claims[
+     ""SSI Claims""
+]
+
+participant SSI_Verification[
+     ""SSI Verification""
+]
+
+
+participant SSI_VerifiableCredentials[
+     ""SSI VerifiableCredentials""
+]
+
+
+participant SSI_Verifiable_Presentation[
+     ""SSI Verifiable Presentation""
+]
+
+participant SSI_VerifiableCredentials_Registry[
+     ""SSI VerifiableCredentials Registry""
+]
+
+participant SSI_Wallet_API_Service[
+     ""SSI Managed Identity Wallet Service""
+]
+
+participant Managed_Identity_Wallet[
+     ""Managed Identity Wallet""
+]
+
+
+
+note over Managed_Identity_Wallet
+ <w:#FF33FF> Operating Environment </w>
+end note
+note over Consumer_EDC_Contract_Offer_Request
+ <w:#FF33FF> Consumer </w>
+end note
+note over Multipart_Controller_Provider, SSI_Wallet_API_Service
+ <w:#FF33FF>Provider EDC </w>
+end note
+autonumber
+
+Consumer_EDC_Contract_Offer_Request -> Multipart_Controller_Provider : Request ContractOffer
+Multipart_Controller_Provider -> Identity_Service : verifyJwtToken(Tokenpresentation)
+Identity_Service -> SSI_Verification : verifyPresentation(VP)
+SSI_Verification -> SSI_Wallet_API_Service:  "/api/validation/validate" + VP
+SSI_Wallet_API_Service -> Managed_Identity_Wallet : "/api/validation/validate"
+Managed_Identity_Wallet --> SSI_Wallet_API_Service : return {WalletDescription, List<VCs>}
+SSI_Wallet_API_Service --> SSI_Verification: True/False
+SSI_Verification -> Identity_Service : Find credentials with scope
+Identity_Service -> SSI_Claims : getVerifiablePresentation(scope)
+SSI_Claims -> SSI_VerifiableCredentials : findByScope(scope)
+SSI_VerifiableCredentials -> SSI_Wallet_API_Service: fetchWalletDescription()
+SSI_Wallet_API_Service -> Managed_Identity_Wallet : "/api/wallets/did:indy:idunion:test:test#key-1?withCredentials=true"
+Managed_Identity_Wallet --> SSI_Wallet_API_Service : return {WalletDescription, List<VCs>}
+SSI_Wallet_API_Service -> SSI_VerifiableCredentials_Registry : Save VC in Map<VC-TypeString, VC>
+SSI_VerifiableCredentials -> SSI_VerifiableCredentials_Registry : Find VC by Scope
+SSI_VerifiableCredentials_Registry --> SSI_VerifiableCredentials : Return VC as VC Object
+SSI_VerifiableCredentials --> SSI_Claims : Return VC Object
+SSI_Claims -> SSI_Verifiable_Presentation : Build VP out of VC Object
+SSI_Verifiable_Presentation -> SSI_Wallet_API_Service : Issue VP from VC
+SSI_Wallet_API_Service -> Managed_Identity_Wallet : Request VP from VC
+Managed_Identity_Wallet --> SSI_Wallet_API_Service : Return VP as Json
+SSI_Wallet_API_Service --> SSI_Verifiable_Presentation : Return VP Object
+SSI_Verifiable_Presentation --> SSI_Claims: Return VPDto Object
+SSI_Claims --> Identity_Service: Response VP Object
+Identity_Service -> SSI_Claims: Build Token from VPDto
+SSI_Claims --> Identity_Service: Return Token
+Identity_Service --> Multipart_Controller_Provider : Return Claim Token with VP
+Multipart_Controller_Provider --> Consumer_EDC_Contract_Offer_Request : ResponseStatus + Token for verification
+@enduml

@@ -14,15 +14,16 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
-        <groupId>net.catenax.edc</groupId>
-        <artifactId>product-edc-parent</artifactId>
-        <version>0.1.1-SNAPSHOT</version>
+        <artifactId>edc-extensions</artifactId>
+        <groupId>net.catenax.edc.extensions</groupId>
+        <version>0.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.catenax.edc.extensions</groupId>
-    <artifactId>edc-extensions</artifactId>
+    <groupId>net.catenax.edc.extensions.ssi</groupId>
+    <artifactId>ssi</artifactId>
     <packaging>pom</packaging>
 
     <properties>
@@ -30,13 +31,9 @@
     </properties>
 
     <modules>
-        <module>business-partner-validation</module>
-        <module>postgresql-migration</module>
-        <module>hashicorp-vault</module>
-        <module>dataplane-selector-configuration</module>
-        <module>data-encryption</module>
-        <module>cx-oauth2</module>
-        <module>ssi</module>
+        <module>ssi-identity-service</module>
+        <module>ssi-managed-identity-wallet</module>
+        <module>ssi-spi</module>
     </modules>
 
 </project>

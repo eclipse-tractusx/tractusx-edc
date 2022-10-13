@@ -1,0 +1,57 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "id": "e8b6aef6-1b8d-4545-829b-28692b442269",
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "holder": "did:indy:idunion:test:8dqQM2aeDXbHTUEayhazqh",
+  "verifiableCredential": [
+    {
+      "id": "defc3da4-92ef-44d9-9aee-dcedc2d72e0e",
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"
+      ],
+      "type": [
+        "NameCredential",
+        "VerifiableCredential"
+      ],
+      "issuer": "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh",
+      "issuanceDate": "2022-04-27T07:26:25Z",
+      "credentialSubject": {
+        "type": [
+          "NameCredential"
+        ],
+        "uuid": "defc3da4-92ef-44d9-9aee-dcedc2d72e0e",
+        "value": "German Car Company",
+        "shortName": "GCC",
+        "nameType": {
+          "technicalKey": "INTERNATIONAL",
+          "name": "The international version of the local name of a business partner",
+          "url": ""
+        },
+        "language": {
+          "technicalKey": "undefined",
+          "name": "Undefined"
+        },
+        "id": "did:indy:idunion:test:8dqQM2aeDXbHTUEayhazqh"
+      },
+      "proof": {
+        "type": "Ed25519Signature2018",
+        "created": "2022-04-27T07:26:31Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:indy:idunion:test:JFcJRR9NSmtZaQGFMJuEjh#key-1",
+        "jws": "eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..Hfbp22CAGoPlLpcymIBFB-5wj-dm0rRkVkHffYmot-iFwoV2cTxJFTb9mO0SO3Yi8tm6ht9sVzx3laM6XWOKBQ"
+      }
+    }
+  ],
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2022-06-22T07:02:41Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:indy:idunion:test:8dqQM2aeDXbHTUEayhazqh#key-1",
+    "jws": "eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..EfBos6waO3VvI3-Ejqza8IyLACGSyoV3hVR64ptKZ0GVGbtdJWQII5GE9zq3zhF032soWUr8yiBPxddDvoLxBA"
+  }
+}
