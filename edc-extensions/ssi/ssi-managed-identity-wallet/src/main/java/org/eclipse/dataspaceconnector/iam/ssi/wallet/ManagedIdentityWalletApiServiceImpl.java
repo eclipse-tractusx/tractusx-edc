@@ -12,25 +12,22 @@
  */
 package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
+import static java.lang.String.format;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.InternalServerErrorException;
+import java.io.IOException;
+import java.util.List;
 import okhttp3.*;
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
 import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenDescriptionDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenRequestDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
 import org.eclipse.dataspaceconnector.iam.ssi.model.WalletDescriptionDto;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.TypeManager;
-import jakarta.ws.rs.InternalServerErrorException;
-
-import java.io.IOException;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
-
-import static java.lang.String.format;
 
 public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiService {
 
@@ -45,12 +42,13 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
 
   private final VerifiableCredentialRegistry credentialRegistry;
 
-  public ManagedIdentityWalletApiServiceImpl(Monitor monitor,
-                                             String logPrefix,
-                                             ManagedIdentityWalletConfig config,
-                                             OkHttpClient httpClient,
-                                             TypeManager typeManager,
-                                             VerifiableCredentialRegistry credentialRegistry) {
+  public ManagedIdentityWalletApiServiceImpl(
+      Monitor monitor,
+      String logPrefix,
+      ManagedIdentityWalletConfig config,
+      OkHttpClient httpClient,
+      TypeManager typeManager,
+      VerifiableCredentialRegistry credentialRegistry) {
     this.monitor = monitor;
     this.logPrefix = logPrefix;
     this.config = config;
@@ -58,7 +56,9 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     this.objectMapper = typeManager.getMapper();
     this.credentialRegistry = credentialRegistry;
     AccessTokenRequestDto.Builder builder = AccessTokenRequestDto.Builder.newInstance();
-    this.accessTokenRequestDto = builder.clientID(config.getKeycloakClientID())
+    this.accessTokenRequestDto =
+        builder
+            .clientID(config.getKeycloakClientID())
             .clientSecret(config.getKeycloakClientSecret())
             .grandType(config.getKeycloakGrandType())
             .scope(config.getKeycloakScope())
@@ -71,9 +71,10 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     var url = config.getWalletURL() + "/api/presentations";
     try {
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
-      RequestBody reqBody = RequestBody.create(
-              MediaType.parse("application/json"), verifiableCredentialJson);
-      Request request = new Request.Builder()
+      RequestBody reqBody =
+          RequestBody.create(MediaType.parse("application/json"), verifiableCredentialJson);
+      Request request =
+          new Request.Builder()
               .url(url)
               .header("Authorization", "Bearer " + accessToken.getAccessToken())
               .post(reqBody)
@@ -81,7 +82,9 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
       var response = httpClient.newCall(request).execute();
       var body = response.body();
       if (!response.isSuccessful() || body == null) {
-        throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+        throw new InternalServerErrorException(
+            format(
+                "MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
       }
       monitor.info("Fetched VP");
       return body.string();
@@ -98,14 +101,18 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     try {
       accessToken = getKeyCloakToken(this.accessTokenRequestDto);
       monitor.severe(format("Fetched AccessToken %s", accessToken));
-      Request request = new Request.Builder()
+      Request request =
+          new Request.Builder()
               .url(url)
               .header("Authorization", "Bearer " + accessToken.getAccessToken())
               .build();
       var response = httpClient.newCall(request).execute();
       var body = response.body();
       if (!response.isSuccessful() || body == null) {
-        throw new InternalServerErrorException(format("Keycloak responded with: %s %s", response.code(), body != null ? body.string() : ""));
+        throw new InternalServerErrorException(
+            format(
+                "Keycloak responded with: %s %s",
+                response.code(), body != null ? body.string() : ""));
       }
       monitor.info("Fetched Did");
       return body.string();
@@ -120,9 +127,10 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     var url = config.getWalletURL() + "/api/presentations/validation?withDateValidation=false";
     try {
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
-      RequestBody reqBody = RequestBody.create(
-              MediaType.parse("application/json"), verifiablePresentationJson);
-      Request request = new Request.Builder()
+      RequestBody reqBody =
+          RequestBody.create(MediaType.parse("application/json"), verifiablePresentationJson);
+      Request request =
+          new Request.Builder()
               .url(url)
               .header("Authorization", "Bearer " + accessToken.getAccessToken())
               .post(reqBody)
@@ -131,7 +139,9 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
       var body = response.body();
       if (!response.isSuccessful() || body == null) {
         monitor.info("VP invalid");
-        throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+        throw new InternalServerErrorException(
+            format(
+                "MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
       }
       monitor.info("VP valid");
       return body.string();
@@ -140,22 +150,26 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     }
   }
 
-
   public void fetchWalletDescription() {
     monitor.info(format("%s :: Start fetching Wallet Data", logPrefix));
     try {
-      var url = config.getWalletURL() + "/api/wallets/" + config.getWalletDID() + "?withCredentials=true";
+      var url =
+          config.getWalletURL() + "/api/wallets/" + config.getWalletDID() + "?withCredentials=true";
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
-      Request request = new Request.Builder()
+      Request request =
+          new Request.Builder()
               .url(url)
               .header("Authorization", "Bearer " + accessToken.getAccessToken())
               .build();
       var response = httpClient.newCall(request).execute();
       var body = response.body();
       if (!response.isSuccessful() || body == null) {
-        throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+        throw new InternalServerErrorException(
+            format(
+                "MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
       }
-      WalletDescriptionDto walletDescriptionDto = objectMapper.readValue(body.string(), WalletDescriptionDto.class);
+      WalletDescriptionDto walletDescriptionDto =
+          objectMapper.readValue(body.string(), WalletDescriptionDto.class);
       fillRegistry(walletDescriptionDto.getVerifiableCredentials());
       monitor.info("Saved Wallet data in registry");
     } catch (Exception e) {
@@ -168,7 +182,6 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     return config.getOwnerBPN();
   }
 
-
   private void fillRegistry(List<VerifiableCredentialDto> credentialDtoList) {
     credentialRegistry.clearRegistry();
     for (VerifiableCredentialDto vc : credentialDtoList) {
@@ -176,14 +189,18 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     }
   }
 
-  private AccessTokenDescriptionDto getKeyCloakToken(AccessTokenRequestDto accessTokenRequest) throws IOException {
+  private AccessTokenDescriptionDto getKeyCloakToken(AccessTokenRequestDto accessTokenRequest)
+      throws IOException {
     var url = config.getAccessTokenURL();
-    RequestBody formBody = new FormBody.Builder()
+    RequestBody formBody =
+        new FormBody.Builder()
             .add("grant_type", accessTokenRequest.getGrantType())
             .add("client_id", accessTokenRequest.getCliendId())
             .add("client_secret", accessTokenRequest.getClient_secret())
-            .add("scope", accessTokenRequest.getScope()).build();
-    var request = new Request.Builder()
+            .add("scope", accessTokenRequest.getScope())
+            .build();
+    var request =
+        new Request.Builder()
             .url(url)
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(formBody);
@@ -191,9 +208,13 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     try (var response = httpClient.newCall(request.build()).execute()) {
       var body = response.body();
       if (!response.isSuccessful() || body == null) {
-        throw new InternalServerErrorException(format("Keycloak responded with: %s %s", response.code(), body != null ? body.string() : ""));
+        throw new InternalServerErrorException(
+            format(
+                "Keycloak responded with: %s %s",
+                response.code(), body != null ? body.string() : ""));
       }
-      var accessTokenDescription = objectMapper.readValue(body.string(), AccessTokenDescriptionDto.class);
+      var accessTokenDescription =
+          objectMapper.readValue(body.string(), AccessTokenDescriptionDto.class);
       monitor.info("Get new token with ID: " + accessTokenDescription.getTokenID());
       return accessTokenDescription;
     } catch (Exception e) {

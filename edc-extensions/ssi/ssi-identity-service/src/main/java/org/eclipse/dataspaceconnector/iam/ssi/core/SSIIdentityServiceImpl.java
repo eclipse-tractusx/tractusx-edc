@@ -13,7 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.iam.ssi.core.claims.*;
@@ -29,15 +28,18 @@ public class SSIIdentityServiceImpl implements IdentityService {
   private final SSIClaims claims;
   private final SSIVerification verification;
 
-  public SSIIdentityServiceImpl(IdentityWalletApiService walletApiService, SSIVerifiableCredentials verifiableCredentials, SSIVerifiablePresentation verifiablePresentation) {
+  public SSIIdentityServiceImpl(
+      IdentityWalletApiService walletApiService,
+      SSIVerifiableCredentials verifiableCredentials,
+      SSIVerifiablePresentation verifiablePresentation) {
     claims = new SSIClaims(verifiableCredentials, verifiablePresentation);
     verification = new SSIVerificationImpl(walletApiService);
   }
 
   /**
-   *
    * @param scope the given type of the needed credential
-   * @return Tokenrepresentation with the Verifiable Presentation as json string claim
+   * @return Tokenrepresentation with the Verifiable Presentation as json string
+   *         claim
    */
   @Override
   public Result<TokenRepresentation> obtainClientCredentials(String scope) {
@@ -54,7 +56,9 @@ public class SSIIdentityServiceImpl implements IdentityService {
 
   /**
    * Verifies the token representation of the json verifiable presentation
-   * @param tokenRepresentation A token representation including the token to verify.
+   *
+   * @param tokenRepresentation A token representation including the token to
+   *                            verify.
    * @return Result<ClaimToken> with the json VerifiablePresentation of the EDC
    */
   @Override
@@ -64,12 +68,12 @@ public class SSIIdentityServiceImpl implements IdentityService {
     var token = tokenRepresentation.getToken();
     try {
       VerifiablePresentationDto tokenVP = mapper.readValue(token, VerifiablePresentationDto.class);
-      if(verification.verifyPresentation(tokenVP)){
+      if (verification.verifyPresentation(tokenVP)) {
         Result<TokenRepresentation> responseToken = obtainClientCredentials("");
         var claimTokenBuilder = ClaimToken.Builder.newInstance();
         claimTokenBuilder.claim("", responseToken.getContent().getToken());
         return Result.success(claimTokenBuilder.build());
-      } else{
+      } else {
         return Result.failure("Invalid Token");
       }
     } catch (JsonProcessingException e) {

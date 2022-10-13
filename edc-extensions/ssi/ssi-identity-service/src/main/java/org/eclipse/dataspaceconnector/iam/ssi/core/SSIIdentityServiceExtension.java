@@ -20,10 +20,10 @@ import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiableCredentia
 import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiablePresentation;
 import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiablePresentationImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
-import org.eclipse.dataspaceconnector.spi.system.Inject;
-import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
@@ -36,28 +36,21 @@ public class SSIIdentityServiceExtension implements ServiceExtension {
     return "SSI Identity Service";
   }
 
-  @Inject
-  WebService webService;
+  @Inject WebService webService;
 
-  @Inject
-  private OkHttpClient okHttpClient;
+  @Inject private OkHttpClient okHttpClient;
 
-  @Inject
-  public static IdentityWalletApiService walletApiService;
+  @Inject public static IdentityWalletApiService walletApiService;
 
   public SSIVerifiablePresentation verifiablePresentation;
 
   public SSIVerifiableCredentials verifiableCredentials;
 
-
-  @Inject
-  public VerifiableCredentialRegistry verifiableCredentialRegistry;
+  @Inject public VerifiableCredentialRegistry verifiableCredentialRegistry;
 
   private static final String LOG_PREFIX_SETTING = "ssi.miw.logprefix";
 
-  @Inject
-  DataManagementApiConfiguration config;
-
+  @Inject DataManagementApiConfiguration config;
 
   @Override
   public void initialize(ServiceExtensionContext context) {
@@ -65,12 +58,15 @@ public class SSIIdentityServiceExtension implements ServiceExtension {
     var typeManager = context.getTypeManager();
     context.getMonitor().debug("Starting initializing of SSI Identity Service");
 
-    verifiableCredentials = new SSIVerifiableCredentialsImpl(walletApiService, verifiableCredentialRegistry);
+    verifiableCredentials =
+        new SSIVerifiableCredentialsImpl(walletApiService, verifiableCredentialRegistry);
     verifiablePresentation = new SSIVerifiablePresentationImpl(walletApiService);
     context.registerService(VerifiableCredentialRegistry.class, verifiableCredentialRegistry);
     context.registerService(SSIVerifiableCredentials.class, verifiableCredentials);
     context.registerService(SSIVerifiablePresentation.class, verifiablePresentation);
-    context.registerService(IdentityService.class,
-            new SSIIdentityServiceImpl(walletApiService, verifiableCredentials, verifiablePresentation));
+    context.registerService(
+        IdentityService.class,
+        new SSIIdentityServiceImpl(
+            walletApiService, verifiableCredentials, verifiablePresentation));
   }
 }

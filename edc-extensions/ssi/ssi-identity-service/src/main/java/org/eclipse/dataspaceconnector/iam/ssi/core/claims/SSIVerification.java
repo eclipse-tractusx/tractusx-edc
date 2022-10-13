@@ -15,9 +15,7 @@ package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 
-/**
- * Verification interface to verify a Verifiable Presentation or Verifiable Credential
- */
+/** Verification interface to verify a Verifiable Presentation or Verifiable Credential */
 public interface SSIVerification {
 
   boolean verifyPresentation(VerifiablePresentationDto vp);

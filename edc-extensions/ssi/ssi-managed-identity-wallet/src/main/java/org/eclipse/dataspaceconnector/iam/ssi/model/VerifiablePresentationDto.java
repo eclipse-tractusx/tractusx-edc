@@ -14,7 +14,6 @@
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class VerifiablePresentationDto {
@@ -33,12 +32,13 @@ public class VerifiablePresentationDto {
 
   private final LdProofDto proof;
 
-  public VerifiablePresentationDto(@JsonProperty("@context") List<String> context,
-                                   @JsonProperty("id") String id,
-                                   @JsonProperty("type") List<String> type,
-                                   @JsonProperty("holder") String holder,
-                                   @JsonProperty("verifiableCredential") List<VerifiableCredentialDto> verifiableCredentials,
-                                   @JsonProperty("proof") LdProofDto proof) {
+  public VerifiablePresentationDto(
+      @JsonProperty("@context") List<String> context,
+      @JsonProperty("id") String id,
+      @JsonProperty("type") List<String> type,
+      @JsonProperty("holder") String holder,
+      @JsonProperty("verifiableCredential") List<VerifiableCredentialDto> verifiableCredentials,
+      @JsonProperty("proof") LdProofDto proof) {
     this.context = context;
     this.id = id;
     this.type = type;

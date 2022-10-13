@@ -107,6 +107,12 @@
             <name>Danubtech</name>
             <url>https://repo.danubetech.com/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <name>jitpack</name>
+            <url>https://jitpack.io</url>
+        </repository>
+
         <repository> <!-- To be able to use edc snapshot "releases" -->
             <id>sonatype-snapshots</id>
             <snapshots>

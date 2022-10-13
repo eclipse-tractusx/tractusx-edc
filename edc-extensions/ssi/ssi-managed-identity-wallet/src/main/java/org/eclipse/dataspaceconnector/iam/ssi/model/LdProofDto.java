@@ -13,7 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LdProofDto {
@@ -38,16 +37,17 @@ public class LdProofDto {
 
   private final String nonce;
 
-  public LdProofDto(@JsonProperty("type") String type,
-                    @JsonProperty("created") String created,
-                    @JsonProperty("proofPurpose") String proofPurpose,
-                    @JsonProperty("verificationMethod") String verificationMethod,
-                    @JsonProperty("jws") String jws,
-                    @JsonProperty("proofValue") String proofValue,
-                    @JsonProperty("creator") String creator,
-                    @JsonProperty("domain") String domain,
-                    @JsonProperty("challenge") String challenge,
-                    @JsonProperty("nonce") String nonce) {
+  public LdProofDto(
+      @JsonProperty("type") String type,
+      @JsonProperty("created") String created,
+      @JsonProperty("proofPurpose") String proofPurpose,
+      @JsonProperty("verificationMethod") String verificationMethod,
+      @JsonProperty("jws") String jws,
+      @JsonProperty("proofValue") String proofValue,
+      @JsonProperty("creator") String creator,
+      @JsonProperty("domain") String domain,
+      @JsonProperty("challenge") String challenge,
+      @JsonProperty("nonce") String nonce) {
     this.type = type;
     this.created = created;
     this.proofPurpose = proofPurpose;

@@ -36,14 +36,15 @@ public class VerifiableCredentialDto {
 
   private final LdProofDto proof;
 
-  public VerifiableCredentialDto(@JsonProperty("id") String id,
-                                 @JsonProperty("@context") List<String> context,
-                                 @JsonProperty("type") List<String> type,
-                                 @JsonProperty("issuer") String issuer,
-                                 @JsonProperty("issuanceDate") String issuanceDate,
-                                 @JsonProperty("expirationDate") String expirationDate,
-                                 @JsonProperty("credentialSubject") Map<String, Object> credentialSubject,
-                                 @JsonProperty("proof") LdProofDto proof) {
+  public VerifiableCredentialDto(
+      @JsonProperty("id") String id,
+      @JsonProperty("@context") List<String> context,
+      @JsonProperty("type") List<String> type,
+      @JsonProperty("issuer") String issuer,
+      @JsonProperty("issuanceDate") String issuanceDate,
+      @JsonProperty("expirationDate") String expirationDate,
+      @JsonProperty("credentialSubject") Map<String, Object> credentialSubject,
+      @JsonProperty("proof") LdProofDto proof) {
     this.id = id;
     this.context = context;
     this.type = type;

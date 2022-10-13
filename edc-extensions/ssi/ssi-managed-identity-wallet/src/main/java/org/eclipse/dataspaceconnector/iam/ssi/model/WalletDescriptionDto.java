@@ -14,49 +14,49 @@
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class WalletDescriptionDto {
-    private final String name;
+  private final String name;
 
-    private final String bpn;
+  private final String bpn;
 
-    private final String did;
+  private final String did;
 
-    private final String createdAt;
+  private final String createdAt;
 
-    private final List<VerifiableCredentialDto> verifiableCredentials;
+  private final List<VerifiableCredentialDto> verifiableCredentials;
 
-    public WalletDescriptionDto(@JsonProperty("name") String name,
-                                @JsonProperty("bpn") String bpn,
-                                @JsonProperty("did") String did,
-                                @JsonProperty("createdAt") String createdAt,
-                                @JsonProperty("vcs") List<VerifiableCredentialDto> verifiableCredentials) {
-        this.name = name;
-        this.bpn = bpn;
-        this.did = did;
-        this.createdAt = createdAt;
-        this.verifiableCredentials = verifiableCredentials;
-    }
+  public WalletDescriptionDto(
+      @JsonProperty("name") String name,
+      @JsonProperty("bpn") String bpn,
+      @JsonProperty("did") String did,
+      @JsonProperty("createdAt") String createdAt,
+      @JsonProperty("vcs") List<VerifiableCredentialDto> verifiableCredentials) {
+    this.name = name;
+    this.bpn = bpn;
+    this.did = did;
+    this.createdAt = createdAt;
+    this.verifiableCredentials = verifiableCredentials;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getBpn() {
-        return bpn;
-    }
+  public String getBpn() {
+    return bpn;
+  }
 
-    public String getDid() {
-        return did;
-    }
+  public String getDid() {
+    return did;
+  }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
+  public String getCreatedAt() {
+    return createdAt;
+  }
 
-    public List<VerifiableCredentialDto> getVerifiableCredentials() {
-        return verifiableCredentials;
-    }
+  public List<VerifiableCredentialDto> getVerifiableCredentials() {
+    return verifiableCredentials;
+  }
 }

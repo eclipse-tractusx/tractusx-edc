@@ -15,13 +15,12 @@ package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationRequestDto;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation {
 
@@ -32,22 +31,22 @@ public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation 
   }
 
   /**
-   * Generates a Verifiable Presentation by requesting it from the IdentityWalletAPI Service with
-   * a given VerifiableCredentialDto
+   * Generates a Verifiable Presentation by requesting it from the IdentityWalletAPI Service with a
+   * given VerifiableCredentialDto
+   *
    * @param vc
    * @return VerifiablePresentationDto
    * @throws JsonProcessingException
    */
   @Override
-  public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException {
+  public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc)
+      throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     List<VerifiableCredentialDto> credentialDtoList = new ArrayList<>();
     credentialDtoList.add(vc);
 
-    VerifiablePresentationRequestDto vpRequest = new VerifiablePresentationRequestDto(
-            walletApiService.getOwnerBPN(),
-            credentialDtoList
-    );
+    VerifiablePresentationRequestDto vpRequest =
+        new VerifiablePresentationRequestDto(walletApiService.getOwnerBPN(), credentialDtoList);
 
     String vpRequestJsonString = mapper.writeValueAsString(vpRequest);
     String vpAsString = walletApiService.issueVerifiablePresentation(vpRequestJsonString);

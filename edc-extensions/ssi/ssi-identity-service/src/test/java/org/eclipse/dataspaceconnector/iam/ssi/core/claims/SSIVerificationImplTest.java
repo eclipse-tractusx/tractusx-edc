@@ -13,21 +13,20 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ipfs.multibase.Base58;
+import java.io.IOException;
 import org.eclipse.dataspaceconnector.iam.ssi.core.did.DidDocumentDto;
 import org.eclipse.dataspaceconnector.iam.ssi.core.did.DidVerificationMethodDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SSIVerificationImplTest {
 
@@ -39,7 +38,6 @@ public class SSIVerificationImplTest {
 
   private SSIVerificationImpl verification;
   private ManagedIdentityWalletApiServiceImpl mockWallet;
-
 
   @BeforeEach
   public void setUp() throws IOException {
@@ -57,16 +55,14 @@ public class SSIVerificationImplTest {
     when(mockWallet.resolveDid(anyString())).thenReturn(didDoc);
   }
 
-
   @Test
   public void testVerifyPresentation_Success() throws IOException {
-    //given
+    // given
     DidVerificationMethodDto didVerifyMethod = didDocumentDto.getVerificationMethodDtos().get(0);
     byte[] publicKey = Base58.decode(didVerifyMethod.getPublicKeyBase58());
-    //when
+    // when
     Boolean result = verification.verifyPresentation(verifiablePresentationDto);
-    //then
+    // then
     assertEquals(result, true);
   }
-
 }

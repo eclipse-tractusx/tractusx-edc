@@ -13,6 +13,12 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
@@ -20,16 +26,10 @@ import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class SSIDidResolverTest {
 
   private ManagedIdentityWalletApiServiceImpl walletControllerMock =
-          mock(ManagedIdentityWalletApiServiceImpl.class);
+      mock(ManagedIdentityWalletApiServiceImpl.class);
 
   private SSIDidResolverImpl didResolver;
 
@@ -47,16 +47,16 @@ public class SSIDidResolverTest {
     }
   }
 
-
   @Test
   public void resolveDidDocumentTest() throws JsonProcessingException {
-    //given
+    // given
     String did = "1";
     when(walletControllerMock.resolveDid(anyString())).thenReturn(DID_DOCUMENT_STRING);
-    DidDocumentDto expectedDidDocument = new ObjectMapper().readValue(DID_DOCUMENT_STRING, DidDocumentDto.class);
-    //when
+    DidDocumentDto expectedDidDocument =
+        new ObjectMapper().readValue(DID_DOCUMENT_STRING, DidDocumentDto.class);
+    // when
     DidDocumentDto result = didResolver.resolveDid(did);
-    //then
+    // then
     assertThat(expectedDidDocument.getId()).isEqualTo(result.getId());
   }
 }

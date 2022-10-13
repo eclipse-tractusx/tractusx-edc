@@ -29,24 +29,27 @@ public class SSIClaims {
   SSIVerifiableCredentials verifiableCredentials;
   SSIVerifiablePresentation verifiablePresentation;
 
-  public SSIClaims(SSIVerifiableCredentials verifiableCredentials, SSIVerifiablePresentation verifiablePresentation) {
+  public SSIClaims(
+      SSIVerifiableCredentials verifiableCredentials,
+      SSIVerifiablePresentation verifiablePresentation) {
     this.verifiableCredentials = verifiableCredentials;
     this.verifiablePresentation = verifiablePresentation;
   }
 
-  public VerifiablePresentationDto getVerifiablePresentation(String scope) throws Exception{
-    //Try to get Credentials with Scope
-    try{
+  public VerifiablePresentationDto getVerifiablePresentation(String scope) throws Exception {
+    // Try to get Credentials with Scope
+    try {
       VerifiableCredentialDto vc = verifiableCredentials.findByScope(scope);
       VerifiablePresentationDto vp = verifiablePresentation.getPresentation(vc);
 
       return vp;
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new VerifiableCredentialException(e.getMessage());
     }
   }
 
-  public TokenRepresentation makeTokenFromVerifiablePresentation(VerifiablePresentationDto vp) throws JsonProcessingException {
+  public TokenRepresentation makeTokenFromVerifiablePresentation(VerifiablePresentationDto vp)
+      throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     String tokenVP = mapper.writeValueAsString(vp);
     TokenRepresentation token = TokenRepresentation.Builder.newInstance().token(tokenVP).build();

@@ -13,6 +13,11 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Properties;
 import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -22,13 +27,6 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.TypeManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.util.Properties;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ManagedIdentityWalletApiServiceImplTest {
 
@@ -48,25 +46,26 @@ public class ManagedIdentityWalletApiServiceImplTest {
   private String VALID_WALLET_DESCRIPTION_RESPONSE;
   private String VALID_DID_DOCUMENT_RESPONSE;
 
-
   @BeforeEach
   public void setUp() throws IOException {
     var stream = getClass().getClassLoader().getResourceAsStream("walletConfig.properties");
     configProps = new Properties();
     configProps.load(stream);
 
-    VALID_WALLET_DESCRIPTION_RESPONSE = new String(getClass()
-            .getClassLoader()
-            .getResourceAsStream(WALLET_DESCRIPTION_JSON)
-            .readAllBytes());
+    VALID_WALLET_DESCRIPTION_RESPONSE =
+        new String(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream(WALLET_DESCRIPTION_JSON)
+                .readAllBytes());
 
-    VALID_DID_DOCUMENT_RESPONSE = new String(getClass()
-            .getClassLoader()
-            .getResourceAsStream(DID_DOCUMENT_JSON)
-            .readAllBytes());
+    VALID_DID_DOCUMENT_RESPONSE =
+        new String(
+            getClass().getClassLoader().getResourceAsStream(DID_DOCUMENT_JSON).readAllBytes());
 
     this.mockWebServer = new MockWebServer();
-    this.walletApiService = new ManagedIdentityWalletApiServiceImpl(
+    this.walletApiService =
+        new ManagedIdentityWalletApiServiceImpl(
             mock(Monitor.class),
             "testService",
             walletConfigMock,
@@ -77,20 +76,23 @@ public class ManagedIdentityWalletApiServiceImplTest {
 
   @Test
   public void verifyGetKeyCloakTokenSuccess() throws IOException {
-    //given
-    //TODO mock http client response and check
-    mockWebServer.enqueue(new MockResponse()
+    // given
+    // TODO mock http client response and check
+    mockWebServer.enqueue(
+        new MockResponse()
             .addHeader("Content-Type", "application/json; charset=utf-8")
             .setResponseCode(500));
     AccessTokenRequestDto tokenMock = mock(AccessTokenRequestDto.class);
-    when(walletConfigMock.getAccessTokenURL()).thenReturn(configProps.getProperty(ACCESSTOKEN_URL_PROP));
+    when(walletConfigMock.getAccessTokenURL())
+        .thenReturn(configProps.getProperty(ACCESSTOKEN_URL_PROP));
     when(tokenMock.getGrantType()).thenReturn(configProps.getProperty(ACCESSTOKEN_GRANDTYPE_PROP));
     when(tokenMock.getCliendId()).thenReturn(configProps.getProperty(ACCESSTOKEN_CLIENTID_PROP));
-    when(tokenMock.getClient_secret()).thenReturn(configProps.getProperty(ACCESSTOKEN_CLIENTSECRET_PROP));
+    when(tokenMock.getClient_secret())
+        .thenReturn(configProps.getProperty(ACCESSTOKEN_CLIENTSECRET_PROP));
     when(tokenMock.getScope()).thenReturn(configProps.getProperty(ACCESSTOKEN_SCOPE_PROP));
-    //when
-    //AccessTokenDescriptionDto result = walletApiService.getKeyCloakToken(tokenMock);
-    //then
-    //assertNotNull(result);
+    // when
+    // AccessTokenDescriptionDto result = walletApiService.getKeyCloakToken(tokenMock);
+    // then
+    // assertNotNull(result);
   }
 }

@@ -18,14 +18,11 @@ import org.junit.jupiter.api.Test;
 
 public class SSIIdentityServiceExtensionTest {
 
-
   private static final String VC_SCOPE = "Membership";
   private SSIIdentityServiceImpl identityService;
 
   @Test
-  void testNoConfigObtainClientCredentials(){
+  void testNoConfigObtainClientCredentials() {
     identityService.obtainClientCredentials(VC_SCOPE);
   }
-
-
 }

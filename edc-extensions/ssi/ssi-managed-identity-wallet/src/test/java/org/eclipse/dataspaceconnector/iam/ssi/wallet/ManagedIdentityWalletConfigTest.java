@@ -18,7 +18,5 @@ import org.junit.jupiter.api.Test;
 public class ManagedIdentityWalletConfigTest {
 
   @Test
-  public void verifyWalletConfigBuilder(){
-
-  }
+  public void verifyWalletConfigBuilder() {}
 }

@@ -33,14 +33,15 @@ public class DidVerificationMethodDto {
 
   private final String publicKeyJwk;
 
-  public DidVerificationMethodDto(@JsonProperty("id") String id,
-                                  @JsonProperty("type") String type,
-                                  @JsonProperty("controller") String controller,
-                                  @JsonProperty("publicKeyBase64") String publicKeyBase64,
-                                  @JsonProperty("publicKeyBase58") String publicKeyBase58,
-                                  @JsonProperty("publicKeyHex") String publicKeyHex,
-                                  @JsonProperty("publicKeyMultibase") String publicKeyMultibase,
-                                  @JsonProperty("publicKeyJwk") String publicKeyJwk) {
+  public DidVerificationMethodDto(
+      @JsonProperty("id") String id,
+      @JsonProperty("type") String type,
+      @JsonProperty("controller") String controller,
+      @JsonProperty("publicKeyBase64") String publicKeyBase64,
+      @JsonProperty("publicKeyBase58") String publicKeyBase58,
+      @JsonProperty("publicKeyHex") String publicKeyHex,
+      @JsonProperty("publicKeyMultibase") String publicKeyMultibase,
+      @JsonProperty("publicKeyJwk") String publicKeyJwk) {
     this.id = id;
     this.type = type;
     this.controller = controller;

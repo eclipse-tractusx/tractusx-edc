@@ -13,31 +13,29 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 import org.eclipse.dataspaceconnector.spi.result.Result;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-
 public class SSIIdentityServiceImplTest {
-
 
   SSIIdentityServiceImpl identityService;
 
   @Test
-  public void obtainClientCredentialTest(){
-    //given
+  public void obtainClientCredentialTest() {
+    // given
     String scope = "TestCredentials";
     VerifiablePresentationDto expectedVP = null;
-    TokenRepresentation expectedToken = TokenRepresentation.Builder.newInstance().token(expectedVP.toString()).build();
+    TokenRepresentation expectedToken =
+        TokenRepresentation.Builder.newInstance().token(expectedVP.toString()).build();
     Result<TokenRepresentation> expectedTokenPresentation = Result.success(expectedToken);
-    //when
+    // when
     Result<TokenRepresentation> result = identityService.obtainClientCredentials(scope);
-    //then
+    // then
     assertEquals(expectedTokenPresentation, result);
   }
 }

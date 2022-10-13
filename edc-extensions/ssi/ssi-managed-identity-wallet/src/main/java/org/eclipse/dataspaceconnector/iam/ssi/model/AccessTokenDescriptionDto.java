@@ -17,60 +17,61 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AccessTokenDescriptionDto {
 
-    private final String tokenID;
+  private final String tokenID;
 
-    private final String accessToken;
+  private final String accessToken;
 
-    private final String expiresIn;
+  private final String expiresIn;
 
-    private final String refreshExpiresIn;
+  private final String refreshExpiresIn;
 
-    private final String tokenType;
-    private final String notBeforePolicy;
-    private final String scope;
+  private final String tokenType;
+  private final String notBeforePolicy;
+  private final String scope;
 
-    @JsonCreator
-    public AccessTokenDescriptionDto(@JsonProperty("access_token") String accessToken,
-                                     @JsonProperty("expires_in") String expiresIn,
-                                     @JsonProperty("id_token") String tokenID,
-                                     @JsonProperty("not-before-policy") String notBeforePolicy,
-                                     @JsonProperty("refresh_expires_in") String refreshExpiresIn,
-                                     @JsonProperty("scope") String scope,
-                                     @JsonProperty("token_type") String tokenType){
-            this.tokenID = tokenID;
-            this.accessToken = accessToken;
-            this.expiresIn = expiresIn;
-            this.refreshExpiresIn = refreshExpiresIn;
-            this.tokenType = tokenType;
-            this.notBeforePolicy = notBeforePolicy;
-            this.scope = scope;
-    }
+  @JsonCreator
+  public AccessTokenDescriptionDto(
+      @JsonProperty("access_token") String accessToken,
+      @JsonProperty("expires_in") String expiresIn,
+      @JsonProperty("id_token") String tokenID,
+      @JsonProperty("not-before-policy") String notBeforePolicy,
+      @JsonProperty("refresh_expires_in") String refreshExpiresIn,
+      @JsonProperty("scope") String scope,
+      @JsonProperty("token_type") String tokenType) {
+    this.tokenID = tokenID;
+    this.accessToken = accessToken;
+    this.expiresIn = expiresIn;
+    this.refreshExpiresIn = refreshExpiresIn;
+    this.tokenType = tokenType;
+    this.notBeforePolicy = notBeforePolicy;
+    this.scope = scope;
+  }
 
-    public String getTokenID() {
-        return tokenID;
-    }
+  public String getTokenID() {
+    return tokenID;
+  }
 
-    public String getAccessToken() {
-        return accessToken;
-    }
+  public String getAccessToken() {
+    return accessToken;
+  }
 
-    public String getExpiresIn() {
-        return expiresIn;
-    }
+  public String getExpiresIn() {
+    return expiresIn;
+  }
 
-    public String getRefreshExpiresIn() {
-        return refreshExpiresIn;
-    }
+  public String getRefreshExpiresIn() {
+    return refreshExpiresIn;
+  }
 
-    public String getTokenType() {
-        return tokenType;
-    }
+  public String getTokenType() {
+    return tokenType;
+  }
 
-    public String getNotBeforePolicy() {
-        return notBeforePolicy;
-    }
+  public String getNotBeforePolicy() {
+    return notBeforePolicy;
+  }
 
-    public String getScope() {
-        return scope;
-    }
+  public String getScope() {
+    return scope;
+  }
 }

@@ -27,7 +27,8 @@ public class VerifiableCredentialException extends RuntimeException {
     super(cause);
   }
 
-  public VerifiableCredentialException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+  public VerifiableCredentialException(
+      String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 }

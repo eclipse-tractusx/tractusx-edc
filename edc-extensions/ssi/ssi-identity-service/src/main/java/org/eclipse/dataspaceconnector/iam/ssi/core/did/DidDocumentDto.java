@@ -14,7 +14,6 @@
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class DidDocumentDto {
@@ -37,15 +36,16 @@ public class DidDocumentDto {
 
   private final List<DidServiceDto> services;
 
-  public DidDocumentDto(@JsonProperty("id") String id,
-                        @JsonProperty("@context") List<String> context,
-                        @JsonProperty("verificationMethod") List<DidVerificationMethodDto> verificationMethodDtos,
-                        @JsonProperty("authentication") List<Object> authenticationVerificationMethods,
-                        @JsonProperty("assertionMethod") List<Object> assertionMethodVerificationMethods,
-                        @JsonProperty("keyAgreement") List<Object> keyAgreementVerificationMethods,
-                        @JsonProperty("capabilityInvocation") List<Object> capabilityInvocationVerificationMethods,
-                        @JsonProperty("capabilityDelegation") List<Object> capabilityDelegationVerificationMethods,
-                        @JsonProperty("service") List<DidServiceDto> services) {
+  public DidDocumentDto(
+      @JsonProperty("id") String id,
+      @JsonProperty("@context") List<String> context,
+      @JsonProperty("verificationMethod") List<DidVerificationMethodDto> verificationMethodDtos,
+      @JsonProperty("authentication") List<Object> authenticationVerificationMethods,
+      @JsonProperty("assertionMethod") List<Object> assertionMethodVerificationMethods,
+      @JsonProperty("keyAgreement") List<Object> keyAgreementVerificationMethods,
+      @JsonProperty("capabilityInvocation") List<Object> capabilityInvocationVerificationMethods,
+      @JsonProperty("capabilityDelegation") List<Object> capabilityDelegationVerificationMethods,
+      @JsonProperty("service") List<DidServiceDto> services) {
     this.id = id;
     this.context = context;
     this.verificationMethodDtos = verificationMethodDtos;

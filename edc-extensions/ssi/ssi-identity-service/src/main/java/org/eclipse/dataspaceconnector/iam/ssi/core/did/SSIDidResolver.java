@@ -19,9 +19,9 @@ public interface SSIDidResolver {
 
   /**
    * Resolve a DID or BPN via the MIW API endpoint
+   *
    * @param did as String or BPN
    * @return DidDocumentDto
    */
   DidDocumentDto resolveDid(String did) throws JsonProcessingException;
-
 }

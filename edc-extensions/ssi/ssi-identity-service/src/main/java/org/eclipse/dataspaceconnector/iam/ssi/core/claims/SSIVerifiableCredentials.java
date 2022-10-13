@@ -13,12 +13,9 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 
-/**
- * Interface for finding specific Verifiable Credentials within a given scope
- */
+/** Interface for finding specific Verifiable Credentials within a given scope */
 public interface SSIVerifiableCredentials {
 
   VerifiableCredentialDto findByScope(String scope);

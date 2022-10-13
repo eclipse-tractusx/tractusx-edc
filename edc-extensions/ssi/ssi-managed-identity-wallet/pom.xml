@@ -52,14 +52,6 @@
         <!-- EDC -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>core-spi</artifactId>
         </dependency>
         <dependency>
@@ -75,6 +67,11 @@
             <artifactId>http</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.danubetech</groupId>
             <artifactId>verifiable-credentials-java</artifactId>
@@ -90,11 +87,13 @@
             <artifactId>ld-signatures-java</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.github.multiformats</groupId>
             <artifactId>java-multibase</artifactId>
-            <version>1.1.0</version>
+            <version>v1.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
@@ -108,6 +107,33 @@
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>9.25.5</version>
         </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>net.catenax.edc.extensions.ssi</groupId>
+            <artifactId>ssi-spi</artifactId>
+            <version>0.1.3-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

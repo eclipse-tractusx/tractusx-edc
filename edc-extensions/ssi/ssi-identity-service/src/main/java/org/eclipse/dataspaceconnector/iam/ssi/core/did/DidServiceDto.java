@@ -14,7 +14,6 @@
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class DidServiceDto {
@@ -31,12 +30,13 @@ public class DidServiceDto {
 
   private final int priority;
 
-  public DidServiceDto(@JsonProperty("id") String id,
-                       @JsonProperty("type") String type,
-                       @JsonProperty("serviceEndpoint") String serviceEndpoint,
-                       @JsonProperty("recipientKeys") List<String> recipientKeys,
-                       @JsonProperty("routingKeys") List<String> routingKeys,
-                       @JsonProperty("priority") int priority) {
+  public DidServiceDto(
+      @JsonProperty("id") String id,
+      @JsonProperty("type") String type,
+      @JsonProperty("serviceEndpoint") String serviceEndpoint,
+      @JsonProperty("recipientKeys") List<String> recipientKeys,
+      @JsonProperty("routingKeys") List<String> routingKeys,
+      @JsonProperty("priority") int priority) {
     this.id = id;
     this.type = type;
     this.serviceEndpoint = serviceEndpoint;

@@ -21,9 +21,8 @@ public class VerifiablePresentationRequestDto {
 
   private final List<VerifiableCredentialDto> verifiableCredentials;
 
-
-  public VerifiablePresentationRequestDto(String holderIdentifier,
-                                          List<VerifiableCredentialDto> verifiableCredentials) {
+  public VerifiablePresentationRequestDto(
+      String holderIdentifier, List<VerifiableCredentialDto> verifiableCredentials) {
     this.holderIdentifier = holderIdentifier;
     this.verifiableCredentials = verifiableCredentials;
   }

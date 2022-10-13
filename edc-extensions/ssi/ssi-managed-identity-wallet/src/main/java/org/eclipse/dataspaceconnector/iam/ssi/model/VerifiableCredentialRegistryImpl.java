@@ -13,16 +13,19 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
+import static java.lang.String.format;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.String.format;
+public final class VerifiableCredentialRegistryImpl implements VerifiableCredentialRegistry {
 
-public final class VerifiableCredentialRegistryImpl implements VerifiableCredentialRegistry{
+  private static final VerifiableCredentialRegistry instance =
+      new VerifiableCredentialRegistryImpl();
 
-  private static final VerifiableCredentialRegistry instance = new VerifiableCredentialRegistryImpl();
-
-  public static VerifiableCredentialRegistry getInstance() { return instance; }
+  public static VerifiableCredentialRegistry getInstance() {
+    return instance;
+  }
 
   private final Map<String, VerifiableCredentialDto> verifiableCredentialMap;
 
@@ -35,13 +38,13 @@ public final class VerifiableCredentialRegistryImpl implements VerifiableCredent
     verifiableCredentialMap.put(vc.getType().get(0).toString(), vc);
   }
 
-  public void clearRegistry(){
+  public void clearRegistry() {
     this.verifiableCredentialMap.clear();
   }
 
   @Override
   public VerifiableCredentialDto getVerifiableCredential(String name) throws Exception {
-    if(verifiableCredentialMap.containsKey(name)){
+    if (verifiableCredentialMap.containsKey(name)) {
       return verifiableCredentialMap.get(name);
     } else {
       throw new Exception(format("Credential with type %s not found", name));

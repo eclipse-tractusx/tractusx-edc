@@ -21,10 +21,7 @@ import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 
-
-/**
- * Verification of the signature validation from a given Verifiable Presentation
- */
+/** Verification of the signature validation from a given Verifiable Presentation */
 public class SSIVerificationImpl implements SSIVerification {
 
   private final SSIDidResolver didResolver;
@@ -35,10 +32,10 @@ public class SSIVerificationImpl implements SSIVerification {
     this.walletApiService = walletApiService;
   }
 
-
   /**
-   * Verification of a given Presentation by consuming the validation
-   * Service Endpoint of the Wallet Identity Service
+   * Verification of a given Presentation by consuming the validation Service Endpoint of the Wallet
+   * Identity Service
+   *
    * @param vp
    * @return
    */
@@ -50,7 +47,7 @@ public class SSIVerificationImpl implements SSIVerification {
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       String jsonVP = mapper.writeValueAsString(vp);
       String validationResult = walletApiService.validateVerifablePresentation(jsonVP);
-      if(!validationResult.equals(null)){
+      if (!validationResult.equals(null)) {
         result = true;
       }
     } catch (Exception e) {

@@ -13,29 +13,25 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import org.junit.jupiter.api.Test;
 
 public class DidDocumentDtoTest {
 
   @Test
   public void didDocumentVerifyMapping() throws IOException {
-    //given
+    // given
     String jsonDidDocumentFilePath = "diddocument.json";
     String jsonDidDocumentString = "";
     DidDocumentDto didDoc = null;
-    //when
+    // when
     var stream = getClass().getClassLoader().getResourceAsStream(jsonDidDocumentFilePath);
     jsonDidDocumentString = new String(stream.readAllBytes());
     didDoc = new ObjectMapper().readValue(jsonDidDocumentString, DidDocumentDto.class);
-    //then
+    // then
     assertNotNull(didDoc);
   }
-
 }

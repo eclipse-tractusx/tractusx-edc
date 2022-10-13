@@ -14,26 +14,24 @@
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.dataspaceconnector.spi.EdcException;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class VerifiableCredentialDtoTest {
 
   private final String VC_File = "verifiablecredential.json";
 
   @Test
-  void testVerifiableCredentialMapper(){
+  void testVerifiableCredentialMapper() {
     try (var stream = getClass().getClassLoader().getResourceAsStream(VC_File)) {
       String vcJson = new String(stream.readAllBytes());
-      VerifiableCredentialDto vc = new ObjectMapper().readValue(vcJson, VerifiableCredentialDto.class);
-      assertThat(vc.getId()).isNotNull();
+      VerifiableCredentialDto vc =
+          new ObjectMapper().readValue(vcJson, VerifiableCredentialDto.class);
+      Assertions.assertNotNull(vc.getId());
     } catch (IOException e) {
       throw new EdcException(e.getMessage());
     }
   }
-
 }

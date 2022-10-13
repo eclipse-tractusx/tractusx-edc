@@ -13,28 +13,28 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
 
 public class VerifiablePresentationDtoTest {
 
   @Test
-  public void verifiablePresentationVerifyMapping(){
-    //given
+  public void verifiablePresentationVerifyMapping() {
+    // given
     String jsonVpFilePath = "verifiablepresentation.json";
     String jsonVpString = "";
     VerifiablePresentationDto vp = null;
-    //when
-    try(var stream = getClass().getClassLoader().getResourceAsStream(jsonVpFilePath)){
+    // when
+    try (var stream = getClass().getClassLoader().getResourceAsStream(jsonVpFilePath)) {
       jsonVpString = new String(stream.readAllBytes());
       vp = new ObjectMapper().readValue(jsonVpString, VerifiablePresentationDto.class);
-    } catch (Exception e){
+    } catch (Exception e) {
       fail(e.getMessage());
     }
-    //then
+    // then
     assertNotNull(vp);
   }
 }
