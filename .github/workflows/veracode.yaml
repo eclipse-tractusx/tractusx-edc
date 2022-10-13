@@ -87,7 +87,7 @@ jobs:
         with:
           appname: product-edc/${{ matrix.name }}
           createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
+          version: ${{ matrix.name }}-${{ github.sha }}
           filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.zip
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
@@ -138,7 +138,7 @@ jobs:
         with:
           appname: product-edc/${{ matrix.name }}
           createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
+          version: ${{ matrix.name }}-${{ github.sha }}
           filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.zip
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
