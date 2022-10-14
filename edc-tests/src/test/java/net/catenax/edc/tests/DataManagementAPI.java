@@ -181,7 +181,6 @@ public class DataManagementAPI {
   private CloseableHttpResponse sendRequest(HttpRequestBase request) throws IOException {
     request.addHeader("X-Api-Key", dataMgmtAuthKey);
 
-    System.out.println(String.format("Send %-6s %s", request.getMethod(), request.getURI()));
     log.debug(String.format("Send %-6s %s", request.getMethod(), request.getURI()));
 
     final CloseableHttpResponse response = httpClient.execute(request);
