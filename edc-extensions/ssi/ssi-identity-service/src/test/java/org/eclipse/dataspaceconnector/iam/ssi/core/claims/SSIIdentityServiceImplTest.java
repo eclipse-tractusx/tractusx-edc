@@ -30,7 +30,7 @@ public class SSIIdentityServiceImplTest {
   public void obtainClientCredentialTest() {
     // given
     String scope = "TestCredentials";
-    TokenParameters tokenParameters = TokenParameters.Builder.newInstance().scope(scope).build();
+    TokenParameters tokenParameters = TokenParameters.Builder.newInstance().scope(scope).audience("").build();
     VerifiablePresentationDto expectedVP = null;
     TokenRepresentation expectedToken =
         TokenRepresentation.Builder.newInstance().token(expectedVP.toString()).build();

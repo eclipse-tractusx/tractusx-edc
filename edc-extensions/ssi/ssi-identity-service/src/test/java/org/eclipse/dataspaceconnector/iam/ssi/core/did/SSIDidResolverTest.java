@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
-import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ public class SSIDidResolverTest {
 
   @BeforeEach
   public void setUp() {
-    didResolver = new SSIDidResolverImpl(mock(IdentityWalletApiService.class));
+    didResolver = new SSIDidResolverImpl(walletControllerMock);
     try (var stream = getClass().getClassLoader().getResourceAsStream(DID_DOCUMENT_FILE)) {
       DID_DOCUMENT_STRING = new String(stream.readAllBytes());
     } catch (Exception e) {
