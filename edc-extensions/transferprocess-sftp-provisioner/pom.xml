@@ -18,7 +18,7 @@
     <parent>
         <groupId>net.catenax.edc.extensions</groupId>
         <artifactId>edc-extensions</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -119,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-policy</artifactId>
+            <artifactId>policy-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>

@@ -15,8 +15,8 @@
 
 package net.catenax.edc.transferprocess.sftp.provisioner;
 
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.EdcException;
-import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.system.configuration.Config;
 
 import java.net.MalformedURLException;

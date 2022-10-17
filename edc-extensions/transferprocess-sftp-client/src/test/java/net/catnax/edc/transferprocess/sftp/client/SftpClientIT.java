@@ -25,7 +25,7 @@ import net.catenax.edc.transferprocess.sftp.provisioner.SftpLocation;
 import net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension;
 import net.catenax.edc.transferprocess.sftp.provisioner.SftpUser;
 import org.eclipse.dataspaceconnector.junit.extensions.EdcExtension;
-import org.eclipse.dataspaceconnector.spi.system.Requires;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transfer.provision.ProvisionManager;
