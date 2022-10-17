@@ -1,0 +1,102 @@
+/*
+ *  Copyright (c) 2022 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - Initial implementation
+ *
+ */
+
+package org.eclipse.tractusx.edc.boot.runtime;
+
+import static java.lang.ClassLoader.getSystemClassLoader;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Properties;
+import org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime;
+import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.dataspaceconnector.spi.system.configuration.Config;
+import org.eclipse.dataspaceconnector.spi.system.configuration.ConfigFactory;
+import org.jetbrains.annotations.NotNull;
+
+public class MultiTenantRuntime extends BaseRuntime {
+
+  private final @NotNull Monitor monitor = createMonitor();
+
+  public static void main(String[] args) {
+    var runtime = new MultiTenantRuntime();
+    runtime.boot();
+  }
+
+  protected void boot() {
+    loadTenantsConfig().getConfig("edc.tenants").partition().forEach(this::bootTenant);
+  }
+
+  private void bootTenant(Config tenantConfig) {
+    var baseProperties = System.getProperties();
+    tenantConfig.getRelativeEntries().forEach(System::setProperty);
+    var entries =
+        Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+            .map(this::toUrl)
+            .toArray(URL[]::new);
+
+    try (var classLoader = URLClassLoader.newInstance(entries, getSystemClassLoader())) {
+      var runtimeThread =
+          new Thread(
+              () -> {
+                try {
+                  Thread.currentThread().setContextClassLoader(classLoader);
+                  super.boot();
+                } catch (Exception e) {
+                  throw new EdcException(e);
+                }
+              });
+
+      monitor.info("Starting tenant " + tenantConfig.currentNode());
+      runtimeThread.start();
+
+      runtimeThread.join(20_000);
+
+    } catch (InterruptedException | IOException e) {
+      throw new EdcException(e);
+    } finally {
+      System.setProperties(baseProperties);
+    }
+  }
+
+  @NotNull
+  private Config loadTenantsConfig() {
+    var tenantsPath = System.getProperty("edc.tenants.path");
+    if (tenantsPath == null) {
+      throw new EdcException("No edc.tenants.path mandatory property provided");
+    }
+    try (var is = Files.newInputStream(Path.of(tenantsPath))) {
+      var properties = new Properties();
+      properties.load(is);
+      return ConfigFactory.fromProperties(properties);
+    } catch (IOException e) {
+      throw new EdcException(e);
+    }
+  }
+
+  private URL toUrl(String entry) {
+    try {
+      return new File(entry).toURI().toURL();
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}

@@ -28,6 +28,7 @@
         <module>edc-controlplane</module>
         <module>edc-dataplane</module>
         <module>edc-tests</module>
+        <module>samples</module>
     </modules>
 
     <inceptionYear>2022</inceptionYear>
@@ -347,13 +348,13 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
-                <artifactId>xsuaa-authenticator</artifactId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>cx-oauth2</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.tractusx.edc.extensions</groupId>
-                <artifactId>cx-oauth2</artifactId>
+                <artifactId>multi-tenancy</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

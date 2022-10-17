@@ -21,8 +21,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
-    <artifactId>edc-extensions</artifactId>
+    <groupId>org.eclipse.tractusx.edc.samples</groupId>
+    <artifactId>samples</artifactId>
     <packaging>pom</packaging>
 
     <properties>
@@ -30,13 +30,7 @@
     </properties>
 
     <modules>
-        <module>business-partner-validation</module>
-        <module>cx-oauth2</module>
-        <module>data-encryption</module>
-        <module>dataplane-selector-configuration</module>
-        <module>hashicorp-vault</module>
-        <module>multi-tenancy</module>
-        <module>postgresql-migration</module>
+        <module>sample-multi-tenancy</module>
     </modules>
 
 </project>
