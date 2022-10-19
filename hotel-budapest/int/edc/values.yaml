@@ -8,7 +8,7 @@ backend:
 postgres:
   enabled: true
   auth:
-    password: "psql_password"
+    password: &psqlPassword "psql_password"
     username: &psqlUsername "postgresql_sandbox_user"
     database: "edc"
   persistence:
@@ -20,7 +20,6 @@ dataplane:
     repository: ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
     tag: latest
     pullPolicy: Always
-  envSecretName: "{{ .Release.Name }}-dataplane-secret"
   edc:
     endpoints:
       default:
@@ -37,7 +36,7 @@ dataplane:
         path: /dataplane/metrics
   ingresses:
     - enabled: true
-      hostname: "{{ .Release.Name }}.dev.catena-x.net"
+      hostname: "{{ .Release.Name }}.int.catena-x.net"
       endpoints:
         - default
         - public
@@ -51,10 +50,13 @@ dataplane:
       otel.javaagent.enabled=false
       otel.javaagent.debug=false
   env:
-    JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
-    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://controlplane:8182/validation/token
+    EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: "http://{{ .Release.Name }}-controlplane:8182/validation/token"
     EDC_VAULT_HASHICORP_URL: http://vault:8200
+    EDC_VAULT_HASHICORP_TOKEN: token
+    EDC_VAULT_HASHICORP_API_SECRET_PATH: /v1/secret
+    EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH: /v1/sys/health
+    EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK: "true"
 
 controlplane:
   enabled: true
@@ -84,7 +86,7 @@ controlplane:
         path: /controlplane/metrics
   ingresses:
     - enabled: true
-      hostname: "{{ .Release.Name }}.dev.catena-x.net"
+      hostname: "{{ .Release.Name }}.int.catena-x.net"
       endpoints:
         - default
         - data
@@ -98,7 +100,6 @@ controlplane:
     properties: |-
       otel.javaagent.enabled=false
       otel.javaagent.debug=false
-  envSecretName: "{{ .Release.Name }}-controlplane-secret"
   env:
     EDC_OAUTH_CLIENT_ID: oauth client id
     EDC_OAUTH_PROVIDER_JWKS_URL: "http://daps:4567/jwks.json"
@@ -106,12 +107,12 @@ controlplane:
     EDC_OAUTH_PRIVATE_KEY_ALIAS: vault private key alias
     EDC_OAUTH_PUBLIC_KEY_ALIAS: vault certificate alias
     EDC_OAUTH_PROVIDER_AUDIENCE: idsc:IDS_CONNECTORS_ALL
-    IDS_WEBHOOK_ADDRESS: http://controlplane:8282
-    EDC_IDS_ENDPOINT: "http://controlplane:8282/api/v1/ids"
+    IDS_WEBHOOK_ADDRESS: "https://{{ .Release.Name }}.int.catena-x.net/api/v1/ids"
+    EDC_IDS_ENDPOINT: "https://{{ .Release.Name }}.int.catena-x.net/api/v1/ids"
     EDC_IDS_DESCRIPTION: "{{ .Release.Name }} EDC Control Plane"
     EDC_DATASOURCE_ASSET_NAME: asset
     EDC_DATASOURCE_ASSET_USER: *psqlUsername
-    EDC_DATASOURCE_ASSET_URL: &psqlJdbcUrl "jdbc:postgresql://postgresql:5432/edc"
+    EDC_DATASOURCE_ASSET_URL: &psqlJdbcUrl "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
     EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
     EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
     EDC_DATASOURCE_CONTRACTDEFINITION_URL: *psqlJdbcUrl
@@ -124,15 +125,25 @@ controlplane:
     EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
     EDC_DATASOURCE_TRANSFERPROCESS_USER: *psqlUsername
     EDC_DATASOURCE_TRANSFERPROCESS_URL: *psqlJdbcUrl
-    EDC_DATAPLANE_SELECTOR_HTTPPROXY_URL: http://dataplane:9999/api/dataplane/control
+    EDC_DATAPLANE_SELECTOR_HTTPPROXY_URL: http://{{ .Release.Name }}-dataplane:9999/api/dataplane/control
     EDC_DATAPLANE_SELECTOR_HTTPPROXY_SOURCETYPES : HttpData
     EDC_DATAPLANE_SELECTOR_HTTPPROXY_DESTINATIONTYPES: HttpProxy
     EDC_DATAPLANE_SELECTOR_HTTPPROXY_PROPERTIES: >-
       {
-        "publicApiUrl": "http://dataplane:8185/dataplane/api/public"
+        "publicApiUrl": "https://{{ .Release.Name }}.int.catena-x.net/dataplane/api/public"
       }
-    EDC_TRANSFER_PROXY_ENDPOINT: http://dataplane:8185/dataplane/api/public
+    EDC_TRANSFER_PROXY_ENDPOINT: http://{{ .Release.Name }}-dataplane:8185/dataplane/api/public
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: vault token signer private key
     EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: vault token signer public key
     EDC_RECEIVER_HTTP_ENDPOINT: http://backend
-    EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
+    EDC_VAULT_HASHICORP_URL: http://vault:8200
+    EDC_VAULT_HASHICORP_TOKEN: token
+    EDC_VAULT_HASHICORP_API_SECRET_PATH: /v1/secret
+    EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH: /v1/sys/health
+    EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK: "true"
+    EDC_API_AUTH_KEY: *psqlPassword
+    EDC_DATASOURCE_ASSET_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_POLICY_PASSWORD: *psqlPassword
+    EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD: *psqlPassword
