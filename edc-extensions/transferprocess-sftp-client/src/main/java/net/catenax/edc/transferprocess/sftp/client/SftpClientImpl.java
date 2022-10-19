@@ -20,8 +20,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpLocation;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpUser;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
@@ -32,7 +32,6 @@ import net.schmizz.sshj.userauth.UserAuthException;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;

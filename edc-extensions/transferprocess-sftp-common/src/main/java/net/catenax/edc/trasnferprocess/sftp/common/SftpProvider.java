@@ -12,19 +12,11 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp.provisioner;
+package net.catenax.edc.trasnferprocess.sftp.common;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
-@Builder
-@Getter
-@ToString
-@EqualsAndHashCode
-public class SftpLocation {
-    private final String host;
-    private final Integer port;
-    private final String path;
+public interface SftpProvider {
+    void createUser(SftpUser user);
+    void deleteUser(SftpUser user);
+    void createLocation(SftpLocation location);
+    void deleteLocation(SftpLocation location);
 }

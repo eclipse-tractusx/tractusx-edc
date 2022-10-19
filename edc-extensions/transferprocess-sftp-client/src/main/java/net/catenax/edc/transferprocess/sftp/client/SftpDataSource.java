@@ -16,8 +16,8 @@ package net.catenax.edc.transferprocess.sftp.client;
 
 import lombok.Builder;
 import lombok.NonNull;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpLocation;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpUser;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
 
 import java.util.stream.Stream;

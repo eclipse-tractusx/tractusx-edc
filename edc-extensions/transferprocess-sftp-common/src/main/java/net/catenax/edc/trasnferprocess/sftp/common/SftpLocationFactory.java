@@ -12,11 +12,8 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp.provisioner;
+package net.catenax.edc.trasnferprocess.sftp.common;
 
-public interface SftpProvider {
-    void createUser(SftpUser user);
-    void deleteUser(SftpUser user);
-    void createLocation(SftpLocation location);
-    void deleteLocation(SftpLocation location);
+public interface SftpLocationFactory {
+    SftpLocation createSftpLocation(String transferProcessId);
 }

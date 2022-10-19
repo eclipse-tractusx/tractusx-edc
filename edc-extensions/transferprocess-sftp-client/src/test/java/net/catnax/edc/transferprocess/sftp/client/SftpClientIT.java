@@ -15,23 +15,17 @@
 package net.catnax.edc.transferprocess.sftp.client;
 
 import lombok.Cleanup;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.catenax.edc.transferprocess.sftp.client.SftpClient;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpLocation;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpUser;
+import net.catenax.edc.transferprocess.sftp.client.SftpClientImpl;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
 import org.eclipse.dataspaceconnector.junit.extensions.EdcExtension;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.transfer.provision.ProvisionManager;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -39,7 +33,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -62,11 +55,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension.SFTP_HOST;
-import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension.SFTP_PATH;
-import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension.SFTP_PORT;
-import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension.SFTP_USER_NAME;
-import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerExtension.SFTP_USER_PASSWORD;
+import static net.catenax.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_HOST;
+import static net.catenax.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_PATH;
+import static net.catenax.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_PORT;
+import static net.catenax.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_NAME;
+import static net.catenax.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_PASSWORD;
 
 @Testcontainers
 @ExtendWith(EdcExtension.class)
@@ -115,16 +108,11 @@ public class SftpClientIT {
                     .waitingFor(Wait.forListeningPort())
                     .withFileSystemBind(dockerVolumeDirectory.toAbsolutePath().toString(), "/home/user/transfer");
 
-    private ProvisionManager provisionManager;
-    private TestExtension testExtension;
+    private final SftpClientImpl sftpClient = new SftpClientImpl();
 
     @BeforeEach
-    @SneakyThrows
-    void setup(EdcExtension extension) {
-        extension.setConfiguration(getSftpConfig());
-        provisionManager = Mockito.mock(ProvisionManager.class);
-        testExtension = new TestExtension(provisionManager);
-        extension.registerSystemExtension(ServiceExtension.class, testExtension);
+    void setup() {
+        sftpClient.setDisableHostVerification(true);
     }
 
     @AfterAll
@@ -157,7 +145,7 @@ public class SftpClientIT {
 
         @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
 
-        testExtension.getSftpClient().uploadFile(sftpUser, sftpLocation, fileStream);
+        sftpClient.uploadFile(sftpUser, sftpLocation, fileStream);
 
         final Path uploadedFilePath = remoteUploadDirectory.resolve(file.getName());
         Assertions.assertTrue(Files.exists(uploadedFilePath));
@@ -186,15 +174,13 @@ public class SftpClientIT {
         Files.copy(fileToUpload, remoteDownloadDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
 
         @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-        @Cleanup final InputStream target = testExtension.getSftpClient().downloadFile(sftpUser, sftpLocation);
+        @Cleanup final InputStream target = sftpClient.downloadFile(sftpUser, sftpLocation);
 
         for (int i = 0; i <= source.available(); i++) {
             int sourceInt = source.read();
             int targetInt = target.read();
             Assertions.assertEquals(sourceInt, targetInt, String.format("Difference in byte %d, should be %d, is %d", i, sourceInt, targetInt));
         }
-
-        //Assertions.assertTrue(IOUtils.contentEquals(source, target));
     }
 
     private Map<String, String> getSftpConfig() {
@@ -204,22 +190,6 @@ public class SftpClientIT {
                 SFTP_PATH, "transfer",
                 SFTP_USER_NAME, "user",
                 SFTP_USER_PASSWORD, "password");
-    }
-
-    @Getter
-    @Requires(SftpClient.class)
-    @RequiredArgsConstructor
-    private static class TestExtension extends SftpProvisionerExtension {
-        private SftpClient sftpClient;
-        @NonNull
-        private final ProvisionManager provisionManager;
-
-        @Override
-        public void initialize(ServiceExtensionContext context) {
-            sftpClient = context.getService(SftpClient.class);
-            context.registerService(ProvisionManager.class, provisionManager);
-            super.initialize(context);
-        }
     }
 
     @NoArgsConstructor

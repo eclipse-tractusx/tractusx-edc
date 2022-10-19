@@ -22,7 +22,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>transferprocess-sftp-client</artifactId>
+    <artifactId>transferprocess-sftp-common</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -106,48 +106,11 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <!-- EDC Depencencies -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>core-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>junit</artifactId>
-            <classifier>test-fixtures</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.catenax.edc.extensions</groupId>
-            <artifactId>transferprocess-sftp-common</artifactId>
-            <version>0.1.3-SNAPSHOT</version>
         </dependency>
 
         <!-- External Dependencies -->
@@ -155,53 +118,8 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.hierynomus</groupId>
-            <artifactId>sshj</artifactId>
-        </dependency>
 
         <!-- Test Dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <profiles>

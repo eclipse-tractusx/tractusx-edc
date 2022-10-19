@@ -16,6 +16,8 @@ package net.catenax.edc.transferprocess.sftp.provisioner;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocationFactory;
 
 @RequiredArgsConstructor
 public class ConfigBackedSftpLocationFactory implements SftpLocationFactory {

@@ -16,7 +16,8 @@ package net.catenax.edc.transferprocess.sftp.provisioner;
 
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUserFactory;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 
 import java.security.KeyPair;

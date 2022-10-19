@@ -16,6 +16,11 @@ package net.catenax.edc.transferprocess.sftp.provisioner;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocationFactory;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpProvider;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUserFactory;
 import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyEngine;
 import org.eclipse.dataspaceconnector.spi.response.ResponseStatus;

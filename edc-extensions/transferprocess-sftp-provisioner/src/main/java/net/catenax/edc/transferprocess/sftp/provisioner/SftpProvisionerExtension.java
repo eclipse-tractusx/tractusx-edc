@@ -14,6 +14,10 @@
 
 package net.catenax.edc.transferprocess.sftp.provisioner;
 
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocationFactory;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpProvider;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpSettings;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUserFactory;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 import org.bouncycastle.openssl.PEMParser;
@@ -21,7 +25,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.eclipse.dataspaceconnector.core.policy.engine.PolicyEngineImpl;
 import org.eclipse.dataspaceconnector.core.policy.engine.RuleBindingRegistryImpl;
 import org.eclipse.dataspaceconnector.core.policy.engine.ScopeFilter;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
 import org.eclipse.dataspaceconnector.spi.EdcException;
@@ -45,28 +48,8 @@ import java.security.spec.RSAPublicKeySpec;
 import static net.catenax.edc.transferprocess.sftp.provisioner.SftpProvisionerConfiguration.ProvisionerType.PROVIDER;
 
 @Provides(SftpProvisioner.class)
-public class SftpProvisionerExtension implements ServiceExtension {
+public class SftpProvisionerExtension implements ServiceExtension, SftpSettings {
 
-    @EdcSetting(required = true)
-    public static final String SFTP_HOST = "edc.transfer.sftp.location.host";
-
-    @EdcSetting(required = true)
-    public static final String SFTP_PORT = "edc.transfer.sftp.location.port";
-
-    @EdcSetting(required = true)
-    public static final String SFTP_PATH = "edc.transfer.sftp.location.path";
-
-    @EdcSetting(required = true)
-    public static final String SFTP_USER_NAME = "edc.transfer.sftp.user.name";
-
-    @EdcSetting
-    public static final String SFTP_USER_PASSWORD = "edc.transfer.sftp.user.password";
-
-    @EdcSetting
-    public static final String SFTP_USER_KEY_PATH = "edc.transfer.sftp.user.key.path";
-
-    @EdcSetting
-    public static final String SFTP_USER_KEY_PASSPHRASE = "edc.transfer.sftp.user.key.passphrase";
 
     ProvisionManager provisionManager;
     ResourceManifestGenerator manifestGenerator;

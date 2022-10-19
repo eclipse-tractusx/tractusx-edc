@@ -45,6 +45,7 @@
         <module>transferprocess-sftp-common</module>
         <module>transferprocess-sftp-client</module>
         <module>transferprocess-sftp-provisioner</module>
+        <module>transferprocess-sftp-common</module>
     </modules>
 
 </project>

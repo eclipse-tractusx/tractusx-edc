@@ -12,8 +12,21 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp.provisioner;
+package net.catenax.edc.trasnferprocess.sftp.common;
 
-public interface SftpLocationFactory {
-    SftpLocation createSftpLocation(String transferProcessId);
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.security.KeyPair;
+
+@Builder
+@Getter
+@ToString(of = "name")
+@EqualsAndHashCode
+public class SftpUser {
+    private final String name;
+    private final String password;
+    private final KeyPair keyPair;
 }

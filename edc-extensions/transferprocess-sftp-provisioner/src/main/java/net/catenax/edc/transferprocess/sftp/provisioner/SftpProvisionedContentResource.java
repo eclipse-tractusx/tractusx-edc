@@ -16,6 +16,8 @@ package net.catenax.edc.transferprocess.sftp.provisioner;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionedContentResource;
 
 @Getter

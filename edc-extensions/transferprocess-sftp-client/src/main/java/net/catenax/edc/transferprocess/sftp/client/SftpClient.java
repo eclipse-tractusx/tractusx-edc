@@ -14,8 +14,8 @@
 
 package net.catenax.edc.transferprocess.sftp.client;
 
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpLocation;
-import net.catenax.edc.transferprocess.sftp.provisioner.SftpUser;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
 
 import java.io.IOException;
 import java.io.InputStream;

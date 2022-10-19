@@ -12,7 +12,7 @@
  *
  */
 
-package net.catenax.edc.transferprocess.sftp.provisioner;
+package net.catenax.edc.trasnferprocess.sftp.common;
 
 public interface SftpUserFactory {
     SftpUser createSftpUser(String transferProcessId);

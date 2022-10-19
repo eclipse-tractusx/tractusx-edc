@@ -14,6 +14,10 @@
 
 package net.catenax.edc.transferprocess.sftp.provisioner;
 
+import net.catenax.edc.trasnferprocess.sftp.common.SftpLocation;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpProvider;
+import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
+
 public class NoopSftpProvider implements SftpProvider {
     @Override
     public void createUser(SftpUser user) {
