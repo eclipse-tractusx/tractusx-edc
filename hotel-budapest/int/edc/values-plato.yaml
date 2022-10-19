@@ -32,6 +32,8 @@ controlplane:
       java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
       java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   env:
+    EDC_OAUTH_PROVIDER_JWKS_URL: "https://daps1.int.demo.catena-x.net/.well-known/jwks.json"
+    EDC_OAUTH_TOKEN_URL: "https://daps1.int.demo.catena-x.net/token"
     EDC_OAUTH_CLIENT_ID: int-plato-EDC_OAUTH_CLIENT_ID
     EDC_OAUTH_PRIVATE_KEY_ALIAS: int-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS
     EDC_OAUTH_PUBLIC_KEY_ALIAS: int-plato-EDC_OAUTH_PUBLIC_KEY_ALIAS

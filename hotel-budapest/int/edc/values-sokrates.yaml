@@ -18,6 +18,8 @@ controlplane:
   ingresses:
     - hostname: "sokrates.int.catena-x.net"
   env:
+    EDC_OAUTH_PROVIDER_JWKS_URL: "https://daps1.int.demo.catena-x.net/.well-known/jwks.json"
+    EDC_OAUTH_TOKEN_URL: "https://daps1.int.demo.catena-x.net/token"
     EDC_OAUTH_CLIENT_ID: int-sokrates-EDC_OAUTH_CLIENT_ID
     EDC_OAUTH_PRIVATE_KEY_ALIAS: int-sokrates-EDC_OAUTH_PRIVATE_KEY_ALIAS
     EDC_OAUTH_PUBLIC_KEY_ALIAS: int-sokrates-EDC_OAUTH_PUBLIC_KEY_ALIAS
