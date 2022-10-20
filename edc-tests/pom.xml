@@ -170,10 +170,6 @@
                     <groupId>net.catenax.edc.extensions</groupId>
                     <artifactId>cx-oauth2</artifactId>
                 </dependency>
-                <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
-                    <artifactId>xsuaa-authenticator</artifactId>
-                </dependency>
                 <!-- edc-controlplane -->
                 <dependency>
                     <groupId>net.catenax.edc</groupId>
