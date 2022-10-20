@@ -38,9 +38,9 @@ public class InMemoryMessageServiceTest {
   @Test
   public void send_shouldCallListenerOnce() throws InterruptedException {
     // given
-    Message<ProcessData> message = new DataReferenceRetrievalDto(null);
+    Message<ProcessData> message = new DataReferenceRetrievalDto(null, 3);
     when(listenerService.getListener(any())).thenReturn(listener);
-    MessageService messageService = new InMemoryMessageService(monitor, listenerService);
+    MessageService messageService = new InMemoryMessageService(monitor, listenerService, 3);
 
     // when
     messageService.send(Channel.INITIAL, message);
@@ -53,10 +53,10 @@ public class InMemoryMessageServiceTest {
   @Test
   public void send_shouldCallListenerWithRetryOnException() throws InterruptedException {
     // given
-    Message<ProcessData> message = new DataReferenceRetrievalDto(null);
+    Message<ProcessData> message = new DataReferenceRetrievalDto(null, 3);
     when(listenerService.getListener(any())).thenReturn(listener);
     doThrow(new IllegalStateException()).doNothing().when(listener).process(any());
-    MessageService messageService = new InMemoryMessageService(monitor, listenerService);
+    MessageService messageService = new InMemoryMessageService(monitor, listenerService, 3);
 
     // when
     messageService.send(Channel.INITIAL, message);

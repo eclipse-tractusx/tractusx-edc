@@ -21,12 +21,12 @@ import java.util.Map;
 import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.util.LockMap;
 
-public class InMemorySyncService implements NotificationSyncService {
+public class ContractInMemorySyncService implements ContractNotificationSyncService {
   private final Map<String, DataReferenceRetrievalDto> dtoMap = new HashMap<>();
   private final Map<String, ContractInfo> contractInfoMap = new HashMap<>();
   private final LockMap locks;
 
-  public InMemorySyncService(LockMap locks) {
+  public ContractInMemorySyncService(LockMap locks) {
     this.locks = locks;
   }
 

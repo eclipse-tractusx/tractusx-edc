@@ -16,7 +16,7 @@ package net.catenax.edc.cp.adapter.process.contractnotification;
 
 import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 
-public interface NotificationSyncService {
+public interface ContractNotificationSyncService {
   DataReferenceRetrievalDto exchangeConfirmedContract(
       String contractNegotiationId, String contractAgreementId);
 

@@ -69,8 +69,7 @@ public class ContractNegotiationHandlerTest {
         .thenReturn(getValidContractAgreementData());
 
     // when
-    contractNegotiationHandler.process(
-        new DataReferenceRetrievalDto(new ProcessData("asset", "provider")));
+    contractNegotiationHandler.process(new DataReferenceRetrievalDto(getProcessData(), 3));
 
     // then
     verify(contractNegotiationService, times(0)).initiateNegotiation(any());
@@ -97,8 +96,7 @@ public class ContractNegotiationHandlerTest {
         .thenReturn(getContractNegotiation());
 
     // when
-    contractNegotiationHandler.process(
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "provider")));
+    contractNegotiationHandler.process(new DataReferenceRetrievalDto(getProcessData(), 3));
 
     // then
     verify(contractNegotiationService, times(1)).initiateNegotiation(any());
@@ -124,12 +122,20 @@ public class ContractNegotiationHandlerTest {
         .thenReturn(getContractNegotiation());
 
     // when
-    contractNegotiationHandler.process(
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "provider")));
+    contractNegotiationHandler.process(new DataReferenceRetrievalDto(getProcessData(), 3));
 
     // then
     verify(contractNegotiationService, times(1)).initiateNegotiation(any());
     verify(messageService, times(1)).send(any(), any(Message.class));
+  }
+
+  private ProcessData getProcessData() {
+    return ProcessData.builder()
+        .assetId("assetId")
+        .provider("provider")
+        .catalogExpiryTime(30)
+        .contractAgreementCacheOn(true)
+        .build();
   }
 
   private ContractNegotiation getContractNegotiation() {

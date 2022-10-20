@@ -43,7 +43,7 @@ public class ContractNotificationHandlerTest {
   @Mock Monitor monitor;
   @Mock MessageService messageService;
   @Mock ContractNegotiationService contractNegotiationService;
-  @Mock NotificationSyncService notificationSyncService;
+  @Mock ContractNotificationSyncService notificationSyncService;
   @Mock ContractDataStore contractDataStore;
   @Mock TransferProcessService transferProcessService;
 
@@ -64,8 +64,7 @@ public class ContractNotificationHandlerTest {
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
 
     // when
     contractNotificationHandler.process(dto);
@@ -88,8 +87,7 @@ public class ContractNotificationHandlerTest {
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
     dto.getPayload().setContractConfirmed(true);
 
     // when
@@ -113,8 +111,7 @@ public class ContractNotificationHandlerTest {
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
 
     // when
     contractNotificationHandler.process(dto);
@@ -140,8 +137,7 @@ public class ContractNotificationHandlerTest {
             contractNegotiationService,
             transferProcessService,
             contractDataStore);
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
 
     // when
     contractNotificationHandler.process(dto);
@@ -178,7 +174,7 @@ public class ContractNotificationHandlerTest {
   public void preConfirmed_shouldInitiateTransferIfMessageIsAvailable() {
     // given
     when(notificationSyncService.exchangeConfirmedContract(any(), any()))
-        .thenReturn(new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl")));
+        .thenReturn(new DataReferenceRetrievalDto(getProcessData(), 3));
     when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
@@ -202,7 +198,7 @@ public class ContractNotificationHandlerTest {
   public void preDeclined_shouldSendErrorResultIfMessageIsAvailable() {
     // given
     when(notificationSyncService.exchangeDeclinedContract(any()))
-        .thenReturn(new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl")));
+        .thenReturn(new DataReferenceRetrievalDto(getProcessData(), 3));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
             monitor,
@@ -228,7 +224,7 @@ public class ContractNotificationHandlerTest {
   public void preError_shouldSendErrorResultIfMessageIsAvailable() {
     // given
     when(notificationSyncService.exchangeErrorContract(any()))
-        .thenReturn(new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl")));
+        .thenReturn(new DataReferenceRetrievalDto(getProcessData(), 3));
     ContractNotificationHandler contractNotificationHandler =
         new ContractNotificationHandler(
             monitor,
@@ -266,5 +262,9 @@ public class ContractNotificationHandlerTest {
                 .policy(Policy.Builder.newInstance().build())
                 .build())
         .build();
+  }
+
+  private ProcessData getProcessData() {
+    return ProcessData.builder().assetId("assetId").provider("provider").build();
   }
 }

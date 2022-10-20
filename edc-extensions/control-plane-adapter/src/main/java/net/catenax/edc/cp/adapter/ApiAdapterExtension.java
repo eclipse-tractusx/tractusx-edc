@@ -22,31 +22,31 @@ import net.catenax.edc.cp.adapter.messaging.InMemoryMessageService;
 import net.catenax.edc.cp.adapter.messaging.ListenerService;
 import net.catenax.edc.cp.adapter.process.contractdatastore.InMemoryContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractnegotiation.ContractNegotiationHandler;
+import net.catenax.edc.cp.adapter.process.contractnotification.ContractInMemorySyncService;
 import net.catenax.edc.cp.adapter.process.contractnotification.ContractNotificationHandler;
 import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
-import net.catenax.edc.cp.adapter.process.datareference.InMemorySyncService;
+import net.catenax.edc.cp.adapter.process.datareference.DataRefInMemorySyncService;
 import net.catenax.edc.cp.adapter.service.ErrorResultService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
 import net.catenax.edc.cp.adapter.util.LockMap;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogServiceImpl;
+import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationServiceImpl;
-import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessServiceImpl;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
+import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.ConsumerContractNegotiationManager;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationObservable;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.store.ContractNegotiationStore;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.NoopTransactionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
-import org.eclipse.dataspaceconnector.spi.transfer.TransferProcessManager;
 import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiverRegistry;
-import org.eclipse.dataspaceconnector.spi.transfer.store.TransferProcessStore;
 
 public class ApiAdapterExtension implements ServiceExtension {
   @Inject private WebService webService;
@@ -54,9 +54,9 @@ public class ApiAdapterExtension implements ServiceExtension {
   @Inject private ConsumerContractNegotiationManager manager;
   @Inject private TransactionContext transactionContext;
   @Inject private RemoteMessageDispatcherRegistry dispatcher;
-  @Inject private TransferProcessStore transferProcessStore;
-  @Inject private TransferProcessManager transferProcessManager;
   @Inject private EndpointDataReferenceReceiverRegistry receiverRegistry;
+  @Inject private DataManagementApiConfiguration apiConfig;
+  @Inject private TransferProcessService transferProcessService;
 
   @Override
   public String name() {
@@ -71,16 +71,19 @@ public class ApiAdapterExtension implements ServiceExtension {
         context.getService(ContractNegotiationObservable.class, false);
 
     /** internal dependencies * */
+    ApiAdapterConfig config = new ApiAdapterConfig(context);
     ContractNegotiationService contractNegotiationService =
         new ContractNegotiationServiceImpl(store, manager, getTransactionContext(monitor));
     ListenerService listenerService = new ListenerService();
-    InMemoryMessageService messageService = new InMemoryMessageService(monitor, listenerService);
-    ResultService resultService = new ResultService();
+    InMemoryMessageService messageService =
+        new InMemoryMessageService(
+            monitor, listenerService, config.getInMemoryMessageServiceThreadNumber());
+    ResultService resultService = new ResultService(config.getDefaultSyncRequestTimeout());
     listenerService.addListener(Channel.RESULT, resultService);
     ErrorResultService errorResultService = new ErrorResultService(monitor, messageService);
     listenerService.addListener(Channel.DLQ, errorResultService);
 
-    initHttpController(monitor, messageService, resultService);
+    initHttpController(monitor, messageService, resultService, config);
     initContractNegotiationHandler(
         monitor, contractNegotiationService, messageService, listenerService);
     initContractConfirmationHandler(
@@ -93,8 +96,13 @@ public class ApiAdapterExtension implements ServiceExtension {
   }
 
   private void initHttpController(
-      Monitor monitor, InMemoryMessageService messageService, ResultService resultService) {
-    webService.registerResource(new HttpController(monitor, resultService, messageService));
+      Monitor monitor,
+      InMemoryMessageService messageService,
+      ResultService resultService,
+      ApiAdapterConfig config) {
+    webService.registerResource(
+        apiConfig.getContextAlias(),
+        new HttpController(monitor, resultService, messageService, config));
   }
 
   private void initContractNegotiationHandler(
@@ -125,11 +133,10 @@ public class ApiAdapterExtension implements ServiceExtension {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            new net.catenax.edc.cp.adapter.process.contractnotification.InMemorySyncService(
+            new ContractInMemorySyncService(
                 new LockMap()),
             contractNegotiationService,
-            new TransferProcessServiceImpl(
-                transferProcessStore, transferProcessManager, getTransactionContext(monitor)),
+            transferProcessService,
             new InMemoryContractDataStore());
 
     listenerService.addListener(Channel.CONTRACT_CONFIRMATION, contractNotificationHandler);
@@ -142,7 +149,7 @@ public class ApiAdapterExtension implements ServiceExtension {
       Monitor monitor, InMemoryMessageService messageService, ListenerService listenerService) {
 
     DataReferenceHandler dataReferenceHandler =
-        new DataReferenceHandler(monitor, messageService, new InMemorySyncService(new LockMap()));
+        new DataReferenceHandler(monitor, messageService, new DataRefInMemorySyncService(new LockMap()));
     listenerService.addListener(Channel.DATA_REFERENCE, dataReferenceHandler);
     receiverRegistry.registerReceiver(dataReferenceHandler);
   }

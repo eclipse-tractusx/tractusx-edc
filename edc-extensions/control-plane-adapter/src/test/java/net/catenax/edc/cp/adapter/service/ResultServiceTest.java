@@ -27,7 +27,7 @@ public class ResultServiceTest {
   @Test
   public void pull_shouldReturnDataReferenceWhenMessageOccursFirst() throws InterruptedException {
     // given
-    ResultService resultService = new ResultService();
+    ResultService resultService = new ResultService(20);
     String endpointDataRefId = "456";
     DataReferenceRetrievalDto dto = getDto(endpointDataRefId);
     ProcessData processData;
@@ -43,7 +43,7 @@ public class ResultServiceTest {
   @Test
   public void pull_shouldReturnDataReferenceWhenMessageOccursSecond() throws InterruptedException {
     // given
-    ResultService resultService = new ResultService();
+    ResultService resultService = new ResultService(20);
     String endpointDataRefId = "456";
     DataReferenceRetrievalDto dto = getDto(endpointDataRefId);
     ProcessData processData;
@@ -68,7 +68,7 @@ public class ResultServiceTest {
   @Test
   public void pull_shouldReturnNullOnTimeout() throws InterruptedException {
     // given
-    ResultService resultService = new ResultService();
+    ResultService resultService = new ResultService(20);
 
     // when
     ProcessData processData = resultService.pull("123", 500, TimeUnit.MILLISECONDS);
@@ -80,8 +80,8 @@ public class ResultServiceTest {
   @Test
   public void process_shouldThrowIllegalArgumentExceptionIfNoDataPayload() {
     // given
-    ResultService resultService = new ResultService();
-    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(null);
+    ResultService resultService = new ResultService(20);
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(null, 3);
 
     // when then
     try {
@@ -92,8 +92,7 @@ public class ResultServiceTest {
   }
 
   private DataReferenceRetrievalDto getDto(String endpointDataRefId) {
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("123", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
     dto.getPayload()
         .setEndpointDataReference(
             EndpointDataReference.Builder.newInstance()
@@ -111,5 +110,9 @@ public class ResultServiceTest {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+  }
+
+  private ProcessData getProcessData() {
+    return ProcessData.builder().assetId("assetId").provider("provider").build();
   }
 }

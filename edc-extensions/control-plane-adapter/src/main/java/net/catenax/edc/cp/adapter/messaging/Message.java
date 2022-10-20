@@ -22,26 +22,18 @@ public abstract class Message<T> {
   @Getter private final String traceId;
   @Getter private final T payload;
   private final AtomicInteger errorNumber = new AtomicInteger();
-  private int retryLimit = 3; // TODO configure
+  private final int retryLimit;
   @Getter private Exception finalException;
 
   public Message(String traceId, T payload, int retryLimit) {
-    this(traceId, payload);
-    this.retryLimit = retryLimit;
-  }
-
-  public Message(String traceId, T payload) {
-    this.payload = payload;
     this.traceId = traceId;
+    this.retryLimit = retryLimit;
+    this.payload = payload;
   }
 
   public Message(T payload, int retryLimit) {
-    this(payload);
+    this.traceId = UUID.randomUUID().toString();
     this.retryLimit = retryLimit;
-  }
-
-  public Message(T payload) {
-    traceId = UUID.randomUUID().toString();
     this.payload = payload;
   }
 

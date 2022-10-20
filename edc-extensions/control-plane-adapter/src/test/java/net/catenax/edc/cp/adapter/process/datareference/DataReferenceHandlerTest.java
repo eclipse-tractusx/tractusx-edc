@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 public class DataReferenceHandlerTest {
   @Mock Monitor monitor;
   @Mock MessageService messageService;
-  @Mock NotificationSyncService notificationSyncService;
+  @Mock DataRefNotificationSyncService notificationSyncService;
 
   @BeforeEach
   void init() {
@@ -45,8 +45,7 @@ public class DataReferenceHandlerTest {
     // given
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, notificationSyncService);
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
 
     // when
     dataReferenceHandler.process(dto);
@@ -62,8 +61,7 @@ public class DataReferenceHandlerTest {
     when(notificationSyncService.exchangeDto(any(), any())).thenReturn(getEndpointDataReference());
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, notificationSyncService);
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
 
     // when
     dataReferenceHandler.process(dto);
@@ -89,8 +87,7 @@ public class DataReferenceHandlerTest {
   @Test
   public void send_shouldSendResultWhenMessageIsAvailable() {
     // given
-    DataReferenceRetrievalDto dto =
-        new DataReferenceRetrievalDto(new ProcessData("assetId", "providerUrl"));
+    DataReferenceRetrievalDto dto = new DataReferenceRetrievalDto(getProcessData(), 3);
     when(notificationSyncService.exchangeDataReference(any(), any())).thenReturn(dto);
     DataReferenceHandler dataReferenceHandler =
         new DataReferenceHandler(monitor, messageService, notificationSyncService);
@@ -109,5 +106,9 @@ public class DataReferenceHandlerTest {
         .authCode("authCode")
         .authKey("authKey")
         .build();
+  }
+
+  private ProcessData getProcessData() {
+    return ProcessData.builder().assetId("assetId").provider("provider").build();
   }
 }

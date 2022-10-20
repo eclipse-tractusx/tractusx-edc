@@ -37,6 +37,7 @@ public class HttpController {
   private final Monitor monitor;
   private final ResultService resultService;
   private final MessageService messageService;
+  private final ApiAdapterConfig config;
 
   @GET
   @Path("sync/{assetId}")
@@ -79,8 +80,9 @@ public class HttpController {
   }
 
   private String initiateProcess(String assetId, String providerUrl) {
-    ProcessData processData = new ProcessData(assetId, providerUrl);
-    Message<ProcessData> message = new DataReferenceRetrievalDto(processData);
+    ProcessData processData = getProcessData(assetId, providerUrl);
+    Message<ProcessData> message =
+        new DataReferenceRetrievalDto(processData, config.getDefaultMessageRetryNumber());
     messageService.send(Channel.INITIAL, message);
     return message.getTraceId();
   }
@@ -106,6 +108,15 @@ public class HttpController {
   private Response timeoutResponse() {
     return Response.status(Response.Status.REQUEST_TIMEOUT)
         .entity(Response.Status.REQUEST_TIMEOUT.getReasonPhrase())
+        .build();
+  }
+
+  private ProcessData getProcessData(String assetId, String providerUrl) {
+    return ProcessData.builder()
+        .assetId(assetId)
+        .provider(providerUrl)
+        .contractAgreementCacheOn(config.isContractAgreementCacheOn())
+        .catalogExpiryTime(config.getCatalogExpireAfterTime())
         .build();
   }
 }

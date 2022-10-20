@@ -29,7 +29,7 @@ import net.catenax.edc.cp.adapter.messaging.Listener;
 @RequiredArgsConstructor
 public class ResultService implements Listener<DataReferenceRetrievalDto> {
   private final int CAPACITY = 1;
-  private final int DEFAULT_TIMEOUT = 15; // TODO move to config
+  private final int DEFAULT_TIMEOUT;
   private final Map<String, ArrayBlockingQueue<ProcessData>> results = new ConcurrentHashMap<>();
 
   public ProcessData pull(String id) throws InterruptedException {

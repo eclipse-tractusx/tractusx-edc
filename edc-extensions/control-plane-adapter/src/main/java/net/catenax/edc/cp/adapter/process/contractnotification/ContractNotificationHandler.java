@@ -43,7 +43,7 @@ public class ContractNotificationHandler
   public static final String CONTRACT_ERROR_MESSAGE = "Contract Error for asset.";
   private final Monitor monitor;
   private final MessageService messageService;
-  private final NotificationSyncService syncService;
+  private final ContractNotificationSyncService syncService;
   private final ContractNegotiationService contractNegotiationService;
   private final TransferProcessService transferProcessService;
   private final ContractDataStore contractDataStore;

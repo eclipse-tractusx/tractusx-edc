@@ -38,6 +38,7 @@ import org.eclipse.dataspaceconnector.spi.types.domain.catalog.Catalog;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractOfferRequest;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.offer.ContractOffer;
+import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class ContractNegotiationHandler implements Listener<DataReferenceRetrievalDto> {
@@ -55,8 +56,7 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
             "[%s] RequestHandler: input request: [%s]", dto.getTraceId(), dto.getPayload()));
     ProcessData processData = dto.getPayload();
 
-    ContractAgreementData contractData =
-        contractDataStore.get(dto.getPayload().getAssetId(), dto.getPayload().getProvider());
+    ContractAgreementData contractData = getCachedContractData(dto);
     if (Objects.nonNull(contractData) && isContractValid(contractData)) {
       monitor.info(String.format("[%s] ContractAgreement taken from cache.", dto.getTraceId()));
       dto.getPayload().setContractAgreementId(contractData.getId());
@@ -66,7 +66,10 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
     }
 
     ContractOffer contractOffer =
-        findContractOffer(processData.getAssetId(), processData.getProvider());
+        findContractOffer(
+            processData.getAssetId(),
+            processData.getProvider(),
+            processData.getCatalogExpiryTime());
 
     String contractNegotiationId =
         initializeContractNegotiation(
@@ -76,6 +79,13 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
     messageService.send(Channel.CONTRACT_CONFIRMATION, dto);
   }
 
+  @Nullable
+  private ContractAgreementData getCachedContractData(DataReferenceRetrievalDto dto) {
+    return dto.getPayload().isContractAgreementCacheOn()
+        ? contractDataStore.get(dto.getPayload().getAssetId(), dto.getPayload().getProvider())
+        : null;
+  }
+
   private boolean isContractValid(ContractAgreementData contractAgreement) {
     long now = Instant.now().getEpochSecond();
     return Objects.nonNull(contractAgreement)
@@ -83,8 +93,9 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
         && contractAgreement.getContractEndDate() > now;
   }
 
-  private ContractOffer findContractOffer(String assetId, String providerUrl) {
-    Catalog catalog = getCatalog(providerUrl);
+  private ContractOffer findContractOffer(
+      String assetId, String providerUrl, int catalogExpiryTime) {
+    Catalog catalog = getCatalog(providerUrl, catalogExpiryTime);
     return Optional.ofNullable(catalog.getContractOffers()).orElse(Collections.emptyList()).stream()
         .filter(it -> it.getAsset().getId().equals(assetId))
         .findFirst()
@@ -93,8 +104,8 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
                 new ResourceNotFoundException("Could not find Contract Offer for given Asset Id"));
   }
 
-  private Catalog getCatalog(String providerUrl) {
-    Catalog catalog = catalogCache.get(providerUrl);
+  private Catalog getCatalog(String providerUrl, int catalogExpiryTime) {
+    Catalog catalog = catalogCache.get(providerUrl, catalogExpiryTime);
     if (Objects.nonNull(catalog)) {
       return catalog;
     }

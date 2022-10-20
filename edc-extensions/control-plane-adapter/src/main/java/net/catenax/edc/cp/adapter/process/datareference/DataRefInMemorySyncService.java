@@ -24,7 +24,7 @@ import net.catenax.edc.cp.adapter.util.LockMap;
 import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference;
 
 @RequiredArgsConstructor
-public class InMemorySyncService implements NotificationSyncService {
+public class DataRefInMemorySyncService implements DataRefNotificationSyncService {
   private final Map<String, DataReferenceRetrievalDto> dtoMap = new HashMap<>();
   private final Map<String, EndpointDataReference> dataReferenceMap = new HashMap<>();
   private final LockMap locks;

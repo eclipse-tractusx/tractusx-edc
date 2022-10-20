@@ -33,7 +33,7 @@ public class DataReferenceHandler
     implements Listener<DataReferenceRetrievalDto>, EndpointDataReferenceReceiver {
   private final Monitor monitor;
   private final MessageService messageService;
-  private final NotificationSyncService syncService;
+  private final DataRefNotificationSyncService syncService;
 
   @Override
   public void process(DataReferenceRetrievalDto dto) {

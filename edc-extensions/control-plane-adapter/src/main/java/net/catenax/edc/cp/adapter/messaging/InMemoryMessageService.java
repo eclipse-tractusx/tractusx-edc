@@ -19,16 +19,19 @@ import static java.util.Objects.isNull;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 
-@RequiredArgsConstructor
 public class InMemoryMessageService implements MessageService {
-  private static final int THREAD_POOL_SIZE = 10;
-  private final ScheduledExecutorService executorService =
-      Executors.newScheduledThreadPool(THREAD_POOL_SIZE);
   private final Monitor monitor;
   private final ListenerService listenerService;
+  private final ScheduledExecutorService executorService;
+
+  public InMemoryMessageService(
+      Monitor monitor, ListenerService listenerService, int threadPoolSize) {
+    this.monitor = monitor;
+    this.listenerService = listenerService;
+    executorService = Executors.newScheduledThreadPool(threadPoolSize);
+  }
 
   @Override
   public void send(Channel name, Message<?> message) {
