@@ -33,7 +33,6 @@
         <module>business-partner-validation</module>
         <module>postgresql-migration</module>
         <module>hashicorp-vault</module>
-        <module>xsuaa-authenticator</module>
         <module>dataplane-selector-configuration</module>
         <module>data-encryption</module>
         <module>cx-oauth2</module>
