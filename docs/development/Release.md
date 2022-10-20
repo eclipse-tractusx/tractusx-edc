@@ -23,11 +23,18 @@ As alternative check out the repository and build the plugin locally, so that it
 This call generates the dependencies file. If there is a value set for `dash.iplab.token` it will also automatically create new issues for all unknown dependencies at the Eclipse Intellectual Property board
 https://gitlab.eclipse.org/eclipsefdn/emo-team/iplab/-/issues
 
+**Update Dependencies File and create Eclipse Issues (Eclipse Commiters only)**
 ```bash
 ./mvnw org.eclipse.dash:license-tool-plugin:license-check \
     -Ddash.summary=DEPENDENCIES \
     -Ddash.projectId=automotive.tractusx \
     -Ddash.iplab.token=<token*>
+```
+
+**Update Dependencies File**
+```bash
+./mvnw org.eclipse.dash:license-tool-plugin:license-check \
+    -Ddash.summary=DEPENDENCIES
 ```
 
 <p>
