@@ -68,6 +68,12 @@
             <artifactId>cx-oauth2</artifactId>
         </dependency>
 
+        <!-- Core -->
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>control-plane-core</artifactId>
+        </dependency>
+
         <!-- Config -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -78,6 +84,14 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>auth-tokenbased</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>oauth2-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>iam-daps</artifactId>
         </dependency>
 
         <!-- APIs -->
@@ -119,30 +133,8 @@
         <!-- Core -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-boot</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>transfer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contract</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>jwt-spi</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jwt-core</artifactId>
-        </dependency>
-        -->
 
         <!-- Data-Plane -->
         <dependency>

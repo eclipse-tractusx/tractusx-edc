@@ -97,12 +97,6 @@
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>oauth2-spi</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.eclipse.dataspaceconnector</groupId>
-                    <artifactId>jwt-spi</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
