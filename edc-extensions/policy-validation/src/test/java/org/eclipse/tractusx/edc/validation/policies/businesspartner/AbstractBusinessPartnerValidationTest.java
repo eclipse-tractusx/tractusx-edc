@@ -51,7 +51,7 @@ class AbstractBusinessPartnerValidationTest {
   @EnumSource(Operator.class)
   void testFailsOnUnsupportedOperations(Operator operator) {
 
-    if (operator == Operator.EQ || operator == Operator.IN) { // only allowed operator
+    if (operator == Operator.EQ) { // only allowed operator
       return;
     }
 
@@ -72,7 +72,6 @@ class AbstractBusinessPartnerValidationTest {
 
     // invoke & assert
     Assertions.assertFalse(validation.evaluate(Operator.EQ, 1, policyContext));
-    Assertions.assertFalse(validation.evaluate(Operator.IN, "foo", policyContext));
   }
 
   @Test
@@ -135,6 +134,9 @@ class AbstractBusinessPartnerValidationTest {
     Assertions.assertTrue(isContainedTrue);
   }
 
+  // In the past it was possible to use the 'IN' constraint with multiple BPNs as
+  // a list. This is no longer supported.
+  // The EDC must now always decline this kind of BPN format.
   @Test
   void testValidationForMultipleParticipants() {
 
@@ -143,8 +145,8 @@ class AbstractBusinessPartnerValidationTest {
     prepareBusinessPartnerClaim("foo");
 
     // invoke & verify
-    Assertions.assertTrue(validation.evaluate(Operator.IN, List.of("foo", "bar"), policyContext));
-    Assertions.assertTrue(validation.evaluate(Operator.IN, List.of(1, "foo"), policyContext));
+    Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("foo", "bar"), policyContext));
+    Assertions.assertFalse(validation.evaluate(Operator.IN, List.of(1, "foo"), policyContext));
     Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("bar", "bar"), policyContext));
   }
 
