@@ -77,6 +77,7 @@ public class PolicyValidationExtension implements ServiceExtension {
    * </pre>
    */
   public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
+
   public static final String ROLE_CONSTRAINT_KEY = "Role";
   public static final String ATTRIBUTE_CONSTRAINT_KEY = "Attribute";
 
@@ -102,36 +103,45 @@ public class PolicyValidationExtension implements ServiceExtension {
 
     final Monitor monitor = context.getMonitor();
 
-    // Businesspartner Validation
+    ruleBindingRegistry.bind("USE", ALL_SCOPES);
+
+    // BPN Validation
     final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor);
     final BusinessPartnerPermissionFunction permissionFunction =
         new BusinessPartnerPermissionFunction(monitor);
     final BusinessPartnerProhibitionFunction prohibitionFunction =
         new BusinessPartnerProhibitionFunction(monitor);
-    ruleBindingRegistry.bind("USE", ALL_SCOPES);
     ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, ALL_SCOPES);
-    policyEngine.registerFunction(ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
-    policyEngine.registerFunction(ALL_SCOPES, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
-    policyEngine.registerFunction(ALL_SCOPES, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
 
     // Role Validation
     final RoleDutyFunction roleDutyFunction = new RoleDutyFunction(monitor);
     final RolePermissionFunction rolePermissionFunction = new RolePermissionFunction(monitor);
     final RoleProhibitionFunction roleProhibitionFunction = new RoleProhibitionFunction(monitor);
-    ruleBindingRegistry.bind("USE", ALL_SCOPES);
     ruleBindingRegistry.bind(ROLE_CONSTRAINT_KEY, ALL_SCOPES);
     policyEngine.registerFunction(ALL_SCOPES, Duty.class, ROLE_CONSTRAINT_KEY, roleDutyFunction);
-    policyEngine.registerFunction(ALL_SCOPES, Permission.class, ROLE_CONSTRAINT_KEY, rolePermissionFunction);
-    policyEngine.registerFunction(ALL_SCOPES, Prohibition.class, ROLE_CONSTRAINT_KEY, roleProhibitionFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Permission.class, ROLE_CONSTRAINT_KEY, rolePermissionFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Prohibition.class, ROLE_CONSTRAINT_KEY, roleProhibitionFunction);
 
     // Attribute Validation
     final AttributeDutyFunction attributeDutyFunction = new AttributeDutyFunction(monitor);
-    final AttributePermissionFunction attributePermissionFunction = new AttributePermissionFunction(monitor);
-    final AttributeProhibitionFunction attributeProhibitionFunction = new AttributeProhibitionFunction(monitor);
-    ruleBindingRegistry.bind("USE", ALL_SCOPES);
+    final AttributePermissionFunction attributePermissionFunction =
+        new AttributePermissionFunction(monitor);
+    final AttributeProhibitionFunction attributeProhibitionFunction =
+        new AttributeProhibitionFunction(monitor);
     ruleBindingRegistry.bind(ATTRIBUTE_CONSTRAINT_KEY, ALL_SCOPES);
-    policyEngine.registerFunction(ALL_SCOPES, Duty.class, ATTRIBUTE_CONSTRAINT_KEY, attributeDutyFunction);
-    policyEngine.registerFunction(ALL_SCOPES, Permission.class, ATTRIBUTE_CONSTRAINT_KEY, attributePermissionFunction);
-    policyEngine.registerFunction(ALL_SCOPES, Prohibition.class, ATTRIBUTE_CONSTRAINT_KEY, attributeProhibitionFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Duty.class, ATTRIBUTE_CONSTRAINT_KEY, attributeDutyFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Permission.class, ATTRIBUTE_CONSTRAINT_KEY, attributePermissionFunction);
+    policyEngine.registerFunction(
+        ALL_SCOPES, Prohibition.class, ATTRIBUTE_CONSTRAINT_KEY, attributeProhibitionFunction);
   }
 }

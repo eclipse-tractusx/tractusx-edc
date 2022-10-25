@@ -15,13 +15,12 @@
 
 package org.eclipse.tractusx.edc.validation.policies.role;
 
+import java.util.Map;
+import java.util.Objects;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.eclipse.dataspaceconnector.spi.agent.ParticipantAgent;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
-
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Abstract class for BusinessPartnerNumber validation. This class may be inherited from the EDC
@@ -61,7 +60,8 @@ public abstract class AbstractRoleValidation {
    * Evaluation funtion to decide whether a claim belongs to a specific role.
    *
    * @param operator operator of the constraint
-   * @param rightValue right value fo the constraint, that contains the defined role (e.g. dismantler)
+   * @param rightValue right value fo the constraint, that contains the defined role (e.g.
+   *     dismantler)
    * @param policyContext context of the policy with claims
    * @return true if claims are from the constrained role
    */
@@ -70,7 +70,9 @@ public abstract class AbstractRoleValidation {
 
     if (policyContext.hasProblems() && !policyContext.getProblems().isEmpty()) {
       String problems = String.join(", ", policyContext.getProblems());
-      String message = String.format( "RoleValidation: Rejecting PolicyContext with problems. Problems: %s", problems);
+      String message =
+          String.format(
+              "RoleValidation: Rejecting PolicyContext with problems. Problems: %s", problems);
       monitor.debug(message);
       return false;
     }
@@ -111,15 +113,19 @@ public abstract class AbstractRoleValidation {
    * @return true if object is an iterable and constains a string that is successfully evaluated
    *     against the claim
    */
-  private boolean containsRole(String referringConnectorClaim, Object role, PolicyContext policyContext) {
+  private boolean containsRole(
+      String referringConnectorClaim, Object role, PolicyContext policyContext) {
     if (role == null) {
-      final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
+      final String message =
+          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
     }
     if (!(role instanceof Iterable)) {
-      final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, role.getClass().getName());
+      final String message =
+          String.format(
+              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, role.getClass().getName());
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
@@ -127,12 +133,14 @@ public abstract class AbstractRoleValidation {
 
     for (Object roleName : (Iterable) role) {
       if (roleName == null) {
-        final String message = String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
+        final String message =
+            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
         monitor.warning(message);
         policyContext.reportProblem(message);
       } else if (!(roleName instanceof String)) {
         final String message =
-            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, roleName.getClass().getName());
+            String.format(
+                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, roleName.getClass().getName());
         monitor.warning(message);
         policyContext.reportProblem(message);
       } else if (isCorrectRole(referringConnectorClaim, (String) roleName)) {
@@ -156,7 +164,8 @@ public abstract class AbstractRoleValidation {
       return false;
     }
     if (!(role instanceof String)) {
-      final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, role.getClass().getName());
+      final String message =
+          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, role.getClass().getName());
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
@@ -166,11 +175,11 @@ public abstract class AbstractRoleValidation {
   }
 
   /**
-   * At the time of writing (25. Oktober 2022) the role is part of the
-   * 'referringConnector' claim, which contains a connector URL. As the CX projects are not further
-   * aligned about the URL formatting, the enforcement can only be done by checking whether the URL
-   * _contains_ the number. As this introduces some insecurities when validation a role,
-   * this should be addresses in the long term.
+   * At the time of writing (25. Oktober 2022) the role is part of the 'referringConnector' claim,
+   * which contains a connector URL. As the CX projects are not further aligned about the URL
+   * formatting, the enforcement can only be done by checking whether the URL _contains_ the number.
+   * As this introduces some insecurities when validation a role, this should be addresses in the
+   * long term.
    *
    * @param referringConnectorClaim describing URL with the role
    * @param role of the constraint

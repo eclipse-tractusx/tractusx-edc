@@ -53,7 +53,7 @@
         <!-- CX Extensions -->
         <dependency>
             <groupId>org.eclipse.tractusx.edc.extensions</groupId>
-            <artifactId>business-partner-validation</artifactId>
+            <artifactId>policy-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.tractusx.edc.extensions</groupId>

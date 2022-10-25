@@ -21,7 +21,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>business-partner-validation</artifactId>
+    <artifactId>policy-validation</artifactId>
     <packaging>jar</packaging>
 
     <properties>
