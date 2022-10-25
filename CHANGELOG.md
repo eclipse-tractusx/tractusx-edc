@@ -11,10 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   New Postman collection for developers `/docs/development/postman`
 -   New XSUAA Authenticator Extension ([Readme](/edc-extensions/xsuaa-authenticator/README.md))
+-   New Policy Enforcement capabilities for `Role` and `Attribute`
 
 ### Updated
 
 -   Set EDC version to `0.0.1-20221006-SNAPSHOT`
+-   Renamed `business-partner-validation` extension to `policy-validation` extension
 
 ### Changed
 
