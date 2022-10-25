@@ -32,14 +32,10 @@ public abstract class AbstractAttributeValidation {
   // Problems reported to the policy context are not logged. Therefore, everything
   // that is reported to the policy context should be logged, too.
 
-  private static final String SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING =
-      "Skipping evaluation of iterable value in Attribute constraint. Right values used in an iterable must be of type 'String'. Unsupported type: '%s'";
   private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING =
       "Failing evaluation because of invalid Attribute constraint. For operator 'EQ' right value must be of type 'String'. Unsupported type: '%s'";
-  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE =
-      "Failing evaluation because of invalid Attribute constraint. For operator 'IN' right value must be of type 'Iterable'. Unsupported type: '%s'";
   private static final String FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR =
-      "Failing evaluation because of invalid Attribute constraint. As operator only 'EQ' or 'IN' are supported. Unsupported operator: '%s'";
+      "Failing evaluation because of invalid Attribute constraint. As operator only 'EQ' is supported. Unsupported operator: '%s'";
 
   private final Monitor monitor;
 
@@ -51,7 +47,7 @@ public abstract class AbstractAttributeValidation {
   private static final String ATTRIBUTE_CLAIM = "attribute";
 
   /**
-   * Evaluation funtion to decide whether a claim belongs to a specific Attribute.
+   * Evaluation function to decide whether a claim belongs to a specific Attribute.
    *
    * @param operator operator of the constraint
    * @param rightValue right value fo the constraint, that contains the Attribute (e.g.
@@ -91,58 +87,12 @@ public abstract class AbstractAttributeValidation {
 
     if (operator == Operator.EQ) {
       return isAttributeValue(attributeClaim, rightValue, policyContext);
-    } else if (operator == Operator.IN) {
-      return containsAttribute(attributeClaim, rightValue, policyContext);
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
     }
-  }
-
-  /**
-   * @param attributeClaim of the participant
-   * @param attribute object
-   * @return true if object is an iterable and constains a string that is successfully evaluated
-   *     against the claim
-   */
-  private boolean containsAttribute(
-      String attributeClaim, Object attribute, PolicyContext policyContext) {
-    if (attribute == null) {
-      final String message =
-          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
-      monitor.warning(message);
-      policyContext.reportProblem(message);
-      return false;
-    }
-    if (!(attribute instanceof Iterable)) {
-      final String message =
-          String.format(
-              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, attribute.getClass().getName());
-      monitor.warning(message);
-      policyContext.reportProblem(message);
-      return false;
-    }
-
-    for (Object attr : (Iterable) attribute) {
-      if (attr == null) {
-        final String message =
-            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
-        monitor.warning(message);
-        policyContext.reportProblem(message);
-      } else if (!(attr instanceof String)) {
-        final String message =
-            String.format(
-                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, attr.getClass().getName());
-        monitor.warning(message);
-        policyContext.reportProblem(message);
-      } else if (isCorrectAttribute(attributeClaim, (String) attr)) {
-        return true; // iterable does contain at least one matching value
-      }
-    }
-
-    return false;
   }
 
   /**
@@ -172,7 +122,7 @@ public abstract class AbstractAttributeValidation {
   /**
    * @param attributeClaim describing URL with attribute
    * @param attribute of the constraint
-   * @return true if claim contains the attribute
+   * @return true if claim is equal the attribute claim
    */
   private static boolean isCorrectAttribute(String attributeClaim, String attribute) {
     return attributeClaim.equals(attribute);

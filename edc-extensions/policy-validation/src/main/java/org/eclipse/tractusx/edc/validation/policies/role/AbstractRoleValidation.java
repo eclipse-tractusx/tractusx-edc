@@ -23,8 +23,8 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
 
 /**
- * Abstract class for BusinessPartnerNumber validation. This class may be inherited from the EDC
- * policy enforcing functions for duties, permissions and prohibitions.
+ * Abstract class for Role validation. This class may be inherited from the EDC policy enforcing
+ * functions for duties, permissions and prohibitions.
  */
 public abstract class AbstractRoleValidation {
 
@@ -32,14 +32,10 @@ public abstract class AbstractRoleValidation {
   // Problems reported to the policy context are not logged. Therefore, everything
   // that is reported to the policy context should be logged, too.
 
-  private static final String SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING =
-      "Skipping evaluation of iterable value in Role constraint. Right values used in an iterable must be of type 'String'. Unsupported type: '%s'";
   private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING =
       "Failing evaluation because of invalid Role constraint. For operator 'EQ' right value must be of type 'String'. Unsupported type: '%s'";
-  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE =
-      "Failing evaluation because of invalid Role constraint. For operator 'IN' right value must be of type 'Iterable'. Unsupported type: '%s'";
   private static final String FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR =
-      "Failing evaluation because of invalid Role constraint. As operator only 'EQ' or 'IN' are supported. Unsupported operator: '%s'";
+      "Failing evaluation because of invalid Role constraint. As operator only 'EQ' is supported. Unsupported operator: '%s'";
 
   private final Monitor monitor;
 
@@ -51,7 +47,7 @@ public abstract class AbstractRoleValidation {
   private static final String ROLE_CLAIM = "role";
 
   /**
-   * Evaluation funtion to decide whether a claim belongs to a specific role.
+   * Evaluation function to decide whether a claim belongs to a specific role.
    *
    * @param operator operator of the constraint
    * @param rightValue right value fo the constraint, that contains the defined role (e.g.
@@ -91,57 +87,12 @@ public abstract class AbstractRoleValidation {
 
     if (operator == Operator.EQ) {
       return isRole(roleClaim, rightValue, policyContext);
-    } else if (operator == Operator.IN) {
-      return containsRole(roleClaim, rightValue, policyContext);
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
     }
-  }
-
-  /**
-   * @param roleClaim of the participant
-   * @param role object
-   * @return true if object is an iterable and constains a string that is successfully evaluated
-   *     against the claim
-   */
-  private boolean containsRole(String roleClaim, Object role, PolicyContext policyContext) {
-    if (role == null) {
-      final String message =
-          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
-      monitor.warning(message);
-      policyContext.reportProblem(message);
-      return false;
-    }
-    if (!(role instanceof Iterable)) {
-      final String message =
-          String.format(
-              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, role.getClass().getName());
-      monitor.warning(message);
-      policyContext.reportProblem(message);
-      return false;
-    }
-
-    for (Object roleName : (Iterable) role) {
-      if (roleName == null) {
-        final String message =
-            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
-        monitor.warning(message);
-        policyContext.reportProblem(message);
-      } else if (!(roleName instanceof String)) {
-        final String message =
-            String.format(
-                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, roleName.getClass().getName());
-        monitor.warning(message);
-        policyContext.reportProblem(message);
-      } else if (isCorrectRole(roleClaim, (String) roleName)) {
-        return true; // iterable does contain at least one matching value
-      }
-    }
-
-    return false;
   }
 
   /**
@@ -170,7 +121,7 @@ public abstract class AbstractRoleValidation {
   /**
    * @param roleClaim describing URL with the role
    * @param role of the constraint
-   * @return true if claim contains the business partner number
+   * @return true if claim is equal the role claim
    */
   private static boolean isCorrectRole(String roleClaim, String role) {
     return roleClaim.equals(role);
