@@ -12,7 +12,7 @@
  *
  */
 
-package net.catenax.edc.hashicorpvault;
+package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.io.IOException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;

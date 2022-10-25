@@ -12,7 +12,7 @@
  *
  */
 
-package net.catenax.edc.hashicorpvault;
+package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.security.cert.X509Certificate;
 import lombok.SneakyThrows;

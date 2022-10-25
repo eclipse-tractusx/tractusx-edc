@@ -12,7 +12,7 @@
  *
  */
 
-package net.catenax.edc.hashicorpvault;
+package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;

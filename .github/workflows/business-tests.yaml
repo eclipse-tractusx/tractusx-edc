@@ -211,7 +211,7 @@ jobs:
                 {
                   "args": [
                     "-c",
-                    "cd /product-edc && ./mvnw -s settings.xml -B -Pbusiness-tests -pl edc-tests test -Dtest=net.catenax.edc.tests.features.RunCucumberTest"
+                    "cd /product-edc && ./mvnw -s settings.xml -B -Pbusiness-tests -pl edc-tests test -Dtest=org.eclipse.tractusx.edc.tests.features.RunCucumberTest"
                   ],
                   "command": [
                     "/bin/sh"

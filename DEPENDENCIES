@@ -50,15 +50,15 @@ maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.18, Apache-2.0
 maven/mavencentral/io.projectreactor/reactor-core/3.4.17, Apache-2.0, approved, clearlydefined
 maven/mavencentral/jakarta.ws.rs/jakarta.ws.rs-api/3.1.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.rest
 maven/mavencentral/javax.validation/validation-api/2.0.1.Final, Apache-2.0, approved, CQ15302
-maven/mavencentral/net.catenax.edc.extensions/business-partner-validation/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc.extensions/cx-oauth2/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc.extensions/data-encryption/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc.extensions/dataplane-selector-configuration/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc.extensions/hashicorp-vault/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc.extensions/postgresql-migration/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc/edc-controlplane-base/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc/edc-controlplane-postgresql/0.1.1-SNAPSHOT, , restricted, clearlydefined
-maven/mavencentral/net.catenax.edc/edc-dataplane-base/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc.extensions/business-partner-validation/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc.extensions/cx-oauth2/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc.extensions/data-encryption/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc.extensions/dataplane-selector-configuration/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc.extensions/hashicorp-vault/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc.extensions/postgresql-migration/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc/edc-controlplane-base/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc/edc-controlplane-postgresql/0.1.1-SNAPSHOT, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx.edc/edc-dataplane-base/0.1.1-SNAPSHOT, , restricted, clearlydefined
 maven/mavencentral/net.java.dev.jna/jna-platform/5.6.0, Apache-2.0 OR LGPL-2.1-or-later, approved, CQ22390
 maven/mavencentral/net.java.dev.jna/jna/5.5.0, Apache-2.0 or LGPL-2.1, approved, #1508
 maven/mavencentral/net.minidev/accessors-smart/2.4.8, Apache-2.0, approved, clearlydefined

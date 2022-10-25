@@ -11,7 +11,7 @@
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
 #
-net.catenax.edc.oauth2.jwt.decorator.JwtDecoratorExtension
-net.catenax.edc.oauth2.jwt.validation.JwtValidationExtension
-net.catenax.edc.oauth2.jwt.generator.JwtTokenGenerationServiceExtension
-net.catenax.edc.oauth2.OAuth2Extension
+org.eclipse.tractusx.edc.oauth2.jwt.decorator.JwtDecoratorExtension
+org.eclipse.tractusx.edc.oauth2.jwt.validation.JwtValidationExtension
+org.eclipse.tractusx.edc.oauth2.jwt.generator.JwtTokenGenerationServiceExtension
+org.eclipse.tractusx.edc.oauth2.OAuth2Extension

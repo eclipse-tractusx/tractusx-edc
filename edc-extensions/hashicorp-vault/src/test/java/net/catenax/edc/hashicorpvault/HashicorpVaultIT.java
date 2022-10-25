@@ -12,7 +12,7 @@
  *
  */
 
-package net.catenax.edc.hashicorpvault;
+package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.util.UUID;
 import org.eclipse.dataspaceconnector.spi.security.Vault;

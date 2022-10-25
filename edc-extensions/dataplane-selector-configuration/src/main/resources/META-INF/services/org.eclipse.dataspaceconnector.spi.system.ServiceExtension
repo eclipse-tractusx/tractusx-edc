@@ -12,4 +12,4 @@
 #
 #
 
-net.catenax.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension
+org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension

@@ -17,12 +17,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.catenax.edc</groupId>
+        <groupId>org.eclipse.tractusx.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
         <version>0.1.3-SNAPSHOT</version>
     </parent>
 
-    <groupId>net.catenax.edc.tests</groupId>
+    <groupId>org.eclipse.tractusx.edc.tests</groupId>
     <artifactId>edc-tests</artifactId>
     <packaging>jar</packaging>
 
@@ -147,57 +147,57 @@
                 -->
                 <!-- edc-extensions -->
                 <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>business-partner-validation</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>dataplane-selector-configuration</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>hashicorp-vault</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>postgresql-migration</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>data-encryption</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc.extensions</groupId>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>cx-oauth2</artifactId>
                 </dependency>
                 <!-- edc-controlplane -->
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-controlplane-base</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-controlplane-memory</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-controlplane-postgresql</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
                 </dependency>
                 <!-- edc-dataplane -->
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-dataplane-base</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-dataplane-azure-vault</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>net.catenax.edc</groupId>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-dataplane-hashicorp-vault</artifactId>
                 </dependency>
             </dependencies>

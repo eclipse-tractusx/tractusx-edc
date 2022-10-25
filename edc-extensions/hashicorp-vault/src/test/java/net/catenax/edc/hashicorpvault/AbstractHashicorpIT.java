@@ -12,11 +12,11 @@
  *
  */
 
-package net.catenax.edc.hashicorpvault;
+package org.eclipse.tractusx.edc.hashicorpvault;
 
-import static net.catenax.edc.hashicorpvault.HashicorpVaultClient.VAULT_DATA_ENTRY_NAME;
-import static net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_TOKEN;
-import static net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_URL;
+import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultClient.VAULT_DATA_ENTRY_NAME;
+import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_TOKEN;
+import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_URL;
 
 import java.util.ArrayList;
 import java.util.HashMap;

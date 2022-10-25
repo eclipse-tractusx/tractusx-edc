@@ -11,8 +11,8 @@
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
 #
-net.catenax.edc.postgresql.migration.AssetPostgresqlMigrationExtension
-net.catenax.edc.postgresql.migration.ContractDefinitionPostgresqlMigrationExtension
-net.catenax.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension
-net.catenax.edc.postgresql.migration.PolicyPostgresqlMigrationExtension
-net.catenax.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.AssetPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.ContractDefinitionPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension
