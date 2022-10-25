@@ -47,14 +47,8 @@ public abstract class AbstractRoleValidation {
     this.monitor = Objects.requireNonNull(monitor);
   }
 
-  /**
-   * Name of the claim that contains the Business Partner Number.
-   *
-   * <p><strong>Please note:</strong> At the time of writing (April 2022) the business partner
-   * number is part of the 'referringConnector' claim in the IDS DAT token. This will probably
-   * change for the next release.
-   */
-  private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
+  /** Name of the claim that contains the Role. */
+  private static final String ROLE_CLAIM = "role";
 
   /**
    * Evaluation funtion to decide whether a claim belongs to a specific role.
@@ -80,25 +74,25 @@ public abstract class AbstractRoleValidation {
     final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
     final Map<String, Object> claims = participantAgent.getClaims();
 
-    if (!claims.containsKey(REFERRING_CONNECTOR_CLAIM)) {
+    if (!claims.containsKey(ROLE_CLAIM)) {
       return false;
     }
 
-    Object referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
-    String referringConnectorClaim = null;
+    Object roleClaimObject = claims.get(ROLE_CLAIM);
+    String roleClaim = null;
 
-    if (referringConnectorClaimObject instanceof String) {
-      referringConnectorClaim = (String) referringConnectorClaimObject;
+    if (roleClaimObject instanceof String) {
+      roleClaim = (String) roleClaimObject;
     }
 
-    if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
+    if (roleClaim == null || roleClaim.isEmpty()) {
       return false;
     }
 
     if (operator == Operator.EQ) {
-      return isRole(referringConnectorClaim, rightValue, policyContext);
+      return isRole(roleClaim, rightValue, policyContext);
     } else if (operator == Operator.IN) {
-      return containsRole(referringConnectorClaim, rightValue, policyContext);
+      return containsRole(roleClaim, rightValue, policyContext);
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
@@ -108,13 +102,12 @@ public abstract class AbstractRoleValidation {
   }
 
   /**
-   * @param referringConnectorClaim of the participant
+   * @param roleClaim of the participant
    * @param role object
    * @return true if object is an iterable and constains a string that is successfully evaluated
    *     against the claim
    */
-  private boolean containsRole(
-      String referringConnectorClaim, Object role, PolicyContext policyContext) {
+  private boolean containsRole(String roleClaim, Object role, PolicyContext policyContext) {
     if (role == null) {
       final String message =
           String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
@@ -143,7 +136,7 @@ public abstract class AbstractRoleValidation {
                 SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, roleName.getClass().getName());
         monitor.warning(message);
         policyContext.reportProblem(message);
-      } else if (isCorrectRole(referringConnectorClaim, (String) roleName)) {
+      } else if (isCorrectRole(roleClaim, (String) roleName)) {
         return true; // iterable does contain at least one matching value
       }
     }
@@ -152,11 +145,11 @@ public abstract class AbstractRoleValidation {
   }
 
   /**
-   * @param referringConnectorClaim of the participant
+   * @param roleClaim of the participant
    * @param role object
    * @return true if object is string and successfully evaluated against the claim
    */
-  private boolean isRole(String referringConnectorClaim, Object role, PolicyContext policyContext) {
+  private boolean isRole(String roleClaim, Object role, PolicyContext policyContext) {
     if (role == null) {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
       monitor.warning(message);
@@ -171,21 +164,15 @@ public abstract class AbstractRoleValidation {
       return false;
     }
 
-    return isCorrectRole(referringConnectorClaim, (String) role);
+    return isCorrectRole(roleClaim, (String) role);
   }
 
   /**
-   * At the time of writing (25. Oktober 2022) the role is part of the 'referringConnector' claim,
-   * which contains a connector URL. As the CX projects are not further aligned about the URL
-   * formatting, the enforcement can only be done by checking whether the URL _contains_ the number.
-   * As this introduces some insecurities when validation a role, this should be addresses in the
-   * long term.
-   *
-   * @param referringConnectorClaim describing URL with the role
+   * @param roleClaim describing URL with the role
    * @param role of the constraint
    * @return true if claim contains the business partner number
    */
-  private static boolean isCorrectRole(String referringConnectorClaim, String role) {
-    return referringConnectorClaim.contains(role);
+  private static boolean isCorrectRole(String roleClaim, String role) {
+    return roleClaim.equals(role);
   }
 }

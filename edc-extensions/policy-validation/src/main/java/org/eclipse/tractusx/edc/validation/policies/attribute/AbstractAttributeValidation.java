@@ -47,14 +47,8 @@ public abstract class AbstractAttributeValidation {
     this.monitor = Objects.requireNonNull(monitor);
   }
 
-  /**
-   * Name of the claim that contains the Attribute.
-   *
-   * <p><strong>Please note:</strong> At the time of writing (Oktober 2022) the attribute is part of
-   * the 'referringConnector' claim in the IDS DAT token. This will probably change for the next
-   * release.
-   */
-  private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
+  /** Name of the claim that contains the Attribute. */
+  private static final String ATTRIBUTE_CLAIM = "attribute";
 
   /**
    * Evaluation funtion to decide whether a claim belongs to a specific Attribute.
@@ -80,25 +74,25 @@ public abstract class AbstractAttributeValidation {
     final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
     final Map<String, Object> claims = participantAgent.getClaims();
 
-    if (!claims.containsKey(REFERRING_CONNECTOR_CLAIM)) {
+    if (!claims.containsKey(ATTRIBUTE_CLAIM)) {
       return false;
     }
 
-    Object referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
-    String referringConnectorClaim = null;
+    Object attributeClaimObject = claims.get(ATTRIBUTE_CLAIM);
+    String attributeClaim = null;
 
-    if (referringConnectorClaimObject instanceof String) {
-      referringConnectorClaim = (String) referringConnectorClaimObject;
+    if (attributeClaimObject instanceof String) {
+      attributeClaim = (String) attributeClaimObject;
     }
 
-    if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
+    if (attributeClaim == null || attributeClaim.isEmpty()) {
       return false;
     }
 
     if (operator == Operator.EQ) {
-      return isAttributeValue(referringConnectorClaim, rightValue, policyContext);
+      return isAttributeValue(attributeClaim, rightValue, policyContext);
     } else if (operator == Operator.IN) {
-      return containsAttribute(referringConnectorClaim, rightValue, policyContext);
+      return containsAttribute(attributeClaim, rightValue, policyContext);
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
@@ -108,13 +102,13 @@ public abstract class AbstractAttributeValidation {
   }
 
   /**
-   * @param referringConnectorClaim of the participant
+   * @param attributeClaim of the participant
    * @param attribute object
    * @return true if object is an iterable and constains a string that is successfully evaluated
    *     against the claim
    */
   private boolean containsAttribute(
-      String referringConnectorClaim, Object attribute, PolicyContext policyContext) {
+      String attributeClaim, Object attribute, PolicyContext policyContext) {
     if (attribute == null) {
       final String message =
           String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
@@ -143,7 +137,7 @@ public abstract class AbstractAttributeValidation {
                 SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, attr.getClass().getName());
         monitor.warning(message);
         policyContext.reportProblem(message);
-      } else if (isCorrectAttribute(referringConnectorClaim, (String) attr)) {
+      } else if (isCorrectAttribute(attributeClaim, (String) attr)) {
         return true; // iterable does contain at least one matching value
       }
     }
@@ -152,12 +146,12 @@ public abstract class AbstractAttributeValidation {
   }
 
   /**
-   * @param referringConnectorClaim of the participant
+   * @param attributeClaim of the participant
    * @param attribute object
    * @return true if object is string and successfully evaluated against the claim
    */
   private boolean isAttributeValue(
-      String referringConnectorClaim, Object attribute, PolicyContext policyContext) {
+      String attributeClaim, Object attribute, PolicyContext policyContext) {
     if (attribute == null) {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
       monitor.warning(message);
@@ -172,21 +166,15 @@ public abstract class AbstractAttributeValidation {
       policyContext.reportProblem(message);
       return false;
     }
-    return isCorrectAttribute(referringConnectorClaim, (String) attribute);
+    return isCorrectAttribute(attributeClaim, (String) attribute);
   }
 
   /**
-   * At the time of writing (October 2022) the attribute is part of the 'referringConnector' claim,
-   * which contains a connector URL. As the CX projects are not further aligned about the URL
-   * formatting, the enforcement can only be done by checking whether the URL _contains_ the number.
-   * As this introduces some insecurities when validation the attribue this should be addresses in
-   * the long term.
-   *
-   * @param referringConnectorClaim describing URL with attribute
+   * @param attributeClaim describing URL with attribute
    * @param attribute of the constraint
    * @return true if claim contains the attribute
    */
-  private static boolean isCorrectAttribute(String referringConnectorClaim, String attribute) {
-    return referringConnectorClaim.contains(attribute);
+  private static boolean isCorrectAttribute(String attributeClaim, String attribute) {
+    return attributeClaim.equals(attribute);
   }
 }
