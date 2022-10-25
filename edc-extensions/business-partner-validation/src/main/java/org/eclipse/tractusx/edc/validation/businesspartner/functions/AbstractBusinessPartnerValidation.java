@@ -32,14 +32,10 @@ public abstract class AbstractBusinessPartnerValidation {
   // Problems reported to the policy context are not logged. Therefore, everything
   // that is reported to the policy context should be logged, too.
 
-  private static final String SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING =
-      "Skipping evaluation of iterable value in BusinessPartnerNumber constraint. Right values used in an iterable must be of type 'String'. Unsupported type: '%s'";
   private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING =
       "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'EQ' right value must be of type 'String'. Unsupported type: '%s'";
-  private static final String FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE =
-      "Failing evaluation because of invalid BusinessPartnerNumber constraint. For operator 'IN' right value must be of type 'Iterable'. Unsupported type: '%s'";
   private static final String FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR =
-      "Failing evaluation because of invalid BusinessPartnerNumber constraint. As operator only 'EQ' or 'IN' are supported. Unsupported operator: '%s'";
+      "Failing evaluation because of invalid BusinessPartnerNumber constraint. As operator only 'EQ' is supported. Unsupported operator: '%s'";
 
   private final Monitor monitor;
 
@@ -98,61 +94,12 @@ public abstract class AbstractBusinessPartnerValidation {
 
     if (operator == Operator.EQ) {
       return isBusinessPartnerNumber(referringConnectorClaim, rightValue, policyContext);
-    } else if (operator == Operator.IN) {
-      return containsBusinessPartnerNumber(referringConnectorClaim, rightValue, policyContext);
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
       policyContext.reportProblem(message);
       return false;
     }
-  }
-
-  /**
-   * @param referringConnectorClaim of the participant
-   * @param businessPartnerNumbers object
-   * @return true if object is an iterable and constains a string that is successfully evaluated
-   *     against the claim
-   */
-  private boolean containsBusinessPartnerNumber(
-      String referringConnectorClaim, Object businessPartnerNumbers, PolicyContext policyContext) {
-    if (businessPartnerNumbers == null) {
-      final String message =
-          String.format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE, "null");
-      monitor.warning(message);
-      policyContext.reportProblem(message);
-      return false;
-    }
-    if (!(businessPartnerNumbers instanceof Iterable)) {
-      final String message =
-          String.format(
-              FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_ITERABLE,
-              businessPartnerNumbers.getClass().getName());
-      monitor.warning(message);
-      policyContext.reportProblem(message);
-      return false;
-    }
-
-    for (Object businessPartnerNumber : (Iterable) businessPartnerNumbers) {
-      if (businessPartnerNumber == null) {
-        final String message =
-            String.format(SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING, "null");
-        monitor.warning(message);
-        policyContext.reportProblem(message);
-      } else if (!(businessPartnerNumber instanceof String)) {
-        final String message =
-            String.format(
-                SKIP_EVALUATION_BECAUSE_ITERABLE_VALUE_NOT_STRING,
-                businessPartnerNumber.getClass().getName());
-        monitor.warning(message);
-        policyContext.reportProblem(message);
-      } else if (isCorrectBusinessPartner(
-          referringConnectorClaim, (String) businessPartnerNumber)) {
-        return true; // iterable does contain at least one matching value
-      }
-    }
-
-    return false;
   }
 
   /**

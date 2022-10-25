@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 
 -   Set EDC version to `0.0.1-20221006-SNAPSHOT`
+-   Business Partner Number Extension no longer supports the 'IN' constraint operator
 
 ### Changed
 
