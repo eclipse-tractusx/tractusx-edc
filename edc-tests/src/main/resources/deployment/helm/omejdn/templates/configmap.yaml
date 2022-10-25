@@ -9,6 +9,8 @@ data:
     ---
     idsc:IDS_CONNECTOR_ATTRIBUTES_ALL:
     - referringConnector
+    - role
+    - attribute
 
   omejdn.yml:  |-
     ---
