@@ -34,6 +34,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.tractusx.edc.tests.data.Asset;
+import org.eclipse.tractusx.edc.tests.data.AttributeConstraint;
 import org.eclipse.tractusx.edc.tests.data.BusinessPartnerNumberConstraint;
 import org.eclipse.tractusx.edc.tests.data.Constraint;
 import org.eclipse.tractusx.edc.tests.data.ContractDefinition;
@@ -43,6 +44,7 @@ import org.eclipse.tractusx.edc.tests.data.ContractOffer;
 import org.eclipse.tractusx.edc.tests.data.PayMeConstraint;
 import org.eclipse.tractusx.edc.tests.data.Permission;
 import org.eclipse.tractusx.edc.tests.data.Policy;
+import org.eclipse.tractusx.edc.tests.data.RoleConstraint;
 
 @Slf4j
 public class DataManagementAPI {
@@ -283,6 +285,10 @@ public class DataManagementAPI {
       return mapConstraint((BusinessPartnerNumberConstraint) constraint);
     } else if (PayMeConstraint.class.equals(constraint.getClass())) {
       return mapConstraint((PayMeConstraint) constraint);
+    } else if (RoleConstraint.class.equals(constraint.getClass())) {
+      return mapConstraint((RoleConstraint) constraint);
+    } else if (AttributeConstraint.class.equals(constraint.getClass())) {
+      return mapConstraint((AttributeConstraint) constraint);
     } else {
       throw new UnsupportedOperationException(
           "Unsupported constraint type: " + constraint.getClass().getName());
@@ -297,6 +303,42 @@ public class DataManagementAPI {
     final DataManagementApiLiteralExpression rightExpression =
         new DataManagementApiLiteralExpression();
     rightExpression.value = String.valueOf(constraint.getAmount());
+
+    final DataManagementApiConstraint dataManagementApiConstraint =
+        new DataManagementApiConstraint();
+    dataManagementApiConstraint.leftExpression = leftExpression;
+    dataManagementApiConstraint.rightExpression = rightExpression;
+    dataManagementApiConstraint.operator = "EQ";
+
+    return dataManagementApiConstraint;
+  }
+
+  private DataManagementApiConstraint mapConstraint(RoleConstraint constraint) {
+    final DataManagementApiLiteralExpression leftExpression =
+        new DataManagementApiLiteralExpression();
+    leftExpression.value = "Role";
+
+    final DataManagementApiLiteralExpression rightExpression =
+        new DataManagementApiLiteralExpression();
+    rightExpression.value = String.valueOf(constraint.getRole());
+
+    final DataManagementApiConstraint dataManagementApiConstraint =
+        new DataManagementApiConstraint();
+    dataManagementApiConstraint.leftExpression = leftExpression;
+    dataManagementApiConstraint.rightExpression = rightExpression;
+    dataManagementApiConstraint.operator = "EQ";
+
+    return dataManagementApiConstraint;
+  }
+
+  private DataManagementApiConstraint mapConstraint(AttributeConstraint constraint) {
+    final DataManagementApiLiteralExpression leftExpression =
+        new DataManagementApiLiteralExpression();
+    leftExpression.value = "Attribute";
+
+    final DataManagementApiLiteralExpression rightExpression =
+        new DataManagementApiLiteralExpression();
+    rightExpression.value = String.valueOf(constraint.getAttribute());
 
     final DataManagementApiConstraint dataManagementApiConstraint =
         new DataManagementApiConstraint();

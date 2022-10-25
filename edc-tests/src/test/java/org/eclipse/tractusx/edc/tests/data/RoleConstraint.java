@@ -8,17 +8,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Mercedes-Benz Tech Innovation GmbH - Initial Implementation
+ *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
  *
  */
-
 package org.eclipse.tractusx.edc.tests.data;
 
 import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class BusinessPartnerNumberConstraint implements Constraint {
+public class RoleConstraint implements Constraint {
 
-  @NonNull String businessPartnerNumber;
+  @NonNull String role;
 }

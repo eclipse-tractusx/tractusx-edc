@@ -19,11 +19,13 @@ import io.cucumber.java.en.Given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.tractusx.edc.tests.data.AttributeConstraint;
 import org.eclipse.tractusx.edc.tests.data.BusinessPartnerNumberConstraint;
 import org.eclipse.tractusx.edc.tests.data.Constraint;
 import org.eclipse.tractusx.edc.tests.data.PayMeConstraint;
 import org.eclipse.tractusx.edc.tests.data.Permission;
 import org.eclipse.tractusx.edc.tests.data.Policy;
+import org.eclipse.tractusx.edc.tests.data.RoleConstraint;
 
 public class PolicyStepDefs {
 
@@ -43,9 +45,17 @@ public class PolicyStepDefs {
       final String action = map.get("action");
 
       List<Constraint> constraints = new ArrayList<>();
+      // BPN
       final String businessPartnerNumber = map.get("businessPartnerNumber");
       if (businessPartnerNumber != null && !businessPartnerNumber.isBlank())
         constraints.add(new BusinessPartnerNumberConstraint(businessPartnerNumber));
+      // ROLE
+      final String role = map.get("role");
+      if (role != null && !role.isBlank()) constraints.add(new RoleConstraint(role));
+      // ATTRIBUTE
+      final String attribute = map.get("attribute");
+      if (attribute != null && !attribute.isBlank())
+        constraints.add(new AttributeConstraint(attribute));
 
       final String payMe = map.get("payMe");
       if (payMe != null && !payMe.isBlank())

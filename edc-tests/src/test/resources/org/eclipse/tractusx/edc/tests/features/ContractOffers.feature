@@ -35,7 +35,7 @@ Feature: Contract Offers
       | contract-definition-1 | asset-1 |
       | contract-definition-2 | asset-2 |
 
-  Scenario: EQ Business Partner Constrain for Catalog
+  Scenario: EQ Business Partner Constraint for Catalog
     Given 'Plato' has the following assets
       | id      | description   |
       | asset-1 | Example Asset |
@@ -77,6 +77,32 @@ Feature: Contract Offers
       | source definition     | asset   |
       | contract-definition-2 | asset-1 |
   #| contract-definition-1 | asset-1 | # Issue https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1764
+
+  Scenario: CX-Constraint Validation
+    Given 'Plato' has the following assets
+      | id      | description   |
+      | asset-1 | Example Asset |
+    And 'Plato' has the following policies
+      | id       | action | businessPartnerNumber | role       | attribute        |
+      | policy-1 | USE    | BPNSOKRATES           | Dismantler | ISO-Certificated |
+      | policy-2 | USE    | BPNFOO                | Dismantler | ISO-Certificated |
+      | policy-3 | USE    | BPNSOKRATES           | Recylcer   | ISO-Certificated |
+      | policy-4 | USE    | BPNSOKRATES           | Dismantler | FOO-Certificated |
+    And 'Plato' has the following contract definitions
+      | id                    | access policy | contract policy | asset   |
+      | contract-definition-1 | policy-1      | policy-1        | asset-1 |
+      | contract-definition-2 | policy-2      | policy-1        | asset-1 |
+      | contract-definition-3 | policy-3      | policy-1        | asset-1 |
+      | contract-definition-4 | policy-4      | policy-1        | asset-1 |
+    When 'Sokrates' requests the catalog from 'Plato'
+    Then the catalog contains the following offers
+      | source definition     | asset   |
+      | contract-definition-1 | asset-1 |
+    And the catalog does not contain the following offers
+      | source definition     | asset   |
+      | contract-definition-2 | asset-1 |
+      | contract-definition-3 | asset-1 |
+      | contract-definition-4 | asset-1 |
 
   Scenario: Catalog with 1000 Contract Offers
     Given 'Plato' has '1000' assets
