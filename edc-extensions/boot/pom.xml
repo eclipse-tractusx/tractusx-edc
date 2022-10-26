@@ -28,7 +28,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>boot-extension</artifactId>
+    <artifactId>boot</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -36,6 +36,9 @@
         <sourceDirectory>${originalSourceDirectory}</sourceDirectory>
         <delombokSourceDirectory>${project.build.directory}/delombok</delombokSourceDirectory>
         <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
+
+        <openTelemetryVersion>1.12.0</openTelemetryVersion>
+        <slf4jVersion>2.0.0-alpha7</slf4jVersion>
     </properties>
 
     <build>
@@ -95,10 +98,16 @@
     </build>
 
     <dependencies>
-        <!-- SPI -->
+        <!-- EDC Dependency -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-spi</artifactId>
+            <artifactId>core-boot</artifactId>
+        </dependency>
+
+        <!-- External Dependencies -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 </project>
