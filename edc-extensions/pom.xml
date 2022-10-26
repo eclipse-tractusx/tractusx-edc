@@ -30,6 +30,7 @@
     </properties>
 
     <modules>
+        <module>boot-extension</module>
         <module>business-partner-validation</module>
         <module>postgresql-migration</module>
         <module>hashicorp-vault</module>
