@@ -95,7 +95,7 @@ public class PolicyValidationExtension implements ServiceExtension {
 
   @Override
   public String name() {
-    return "Policy Validation Extension";
+    return "Access Policy Validation Extension";
   }
 
   @Override

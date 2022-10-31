@@ -86,7 +86,13 @@ public abstract class AbstractAttributeValidation {
     }
 
     if (operator == Operator.EQ) {
-      return isAttributeValue(attributeClaim, rightValue, policyContext);
+      String[] attributes = attributeClaim.split(",");
+      for(String attribute : attributes){
+        if(isAttributeValue(attribute, rightValue, policyContext)){
+          return true;
+        }
+      }
+      return false;
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);

@@ -85,8 +85,14 @@ public abstract class AbstractRoleValidation {
       return false;
     }
 
-    if (operator == Operator.EQ) {
-      return isRole(roleClaim, rightValue, policyContext);
+    if(operator == Operator.EQ) {
+      String[] roles = roleClaim.split(",");
+      for(String role : roles){
+        if(isRole(role.trim(), rightValue, policyContext)){
+          return true;
+        }
+      }
+      return false;
     } else {
       final String message = String.format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
       monitor.warning(message);
