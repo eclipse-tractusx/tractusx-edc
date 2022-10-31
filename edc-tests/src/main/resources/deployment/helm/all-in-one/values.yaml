@@ -12,8 +12,8 @@ idsdaps:
       name: sokrates
       attributes:
         referringConnector: http://sokrates-edc-controlplane/BPNSOKRATES
-        role: Dismantler
-        attribute: ISO-Certificated
+        role: Dismantler, Recycler
+        attribute: ISO-Certificated, DIN-Certificated
       # Must be the same certificate that is stores in section 'sokrates-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
