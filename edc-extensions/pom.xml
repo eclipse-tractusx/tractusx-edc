@@ -30,7 +30,7 @@
     </properties>
 
     <modules>
-        <module>policy-validation</module>
+        <module>access-policy-validation</module>
         <module>postgresql-migration</module>
         <module>hashicorp-vault</module>
         <module>dataplane-selector-configuration</module>

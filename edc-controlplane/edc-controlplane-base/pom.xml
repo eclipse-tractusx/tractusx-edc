@@ -53,7 +53,7 @@
         <!-- CX Extensions -->
         <dependency>
             <groupId>org.eclipse.tractusx.edc.extensions</groupId>
-            <artifactId>policy-validation</artifactId>
+            <artifactId>access-policy-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.tractusx.edc.extensions</groupId>
