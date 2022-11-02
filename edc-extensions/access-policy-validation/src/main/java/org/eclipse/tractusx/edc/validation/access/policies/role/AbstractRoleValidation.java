@@ -85,10 +85,10 @@ public abstract class AbstractRoleValidation {
       return false;
     }
 
-    if(operator == Operator.EQ) {
+    if (operator == Operator.EQ) {
       String[] roles = roleClaim.split(",");
-      for(String role : roles){
-        if(isRole(role.trim(), rightValue, policyContext)){
+      for (String role : roles) {
+        if (isRole(role.trim(), rightValue, policyContext)) {
           return true;
         }
       }

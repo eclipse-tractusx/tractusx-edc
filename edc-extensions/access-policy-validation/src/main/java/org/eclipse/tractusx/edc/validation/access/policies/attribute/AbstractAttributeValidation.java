@@ -87,8 +87,8 @@ public abstract class AbstractAttributeValidation {
 
     if (operator == Operator.EQ) {
       String[] attributes = attributeClaim.split(",");
-      for(String attribute : attributes){
-        if(isAttributeValue(attribute, rightValue, policyContext)){
+      for (String attribute : attributes) {
+        if (isAttributeValue(attribute, rightValue, policyContext)) {
           return true;
         }
       }
