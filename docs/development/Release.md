@@ -43,5 +43,14 @@ https://gitlab.eclipse.org/eclipsefdn/emo-team/iplab/-/issues
     </small>
 </p>
 
+### 3. Resolve restricted Dependencies
+
+If a dependency is `restricted`, it is not approved by the Eclipse Foundation, yet.
+The Eclipse Bot is able to approve dependencies automatically, if the license can be resolved by ClearlyDefined.
+
+1. (optional) Visit [https://clearlydefined.io/harvest](https://clearlydefined.io/harvest) and harvest the dependency from maven central.
+2. Create the Eclipse IP Issues or ask an Eclipse Commiter to do this for you.
+
+
 [maven-shield]: https://img.shields.io/badge/Apache%20Maven-URL-blue
 [maven-url]: https://maven.apache.org
