@@ -1,24 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "eclipse-dataspace-connector.fullname" . }}-control-plane
+  name: {{ include "eclipse-dataspace-connector.fullname" . }}-control
   labels:
     {{- include "eclipse-dataspace-connector.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.control.autoscaling.enabled }}
+  replicas: {{ .Values.control.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "eclipse-dataspace-connector.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.control.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "eclipse-dataspace-connector.selectorLabels" . | nindent 8 }}
+        {{- include .Values.control.podLabels . }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -26,76 +27,72 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "eclipse-dataspace-connector.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.control.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          {{- if .Values.controlplane.image.repository }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          {{- else if .Values.postgresql.connectionString and .Values.vault.hashicorp }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          {{- else if .Values.postgresql.connectionString and .Values.vault.azure }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-vault:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          {{- else if .Values.vault.hashicorp }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          {{- else if .Values.vault.azure }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            {{- toYaml .Values.control.securityContext | nindent 12 }}
+          {{- if .Values.control.image.repository }}
+          image: "{{ .Values.control.image.repository }}:{{ .Values.control.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.control.postgresql.enabled and .Values.vault.azure.enabled }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.control.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.control.postgresql.enabled and .Values.vault.azure.enabled }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-vault:{{ .Values.control.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.vault.hashicorp.enabled }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.control.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.vault.azure.enabled }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory:{{ .Values.control.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose control-plane image automatically based on configuration" }}
           {{- end }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.control.image.pullPolicy }}
           ports:
-            - name: default
-              containerPort: {{ .Values.controlplane.endpoints.default.port | default 8080 }}
+          {{- range .Values.control.endpoints }}
+            - name: {{ . }}
+              containerPorts: {{ .port }}
               protocol: TCP
-            - name: data
-              containerPort: {{ .Values.controlplane.endpoints.data.port | default 8181 }}
-              protocol: TCP
-            - name: validation
-              containerPort: {{ .Values.controlplane.endpoints.validation.port | default 8182 }}
-              protocol: TCP
-            - name: control
-              containerPort: {{ .Values.controlplane.endpoints.control.port | default 9999 }}
-              protocol: TCP
-            - name: ids
-              containerPort: {{ .Values.controlplane.endpoints.ids.port | default 8282 }}
-              protocol: TCP
-            - name: metrics
-              containerPort: {{ .Values.controlplane.endpoints.metrics.port | default 9090 }}
-              protocol: TCP
-          {{- if .Values.controlplane.livenessProbe.enabled }}
+          {{- end }}
+          {{- if .Values.control.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-            httpGet:
-              path: {{ .Values.controlplane.endpoints.default.path | default /api }}/check/liveness
-              port: default
+              path: {{ .Values.control.endpoints.default.path }}/check/liveness
+              port: {{ .Values.control.endpoints.default.port }}
+            initialDelaySeconds: {{ .Values.control.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.control.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.control.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.control.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.control.livenessProbe.successThreshold }}
           {{- end }}
           {{- if .Values.controlplane.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.controlplane.endpoints.default.path | default /api }}/check/readiness
-              port: default
+              path: {{ .Values.control.endpoints.default.path }}/check/readiness
+              port: {{ .Values.control.endpoints.default.port }}
+            initialDelaySeconds: {{ .Values.control.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.control.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.control.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.control.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.control.readinessProbe.successThreshold }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.control.resources | nindent 12 }}
+      {{- with .Values.control.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.control.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.control.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       env:
-        {{- if .Values.controlplane.debug.enabled and .Values.controlplane.debug.suspendOnStart }}
-        JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="{{ .Values.controlplane.debug.port | default 1044 }}
-        {{- else if .Values.controlplane.debug.enabled }}
-        JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address="{{ .Values.controlplane.debug.port | default 1044 }}
+        {{- if .Values.control.debug.enabled and .Values.control.debug.suspendOnStart }}
+        JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="{{ .Values.control.debug.port }}
+        {{- else if .Values.control.debug.enabled }}
+        JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address="{{ .Values.control.debug.port }}
         {{- end }}
 
         ########################
@@ -112,9 +109,12 @@ spec:
         #############
         ## GENERAL ##
         #############
-        IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
-        EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
-        EDC_IDS_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
+        #IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
+        IDS_WEBHOOK_ADDRESS: {{ include "control.host") }}
+        #EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
+        EDC_IDS_ENDPOINT: {{ printf "%s%s" (include "control.host") "/api/v1/ids" }}
+        #EDC_IDS_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
+        EDC_IDS_ENDPOINT_AUDIENCE: {{ printf "%s%s" (include "control.host") "/api/v1/ids/data" }}
         EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
 
         ################
@@ -152,6 +152,7 @@ spec:
 
         # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: http://sokrates-edc-dataplane:9999/api/dataplane/control
+        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: {{ printf "%s%s" (include "control.host") "/api/v1/ids/data" }}
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >- 
