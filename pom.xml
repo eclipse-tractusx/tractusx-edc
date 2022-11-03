@@ -350,6 +350,21 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>net.catenax.edc.extensions.ssi</groupId>
+                <artifactId>ssi-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions.ssi</groupId>
+                <artifactId>ssi-identity-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.catenax.edc.extensions.ssi</groupId>
+                <artifactId>ssi-managed-identity-wallet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>net.catenax.edc.extensions</groupId>
                 <artifactId>dataplane-selector-configuration</artifactId>
                 <version>${project.version}</version>

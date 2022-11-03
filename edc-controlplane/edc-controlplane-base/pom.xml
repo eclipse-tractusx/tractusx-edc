@@ -63,9 +63,19 @@
             <groupId>net.catenax.edc.extensions</groupId>
             <artifactId>data-encryption</artifactId>
         </dependency>
+
+        <!-- SSI -->
         <dependency>
-            <groupId>net.catenax.edc.extensions</groupId>
-            <artifactId>cx-oauth2</artifactId>
+            <groupId>net.catenax.edc.extensions.ssi</groupId>
+            <artifactId>ssi-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc.extensions.ssi</groupId>
+            <artifactId>ssi-identity-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.catenax.edc.extensions.ssi</groupId>
+            <artifactId>ssi-managed-identity-wallet</artifactId>
         </dependency>
 
         <!-- Config -->
