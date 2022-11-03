@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0e923447-f09f-4cd9-8d2f-5bd4a09d378e",
+		"_postman_id": "6f161032-2b27-482f-9269-065618ffe11d",
 		"name": "EDC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -244,13 +244,40 @@
 			"response": []
 		},
 		{
-			"name": "Policy (BPNs)",
+			"name": "Policy (Role)",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": [\n                    {\n                        \"edctype\": \"AtomicConstraint\",\n                        \"leftExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"BusinessPartnerNumber\"\n                        },\n                        \"rightExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": [\n                                \"BPNFOO\",\n                                \"{{POLICY_BPN}}\"\n                            ]\n                        },\n                        \"operator\": \"IN\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": [\n                    {\n                        \"edctype\": \"AtomicConstraint\",\n                        \"leftExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"Role\"\n                        },\n                        \"rightExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"{{POLICY_ROLE}}\"\n                        },\n                        \"operator\": \"EQ\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PROVIDER_DATAMGMT_URL}}/data/policydefinitions",
+					"host": [
+						"{{PROVIDER_DATAMGMT_URL}}"
+					],
+					"path": [
+						"data",
+						"policydefinitions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Policy (Attribute)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": [\n                    {\n                        \"edctype\": \"AtomicConstraint\",\n                        \"leftExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"Attribute\"\n                        },\n                        \"rightExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"{{POLICY_ATTRIBUTE}}\"\n                        },\n                        \"operator\": \"EQ\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -277,7 +304,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ],\n        \"extensibleProperties\": {\n            \"foo\": \"bar\"\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -420,7 +447,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/catalog?providerUrl={{PROVIDER_IDS_URL}}/api/v1/ids/data",
+					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/catalog?providerUrl={{PROVIDER_IDS_URL}}/api/v1/ids/data&limit=10",
 					"host": [
 						"{{CONSUMER_DATAMGMT_URL}}"
 					],
@@ -432,6 +459,10 @@
 						{
 							"key": "providerUrl",
 							"value": "{{PROVIDER_IDS_URL}}/api/v1/ids/data"
+						},
+						{
+							"key": "limit",
+							"value": "10"
 						}
 					]
 				}
@@ -462,7 +493,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_IDS_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": []\n                }\n            ]\n        }\n    }\n}",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -478,6 +509,94 @@
 						"data",
 						"contractnegotiations",
 						"{{NEGOTIATION_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Negotations",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"AGREEMENT_ID\", jsonData.contractAgreementId);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/contractnegotiations",
+					"host": [
+						"{{CONSUMER_DATAMGMT_URL}}"
+					],
+					"path": [
+						"data",
+						"contractnegotiations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agreements",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"AGREEMENT_ID\", jsonData.contractAgreementId);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/contractagreements",
+					"host": [
+						"{{CONSUMER_DATAMGMT_URL}}"
+					],
+					"path": [
+						"data",
+						"contractagreements"
 					]
 				}
 			},
@@ -577,7 +696,6 @@
 							"pm.test(\"Body matches string\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
-							"",
 							"});"
 						],
 						"type": "text/javascript"
@@ -590,48 +708,6 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_IDS_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": [\n                        {\n                            \"edctype\": \"AtomicConstraint\",\n                            \"leftExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"BusinessPartnerNumber\"\n                            },\n                            \"rightExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"{{POLICY_BPN}}\"\n                            },\n                            \"operator\": \"EQ\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/contractnegotiations",
-					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
-					],
-					"path": [
-						"data",
-						"contractnegotiations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Negotation (BPNs)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Body matches string\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
-							"",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_IDS_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": [\n                        {\n                            \"edctype\": \"AtomicConstraint\",\n                            \"leftExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"BusinessPartnerNumber\"\n                            },\n                            \"rightExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": [\n                                    \"BPNFOO\",\n                                    \"{{POLICY_BPN}}\"\n                                ]\n                            },\n                            \"operator\": \"IN\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -802,7 +878,7 @@
 	"variable": [
 		{
 			"key": "CONSUMER_DATAMGMT_URL",
-			"value": "http://192.168.49.2:31639"
+			"value": "http://192.168.49.2:31316"
 		},
 		{
 			"key": "PROVIDER_IDS_URL",
@@ -810,11 +886,11 @@
 		},
 		{
 			"key": "PROVIDER_DATAMGMT_URL",
-			"value": "http://192.168.49.2:31495"
+			"value": "http://192.168.49.2:31264"
 		},
 		{
 			"key": "CONSUMER_BACKEND_URL",
-			"value": "http://192.168.49.2:31612",
+			"value": "http://192.168.49.2:32129",
 			"type": "default"
 		},
 		{
@@ -849,19 +925,29 @@
 		},
 		{
 			"key": "NEGOTIATION_ID",
-			"value": ""
+			"value": "ae3f5517-0eff-4b1b-ac09-547dba29ee8d"
 		},
 		{
 			"key": "AGREEMENT_ID",
-			"value": ""
+			"value": "1:150dd47c-5e10-4f18-bd44-367e02353970"
 		},
 		{
 			"key": "TRANSFER_ID",
-			"value": ""
+			"value": 0.31821203306650725
 		},
 		{
 			"key": "TRANSFER_PROCESS_ID",
-			"value": ""
+			"value": "6078663a-8588-45df-b6c0-47ae99ad67f3"
+		},
+		{
+			"key": "POLICY_ROLE",
+			"value": "Dismantler",
+			"type": "default"
+		},
+		{
+			"key": "POLICY_ATTRIBUTE",
+			"value": "ISO-Certificated",
+			"type": "default"
 		}
 	]
 }
