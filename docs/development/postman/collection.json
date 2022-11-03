@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0e923447-f09f-4cd9-8d2f-5bd4a09d378e",
+		"_postman_id": "8ad84d1d-060b-4236-bc59-69e1d357e05c",
 		"name": "EDC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -658,7 +658,8 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.collectionVariables.set(\"TRANSFER_ID\", Math.random());"
+							"var uuid = require('uuid')",
+							"pm.collectionVariables.set(\"TRANSFER_PROCESS_ID\", uuid.v4());"
 						],
 						"type": "text/javascript"
 					}
@@ -669,7 +670,7 @@
 						"exec": [
 							"pm.test(\"Body matches string\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.collectionVariables.set(\"TRANSFER_PROCESS_ID\", jsonData.id);",
+							"    pm.collectionVariables.set(\"TRANSFER_ID\", jsonData.id);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -727,14 +728,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/transferprocess/{{TRANSFER_PROCESS_ID}}",
+					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/transferprocess/{{TRANSFER_ID}}",
 					"host": [
 						"{{CONSUMER_DATAMGMT_URL}}"
 					],
 					"path": [
 						"data",
 						"transferprocess",
-						"{{TRANSFER_PROCESS_ID}}"
+						"{{TRANSFER_ID}}"
 					]
 				}
 			},
@@ -752,12 +753,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{CONSUMER_BACKEND_URL}}/{{TRANSFER_ID}}",
+					"raw": "{{CONSUMER_BACKEND_URL}}/{{TRANSFER_PROCESS_ID}}",
 					"host": [
 						"{{CONSUMER_BACKEND_URL}}"
 					],
 					"path": [
-						"{{TRANSFER_ID}}"
+						"{{TRANSFER_PROCESS_ID}}"
 					]
 				}
 			},
