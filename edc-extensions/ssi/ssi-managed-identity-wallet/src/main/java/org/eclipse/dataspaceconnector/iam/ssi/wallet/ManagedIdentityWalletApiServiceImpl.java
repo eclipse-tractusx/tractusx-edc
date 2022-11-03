@@ -67,7 +67,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   }
 
   public String issueVerifiablePresentation(String verifiableCredentialJson) {
-    monitor.info(format("%s :: Received a presentation request for presentation", logPrefix));
+    monitor.info(format("%s :: Received a presentation request for presentation", "WalletAPI"));
     var url = config.getWalletURL() + "/api/presentations";
     try {
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
@@ -94,7 +94,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   }
 
   public String resolveDid(String did) {
-    monitor.info(format("%s :: Received a did request for did " + did, logPrefix));
+    monitor.info(format("%s :: Received a did request for did " + did, "WalletAPI"));
     var url = config.getWalletURL() + "/api/didDocuments/" + did;
     AccessTokenDescriptionDto accessToken = null;
 
@@ -123,7 +123,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   }
 
   public String validateVerifablePresentation(String verifiablePresentationJson) {
-    monitor.info(format("%s :: Received a VP validation reques", logPrefix));
+    monitor.info(format("%s :: Received a VP validation request", "WalletAPI"));
     var url = config.getWalletURL() + "/api/presentations/validation?withDateValidation=false";
     try {
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
@@ -151,7 +151,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   }
 
   public void fetchWalletDescription() {
-    monitor.info(format("%s :: Start fetching Wallet Data", logPrefix));
+    monitor.info(format("%s :: Start fetching Wallet Data", "WalletAPI"));
     try {
       var url =
           config.getWalletURL() + "/api/wallets/" + config.getWalletDID() + "?withCredentials=true";
