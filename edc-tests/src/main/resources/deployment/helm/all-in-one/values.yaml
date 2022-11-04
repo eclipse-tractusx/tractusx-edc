@@ -107,9 +107,9 @@ platovault:
         
         sleep 5
 
-        /bin/vault kv put secret/data-encryption-aes-keys content=H7j47H6vVQQOv/hbdAYz+w==
+        /bin/vault kv put secret/plato/data-encryption-aes-keys content=H7j47H6vVQQOv/hbdAYz+w==
 
-        cat << EOF | /bin/vault kv put secret/my-plato-daps-key content=-
+        cat << EOF | /bin/vault kv put secret/plato/daps/my-plato-daps-key content=-
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX9S8de5FTWl4
         QYdQtkE/yPyCitcBC9TPxmdvWJU22V0jb0YJJeRMfGmHrrFNx6B0Xxp5qhTWY9/c
@@ -140,7 +140,7 @@ platovault:
         -----END PRIVATE KEY-----
         EOF
         
-        cat << EOF | /bin/vault kv put secret/my-plato-daps-crt content=-
+        cat << EOF | /bin/vault kv put secret/plato/daps/my-plato-daps-crt content=-
         -----BEGIN CERTIFICATE-----
         MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
         BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
@@ -239,8 +239,8 @@ platoedccontrolplane:
     EDC_OAUTH_CLIENT_ID: *platoDapsClientId
     EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/jwks.json"
     EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
-    EDC_OAUTH_PRIVATE_KEY_ALIAS: my-plato-daps-key
-    EDC_OAUTH_PUBLIC_KEY_ALIAS: my-plato-daps-crt
+    EDC_OAUTH_PRIVATE_KEY_ALIAS: plato/daps/my-plato-daps-key
+    EDC_OAUTH_PUBLIC_KEY_ALIAS: plato/daps/my-plato-daps-crt
     EDC_OAUTH_PROVIDER_AUDIENCE: idsc:IDS_CONNECTORS_ALL
     EDC_OAUTH_ENDPOINT_AUDIENCE: http://plato-edc-controlplane:8282/api/v1/ids/data
 
@@ -299,8 +299,8 @@ platoedccontrolplane:
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
     EDC_TRANSFER_PROXY_ENDPOINT: http://plato-edc-dataplane:8185/api/public/
-    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-plato-daps-key # for simplicity this example re-uses the DAPS keys.
-    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-plato-daps-crt # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: plato/daps/my-plato-daps-key # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: plato/daps/my-plato-daps-crt # for simplicity this example re-uses the DAPS keys.
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
     EDC_RECEIVER_HTTP_ENDPOINT: http://plato-backend-application
@@ -317,7 +317,7 @@ platoedccontrolplane:
     #####################
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
-    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: plato/data-encryption-aes-keys
     EDC_DATA_ENCRYPTION_ALGORITHM: AES
 
 ############
@@ -356,9 +356,9 @@ sokratesvault:
         
         sleep 5
 
-        /bin/vault kv put secret/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
+        /bin/vault kv put secret/sokrates/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
 
-        cat << EOF | /bin/vault kv put secret/my-sokrates-daps-key content=-
+        cat << EOF | /bin/vault kv put secret/sokrates/daps/my-sokrates-daps-key content=-
         -----BEGIN PRIVATE KEY-----
         MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCv+NUvK7ppJPiM
         wZPaQQxE745T5pV38O/Mkay5m82nnd5BoMoCdhhRTy3Efy79FhvBfGruFBLLGzsQ
@@ -389,7 +389,7 @@ sokratesvault:
         -----END PRIVATE KEY-----
         EOF
         
-        cat << EOF | /bin/vault kv put secret/my-sokrates-daps-crt content=-
+        cat << EOF | /bin/vault kv put secret/sokrates/daps/my-sokrates-daps-crt content=-
         -----BEGIN CERTIFICATE-----
         MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
         BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
@@ -489,8 +489,8 @@ sokratesedccontrolplane:
     EDC_OAUTH_CLIENT_ID: *sokratesDapsClientId
     EDC_OAUTH_PROVIDER_JWKS_URL: *edcControlPlaneOauthJwksUrl
     EDC_OAUTH_TOKEN_URL: *edcControlPlaneOauthTokenUrl
-    EDC_OAUTH_PRIVATE_KEY_ALIAS: my-sokrates-daps-key
-    EDC_OAUTH_PUBLIC_KEY_ALIAS: my-sokrates-daps-crt
+    EDC_OAUTH_PRIVATE_KEY_ALIAS: sokrates/daps/my-sokrates-daps-key
+    EDC_OAUTH_PUBLIC_KEY_ALIAS: sokrates/daps/my-sokrates-daps-crt
     EDC_OAUTH_PROVIDER_AUDIENCE: idsc:IDS_CONNECTORS_ALL
     EDC_OAUTH_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
 
@@ -545,8 +545,8 @@ sokratesedccontrolplane:
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
     EDC_TRANSFER_PROXY_ENDPOINT: http://sokrates-edc-dataplane:8185/api/public/
-    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
-    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: sokrates/daps/my-sokrates-daps-key # for simplicity this example re-uses the DAPS keys.
+    EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: sokrates/daps/my-sokrates-daps-crt # for simplicity this example re-uses the DAPS keys.
 
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
     EDC_RECEIVER_HTTP_ENDPOINT: http://sokrates-backend-application
@@ -563,5 +563,5 @@ sokratesedccontrolplane:
     #####################
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
-    EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+    EDC_DATA_ENCRYPTION_KEYS_ALIAS: sokrates/data-encryption-aes-keys
     EDC_DATA_ENCRYPTION_ALGORITHM: AES

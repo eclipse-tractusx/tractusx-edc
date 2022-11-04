@@ -25,6 +25,8 @@ import org.eclipse.dataspaceconnector.spi.security.Vault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class HashicorpVaultIT extends AbstractHashicorpIT {
 
@@ -34,6 +36,30 @@ class HashicorpVaultIT extends AbstractHashicorpIT {
     Vault vault = getVault();
     String secretValue = vault.resolveSecret(VAULT_ENTRY_KEY);
     Assertions.assertEquals(VAULT_ENTRY_VALUE, secretValue);
+  }
+
+  @Test
+  @DisplayName("Resolve a secret from a sub directory")
+  void testResolveSecret_inASubDirectory() {
+    Vault vault = getVault();
+    String key = "sub/" + VAULT_ENTRY_KEY;
+    String value = key + "value";
+
+    vault.storeSecret(key, value);
+    String secretValue = vault.resolveSecret(key);
+    Assertions.assertEquals(value, secretValue);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"foo!bar", "foo.bar", "foo[bar]", "sub/foo{bar}"})
+  @DisplayName("Resolve a secret with url encoded characters")
+  void testResolveSecret_withUrlEncodedCharacters(String key) {
+    Vault vault = getVault();
+    String value = key + "value";
+
+    vault.storeSecret(key, value);
+    String secretValue = vault.resolveSecret(key);
+    Assertions.assertEquals(value, secretValue);
   }
 
   @Test
