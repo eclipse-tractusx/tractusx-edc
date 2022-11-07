@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Set EDC version to `0.0.1-20221006-SNAPSHOT`
 -   Renamed `business-partner-validation` extension to `access-policy-validation` extension
 -   Business Partner Number `Constraint` no longer supports the 'IN' constraint operator
+-   HashiCorp Vault Extension now allows sub directories for secrets
 
 ### Changed
 
