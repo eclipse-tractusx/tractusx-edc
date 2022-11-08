@@ -24,8 +24,8 @@ import net.catenax.edc.cp.adapter.process.contractdatastore.InMemoryContractData
 import net.catenax.edc.cp.adapter.process.contractnegotiation.ContractNegotiationHandler;
 import net.catenax.edc.cp.adapter.process.contractnotification.ContractInMemorySyncService;
 import net.catenax.edc.cp.adapter.process.contractnotification.ContractNotificationHandler;
-import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
 import net.catenax.edc.cp.adapter.process.datareference.DataRefInMemorySyncService;
+import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
 import net.catenax.edc.cp.adapter.service.ErrorResultService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
@@ -35,13 +35,13 @@ import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManag
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationServiceImpl;
 import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.ConsumerContractNegotiationManager;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationObservable;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.store.ContractNegotiationStore;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.NoopTransactionContext;
@@ -133,8 +133,7 @@ public class ApiAdapterExtension implements ServiceExtension {
         new ContractNotificationHandler(
             monitor,
             messageService,
-            new ContractInMemorySyncService(
-                new LockMap()),
+            new ContractInMemorySyncService(new LockMap()),
             contractNegotiationService,
             transferProcessService,
             new InMemoryContractDataStore());
@@ -149,7 +148,8 @@ public class ApiAdapterExtension implements ServiceExtension {
       Monitor monitor, InMemoryMessageService messageService, ListenerService listenerService) {
 
     DataReferenceHandler dataReferenceHandler =
-        new DataReferenceHandler(monitor, messageService, new DataRefInMemorySyncService(new LockMap()));
+        new DataReferenceHandler(
+            monitor, messageService, new DataRefInMemorySyncService(new LockMap()));
     listenerService.addListener(Channel.DATA_REFERENCE, dataReferenceHandler);
     receiverRegistry.registerReceiver(dataReferenceHandler);
   }
