@@ -138,7 +138,7 @@ controlplane:
     EDC_RECEIVER_HTTP_ENDPOINT: http://backend
     EDC_VAULT_HASHICORP_URL: http://vault:8200
     EDC_VAULT_HASHICORP_TOKEN: token
-    EDC_VAULT_HASHICORP_API_SECRET_PATH: /v1/secret
+    EDC_VAULT_HASHICORP_API_SECRET_PATH: /v1/secret/v1/secret/v1/secret/v1/secret/v1/secret
     EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH: /v1/sys/health
     EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK: "true"
     EDC_API_AUTH_KEY: *psqlPassword

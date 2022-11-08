@@ -4,7 +4,7 @@ dataplane:
     tag: latest
     pullPolicy: Always
   ingresses:
-    - hostname: "plato.int.catena-x.net"
+    - hostname: "plato.int.demo.catena-x.net"
   logging:
     properties: |-
       .level=INFO
@@ -23,7 +23,7 @@ controlplane:
     tag: latest
     pullPolicy: Always
   ingresses:
-    - hostname: "plato.int.catena-x.net"
+    - hostname: "plato.int.demo.catena-x.net"
   logging:
     properties: |-
       .level=INFO
@@ -37,9 +37,10 @@ controlplane:
     EDC_OAUTH_CLIENT_ID: int-plato-EDC_OAUTH_CLIENT_ID
     EDC_OAUTH_PRIVATE_KEY_ALIAS: int-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS
     EDC_OAUTH_PUBLIC_KEY_ALIAS: int-plato-EDC_OAUTH_PUBLIC_KEY_ALIAS
-    IDS_WEBHOOK_ADDRESS: "https://plato.int.catena-x.net/api/v1/ids"
-    EDC_IDS_ENDPOINT: "https://plato.int.catena-x.net/api/v1/ids"
+    IDS_WEBHOOK_ADDRESS: "https://plato.int.demo.catena-x.net/api/v1/ids"
+    EDC_IDS_ENDPOINT: "https://plato.int.demo.catena-x.net/api/v1/ids"
     EDC_IDS_DESCRIPTION: "plato EDC Control Plane"
+    EDC_IDS_ENDPOINT_AUDIENCE: https://plato.int.demo.catena-x.net
     EDC_DATASOURCE_ASSET_URL: &psqlJdbcUrl "jdbc:postgresql://plato-postgres:5432/edc"
     EDC_DATASOURCE_CONTRACTDEFINITION_URL: *psqlJdbcUrl
     EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *psqlJdbcUrl
@@ -48,7 +49,7 @@ controlplane:
     EDC_DATAPLANE_SELECTOR_HTTPPROXY_URL: http://plato-dataplane:9999/api/dataplane/control
     EDC_DATAPLANE_SELECTOR_HTTPPROXY_PROPERTIES: >-
       {
-        "publicApiUrl": "https://plato.int.catena-x.net/dataplane/api/public"
+        "publicApiUrl": "https://plato.int.demo.catena-x.net/dataplane/api/public"
       }
     EDC_TRANSFER_PROXY_ENDPOINT: http://plato-dataplane:8185/dataplane/api/public
     EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: int-plato-EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
