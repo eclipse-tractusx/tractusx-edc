@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v3.1.0
       -
         name: Set-Up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.6.0
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -39,7 +39,7 @@ jobs:
         uses: azure/setup-kubectl@v3.0
       -
         name: Helm Set-Up
-        uses: azure/setup-helm@v3.3
+        uses: azure/setup-helm@v3.4
         with:
           version: v3.8.1
       -
@@ -211,7 +211,7 @@ jobs:
                 {
                   "args": [
                     "-c",
-                    "cd /product-edc && ./mvnw -s settings.xml -B -Pbusiness-tests -pl edc-tests test -Dtest=net.catenax.edc.tests.features.RunCucumberTest"
+                    "cd /product-edc && ./mvnw -s settings.xml -B -Pbusiness-tests -pl edc-tests test -Dtest=org.eclipse.tractusx.edc.tests.features.RunCucumberTest"
                   ],
                   "command": [
                     "/bin/sh"
