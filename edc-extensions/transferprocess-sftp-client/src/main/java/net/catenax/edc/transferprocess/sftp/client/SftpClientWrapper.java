@@ -20,7 +20,7 @@ import net.catenax.edc.trasnferprocess.sftp.common.SftpUser;
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface SftpClient {
+public interface SftpClientWrapper {
     void uploadFile(SftpUser sftpUser, SftpLocation sftpLocation, InputStream inputStream) throws IOException;
 
     InputStream downloadFile(SftpUser sftpUser, SftpLocation sftpLocation) throws IOException;

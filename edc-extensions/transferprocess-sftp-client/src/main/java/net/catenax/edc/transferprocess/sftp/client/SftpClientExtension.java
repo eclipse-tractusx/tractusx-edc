@@ -18,13 +18,11 @@ import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
-@Provides(SftpClient.class)
+@Provides(SftpClientWrapper.class)
 public class SftpClientExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
-        SftpClientImpl sftpClient = new SftpClientImpl();
-        //TODO: not here!
-        sftpClient.setDisableHostVerification(true);
-        context.registerService(SftpClient.class, sftpClient);
+        SshdSftpClient sftpClient = new SshdSftpClient();
+        context.registerService(SftpClientWrapper.class, sftpClient);
     }
 }

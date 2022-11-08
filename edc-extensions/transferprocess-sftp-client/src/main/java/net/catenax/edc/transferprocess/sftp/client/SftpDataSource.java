@@ -29,12 +29,12 @@ public class SftpDataSource implements DataSource {
     @NonNull
     private final SftpLocation sftpLocation;
     @NonNull
-    private final SftpClient sftpClient;
+    private final SftpClientWrapper sftpClientWrapper;
 
 
     @Override
     public Stream<Part> openPartStream() {
-        Part sftpPart = new SftpPart(sftpUser, sftpLocation, sftpClient);
+        Part sftpPart = new SftpPart(sftpUser, sftpLocation, sftpClientWrapper);
         return Stream.of(sftpPart);
     }
 }

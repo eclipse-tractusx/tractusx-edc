@@ -30,7 +30,7 @@ public class SftpPart implements DataSource.Part {
     @NonNull
     private final SftpLocation sftpLocation;
     @NonNull
-    private final SftpClient sftpClient;
+    private final SftpClientWrapper sftpClientWrapper;
     @Override
     public String name() {
         return sftpLocation.getPath();
@@ -39,6 +39,6 @@ public class SftpPart implements DataSource.Part {
     @Override
     @SneakyThrows
     public InputStream openStream() {
-        return sftpClient.downloadFile(sftpUser, sftpLocation);
+        return sftpClientWrapper.downloadFile(sftpUser, sftpLocation);
     }
 }
