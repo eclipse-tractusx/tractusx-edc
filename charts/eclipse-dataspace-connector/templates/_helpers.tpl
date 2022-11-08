@@ -105,7 +105,7 @@ Create the name of the service account to use
 ids control host
 */}}
 {{- define "control.host" -}}
-{{- defaultHost:= printf "http://%s:%s" (include "control.fullname") .Values.control.endpoints.ids.port }}
+{{- defaultHost:= printf "%s:%s" (include "control.fullname") .Values.control.endpoints.ids.port }}
 {{- if .Values.control.host }}
 {{- default $defaultHost .Values.control.host }}
 {{- end }}
@@ -115,7 +115,17 @@ ids control host
 contral data host
 */}}
 {{- define "data.host.control" -}}
-{{- defaultHost:= printf "http://%s:%s" (include "control.fullname") .Values.data.endpoints.control.port }}
+{{- defaultHost:= printf "%s:%s" (include "control.fullname") .Values.data.endpoints.control.port }}
+{{- if .Values.control.host }}
+{{- default $defaultHost .Values.control.host }}
+{{- end }}
+{{- end }}
+
+{{/*
+public data host
+*/}}
+{{- define "data.host.public" -}}
+{{- defaultHost:= printf "%s:%s" (include "control.fullname") .Values.data.endpoints.public.port }}
 {{- if .Values.control.host }}
 {{- default $defaultHost .Values.control.host }}
 {{- end }}

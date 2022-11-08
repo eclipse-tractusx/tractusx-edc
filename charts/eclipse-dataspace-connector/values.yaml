@@ -5,7 +5,9 @@
 imagePullSecrets: []
 
 control:
-  host: ""
+  host: 
+    name: ""
+    tls: true
   nameOverride: ""
   fullnameOverride: ""
   image:
@@ -187,21 +189,21 @@ data:
   tolerations: []
   affinity: {}
 
-# see https://github.com/bitnami/charts/blob/main/bitnami/postgresql/README.md
 postgresql:
   enabled: false
+  host: ""
+  port: 5432
+  database: "edc"
   auth:
     password: ""
     username: ""
     database: ""
-    existingSecret: ""
-  persistence:
-    enabled: false
 
 vault:
   hashicorp:
     enabled: false
-    url: ""
+    host: ""
+    tls: true
     token: ""
     timeout: 30
     healthCheck:
@@ -216,16 +218,19 @@ vault:
     client: ""
     tenant: ""
     secret: ""
+  secretNames:
+    transferProxyTokenSignerPublicKey: "transfer-proxy-token-signer-public-key"
+    transferProxyTokenSignerPrivateKey: "transfer-proxy-token-signer-private-key"
+    dapsPrivateKey: "daps-private-key"
+    dapsPublicKey: "daps-public-key"
 
 daps:
+  host: ""
+  tls: true
   clientId: ""
-  endpoints:
-    jwks: ""
-    token: ""
-    privateKey: ""
-    privateKeyAlias: ""
-    publicKey: ""
-    publicKeyAlias: ""
+  paths:
+    jwks: /jwks.json
+    token: /token
 
 serviceAccount:
   # Specifies whether a service account should be created
