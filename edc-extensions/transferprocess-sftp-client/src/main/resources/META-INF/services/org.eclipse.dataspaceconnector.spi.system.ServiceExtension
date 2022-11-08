@@ -10,4 +10,4 @@
 #  Contributors:
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
-net.catenax.edc.transferprocess.sftp.client.SftpClientExtension
+SftpClientExtension
