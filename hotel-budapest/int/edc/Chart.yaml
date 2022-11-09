@@ -10,12 +10,12 @@ dependencies:
   - name: edc-controlplane
     alias: controlplane
     version: ">=0.0.1"
-    repository: file://../../../deployment/helm/edc-controlplane
+    repository: file://../../../charts/edc-controlplane
     condition: controlplane.enabled
   - name: edc-dataplane
     alias: dataplane
     version: ">=0.0.1"
-    repository: file://../../../deployment/helm/edc-dataplane
+    repository: file://../../../charts/edc-dataplane
     condition: dataplane.enabled
   - name: backend-service
     alias: backend
