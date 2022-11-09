@@ -5,9 +5,6 @@
 imagePullSecrets: []
 
 control:
-  host: 
-    name: ""
-    tls: true
   nameOverride: ""
   fullnameOverride: ""
   image:
@@ -70,21 +67,55 @@ control:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+  ## Ingress declaration to expose the network service.
+  ingresses:
+    ## Public / Internet facing Ingress
+    - enabled: true
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-control.local"
+      # -- Additional ingress annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this ingress resource
+      endpoints:
+        - ids
+      # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
+      className: ""
+      # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+      tls:
+        # -- Enables TLS on the ingress resource
+        enabled: false
+        # -- If present overwrites the default secret name
+        secretName: ""
+      ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
+      certManager:
+        # -- If preset enables certificate generation via cert-manager namespace scoped issuer
+        issuer: ""
+        # -- If preset enables certificate generation via cert-manager cluster-wide issuer
+        clusterIssuer: ""
+    ## Private / Intranet facing Ingress
+    - enabled: false
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-control.intranet"
+      # -- Additional ingress annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this ingress resource
+      endpoints:
+        - data
+        - control
+      # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
+      className: ""
+      # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+      tls:
+        # -- Enables TLS on the ingress resource
+        enabled: false
+        # -- If present overwrites the default secret name
+        secretName: ""
+      ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
+      certManager:
+        # -- If preset enables certificate generation via cert-manager namespace scoped issuer
+        issuer: ""
+        # -- If preset enables certificate generation via cert-manager cluster-wide issuer
+        clusterIssuer: ""
   volumeMounts: []
   volumes: []
   resources: {}
@@ -150,21 +181,31 @@ data:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+  ## Ingress declaration to expose the network service.
+  ingresses:
+    ## Public / Internet facing Ingress
+    - enabled: true
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-data.local"
+      # -- Additional ingress annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this ingress resource
+      endpoints:
+        - public
+      # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
+      className: ""
+      # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+      tls:
+        # -- Enables TLS on the ingress resource
+        enabled: false
+        # -- If present overwrites the default secret name
+        secretName: ""
+      ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
+      certManager:
+        # -- If preset enables certificate generation via cert-manager namespace scoped issuer
+        issuer: ""
+        # -- If preset enables certificate generation via cert-manager cluster-wide issuer
+        clusterIssuer: ""
   volumeMounts: []
   volumes: []
   resources: {}
@@ -197,13 +238,11 @@ postgresql:
   auth:
     password: ""
     username: ""
-    database: ""
 
 vault:
   hashicorp:
     enabled: false
     host: ""
-    tls: true
     token: ""
     timeout: 30
     healthCheck:
@@ -218,19 +257,23 @@ vault:
     client: ""
     tenant: ""
     secret: ""
+    certificate: ""
   secretNames:
-    transferProxyTokenSignerPublicKey: "transfer-proxy-token-signer-public-key"
-    transferProxyTokenSignerPrivateKey: "transfer-proxy-token-signer-private-key"
-    dapsPrivateKey: "daps-private-key"
-    dapsPublicKey: "daps-public-key"
+    transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
+    transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
+    transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
+    dapsPrivateKey: daps-private-key
+    dapsPublicKey: daps-public-key
 
 daps:
   host: ""
-  tls: true
   clientId: ""
   paths:
     jwks: /jwks.json
     token: /token
+
+backendService:
+  httpProxyTokenReceiverUrl: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

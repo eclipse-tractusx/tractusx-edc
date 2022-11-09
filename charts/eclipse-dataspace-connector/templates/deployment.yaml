@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "eclipse-dataspace-connector.fullname" . }}-control
+  name: {{ include "control.fullname" . }}
   labels:
     {{- include "eclipse-dataspace-connector.labels" . | nindent 4 }}
 spec:
@@ -101,22 +101,18 @@ spec:
 
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
         EDC_OAUTH_CLIENT_ID: {{ .Values.daps.clientId }}
-        EDC_OAUTH_PROVIDER_JWKS_URL: {{ printf "%s%s" .Values.daps.host .Values.daps.paths.jwks }}
-        EDC_OAUTH_TOKEN_URL: {{ printf "%s%s" .Values.daps.host .Values.daps.paths.token }}
+        EDC_OAUTH_PROVIDER_JWKS_URL: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.jwks }}
+        EDC_OAUTH_TOKEN_URL: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.token }}
         EDC_OAUTH_PRIVATE_KEY_ALIAS: {{ .Values.vault.secretNames.dapsPrivateKey }}
         EDC_OAUTH_PUBLIC_KEY_ALIAS: {{ .Values.vault.secretNames.dapsPublicKey }}
 
         #############
         ## GENERAL ##
         #############
-        #IDS_WEBHOOK_ADDRESS: http://sokrates-edc-controlplane:8282
         IDS_WEBHOOK_ADDRESS: {{ include "control.host") }}
-        #EDC_IDS_ENDPOINT: http://sokrates-edc-controlplane:8282/api/v1/ids
-        EDC_IDS_ENDPOINT: {{ printf "http://%s%s" (include "control.host") "/api/v1/ids" }}
-        #EDC_IDS_ENDPOINT_AUDIENCE: http://sokrates-edc-controlplane:8282/api/v1/ids/data
-        EDC_IDS_ENDPOINT_AUDIENCE: {{ printf "http://%s%s" (include "control.host") "/api/v1/ids/data" }}
+        EDC_IDS_ENDPOINT: {{ printf "https://%s%s" (include "control.host") "/api/v1/ids" }}
+        EDC_IDS_ENDPOINT_AUDIENCE: {{ printf "https://%s%s" (include "control.host") "/api/v1/ids/data" }}
         EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
-
 
         {{- if .Values.postgresql.enabled }}
         ################
@@ -127,30 +123,30 @@ spec:
         EDC_DATASOURCE_ASSET_NAME: asset
         EDC_DATASOURCE_ASSET_USER: {{ .Values.postgresql.auth.username }}
         EDC_DATASOURCE_ASSET_PASSWORD: {{ .Values.postgresql.auth.password }}
-        EDC_DATASOURCE_ASSET_URL: &SokratesPsqlConStr {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+        EDC_DATASOURCE_ASSET_URL: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
         
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
         EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
         EDC_DATASOURCE_CONTRACTDEFINITION_USER: {{ .Values.postgresql.auth.username }}
         EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD: {{ .Values.postgresql.auth.password }}
-        EDC_DATASOURCE_CONTRACTDEFINITION_URL: *SokratesPsqlConStr
+        EDC_DATASOURCE_CONTRACTDEFINITION_URL: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
         EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME: contractnegotiation
         EDC_DATASOURCE_CONTRACTNEGOTIATION_USER: {{ .Values.postgresql.auth.username }}
         EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD: {{ .Values.postgresql.auth.password }}
-        EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: *SokratesPsqlConStr
+        EDC_DATASOURCE_CONTRACTNEGOTIATION_URL: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
         EDC_DATASOURCE_POLICY_NAME: policy
         EDC_DATASOURCE_POLICY_USER: {{ .Values.postgresql.auth.username }}
-        EDC_DATASOURCE_POLICY_URL: *SokratesPsqlConStr
+        EDC_DATASOURCE_POLICY_URL: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
         EDC_DATASOURCE_TRANSFERPROCESS_NAME: transferprocess
         EDC_DATASOURCE_TRANSFERPROCESS_USER: {{ .Values.postgresql.auth.username }}
         EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD: {{ .Values.postgresql.auth.password }}
-        EDC_DATASOURCE_TRANSFERPROCESS_URL: *SokratesPsqlConStr
+        EDC_DATASOURCE_TRANSFERPROCESS_URL: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
         {{- end }}
 
         ################
@@ -161,28 +157,48 @@ spec:
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: {{ printf "http://%s%s" (include "data.host.control") .Values.data.endpoints.control.path }}
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
         EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
-        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: {{ printf "{\"publicApiUrl\": \"http://%s\" }" {{ printf "%s%s" (include "data.host.public") .Values.data.endpoints.public.path }} }}
+        EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: {{ printf "{\"publicApiUrl\": \"https://%s\" }" {{ printf "%s%s" (include "data.host.public") .Values.data.endpoints.public.path }} }}
 
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
-        EDC_TRANSFER_PROXY_ENDPOINT: {{ printf "http://%s%s" (include "data.host.public") .Values.data.endpoints.public.path }}
+        EDC_TRANSFER_PROXY_ENDPOINT: {{ printf "https://%s%s" (include "data.host.public") .Values.data.endpoints.public.path }}
         EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
         EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey }}
 
         # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
-        EDC_RECEIVER_HTTP_ENDPOINT: http://sokrates-backend-application
+        EDC_RECEIVER_HTTP_ENDPOINT: {{ .Values.backendService.httpProxyTokenReceiverUrl }}
 
-        ###############
-        ## KEY VAULT ##
-        ###############
+        ###########
+        ## VAULT ##
+        ###########
+
+        {{- if .Values.vault.hashicorp.enabled }}
 
         # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
-        EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
+        EDC_VAULT_HASHICORP_URL: {{ printf "http://%s" .Values.vault.hashicorp.host }}
+        EDC_VAULT_HASHICORP_TOKEN: {{ .Values.vault.hashicorp.token }}
+        EDC_VAULT_HASHICORP_TIMEOUT_SECONDS: {{ .Values.vault.hashicorp.timeout }}
+        EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED: {{ .Values.vault.hashicorp.healthCheck.enabled }}
+        EDC_VAULT_HASHICORP_HEALTH_STANDBY_OK: {{ .Values.vault.hashicorp.healthCheck.standbyOk }}
+        EDC_VAULT_HASHICORP_API_SECRET_PATH: {{ .Values.vault.hashicorp.paths.secret }}
+        EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH: {{ .Values.vault.hashicorp.paths.secret }}
+
+        {{- end }}
+
+        {{- if .Values.vault.azure.enabled }}
+
+        EDC_VAULT_CLIENTID: {{ .Values.vault.azure.client }}
+        EDC_VAULT_TENANTID: {{ .Values.vault.azure.tenant }}
+        EDC_VAULT_NAME: {{ .Values.vault.azure.name }}
+        EDC_VAULT_CLIENTSECRET: {{ .Values.vault.azure.secret }}
+        EDC_VAULT_CERTIFICATE: {{ .Values.vault.azure.certificate }}
+
+        {{- end }}
 
         #####################
         ## DATA ENCRYPTION ##
         #####################
 
         # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
-        EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
+        EDC_DATA_ENCRYPTION_KEYS_ALIAS: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey }}
         EDC_DATA_ENCRYPTION_ALGORITHM: AES
 
