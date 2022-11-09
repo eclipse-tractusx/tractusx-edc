@@ -22,11 +22,10 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefiniti
 @Getter
 @RequiredArgsConstructor
 public class SftpProviderResourceDefinition extends ResourceDefinition {
-    @NonNull
-    private String dataAddressType;
+  @NonNull private String dataAddressType;
 
-    @Override
-    public <RD extends ResourceDefinition, B extends Builder<RD, B>> B toBuilder() {
-        return null;
-    }
+  @Override
+  public <RD extends ResourceDefinition, B extends Builder<RD, B>> B toBuilder() {
+    return null;
+  }
 }

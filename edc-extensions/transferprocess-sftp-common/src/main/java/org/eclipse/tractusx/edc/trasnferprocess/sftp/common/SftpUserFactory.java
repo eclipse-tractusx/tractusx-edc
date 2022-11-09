@@ -15,5 +15,5 @@
 package org.eclipse.tractusx.edc.trasnferprocess.sftp.common;
 
 public interface SftpUserFactory {
-    SftpUser createSftpUser(String transferProcessId);
+  SftpUser createSftpUser(String transferProcessId);
 }

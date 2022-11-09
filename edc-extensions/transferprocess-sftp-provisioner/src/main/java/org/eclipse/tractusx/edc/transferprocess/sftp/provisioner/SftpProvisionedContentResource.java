@@ -16,17 +16,14 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionedContentResource;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
-import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionedContentResource;
 
 @Getter
 @RequiredArgsConstructor
 public class SftpProvisionedContentResource extends ProvisionedContentResource {
-    @NonNull
-    private SftpUser sftpUser;
-    @NonNull
-    private SftpLocation sftpLocation;
-    @NonNull
-    private String transferProcessId;
+  @NonNull private SftpUser sftpUser;
+  @NonNull private SftpLocation sftpLocation;
+  @NonNull private String transferProcessId;
 }

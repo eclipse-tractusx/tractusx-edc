@@ -24,11 +24,13 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefiniti
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
-public class SftpProviderResourceDefinitionGenerator implements ProviderResourceDefinitionGenerator {
-    @NonNull
-    private final String dataAddressType;
-    @Override
-    public @Nullable ResourceDefinition generate(DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
-        return null;
-    }
+public class SftpProviderResourceDefinitionGenerator
+    implements ProviderResourceDefinitionGenerator {
+  @NonNull private final String dataAddressType;
+
+  @Override
+  public @Nullable ResourceDefinition generate(
+      DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
+    return null;
+  }
 }

@@ -14,27 +14,22 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.NonNull;
+import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
-import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
-
-import java.util.stream.Stream;
 
 @Builder
 public class SftpDataSource implements DataSource {
-    @NonNull
-    private final SftpUser sftpUser;
-    @NonNull
-    private final SftpLocation sftpLocation;
-    @NonNull
-    private final SftpClientWrapper sftpClientWrapper;
+  @NonNull private final SftpUser sftpUser;
+  @NonNull private final SftpLocation sftpLocation;
+  @NonNull private final SftpClientWrapper sftpClientWrapper;
 
-
-    @Override
-    public Stream<Part> openPartStream() {
-        Part sftpPart = new SftpPart(sftpUser, sftpLocation, sftpClientWrapper);
-        return Stream.of(sftpPart);
-    }
+  @Override
+  public Stream<Part> openPartStream() {
+    Part sftpPart = new SftpPart(sftpUser, sftpLocation, sftpClientWrapper);
+    return Stream.of(sftpPart);
+  }
 }

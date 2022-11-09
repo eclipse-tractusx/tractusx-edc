@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class SftpLocation {
-    private final String host;
-    private final Integer port;
-    private final String path;
+  private final String host;
+  private final Integer port;
+  private final String path;
 }

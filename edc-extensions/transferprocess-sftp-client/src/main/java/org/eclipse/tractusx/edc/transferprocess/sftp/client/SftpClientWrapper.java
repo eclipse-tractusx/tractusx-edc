@@ -14,14 +14,14 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 public interface SftpClientWrapper {
-    void uploadFile(SftpUser sftpUser, SftpLocation sftpLocation, InputStream inputStream) throws IOException;
+  void uploadFile(SftpUser sftpUser, SftpLocation sftpLocation, InputStream inputStream)
+      throws IOException;
 
-    InputStream downloadFile(SftpUser sftpUser, SftpLocation sftpLocation) throws IOException;
+  InputStream downloadFile(SftpUser sftpUser, SftpLocation sftpLocation) throws IOException;
 }

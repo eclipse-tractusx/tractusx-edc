@@ -14,29 +14,27 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
+import java.security.KeyPair;
 import lombok.Builder;
 import lombok.NonNull;
+import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUserFactory;
-import org.eclipse.dataspaceconnector.spi.EdcException;
-
-import java.security.KeyPair;
 
 @Builder
 public class ConfigBackedSftpUserFactory implements SftpUserFactory {
-    @NonNull
-    private final String sftpUserName;
-    private final String sftpUserPassword;
-    private final KeyPair sftpUserKeyPair;
+  @NonNull private final String sftpUserName;
+  private final String sftpUserPassword;
+  private final KeyPair sftpUserKeyPair;
 
-    @Override
-    public SftpUser createSftpUser(String transferProcessId) {
-        if (sftpUserKeyPair != null) {
-            return SftpUser.builder().name(sftpUserName).keyPair(sftpUserKeyPair).build();
-        }
-        if (sftpUserPassword != null) {
-            return SftpUser.builder().name(sftpUserName).password(sftpUserPassword).build();
-        }
-        throw new EdcException(String.format("No auth method provided for SftpUser %s", sftpUserName));
+  @Override
+  public SftpUser createSftpUser(String transferProcessId) {
+    if (sftpUserKeyPair != null) {
+      return SftpUser.builder().name(sftpUserName).keyPair(sftpUserKeyPair).build();
     }
+    if (sftpUserPassword != null) {
+      return SftpUser.builder().name(sftpUserName).password(sftpUserPassword).build();
+    }
+    throw new EdcException(String.format("No auth method provided for SftpUser %s", sftpUserName));
+  }
 }

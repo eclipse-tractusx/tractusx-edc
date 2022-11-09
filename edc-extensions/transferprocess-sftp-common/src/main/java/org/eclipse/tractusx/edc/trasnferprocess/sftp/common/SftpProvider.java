@@ -15,8 +15,11 @@
 package org.eclipse.tractusx.edc.trasnferprocess.sftp.common;
 
 public interface SftpProvider {
-    void createUser(SftpUser user);
-    void deleteUser(SftpUser user);
-    void createLocation(SftpLocation location);
-    void deleteLocation(SftpLocation location);
+  void createUser(SftpUser user);
+
+  void deleteUser(SftpUser user);
+
+  void createLocation(SftpLocation location);
+
+  void deleteLocation(SftpLocation location);
 }

@@ -14,19 +14,18 @@
 
 package org.eclipse.tractusx.edc.trasnferprocess.sftp.common;
 
+import java.security.KeyPair;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.security.KeyPair;
 
 @Builder
 @Getter
 @ToString(of = "name")
 @EqualsAndHashCode
 public class SftpUser {
-    private final String name;
-    private final String password;
-    private final KeyPair keyPair;
+  private final String name;
+  private final String password;
+  private final KeyPair keyPair;
 }

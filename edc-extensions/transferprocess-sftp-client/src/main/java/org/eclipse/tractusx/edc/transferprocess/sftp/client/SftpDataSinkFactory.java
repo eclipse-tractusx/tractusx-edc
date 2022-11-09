@@ -21,18 +21,18 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
 public class SftpDataSinkFactory implements DataSinkFactory {
-    @Override
-    public boolean canHandle(DataFlowRequest request) {
-        return false;
-    }
+  @Override
+  public boolean canHandle(DataFlowRequest request) {
+    return false;
+  }
 
-    @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        return null;
-    }
+  @Override
+  public @NotNull Result<Boolean> validate(DataFlowRequest request) {
+    return null;
+  }
 
-    @Override
-    public DataSink createSink(DataFlowRequest request) {
-        return null;
-    }
+  @Override
+  public DataSink createSink(DataFlowRequest request) {
+    return null;
+  }
 }

@@ -19,22 +19,15 @@ import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpProvider;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
 
 public class NoopSftpProvider implements SftpProvider {
-    @Override
-    public void createUser(SftpUser user) {
+  @Override
+  public void createUser(SftpUser user) {}
 
-    }
+  @Override
+  public void deleteUser(SftpUser user) {}
 
-    @Override
-    public void deleteUser(SftpUser user) {
+  @Override
+  public void createLocation(SftpLocation location) {}
 
-    }
-
-    @Override
-    public void createLocation(SftpLocation location) {
-    }
-
-    @Override
-    public void deleteLocation(SftpLocation location) {
-
-    }
+  @Override
+  public void deleteLocation(SftpLocation location) {}
 }

@@ -20,9 +20,9 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
 @Provides(SftpClientWrapper.class)
 public class SftpClientExtension implements ServiceExtension {
-    @Override
-    public void initialize(ServiceExtensionContext context) {
-        SshdSftpClient sftpClient = new SshdSftpClient();
-        context.registerService(SftpClientWrapper.class, sftpClient);
-    }
+  @Override
+  public void initialize(ServiceExtensionContext context) {
+    SshdSftpClient sftpClient = new SshdSftpClient();
+    context.registerService(SftpClientWrapper.class, sftpClient);
+  }
 }
