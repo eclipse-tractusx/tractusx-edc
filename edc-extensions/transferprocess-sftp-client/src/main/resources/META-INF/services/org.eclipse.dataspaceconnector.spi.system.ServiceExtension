@@ -10,4 +10,4 @@
 #  Contributors:
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
-SftpClientExtension
+org.eclipse.tractusx.edc.transferprocess.sftp.client.SftpClientExtension

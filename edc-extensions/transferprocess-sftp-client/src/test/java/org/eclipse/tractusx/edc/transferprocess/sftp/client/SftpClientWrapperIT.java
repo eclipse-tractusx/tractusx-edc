@@ -14,35 +14,11 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_HOST;
-import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_PATH;
-import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_PORT;
-import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_KEY_PATH;
-import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_NAME;
-import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_PASSWORD;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermission;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
 import lombok.Cleanup;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemWriter;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.bouncycastle.crypto.util.OpenSSHPublicKeyUtil;
 import org.eclipse.dataspaceconnector.junit.extensions.EdcExtension;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
@@ -64,6 +40,32 @@ import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomUtils;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_HOST;
+import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_PATH;
+import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_PORT;
+import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_NAME;
+import static org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpSettings.SFTP_USER_PASSWORD;
+
 @Testcontainers
 @ExtendWith(EdcExtension.class)
 public class SftpClientWrapperIT {
@@ -75,7 +77,6 @@ public class SftpClientWrapperIT {
   static final Path localUploadAndGeneratorDirectory;
   static final Path localDownloadDirectory;
   static final Path keyDirectory;
-  static final Path privateKeyPath;
   static final Path publicKeyPath;
   static final KeyPair keyPair;
 
@@ -101,24 +102,22 @@ public class SftpClientWrapperIT {
       remoteUploadDirectory = Files.createDirectory(dockerVolumeDirectory.resolve("upload"));
       remoteDownloadDirectory = Files.createDirectory(dockerVolumeDirectory.resolve("download"));
       keyDirectory = Files.createTempDirectory(SftpClientWrapperIT.class.getName());
-      privateKeyPath = keyDirectory.resolve("private");
       publicKeyPath = keyDirectory.resolve("public");
+
+      try (final OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(publicKeyPath.toString()))) {
+        final RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        final RSAKeyParameters publicKeyParameters = new RSAKeyParameters(false, publicKey.getModulus(), publicKey.getPublicExponent());
+        byte[] encodedKey = OpenSSHPublicKeyUtil.encodePublicKey(publicKeyParameters);
+        String keyString = Base64.getEncoder().encodeToString(encodedKey);
+        String authKeysEntry = String.format("ssh-rsa %s", keyString);
+        fileWriter.write(authKeysEntry);
+      }
 
       Files.setPosixFilePermissions(dockerVolumeDirectory, fullPermission);
       Files.setPosixFilePermissions(remoteUploadDirectory, fullPermission);
       Files.setPosixFilePermissions(remoteDownloadDirectory, fullPermission);
       Files.setPosixFilePermissions(keyDirectory, fullPermission);
 
-      try (final PemWriter pemWriter =
-          new PemWriter(new OutputStreamWriter(new FileOutputStream(privateKeyPath.toString())))) {
-        pemWriter.writeObject(new PemObject("PRIVATE KEY", keyPair.getPrivate().getEncoded()));
-        pemWriter.flush();
-      }
-      try (final PemWriter pemWriter =
-          new PemWriter(new OutputStreamWriter(new FileOutputStream(publicKeyPath.toString())))) {
-        pemWriter.writeObject(new PemObject("PUBLIC KEY", keyPair.getPublic().getEncoded()));
-        pemWriter.flush();
-      }
     } catch (IOException e) {
       throw new RuntimeException();
     }
@@ -137,8 +136,16 @@ public class SftpClientWrapperIT {
   private final SshdSftpClient sftpClient = new SshdSftpClient();
 
   @BeforeEach
+  @SneakyThrows
   void setup() {
     sftpClient.setDisableHostVerification(true);
+
+    sftpContainer.execInContainer("mkdir", "-p", "/home/user/.ssh");
+    sftpContainer.execInContainer("chmod", "700", "/home/user/.ssh");
+    sftpContainer.execInContainer("chown", "user", "/home/user/.ssh/");
+    sftpContainer.execInContainer("cp", "-f", "/home/user/keys/public", "/home/user/.ssh/authorized_keys");
+    sftpContainer.execInContainer("chown", "user", "/home/user/.ssh/authorized_keys");
+    sftpContainer.execInContainer("chmod", "600", "/home/user/.ssh/authorized_keys");
   }
 
   @AfterAll
@@ -162,12 +169,19 @@ public class SftpClientWrapperIT {
           .map(Path::toFile)
           .forEach(File::delete);
     }
+    if (Files.exists(keyDirectory)) {
+      Files.walk(keyDirectory)
+              .sorted(Comparator.reverseOrder())
+              .map(Path::toFile)
+              .forEach(File::delete);
+    }
   }
 
   @ParameterizedTest
   @SneakyThrows
   @ArgumentsSource(FilesProvider.class)
   void uploadFileWithPassword(File file) {
+    String remoteFileName = String.format("pwUpload_%s", file.getName());
     final SftpUser sftpUser =
         SftpUser.builder()
             .name(getSftpPasswordConfig().get(SFTP_USER_NAME))
@@ -179,14 +193,14 @@ public class SftpClientWrapperIT {
             .port(Integer.parseInt(getSftpPasswordConfig().get(SFTP_PORT)))
             .path(
                 String.format(
-                    "%s/%s/%s", getSftpPasswordConfig().get(SFTP_PATH), "upload", file.getName()))
+                    "%s/%s/%s", getSftpPasswordConfig().get(SFTP_PATH), "upload", remoteFileName))
             .build();
 
     @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
 
     sftpClient.uploadFile(sftpUser, sftpLocation, fileStream);
 
-    final Path uploadedFilePath = remoteUploadDirectory.resolve(file.getName());
+    final Path uploadedFilePath = remoteUploadDirectory.resolve(remoteFileName);
     Assertions.assertTrue(Files.exists(uploadedFilePath));
 
     @Cleanup final InputStream source = Files.newInputStream(file.toPath());
@@ -202,17 +216,7 @@ public class SftpClientWrapperIT {
   @SneakyThrows
   @ArgumentsSource(FilesProvider.class)
   void uploadFileWithKeyPair(File file) {
-    var res0 = sftpContainer.execInContainer("ls", "/home");
-    var res1 = sftpContainer.execInContainer("mkdir", "-p", "/home/user/.ssh");
-    var res2 = sftpContainer.execInContainer("chmod", "700", "/home/user/.ssh");
-    var res3 = sftpContainer.execInContainer("chown", "user", "/home/user/.ssh/");
-    var res4 =
-        sftpContainer.execInContainer(
-            "cp", "-f", "/home/user/keys/public", "/home/user/.ssh/authorized_keys");
-    var res5 = sftpContainer.execInContainer("chown", "user", "/home/user/.ssh/authorized_keys");
-    var res6 = sftpContainer.execInContainer("chmod", "600", "/home/user/.ssh/authorized_keys");
-    var res7 = sftpContainer.execInContainer("cat", "/home/user/.ssh/authorized_keys");
-
+    String remoteFileName = String.format("keyUpload_%s", file.getName());
     final SftpUser sftpUser =
         SftpUser.builder().name(getSftpKeyConfig().get(SFTP_USER_NAME)).keyPair(keyPair).build();
     final SftpLocation sftpLocation =
@@ -221,14 +225,14 @@ public class SftpClientWrapperIT {
             .port(Integer.parseInt(getSftpKeyConfig().get(SFTP_PORT)))
             .path(
                 String.format(
-                    "%s/%s/%s", getSftpKeyConfig().get(SFTP_PATH), "upload", file.getName()))
+                    "%s/%s/%s", getSftpKeyConfig().get(SFTP_PATH), "upload", remoteFileName))
             .build();
 
     @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
 
     sftpClient.uploadFile(sftpUser, sftpLocation, fileStream);
 
-    final Path uploadedFilePath = remoteUploadDirectory.resolve(file.getName());
+    final Path uploadedFilePath = remoteUploadDirectory.resolve(remoteFileName);
     Assertions.assertTrue(Files.exists(uploadedFilePath));
 
     @Cleanup final InputStream source = Files.newInputStream(file.toPath());
@@ -243,7 +247,8 @@ public class SftpClientWrapperIT {
   @ParameterizedTest
   @SneakyThrows
   @ArgumentsSource(FilesProvider.class)
-  void downloadFile(File file) {
+  void downloadFileWithPassword(File file) {
+    String remoteFileName = String.format("pwDownload_%s", file.getName());
     final SftpUser sftpUser =
         SftpUser.builder()
             .name(getSftpPasswordConfig().get(SFTP_USER_NAME))
@@ -255,26 +260,55 @@ public class SftpClientWrapperIT {
             .port(Integer.parseInt(getSftpPasswordConfig().get(SFTP_PORT)))
             .path(
                 String.format(
-                    "%s/%s/%s", getSftpPasswordConfig().get(SFTP_PATH), "download", file.getName()))
+                    "%s/%s/%s", getSftpPasswordConfig().get(SFTP_PATH), "download", remoteFileName))
             .build();
 
     @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
     Files.copy(
         fileToUpload,
-        remoteDownloadDirectory.resolve(file.getName()),
+        remoteDownloadDirectory.resolve(remoteFileName),
         StandardCopyOption.REPLACE_EXISTING);
 
     @Cleanup final InputStream source = Files.newInputStream(file.toPath());
     @Cleanup final InputStream target = sftpClient.downloadFile(sftpUser, sftpLocation);
 
-    for (int i = 0; i <= source.available(); i++) {
-      int sourceInt = source.read();
-      int targetInt = target.read();
-      Assertions.assertEquals(
-          sourceInt,
-          targetInt,
-          String.format("Difference in byte %d, should be %d, is %d", i, sourceInt, targetInt));
-    }
+    Assertions.assertTrue(
+            IOUtils.contentEquals(source, target),
+            String.format(
+                    "File %s should have same content as file %s", file.toPath(), sftpLocation.getPath()));
+
+  }
+
+  @ParameterizedTest
+  @SneakyThrows
+  @ArgumentsSource(FilesProvider.class)
+  void downloadFileWithKeyPair(File file) {
+    String remoteFileName = String.format("pwDownload_%s", file.getName());
+    final SftpUser sftpUser =
+            SftpUser.builder().name(getSftpKeyConfig().get(SFTP_USER_NAME)).keyPair(keyPair).build();
+    final SftpLocation sftpLocation =
+            SftpLocation.builder()
+                    .host(getSftpPasswordConfig().get(SFTP_HOST))
+                    .port(Integer.parseInt(getSftpPasswordConfig().get(SFTP_PORT)))
+                    .path(
+                            String.format(
+                                    "%s/%s/%s", getSftpPasswordConfig().get(SFTP_PATH), "download", remoteFileName))
+                    .build();
+
+    @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
+    Files.copy(
+            fileToUpload,
+            remoteDownloadDirectory.resolve(remoteFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+
+    @Cleanup final InputStream source = Files.newInputStream(file.toPath());
+    @Cleanup final InputStream target = sftpClient.downloadFile(sftpUser, sftpLocation);
+
+    Assertions.assertTrue(
+            IOUtils.contentEquals(source, target),
+            String.format(
+                    "File %s should have same content as file %s", file.toPath(), sftpLocation.getPath()));
+
   }
 
   private Map<String, String> getSftpPasswordConfig() {
@@ -291,8 +325,7 @@ public class SftpClientWrapperIT {
         SFTP_HOST, "127.0.0.1",
         SFTP_PORT, sftpContainer.getFirstMappedPort().toString(),
         SFTP_PATH, "transfer",
-        SFTP_USER_NAME, "user",
-        SFTP_USER_KEY_PATH, privateKeyPath.toAbsolutePath().toString());
+        SFTP_USER_NAME, "user");
   }
 
   @SneakyThrows
@@ -305,7 +338,7 @@ public class SftpClientWrapperIT {
   @NoArgsConstructor
   private static class FilesProvider implements ArgumentsProvider {
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
       return Stream.of(
           Arguments.of(get1KBFile()), Arguments.of(get1MBFile()), Arguments.of(get2MBFile()));
     }

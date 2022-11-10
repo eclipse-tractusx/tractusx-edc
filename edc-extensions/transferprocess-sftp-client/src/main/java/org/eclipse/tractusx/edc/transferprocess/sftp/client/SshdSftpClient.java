@@ -14,31 +14,32 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Duration;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.sshd.client.ClientBuilder;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.auth.password.PasswordIdentityProvider;
+import org.apache.sshd.client.keyverifier.KnownHostsServerKeyVerifier;
+import org.apache.sshd.client.keyverifier.RejectAllServerKeyVerifier;
+import org.apache.sshd.client.keyverifier.ServerKeyVerifier;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.keyprovider.KeyIdentityProvider;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.SftpClientFactory;
-import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
 
-public class SshdSftpClient implements SftpClientWrapper {
-  private static final int EOF = -1;
-  private static final int BUFFER_SIZE_DEFAULT = 4096;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
 
+public class SshdSftpClient implements SftpClientWrapper {
+
+  @Setter private int bufferSize = 4096;
   @Setter private boolean disableHostVerification = false;
   @Setter private Path knownHostFile = Paths.get(System.getenv("HOME"), ".ssh/known_hosts");
 
@@ -50,7 +51,7 @@ public class SshdSftpClient implements SftpClientWrapper {
       throws IOException {
     try (final SftpClient sftpClient = getSftpClient(sftpUser, sftpLocation)) {
       try (OutputStream outputStream =
-          sftpClient.write(sftpLocation.getPath(), BUFFER_SIZE_DEFAULT)) {
+          sftpClient.write(sftpLocation.getPath(), bufferSize)) {
         inputStream.transferTo(outputStream);
       }
     }
@@ -60,13 +61,7 @@ public class SshdSftpClient implements SftpClientWrapper {
   public InputStream downloadFile(
       @NonNull final SftpUser sftpUser, @NonNull final SftpLocation sftpLocation)
       throws IOException {
-    InputStream downloadedFileStream;
-    try (final SftpClient sftpClient = getSftpClient(sftpUser, sftpLocation)) {
-      InputStream inputStream = sftpClient.read(sftpLocation.getPath(), BUFFER_SIZE_DEFAULT);
-      byte[] inputBytes = inputStream.readAllBytes();
-      downloadedFileStream = new ByteArrayInputStream(inputBytes);
-    }
-    return downloadedFileStream;
+    return getSftpClient(sftpUser, sftpLocation).read(sftpLocation.getPath(), bufferSize);
   }
 
   @SneakyThrows
@@ -78,9 +73,14 @@ public class SshdSftpClient implements SftpClientWrapper {
       sshClient.setPasswordIdentityProvider(
           PasswordIdentityProvider.wrapPasswords(sftpUser.getPassword()));
     } else {
-      throw new EdcException(
-          String.format("No authentication method provided for sftp user %s", sftpUser.getName()));
+      sshClient.setPasswordIdentityProvider(PasswordIdentityProvider.EMPTY_PASSWORDS_PROVIDER);
     }
+
+    if (!disableHostVerification) {
+      final ServerKeyVerifier keyVerifier = new KnownHostsServerKeyVerifier(RejectAllServerKeyVerifier.INSTANCE, knownHostFile);
+      sshClient.setServerKeyVerifier(keyVerifier);
+    }
+
     sshClient.start();
 
     ClientSession session =
@@ -88,6 +88,7 @@ public class SshdSftpClient implements SftpClientWrapper {
             .connect(sftpUser.getName(), sftpLocation.getHost(), sftpLocation.getPort())
             .verify()
             .getSession();
+    // TODO: set timeout
     session.auth().await(Duration.ofSeconds(10));
 
     SftpClientFactory factory = SftpClientFactory.instance();
