@@ -1,28 +1,58 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if .Values.control.autoscaling.enabled }}
+---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "eclipse-dataspace-connector.fullname" . }}
+  name: {{ include "txdc.control.fullname" . }}
   labels:
-    {{- include "eclipse-dataspace-connector.labels" . | nindent 4 }}
+    {{- include "txdc.control.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "eclipse-dataspace-connector.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+    name: {{ include "txdc.control.fullname" . }}
+  minReplicas: {{ .Values.control.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.control.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.control.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+        targetAverageUtilization: {{ .Values.control.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- if .Values.control.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+        targetAverageUtilization: {{ .Values.control.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
+{{- if .Values.control.autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "txdc.data.fullname" . }}
+  labels:
+    {{- include "txdc.data.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "txdc.data.fullname" . }}
+  minReplicas: {{ .Values.data.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.data.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.data.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.data.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.data.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.data.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}

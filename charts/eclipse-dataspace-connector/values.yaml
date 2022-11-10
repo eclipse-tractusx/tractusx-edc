@@ -18,13 +18,20 @@ control:
     enabled: false
     port: 1044
     suspendOnStart: false
+  internationalDataSpaces:
+    id: TXDC
+    description: Tractus-X Eclipse IDS Data Space Connector
+    title: ""
+    maintainer: ""
+    curator: ""
+    catalogId: ""
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
     initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 6
+    failureThreshold: 6-``
     successThreshold: 1
   readinessProbe:
     # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "control.fullname" . }}
+  name: {{ include "txdc.control.fullname" . }}
   labels:
-    {{- include "eclipse-dataspace-connector.labels" . | nindent 4 }}
+    {{- include "txdc.control.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.control.autoscaling.enabled }}
   replicas: {{ .Values.control.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "eclipse-dataspace-connector.selectorLabels" . | nindent 6 }}
+      {{- include "txdc.control.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.control.podAnnotations }}
@@ -18,14 +18,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "eclipse-dataspace-connector.selectorLabels" . | nindent 8 }}
+        {{- include "txdc.control.selectorLabels" . | nindent 8 }}
         {{- include .Values.control.podLabels . }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "eclipse-dataspace-connector.serviceAccountName" . }}
+      serviceAccountName: {{ include "txdc.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.control.podSecurityContext | nindent 8 }}
       containers:
@@ -109,10 +109,15 @@ spec:
         #############
         ## GENERAL ##
         #############
-        IDS_WEBHOOK_ADDRESS: {{ include "control.host") }}
-        EDC_IDS_ENDPOINT: {{ printf "https://%s%s" (include "control.host") "/api/v1/ids" }}
+        IDS_WEBHOOK_ADDRESS: {{ include "txdc.control.url.ids") }}
+        EDC_IDS_ENDPOINT: {{ include "txdc.control.url.ids" }}
         EDC_IDS_ENDPOINT_AUDIENCE: {{ printf "https://%s%s" (include "control.host") "/api/v1/ids/data" }}
-        EDC_IDS_DESCRIPTION: "Sokrates Control Plane"
+        EDC_IDS_ID: {{ .Values.control.internationalDataSpaces.id }}
+        EDC_IDS_DESCRIPTION: {{ .Values.control.internationalDataSpaces.description }}
+        EDC_IDS_TITLE: {{ .Values.control.internationalDataSpaces.title }}
+        EDC_IDS_MAINTAINER: {{ .Values.control.internationalDataSpaces.maintainer }}
+        EDC_IDS_CURATOR: {{ .Values.control.internationalDataSpaces.curator }}
+        EDC_IDS_CATALOG_ID: {{ .Values.control.internationalDataSpaces.catalogId }}
 
         {{- if .Values.postgresql.enabled }}
         ################

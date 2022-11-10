@@ -1,11 +1,15 @@
-{{- $controlFullName := include "edc-controlplane.fullname" . }}
-{{- $controlLabels := include "edc-controlplane.labels" . | nindent 4 }}
+{{- $controlFullName := include "txdc.control.fullname" . }}
+{{- $controlLabels := include "txdc.control.labels" . | nindent 4 }}
+{{- $controlEdcEndpoints := .Values.control.endpoints }}
+{{- $dataFullName := include "txdc.data.fullname" . }}
+{{- $dataLabels := include "txdc.data.labels" . | nindent 4 }}
+{{- $dataEdcEndpoints := .Values.data.endpoints }}
 {{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
-{{- $controlEdcEndpoints := .Values.edc.endpoints }}
 {{- $namespace := .Release.Namespace }}
+
 {{- range .Values.control.ingresses }}
 {{- if and .enabled .endpoints }}
-{{- $ingressName := printf "%s-%s" $controlFullName .hostname }}
+{{- $controlIngressName := printf "%s-%s" $controlFullName .hostname }}
 ---
 {{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
@@ -16,7 +20,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $ingressName }}
+  name: {{ $controlIngressName }}
   namespace: {{ $namespace | default "default" | quote }}
   labels:
     {{- $controlLabels | nindent 2 }}
@@ -49,7 +53,7 @@ spec:
       {{- if .tls.secretName }}
       secretName: {{ .tls.secretName }}
       {{- else }}
-      secretName: {{ $ingressName }}-tls
+      secretName: {{ $controlIngressName }}-tls
       {{- end }}
   {{- end }}
   rules:
@@ -69,6 +73,80 @@ spec:
                   number: {{ $mapping.port }}
               {{- else }}
               serviceName: {{ $controlFullName }}
+              servicePort: {{ $mapping.port }}
+              {{- end }}
+        {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}{{- /* end: if .enabled */}}
+{{- end }}{{- /* end: range .Values.ingresses */}}
+
+{{- range .Values.data.ingresses }}
+{{- if and .enabled .endpoints }}
+{{- $dataIngressName := printf "%s-%s" $dataFullName .hostname }}
+---
+{{- if semverCompare ">=1.19-0" $gitVersion }}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" $gitVersion }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else }}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $dataIngressName }}
+  namespace: {{ $namespace | default "default" | quote }}
+  labels:
+    {{- $dataLabels | nindent 2 }}
+  annotations:
+    {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
+    {{- if not (hasKey .annotations "kubernetes.io/ingress.class") }}
+    {{- $_ := set .annotations "kubernetes.io/ingress.class" .className}}
+    {{- end }}
+    {{- end }}
+    {{- if .certManager }}
+    {{- if .certManager.issuer }}
+    {{- $_ := set .annotations "cert-manager.io/issuer" .certManager.issuer}}
+    {{- end }}
+    {{- if .certManager.clusterIssuer }}
+    {{- $_ := set .annotations "cert-manager.io/cluster-issuer" .certManager.clusterIssuer}}
+    {{- end }}
+    {{- end }}
+    {{- with .annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and .className (semverCompare ">=1.18-0" $gitVersion) }}
+  ingressClassName: {{ .className }}
+  {{- end }}
+  {{- if .hostname }}
+  {{- if .tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .hostname }}
+      {{- if .tls.secretName }}
+      secretName: {{ .tls.secretName }}
+      {{- else }}
+      secretName: {{ $dataIngressName }}-tls
+      {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .hostname }}
+      http:
+        paths:
+          {{- $ingressEdcEndpoints := .endpoints }}
+          {{- range  $name, $mapping := $dataEdcEndpoints }}
+          {{- if (has $name $ingressEdcEndpoints) }}
+          - path: {{ $mapping.path }}
+            pathType: Prefix
+            backend:
+              {{- if semverCompare ">=1.19-0" $gitVersion }}
+              service:
+                name: {{ $dataFullName }}
+                port:
+                  number: {{ $mapping.port }}
+              {{- else }}
+              serviceName: {{ $dataFullName }}
               servicePort: {{ $mapping.port }}
               {{- end }}
         {{- end }}
