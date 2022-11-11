@@ -10,5 +10,7 @@ spec:
       name: miwport
     - port: 11000
       name: acapyport
+    - port: 8086
+      name: revocationport
   selector:
     app: catenax-managed-identity-wallets

@@ -258,15 +258,16 @@ platoedccontrolplane:
     #########
     ## SSI ##
     #########
-    SSI_MIW_URL: "https://managed-identity-wallets.dev.demo.catena-x.net"
-    SSI_MIW_DID: "did:indy:idunion:test:test"
-    SSI_MIW_BPN: "BPNPLATO"
-    SSI_MIW_ACCESSTOKEN_URL: "https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
-    SSI_MIW_KEYCLOAK_CLIENTID: ""
-    SSI_MIW_KEYCLOAK_CLIENTSECRET: ""
+    SSI_MIW_URL: "http://<ip-address>:8080"
+    SSI_MIW_DID: "did:sov:7sGQTm6SkoTA3fszdFCxxS"
+    SSI_MIW_BPN: "BPNL000000000001"
+    SSI_MIW_ACCESSTOKEN_URL: "http://<ip-address>:8081/auth/realms/catenax/protocol/openid-connect/token"
+    SSI_MIW_KEYCLOAK_CLIENTID: "ManagedIdentityWallets"
+    SSI_MIW_KEYCLOAK_CLIENTSECRET: "ManagedIdentityWallets-Secret"
     SSI_MIW_KEYCLOAK_GRANDTYPE: "client_credentials"
     SSI_MIW_KEYCLOAK_SCOPE: "openid"
     SSI_MIW_LOGPREFIX: "ManagedIdentityWalletLogger"
+    SSI_MIW_TRUSTED_PROVIDERS: "did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14"
 
     ################
     ## POSTGRESQL ##
@@ -517,15 +518,16 @@ sokratesedccontrolplane:
     #########
     ## SSI ##
     #########
-    SSI_MIW_URL: "https://managed-identity-wallets.dev.demo.catena-x.net"
-    SSI_MIW_DID: "did:indy:idunion:test:test"
-    SSI_MIW_BPN: "BPNSOKRATES"
-    SSI_MIW_ACCESSTOKEN_URL: "https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
-    SSI_MIW_KEYCLOAK_CLIENTID: ""
-    SSI_MIW_KEYCLOAK_CLIENTSECRET: ""
+    SSI_MIW_URL: "http://<ip-address>:8080"
+    SSI_MIW_DID: "did:sov:TeiBcbgvNpsX1c8Vaj2D9J"
+    SSI_MIW_BPN: "BPNL000000000002" 
+    SSI_MIW_ACCESSTOKEN_URL: "http://<ip-address>:8081/auth/realms/catenax/protocol/openid-connect/token"
+    SSI_MIW_KEYCLOAK_CLIENTID: "ManagedIdentityWallets"
+    SSI_MIW_KEYCLOAK_CLIENTSECRET: "ManagedIdentityWallets-Secret"
     SSI_MIW_KEYCLOAK_GRANDTYPE: "client_credentials"
     SSI_MIW_KEYCLOAK_SCOPE: "openid"
     SSI_MIW_LOGPREFIX: "ManagedIdentityWalletLogger"
+    SSI_MIW_TRUSTED_PROVIDERS: "did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14"
 
     ################
     ## POSTGRESQL ##

@@ -17,7 +17,7 @@ dependencies:
 
   # https://github.com/bitnami/charts/tree/master/bitnami/keycloak/
   - name: keycloak
-    version: 10.x.x
+    version: 10.1.0
     repository: https://charts.bitnami.com/bitnami
     condition: cxkeycloak.enabled
     alias: cxkeycloak

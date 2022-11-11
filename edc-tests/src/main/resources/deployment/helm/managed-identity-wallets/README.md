@@ -72,14 +72,15 @@ kubectl -n managed-identity-wallets create secret generic catenax-managed-identi
 The default state of the test container comes from SQL-Dumps which get executed
 on each deployment of the Chart. For the Mapping a configmap is used.
 ```shell
-kubectl create configmap <map-name> templates/confimap.yaml
+kubectl create configmap miw-map --from-file=templates/configmap.yaml
 ```
 
 ## 1.4 Install/Upgrade for local testing
 The Helm file is now ready for deployment, execute the following Command
 and the System should be ready.
 ```shell
-helm upgrade --install managed-identity-wallets-local -f values.yaml -f values-local.yaml .
+helm dependency build
+helm upgrade --install managed-identity-wallets-local --namespace managed-identity-wallets -f values.yaml -f values-local.yaml .
 ```
 
 # 2 Help
@@ -96,12 +97,12 @@ kubectl run --rm -it client --image alpine
 #### Within the pod:
 This command is for fetching the accessToken.
 ```
-curl --location --request POST 'http://catenax-keycloak/realms/catenax/protocol/openid-connect/token' \
-    --header 'Content-Type: application/x-www-form-urlencoded' \
-    --data-urlencode 'client_id=ManagedIdentityWallets' \
-    --data-urlencode 'grant_type=client_credentials' \
-    --data-urlencode 'client_secret=ManagedIdentityWallets-Secret' \
-    --data-urlencode 'scope=openid'
+curl --location --request POST 'http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'client_id=ManagedIdentityWallets' \
+--data-urlencode 'grant_type=client_credentials' \
+--data-urlencode 'client_secret=ManagedIdentityWallets-Secret' \
+--data-urlencode 'scope=openid'
 ```
 
 ## Expose via loadbalancer

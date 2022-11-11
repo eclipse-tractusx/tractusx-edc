@@ -358,17 +358,17 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions.ssi</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
                 <artifactId>ssi-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions.ssi</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
                 <artifactId>ssi-identity-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions.ssi</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
                 <artifactId>ssi-managed-identity-wallet</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -383,7 +383,7 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>xsuaa-authenticator</artifactId>
                 <version>${project.version}</version>
             </dependency>

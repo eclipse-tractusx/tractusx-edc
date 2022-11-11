@@ -8,6 +8,14 @@ logging:
   exposed: "INFO"
 wallet:
   baseWalletBpn: "BPNL000000000000"
+revocationService:
+  imageName: "registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation"
+  tag: "1.0.0-SNAPSHOT-quarkus-2.10.2.Final-java17"
+  port: "8086"
+  httpAccessLog: true
+  minIssueInterval: "2"
+  baseUrlForCredentialList: "https//localhost:8080/api/credentials/"
+  clientIssuanceApiUrl: "http://localhost:8080"
 acapy:
   imageName: "bcgovimages/aries-cloudagent"
   tag: "py36-1.16-1_0.7.4"

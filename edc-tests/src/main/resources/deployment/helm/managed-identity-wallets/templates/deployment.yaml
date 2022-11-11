@@ -92,6 +92,10 @@ spec:
                   key: acapy-admin-api-key
             - name: CX_BPN
               value: {{ .Values.wallet.baseWalletBpn }}
+            - name: REVOCATION_URL
+              value: {{ .Values.revocation.revocationServiceUrl }}
+            - name: REVOCATION_CREATE_STATUS_LIST_CREDENTIAL_AT_HOUR
+              value: {{ .Values.revocation.refreshHour | quote }}
           resources:
             requests:
               cpu: 100m
@@ -101,6 +105,34 @@ spec:
               memory: 256Mi
           ports:
             - containerPort: 8080
+        - name: catenax-revocation-service
+          image: {{ .Values.revocationService.imageName }}:{{ .Values.revocationService.tag }}
+          imagePullPolicy: Always
+          env:
+          - name: QUARKUS_HTTP_PORT
+            value: {{ .Values.revocationService.port | quote }}
+          - name: QUARKUS_HTTP_ACCESS_LOG_ENABLED
+            value: {{ .Values.revocationService.httpAccessLog | quote | default "false" }}
+          - name: QUARKUS_DATASOURCE_JDBC_URL
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-secrets
+                key: cx-db-jdbc-url
+          - name: REVOCATION_BASE_URL
+            value: {{ .Values.revocationService.baseUrlForCredentialList }}
+          - name: REVOCATION_MIN_ISSUE_INTERVAL
+            value: {{ .Values.revocationService.minIssueInterval | quote}}
+          - name: QUARKUS_REST_CLIENT_SSI_ISSUANCE_API_URL
+            value: {{ .Values.revocationService.clientIssuanceApiUrl }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+            - containerPort: 8086
         - name: catenax-acapy
           image: {{ .Values.acapy.imageName }}:{{ .Values.acapy.tag }}
           env:

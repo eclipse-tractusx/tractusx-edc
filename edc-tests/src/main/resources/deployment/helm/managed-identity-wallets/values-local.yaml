@@ -10,6 +10,9 @@ auth:
 datapool:
   url: "https://catenax-bpdm-dev.demo.catena-x.net"
   authUrl: "https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
+revocation:
+  refreshHour: "3"
+  revocationServiceUrl: http://localhost:8086
 acapy:
   logLevel: "DEBUG"
   ledgerUrl: "http://dev.greenlight.bcovrin.vonx.io"
