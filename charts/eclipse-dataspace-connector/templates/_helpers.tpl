@@ -11,6 +11,13 @@ Expand the name of the chart.
 {{/*
 Expand the name of the chart.
 */}}
+{{- define "txdc.serviceAccountName" -}}
+{{- printf "%s-%s" (include "txdc.name" . ) "servicAccount" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Expand the name of the chart.
+*/}}
 {{- define "txdc.controlplane.name" -}}
 {{- $controlDefault := (printf "%s-%s" .Chart.Name "control") }}
 {{- default $controlDefault .Values.controlplaneplane.nameOverride | trunc 63 | trimSuffix "-" }}
@@ -67,6 +74,17 @@ Create chart name and version as used by the chart label.
 */}}
 {{- define "txdc.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }} 
+
+{{/*
+Control Common labels
+*/}}
+{{- define "txdc.labels" -}}
+helm.sh/chart: {{ include "txdc.chart" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
@@ -75,7 +93,6 @@ Control Common labels
 {{- define "txdc.controlplane.labels" -}}
 helm.sh/chart: {{ include "txdc.chart" . }}
 {{ include "txdc.controlplane.selectorLabels" . }}
-{{- with .Values.customLabels }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -88,7 +105,6 @@ Data Common labels
 {{- define "txdc.dataplane.labels" -}}
 helm.sh/chart: {{ include "txdc.chart" . }}
 {{ include "txdc.dataplane.selectorLabels" . }}
-{{- with .Values.customLabels }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
