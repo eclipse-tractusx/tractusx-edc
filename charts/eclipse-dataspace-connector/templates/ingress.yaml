@@ -72,8 +72,6 @@ spec:
                 port:
                   number: {{ $mapping.port }}
               {{- else }}
-              serviceName: {{ $controlFullName }}
-              servicePort: {{ $mapping.port }}
               {{- end }}
         {{- end }}
   {{- end }}
@@ -146,8 +144,6 @@ spec:
                 port:
                   number: {{ $mapping.port }}
               {{- else }}
-              serviceName: {{ $dataFullName }}
-              servicePort: {{ $mapping.port }}
               {{- end }}
         {{- end }}
   {{- end }}

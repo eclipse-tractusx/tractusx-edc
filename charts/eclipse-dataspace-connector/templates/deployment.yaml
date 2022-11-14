@@ -19,7 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "txdc.controlplane.selectorLabels" . | nindent 8 }}
-        {{- include .Values.controlplane.podLabels . }}
+        {{- .Values.controlplane.podLabels }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -34,9 +34,9 @@ spec:
             {{- toYaml .Values.controlplane.securityContext | nindent 12 }}
           {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
-          {{- else if .Values.controlplane.postgresql.enabled and .Values.vault.azure.enabled }}
+          {{- else if and .Values.postgresql.enabled (not .Values.vault.azure.enabled) }}
           image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
-          {{- else if .Values.controlplane.postgresql.enabled and .Values.vault.azure.enabled }}
+          {{- else if and .Values.postgresql.enabled .Values.vault.azure.enabled }}
           image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.hashicorp.enabled }}
           image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
@@ -63,7 +63,7 @@ spec:
             failureThreshold: {{ .Values.controlplane.livenessProbe.failureThreshold }}
             successThreshold: {{ .Values.controlplane.livenessProbe.successThreshold }}
           {{- end }}
-          {{- if .Values.controlplaneplane.readinessProbe.enabled }}
+          {{- if .Values.controlplane.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: {{ .Values.controlplane.endpoints.default.path }}/check/readiness
@@ -77,7 +77,7 @@ spec:
           resources:
             {{- toYaml .Values.controlplane.resources | nindent 12 }}
           env:
-            {{- if .Values.controlplane.debug.enabled and .Values.controlplane.debug.suspendOnStart }}
+            {{- if and .Values.controlplane.debug.enabled .Values.controlplane.debug.suspendOnStart }}
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="{{ .Values.controlplane.debug.port }}
             {{- else if .Values.controlplane.debug.enabled }}
@@ -98,17 +98,18 @@ spec:
               value: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.token }}
             - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
               value: {{ .Values.vault.secretNames.dapsPrivateKey }}
-            - nameEDC_OAUTH_PUBLIC_KEY_ALIAS: {{ .Values.vault.secretNames.dapsPublicKey }}
+            - name: EDC_OAUTH_PUBLIC_KEY_ALIAS
+              value: {{ .Values.vault.secretNames.dapsPublicKey }}
 
             #############
             ## GENERAL ##
             #############
             - name: IDS_WEBHOOK_ADDRESS
-              value: {{ include "txdc.controlplane.url.ids" }}
+              value: {{ include "txdc.controlplane.url.ids" . }}
             - name: EDC_IDS_ENDPOINT
-              value: {{ include "txdc.controlplane.url.ids" }}
+              value: {{ include "txdc.controlplane.url.ids" . }}
             - name: EDC_IDS_ENDPOINT_AUDIENCE
-              value: {{ printf "https://%s%s" (include "control.host") "/api/v1/ids/data" }}
+              value: {{ printf "https://%s%s" (include "control.host" . ) "/api/v1/ids/data" }}
             - name: EDC_IDS_ID
               value: {{ .Values.controlplane.internationalDataSpaces.id }}
             - name: EDC_IDS_DESCRIPTION
@@ -184,17 +185,17 @@ spec:
 
             # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL
-              value: {{ printf "http://%s%s" (include "data.host.control") .Values.dataplane.endpoints.control.path }}
+              value: {{ printf "http://%s%s" (include "data.host.control" . ) .Values.dataplane.endpoints.control.path }}
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES
               value: HttpData
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES
               value: HttpProxy
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES
-              value: {{ printf "{ \"publicApiUrl\": \"https://%s\" }" (printf "%s%s" (include "data.host.public") .Values.dataplane.endpoints.public.path) }}
+              value: {{ printf "{ \"publicApiUrl\": \"https://%s\" }" (printf "%s%s" (include "data.host.public" . ) .Values.dataplane.endpoints.public.path) }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
             - name: EDC_TRANSFER_PROXY_ENDPOINT
-              value: {{ printf "https://%s%s" (include "data.host.public") .Values.dataplane.endpoints.public.path }}
+              value: {{ printf "https://%s%s" (include "data.host.public" . ) .Values.dataplane.endpoints.public.path }}
             - name: EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
             - name: EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
