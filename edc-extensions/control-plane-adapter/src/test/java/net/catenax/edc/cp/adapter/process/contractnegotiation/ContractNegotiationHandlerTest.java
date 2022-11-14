@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Message;
-import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
@@ -43,7 +43,7 @@ import org.mockito.MockitoAnnotations;
 
 public class ContractNegotiationHandlerTest {
   @Mock Monitor monitor;
-  @Mock MessageService messageService;
+  @Mock MessageBus messageBus;
   @Mock ContractNegotiationService contractNegotiationService;
   @Mock CatalogService catalogService;
   @Mock ContractDataStore contractDataStore;
@@ -59,7 +59,7 @@ public class ContractNegotiationHandlerTest {
     ContractNegotiationHandler contractNegotiationHandler =
         new ContractNegotiationHandler(
             monitor,
-            messageService,
+            messageBus,
             contractNegotiationService,
             catalogService,
             contractDataStore,
@@ -73,7 +73,7 @@ public class ContractNegotiationHandlerTest {
 
     // then
     verify(contractNegotiationService, times(0)).initiateNegotiation(any());
-    verify(messageService, times(1)).send(any(), any(Message.class));
+    verify(messageBus, times(1)).send(any(), any(Message.class));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class ContractNegotiationHandlerTest {
     ContractNegotiationHandler contractNegotiationHandler =
         new ContractNegotiationHandler(
             monitor,
-            messageService,
+            messageBus,
             contractNegotiationService,
             catalogService,
             contractDataStore,
@@ -100,7 +100,7 @@ public class ContractNegotiationHandlerTest {
 
     // then
     verify(contractNegotiationService, times(1)).initiateNegotiation(any());
-    verify(messageService, times(1)).send(any(), any(Message.class));
+    verify(messageBus, times(1)).send(any(), any(Message.class));
   }
 
   @Test
@@ -109,7 +109,7 @@ public class ContractNegotiationHandlerTest {
     ContractNegotiationHandler contractNegotiationHandler =
         new ContractNegotiationHandler(
             monitor,
-            messageService,
+            messageBus,
             contractNegotiationService,
             catalogService,
             contractDataStore,
@@ -126,7 +126,7 @@ public class ContractNegotiationHandlerTest {
 
     // then
     verify(contractNegotiationService, times(1)).initiateNegotiation(any());
-    verify(messageService, times(1)).send(any(), any(Message.class));
+    verify(messageBus, times(1)).send(any(), any(Message.class));
   }
 
   private ProcessData getProcessData() {

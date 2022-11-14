@@ -10,13 +10,13 @@ Additional requirements, that affects the architecture of the extension:
 
 <b>Configuration:</b>
 
-| Key | Description                                                                                                                                                                      | Mandatory | Default |
-|:----|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|----|
-| edc.cp.adapter.default.message.retry.number | Number of retries of a message, in case of an error, within the internal process of retrieving DataReference                                                                     | no   | 3  |
-| edc.cp.adapter.default.sync.request.timeout | Timeout for synchronous request (in seconds), after witch 'timeout' error will be returned to the requesting client                                                              | no   | 20 | 
-| edc.cp.adapter.messageservice.inmemory.thread.number | Number of threads running within the in-memory implementation of MessageService                                                                                          _ _     | no   | 10 |
-| edc.cp.adapter.cache.contract.agreement | Turn on/off contract agreement cache for the specific asset. Once the contract is agreed, the second request for the same asset will reuse the agreement. Value 1 = on, 0 = off. | no   | 1  |
-| edc.cp.adapter.cache.catalog.expire.after | Number of seconds, after witch prevoiusly requested catalog will not be reused, and will be removed from catalog cache                                                           | no   | 3600 |
+| Key                                              | Description                                                                                                                                                                      | Mandatory | Default |
+|:-------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|----|
+| edc.cp.adapter.default.message.retry.number      | Number of retries of a message, in case of an error, within the internal process of retrieving DataReference                                                                     | no   | 3  |
+| edc.cp.adapter.default.sync.request.timeout      | Timeout for synchronous request (in seconds), after witch 'timeout' error will be returned to the requesting client                                                              | no   | 20 | 
+| edc.cp.adapter.messagebus.inmemory.thread.number | Number of threads running within the in-memory implementation of MessageBus                                                                                          _ _         | no   | 10 |
+| edc.cp.adapter.cache.contract.agreement          | Turn on/off contract agreement cache for the specific asset. Once the contract is agreed, the second request for the same asset will reuse the agreement. Value 1 = on, 0 = off. | no   | 1  |
+| edc.cp.adapter.cache.catalog.expire.after        | Number of seconds, after witch prevoiusly requested catalog will not be reused, and will be removed from catalog cache                                                           | no   | 3600 |
 
 
 <b>How to use it:</b>

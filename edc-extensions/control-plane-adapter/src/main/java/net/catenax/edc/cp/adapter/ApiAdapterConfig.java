@@ -21,8 +21,8 @@ public class ApiAdapterConfig {
       "edc.cp.adapter.default.message.retry.number";
   private static final String DEFAULT_SYNC_REQUEST_TIMEOUT =
       "edc.cp.adapter.default.sync.request.timeout";
-  private static final String IN_MEMORY_MESSAGE_SERVICE_THREAD_NUMBER =
-      "edc.cp.adapter.messageservice.inmemory.thread.number";
+  private static final String IN_MEMORY_MESSAGE_BUS_THREAD_NUMBER =
+      "edc.cp.adapter.messagebus.inmemory.thread.number";
   private static final String CATALOG_EXPIRE_AFTER_TIME =
       "edc.cp.adapter.cache.catalog.expire.after";
   private static final String CONTRACT_AGREEMENT_CACHE = "edc.cp.adapter.cache.contract.agreement";
@@ -41,8 +41,8 @@ public class ApiAdapterConfig {
     return context.getSetting(DEFAULT_SYNC_REQUEST_TIMEOUT, 20);
   }
 
-  public int getInMemoryMessageServiceThreadNumber() {
-    return context.getSetting(IN_MEMORY_MESSAGE_SERVICE_THREAD_NUMBER, 10);
+  public int getInMemoryMessageBusThreadNumber() {
+    return context.getSetting(IN_MEMORY_MESSAGE_BUS_THREAD_NUMBER, 10);
   }
 
   public boolean isContractAgreementCacheOn() {

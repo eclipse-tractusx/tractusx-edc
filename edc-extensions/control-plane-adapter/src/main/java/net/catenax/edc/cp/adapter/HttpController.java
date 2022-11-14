@@ -25,7 +25,7 @@ import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.dto.ProcessData;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Message;
-import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 
@@ -36,7 +36,7 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 public class HttpController {
   private final Monitor monitor;
   private final ResultService resultService;
-  private final MessageService messageService;
+  private final MessageBus messageBus;
   private final ApiAdapterConfig config;
 
   @GET
@@ -83,7 +83,7 @@ public class HttpController {
     ProcessData processData = getProcessData(assetId, providerUrl);
     Message<ProcessData> message =
         new DataReferenceRetrievalDto(processData, config.getDefaultMessageRetryNumber());
-    messageService.send(Channel.INITIAL, message);
+    messageBus.send(Channel.INITIAL, message);
     return message.getTraceId();
   }
 

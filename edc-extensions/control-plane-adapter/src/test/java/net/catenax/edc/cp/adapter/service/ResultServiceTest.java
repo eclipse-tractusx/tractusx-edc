@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ResultServiceTest {
+
   @Test
   public void pull_shouldReturnDataReferenceWhenMessageOccursFirst() throws InterruptedException {
     // given
@@ -56,15 +57,6 @@ public class ResultServiceTest {
     Assertions.assertEquals(endpointDataRefId, processData.getEndpointDataReference().getId());
   }
 
-  private void processMessageWithDelay(ResultService resultService, DataReferenceRetrievalDto dto) {
-    new Thread(
-            () -> {
-              sleep(400);
-              resultService.process(dto);
-            })
-        .start();
-  }
-
   @Test
   public void pull_shouldReturnNullOnTimeout() throws InterruptedException {
     // given
@@ -89,6 +81,15 @@ public class ResultServiceTest {
       fail("Method should throw IllegalArgumentException");
     } catch (IllegalArgumentException ignored) {
     }
+  }
+
+  private void processMessageWithDelay(ResultService resultService, DataReferenceRetrievalDto dto) {
+    new Thread(
+            () -> {
+              sleep(400);
+              resultService.process(dto);
+            })
+        .start();
   }
 
   private DataReferenceRetrievalDto getDto(String endpointDataRefId) {

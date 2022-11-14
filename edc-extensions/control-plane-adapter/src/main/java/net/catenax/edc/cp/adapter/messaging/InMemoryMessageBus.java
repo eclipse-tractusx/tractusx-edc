@@ -21,13 +21,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 
-public class InMemoryMessageService implements MessageService {
+public class InMemoryMessageBus implements MessageBus {
   private final Monitor monitor;
   private final ListenerService listenerService;
   private final ScheduledExecutorService executorService;
 
-  public InMemoryMessageService(
-      Monitor monitor, ListenerService listenerService, int threadPoolSize) {
+  public InMemoryMessageBus(Monitor monitor, ListenerService listenerService, int threadPoolSize) {
     this.monitor = monitor;
     this.listenerService = listenerService;
     executorService = Executors.newScheduledThreadPool(threadPoolSize);

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import jakarta.ws.rs.core.Response;
-import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.junit.jupiter.api.Test;
@@ -34,10 +34,9 @@ public class HttpControllerTest {
     // given
     Monitor monitor = Mockito.mock(Monitor.class);
     ResultService resultService = Mockito.mock(ResultService.class);
-    MessageService messageService = Mockito.mock(MessageService.class);
+    MessageBus messageBus = Mockito.mock(MessageBus.class);
     when(config.getDefaultMessageRetryNumber()).thenReturn(RETRY_NUMBER);
-    HttpController httpController =
-        new HttpController(monitor, resultService, messageService, config);
+    HttpController httpController = new HttpController(monitor, resultService, messageBus, config);
 
     // when
     Response response = httpController.getAssetSynchronous(null, "providerUrl");
@@ -51,11 +50,10 @@ public class HttpControllerTest {
     // given
     Monitor monitor = Mockito.mock(Monitor.class);
     ResultService resultService = Mockito.mock(ResultService.class);
-    MessageService messageService = Mockito.mock(MessageService.class);
+    MessageBus messageBus = Mockito.mock(MessageBus.class);
     ApiAdapterConfig config = Mockito.mock(ApiAdapterConfig.class);
     when(config.getDefaultMessageRetryNumber()).thenReturn(RETRY_NUMBER);
-    HttpController httpController =
-        new HttpController(monitor, resultService, messageService, config);
+    HttpController httpController = new HttpController(monitor, resultService, messageBus, config);
 
     // when
     Response response = httpController.getAssetSynchronous("assetId", null);

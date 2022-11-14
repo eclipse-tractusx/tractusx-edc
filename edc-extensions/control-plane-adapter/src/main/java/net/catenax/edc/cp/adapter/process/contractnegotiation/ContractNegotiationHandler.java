@@ -26,7 +26,7 @@ import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
 import net.catenax.edc.cp.adapter.exception.ResourceNotFoundException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
-import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 @RequiredArgsConstructor
 public class ContractNegotiationHandler implements Listener<DataReferenceRetrievalDto> {
   private final Monitor monitor;
-  private final MessageService messageService;
+  private final MessageBus messageBus;
   private final ContractNegotiationService contractNegotiationService;
   private final CatalogService catalogService;
   private final ContractDataStore contractDataStore;
@@ -61,7 +61,7 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
       monitor.info(String.format("[%s] ContractAgreement taken from cache.", dto.getTraceId()));
       dto.getPayload().setContractAgreementId(contractData.getId());
       dto.getPayload().setContractConfirmed(true);
-      messageService.send(Channel.CONTRACT_CONFIRMATION, dto);
+      messageBus.send(Channel.CONTRACT_CONFIRMATION, dto);
       return;
     }
 
@@ -76,7 +76,7 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
             contractOffer, dto.getPayload().getProvider(), dto.getTraceId());
     dto.getPayload().setContractNegotiationId(contractNegotiationId);
 
-    messageService.send(Channel.CONTRACT_CONFIRMATION, dto);
+    messageBus.send(Channel.CONTRACT_CONFIRMATION, dto);
   }
 
   @Nullable

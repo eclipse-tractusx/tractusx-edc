@@ -24,7 +24,7 @@ import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
 import net.catenax.edc.cp.adapter.exception.ResourceNotFoundException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
-import net.catenax.edc.cp.adapter.messaging.MessageService;
+import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class ErrorResultService implements Listener<DataReferenceRetrievalDto> {
   }
 
   private final Monitor monitor;
-  private final MessageService messageService;
+  private final MessageBus messageBus;
 
   @Override
   public void process(DataReferenceRetrievalDto dto) {
@@ -47,7 +47,7 @@ public class ErrorResultService implements Listener<DataReferenceRetrievalDto> {
             statusOfException.getOrDefault(
                 dto.getFinalException().getClass(), Response.Status.INTERNAL_SERVER_ERROR));
     log(dto);
-    messageService.send(Channel.RESULT, dto);
+    messageBus.send(Channel.RESULT, dto);
   }
 
   private String getErrorMessage(DataReferenceRetrievalDto dto) {

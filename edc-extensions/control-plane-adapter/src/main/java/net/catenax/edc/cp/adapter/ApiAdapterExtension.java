@@ -15,17 +15,18 @@
 package net.catenax.edc.cp.adapter;
 
 import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
 
 import net.catenax.edc.cp.adapter.messaging.Channel;
-import net.catenax.edc.cp.adapter.messaging.InMemoryMessageService;
+import net.catenax.edc.cp.adapter.messaging.InMemoryMessageBus;
 import net.catenax.edc.cp.adapter.messaging.ListenerService;
+import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractdatastore.InMemoryContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractnegotiation.ContractNegotiationHandler;
-import net.catenax.edc.cp.adapter.process.contractnotification.ContractInMemorySyncService;
-import net.catenax.edc.cp.adapter.process.contractnotification.ContractNotificationHandler;
+import net.catenax.edc.cp.adapter.process.contractnotification.*;
 import net.catenax.edc.cp.adapter.process.datareference.DataRefInMemorySyncService;
+import net.catenax.edc.cp.adapter.process.datareference.DataRefNotificationSyncService;
 import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
+import net.catenax.edc.cp.adapter.process.datareference.EndpointDataReferenceReceiverImpl;
 import net.catenax.edc.cp.adapter.service.ErrorResultService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
@@ -33,26 +34,21 @@ import net.catenax.edc.cp.adapter.util.LockMap;
 import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogServiceImpl;
 import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
-import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationServiceImpl;
 import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.spi.WebService;
-import org.eclipse.dataspaceconnector.spi.contract.negotiation.ConsumerContractNegotiationManager;
+import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationListener;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationObservable;
-import org.eclipse.dataspaceconnector.spi.contract.negotiation.store.ContractNegotiationStore;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.transaction.NoopTransactionContext;
-import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
+import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiver;
 import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiverRegistry;
 
 public class ApiAdapterExtension implements ServiceExtension {
   @Inject private WebService webService;
-  @Inject private ContractNegotiationStore store;
-  @Inject private ConsumerContractNegotiationManager manager;
-  @Inject private TransactionContext transactionContext;
+  @Inject private ContractNegotiationService contractNegotiationService;
   @Inject private RemoteMessageDispatcherRegistry dispatcher;
   @Inject private EndpointDataReferenceReceiverRegistry receiverRegistry;
   @Inject private DataManagementApiConfiguration apiConfig;
@@ -72,95 +68,95 @@ public class ApiAdapterExtension implements ServiceExtension {
 
     /** internal dependencies * */
     ApiAdapterConfig config = new ApiAdapterConfig(context);
-    ContractNegotiationService contractNegotiationService =
-        new ContractNegotiationServiceImpl(store, manager, getTransactionContext(monitor));
     ListenerService listenerService = new ListenerService();
-    InMemoryMessageService messageService =
-        new InMemoryMessageService(
-            monitor, listenerService, config.getInMemoryMessageServiceThreadNumber());
+    InMemoryMessageBus messageBus =
+        new InMemoryMessageBus(
+            monitor, listenerService, config.getInMemoryMessageBusThreadNumber());
+
     ResultService resultService = new ResultService(config.getDefaultSyncRequestTimeout());
+    ErrorResultService errorResultService = new ErrorResultService(monitor, messageBus);
+    ContractNotificationSyncService contractSyncService =
+        new ContractInMemorySyncService(new LockMap());
+    ContractDataStore contractDataStore = new InMemoryContractDataStore();
+    DataTransferInitializer dataTransferInitializer =
+        new DataTransferInitializer(monitor, transferProcessService);
+    ContractNotificationHandler contractNotificationHandler =
+        new ContractNotificationHandler(
+            monitor,
+            messageBus,
+            contractSyncService,
+            contractNegotiationService,
+            dataTransferInitializer);
+    ContractNegotiationHandler contractNegotiationHandler =
+        getContractNegotiationHandler(
+            monitor, contractNegotiationService, messageBus, contractDataStore);
+    DataRefNotificationSyncService dataRefSyncService =
+        new DataRefInMemorySyncService(new LockMap());
+    DataReferenceHandler dataReferenceHandler =
+        new DataReferenceHandler(monitor, messageBus, dataRefSyncService);
+
+    listenerService.addListener(Channel.INITIAL, contractNegotiationHandler);
+    listenerService.addListener(Channel.CONTRACT_CONFIRMATION, contractNotificationHandler);
+    listenerService.addListener(Channel.DATA_REFERENCE, dataReferenceHandler);
     listenerService.addListener(Channel.RESULT, resultService);
-    ErrorResultService errorResultService = new ErrorResultService(monitor, messageService);
     listenerService.addListener(Channel.DLQ, errorResultService);
 
-    initHttpController(monitor, messageService, resultService, config);
-    initContractNegotiationHandler(
-        monitor, contractNegotiationService, messageService, listenerService);
-    initContractConfirmationHandler(
+    initHttpController(monitor, messageBus, resultService, config);
+    initContractNegotiationListener(
         monitor,
         negotiationObservable,
-        contractNegotiationService,
-        messageService,
-        listenerService);
-    initDataReferenceHandler(monitor, messageService, listenerService);
+        messageBus,
+        contractSyncService,
+        contractDataStore,
+        dataTransferInitializer);
+    initDataReferenceReciever(monitor, messageBus, dataRefSyncService);
   }
 
   private void initHttpController(
       Monitor monitor,
-      InMemoryMessageService messageService,
+      InMemoryMessageBus messageBus,
       ResultService resultService,
       ApiAdapterConfig config) {
     webService.registerResource(
         apiConfig.getContextAlias(),
-        new HttpController(monitor, resultService, messageService, config));
+        new HttpController(monitor, resultService, messageBus, config));
   }
 
-  private void initContractNegotiationHandler(
+  private ContractNegotiationHandler getContractNegotiationHandler(
       Monitor monitor,
       ContractNegotiationService contractNegotiationService,
-      InMemoryMessageService messageService,
-      ListenerService listenerService) {
-
-    listenerService.addListener(
-        Channel.INITIAL,
-        new ContractNegotiationHandler(
-            monitor,
-            messageService,
-            contractNegotiationService,
-            new CatalogServiceImpl(dispatcher),
-            new InMemoryContractDataStore(),
-            new ExpiringMap<>()));
+      InMemoryMessageBus messageBus,
+      ContractDataStore contractDataStore) {
+    return new ContractNegotiationHandler(
+        monitor,
+        messageBus,
+        contractNegotiationService,
+        new CatalogServiceImpl(dispatcher),
+        contractDataStore,
+        new ExpiringMap<>());
   }
 
-  private void initContractConfirmationHandler(
+  private void initDataReferenceReciever(
+      Monitor monitor,
+      InMemoryMessageBus messageBus,
+      DataRefNotificationSyncService dataRefSyncService) {
+    EndpointDataReferenceReceiver dataReferenceReceiver =
+        new EndpointDataReferenceReceiverImpl(monitor, messageBus, dataRefSyncService);
+    receiverRegistry.registerReceiver(dataReferenceReceiver);
+  }
+
+  private void initContractNegotiationListener(
       Monitor monitor,
       ContractNegotiationObservable negotiationObservable,
-      ContractNegotiationService contractNegotiationService,
-      InMemoryMessageService messageService,
-      ListenerService listenerService) {
-
-    ContractNotificationHandler contractNotificationHandler =
-        new ContractNotificationHandler(
-            monitor,
-            messageService,
-            new ContractInMemorySyncService(new LockMap()),
-            contractNegotiationService,
-            transferProcessService,
-            new InMemoryContractDataStore());
-
-    listenerService.addListener(Channel.CONTRACT_CONFIRMATION, contractNotificationHandler);
+      InMemoryMessageBus messageBus,
+      ContractNotificationSyncService contractSyncService,
+      ContractDataStore contractDataStore,
+      DataTransferInitializer dataTransferInitializer) {
+    ContractNegotiationListener contractNegotiationListener =
+        new ContractNegotiationListenerImpl(
+            monitor, messageBus, contractSyncService, contractDataStore, dataTransferInitializer);
     if (nonNull(negotiationObservable)) {
-      negotiationObservable.registerListener(contractNotificationHandler);
+      negotiationObservable.registerListener(contractNegotiationListener);
     }
-  }
-
-  private void initDataReferenceHandler(
-      Monitor monitor, InMemoryMessageService messageService, ListenerService listenerService) {
-
-    DataReferenceHandler dataReferenceHandler =
-        new DataReferenceHandler(
-            monitor, messageService, new DataRefInMemorySyncService(new LockMap()));
-    listenerService.addListener(Channel.DATA_REFERENCE, dataReferenceHandler);
-    receiverRegistry.registerReceiver(dataReferenceHandler);
-  }
-
-  private TransactionContext getTransactionContext(Monitor monitor) {
-    return ofNullable(transactionContext)
-        .orElseGet(
-            () -> {
-              monitor.warning(
-                  "No TransactionContext registered, a no-op implementation will be used, not suitable for production environments");
-              return new NoopTransactionContext();
-            });
   }
 }

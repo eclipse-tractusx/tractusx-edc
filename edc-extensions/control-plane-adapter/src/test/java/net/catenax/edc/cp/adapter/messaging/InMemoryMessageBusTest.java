@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class InMemoryMessageServiceTest {
+public class InMemoryMessageBusTest {
   @Mock Monitor monitor;
   @Mock Listener<DataReferenceRetrievalDto> listener;
   @Mock ListenerService listenerService;
@@ -40,10 +40,10 @@ public class InMemoryMessageServiceTest {
     // given
     Message<ProcessData> message = new DataReferenceRetrievalDto(null, 3);
     when(listenerService.getListener(any())).thenReturn(listener);
-    MessageService messageService = new InMemoryMessageService(monitor, listenerService, 3);
+    MessageBus messageBus = new InMemoryMessageBus(monitor, listenerService, 3);
 
     // when
-    messageService.send(Channel.INITIAL, message);
+    messageBus.send(Channel.INITIAL, message);
 
     // then
     Thread.sleep(50);
@@ -56,10 +56,10 @@ public class InMemoryMessageServiceTest {
     Message<ProcessData> message = new DataReferenceRetrievalDto(null, 3);
     when(listenerService.getListener(any())).thenReturn(listener);
     doThrow(new IllegalStateException()).doNothing().when(listener).process(any());
-    MessageService messageService = new InMemoryMessageService(monitor, listenerService, 3);
+    MessageBus messageBus = new InMemoryMessageBus(monitor, listenerService, 3);
 
     // when
-    messageService.send(Channel.INITIAL, message);
+    messageBus.send(Channel.INITIAL, message);
 
     // then
     Thread.sleep(1000);
