@@ -18,36 +18,55 @@
  */
 package org.eclipse.tractusx.edc.ssi.core.identity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 import org.eclipse.tractusx.edc.ssi.core.SSIIdentityServiceImpl;
+import org.eclipse.tractusx.edc.ssi.core.claims.SSIClaims;
 import org.eclipse.tractusx.edc.ssi.core.claims.SSIVerifiableCredentialsImpl;
 import org.eclipse.tractusx.edc.ssi.core.claims.SSIVerifiablePresentationImpl;
+import org.eclipse.tractusx.edc.ssi.miw.model.VerifiablePresentationDto;
 import org.eclipse.tractusx.edc.ssi.miw.wallet.ManagedIdentityWalletApiServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SSIIdentityServiceExtensionTest {
 
+  private final String VP_FILE = "verifiablepresentation.json";
+  private VerifiablePresentationDto vpDto = null;
   private SSIIdentityServiceImpl identityService;
 
   private ManagedIdentityWalletApiServiceImpl mockWallet;
   private SSIVerifiableCredentialsImpl vcImpl;
   private SSIVerifiablePresentationImpl vpImpl;
+  private SSIClaims ssiClaims;
 
   @BeforeEach
   public void setUp() throws IOException {
+
+    ObjectMapper mapper = new ObjectMapper();
+    var vcStream = getClass().getClassLoader().getResourceAsStream(VP_FILE);
+    String vcString = new String(vcStream.readAllBytes());
+    this.vpDto = mapper.readValue(vcString, VerifiablePresentationDto.class);
+
     mockWallet = mock(ManagedIdentityWalletApiServiceImpl.class);
     vcImpl = mock(SSIVerifiableCredentialsImpl.class);
     vpImpl = mock(SSIVerifiablePresentationImpl.class);
+    ssiClaims = mock(SSIClaims.class);
     identityService = new SSIIdentityServiceImpl(mockWallet, vcImpl, vpImpl);
   }
 
   @Test
-  void testNoConfigObtainClientCredentials() {
-    identityService.obtainClientCredentials(null);
-    assertEquals(true, true);
+  void testObtainClientCredentials() throws JsonProcessingException {
+    when(ssiClaims.getVerifiablePresentation(anyString())).thenReturn(vpDto);
+    when(ssiClaims.makeTokenFromVerifiablePresentation(vpDto))
+        .thenReturn(TokenRepresentation.Builder.newInstance().token(vpDto.toString()).build());
+    assertDoesNotThrow(() -> identityService.obtainClientCredentials(null));
   }
 }

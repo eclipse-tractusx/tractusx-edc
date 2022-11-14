@@ -18,11 +18,8 @@
  */
 package org.eclipse.tractusx.edc.ssi.core;
 
-import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
-import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -41,10 +38,6 @@ public class SSIIdentityServiceExtension implements ServiceExtension {
     return "SSI Identity Service";
   }
 
-  @Inject WebService webService;
-
-  @Inject private OkHttpClient okHttpClient;
-
   @Inject public static IdentityWalletApiService walletApiService;
 
   public SSIVerifiablePresentation verifiablePresentation;
@@ -53,14 +46,8 @@ public class SSIIdentityServiceExtension implements ServiceExtension {
 
   @Inject public VerifiableCredentialRegistry verifiableCredentialRegistry;
 
-  private static final String LOG_PREFIX_SETTING = "ssi.miw.logprefix";
-
-  @Inject DataManagementApiConfiguration config;
-
   @Override
   public void initialize(ServiceExtensionContext context) {
-    var logPrefix = context.getSetting(LOG_PREFIX_SETTING, "MIW");
-    var typeManager = context.getTypeManager();
     context.getMonitor().debug("Starting initializing of SSI Identity Service");
 
     verifiableCredentials =

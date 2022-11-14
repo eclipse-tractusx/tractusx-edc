@@ -94,7 +94,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
               .header(HEADER_AUTHORIZATION_KEY, getAccessToken(this.accessTokenRequestDto))
               .post(reqBody)
               .build();
-      var response = httpClient.newCall(request).execute();
+      Response response = executeCallAndGetResponse(httpClient, request);
       checkMIWResponse(response);
       monitor.info("Fetched VP");
       return response.body().string();
@@ -112,7 +112,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
               .url(url)
               .header(HEADER_AUTHORIZATION_KEY, getAccessToken(this.accessTokenRequestDto))
               .build();
-      var response = httpClient.newCall(request).execute();
+      Response response = executeCallAndGetResponse(httpClient, request);
       checkMIWResponse(response);
       monitor.info("Fetched Did");
       return response.body().string();
@@ -137,7 +137,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
               .header(HEADER_AUTHORIZATION_KEY, getAccessToken(this.accessTokenRequestDto))
               .post(reqBody)
               .build();
-      var response = httpClient.newCall(request).execute();
+      Response response = executeCallAndGetResponse(httpClient, request);
       String error = "";
       if (response.isSuccessful() && response.body() != null) {
         VerifyResponse verifyResponse =
@@ -166,7 +166,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
               .url(url)
               .header(HEADER_AUTHORIZATION_KEY, getAccessToken(this.accessTokenRequestDto))
               .build();
-      var response = httpClient.newCall(request).execute();
+      Response response = executeCallAndGetResponse(httpClient, request);
       checkMIWResponse(response);
       WalletDescriptionDto walletDescriptionDto =
           objectMapper.readValue(response.body().string(), WalletDescriptionDto.class);
@@ -180,6 +180,20 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   @Override
   public String getOwnerBPN() {
     return config.getOwnerBPN();
+  }
+
+  private Response executeCallAndGetResponse(OkHttpClient httpClient, Request request)
+      throws IOException {
+    var response = httpClient.newCall(request).execute();
+    return response;
+  }
+
+  private void checkMIWResponse(Response response) throws IOException {
+    var body = response.body();
+    if (!response.isSuccessful() || body == null) {
+      throw new InternalServerErrorException(
+              format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+    }
   }
 
   private void fillRegistry(List<VerifiableCredentialDto> credentialDtoList) {
@@ -219,14 +233,6 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     } catch (Exception e) {
       monitor.severe(format("Error in calling the keycloak server at %s", url), e);
       throw e;
-    }
-  }
-
-  private void checkMIWResponse(Response response) throws IOException {
-    var body = response.body();
-    if (!response.isSuccessful() || body == null) {
-      throw new InternalServerErrorException(
-          format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
     }
   }
 

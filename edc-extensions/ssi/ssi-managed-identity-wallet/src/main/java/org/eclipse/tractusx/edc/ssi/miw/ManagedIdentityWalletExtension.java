@@ -20,11 +20,10 @@ package org.eclipse.tractusx.edc.ssi.miw;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
-import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.ssi.miw.registry.VerifiableCredentialRegistry;
@@ -41,7 +40,6 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
     return "Managed Identity Wallets";
   }
 
-  @Inject WebService webService;
   @Inject private OkHttpClient okHttpClient;
 
   private static final String LOG_PREFIX_SETTING = "ssi.miw.logprefix";
@@ -63,13 +61,11 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
   private static final String OWNER_BPN = "ssi.miw.bpn";
   private static final String DIDS_OF_TRUSTED_PROVIDERS = "ssi.miw.trusted.providers";
 
-  @Inject DataManagementApiConfiguration config;
-
   private ManagedIdentityWalletConfig walletConfig;
 
   @Override
   public void initialize(ServiceExtensionContext context) {
-    var logPrefix = context.getSetting(LOG_PREFIX_SETTING, "MIW");
+    var logPrefix = context.getSetting(LOG_PREFIX_SETTING, "ManagedIdentityWalletLogger");
     var typeManager = context.getTypeManager();
 
     ManagedIdentityWalletConfig.Builder walletBuilderConfig =
@@ -81,8 +77,9 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
             .accessTokenURL(context.getConfig().getString(ACCESSTOKEN_URL))
             .keycloakClientID(context.getConfig().getString(KEYCLOAK_CLIENT_ID))
             .keycloakClientSecret(context.getConfig().getString(KEYCLOAK_CLIENT_SECRET))
-            .keycloakGrandType(context.getConfig().getString(KEYCLOAK_CLIENT_GRAND_TYPE))
-            .keycloakScope(context.getConfig().getString(KEYCLOAK_SCOPE))
+            .keycloakGrandType(
+                context.getConfig().getString(KEYCLOAK_CLIENT_GRAND_TYPE, "client_credentials"))
+            .keycloakScope(context.getSetting(KEYCLOAK_SCOPE, "openid"))
             .ownerBPN(context.getConfig().getString(OWNER_BPN))
             .trustedProvider(
                 new ArrayList<>(
@@ -92,13 +89,20 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
 
     VerifiableCredentialRegistry credentialRegistry = new VerifiableCredentialRegistryImpl();
     context.registerService(VerifiableCredentialRegistry.class, credentialRegistry);
+    var modifiedOkHttpClient =
+        okHttpClient
+            .newBuilder()
+            .connectTimeout(40, TimeUnit.SECONDS)
+            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build();
     context.registerService(
         IdentityWalletApiService.class,
         new ManagedIdentityWalletApiServiceImpl(
             context.getMonitor(),
             logPrefix,
             walletConfig,
-            okHttpClient,
+            modifiedOkHttpClient,
             typeManager,
             credentialRegistry));
   }
