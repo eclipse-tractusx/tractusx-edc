@@ -1,5 +1,10 @@
-{{- $controlDefault := (printf "%s-%s" .Chart.Name "control") }}
-{{- $dataDefault := (printf "%s-%s" .Chart.Name "data") }}
+{{- define "control-default" -}}
+{{ printf "%s-%s" .Chart.Name "control" }}
+{{ end }}
+
+{{- define "data-default" -}}
+{{ printf "%s-%s" .Chart.Name "data" }}
+{{ end }}
 
 {{/*
 Expand the name of the chart.
@@ -19,14 +24,14 @@ Expand the name of the chart.
 Expand the name of the chart.
 */}}
 {{- define "txdc.controlplane.name" -}}
-{{- default $controlDefault .Values.controlplane.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default (include "data-default" . ) .Values.controlplane.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Expand the name of the chart.
 */}}
 {{- define "txdc.dataplane.name" -}}
-{{- default $dataDefault .Values.dataplane.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default (include "control-default" . ) .Values.dataplane.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -35,11 +40,13 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.controlplane.fullname" -}}
+{{- if .Values.test }}
+{{- print "hello" }}
+{{- end }}
 {{- if .Values.controlplane.fullnameOverride }}
 {{- .Values.controlplane.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $controlDefault := (printf "%s-%s" .Chart.Name "control") }}
-{{- $name := default $controlDefault .Values.controlplane.nameOverride }}
+{{- $name := default (include "control-default" . ) .Values.controlplane.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
