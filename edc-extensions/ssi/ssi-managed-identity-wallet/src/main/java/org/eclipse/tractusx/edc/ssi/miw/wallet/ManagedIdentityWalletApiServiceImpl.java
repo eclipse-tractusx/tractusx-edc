@@ -192,7 +192,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     var body = response.body();
     if (!response.isSuccessful() || body == null) {
       throw new InternalServerErrorException(
-              format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+          format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
     }
   }
 
