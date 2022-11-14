@@ -199,6 +199,10 @@ platoedcdataplane:
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
     EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://plato-edc-controlplane:8182/validation/token
 
+    EDC_AWS_ENDPOINT_OVERRIDE: http://minio:9000
+    AWS_SECRET_ACCESS_KEY: platoqwerty123
+    AWS_ACCESS_KEY_ID: platoqwerty123
+
     ###############
     ## KEY VAULT ##
     ###############
@@ -289,9 +293,9 @@ platoedccontrolplane:
     ################
 
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
-    EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control
-    EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData
-    EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control/transfer
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData,AmazonS3
+    EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy,AmazonS3
     EDC_DATAPLANE_SELECTOR_PLATOPLANE_PROPERTIES: >-
       { 
         "publicApiUrl": "http://plato-edc-dataplane:8185/api/public/"
@@ -448,6 +452,10 @@ sokratesedcdataplane:
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/data-plane/data-plane-api
     EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://sokrates-edc-controlplane:8182/validation/token
 
+    EDC_AWS_ENDPOINT_OVERRIDE: http://minio:9000
+    AWS_SECRET_ACCESS_KEY: platoqwerty123
+    AWS_ACCESS_KEY_ID: platoqwerty123
+
     ###############
     ## KEY VAULT ##
     ###############
@@ -509,7 +517,7 @@ sokratesedccontrolplane:
     EDC_DATASOURCE_ASSET_NAME: asset
     EDC_DATASOURCE_ASSET_USER: *psqlUsername
     EDC_DATASOURCE_ASSET_URL: &SokratesPsqlConStr "jdbc:postgresql://sokrates-postgresql:5432/edc"
-    
+
     # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
     EDC_DATASOURCE_CONTRACTDEFINITION_NAME: contractdefinition
     EDC_DATASOURCE_CONTRACTDEFINITION_USER: *psqlUsername
@@ -538,7 +546,7 @@ sokratesedccontrolplane:
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: http://sokrates-edc-dataplane:9999/api/dataplane/control
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
-    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >- 
+    EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES: >-
       { 
         "publicApiUrl": "http://sokrates-edc-dataplane:8185/api/public/"
       }
@@ -565,3 +573,36 @@ sokratesedccontrolplane:
     # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
     EDC_DATA_ENCRYPTION_KEYS_ALIAS: sokrates/data-encryption-aes-keys
     EDC_DATA_ENCRYPTION_ALGORITHM: AES
+
+minio:
+  fullnameOverride: minio
+  replicas: 2
+  drivesPerNode: 0
+  persistence:
+    size: 128Mi
+  resources:
+    requests:
+      memory: 128Mi
+  service:
+    type: NodePort
+    control:
+      port: 9000
+  users:
+    - accessKey: platoqwerty123
+      secretKey: platoqwerty123
+      policy: customBucketPolicy
+    - accessKey: sokratesqwerty123
+      secretKey: sokratesqwerty123
+      policy: customBucketPolicy
+  policies:
+    - name: customBucketPolicy
+      statements:
+        - resources:
+            - 'arn:aws:s3:::*'
+          actions:
+            - "s3:PutObject"
+            - "s3:ListBucket"
+            - "s3:CreateBucket"
+            - "s3:GetObject"
+            - "s3:DeleteObject"
+            - "s3:DeleteBucket"

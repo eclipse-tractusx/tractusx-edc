@@ -76,7 +76,7 @@ public class NegotiationSteps {
     Assertions.assertEquals(ContractNegotiationState.DECLINED, lastInitiatedNegotiation.getState());
   }
 
-  private boolean isNegotiationComplete(DataManagementAPI dataManagementAPI, String negotiationId)
+  static boolean isNegotiationComplete(DataManagementAPI dataManagementAPI, String negotiationId)
       throws IOException {
     var negotiation = dataManagementAPI.getNegotiation(negotiationId);
     return negotiation != null
