@@ -1,6 +1,6 @@
 image:
   name: "catena-x/managed-identity-wallets"
-  tag: "0.5.8"
+  tag: "2.1.1"
 app:
   version: "0.4.0"
 wallet:

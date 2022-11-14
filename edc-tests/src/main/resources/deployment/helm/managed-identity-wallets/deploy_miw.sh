@@ -2,7 +2,6 @@
 
 # Create namespace
 kubectl create namespace managed-identity-wallets
-sleep 3
 
 # Load miw image
 minikube image load catena-x/managed-identity-wallets:2.1.1

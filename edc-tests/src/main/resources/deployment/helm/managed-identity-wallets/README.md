@@ -14,12 +14,12 @@ Steps needed before starting the solution:
 Based on the [official documentation](https://ktor.io/docs/docker.html#getting-the-application-ready)
 below the steps to build and run this service via Docker.
 
-First step is to clone the reppsitory of the Managed-Identity-Wallet application and check out the following commit
+First step is to clone the repository of the Managed-Identity-Wallet application and check to branch `edc-timeout-fix`
 
 ```
 git clone https://github.com/catenax-ng/product-core-managed-identity-wallets.git
 
-git checkout 3440deaa36441ed5e2bd87f1bacc96ac309cd8b9
+git checkout edc-timeout-fix
 ``` 
 
 Then build it using Gradle:
@@ -47,14 +47,20 @@ kubectl delete namespace managed-identity-wallets
 
 ### Deploy the Release
 
-Run the deployement command to deploy the MIW release with its dependencies
-
-
+Run the deployment command to deploy the MIW release with its dependencies
 ````
 ./deploy_miw.sh
 ````
 
-Check the logs of the Acapy container in pod `catenax-managed-identity-wallets` (check the Help section). If it is not running correctly then delete the pod  with command `kubectl delete pod catenax-managed-identity-wallets-<replace-id> -n managed-identity-wallets` 
+Check the logs of the Acapy container in pod `catenax-managed-identity-wallets` with `kubectl logs -f <pod-name> -c catenax-acapy -n managed-identity-wallets`. If it is showing this error messagen `aries_cloudagent.core.error.ProfileError: Error creating wallet AcapyCatenaX : Error: Wallet storage error occurred Caused by: Plugin returned error` then delete the pod with command `kubectl delete pod catenax-managed-identity-wallets-<replace-id> -n managed-identity-wallets` and check the logs of the new pod.
+
+To check the logs of MIW and AcaPy open two terminals and run the commands after replacing the pod name
+
+```bash
+kubectl logs -f <pod-name> -c catenax-managed-identity-wallets -n managed-identity-wallets
+
+kubectl logs -f <pod-name> -c catenax-acapy -n managed-identity-wallets
+```
 
 To uninstall the deployment
 
@@ -71,23 +77,13 @@ minikube kubectl -- delete pvc -n managed-identity-wallets --all
 ```bash
 minikube kubectl -- delete pv -n managed-identity-wallets --all
 ```
-To delete namespace and everything included
 
+To delete namespace and everything included
 ```
 kubectl delete namespace managed-identity-wallets
 ```
 
 ## Help
-
-### Check the logs 
-To check the logs of MIW and AcaPy open two terminals and run the commands after replacing the pod name
-
-```bash
-kubectl logs -f <pod-name> -c catenax-managed-identity-wallets -n managed-identity-wallets
-
-kubectl logs -f <pod-name> -c catenax-acapy -n managed-identity-wallets
-```
-
 
 ### Accessing Keycloak Token
 This setup is purposed to be accessed via an EDC-Instance in the Cluster. So if you want to test it
@@ -123,7 +119,3 @@ is needed.
 ```bash
 kubectl -n managed-identity-wallets apply -f templates/loadbalancer.yaml
 ```
-
-kubectl logs -f catenax-managed-identity-wallets-5559bcd8d4-7ghvs -c catenax-managed-identity-wallets -n managed-identity-wallets
-
-kubectl logs -f catenax-managed-identity-wallets-5559bcd8d4-7ghvs -c catenax-acapy -n managed-identity-wallets
