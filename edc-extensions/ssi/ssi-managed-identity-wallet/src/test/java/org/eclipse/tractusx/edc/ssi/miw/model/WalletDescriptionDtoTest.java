@@ -16,27 +16,27 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.eclipse.tractusx.edc.ssi.core.did;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+package org.eclipse.tractusx.edc.ssi.miw.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class DidDocumentDtoTest {
+public class WalletDescriptionDtoTest {
+
+  private final String WD_File = "walletdescription.json";
 
   @Test
-  public void didDocumentVerifyMapping() throws IOException {
-    // given
-    String jsonDidDocumentFilePath = "diddocument.json";
-    String jsonDidDocumentString = "";
-    DidDocumentDto didDoc = null;
-    // when
-    var stream = getClass().getClassLoader().getResourceAsStream(jsonDidDocumentFilePath);
-    jsonDidDocumentString = new String(stream.readAllBytes());
-    didDoc = new ObjectMapper().readValue(jsonDidDocumentString, DidDocumentDto.class);
-    // then
-    assertNotNull(didDoc);
+  void testVerifiableCredentialMapper() {
+    try (var stream = getClass().getClassLoader().getResourceAsStream(WD_File)) {
+      String walletJson = new String(stream.readAllBytes());
+      WalletDescriptionDto wallet =
+          new ObjectMapper().readValue(walletJson, WalletDescriptionDto.class);
+      Assertions.assertNotNull(wallet.getBpn());
+    } catch (IOException e) {
+      throw new EdcException(e.getMessage());
+    }
   }
 }

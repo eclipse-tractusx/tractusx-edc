@@ -258,16 +258,16 @@ platoedccontrolplane:
     #########
     ## SSI ##
     #########
-    SSI_MIW_URL: "http://<ip-address>:8080"
-    SSI_MIW_DID: "did:sov:7sGQTm6SkoTA3fszdFCxxS"
+    SSI_MIW_URL: "http://catenax-managed-identity-wallets.managed-identity-wallets.svc.cluster.local:8080"
+    SSI_MIW_DID: "did:sov:LXN15K33DXGN7MDB9QvFb1"
     SSI_MIW_BPN: "BPNL000000000001"
-    SSI_MIW_ACCESSTOKEN_URL: "http://<ip-address>:8081/auth/realms/catenax/protocol/openid-connect/token"
+    SSI_MIW_ACCESSTOKEN_URL: "http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/token"
     SSI_MIW_KEYCLOAK_CLIENTID: "ManagedIdentityWallets"
     SSI_MIW_KEYCLOAK_CLIENTSECRET: "ManagedIdentityWallets-Secret"
     SSI_MIW_KEYCLOAK_GRANDTYPE: "client_credentials"
     SSI_MIW_KEYCLOAK_SCOPE: "openid"
     SSI_MIW_LOGPREFIX: "ManagedIdentityWalletLogger"
-    SSI_MIW_TRUSTED_PROVIDERS: "did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14"
+    SSI_MIW_TRUSTED_PROVIDERS: "did:sov:TrYVeQ23QWHSGm5n3vWQva;did:sov:TrYVeQ23QWHSGm5n3vWQva;did:sov:TrYVeQ23QWHSGm5n3vWQva"
 
     ################
     ## POSTGRESQL ##
@@ -518,16 +518,16 @@ sokratesedccontrolplane:
     #########
     ## SSI ##
     #########
-    SSI_MIW_URL: "http://<ip-address>:8080"
-    SSI_MIW_DID: "did:sov:TeiBcbgvNpsX1c8Vaj2D9J"
+    SSI_MIW_URL: "http://catenax-managed-identity-wallets.managed-identity-wallets.svc.cluster.local:8080"
+    SSI_MIW_DID: "did:sov:SFz2A3jZP5ciaAVdmEQJEP"
     SSI_MIW_BPN: "BPNL000000000002" 
-    SSI_MIW_ACCESSTOKEN_URL: "http://<ip-address>:8081/auth/realms/catenax/protocol/openid-connect/token"
+    SSI_MIW_ACCESSTOKEN_URL: "http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/token"
     SSI_MIW_KEYCLOAK_CLIENTID: "ManagedIdentityWallets"
     SSI_MIW_KEYCLOAK_CLIENTSECRET: "ManagedIdentityWallets-Secret"
     SSI_MIW_KEYCLOAK_GRANDTYPE: "client_credentials"
     SSI_MIW_KEYCLOAK_SCOPE: "openid"
     SSI_MIW_LOGPREFIX: "ManagedIdentityWalletLogger"
-    SSI_MIW_TRUSTED_PROVIDERS: "did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14"
+    SSI_MIW_TRUSTED_PROVIDERS: "did:sov:TrYVeQ23QWHSGm5n3vWQva;did:sov:TrYVeQ23QWHSGm5n3vWQva"
 
     ################
     ## POSTGRESQL ##

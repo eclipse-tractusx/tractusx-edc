@@ -688,7 +688,7 @@
           "protocolMapper": "oidc-hardcoded-claim-mapper",
           "consentRequired": false,
           "config": {
-            "claim.value": "BPNL000000001",
+            "claim.value": "BPNL000000000",
             "userinfo.token.claim": "false",
             "id.token.claim": "false",
             "access.token.claim": "true",

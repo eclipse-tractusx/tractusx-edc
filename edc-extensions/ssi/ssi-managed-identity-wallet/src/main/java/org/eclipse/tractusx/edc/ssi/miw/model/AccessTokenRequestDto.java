@@ -23,11 +23,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 public class AccessTokenRequestDto {
-  private String client_id;
 
-  private String client_secret;
+  private String clientId;
 
-  private String grant_type;
+  private String clientSecret;
+
+  private String grantType;
 
   private String scope;
 
@@ -35,16 +36,17 @@ public class AccessTokenRequestDto {
 
   @JsonProperty("client_id")
   public String getClientId() {
-    return client_id;
+    return clientId;
   }
 
-  public String getClient_secret() {
-    return client_secret;
+  @JsonProperty("client_secret")
+  public String getClientSecret() {
+    return clientSecret;
   }
 
   @JsonProperty("grant_type")
   public String getGrantType() {
-    return grant_type;
+    return grantType;
   }
 
   @JsonProperty("scope")
@@ -66,17 +68,17 @@ public class AccessTokenRequestDto {
     }
 
     public Builder clientID(String clientID) {
-      dto.client_id = clientID;
+      dto.clientId = clientID;
       return this;
     }
 
     public Builder clientSecret(String clientSecret) {
-      dto.client_secret = clientSecret;
+      dto.clientSecret = clientSecret;
       return this;
     }
 
     public Builder grandType(String grandType) {
-      dto.grant_type = grandType;
+      dto.grantType = grandType;
       return this;
     }
 

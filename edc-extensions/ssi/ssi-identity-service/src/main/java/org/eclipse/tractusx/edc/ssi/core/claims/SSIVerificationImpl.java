@@ -21,19 +21,15 @@ package org.eclipse.tractusx.edc.ssi.core.claims;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.spi.EdcException;
-import org.eclipse.tractusx.edc.ssi.core.did.SSIDidResolver;
-import org.eclipse.tractusx.edc.ssi.core.did.SSIDidResolverImpl;
 import org.eclipse.tractusx.edc.ssi.miw.model.VerifiablePresentationDto;
 import org.eclipse.tractusx.edc.ssi.spi.IdentityWalletApiService;
 
 /** Verification of the signature validation from a given Verifiable Presentation */
 public class SSIVerificationImpl implements SSIVerification {
 
-  private final SSIDidResolver didResolver;
   private final IdentityWalletApiService walletApiService;
 
   public SSIVerificationImpl(IdentityWalletApiService walletApiService) {
-    didResolver = new SSIDidResolverImpl(walletApiService);
     this.walletApiService = walletApiService;
   }
 

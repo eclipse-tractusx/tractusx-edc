@@ -169,7 +169,11 @@ spec:
           - name: ACAPY_ADMIN_PORT
             value: {{ .Values.acapy.adminPort | quote }}
           - name: DB_HOST
+            {{- if .Values.postgresql.enabled }}
+            value: {{ include "postgresContext" (list $ "postgresql.primary.fullname") }}
+            {{- else }}
             value: {{ .Values.acapy.databaseHost }}
+            {{- end }}
           - name: DB_ACCOUNT
             valueFrom:
               secretKeyRef:

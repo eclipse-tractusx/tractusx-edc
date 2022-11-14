@@ -1,16 +1,21 @@
 /*
- * Copyright (c) 2022 ZF Friedrichshafen AG
+ * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: Apache-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- * Contributors:
- *      ZF Friedrichshafen AG - Initial API and Implementation
+ * SPDX-License-Identifier: Apache-2.0
  */
-
 package org.eclipse.tractusx.edc.ssi.miw.wallet;
 
 import static org.mockito.Mockito.mock;
@@ -34,6 +39,8 @@ public class ManagedIdentityWalletApiServiceImplTest {
   private ManagedIdentityWalletApiServiceImpl walletApiService;
   Properties configProps;
   private MockWebServer mockWebServer;
+
+  private final String MIW_URL = "ssi.miw.url";
 
   private final String WALLET_DESCRIPTION_JSON = "walletdescription.json";
   private final String DID_DOCUMENT_JSON = "diddocument.json";
@@ -82,17 +89,24 @@ public class ManagedIdentityWalletApiServiceImplTest {
         new MockResponse()
             .addHeader("Content-Type", "application/json; charset=utf-8")
             .setResponseCode(500));
+
+    when(walletConfigMock.getWalletURL()).thenReturn(configProps.getProperty(MIW_URL));
+
     AccessTokenRequestDto tokenMock = mock(AccessTokenRequestDto.class);
     when(walletConfigMock.getAccessTokenURL())
         .thenReturn(configProps.getProperty(ACCESSTOKEN_URL_PROP));
+
     when(tokenMock.getGrantType()).thenReturn(configProps.getProperty(ACCESSTOKEN_GRANDTYPE_PROP));
     when(tokenMock.getClientId()).thenReturn(configProps.getProperty(ACCESSTOKEN_CLIENTID_PROP));
-    when(tokenMock.getClient_secret())
+    when(tokenMock.getClientSecret())
         .thenReturn(configProps.getProperty(ACCESSTOKEN_CLIENTSECRET_PROP));
     when(tokenMock.getScope()).thenReturn(configProps.getProperty(ACCESSTOKEN_SCOPE_PROP));
+
+    // when(checkMIWResponse)
     // when
-    // AccessTokenDescriptionDto result = walletApiService.getKeyCloakToken(tokenMock);
+    // AccessTokenDescriptionDto result = walletApiService.getAccessToken(tokenMock);
     // then
     // assertNotNull(result);
+    // walletApiService.fetchWalletDescription();
   }
 }

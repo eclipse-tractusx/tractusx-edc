@@ -25,13 +25,38 @@ package org.eclipse.tractusx.edc.ssi.spi;
  */
 public interface IdentityWalletApiService {
 
+  /**
+   * Issue a Verifiable Presentation for the given Verifiable Credential.
+   *
+   * @param verifiableCredentialJson the verifiable Credentials in Json format as String
+   * @return The Verifiable Presentation in Json format as String
+   */
   String issueVerifiablePresentation(String verifiableCredentialJson);
 
+  /**
+   * Resolve the DID Document for a given DID
+   *
+   * @param did the given DID as String
+   * @return the DID Document in Json format as String
+   */
   String resolveDid(String did);
 
+  /** Fetch the description of owned wallet and store its credentials in the Registry. */
   void fetchWalletDescription();
 
+  /**
+   * Validate the Verifiable Presentation and check if its credentials are signed by one of the
+   * trusted issuer.
+   *
+   * @param verifiablePresentationJson the verifiable presentation as String
+   * @return True if valid, otherwise false
+   */
   boolean validateVerifiablePresentation(String verifiablePresentationJson);
 
+  /**
+   * Get the BPN of Owner.
+   *
+   * @return the BPN of the owner as String
+   */
   String getOwnerBPN();
 }

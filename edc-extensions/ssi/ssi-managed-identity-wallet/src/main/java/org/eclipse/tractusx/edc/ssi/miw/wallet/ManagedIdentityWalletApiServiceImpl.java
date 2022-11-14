@@ -195,7 +195,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
         new FormBody.Builder()
             .add("grant_type", accessTokenRequest.getGrantType())
             .add("client_id", accessTokenRequest.getClientId())
-            .add("client_secret", accessTokenRequest.getClient_secret())
+            .add("client_secret", accessTokenRequest.getClientSecret())
             .add("scope", accessTokenRequest.getScope())
             .build();
     var request =

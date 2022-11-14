@@ -29,3 +29,22 @@ The actual service don't validate the Token, this will be implemented as a Valid
 
 ![Consumer Sequence](ssi-doc/uml/SSIExtensionClassDiagram.png)
 
+### Configurations
+
+| Key        | Description              | Example                                                                                         |
+|:-----------|:-------------------------|-------------------------------------------------------------------------------------------------|
+| ssi.miw.url   | Base Endpoint of the managed identity wallet  | `http://catenax-managed-identity-wallets.managed-identity-wallets.svc.cluster.local:8080`       |
+| ssi.miw.did   | DID of the EDC's Company  | `did:sov:LXN15K33DXGN7MDB9QvFb1`                                                                |
+| ssi.miw.bpn   |  BPN of the EDC's Company  | `BPNL000000000005`                                                                              |
+| ssi.miw.trusted.providers    |  An array of dids (sperated with `;`) that are trusted as issuer of Verifiable Credentials| `did:sov:6EweqDHuRFExv8D9VSoP14;did:sov:6EweqDHuRFExv8D9VSoP14`                                 
+| ssi.miw.accesstoken.url   |  the Url to get the access token from | `http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/token` |
+| ssi.miw.keycloak.clientid |  The client id in keycloak  | `ManagedIdentityWallets`                                                                        |
+| ssi.miw.keycloak.clientsecret |  The client secret in keycloak  | `ManagedIdentityWallets-Secret`                                                                 |
+| ssi.miw.keycloak.grandtype    |  The grandtype in keycloak  | `client_credentials`                                                                            |
+| ssi.miw.keycloak.scope    |  The scope in keycloak  | `openid`                                                                                        |
+| ssi.miw.logprefix |  BPN of the EDC's Company  | `ManagedIdentityWalletLogger`                                                                   |
+
+ 
+
+
+

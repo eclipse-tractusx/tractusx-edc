@@ -7,84 +7,89 @@ persistence of the Managed-Identity-Wallets (MIW).
 After each restart, the cluster will be started with a default Deployment, inclusively
 an Authority Wallet and two test Wallets.
 
-# 1. Starting of the Helm chart
+# Starting of the Helm chart
 Steps needed before starting the solution:
 
-## 1.1 Build the Docker Image for the Managed-Identity-Wallets
+## 1. Build the Docker Image for the Managed-Identity-Wallets
 Based on the [official documentation](https://ktor.io/docs/docker.html#getting-the-application-ready)
 below the steps to build and run this service via Docker.
 
-First step is to create the distribution of the Managed-Identity-Wallet application.
-Can be found in the Submodule 'product-core-managed-identity-wallets' and build it, in this example using Gradle:
+First step is to clone the reppsitory of the Managed-Identity-Wallet application and check out the following commit
+
+```
+git clone https://github.com/catenax-ng/product-core-managed-identity-wallets.git
+
+git checkout 3440deaa36441ed5e2bd87f1bacc96ac309cd8b9
+``` 
+
+Then build it using Gradle:
 ```
 ./gradlew installDist
 ```
 
 Next step is to build and tag the Docker image of the MIW:
 ```
-docker build -t catena-x/managed-identity-wallets:0.4.5 .
+docker build -t catena-x/managed-identity-wallets:2.1.1 .
 ```
 
-## 1.2 Setup the Kubernetes Secrets for the Helm deployment
-For the deployment the following secrets are needed. Note that the secrets are
-created for the namespace 'managed-identity-wallets' in this test setup.
+## 2. Setup the Kubernetes and Run Helm deployment
 
-### Secrets for MIW-application
-``` bash
-kubectl -n managed-identity-wallets create secret generic catenax-managed-identity-wallets-secrets \
-  --from-literal=cx-db-jdbc-url='jdbc:postgresql://managed-identity-wallets-local-postgresql:5432/postgres?user=postgres&password=cx-password' \
-  --from-literal=cx-auth-client-id='Custodian' \
-  --from-literal=bpdm-auth-client-id='testID' \
-  --from-literal=bpdm-auth-client-secret='testSecret' \
-  --from-literal=cx-auth-client-secret='Custodian-Secret'
-```
+### Create Namespace 
 
-### Secrets for Acapy
 ```bash
-kubectl -n managed-identity-wallets create secret generic catenax-managed-identity-wallets-acapy-secrets \
-  --from-literal=acapy-wallet-key='issuerKeySecret19' \
-  --from-literal=acapy-agent-wallet-seed='00000000000000000000000111111119' \
-  --from-literal=acapy-jwt-secret='jwtSecret19' \
-  --from-literal=acapy-db-account='postgres' \
-  --from-literal=acapy-db-password='cx-password' \
-  --from-literal=acapy-db-admin='postgres' \
-  --from-literal=acapy-db-admin-password='cx-password' \
-  --from-literal=acapy-admin-api-key='Hj23iQUsstG!dde'
+kubectl create namespace managed-identity-wallets
 ```
+If the namespace already exists then you can delete it with
 
-### Secrets for MIW-Postgres
 ```bash
-kubectl -n managed-identity-wallets create secret generic catenax-managed-identity-wallets-postgresql \
---from-literal=password='cx-password' \
---from-literal=postgres-password='cx-password' \
---from-literal=user='postgres'
+kubectl delete namespace managed-identity-wallets
 ```
 
-### Secrets for Acapy-Postgres
+### Deploy the Release
+
+Run the deployement command to deploy the MIW release with its dependencies
+
+
+````
+./deploy_miw.sh
+````
+
+Check the logs of the Acapy container in pod `catenax-managed-identity-wallets` (check the Help section). If it is not running correctly then delete the pod  with command `kubectl delete pod catenax-managed-identity-wallets-<replace-id> -n managed-identity-wallets` 
+
+To uninstall the deployment
+
 ```bash
-kubectl -n managed-identity-wallets create secret generic catenax-managed-identity-wallets-acapy-postgresql \
---from-literal=password='cx-password' \
---from-literal=postgres-password='cx-password' \
---from-literal=user='postgres'
+helm uninstall managed-identity-wallets-local --namespace managed-identity-wallets
 ```
 
-## 1.3 Apply Configmap for init SQLs
-The default state of the test container comes from SQL-Dumps which get executed
-on each deployment of the Chart. For the Mapping a configmap is used.
-```shell
-kubectl create configmap miw-map --from-file=templates/configmap.yaml
+To delete all presistent data
+
+```bash
+minikube kubectl -- delete pvc -n managed-identity-wallets --all
 ```
 
-## 1.4 Install/Upgrade for local testing
-The Helm file is now ready for deployment, execute the following Command
-and the System should be ready.
-```shell
-helm dependency build
-helm upgrade --install managed-identity-wallets-local --namespace managed-identity-wallets -f values.yaml -f values-local.yaml .
+```bash
+minikube kubectl -- delete pv -n managed-identity-wallets --all
+```
+To delete namespace and everything included
+
+```
+kubectl delete namespace managed-identity-wallets
 ```
 
-# 2 Help
-## Accessing Keycloak Token
+## Help
+
+### Check the logs 
+To check the logs of MIW and AcaPy open two terminals and run the commands after replacing the pod name
+
+```bash
+kubectl logs -f <pod-name> -c catenax-managed-identity-wallets -n managed-identity-wallets
+
+kubectl logs -f <pod-name> -c catenax-acapy -n managed-identity-wallets
+```
+
+
+### Accessing Keycloak Token
 This setup is purposed to be accessed via an EDC-Instance in the Cluster. So if you want to test it
 with Postman, you have to get the Keycloak Token via Container Shell, so that the issuer URL is the 
 same as in the Test-Container defined.
@@ -95,7 +100,13 @@ kubectl run --rm -it client --image alpine
 ```
 
 #### Within the pod:
-This command is for fetching the accessToken.
+
+Install cURL with 
+```
+apk --no-cache add curl
+```
+
+And run this command is for fetching the accessToken.
 ```
 curl --location --request POST 'http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -105,10 +116,14 @@ curl --location --request POST 'http://catenax-keycloak.managed-identity-wallets
 --data-urlencode 'scope=openid'
 ```
 
-## Expose via loadbalancer
+### Expose via loadbalancer
 For viewing the Database with a DB-Viewer tool or testing via Keycloak, a Loadbalancer
 is needed.
 
 ```bash
 kubectl -n managed-identity-wallets apply -f templates/loadbalancer.yaml
 ```
+
+kubectl logs -f catenax-managed-identity-wallets-5559bcd8d4-7ghvs -c catenax-managed-identity-wallets -n managed-identity-wallets
+
+kubectl logs -f catenax-managed-identity-wallets-5559bcd8d4-7ghvs -c catenax-acapy -n managed-identity-wallets

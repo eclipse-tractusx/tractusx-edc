@@ -1,13 +1,33 @@
 image:
-  name: "catenax-ng/product-core-managed-identity-wallets_service"
-  tag: "0.4.5"
+  name: "catena-x/managed-identity-wallets"
+  tag: "0.5.8"
+app:
+  version: "0.4.0"
+wallet:
+  baseWalletBpn: "BPNL000000000000"
 allowEmptyPassword: "\"yes\""
+auth:
+  #jwksUrl: "http://192.168.205.1:8081/auth/realms/catenax/protocol/openid-connect/certs"
+  jwksUrl: "http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/certs"
+  #issuerUrl: "http://192.168.205.1:8081/auth/realms/catenax"
+  issuerUrl: "http://catenax-keycloak.managed-identity-wallets/realms/catenax"
+  redirectUrl: "http://localhost:8080/callback"
+  realm: "catenax"
+  roleMappings: "create_wallets:add_wallets,view_wallets:view_wallets,update_wallets:update_wallets,delete_wallets:delete_wallets,view_wallet:view_wallet,update_wallet:update_wallet"
+  resourceId: "ManagedIdentityWallets"
+datapool:
+  url: "https://catenax-bpdm-dev.demo.catena-x.net"
+  authUrl: "https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
+  grantType: "client_credentials"
+  scope: "openid"
+  refreshHour: "23"
+revocation:
+  refreshHour: "3"
+  revocationServiceUrl: http://localhost:8086
 db:
   jdbcDriver: "org.postgresql.Driver"
 logging:
   exposed: "INFO"
-wallet:
-  baseWalletBpn: "BPNL000000000000"
 revocationService:
   imageName: "registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation"
   tag: "1.0.0-SNAPSHOT-quarkus-2.10.2.Final-java17"
@@ -19,17 +39,18 @@ revocationService:
 acapy:
   imageName: "bcgovimages/aries-cloudagent"
   tag: "py36-1.16-1_0.7.4"
-  ledgerUrl: "https://idu.cloudcompass.ca"
+  logLevel: "DEBUG"
   label: "CatenaXIssuer"
-  logLevel: "INFO"
+  ledgerUrl: "http://dev.greenlight.bcovrin.vonx.io"
+  endpointPort: "8000"
+  endpointUrl: "http://localhost:8000/"
+  adminPort: "11000"
+  adminUrl: "http://localhost:11000"
   networkIdentifier: "idunion:test"
   databaseHost: "managed-identity-wallets-local-postgresql"
-datapool:
-  grantType: "client_credentials"
-  scope: "openid"
-  refreshHour: "23"
-app:
-  version: "0.4.0"
+certificate:
+  host: "managed-identity-wallets.local.demo.catena-x.net"
+
 isLocal: true
 ##################################################################
 # PostgreSQL Helm Chart Values
@@ -57,19 +78,19 @@ postgresql:
           CREATE DATABASE bitnami_keycloak OWNER "postgres";
         01_acapy.sh: |
           echo "Start initializing Acapy"
-          PGPASSWORD=cx-password psql -U postgres -a -f /sql/01_acapyinit.sql
+          PGPASSWORD=cx_password psql -U postgres -a -f /sql/01_acapyinit.sql
         02_basewallet.sh: |
           echo "Start initializing BaseWallet"
-          PGPASSWORD=cx-password psql -U postgres -a -f /sql/02_basewallet.sql
+          PGPASSWORD=cx_password psql -U postgres -a -f /sql/02_basewallet.sql
         00_miw.sh: |
           echo "Start initializing MIW-DB"
-          PGPASSWORD=cx-password psql -U postgres -a -f /sql/03_miwdb.sql
+          PGPASSWORD=cx_password psql -U postgres -a -f /sql/03_miwdb.sql
         03_zfwallet.sh: |
           echo "Start initializing ZF-Wallet"
-          PGPASSWORD=cx-password psql -U postgres -a -f /sql/04_zfwallet.sql
-        04_zfwallet.sh: |
-          echo "Start initializing ZF-Wallet"
-          PGPASSWORD=cx-password psql -U postgres -a -f /sql/05_bmwwallet.sql
+          PGPASSWORD=cx_password psql -U postgres -a -f /sql/04_zfwallet.sql
+        04_bmwwallet.sh: |
+          echo "Start initializing BMW-Wallet"
+          PGPASSWORD=cx_password psql -U postgres -a -f /sql/05_bmwwallet.sql
 ##################################################################
 # Keycloak Helm Chart Values
 ##################################################################
@@ -88,7 +109,7 @@ cxkeycloak:
     port: 5432
     user: postgres
     database: bitnami_keycloak
-    password: "cx-password"
+    password: "cx_password"
   keycloakConfigCli:
     enabled: true
     configuration:
@@ -785,7 +806,7 @@ cxkeycloak:
                   "protocolMapper": "oidc-hardcoded-claim-mapper",
                   "consentRequired": false,
                   "config": {
-                    "claim.value": "BPNL000000001",
+                    "claim.value": "BPNL000000000",
                     "userinfo.token.claim": "false",
                     "id.token.claim": "false",
                     "access.token.claim": "true",

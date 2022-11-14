@@ -8,9 +8,13 @@ spec:
   ports:
     - port: 8080
       name: miwport
+    - port: 8000
+      name: acapy-endpoint
     - port: 11000
-      name: acapyport
+      name: acapy-api
     - port: 8086
       name: revocationport
+    - port: 8081
+      name: keycloak
   selector:
     app: catenax-managed-identity-wallets
