@@ -32,4 +32,7 @@ public final class Constants {
   public static final String DATABASE_URL = "DATABASE_URL";
   public static final String DATABASE_USER = "DATABASE_USER";
   public static final String DATABASE_PASSWORD = "DATABASE_PASSWORD";
+  public static final String EDC_AWS_ENDPOINT_OVERRIDE = "EDC_AWS_ENDPOINT_OVERRIDE";
+  public static final String AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID";
+  public static final String AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY";
 }

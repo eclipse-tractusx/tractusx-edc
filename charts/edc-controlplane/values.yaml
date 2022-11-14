@@ -31,6 +31,9 @@ nameOverride: ""
 # -- Overrides the releases full name
 fullnameOverride: ""
 
+# -- Additional custom Labels to add
+customLabels: {}
+
 serviceAccount:
   # -- Specifies whether a [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) should be created per release
   create: true

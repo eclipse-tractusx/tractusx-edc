@@ -105,6 +105,11 @@
             <groupId>org.eclipse.tractusx.edc.extensions</groupId>
             <artifactId>hashicorp-vault</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-transfer-client</artifactId>
+        </dependency>
     </dependencies>
 
 

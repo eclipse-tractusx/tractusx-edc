@@ -36,6 +36,7 @@ Common labels
 {{- define "edc-controlplane.labels" -}}
 helm.sh/chart: {{ include "edc-controlplane.chart" . }}
 {{ include "edc-controlplane.selectorLabels" . }}
+{{ include "edc-controlplane.customLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -48,6 +49,15 @@ Selector labels
 {{- define "edc-controlplane.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "edc-controlplane.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Custom labels
+*/}}
+{{- define "edc-controlplane.customLabels" -}}
+{{- with .Values.customLabels }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*

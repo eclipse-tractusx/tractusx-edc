@@ -38,6 +38,7 @@
         <org.apache.httpcomponents.httpclient.version>4.5.13</org.apache.httpcomponents.httpclient.version>
         <ch.qos.logback.version>1.4.4</ch.qos.logback.version>
         <org.slf4j.api.version>2.0.3</org.slf4j.api.version>
+        <software.amazon.awssdk>2.18.1</software.amazon.awssdk>
     </properties>
 
     <dependencies>
@@ -104,6 +105,12 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${software.amazon.awssdk}</version>
             <scope>test</scope>
         </dependency>
 

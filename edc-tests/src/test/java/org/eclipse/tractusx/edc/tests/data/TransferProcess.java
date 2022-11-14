@@ -1,5 +1,4 @@
-/*
- * Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
+/* Copyright (c) 2022 ZF Friedrichshafen AG
  * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -18,13 +17,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.tests.util;
+package org.eclipse.tractusx.edc.tests.data;
 
-import java.time.Duration;
+import lombok.NonNull;
+import lombok.Value;
 
-public class Timeouts {
-  private Timeouts() {}
-
-  public static final Duration CONTRACT_NEGOTIATION = Duration.ofSeconds(90);
-  public static final Duration FILE_TRANSFER = Duration.ofSeconds(90);
+@Value
+public class TransferProcess {
+  @NonNull String id;
+  @NonNull TransferProcessState state;
 }
