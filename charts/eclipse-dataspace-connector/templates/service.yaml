@@ -2,65 +2,65 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "control.fullname" . }}
+  name: {{ include "txdc.controlplane.fullname" . }}
   namespace: {{ .Release.Namespace | default "default" | quote }}
   labels:
-    {{- include "control.labels" . | nindent 4 }}
+    {{- include "txdc.controlplane.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.controlplane.service.type }}
   ports:
-    - port: {{ .Values.control.endpoints.default.port }}
+    - port: {{ .Values.controlplane.endpoints.default.port }}
       targetPort: default
       protocol: TCP
       name: default
-    - port: {{ .Values.control.endpoints.control.port }}
+    - port: {{ .Values.controlplane.endpoints.control.port }}
       targetPort: control
       protocol: TCP
       name: control
-    - port: {{ .Values.control.endpoints.data.port }}
+    - port: {{ .Values.controlplane.endpoints.data.port }}
       targetPort: data
       protocol: TCP
       name: data
-    - port: {{ .Values.control.endpoints.validation.port }}
+    - port: {{ .Values.controlplane.endpoints.validation.port }}
       targetPort: validation
       protocol: TCP
       name: validation
-    - port: {{ .Values.control.endpoints.ids.port }}
+    - port: {{ .Values.controlplane.endpoints.ids.port }}
       targetPort: ids
       protocol: TCP
       name: ids
-    - port: {{ .Values.control.endpoints.metrics.port }}
+    - port: {{ .Values.controlplane.endpoints.metrics.port }}
       targetPort: metrics
       protocol: TCP
       name: metrics
   selector:
-    {{- include "control.selectorLabels" . | nindent 4 }}
+    {{- include "txdc.controlplane.selectorLabels" . | nindent 4 }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "data.fullname" . }}
+  name: {{ include "txdc.dataplane.fullname" . }}
   namespace: {{ .Release.Namespace | default "default" | quote }}
   labels:
-    {{- include "data.labels" . | nindent 4 }}
+    {{- include "txdc.dataplane.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.dataplane.service.type }}
   ports:
-    - port: {{ .Values.data.endpoints.default.port }}
+    - port: {{ .Values.dataplane.endpoints.default.port }}
       targetPort: default
       protocol: TCP
       name: default
-    - port: {{ .Values.data.endpoints.control.port }}
+    - port: {{ .Values.dataplane.endpoints.control.port }}
       targetPort: control
       protocol: TCP
       name: control
-    - port: {{ .Values.data.endpoints.public.port }}
+    - port: {{ .Values.dataplane.endpoints.public.port }}
       targetPort: public
       protocol: TCP
       name: public
-    - port: {{ .Values.data.endpoints.metrics.port }}
+    - port: {{ .Values.dataplane.endpoints.metrics.port }}
       targetPort: metrics
       protocol: TCP
       name: metrics
   selector:
-    {{- include "data.selectorLabels" . | nindent 4 }}
+    {{- include "txdc.dataplane.selectorLabels" . | nindent 4 }}

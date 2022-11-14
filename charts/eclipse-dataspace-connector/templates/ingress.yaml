@@ -1,13 +1,13 @@
-{{- $controlFullName := include "txdc.control.fullname" . }}
-{{- $controlLabels := include "txdc.control.labels" . | nindent 4 }}
-{{- $controlEdcEndpoints := .Values.control.endpoints }}
-{{- $dataFullName := include "txdc.data.fullname" . }}
-{{- $dataLabels := include "txdc.data.labels" . | nindent 4 }}
-{{- $dataEdcEndpoints := .Values.data.endpoints }}
+{{- $controlFullName := include "txdc.controlplane.fullname" . }}
+{{- $controlLabels := include "txdc.controlplane.labels" . | nindent 4 }}
+{{- $controlEdcEndpoints := .Values.controlplane.endpoints }}
+{{- $dataFullName := include "txdc.dataplane.fullname" . }}
+{{- $dataLabels := include "txdc.dataplane.labels" . | nindent 4 }}
+{{- $dataEdcEndpoints := .Values.dataplane.endpoints }}
 {{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
 {{- $namespace := .Release.Namespace }}
 
-{{- range .Values.control.ingresses }}
+{{- range .Values.controlplane.ingresses }}
 {{- if and .enabled .endpoints }}
 {{- $controlIngressName := printf "%s-%s" $controlFullName .hostname }}
 ---
@@ -81,7 +81,7 @@ spec:
 {{- end }}{{- /* end: if .enabled */}}
 {{- end }}{{- /* end: range .Values.ingresses */}}
 
-{{- range .Values.data.ingresses }}
+{{- range .Values.dataplane.ingresses }}
 {{- if and .enabled .endpoints }}
 {{- $dataIngressName := printf "%s-%s" $dataFullName .hostname }}
 ---

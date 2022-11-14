@@ -4,7 +4,9 @@
 
 imagePullSecrets: []
 
-control:
+customLabels: {}
+
+controlplane:
   nameOverride: ""
   fullnameOverride: ""
   image:
@@ -31,7 +33,7 @@ control:
     initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 6-``
+    failureThreshold: 6
     successThreshold: 1
   readinessProbe:
     # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
@@ -77,7 +79,7 @@ control:
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
-    - enabled: true
+    - enabled: false
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.local"
       # -- Additional ingress annotations to add
@@ -147,7 +149,7 @@ control:
   tolerations: []
   affinity: {}
 
-data:
+dataplane:
   nameOverride: ""
   fullnameOverride: ""
   image:
@@ -191,7 +193,7 @@ data:
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
-    - enabled: true
+    - enabled: false
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-data.local"
       # -- Additional ingress annotations to add
@@ -239,6 +241,7 @@ data:
 
 postgresql:
   enabled: false
+  install: false
   host: ""
   port: 5432
   database: "edc"
