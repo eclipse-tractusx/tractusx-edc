@@ -24,7 +24,7 @@ import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class WalletDescriptionDtoTest {
+class WalletDescriptionDtoTest {
 
   private final String WD_File = "walletdescription.json";
 

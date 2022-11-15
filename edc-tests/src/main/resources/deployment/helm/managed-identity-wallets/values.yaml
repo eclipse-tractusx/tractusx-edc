@@ -7,25 +7,28 @@ wallet:
   baseWalletBpn: "BPNL000000000000"
 allowEmptyPassword: "\"yes\""
 auth:
-  #jwksUrl: "http://192.168.205.1:8081/auth/realms/catenax/protocol/openid-connect/certs"
   jwksUrl: "http://catenax-keycloak.managed-identity-wallets/realms/catenax/protocol/openid-connect/certs"
-  #issuerUrl: "http://192.168.205.1:8081/auth/realms/catenax"
   issuerUrl: "http://catenax-keycloak.managed-identity-wallets/realms/catenax"
   redirectUrl: "http://localhost:8080/callback"
   realm: "catenax"
   roleMappings: "create_wallets:add_wallets,view_wallets:view_wallets,update_wallets:update_wallets,delete_wallets:delete_wallets,view_wallet:view_wallet,update_wallet:update_wallet"
   resourceId: "ManagedIdentityWallets"
+  clientId: "Custodian"
+  clientSecret: "Custodian-Secret"
 datapool:
   url: "https://catenax-bpdm-dev.demo.catena-x.net"
   authUrl: "https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
   grantType: "client_credentials"
   scope: "openid"
   refreshHour: "23"
+  authClientId: "testID"
+  authClientSecret: "testSecret"
 revocation:
   refreshHour: "3"
   revocationServiceUrl: http://localhost:8086
 db:
   jdbcDriver: "org.postgresql.Driver"
+  jdbcUrl: "jdbc:postgresql://managed-identity-wallets-local-postgresql:5432/postgres?user=postgres&password=cx_password"
 logging:
   exposed: "INFO"
 revocationService:
@@ -48,6 +51,15 @@ acapy:
   adminUrl: "http://localhost:11000"
   networkIdentifier: "idunion:test"
   databaseHost: "managed-identity-wallets-local-postgresql"
+  walletKey: "issuerKeySecret19"
+  agentWalletSeed: "70010550038305040070100111510019"
+  jwtSecret: "jwtSecret19"
+  dbAccount: "postgres"
+  dbPassword: "cx_password"
+  dbAdmin: "postgres"
+  dbAdminPassword: "cx_password"
+  adminApiKey: "Hj23iQUsstG!dde"
+
 certificate:
   host: "managed-identity-wallets.local.demo.catena-x.net"
 
@@ -59,7 +71,9 @@ postgresql:
   enabled: true
   debug: true
   auth:
-    existingSecret: "catenax-managed-identity-wallets-postgresql"
+    postgresPassword: "cx_password"
+    password: "cx_password"
+    username: "postgres"
   primary:
     extraVolumeMounts:
       - name: sql-commands

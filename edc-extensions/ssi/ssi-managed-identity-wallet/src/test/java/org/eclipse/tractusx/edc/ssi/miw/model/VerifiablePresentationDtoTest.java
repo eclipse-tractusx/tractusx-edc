@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-public class VerifiablePresentationDtoTest {
+class VerifiablePresentationDtoTest {
 
   @Test
   public void verifiablePresentationVerifyMapping() {

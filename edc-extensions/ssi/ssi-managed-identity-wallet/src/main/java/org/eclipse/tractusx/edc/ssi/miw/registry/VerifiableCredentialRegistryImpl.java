@@ -41,7 +41,7 @@ public final class VerifiableCredentialRegistryImpl implements VerifiableCredent
 
   @Override
   public void addVerifiableCredential(VerifiableCredentialDto vc) {
-    verifiableCredentialMap.put(vc.getType().get(0).toString(), vc);
+    verifiableCredentialMap.put(vc.getType().get(0), vc);
   }
 
   @Override

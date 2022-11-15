@@ -20,7 +20,7 @@ package org.eclipse.tractusx.edc.ssi.miw.wallet;
 
 import org.junit.jupiter.api.Test;
 
-public class ManagedIdentityWalletConfigTest {
+class ManagedIdentityWalletConfigTest {
 
   @Test
   public void verifyWalletConfigBuilder() {}

@@ -31,7 +31,7 @@ import org.eclipse.tractusx.edc.ssi.miw.wallet.ManagedIdentityWalletApiServiceIm
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SSIVerificationImplTest {
+class SSIVerificationImplTest {
 
   private final String DID_DOCUMENT_FILE = "diddocument.json";
   private final String VERIFIABLE_PRESENTATION_FILE = "verifiablepresentation.json";

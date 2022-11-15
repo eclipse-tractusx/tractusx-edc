@@ -31,10 +31,7 @@ spec:
             - name: ALLOW_EMPTY_PASSWORD
               value: {{ .Values.allowEmptyPassword | default "no" }}
             - name: CX_DB_JDBC_URL
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-secrets
-                  key: cx-db-jdbc-url
+              value: {{ .Values.db.jdbcUrl }}
             - name: CX_DB_JDBC_DRIVER
               value: {{ .Values.db.jdbcDriver }}
             - name: CX_AUTH_JWKS_URL
@@ -50,29 +47,17 @@ spec:
             - name: CX_AUTH_RESOURCE_ID
               value: {{ .Values.auth.resourceId }}
             - name: CX_AUTH_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-secrets
-                  key: cx-auth-client-id
+              value: {{ .Values.auth.clientId }}
             - name: CX_AUTH_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-secrets
-                  key: cx-auth-client-secret
+              value: {{ .Values.auth.clientSecret }}
             - name: CX_AUTH_REDIRECT_URL
               value: {{ .Values.auth.redirectUrl }}
             - name: BPDM_DATAPOOL_URL
               value: {{ .Values.datapool.url }}
             - name: BPDM_AUTH_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-secrets
-                  key: bpdm-auth-client-id
+              value:  {{ .Values.datapool.authClientId }}
             - name: BPDM_AUTH_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-secrets
-                  key: bpdm-auth-client-secret
+              value: {{ .Values.datapool.authClientSecret }}
             - name: BPDM_AUTH_GRANT_TYPE
               value: {{ .Values.datapool.grantType }}
             - name: BPDM_AUTH_SCOPE
@@ -86,10 +71,7 @@ spec:
             - name: ACAPY_NETWORK_IDENTIFIER
               value: {{ .Values.acapy.networkIdentifier }}
             - name: ACAPY_ADMIN_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-admin-api-key
+              value: {{ .Values.acapy.adminApiKey }}
             - name: CX_BPN
               value: {{ .Values.wallet.baseWalletBpn }}
             - name: REVOCATION_URL
@@ -114,10 +96,7 @@ spec:
           - name: QUARKUS_HTTP_ACCESS_LOG_ENABLED
             value: {{ .Values.revocationService.httpAccessLog | quote | default "false" }}
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-secrets
-                key: cx-db-jdbc-url
+            value: {{ .Values.db.jdbcUrl }}
           - name: REVOCATION_BASE_URL
             value: {{ .Values.revocationService.baseUrlForCredentialList }}
           - name: REVOCATION_MIN_ISSUE_INTERVAL
@@ -137,29 +116,17 @@ spec:
           image: {{ .Values.acapy.imageName }}:{{ .Values.acapy.tag }}
           env:
           - name: WALLET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-wallet-key
+            value: {{ .Values.acapy.walletKey }}
           - name: AGENT_WALLET_SEED
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-agent-wallet-seed
+            value: {{ .Values.acapy.agentWalletSeed | quote }}
           - name: LEDGER_URL
             value: {{ .Values.acapy.ledgerUrl }}
           - name: LABEL
             value: {{ .Values.acapy.label }}
           - name: JWT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-jwt-secret
+            value: {{ .Values.acapy.jwtSecret }}
           - name: ACAPY_ADMIN_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-admin-api-key
+            value: {{ .Values.acapy.adminApiKey }}
           - name: LOG_LEVEL
             value: {{ .Values.acapy.logLevel }}
           - name: ACAPY_ENDPOINT_PORT
@@ -169,31 +136,15 @@ spec:
           - name: ACAPY_ADMIN_PORT
             value: {{ .Values.acapy.adminPort | quote }}
           - name: DB_HOST
-            {{- if .Values.postgresql.enabled }}
-            value: {{ include "postgresContext" (list $ "postgresql.primary.fullname") }}
-            {{- else }}
             value: {{ .Values.acapy.databaseHost }}
-            {{- end }}
           - name: DB_ACCOUNT
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-db-account
+            value: {{ .Values.acapy.dbAccount }}
           - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-db-password
+            value: {{ .Values.acapy.dbPassword }}
           - name: DB_ADMIN_USER
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-db-admin
+            value: {{ .Values.acapy.dbAdmin }}
           - name: DB_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: catenax-managed-identity-wallets-acapy-secrets
-                key: acapy-db-admin-password
+            value: {{ .Values.acapy.dbAdminPassword }}
           resources:
             requests:
               cpu: 100m

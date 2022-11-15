@@ -38,11 +38,7 @@ public class SSIIdentityServiceExtension implements ServiceExtension {
     return "SSI Identity Service";
   }
 
-  @Inject public static IdentityWalletApiService walletApiService;
-
-  public SSIVerifiablePresentation verifiablePresentation;
-
-  public SSIVerifiableCredentials verifiableCredentials;
+  @Inject public IdentityWalletApiService walletApiService;
 
   @Inject public VerifiableCredentialRegistry verifiableCredentialRegistry;
 
@@ -50,9 +46,10 @@ public class SSIIdentityServiceExtension implements ServiceExtension {
   public void initialize(ServiceExtensionContext context) {
     context.getMonitor().debug("Starting initializing of SSI Identity Service");
 
-    verifiableCredentials =
+    SSIVerifiableCredentials verifiableCredentials =
         new SSIVerifiableCredentialsImpl(walletApiService, verifiableCredentialRegistry);
-    verifiablePresentation = new SSIVerifiablePresentationImpl(walletApiService);
+    SSIVerifiablePresentation verifiablePresentation =
+        new SSIVerifiablePresentationImpl(walletApiService);
     context.registerService(VerifiableCredentialRegistry.class, verifiableCredentialRegistry);
     context.registerService(SSIVerifiableCredentials.class, verifiableCredentials);
     context.registerService(SSIVerifiablePresentation.class, verifiablePresentation);

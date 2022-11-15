@@ -24,7 +24,7 @@ import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class VerifiableCredentialDtoTest {
+class VerifiableCredentialDtoTest {
 
   private final String VC_File = "verifiablecredential.json";
 

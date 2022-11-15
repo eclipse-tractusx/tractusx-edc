@@ -21,23 +21,22 @@ package org.eclipse.tractusx.edc.ssi.miw.wallet;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 /** Config Class for the endpoints and user management of the Managed Identity Wallet */
 @JsonDeserialize(builder = ManagedIdentityWalletConfig.Builder.class)
 public class ManagedIdentityWalletConfig {
 
-  @NotNull private String walletURL;
-  @NotNull private String walletDID;
-  @NotNull private String keycloakClientID;
-  @NotNull private String keycloakClientSecret;
-  @NotNull private String keycloakGrandType;
-  @NotNull private String keycloakScope;
-  @NotNull private String accessTokenURL;
-  @NotNull private String ownerBPN;
-  @NotNull private List<String> didsOfTrustedProviders;
+  private String walletURL;
+  private String walletDID;
+  private String keycloakClientID;
+  private String keycloakClientSecret;
+  private String keycloakGrandType;
+  private String keycloakScope;
+  private String accessTokenURL;
+  private String ownerBPN;
+  private List<String> didsOfTrustedProviders;
 
-  @NotNull private String logPrefix;
+  private String logPrefix;
 
   private ManagedIdentityWalletConfig() {}
 

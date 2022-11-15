@@ -31,7 +31,7 @@ import org.eclipse.tractusx.edc.ssi.spi.IdentityWalletApiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SSIVerifiablePresentationImplTest {
+class SSIVerifiablePresentationImplTest {
 
   private final String VC_FILE = "verifiablecredential.json";
   private final String VP_FILE = "verifiablepresentation.json";

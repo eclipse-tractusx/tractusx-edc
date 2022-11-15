@@ -61,8 +61,6 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
   private static final String OWNER_BPN = "ssi.miw.bpn";
   private static final String DIDS_OF_TRUSTED_PROVIDERS = "ssi.miw.trusted.providers";
 
-  private ManagedIdentityWalletConfig walletConfig;
-
   @Override
   public void initialize(ServiceExtensionContext context) {
     var logPrefix = context.getSetting(LOG_PREFIX_SETTING, "ManagedIdentityWalletLogger");
@@ -70,7 +68,7 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
 
     ManagedIdentityWalletConfig.Builder walletBuilderConfig =
         ManagedIdentityWalletConfig.Builder.newInstance();
-    this.walletConfig =
+    ManagedIdentityWalletConfig walletConfig =
         walletBuilderConfig
             .walletURL(context.getConfig().getString(WALLET_URL))
             .walletDID(context.getConfig().getString(WALLET_DID))

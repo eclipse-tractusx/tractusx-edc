@@ -56,7 +56,6 @@ public class SSIClaims {
       throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     String tokenVP = mapper.writeValueAsString(vp);
-    TokenRepresentation token = TokenRepresentation.Builder.newInstance().token(tokenVP).build();
-    return token;
+    return TokenRepresentation.Builder.newInstance().token(tokenVP).build();
   }
 }

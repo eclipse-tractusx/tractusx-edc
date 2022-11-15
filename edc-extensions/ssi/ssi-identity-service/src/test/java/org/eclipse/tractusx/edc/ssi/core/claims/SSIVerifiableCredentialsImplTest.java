@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
 
-public class SSIVerifiableCredentialsImplTest {
+class SSIVerifiableCredentialsImplTest {
 
   private final String VC_FILE = "verifiablecredential.json";
 

@@ -34,17 +34,6 @@ docker build -t catena-x/managed-identity-wallets:2.1.1 .
 
 ## 2. Setup the Kubernetes and Run Helm deployment
 
-### Create Namespace 
-
-```bash
-kubectl create namespace managed-identity-wallets
-```
-If the namespace already exists then you can delete it with
-
-```bash
-kubectl delete namespace managed-identity-wallets
-```
-
 ### Deploy the Release
 
 Run the deployment command to deploy the MIW release with its dependencies
@@ -57,9 +46,9 @@ Check the logs of the Acapy container in pod `catenax-managed-identity-wallets` 
 To check the logs of MIW and AcaPy open two terminals and run the commands after replacing the pod name
 
 ```bash
-kubectl logs -f <pod-name> -c catenax-managed-identity-wallets -n managed-identity-wallets
+kubectl logs -f  -n managed-identity-wallets <pod-name> -c catenax-managed-identity-wallets
 
-kubectl logs -f <pod-name> -c catenax-acapy -n managed-identity-wallets
+kubectl logs -f  -n managed-identity-wallets <pod-name> -c catenax-acapy
 ```
 
 To uninstall the deployment
@@ -78,7 +67,7 @@ minikube kubectl -- delete pvc -n managed-identity-wallets --all
 minikube kubectl -- delete pv -n managed-identity-wallets --all
 ```
 
-To delete namespace and everything included
+To delete namespace and everything included in it
 ```
 kubectl delete namespace managed-identity-wallets
 ```

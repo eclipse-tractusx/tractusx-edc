@@ -36,7 +36,7 @@ import org.eclipse.tractusx.edc.ssi.miw.wallet.ManagedIdentityWalletApiServiceIm
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SSIIdentityServiceExtensionTest {
+class SSIIdentityServiceExtensionTest {
 
   private final String VP_FILE = "verifiablepresentation.json";
   private VerifiablePresentationDto vpDto = null;

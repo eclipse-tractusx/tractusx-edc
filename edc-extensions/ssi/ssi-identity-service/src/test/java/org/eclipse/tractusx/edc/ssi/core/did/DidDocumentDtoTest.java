@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
-public class DidDocumentDtoTest {
+class DidDocumentDtoTest {
 
   @Test
   public void didDocumentVerifyMapping() throws IOException {

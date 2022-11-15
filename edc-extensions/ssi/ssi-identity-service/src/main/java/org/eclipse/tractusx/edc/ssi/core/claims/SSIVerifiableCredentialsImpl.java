@@ -41,8 +41,7 @@ public class SSIVerifiableCredentialsImpl implements SSIVerifiableCredentials {
     walletApiService.fetchWalletDescription();
 
     try {
-      VerifiableCredentialDto vc = verifiableCredentialRegistry.getVerifiableCredential(scope);
-      return vc;
+      return verifiableCredentialRegistry.getVerifiableCredential(scope);
     } catch (Exception e) {
       throw new EdcException(e.getMessage());
     }
