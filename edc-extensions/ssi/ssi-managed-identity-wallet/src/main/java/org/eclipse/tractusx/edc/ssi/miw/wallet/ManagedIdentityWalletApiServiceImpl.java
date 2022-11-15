@@ -189,11 +189,10 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   }
 
   private void checkMIWResponse(Response response) throws IOException {
-    var body = response.body();
+    ResponseBody body = response.body();
     if (!response.isSuccessful() || body == null) {
       throw new InternalServerErrorException(
-          format(
-              "MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+          format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
     }
   }
 
