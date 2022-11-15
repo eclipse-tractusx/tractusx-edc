@@ -109,7 +109,7 @@ spec:
             - name: EDC_IDS_ENDPOINT
               value: {{ include "txdc.controlplane.url.ids" . }}
             - name: EDC_IDS_ENDPOINT_AUDIENCE
-              value: {{ printf "https://%s%s" (include "control.host" . ) "/api/v1/ids/data" }}
+              value: {{ printf "%s%s" (include "txdc.controlplane.url.ids" . ) "/data" }}
             - name: EDC_IDS_ID
               value: {{ .Values.controlplane.internationalDataSpaces.id }}
             - name: EDC_IDS_DESCRIPTION
@@ -185,17 +185,17 @@ spec:
 
             # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL
-              value: {{ printf "http://%s%s" (include "data.host.control" . ) .Values.dataplane.endpoints.control.path }}
+              value: {{ include "txdc.dataplane.url.control" . }}
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES
               value: HttpData
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES
               value: HttpProxy
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES
-              value: {{ printf "{ \"publicApiUrl\": \"https://%s\" }" (printf "%s%s" (include "data.host.public" . ) .Values.dataplane.endpoints.public.path) }}
+              value: {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
             - name: EDC_TRANSFER_PROXY_ENDPOINT
-              value: {{ printf "https://%s%s" (include "data.host.public" . ) .Values.dataplane.endpoints.public.path }}
+              value: {{ include "txdc.dataplane.url.public" . }}
             - name: EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
             - name: EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS

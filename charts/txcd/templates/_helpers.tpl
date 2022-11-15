@@ -40,9 +40,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.controlplane.fullname" -}}
-{{- if .Values.test.foo }}
-{{- print "hello" }}
-{{- end }}
 {{- if .Values.controlplane.fullnameOverride }}
 {{- .Values.controlplane.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -161,12 +158,12 @@ Control IDS URL
 {{- with (index .Values.controlplane.ingresses 0) }}
 {{- if .enabled }} # if ingress enabled
 {{- if .tls.enabled }} # if TLS enabled
-{{ printf "https://%s/%s" .hostname .Values.controlplane.endpoints.ids.path }}
+{{ printf "https://%s/%s" .hostname $.Values.controlplane.endpoints.ids.path }}
 {{- else }} # else when TLS not enabled
-{{ printf "http://%s/%s" .hostname .Values.controlplane.endpoints.ids.path }}
+{{ printf "http://%s/%s" .hostname $.Values.controlplane.endpoints.ids.path }}
 {{- end }} # end if tls
 {{- else }} # else when ingress not enabled
-{{ printf "http://%s:%s/%s" (include "txdc.controlplane.fullname" . ) .Values.controlplane.endpoints.ids.port .Values.controlplane.endpoints.ids.path }}
+{{ printf "http://%s:%s/%s" ( include "txdc.controlplane.fullname" $ ) $.Values.controlplane.endpoints.ids.port $.Values.controlplane.endpoints.ids.path }}
 {{- end }} # end if ingress
 {{- end }} # end with ingress
 {{- end }}
@@ -185,12 +182,12 @@ Data Public URL
 {{- with (index  .Values.dataplane.ingresses 0) }}
 {{- if .enabled }} # if ingress enabled
 {{- if .tls.enabled }} # if TLS enabled
-{{ printf "https://%s/%s" .hostname .Values.dataplane.endpoints.public.path }}
+{{ printf "https://%s/%s" .hostname $.Values.dataplane.endpoints.public.path }}
 {{- else }} # else when TLS not enabled
-{{ printf "http://%s/%s" .hostname .Values.dataplane.endpoints.public.path }}
+{{ printf "http://%s/%s" .hostname $.Values.dataplane.endpoints.public.path }}
 {{- end }} # end if tls
 {{- else }} # else when ingress not enabled
-{{ printf "http://%s:%s/%s" (include "txdc.dataplane.fullname" . ) .Values.dataplane.endpoints.public.port .Values.dataplane.endpoints.public.path }}
+{{ printf "http://%s:%s/%s" (include "txdc.dataplane.fullname" $ ) $.Values.dataplane.endpoints.public.port $.Values.dataplane.endpoints.public.path }}
 {{- end }} # end if ingress
 {{- end }} # end with ingress
 {{- end }}

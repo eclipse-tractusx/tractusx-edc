@@ -6,13 +6,6 @@ imagePullSecrets: [ ]
 
 customLabels: { }
 
-test:
-  foo: "bar"
-
-control:
-  foo: "bar"
-  nameOverride: ""
-
 controlplane:
   nameOverride: ""
   fullnameOverride: ""
