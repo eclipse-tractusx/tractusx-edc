@@ -1,61 +1,152 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "test.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
-  {{- end }}
-{{- end }}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- $controlFullName := include "txdc.controlplane.fullname" . }}
+{{- $controlLabels := include "txdc.controlplane.labels" . | nindent 4 }}
+{{- $controlEdcEndpoints := .Values.controlplane.endpoints }}
+{{- $dataFullName := include "txdc.dataplane.fullname" . }}
+{{- $dataLabels := include "txdc.dataplane.labels" . | nindent 4 }}
+{{- $dataEdcEndpoints := .Values.dataplane.endpoints }}
+{{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
+{{- $namespace := .Release.Namespace }}
+
+{{- range .Values.controlplane.ingresses }}
+{{- if and .enabled .endpoints }}
+{{- $controlIngressName := printf "%s-%s" $controlFullName .hostname }}
+---
+{{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- else if semverCompare ">=1.14-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
+{{- else }}
 apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $controlIngressName }}
+  namespace: {{ $namespace | default "default" | quote }}
   labels:
-    {{- include "test.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+    {{- $controlLabels | nindent 2 }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.className }}
-  {{- end }}
-  {{- if .Values.ingress.tls }}
-  tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+    {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
+    {{- if not (hasKey .annotations "kubernetes.io/ingress.class") }}
+    {{- $_ := set .annotations "kubernetes.io/ingress.class" .className}}
     {{- end }}
+    {{- end }}
+    {{- if .certManager }}
+    {{- if .certManager.issuer }}
+    {{- $_ := set .annotations "cert-manager.io/issuer" .certManager.issuer}}
+    {{- end }}
+    {{- if .certManager.clusterIssuer }}
+    {{- $_ := set .annotations "cert-manager.io/cluster-issuer" .certManager.clusterIssuer}}
+    {{- end }}
+    {{- end }}
+    {{- with .annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and .className (semverCompare ">=1.18-0" $gitVersion) }}
+  ingressClassName: {{ .className }}
+  {{- end }}
+  {{- if .hostname }}
+  {{- if .tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .hostname }}
+      {{- if .tls.secretName }}
+      secretName: {{ .tls.secretName }}
+      {{- else }}
+      secretName: {{ $controlIngressName }}-tls
+      {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .hostname }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
-            {{- end }}
+          {{- $ingressEdcEndpoints := .endpoints }}
+          {{- range  $name, $mapping := $controlEdcEndpoints }}
+          {{- if (has $name $ingressEdcEndpoints) }}
+          - path: {{ $mapping.path }}
+            pathType: Prefix
             backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              {{- if semverCompare ">=1.19-0" $gitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $controlFullName }}
                 port:
-                  number: {{ $svcPort }}
+                  number: {{ $mapping.port }}
               {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
               {{- end }}
-          {{- end }}
-    {{- end }}
+        {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}{{- /* end: if .enabled */}}
+{{- end }}{{- /* end: range .Values.ingresses */}}
+
+{{- range .Values.dataplane.ingresses }}
+{{- if and .enabled .endpoints }}
+{{- $dataIngressName := printf "%s-%s" $dataFullName .hostname }}
+---
+{{- if semverCompare ">=1.19-0" $gitVersion }}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" $gitVersion }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else }}
+apiVersion: extensions/v1beta1
 {{- end }}
+kind: Ingress
+metadata:
+  name: {{ $dataIngressName }}
+  namespace: {{ $namespace | default "default" | quote }}
+  labels:
+    {{- $dataLabels | nindent 2 }}
+  annotations:
+    {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
+    {{- if not (hasKey .annotations "kubernetes.io/ingress.class") }}
+    {{- $_ := set .annotations "kubernetes.io/ingress.class" .className}}
+    {{- end }}
+    {{- end }}
+    {{- if .certManager }}
+    {{- if .certManager.issuer }}
+    {{- $_ := set .annotations "cert-manager.io/issuer" .certManager.issuer}}
+    {{- end }}
+    {{- if .certManager.clusterIssuer }}
+    {{- $_ := set .annotations "cert-manager.io/cluster-issuer" .certManager.clusterIssuer}}
+    {{- end }}
+    {{- end }}
+    {{- with .annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and .className (semverCompare ">=1.18-0" $gitVersion) }}
+  ingressClassName: {{ .className }}
+  {{- end }}
+  {{- if .hostname }}
+  {{- if .tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .hostname }}
+      {{- if .tls.secretName }}
+      secretName: {{ .tls.secretName }}
+      {{- else }}
+      secretName: {{ $dataIngressName }}-tls
+      {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .hostname }}
+      http:
+        paths:
+          {{- $ingressEdcEndpoints := .endpoints }}
+          {{- range  $name, $mapping := $dataEdcEndpoints }}
+          {{- if (has $name $ingressEdcEndpoints) }}
+          - path: {{ $mapping.path }}
+            pathType: Prefix
+            backend:
+              {{- if semverCompare ">=1.19-0" $gitVersion }}
+              service:
+                name: {{ $dataFullName }}
+                port:
+                  number: {{ $mapping.port }}
+              {{- else }}
+              {{- end }}
+        {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}{{- /* end: if .enabled */}}
+{{- end }}{{- /* end: range .Values.ingresses */}}

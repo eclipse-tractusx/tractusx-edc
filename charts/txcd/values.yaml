@@ -2,9 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 
-customLabels: {}
+customLabels: { }
 
 test:
   foo: "bar"
@@ -22,7 +22,7 @@ controlplane:
     pullPolicy: IfNotPresent
     # if null chart.AppVersion. Please note that the deployment might not be compatible with lower version
     tag: ""
-  initContainers: []
+  initContainers: [ ]
   debug:
     enabled: false
     port: 1044
@@ -71,18 +71,20 @@ controlplane:
       path: /metrics
   service:
     type: ClusterIP
-    annotations: {}
-  podLabels: {}
-  podAnnotations: {}
-  podSecurityContext: {}
-    # fsGroup: 2000
-  securityContext: {}
+    annotations: { }
+  podLabels: { }
+  podAnnotations: { }
+  podSecurityContext:
+    { }
+  # fsGroup: 2000
+  securityContext:
+    { }
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-    # runAsUser: 1000
+  # runAsUser: 1000
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
@@ -90,7 +92,7 @@ controlplane:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.local"
       # -- Additional ingress annotations to add
-      annotations: {}
+      annotations: { }
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - ids
@@ -113,7 +115,7 @@ controlplane:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.intranet"
       # -- Additional ingress annotations to add
-      annotations: {}
+      annotations: { }
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - data
@@ -132,9 +134,10 @@ controlplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
-  volumeMounts: []
-  volumes: []
-  resources: {}
+  volumeMounts: [ ]
+  volumes: [ ]
+  resources:
+    { }
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -144,7 +147,7 @@ controlplane:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-    #   memory: 128Mi
+  #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     enabled: false
@@ -152,9 +155,9 @@ controlplane:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity: { }
 
 dataplane:
   nameOverride: ""
@@ -165,7 +168,7 @@ dataplane:
     pullPolicy: IfNotPresent
     # if null chart.AppVersion. Please note that the deployment might not be compatible with lower version
     tag: ""
-  initContainers: []
+  initContainers: [ ]
   debug:
     enabled: false
     port: ""
@@ -186,17 +189,19 @@ dataplane:
     metrics:
       port: 9090
       path: /metrics
-  podLabels: {}
-  podAnnotations: {}
-  podSecurityContext: {}
-    # fsGroup: 2000
-  securityContext: {}
+  podLabels: { }
+  podAnnotations: { }
+  podSecurityContext:
+    { }
+  # fsGroup: 2000
+  securityContext:
+    { }
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-    # runAsUser: 1000
+  # runAsUser: 1000
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
@@ -204,7 +209,7 @@ dataplane:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-data.local"
       # -- Additional ingress annotations to add
-      annotations: {}
+      annotations: { }
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - public
@@ -222,9 +227,10 @@ dataplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
-  volumeMounts: []
-  volumes: []
-  resources: {}
+  volumeMounts: [ ]
+  volumes: [ ]
+  resources:
+    { }
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -234,7 +240,7 @@ dataplane:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-    #   memory: 128Mi
+  #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     enabled: false
@@ -242,9 +248,9 @@ dataplane:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity: { }
 
 postgresql:
   enabled: false
@@ -258,7 +264,7 @@ postgresql:
 
 vault:
   hashicorp:
-    enabled: false
+    enabled: true
     host: ""
     token: ""
     timeout: 30
@@ -296,7 +302,7 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: {}
+  annotations: { }
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
