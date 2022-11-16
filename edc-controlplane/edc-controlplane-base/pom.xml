@@ -70,6 +70,11 @@
             <artifactId>data-encryption</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+            <artifactId>cx-oauth2</artifactId>
+        </dependency>
+
         <!-- SSI
         <dependency>
             <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
