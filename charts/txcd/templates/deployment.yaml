@@ -79,10 +79,10 @@ spec:
           env:
             {{- if and .Values.controlplane.debug.enabled .Values.controlplane.debug.suspendOnStart }}
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="{{ .Values.controlplane.debug.port }}
+              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%s" .Values.controlplane.debug.port }}
             {{- else if .Values.controlplane.debug.enabled }}
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address="{{ .Values.controlplane.debug.port }}
+              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%s" .Values.controlplane.debug.port }} 
             {{- end }}
 
             ########################
@@ -210,7 +210,6 @@ spec:
             ###########
 
             {{- if .Values.vault.hashicorp.enabled }}
-
             # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
             - name: EDC_VAULT_HASHICORP_URL
               value: {{ printf "http://%s" .Values.vault.hashicorp.host }}
@@ -226,7 +225,6 @@ spec:
               value: {{ .Values.vault.hashicorp.paths.secret }}
             - name: EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH
               value: {{ .Values.vault.hashicorp.paths.secret }}
-
             {{- end }}
 
             {{- if .Values.vault.azure.enabled }}
