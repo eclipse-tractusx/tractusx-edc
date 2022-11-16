@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import static org.eclipse.tractusx.edc.tests.Constants.AWS_ACCESS_KEY_ID;
+import static org.eclipse.tractusx.edc.tests.Constants.AWS_SECRET_ACCESS_KEY;
 import static org.eclipse.tractusx.edc.tests.Constants.BACKEND_SERVICE_BACKEND_API_URL;
 import static org.eclipse.tractusx.edc.tests.Constants.DATABASE_PASSWORD;
 import static org.eclipse.tractusx.edc.tests.Constants.DATABASE_URL;
@@ -27,6 +29,7 @@ import static org.eclipse.tractusx.edc.tests.Constants.DATABASE_USER;
 import static org.eclipse.tractusx.edc.tests.Constants.DATA_MANAGEMENT_API_AUTH_KEY;
 import static org.eclipse.tractusx.edc.tests.Constants.DATA_MANAGEMENT_URL;
 import static org.eclipse.tractusx.edc.tests.Constants.DATA_PLANE_URL;
+import static org.eclipse.tractusx.edc.tests.Constants.EDC_AWS_ENDPOINT_OVERRIDE;
 import static org.eclipse.tractusx.edc.tests.Constants.IDS_URL;
 
 import java.util.Locale;
@@ -34,10 +37,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-class Environment {
+@ToString
+public class Environment {
   @NonNull private final String dataManagementAuthKey;
   @NonNull private final String dataManagementUrl;
   @NonNull private final String idsUrl;
@@ -46,6 +51,9 @@ class Environment {
   @NonNull private final String databaseUrl;
   @NonNull private final String databaseUser;
   @NonNull private final String databasePassword;
+  @NonNull private final String awsEndpointOverride;
+  @NonNull private final String awsAccessKey;
+  @NonNull private final String awsSecretAccessKey;
 
   public static Environment byName(String name) {
     name = name.toUpperCase(Locale.ROOT);
@@ -60,6 +68,9 @@ class Environment {
         .databaseUrl(System.getenv(String.join("_", name, DATABASE_URL)))
         .databaseUser(System.getenv(String.join("_", name, DATABASE_USER)))
         .databasePassword(System.getenv(String.join("_", name, DATABASE_PASSWORD)))
+        .awsEndpointOverride(System.getenv(EDC_AWS_ENDPOINT_OVERRIDE))
+        .awsAccessKey(System.getenv(String.join("_", name, AWS_ACCESS_KEY_ID)))
+        .awsSecretAccessKey(System.getenv(String.join("_", name, AWS_SECRET_ACCESS_KEY)))
         .build();
   }
 }

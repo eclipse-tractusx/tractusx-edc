@@ -111,13 +111,18 @@ jobs:
           echo "PLATO_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_USER=postgresql_sandbox_user" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_PASSWORD=psql_password" | tee -a ${GITHUB_ENV}
+          echo "EDC_AWS_ENDPOINT_OVERRIDE=http://minio:9000" | tee -a ${GITHUB_ENV}
+          echo "PLATO_AWS_SECRET_ACCESS_KEY=platoqwerty123" | tee -a ${GITHUB_ENV}
+          echo "PLATO_AWS_ACCESS_KEY_ID=platoqwerty123" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_AWS_SECRET_ACCESS_KEY=sokratesqwerty123" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_AWS_ACCESS_KEY_ID=sokratesqwerty123" | tee -a ${GITHUB_ENV}
       -
         name: Install test environment via Helm
         run: |-
           # Update helm dependencies
           helm dependency update edc-tests/src/main/resources/deployment/helm/all-in-one
 
-          # Install the all-in-one supporting infrastructure environment (daps, vault, pgsql)
+          # Install the all-in-one supporting infrastructure environment (daps, vault, pgsql, minio)
           helm install test-environment edc-tests/src/main/resources/deployment/helm/all-in-one \
             --set platoedccontrolplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
             --set platoedccontrolplane.image.tag=business-test \
@@ -144,6 +149,7 @@ jobs:
             --set sokratesbackendapplication.enabled=false \
             --set sokrates-backend-application.persistence.enabled=false \
             --set plato-backend-application.persistence.enabled=false \
+            --set minio.enabled=true \
             --wait-for-jobs --timeout=120s
 
           # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s
@@ -155,6 +161,7 @@ jobs:
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platovault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platovault --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratespostgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratespostgresql --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platopostgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platopostgresql --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app=minio --timeout=120s || ( kubectl logs -l app=minio --tail 500 && exit 1 )
 
           # Install the all-in-one Control-/DataPlanes and backend-services
           helm upgrade --install test-environment edc-tests/src/main/resources/deployment/helm/all-in-one \
@@ -183,6 +190,7 @@ jobs:
             --set sokratesbackendapplication.enabled=true \
             --set sokrates-backend-application.persistence.enabled=true \
             --set plato-backend-application.persistence.enabled=true \
+            --set minio.enabled=true \
             --wait-for-jobs --timeout=120s
 
           # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s
@@ -236,7 +244,12 @@ jobs:
                     {"name": "PLATO_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://plato-backend-application:8081"},
                     {"name": "PLATO_DATABASE_URL", "value": "${PLATO_DATABASE_URL}"},
                     {"name": "PLATO_DATABASE_USER", "value": "${PLATO_DATABASE_USER}"},
-                    {"name": "PLATO_DATABASE_PASSWORD", "value": "${PLATO_DATABASE_PASSWORD}"}
+                    {"name": "PLATO_DATABASE_PASSWORD", "value": "${PLATO_DATABASE_PASSWORD}"},
+                    {"name": "EDC_AWS_ENDPOINT_OVERRIDE", "value": "${EDC_AWS_ENDPOINT_OVERRIDE}"},
+                    {"name": "PLATO_AWS_SECRET_ACCESS_KEY", "value": "${PLATO_AWS_SECRET_ACCESS_KEY}"},
+                    {"name": "PLATO_AWS_ACCESS_KEY_ID", "value": "${PLATO_AWS_ACCESS_KEY_ID}"},
+                    {"name": "SOKRATES_AWS_SECRET_ACCESS_KEY", "value": "${SOKRATES_AWS_SECRET_ACCESS_KEY}"},
+                    {"name": "SOKRATES_AWS_ACCESS_KEY_ID", "value": "${SOKRATES_AWS_ACCESS_KEY_ID}"}
                   ],
           EOF
 
