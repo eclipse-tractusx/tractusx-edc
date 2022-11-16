@@ -86,7 +86,7 @@
         <cucumber.version>7.9.0</cucumber.version>
         <io.rest.assured.version>5.2.0</io.rest.assured.version>
         <org.junit.platform.surefire.provider.version>1.1.0</org.junit.platform.surefire.provider.version>
-        <mockito.version>4.8.1</mockito.version>
+        <mockito.version>4.9.0</mockito.version>
         <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
