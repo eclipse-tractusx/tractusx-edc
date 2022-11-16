@@ -101,10 +101,10 @@ curl --location --request POST 'http://catenax-keycloak.managed-identity-wallets
 --data-urlencode 'scope=openid'
 ```
 
-### Expose via loadbalancer
-For viewing the Database with a DB-Viewer tool or testing via Keycloak, a Loadbalancer
-is needed.
+### Viewing the Database
+For viewing the Database with a DB-Viewer tool post-forward the port 5432 with
 
 ```bash
-kubectl -n managed-identity-wallets apply -f templates/loadbalancer.yaml
+kubectl port-forward pods/managed-identity-wallets-local-postgresql-0 5432:5432 -n managed-ide
+ntity-wallets
 ```

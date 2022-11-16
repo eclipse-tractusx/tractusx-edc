@@ -44,7 +44,36 @@ The actual service don't validate the Token, this will be implemented as a Valid
 | ssi.miw.keycloak.scope    |  The scope in keycloak  | `openid` | `openid` |
 | ssi.miw.logprefix |  BPN of the EDC's Company  | `ManagedIdentityWalletLogger` | `ManagedIdentityWalletLogger` |
 
- 
-
-
-
+### Setup to test the extension
+- Add the following dependencies to `edc-controlplane/edc-controlplane-base/pom.xml`
+    ```
+    <dependency>
+        <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
+        <artifactId>ssi-spi</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
+        <artifactId>ssi-identity-service</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.tractusx.edc.extensions.ssi</groupId>
+        <artifactId>ssi-managed-identity-wallet</artifactId>
+    </dependency> 
+    ```
+- Remove the following dependencies to `edc-controlplane/edc-controlplane-base/pom.xml`
+    ```
+    <dependency>
+        <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+        <artifactId>cx-oauth2</artifactId>
+    </dependency>
+     <dependency>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>oauth2-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.dataspaceconnector</groupId>
+        <artifactId>iam-daps</artifactId>
+    </dependency>
+    ```
+- Build the new images and run the `all-in-one` with the command `./update_image.sh`
+- Run `managed-identity-wallets` as described in the README.md under `./edc-tests/src/main/resources/deployment/helm/managed-identity-wallets/README.md`
