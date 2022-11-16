@@ -47,6 +47,8 @@ import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceRece
 import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiverRegistry;
 
 public class ApiAdapterExtension implements ServiceExtension {
+  @Inject private Monitor monitor;
+  @Inject private ContractNegotiationObservable negotiationObservable;
   @Inject private WebService webService;
   @Inject private ContractNegotiationService contractNegotiationService;
   @Inject private RemoteMessageDispatcherRegistry dispatcher;
@@ -61,12 +63,6 @@ public class ApiAdapterExtension implements ServiceExtension {
 
   @Override
   public void initialize(ServiceExtensionContext context) {
-    /** external dependencies * */
-    Monitor monitor = context.getMonitor();
-    ContractNegotiationObservable negotiationObservable =
-        context.getService(ContractNegotiationObservable.class, false);
-
-    /** internal dependencies * */
     ApiAdapterConfig config = new ApiAdapterConfig(context);
     ListenerService listenerService = new ListenerService();
     InMemoryMessageBus messageBus =
