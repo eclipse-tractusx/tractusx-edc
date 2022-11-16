@@ -183,6 +183,14 @@
                     <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>cx-oauth2</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>xsuaa-authenticator</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>control-plane-adapter</artifactId>
+                </dependency>
                 <!-- edc-controlplane -->
                 <dependency>
                     <groupId>org.eclipse.tractusx.edc</groupId>
