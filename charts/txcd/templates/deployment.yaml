@@ -19,13 +19,12 @@ spec:
       {{- end }}
       labels:
         {{- include "txdc.controlplane.selectorLabels" . | nindent 8 }}
-        {{- .Values.controlplane.podLabels }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "txdc.serviceAccountName" . }}
+      serviceAccount: {{ include "txdc.serviceaccount.name" . }}
       securityContext:
         {{- toYaml .Values.controlplane.podSecurityContext | nindent 8 }}
       containers:
@@ -47,9 +46,9 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
           ports:
-          {{- range .Values.controlplane.endpoints }}
-            - name: {{ . }}
-              containerPort: {{ .port }}
+          {{- range $key,$value := .Values.controlplane.endpoints }}
+            - name: {{ $key }}
+              containerPort: {{ $value.port }}
               protocol: TCP
           {{- end }}
           {{- if .Values.controlplane.livenessProbe.enabled }}
@@ -79,10 +78,10 @@ spec:
           env:
             {{- if and .Values.controlplane.debug.enabled .Values.controlplane.debug.suspendOnStart }}
             - name: JAVA_TOOL_OPTIONS
-              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%s" .Values.controlplane.debug.port }}
+              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.controlplane.debug.port }}
             {{- else if .Values.controlplane.debug.enabled }}
             - name: JAVA_TOOL_OPTIONS
-              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%s" .Values.controlplane.debug.port }} 
+              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.controlplane.debug.port }} 
             {{- end }}
 
             ########################
@@ -91,15 +90,15 @@ spec:
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/iam/oauth2/oauth2-core
             - name: EDC_OAUTH_CLIENT_ID
-              value: {{ .Values.daps.clientId }}
+              value: {{ .Values.daps.clientId | quote }}
             - name: EDC_OAUTH_PROVIDER_JWKS_URL
               value: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.jwks }}
             - name: EDC_OAUTH_TOKEN_URL
               value: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.token }}
             - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
-              value: {{ .Values.vault.secretNames.dapsPrivateKey }}
+              value: {{ .Values.vault.secretNames.dapsPrivateKey | quote }}
             - name: EDC_OAUTH_PUBLIC_KEY_ALIAS
-              value: {{ .Values.vault.secretNames.dapsPublicKey }}
+              value: {{ .Values.vault.secretNames.dapsPublicKey | quote }}
 
             #############
             ## GENERAL ##
@@ -111,17 +110,17 @@ spec:
             - name: EDC_IDS_ENDPOINT_AUDIENCE
               value: {{ printf "%s%s" (include "txdc.controlplane.url.ids" . ) "/data" }}
             - name: EDC_IDS_ID
-              value: {{ .Values.controlplane.internationalDataSpaces.id }}
+              value: {{ .Values.controlplane.internationalDataSpaces.id | quote }}
             - name: EDC_IDS_DESCRIPTION
-              value: {{ .Values.controlplane.internationalDataSpaces.description }}
+              value: {{ .Values.controlplane.internationalDataSpaces.description | quote }}
             - name: EDC_IDS_TITLE
-              value: {{ .Values.controlplane.internationalDataSpaces.title }}
+              value: {{ .Values.controlplane.internationalDataSpaces.title | quote }}
             - name: EDC_IDS_MAINTAINER
-              value: {{ .Values.controlplane.internationalDataSpaces.maintainer }}
+              value: {{ .Values.controlplane.internationalDataSpaces.maintainer | quote }}
             - name: EDC_IDS_CURATOR
-              value: {{ .Values.controlplane.internationalDataSpaces.curator }}
+              value: {{ .Values.controlplane.internationalDataSpaces.curator | quote }}
             - name: EDC_IDS_CATALOG_ID
-              value: {{ .Values.controlplane.internationalDataSpaces.catalogId }}
+              value: {{ .Values.controlplane.internationalDataSpaces.catalogId | quote }}
 
             {{- if .Values.postgresql.enabled }}
             ################
@@ -132,9 +131,9 @@ spec:
             - name: EDC_DATASOURCE_ASSET_NAME
               value: asset
             - name: EDC_DATASOURCE_ASSET_USER
-              value: {{ .Values.postgresql.auth.username }}
+              value: {{ .Values.postgresql.auth.username | quote }}
             - name: EDC_DATASOURCE_ASSET_PASSWORD
-              value: {{ .Values.postgresql.auth.password }}
+              value: {{ .Values.postgresql.auth.password | quote }}
             - name: EDC_DATASOURCE_ASSET_URL
               value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
@@ -142,9 +141,9 @@ spec:
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_NAME
               value: contractdefinition
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_USER
-              value: {{ .Values.postgresql.auth.username }}
+              value: {{ .Values.postgresql.auth.username | quote }}
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD
-              value: {{ .Values.postgresql.auth.password }}
+              value: {{ .Values.postgresql.auth.password | quote }}
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_URL
               value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
@@ -152,9 +151,9 @@ spec:
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME
               value: contractnegotiation
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_USER
-              value: {{ .Values.postgresql.auth.username }}
+              value: {{ .Values.postgresql.auth.username | quote }}
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD
-              value: {{ .Values.postgresql.auth.password }}
+              value: {{ .Values.postgresql.auth.password | quote }}
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_URL
               value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
@@ -162,9 +161,9 @@ spec:
             - name: EDC_DATASOURCE_POLICY_NAME
               value: policy
             - name: EDC_DATASOURCE_POLICY_USER
-              value: {{ .Values.postgresql.auth.username }}
+              value: {{ .Values.postgresql.auth.username | quote }}
             - name: EDC_DATASOURCE_POLICY_PASSWORD
-              value: {{ .Values.postgresql.auth.password }}
+              value: {{ .Values.postgresql.auth.password | quote }}
             - name: EDC_DATASOURCE_POLICY_URL
               value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 
@@ -172,9 +171,9 @@ spec:
             - name: EDC_DATASOURCE_TRANSFERPROCESS_NAME
               value: transferprocess
             - name: EDC_DATASOURCE_TRANSFERPROCESS_USER
-              value: {{ .Values.postgresql.auth.username }}
+              value: {{ .Values.postgresql.auth.username | quote }}
             - name: EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD
-              value: {{ .Values.postgresql.auth.password }}
+              value: {{ .Values.postgresql.auth.password | quote }}
             - name: EDC_DATASOURCE_TRANSFERPROCESS_URL
               value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
             {{- end }}
@@ -191,19 +190,23 @@ spec:
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES
               value: HttpProxy
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES
-              value: {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
+              value: |-
+                {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
             - name: EDC_TRANSFER_PROXY_ENDPOINT
               value: {{ include "txdc.dataplane.url.public" . }}
             - name: EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
-              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
+              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey | quote }}
             - name: EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
-              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey }}
+              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver
+
+            {{- if .Values.backendService.httpProxyTokenReceiverUrl }}
             - name: EDC_RECEIVER_HTTP_ENDPOINT
-              value: {{ .Values.backendService.httpProxyTokenReceiverUrl }}
+              value: {{ .Values.backendService.httpProxyTokenReceiverUrl | quote }}
+            {{- end }}
 
             ###########
             ## VAULT ##
@@ -214,31 +217,31 @@ spec:
             - name: EDC_VAULT_HASHICORP_URL
               value: {{ printf "http://%s" .Values.vault.hashicorp.host }}
             - name: EDC_VAULT_HASHICORP_TOKEN
-              value: {{ .Values.vault.hashicorp.token }}
+              value: {{ .Values.vault.hashicorp.token | quote }}
             - name: EDC_VAULT_HASHICORP_TIMEOUT_SECONDS
-              value: {{ .Values.vault.hashicorp.timeout }}
+              value: {{ .Values.vault.hashicorp.timeout | quote }}
             - name: EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED
-              value: {{ .Values.vault.hashicorp.healthCheck.enabled }}
+              value: {{ .Values.vault.hashicorp.healthCheck.enabled | quote }}
             - name: EDC_VAULT_HASHICORP_HEALTH_STANDBY_OK
-              value: {{ .Values.vault.hashicorp.healthCheck.standbyOk }}
+              value: {{ .Values.vault.hashicorp.healthCheck.standbyOk | quote }}
             - name: EDC_VAULT_HASHICORP_API_SECRET_PATH
-              value: {{ .Values.vault.hashicorp.paths.secret }}
+              value: {{ .Values.vault.hashicorp.paths.secret | quote }}
             - name: EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH
-              value: {{ .Values.vault.hashicorp.paths.secret }}
+              value: {{ .Values.vault.hashicorp.paths.secret | quote }}
             {{- end }}
 
             {{- if .Values.vault.azure.enabled }}
 
             - name: EDC_VAULT_CLIENTID
-              value: {{ .Values.vault.azure.client }}
+              value: {{ .Values.vault.azure.client | quote  }}
             - name: EDC_VAULT_TENANTID
-              value: {{ .Values.vault.azure.tenant }}
+              value: {{ .Values.vault.azure.tenant | quote }}
             - name: EDC_VAULT_NAME
-              value: {{ .Values.vault.azure.name }}
+              value: {{ .Values.vault.azure.name | quote }}
             - name: EDC_VAULT_CLIENTSECRET
-              value: {{ .Values.vault.azure.secret }}
+              value: {{ .Values.vault.azure.secret | quote }}
             - name: EDC_VAULT_CERTIFICATE
-              value: {{ .Values.vault.azure.certificate }}
+              value: {{ .Values.vault.azure.certificate | quote }}
 
             {{- end }}
 
@@ -248,7 +251,7 @@ spec:
 
             # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
             - name: EDC_DATA_ENCRYPTION_KEYS_ALIAS
-              value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey }}
+              value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
             - name: EDC_DATA_ENCRYPTION_ALGORITHM
               value: AES
 

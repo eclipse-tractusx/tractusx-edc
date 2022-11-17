@@ -1,37 +1,37 @@
 {{- define "control-default" -}}
-{{ printf "%s-%s" .Chart.Name "control" }}
+{{ printf "%s-%s" .Chart.Name "controlplane" -}}
 {{ end }}
 
 {{- define "data-default" -}}
-{{ printf "%s-%s" .Chart.Name "data" }}
+{{ printf "%s-%s" .Chart.Name "dataplane" -}}
 {{ end }}
 
 {{/*
 Expand the name of the chart.
 */}}
 {{- define "txdc.name" -}}
-{{- printf "%s-%s" .Chart.Name "txdc" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Chart.Name "txdc" | replace "+" "_"  | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "txdc.serviceAccountName" -}}
-{{- printf "%s-%s" (include "txdc.name" . ) "servicAccount" | trunc 63 | trimSuffix "-" }}
+{{- define "txdc.serviceaccount.name" -}}
+{{- printf "%s-%s" (include "txdc.name" . ) "serviceaccount" | replace "+" "_"  | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 
 {{/*
 Expand the name of the chart.
 */}}
 {{- define "txdc.controlplane.name" -}}
-{{- default (include "data-default" . ) .Values.controlplane.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default (include "data-default" . ) .Values.controlplane.nameOverride | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Expand the name of the chart.
 */}}
 {{- define "txdc.dataplane.name" -}}
-{{- default (include "control-default" . ) .Values.dataplane.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default (include "control-default" . ) .Values.dataplane.nameOverride | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -41,13 +41,13 @@ If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.controlplane.fullname" -}}
 {{- if .Values.controlplane.fullnameOverride }}
-{{- .Values.controlplane.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Values.controlplane.fullnameOverride | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default (include "control-default" . ) .Values.controlplane.nameOverride }}
 {{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- .Release.Name | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name | replace "+" "_"  | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -59,14 +59,14 @@ If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.dataplane.fullname" -}}
 {{- if .Values.dataplane.fullnameOverride }}
-{{- .Values.dataplane.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Values.dataplane.fullnameOverride | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $dataDefault := ( printf "%s-%s" .Chart.Name "data") }}
 {{- $name := default $dataDefault .Values.dataplane.nameOverride }}
 {{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- .Release.Name | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -75,7 +75,7 @@ If release name contains chart name it will be used as a full name.
 Create chart name and version as used by the chart label.
 */}}
 {{- define "txdc.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- end }} 
 
 {{/*
@@ -119,6 +119,9 @@ Control Selector labels
 {{- define "txdc.controlplane.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "txdc.controlplane.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Values.controlplane.podLabels }}
+{{ .Values.controlplane.podLabels | toYaml }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -127,12 +130,15 @@ Data Selector labels
 {{- define "txdc.dataplane.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "txdc.dataplane.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Values.dataplane.podLabels }}
+{{ .Values.dataplane.podLabels | toYaml }}
+{{- end }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "txdc.controlplane.serviceAccountName" -}}
+{{- define "txdc.controlplane.serviceaccount.name" -}}
 {{- if .Values.serviceAccount.create }}
 {{- default (include "txdc.controlplane.fullname" . ) .Values.serviceAccount.name }}
 {{- else }}
@@ -143,7 +149,7 @@ Create the name of the service account to use
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "txdc.dataplane.serviceAccountName" -}}
+{{- define "txdc.dataplane.serviceaccount.name" -}}
 {{- if .Values.serviceAccount.create }}
 {{- default (include "txdc.dataplane.fullname" . ) .Values.serviceAccount.name }}
 {{- else }}
@@ -156,23 +162,23 @@ Control IDS URL
 */}}
 {{- define "txdc.controlplane.url.ids" -}}
 {{- with (index .Values.controlplane.ingresses 0) }}
-{{- if .enabled }} # if ingress enabled
-{{- if .tls.enabled }} # if TLS enabled
-{{ printf "https://%s/%s" .hostname $.Values.controlplane.endpoints.ids.path }}
-{{- else }} # else when TLS not enabled
-{{ printf "http://%s/%s" .hostname $.Values.controlplane.endpoints.ids.path }}
-{{- end }} # end if tls
-{{- else }} # else when ingress not enabled
-{{ printf "http://%s:%s/%s" ( include "txdc.controlplane.fullname" $ ) $.Values.controlplane.endpoints.ids.port $.Values.controlplane.endpoints.ids.path }}
-{{- end }} # end if ingress
-{{- end }} # end with ingress
+{{- if .enabled }}{{/* if ingress enabled */}}
+{{- if .tls.enabled }}{{/* if TLS enabled */}}
+{{- printf "https://%s%s" .hostname $.Values.controlplane.endpoints.ids.path -}}
+{{- else }}{{/* else when TLS not enabled */}}
+{{- printf "http://%s%s" .hostname $.Values.controlplane.endpoints.ids.path -}}
+{{- end }}{{/* end if tls */}}
+{{- else }}{{/* else when ingress not enabled */}}
+{{- printf "http://%s:%v%s" ( include "txdc.controlplane.fullname" $ ) $.Values.controlplane.endpoints.ids.port $.Values.controlplane.endpoints.ids.path -}}
+{{- end }}{{/* end if ingress */}}
+{{- end }}{{/* end with ingress */}}
 {{- end }}
 
 {{/*
 Data Control URL
 */}}
 {{- define "txdc.dataplane.url.control" -}}
-{{ printf "http://%s:%s/%s" (include "txdc.dataplane.fullname" . ) .Values.dataplane.endpoints.control.port .Values.dataplane.endpoints.control.path }}
+{{- printf "http://%s:%v%s" (include "txdc.dataplane.fullname" . ) .Values.dataplane.endpoints.control.port .Values.dataplane.endpoints.control.path -}}
 {{- end }}
 
 {{/*
@@ -180,14 +186,14 @@ Data Public URL
 */}}
 {{- define "txdc.dataplane.url.public" -}}
 {{- with (index  .Values.dataplane.ingresses 0) }}
-{{- if .enabled }} # if ingress enabled
-{{- if .tls.enabled }} # if TLS enabled
-{{ printf "https://%s/%s" .hostname $.Values.dataplane.endpoints.public.path }}
-{{- else }} # else when TLS not enabled
-{{ printf "http://%s/%s" .hostname $.Values.dataplane.endpoints.public.path }}
-{{- end }} # end if tls
-{{- else }} # else when ingress not enabled
-{{ printf "http://%s:%s/%s" (include "txdc.dataplane.fullname" $ ) $.Values.dataplane.endpoints.public.port $.Values.dataplane.endpoints.public.path }}
-{{- end }} # end if ingress
-{{- end }} # end with ingress
+{{- if .enabled }}{{/* if ingress enabled */}}
+{{- if .tls.enabled }}{{/* if TLS enabled */}}
+{{- printf "https://%s%s" .hostname $.Values.dataplane.endpoints.public.path -}}
+{{- else }}{{/* else when TLS not enabled */}}
+{{- printf "http://%s%s" .hostname $.Values.dataplane.endpoints.public.path -}}
+{{- end }}{{/* end if tls */}}
+{{- else }}{{/* else when ingress not enabled */}}
+{{- printf "http://%s:%v%s" (include "txdc.dataplane.fullname" $ ) $.Values.dataplane.endpoints.public.port $.Values.dataplane.endpoints.public.path -}}
+{{- end }}{{/* end if ingress */}}
+{{- end }}{{/* end with ingress */}}
 {{- end }}
