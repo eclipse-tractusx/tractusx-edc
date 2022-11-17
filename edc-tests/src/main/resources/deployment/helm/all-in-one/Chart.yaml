@@ -25,63 +25,27 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
-  # IDS DAPS
+  # IDS Dynamic Attribute Provisioning Service (IAM)
   - name: ids-daps
     version: 0.0.1
     repository: "file://../omejdn"
     alias: idsdaps
     condition: idsdaps.enabled
 
-  # PLATO CONNECTOR
-  - name: edc-controlplane
-    version: ">=0.0.1"
-    repository: "file://../../../../../../../charts/edc-controlplane"
-    alias: platoedccontrolplane
-    condition: platoedccontrolplane.enabled
-  - name: edc-dataplane
-    version: ">=0.0.1"
-    repository: "file://../../../../../../../charts/edc-dataplane"
-    alias: platoedcdataplane
-    condition: platoedcdataplane.enabled
-  - name: backend-service
-    version: "0.0.6"
-    repository: https://denisneuling.github.io/cx-backend-service
-    alias: platobackendapplication
-    condition: platobackendapplication.enabled
+  # HashiCorp Vault
   - name: vault
     version: 0.20.0
     repository: https://helm.releases.hashicorp.com
-    alias: platovault
-    condition: platovault.enabled
-  - name: postgresql
-    version: 11.2.4
-    repository: https://charts.bitnami.com/bitnami
-    alias: platopostgresql
-    condition: platopostgresql.enabled
+    alias: vault
+    condition: vault.enabled
 
-  # SOKRATES CONNECTOR
-  - name: edc-controlplane
+  # Plato Connector
+  - name: txdc
     version: ">=0.0.1"
-    repository: "file://../../../../../../../charts/edc-controlplane"
-    alias: sokratesedccontrolplane
-    condition: sokratesedccontrolplane.enabled
-  - name: edc-dataplane
-    version: ">=0.0.1"
-    repository: "file://../../../../../../../charts/edc-dataplane"
-    alias: sokratesedcdataplane
-    condition: sokratesedcdataplane.enabled
-  - name: backend-service
-    version: "0.0.6"
-    repository: https://denisneuling.github.io/cx-backend-service
-    alias: sokratesbackendapplication
-    condition: sokratesbackendapplication.enabled
-  - name: vault
-    version: 0.20.0
-    repository: https://helm.releases.hashicorp.com
-    alias: sokratesvault
-    condition: sokratesvault.enabled
-  - name: postgresql
-    version: 11.2.4
-    repository: https://charts.bitnami.com/bitnami
-    alias: sokratespostgresql
-    condition: sokratespostgresql.enabled
+    repository: "file://../../../../../../../charts/txcd"
+    condition: txdc.enabled
+  # - name: backend-service
+  #   version: "0.0.6"
+  #   repository: https://denisneuling.github.io/cx-backend-service
+  #   alias: platobackendapplication
+  #   condition: platobackendapplication.enabled

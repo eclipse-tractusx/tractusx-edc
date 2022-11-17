@@ -197,3 +197,68 @@ Data Public URL
 {{- end }}{{/* end if ingress */}}
 {{- end }}{{/* end with ingress */}}
 {{- end }}
+
+{{/*
+PostgreSQL Password
+*/}}
+{{- define "txdc.postgresql.password" -}}
+{{- if .Values.postgresql.auth.password }}
+{{- print .Values.postgresql.auth.password | quote }}
+{{- else }}
+{{ print ""}}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL User
+*/}}
+{{- define "txdc.postgresql.username" -}}
+{{- if .Values.postgresql.auth.username }}
+{{- print .Values.postgresql.auth.username | quote }}
+{{- else }}
+{{ print ""}}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL Connection Host
+*/}}
+{{- define "txdc.postgresql.host" -}}
+{{- if .Values.postgresql.host }}
+{{ print .Values.postgresql.host }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name "postgresql" }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL Connection Host
+*/}}
+{{- define "txdc.postgresql.port" -}}
+{{- if .Values.postgresql.containerPorts.postgresql }}
+{{- print .Values.postgresql.containerPorts.postgresql }}
+{{- else }}
+{{ print "5432" }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL Connection Host
+*/}}
+{{- define "txdc.postgresql.database" -}}
+{{- if .Values.postgresql.auth.database }}
+{{- print .Values.postgresql.auth.database }}
+{{- else }}
+{{ print "postgres" }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL Connection String
+{{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+*/}}
+{{- define "txdc.postgresql.jdbcUrl" -}}
+{{ printf "jdbc:postgresql://%s:%v/%s" (include "txdc.postgresql.host" . ) (include "txdc.postgresql.port" . ) (include "txdc.postgresql.database" . ) }}
+{{- end }}
+
+

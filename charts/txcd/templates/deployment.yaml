@@ -75,14 +75,22 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.controlplane.resources | nindent 12 }}
+          volumeMounts:
+            - name: configuration
+              mountPath: /app/opentelemetry.properties
+              subPath: opentelemetry.properties
+            - name: configuration
+              mountPath: /app/logging.properties
+              subPath: logging.properties
           env:
+          {{- if .Values.controlplane.debug.enabled }}
+            - name: JAVA_TOOL_OPTIONS
             {{- if and .Values.controlplane.debug.enabled .Values.controlplane.debug.suspendOnStart }}
-            - name: JAVA_TOOL_OPTIONS
               value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.controlplane.debug.port }}
-            {{- else if .Values.controlplane.debug.enabled }}
-            - name: JAVA_TOOL_OPTIONS
-              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.controlplane.debug.port }} 
+            {{- else }}
+              value: {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.controlplane.debug.port }}
             {{- end }}
+          {{- end }}
 
             ########################
             ## DAPS CONFIGURATION ##
@@ -110,7 +118,7 @@ spec:
             - name: EDC_IDS_ENDPOINT_AUDIENCE
               value: {{ printf "%s%s" (include "txdc.controlplane.url.ids" . ) "/data" }}
             - name: EDC_IDS_ID
-              value: {{ .Values.controlplane.internationalDataSpaces.id | quote }}
+              value: {{ printf "urn:connector:%s" (lower .Values.controlplane.internationalDataSpaces.id)  }}
             - name: EDC_IDS_DESCRIPTION
               value: {{ .Values.controlplane.internationalDataSpaces.description | quote }}
             - name: EDC_IDS_TITLE
@@ -120,7 +128,7 @@ spec:
             - name: EDC_IDS_CURATOR
               value: {{ .Values.controlplane.internationalDataSpaces.curator | quote }}
             - name: EDC_IDS_CATALOG_ID
-              value: {{ .Values.controlplane.internationalDataSpaces.catalogId | quote }}
+              value: {{ printf "urn:catalog:%s" (lower .Values.controlplane.internationalDataSpaces.catalogId) }}
 
             {{- if .Values.postgresql.enabled }}
             ################
@@ -131,51 +139,51 @@ spec:
             - name: EDC_DATASOURCE_ASSET_NAME
               value: asset
             - name: EDC_DATASOURCE_ASSET_USER
-              value: {{ .Values.postgresql.auth.username | quote }}
+              value: {{ include "txdc.postgresql.username" . }}
             - name: EDC_DATASOURCE_ASSET_PASSWORD
-              value: {{ .Values.postgresql.auth.password | quote }}
+              value: {{ include "txdc.postgresql.password" . }}
             - name: EDC_DATASOURCE_ASSET_URL
-              value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+              value: {{ include "txdc.postgresql.jdbcUrl" . }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_NAME
               value: contractdefinition
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_USER
-              value: {{ .Values.postgresql.auth.username | quote }}
+              value: {{ include "txdc.postgresql.username" . }}
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD
-              value: {{ .Values.postgresql.auth.password | quote }}
+              value: {{ include "txdc.postgresql.password" . }}
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_URL
-              value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+              value: {{ include "txdc.postgresql.jdbcUrl" . }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME
               value: contractnegotiation
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_USER
-              value: {{ .Values.postgresql.auth.username | quote }}
+              value: {{ include "txdc.postgresql.username" . }}
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD
-              value: {{ .Values.postgresql.auth.password | quote }}
+              value: {{ include "txdc.postgresql.password" . }}
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_URL
-              value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+              value: {{ include "txdc.postgresql.jdbcUrl" . }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
             - name: EDC_DATASOURCE_POLICY_NAME
               value: policy
             - name: EDC_DATASOURCE_POLICY_USER
-              value: {{ .Values.postgresql.auth.username | quote }}
+              value: {{ include "txdc.postgresql.username" . }}
             - name: EDC_DATASOURCE_POLICY_PASSWORD
-              value: {{ .Values.postgresql.auth.password | quote }}
+              value: {{ include "txdc.postgresql.password" . }}
             - name: EDC_DATASOURCE_POLICY_URL
-              value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+              value: {{ include "txdc.postgresql.jdbcUrl" . }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
             - name: EDC_DATASOURCE_TRANSFERPROCESS_NAME
               value: transferprocess
             - name: EDC_DATASOURCE_TRANSFERPROCESS_USER
-              value: {{ .Values.postgresql.auth.username | quote }}
+              value: {{ include "txdc.postgresql.username" . }}
             - name: EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD
-              value: {{ .Values.postgresql.auth.password | quote }}
+              value: {{ include "txdc.postgresql.password" . }}
             - name: EDC_DATASOURCE_TRANSFERPROCESS_URL
-              value: {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
+              value: {{ include "txdc.postgresql.jdbcUrl" . }}
             {{- end }}
 
             ################
@@ -255,6 +263,15 @@ spec:
             - name: EDC_DATA_ENCRYPTION_ALGORITHM
               value: AES
 
+      volumes:
+        - name: configuration
+          configMap:
+            name: {{ include "txdc.controlplane.fullname" . }}-configmap
+            items:
+              - key: opentelemetry.properties
+                path: opentelemetry.properties
+              - key: logging.properties
+                path: logging.properties
       {{- with .Values.controlplane.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

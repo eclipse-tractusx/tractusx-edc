@@ -20,13 +20,14 @@ controlplane:
     enabled: false
     port: 1044
     suspendOnStart: false
+  logLevel: INFO
   internationalDataSpaces:
     id: TXDC
     description: Tractus-X Eclipse IDS Data Space Connector
     title: ""
     maintainer: ""
     curator: ""
-    catalogId: ""
+    catalogId: TXDC-Catalog
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
@@ -249,11 +250,12 @@ postgresql:
   enabled: false
   install: false
   host: ""
-  port: 5432
-  database: "edc"
+  containerPorts:
+    postgresql: 5432
   auth:
-    password: ""
-    username: ""
+    username: "user"
+    password: "password"
+    database: "edc"
 
 vault:
   hashicorp:
