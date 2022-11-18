@@ -169,6 +169,10 @@ txdc:
     internationalDataSpaces:
       id: Plato
       description: Plato Eclipse IDS Data Space Connector
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
   postgresql:
     enabled: true
     install: true
@@ -179,11 +183,11 @@ txdc:
       enabled: true
       token: *vaultToken
     secretNames:
-      transferProxyTokenSignerPublicKey: my-plato-daps-crt
-      transferProxyTokenSignerPrivateKey: my-plato-daps-key
-      transferProxyTokenEncryptionAesKey: data-encryption-aes-keys
-      dapsPrivateKey: my-plato-daps-key
-      dapsPublicKey: my-plato-daps-crt
+      transferProxyTokenSignerPublicKey: plato/daps/my-plato-daps-crt
+      transferProxyTokenSignerPrivateKey: plato/daps/my-plato-daps-key
+      transferProxyTokenEncryptionAesKey: plato/data-encryption-aes-keys
+      dapsPrivateKey: plato/daps/my-plato-daps-key
+      dapsPublicKey: plato/daps/my-plato-daps-crt
   daps:
     host: *dapsHost
     clientId: *platoDapsClientId

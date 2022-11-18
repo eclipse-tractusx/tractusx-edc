@@ -20,5 +20,6 @@ helm install plato --namespace plato --create-namespace edc-tests/src/main/resou
     --set txdc.controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
     --set txdc.dataplane.image.tag=latest \
     --set txdc.dataplane.image.pullPolicy=Never \
-    --set txdc.dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault
+    --set txdc.dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
+    --set txdc.vault.hashicorp.host=plato-vault:8282
 kubectl get pods -n plato
