@@ -163,9 +163,9 @@ txdc:
   enabled: true
   controlplane:
     debug:
-      enabled: false
+      enabled: true
       port: 1044
-      suspendOnStart: false
+      suspendOnStart: true
     internationalDataSpaces:
       id: Plato
       description: Plato Eclipse IDS Data Space Connector
