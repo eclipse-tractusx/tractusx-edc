@@ -90,9 +90,9 @@ vault:
         
         sleep 5
 
-        /bin/vault kv put secret/data-encryption-aes-keys content=H7j47H6vVQQOv/hbdAYz+w==
+        /bin/vault kv put secret/plato/data-encryption-aes-keys content=H7j47H6vVQQOv/hbdAYz+w==
 
-        cat << EOF | /bin/vault kv put secret/my-plato-daps-key content=-
+        cat << EOF | /bin/vault kv put secret/plato/daps/my-plato-daps-key content=-
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX9S8de5FTWl4
         QYdQtkE/yPyCitcBC9TPxmdvWJU22V0jb0YJJeRMfGmHrrFNx6B0Xxp5qhTWY9/c
@@ -123,7 +123,7 @@ vault:
         -----END PRIVATE KEY-----
         EOF
         
-        cat << EOF | /bin/vault kv put secret/my-plato-daps-crt content=-
+        cat << EOF | /bin/vault kv put secret/plato/daps/my-plato-daps-crt content=-
         -----BEGIN CERTIFICATE-----
         MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
         BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl

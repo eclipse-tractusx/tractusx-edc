@@ -36,6 +36,7 @@ Common labels
 {{- define "edc-dataplane.labels" -}}
 helm.sh/chart: {{ include "edc-dataplane.chart" . }}
 {{ include "edc-dataplane.selectorLabels" . }}
+{{ include "edc-dataplane.customLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -48,6 +49,15 @@ Selector labels
 {{- define "edc-dataplane.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "edc-dataplane.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Custom labels
+*/}}
+{{- define "edc-dataplane.customLabels" -}}
+{{- with .Values.customLabels }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*
