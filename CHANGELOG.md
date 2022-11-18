@@ -9,13 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-<<<<<<< HEAD
--   New Container Image for PostgreSQL in Memory Control Plane
-
-### Changed
-
--   DAPS Keys can now be set by configuration (additionally to vault)
-=======
 -   New Postman collection for developers `/docs/development/postman`
 -   New XSUAA Authenticator Extension ([Readme](/edc-extensions/xsuaa-authenticator/README.md))
 
@@ -28,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update package structure/namespace from `net.catenax` to `org.eclipse.tractusx`
->>>>>>> develop
 
 ## [0.1.2] - 2022-09-30
 

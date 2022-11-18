@@ -44,6 +44,7 @@ dependencies:
     version: ">=0.0.1"
     repository: "file://../../../../../../../charts/txcd"
     condition: txdc.enabled
+    
   # - name: backend-service
   #   version: "0.0.6"
   #   repository: https://denisneuling.github.io/cx-backend-service
@@ -51,15 +52,8 @@ dependencies:
   #   condition: platobackendapplication.enabled
 
   # Minio
-  - name: minio
-    alias: minio
-    repository: https://charts.min.io
-    version: 4.1.0
-    condition: minio.enabled
-
-  # Minio
-  - name: minio
-    alias: minio
-    repository: https://charts.min.io
-    version: 4.1.0
-    condition: minio.enabled
+  # - name: minio
+  #   alias: minio
+  #   repository: https://charts.min.io
+  #   version: 4.1.0
+  #   condition: minio.enabled
