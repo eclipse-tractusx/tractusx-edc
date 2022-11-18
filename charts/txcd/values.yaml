@@ -177,6 +177,9 @@ dataplane:
     public:
       port: 8185
       path: /api/public
+    validation:
+      port: 8186
+      path: /validation
     control:
       port: 9999
       path: /api/dataplane/control
@@ -260,7 +263,7 @@ postgresql:
 vault:
   hashicorp:
     enabled: true
-    host: ""
+    url: ""
     token: ""
     timeout: 30
     healthCheck:

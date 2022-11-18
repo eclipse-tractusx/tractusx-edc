@@ -100,7 +100,7 @@ spec:
             - name: EDC_OAUTH_CLIENT_ID
               value: {{ .Values.daps.clientId | quote }}
             - name: EDC_OAUTH_PROVIDER_JWKS_URL
-              value: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.jwks }}
+              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.jwks }}
             - name: EDC_OAUTH_TOKEN_URL
               value: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.token }}
             - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
@@ -108,9 +108,33 @@ spec:
             - name: EDC_OAUTH_PUBLIC_KEY_ALIAS
               value: {{ .Values.vault.secretNames.dapsPublicKey | quote }}
 
-            #############
-            ## GENERAL ##
-            #############
+            #######
+            # API #
+            #######
+            - name: WEB_HTTP_DEFAULT_PORT
+              value: {{ .Values.controlplane.endpoints.default.port | quote }}
+            - name: WEB_HTTP_DEFAULT_PATH
+              value: {{ .Values.controlplane.endpoints.default.path | quote }}
+            - name: WEB_HTTP_DATA_PORT
+              value: {{ .Values.controlplane.endpoints.data.port | quote }}
+            - name: WEB_HTTP_DATA_PATH
+              value: {{ .Values.controlplane.endpoints.data.path | quote }}
+            - name: WEB_HTTP_VALIDATION_PORT
+              value: {{ .Values.controlplane.endpoints.validation.port | quote }}
+            - name: WEB_HTTP_VALIDATION_PATH
+              value: {{ .Values.controlplane.endpoints.validation.path | quote }}
+            - name: WEB_HTTP_CONTROL_PORT
+              value: {{ .Values.controlplane.endpoints.control.port | quote }}
+            - name: WEB_HTTP_CONTROL_PATH
+              value: {{ .Values.controlplane.endpoints.control.path | quote }}
+            - name: WEB_HTTP_IDS_PORT
+              value: {{ .Values.controlplane.endpoints.ids.port | quote }}
+            - name: WEB_HTTP_IDS_PATH
+              value: {{ .Values.controlplane.endpoints.ids.path | quote }}
+
+            #########
+            ## IDS ##
+            #########
             - name: IDS_WEBHOOK_ADDRESS
               value: {{ include "txdc.controlplane.url.ids" . }}
             - name: EDC_IDS_ENDPOINT
@@ -223,7 +247,7 @@ spec:
             {{- if .Values.vault.hashicorp.enabled }}
             # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
             - name: EDC_VAULT_HASHICORP_URL
-              value: {{ printf "http://%s" .Values.vault.hashicorp.host }}
+              value: {{ .Values.vault.hashicorp.url | quote }}
             - name: EDC_VAULT_HASHICORP_TOKEN
               value: {{ .Values.vault.hashicorp.token | quote }}
             - name: EDC_VAULT_HASHICORP_TIMEOUT_SECONDS
@@ -235,7 +259,7 @@ spec:
             - name: EDC_VAULT_HASHICORP_API_SECRET_PATH
               value: {{ .Values.vault.hashicorp.paths.secret | quote }}
             - name: EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH
-              value: {{ .Values.vault.hashicorp.paths.secret | quote }}
+              value: {{ .Values.vault.hashicorp.paths.health | quote }}
             {{- end }}
 
             {{- if .Values.vault.azure.enabled }}

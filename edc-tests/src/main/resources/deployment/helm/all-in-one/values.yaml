@@ -165,7 +165,7 @@ txdc:
     debug:
       enabled: true
       port: 1044
-      suspendOnStart: true
+      suspendOnStart: false
     internationalDataSpaces:
       id: Plato
       description: Plato Eclipse IDS Data Space Connector
@@ -189,7 +189,7 @@ txdc:
       dapsPrivateKey: plato/daps/my-plato-daps-key
       dapsPublicKey: plato/daps/my-plato-daps-crt
   daps:
-    host: *dapsHost
+    url: "http://ids-daps:4567"
     clientId: *platoDapsClientId
     paths:
       jwks: /jwks.json
