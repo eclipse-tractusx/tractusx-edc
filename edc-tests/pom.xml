@@ -38,7 +38,7 @@
         <org.apache.httpcomponents.httpclient.version>4.5.13</org.apache.httpcomponents.httpclient.version>
         <ch.qos.logback.version>1.4.4</ch.qos.logback.version>
         <org.slf4j.api.version>2.0.3</org.slf4j.api.version>
-        <software.amazon.awssdk>2.18.1</software.amazon.awssdk>
+        <software.amazon.awssdk>2.18.18</software.amazon.awssdk>
     </properties>
 
     <dependencies>
@@ -182,6 +182,14 @@
                 <dependency>
                     <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>cx-oauth2</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>xsuaa-authenticator</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>net.catenax.edc.extensions</groupId>
+                    <artifactId>control-plane-adapter</artifactId>
                 </dependency>
                 <!-- edc-controlplane -->
                 <dependency>

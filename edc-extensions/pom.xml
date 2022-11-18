@@ -42,6 +42,7 @@
         <module>dataplane-selector-configuration</module>
         <module>data-encryption</module>
         <module>cx-oauth2</module>
+        <module>control-plane-adapter</module>
     </modules>
 
 </project>
