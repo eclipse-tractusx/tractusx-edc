@@ -36,7 +36,9 @@ controlplane:
     initialDelaySeconds: 30
     # -- this fields specifies that kubernetes should perform a liveness check every 10 seconds
     periodSeconds: 10
+    # -- number of seconds after which the probe times out
     timeoutSeconds: 5
+    # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
     successThreshold: 1
   readinessProbe:
@@ -46,8 +48,11 @@ controlplane:
     initialDelaySeconds: 30
     # -- this fields specifies that kubernetes should perform a readiness check every 10 seconds
     periodSeconds: 10
+    # -- number of seconds after which the probe times out
     timeoutSeconds: 5
+    # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
+    # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   endpoints:
     default:
@@ -134,8 +139,11 @@ controlplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
+  # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container 
   volumeMounts: [ ]
+  # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes: [ ]
+  #-- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
   resources:
     { }
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -179,7 +187,9 @@ dataplane:
     initialDelaySeconds: 30
     # -- this fields specifies that kubernetes should perform a liveness check every 10 seconds
     periodSeconds: 10
+    # -- number of seconds after which the probe times out
     timeoutSeconds: 5
+    # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
     successThreshold: 1
   readinessProbe:
@@ -188,8 +198,11 @@ dataplane:
     initialDelaySeconds: 30
     # -- this fields specifies that kubernetes should perform a liveness check every 10 seconds
     periodSeconds: 10
+    # -- number of seconds after which the probe times out
     timeoutSeconds: 5
+    # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
+    # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   service:
     type: ClusterIP
@@ -252,8 +265,11 @@ dataplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
+  # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container 
   volumeMounts: [ ]
+  # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes: [ ]
+  #-- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
   resources:
     { }
     # We usually recommend not to specify default resources and to leave this as a conscious
