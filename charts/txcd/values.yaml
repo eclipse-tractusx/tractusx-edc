@@ -252,15 +252,9 @@ dataplane:
   affinity: { }
 
 postgresql:
-  enabled: false
-  install: false
-  host: ""
-  containerPorts:
-    postgresql: 5432
-  auth:
-    username: "user"
-    password: "password"
-    database: "edc"
+  jdbcUrl: ""
+  username: ""
+  password: ""
 
 vault:
   hashicorp:

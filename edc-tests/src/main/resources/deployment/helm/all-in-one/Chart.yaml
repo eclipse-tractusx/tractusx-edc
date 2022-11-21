@@ -40,11 +40,11 @@ dependencies:
     condition: vault.enabled
 
   # Plato Connector
-  - name: txdc
-    alias: plato
-    version: ">=0.0.1"
-    repository: "file://../../../../../../../charts/txcd"
-    condition: plato.enabled
+#  - name: txdc
+#    alias: plato
+#    version: ">=0.0.1"
+#    repository: "file://../../../../../../../charts/txcd"
+#    condition: plato.enabled
 
   # Sokrates Connector
   - name: txdc
