@@ -240,8 +240,14 @@ plato:
     host: "plato-postgresql"
     enabled: true
     install: true
-    persistence:
-      enabled: false
+    primary:
+      persistence:
+        enabled: false
+    readReplicas:
+      persistence:
+        enabled: false
+    audit:
+      pgAuditLog: "all, -misc"
   vault:
     hashicorp:
       url: "http://vault:8200"
@@ -281,19 +287,23 @@ sokrates:
     host: "sokrates-postgresql"
     enabled: true
     install: true
-    persistence:
-      enabled: false
+    primary:
+      persistence:
+        enabled: false
+    readReplicas:
+      persistence:
+        enabled: false
   vault:
     hashicorp:
       url: "http://vault:8200"
       enabled: true
       token: *vaultToken
     secretNames:
-      transferProxyTokenSignerPublicKey: sokrates/daps/my-plato-daps-crt
-      transferProxyTokenSignerPrivateKey: sokrates/daps/my-plato-daps-key
+      transferProxyTokenSignerPublicKey: sokrates/daps/my-sokrates-daps-crt
+      transferProxyTokenSignerPrivateKey: sokrates/daps/my-sokrates-daps-key
       transferProxyTokenEncryptionAesKey: sokrates/data-encryption-aes-keys
-      dapsPrivateKey: sokrates/daps/my-plato-daps-key
-      dapsPublicKey: sokrates/daps/my-plato-daps-crt
+      dapsPrivateKey: sokrates/daps/my-sokrates-daps-key
+      dapsPublicKey: sokrates/daps/my-sokrates-daps-crt
   daps:
     url: "http://ids-daps:4567"
     clientId: *sokratesDapsClientId

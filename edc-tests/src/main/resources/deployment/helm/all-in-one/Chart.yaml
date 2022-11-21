@@ -51,7 +51,7 @@ dependencies:
     alias: sokrates
     version: ">=0.0.1"
     repository: "file://../../../../../../../charts/txcd"
-    condition: plato.enabled
+    condition: sokrates.enabled
     
   # - name: backend-service
   #   version: "0.0.6"
