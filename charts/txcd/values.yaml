@@ -3,14 +3,13 @@
 # Declare variables to be passed into your templates.
 
 fullnameOverride: ""
+nameOverride: ""
 
 imagePullSecrets: [ ]
 
 customLabels: { }
 
 controlplane:
-  nameOverride: ""
-  fullnameOverride: ""
   image:
     # when left empty the deployment will select the correct image automatically
     repository: ""
@@ -156,8 +155,6 @@ controlplane:
   affinity: { }
 
 dataplane:
-  nameOverride: ""
-  fullnameOverride: ""
   image:
     # when left empty the deployment will select the correct image automatically
     repository: ""
@@ -252,6 +249,7 @@ dataplane:
   affinity: { }
 
 postgresql:
+  enabled: true
   jdbcUrl: ""
   username: ""
   password: ""
@@ -283,7 +281,7 @@ vault:
     dapsPublicKey: daps-public-key
 
 daps:
-  host: ""
+  url: ""
   clientId: ""
   paths:
     jwks: /jwks.json

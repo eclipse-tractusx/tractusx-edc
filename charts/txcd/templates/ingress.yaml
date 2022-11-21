@@ -1,7 +1,6 @@
-{{- $controlFullName := include "txdc.controlplane.fullname" . }}
+{{- $fullName := include "txdc.fullname" . }}
 {{- $controlLabels := include "txdc.controlplane.labels" . | nindent 4 }}
 {{- $controlEdcEndpoints := .Values.controlplane.endpoints }}
-{{- $dataFullName := include "txdc.dataplane.fullname" . }}
 {{- $dataLabels := include "txdc.dataplane.labels" . | nindent 4 }}
 {{- $dataEdcEndpoints := .Values.dataplane.endpoints }}
 {{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
@@ -9,7 +8,7 @@
 
 {{- range .Values.controlplane.ingresses }}
 {{- if and .enabled .endpoints }}
-{{- $controlIngressName := printf "%s-%s" $controlFullName .hostname }}
+{{- $controlIngressName := printf "%s-controlplane-%s" $fullName .hostname }}
 ---
 {{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
@@ -68,7 +67,7 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $gitVersion }}
               service:
-                name: {{ $controlFullName }}
+                name: {{ $fullName }}-controlPlane
                 port:
                   number: {{ $mapping.port }}
               {{- else }}
@@ -81,7 +80,7 @@ spec:
 
 {{- range .Values.dataplane.ingresses }}
 {{- if and .enabled .endpoints }}
-{{- $dataIngressName := printf "%s-%s" $dataFullName .hostname }}
+{{- $dataIngressName := printf "%s-controlplane-%s" $fullName .hostname }}
 ---
 {{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
@@ -140,7 +139,7 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $gitVersion }}
               service:
-                name: {{ $dataFullName }}
+                name: {{ $fullName }}-dataplane
                 port:
                   number: {{ $mapping.port }}
               {{- else }}

@@ -1,14 +1,20 @@
 ---
 
-# Default values for all-in-one deployment.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+###########
+# INSTALL #
+###########
+install:
+  daps: true
+  postgresql: true
+  vault: true
 
+########
+# DAPS #
+########
 idsdaps:
-  enabled: true
   fullnameOverride: "ids-daps"
   connectors:
-    - id: &sokratesDapsClientId E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
+    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
       name: sokrates
       attributes:
         referringConnector: http://sokrates-edc-controlplane/BPNSOKRATES
@@ -38,7 +44,7 @@ idsdaps:
         uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
         UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
         -----END CERTIFICATE-----
-    - id: &platoDapsClientId 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
+    - id: 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
       name: plato
       attributes:
         referringConnector: http://plato-edc-controlplane/BPNPLATO
@@ -69,10 +75,37 @@ idsdaps:
         zQ==
         -----END CERTIFICATE-----
 
+##############
+# PostgreSQL #
+##############
+plato-postgresql:
+  fullnameOverride: "plato-postgresql"
+  primary:
+    persistence:
+      enabled: false
+  readReplicas:
+    persistence:
+      enabled: false
+  auth:
+    database: "edc"
+    username: "user"
+    password: "password"
+sokrates-postgresql:
+  fullnameOverride: "sokrates-postgresql"
+  primary:
+    persistence:
+      enabled: false
+  readReplicas:
+    persistence:
+      enabled: false
+  auth:
+    database: "edc"
+    username: "user"
+    password: "password"
+
 #########
 # VAULT #
 #########
-
 vault:
   fullnameOverride: "vault"
   enabled: true
@@ -81,7 +114,7 @@ vault:
   server:
     dev:
       enabled: true
-      devRootToken: &vaultToken "root"
+      devRootToken: "root"
     # Must be the same certificate that is configured in section 'ids-daps'
     postStart:
       - "sh"
@@ -216,99 +249,3 @@ vault:
     enabled: true
     externalPort: 8200
     targetPort: 8200
-
-#########
-# PLATO #
-#########
-plato:
-  fullnameOverride: "plato"
-  enabled: true
-  controlplane:
-    debug:
-      enabled: true
-      port: 1044
-      suspendOnStart: true
-    readinessProbe:
-      enabled: false
-    livenessProbe:
-      enabled: false
-    internationalDataSpaces:
-      id: Plato
-      description: Plato Eclipse IDS Data Space Connector
-  postgresql:
-    fullnameOverride: "plato-postgresql"
-    host: "plato-postgresql"
-    enabled: true
-    install: true
-    primary:
-      persistence:
-        enabled: false
-    readReplicas:
-      persistence:
-        enabled: false
-    audit:
-      pgAuditLog: "all, -misc"
-  vault:
-    hashicorp:
-      url: "http://vault:8200"
-      enabled: true
-      token: *vaultToken
-    secretNames:
-      transferProxyTokenSignerPublicKey: plato/daps/my-plato-daps-crt
-      transferProxyTokenSignerPrivateKey: plato/daps/my-plato-daps-key
-      transferProxyTokenEncryptionAesKey: plato/data-encryption-aes-keys
-      dapsPrivateKey: plato/daps/my-plato-daps-key
-      dapsPublicKey: plato/daps/my-plato-daps-crt
-  daps:
-    url: "http://ids-daps:4567"
-    clientId: *platoDapsClientId
-    paths:
-      jwks: /jwks.json
-      token: /token
-  backendService:
-    httpProxyTokenReceiverUrl: "http://example.com"
-
-############
-# Sokrates #
-############
-sokrates:
-  fullnameOverride: "sokrates"
-  enabled: true
-  controlplane:
-    debug:
-      enabled: false
-      port: 1044
-      suspendOnStart: false
-    internationalDataSpaces:
-      id: Sokrates
-      description: Sokrates Eclipse IDS Data Space Connector
-  postgresql:
-    fullnameOverride: "sokrates-postgresql"
-    host: "sokrates-postgresql"
-    enabled: true
-    install: true
-    primary:
-      persistence:
-        enabled: false
-    readReplicas:
-      persistence:
-        enabled: false
-  vault:
-    hashicorp:
-      url: "http://vault:8200"
-      enabled: true
-      token: *vaultToken
-    secretNames:
-      transferProxyTokenSignerPublicKey: sokrates/daps/my-sokrates-daps-crt
-      transferProxyTokenSignerPrivateKey: sokrates/daps/my-sokrates-daps-key
-      transferProxyTokenEncryptionAesKey: sokrates/data-encryption-aes-keys
-      dapsPrivateKey: sokrates/daps/my-sokrates-daps-key
-      dapsPublicKey: sokrates/daps/my-sokrates-daps-crt
-  daps:
-    url: "http://ids-daps:4567"
-    clientId: *sokratesDapsClientId
-    paths:
-      jwks: /jwks.json
-      token: /token
-  backendService:
-    httpProxyTokenReceiverUrl: "http://example.com"

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "txdc.controlplane.fullname" . }}-configmap
+  name: {{ include "txdc.fullname" . }}-controlplane
   namespace: {{ .Release.Namespace | default "default" | quote }}
   labels:
     {{- include "txdc.controlplane.labels" . | nindent 4 }}

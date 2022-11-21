@@ -3,14 +3,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "txdc.controlplane.fullname" . }}
+  name: {{ include "txdc.fullname" . }}-controlplane
   labels:
     {{- include "txdc.controlplane.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "txdc.controlplane.fullname" . }}
+    name: {{ include "txdc.fullname" . }}-controlplane
   minReplicas: {{ .Values.controlplane.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.controlplane.autoscaling.maxReplicas }}
   metrics:
@@ -32,14 +32,14 @@ spec:
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "txdc.dataplane.fullname" . }}
+  name: {{ include "txdc.fullname" . }}-dataplane
   labels:
     {{- include "txdc.dataplane.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "txdc.dataplane.fullname" . }}
+    name: {{ include "txdc.fullname" . }}-dataplane
   minReplicas: {{ .Values.dataplane.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.dataplane.autoscaling.maxReplicas }}
   metrics:
