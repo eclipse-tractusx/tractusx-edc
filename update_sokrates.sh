@@ -6,6 +6,8 @@ helm uninstall cx-sokrates --namespace cx
 # INSTALL
 helm install cx-sokrates --namespace cx --create-namespace charts/txcd \
     --set fullnameOverride=sokrates \
+    --set controlplane.service.type=NodePort \
+    --set controlplane.endpoints.data.authKey=password \
     --set controlplane.image.tag=latest \
     --set controlplane.image.pullPolicy=Never \
     --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \

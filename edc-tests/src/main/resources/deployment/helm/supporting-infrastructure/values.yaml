@@ -7,6 +7,8 @@ install:
   daps: true
   postgresql: true
   vault: true
+  minio: true
+  backendservice: true
 
 ########
 # DAPS #
@@ -104,11 +106,46 @@ sokrates-postgresql:
     password: "password"
 
 #########
+# MINIO #
+#########
+minio:
+  fullnameOverride: minio
+  replicas: 2
+  drivesPerNode: 0
+  persistence:
+    size: 128Mi
+  resources:
+    requests:
+      memory: 128Mi
+  service:
+    type: NodePort
+    control:
+      port: 9000
+  users:
+    - accessKey: platoqwerty123
+      secretKey: platoqwerty123
+      policy: customBucketPolicy
+    - accessKey: sokratesqwerty123
+      secretKey: sokratesqwerty123
+      policy: customBucketPolicy
+  policies:
+    - name: customBucketPolicy
+      statements:
+        - resources:
+            - 'arn:aws:s3:::*'
+          actions:
+            - "s3:PutObject"
+            - "s3:ListBucket"
+            - "s3:CreateBucket"
+            - "s3:GetObject"
+            - "s3:DeleteObject"
+            - "s3:DeleteBucket"
+
+#########
 # VAULT #
 #########
 vault:
   fullnameOverride: "vault"
-  enabled: true
   injector:
     enabled: false
   server:

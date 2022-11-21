@@ -52,6 +52,7 @@ controlplane:
     data:
       port: 8081
       path: /data
+      authKey: ""
     validation:
       port: 8082
       path: /validation

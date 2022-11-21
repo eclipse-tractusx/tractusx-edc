@@ -5,8 +5,8 @@
   http{{ if .tls }}s{{ end }}://{{ .hostname }}{{ .path }}
 {{- end }}
 {{- else if contains "NodePort" $.Values.controlplane.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "txdc.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export NODE_PORT=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "txdc.fullname" $ }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ $.Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo http://$NODE_IP:$NODE_PORT
 {{- else if contains "LoadBalancer" $.Values.controlplane.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
