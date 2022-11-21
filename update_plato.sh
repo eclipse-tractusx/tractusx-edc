@@ -4,7 +4,7 @@
 helm uninstall cx-plato --namespace cx
 
 # INSTALL
-helm install cx-plato --namespace cx --create-namespace charts/txcd \
+helm install cx-plato --namespace cx --create-namespace charts/txdc \
     --set fullnameOverride=plato \
     --set controlplane.service.type=NodePort \
     --set controlplane.endpoints.data.authKey=password \

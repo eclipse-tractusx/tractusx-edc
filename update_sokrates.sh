@@ -4,7 +4,7 @@
 helm uninstall cx-sokrates --namespace cx
 
 # INSTALL
-helm install cx-sokrates --namespace cx --create-namespace charts/txcd \
+helm install cx-sokrates --namespace cx --create-namespace charts/txdc \
     --set fullnameOverride=sokrates \
     --set controlplane.service.type=NodePort \
     --set controlplane.endpoints.data.authKey=password \

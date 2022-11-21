@@ -70,7 +70,7 @@ Control Selector labels
 */}}
 {{- define "txdc.controlplane.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "txdc.name" . }}-controlplane
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}-controlplane
 {{- if .Values.controlplane.podLabels }}
 {{ .Values.controlplane.podLabels | toYaml }}
 {{- end }}
@@ -81,7 +81,7 @@ Data Selector labels
 */}}
 {{- define "txdc.dataplane.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "txdc.name" . }}-dataplane
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}-dataplane
 {{- if .Values.dataplane.podLabels }}
 {{ .Values.dataplane.podLabels | toYaml }}
 {{- end }}
