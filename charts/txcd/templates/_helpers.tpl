@@ -116,12 +116,12 @@ Control IDS URL
 {{- with (index .Values.controlplane.ingresses 0) }}
 {{- if .enabled }}{{/* if ingress enabled */}}
 {{- if .tls.enabled }}{{/* if TLS enabled */}}
-{{- printf "https://%s%s" .hostname $.Values.controlplane.endpoints.ids.path -}}
+{{- printf "https://%s" .hostname -}}
 {{- else }}{{/* else when TLS not enabled */}}
-{{- printf "http://%s%s" .hostname $.Values.controlplane.endpoints.ids.path -}}
+{{- printf "http://%s" .hostname -}}
 {{- end }}{{/* end if tls */}}
 {{- else }}{{/* else when ingress not enabled */}}
-{{- printf "http://%s:%v%s" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.ids.port $.Values.controlplane.endpoints.ids.path -}}
+{{- printf "http://%s-controlplane:%v" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.ids.port -}}
 {{- end }}{{/* end if ingress */}}
 {{- end }}{{/* end with ingress */}}
 {{- end }}
@@ -130,7 +130,7 @@ Control IDS URL
 Data Control URL
 */}}
 {{- define "txdc.dataplane.url.control" -}}
-{{- printf "http://%s:%v%s" (include "txdc.fullname" . ) .Values.dataplane.endpoints.control.port .Values.dataplane.endpoints.control.path -}}
+{{- printf "http://%s-dataplane:%v%s" (include "txdc.fullname" . ) .Values.dataplane.endpoints.control.port .Values.dataplane.endpoints.control.path -}}
 {{- end }}
 
 {{/*
@@ -145,7 +145,7 @@ Data Public URL
 {{- printf "http://%s%s" .hostname $.Values.dataplane.endpoints.public.path -}}
 {{- end }}{{/* end if tls */}}
 {{- else }}{{/* else when ingress not enabled */}}
-{{- printf "http://%s:%v%s" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.public.port $.Values.dataplane.endpoints.public.path -}}
+{{- printf "http://%s-dataplane:%v%s" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.public.port $.Values.dataplane.endpoints.public.path -}}
 {{- end }}{{/* end if ingress */}}
 {{- end }}{{/* end with ingress */}}
 {{- end }}

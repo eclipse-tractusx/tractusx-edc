@@ -140,9 +140,7 @@ spec:
             - name: IDS_WEBHOOK_ADDRESS
               value: {{ include "txdc.controlplane.url.ids" . }}
             - name: EDC_IDS_ENDPOINT
-              value: {{ include "txdc.controlplane.url.ids" . }}
-            - name: EDC_IDS_ENDPOINT_AUDIENCE
-              value: {{ printf "%s%s" (include "txdc.controlplane.url.ids" . ) "/data" }}
+              value: {{ printf "%s%s" (include "txdc.controlplane.url.ids" .) .Values.controlplane.endpoints.ids.path }}
             - name: EDC_IDS_ID
               value: {{ printf "urn:connector:%s" (lower .Values.controlplane.internationalDataSpaces.id)  }}
             - name: EDC_IDS_DESCRIPTION
@@ -155,6 +153,10 @@ spec:
               value: {{ .Values.controlplane.internationalDataSpaces.curator | quote }}
             - name: EDC_IDS_CATALOG_ID
               value: {{ printf "urn:catalog:%s" (lower .Values.controlplane.internationalDataSpaces.catalogId) }}
+            - name: EDC_OAUTH_PROVIDER_AUDIENCE
+              value: "idsc:IDS_CONNECTORS_ALL"
+            - name: EDC_OAUTH_ENDPOINT_AUDIENCE
+              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.ids" . ) .Values.controlplane.endpoints.ids.path "/data" }}
 
             {{- if .Values.postgresql.enabled }}
             ################
