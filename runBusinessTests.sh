@@ -2,7 +2,7 @@
 
 set -x -o xtrace
 
-export EDC_AWS_ENDPOINT_OVERRIDE=http://minio:9000
+export EDC_AWS_ENDPOINT_OVERRIDE=$(minikube service minio -n cx --url)
 
 export PLATO_DATA_MANAGEMENT_URL=$(minikube service plato-controlplane -n cx --url | sed -n 3p)
 export PLATO_DATA_MANAGEMENT_URL="${PLATO_DATA_MANAGEMENT_URL}/data"

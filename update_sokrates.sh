@@ -29,6 +29,9 @@ helm install cx-sokrates --namespace cx --create-namespace charts/txcd \
     --set vault.secretNames.dapsPublicKey=sokrates/daps/my-sokrates-daps-crt \
     --set daps.url=http://ids-daps:4567 \
     --set daps.clientId=E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65 \
+    --set dataplane.aws.endpointOverride=http://minio:9000 \
+    --set dataplane.aws.secretAccessKey=sokratesqwerty123 \
+    --set dataplane.aws.accessKeyId=sokratesqwerty123 \
     --set backendService.httpProxyTokenReceiverUrl=http://example.com
 
 kubectl get pods -n cx

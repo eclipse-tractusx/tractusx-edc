@@ -29,6 +29,9 @@ helm install cx-plato --namespace cx --create-namespace charts/txcd \
     --set vault.secretNames.dapsPublicKey=plato/daps/my-plato-daps-crt \
     --set daps.url=http://ids-daps:4567 \
     --set daps.clientId=99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23 \
+    --set dataplane.aws.endpointOverride=http://minio:9000 \
+    --set dataplane.aws.secretAccessKey=platoqwerty123 \
+    --set dataplane.aws.accessKeyId=platoqwerty123 \
     --set backendService.httpProxyTokenReceiverUrl=http://example.com
 
 kubectl get pods -n cx

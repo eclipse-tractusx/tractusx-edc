@@ -165,8 +165,25 @@ dataplane:
   initContainers: [ ]
   debug:
     enabled: false
-    port: ""
+    port: 1044
     suspendOnStart: false
+  logLevel: INFO
+  livenessProbe:
+    # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
   service:
     type: ClusterIP
     port: 80
@@ -175,17 +192,21 @@ dataplane:
       port: 8080
       path: /api
     public:
-      port: 8185
+      port: 8081
       path: /api/public
     validation:
-      port: 8186
+      port: 8082
       path: /validation
     control:
-      port: 9999
+      port: 8083
       path: /api/dataplane/control
     metrics:
-      port: 9090
+      port: 8084
       path: /metrics
+  aws:
+    endpointOverride: ""
+    accessKeyId: ""
+    secretAccessKey: ""
   podLabels: { }
   podAnnotations: { }
   podSecurityContext:
