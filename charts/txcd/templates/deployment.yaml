@@ -102,7 +102,7 @@ spec:
             - name: EDC_OAUTH_PROVIDER_JWKS_URL
               value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.jwks }}
             - name: EDC_OAUTH_TOKEN_URL
-              value: {{ printf "https://%s%s" .Values.daps.host .Values.daps.paths.token }}
+              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.token }}
             - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
               value: {{ .Values.vault.secretNames.dapsPrivateKey | quote }}
             - name: EDC_OAUTH_PUBLIC_KEY_ALIAS

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # UNINSTALL
-helm uninstall plato --namespace plato
+helm uninstall cx --namespace cx
 sleep 10
 
 # CREATE NEW IMAGE
@@ -14,12 +14,17 @@ minikube image ls | grep edc
 
 # INSTALL
 helm dependency update edc-tests/src/main/resources/deployment/helm/all-in-one
-helm install plato --namespace plato --create-namespace edc-tests/src/main/resources/deployment/helm/all-in-one \
-    --set txdc.controlplane.image.tag=latest \
-    --set txdc.controlplane.image.pullPolicy=Never \
-    --set txdc.controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
-    --set txdc.dataplane.image.tag=latest \
-    --set txdc.dataplane.image.pullPolicy=Never \
-    --set txdc.dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
-    --set txdc.vault.hashicorp.url=http://plato-vault:8200
-kubectl get pods -n plato
+helm install cx --namespace cx --create-namespace edc-tests/src/main/resources/deployment/helm/all-in-one \
+    --set plato.controlplane.image.tag=latest \
+    --set plato.controlplane.image.pullPolicy=Never \
+    --set plato.controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
+    --set plato.dataplane.image.tag=latest \
+    --set plato.dataplane.image.pullPolicy=Never \
+    --set plato.dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
+    --set sokrates.controlplane.image.tag=latest \
+    --set sokrates.controlplane.image.pullPolicy=Never \
+    --set sokrates.controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
+    --set sokrates.dataplane.image.tag=latest \
+    --set sokrates.dataplane.image.pullPolicy=Never \
+    --set sokrates.dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault
+kubectl get pods -n cx

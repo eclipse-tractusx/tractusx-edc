@@ -40,7 +40,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.controlplane.fullname" -}}
-{{- if .Values.controlplane.fullnameOverride }}
+{{- if .Values.fullnameOverride }}
+{{- printf "%s-%s" .Values.fullnameOverride "controlplane" | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
+{{- else if .Values.controlplane.fullnameOverride }}
 {{- .Values.controlplane.fullnameOverride | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default (include "control-default" . ) .Values.controlplane.nameOverride }}
@@ -58,7 +60,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.dataplane.fullname" -}}
-{{- if .Values.dataplane.fullnameOverride }}
+{{- if .Values.fullnameOverride }}
+{{- printf "%s-%s" .Values.fullnameOverride "dataplane" | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
+{{- else if .Values.dataplane.fullnameOverride }}
 {{- .Values.dataplane.fullnameOverride | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $dataDefault := ( printf "%s-%s" .Chart.Name "data") }}
@@ -205,7 +209,7 @@ PostgreSQL Password
 {{- if .Values.postgresql.auth.password }}
 {{- print .Values.postgresql.auth.password | quote }}
 {{- else }}
-{{ print ""}}
+{{- print ""}}
 {{- end }}
 {{- end }}
 
@@ -216,7 +220,7 @@ PostgreSQL User
 {{- if .Values.postgresql.auth.username }}
 {{- print .Values.postgresql.auth.username | quote }}
 {{- else }}
-{{ print ""}}
+{{- print ""}}
 {{- end }}
 {{- end }}
 
@@ -225,7 +229,7 @@ PostgreSQL Connection Host
 */}}
 {{- define "txdc.postgresql.host" -}}
 {{- if .Values.postgresql.host }}
-{{ print .Values.postgresql.host }}
+{{- print .Values.postgresql.host }}
 {{- else }}
 {{- printf "%s-%s" .Release.Name "postgresql" }}
 {{- end }}
@@ -238,7 +242,7 @@ PostgreSQL Connection Host
 {{- if .Values.postgresql.containerPorts.postgresql }}
 {{- print .Values.postgresql.containerPorts.postgresql }}
 {{- else }}
-{{ print "5432" }}
+{{- print "5432" }}
 {{- end }}
 {{- end }}
 
@@ -249,7 +253,7 @@ PostgreSQL Connection Host
 {{- if .Values.postgresql.auth.database }}
 {{- print .Values.postgresql.auth.database }}
 {{- else }}
-{{ print "postgres" }}
+{{- print "postgres" }}
 {{- end }}
 {{- end }}
 
@@ -258,7 +262,7 @@ PostgreSQL Connection String
 {{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
 */}}
 {{- define "txdc.postgresql.jdbcUrl" -}}
-{{ printf "jdbc:postgresql://%s:%v/%s" (include "txdc.postgresql.host" . ) (include "txdc.postgresql.port" . ) (include "txdc.postgresql.database" . ) }}
+{{- printf "jdbc:postgresql://%s:%v/%s" (include "txdc.postgresql.host" . ) (include "txdc.postgresql.port" . ) (include "txdc.postgresql.database" . ) | replace "+" "_"  | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 

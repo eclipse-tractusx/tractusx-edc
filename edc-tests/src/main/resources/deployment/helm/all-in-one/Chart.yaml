@@ -34,16 +34,24 @@ dependencies:
 
   # HashiCorp Vault
   - name: vault
+    alias: vault
     version: 0.20.0
     repository: https://helm.releases.hashicorp.com
-    alias: vault
     condition: vault.enabled
 
   # Plato Connector
   - name: txdc
+    alias: plato
     version: ">=0.0.1"
     repository: "file://../../../../../../../charts/txcd"
-    condition: txdc.enabled
+    condition: plato.enabled
+
+  # Sokrates Connector
+  - name: txdc
+    alias: sokrates
+    version: ">=0.0.1"
+    repository: "file://../../../../../../../charts/txcd"
+    condition: plato.enabled
     
   # - name: backend-service
   #   version: "0.0.6"
