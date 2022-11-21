@@ -204,12 +204,12 @@ jobs:
           sleep 5s
 
           # Wait for Control-/DataPlane and backend-service to become ready
-          #kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokratesbackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokratesbackendapplication --tail 500 && exit 1 )
-          #kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=platobackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=platobackendapplication --tail 500 && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=txdc-sokrates-controlplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=txdc-sokrates-controlplane --tail 500 && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=txdc-sokrates-dataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=txdc-sokrates-dataplane --tail 500 && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=txdc-plato-controlplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/name=txdc-plato-controlplane --tail 500 && exit 1 )
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=txdc-plato-dataplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/name=txdc-plato-dataplane --tail 500 && exit 1 )
+          #kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokratesbackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=sokratesbackendapplication --tail 500 && exit 1 )
+          #kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=platobackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=platobackendapplication --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokrates-controlplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=sokrates-controlplane --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokrates-dataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=sokrates-dataplane --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=plato-controlplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/instance=plato-controlplane --tail 500 && exit 1 )
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=plato-dataplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/instance=plato-dataplane --tail 500 && exit 1 )
 
       ##############################################
       ### Run Business Tests inside kind cluster ###
