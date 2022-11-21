@@ -222,9 +222,9 @@ spec:
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL
               value: {{ include "txdc.dataplane.url.control" . }}
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES
-              value: HttpData
+              value: HttpData,AmazonS3
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES
-              value: HttpProxy
+              value: HttpProxy,AmazonS3
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES
               value: |-
                 {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
