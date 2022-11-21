@@ -227,7 +227,7 @@ spec:
               value: HttpProxy,AmazonS3
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_PROPERTIES
               value: |-
-                {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
+                {{ printf "{ \"publicApiUrl\": \"%s/\" }" (include "txdc.dataplane.url.public" . ) }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
             - name: EDC_TRANSFER_PROXY_ENDPOINT
