@@ -51,6 +51,8 @@ helm.sh/chart: {{ include "txdc.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: edc-controlplane
+app.kubernetes.io/part-of: edc
 {{- end }}
 
 {{/*
@@ -63,6 +65,8 @@ helm.sh/chart: {{ include "txdc.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: edc-dataplane
+app.kubernetes.io/part-of: edc
 {{- end }}
 
 {{/*
