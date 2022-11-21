@@ -267,15 +267,15 @@ spec:
             {{- if .Values.vault.azure.enabled }}
 
             - name: EDC_VAULT_CLIENTID
-              value: {{ .Values.vault.azure.client | quote  }}
+              value: {{ .Values.vault.azure.client | required ".Values.vault.azure.client is required" | quote  }}
             - name: EDC_VAULT_TENANTID
-              value: {{ .Values.vault.azure.tenant | quote }}
+              value: {{ .Values.vault.azure.tenant | required ".Values.vault.azure.tenant is required" | quote }}
             - name: EDC_VAULT_NAME
-              value: {{ .Values.vault.azure.name | quote }}
+              value: {{ .Values.vault.azure.name | required ".Values.vault.azure.name is required" | quote }}
             - name: EDC_VAULT_CLIENTSECRET
-              value: {{ .Values.vault.azure.secret | quote }}
+              value: {{ .Values.vault.azure.secret | required ".Values.vault.azure.secret is required" | quote }}
             - name: EDC_VAULT_CERTIFICATE
-              value: {{ .Values.vault.azure.certificate | quote }}
+              value: {{ .Values.vault.azure.certificate | required ".Values.vault.azure.certificate is required" | quote }}
 
             {{- end }}
 
