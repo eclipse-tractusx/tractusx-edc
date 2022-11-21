@@ -296,8 +296,8 @@ vault:
     secret: ""
     certificate: ""
   secretNames:
-    transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
     transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
+    transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
     dapsPrivateKey: daps-private-key
     dapsPublicKey: daps-public-key

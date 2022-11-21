@@ -141,10 +141,10 @@ jobs:
             --set fullnameOverride=plato \
             --set controlplane.service.type=NodePort \
             --set controlplane.endpoints.data.authKey=password \
-            --set controlplane.image.tag=latest \
+            --set controlplane.image.tag=business-test \
             --set controlplane.image.pullPolicy=Never \
             --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
-            --set dataplane.image.tag=latest \
+            --set dataplane.image.tag=business-test \
             --set dataplane.image.pullPolicy=Never \
             --set dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
             --set controlplane.debug.enabled=true \
@@ -173,10 +173,10 @@ jobs:
             --set fullnameOverride=sokrates \
             --set controlplane.service.type=NodePort \
             --set controlplane.endpoints.data.authKey=password \
-            --set controlplane.image.tag=latest \
+            --set controlplane.image.tag=business-test \
             --set controlplane.image.pullPolicy=Never \
             --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
-            --set dataplane.image.tag=latest \
+            --set dataplane.image.tag=business-test \
             --set dataplane.image.pullPolicy=Never \
             --set dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
             --set controlplane.debug.enabled=true \
