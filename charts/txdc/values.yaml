@@ -41,6 +41,7 @@ controlplane:
     # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
     # -- number of consecutive successes for the probe to be considered successful after having failed
+    # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   readinessProbe:
     # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
@@ -111,7 +112,7 @@ controlplane:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-  # runAsUser: 1000
+    # runAsUser: 1000
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
@@ -213,10 +214,12 @@ dataplane:
     timeoutSeconds: 5
     # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
+    # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   readinessProbe:
     # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
+    # -- seconds to wait before performing the first readiness check
     initialDelaySeconds: 30
     # -- this fields specifies that kubernetes should perform a liveness check every 10 seconds
     periodSeconds: 10
@@ -262,7 +265,7 @@ dataplane:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-  # runAsUser: 1000
+    # runAsUser: 1000
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
@@ -304,7 +307,7 @@ dataplane:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-  #   memory: 128Mi
+    #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     enabled: false
