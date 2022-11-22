@@ -15,18 +15,14 @@ The reason IDS did this is to prevent the IDS DAPS to know, which connectors tal
 | Key | Description | Mandatory | Default |
 |:----|:----|----|----|
 | edc.oauth.token.url | Token URL of the DAPS | X | |
-| edc.oauth.public.key.alias | Vault alias of the public key | x* | |
-| edc.oauth.public.key | Vault alias of the public key | x* | |
+| edc.oauth.public.key.alias | Vault alias of the public key | X | |
 | edc.oauth.client.id | DAPS client id of the connector | X | |
-| edc.oauth.private.key.alias | Vault lias of the private key | x* | |
-| edc.oauth.private.key | Vault lias of the private key | x* | |
+| edc.oauth.private.key.alias | Vault lias of the private key | X | |
 | edc.oauth.token.expiration.seconds | | | 5 minutes |
 | edc.oauth.validation.nbf.leeway | DAPS token request leeway | | 10 seconds |
 | edc.oauth.provider.jwks.refresh | Time between refresh of the DAPS json web key set | | 5 minutes |
 | edc.ids.endpoint.audience | The audience the connector requests from the DAPS. Should be the IDS URL of the connector, e.g. `http://plato-edc-controlplane:8282/api/v1/ids/data` | X | |
 | edc.ids.validation.referringconnector | Adds checks to the DAPS token. Validation that the `referringConnector` equals the `issuerConnector` and the `securityProfile` of the token is equal to the profile of the IDS message | | false |
-
-<small>* for each key there must be ether a entry in the vault or the configuration</small>
 
 ## Audience Validation
 

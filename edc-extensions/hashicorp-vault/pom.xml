@@ -120,10 +120,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
