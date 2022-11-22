@@ -41,6 +41,7 @@ controlplane:
     # -- when a probe fails kubernetes will try 6 times before giving up
     failureThreshold: 6
     # -- number of consecutive successes for the probe to be considered successful after having failed
+    # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   readinessProbe:
     # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
