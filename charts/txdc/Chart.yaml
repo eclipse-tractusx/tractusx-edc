@@ -1,6 +1,6 @@
 apiVersion: v2
 name: txdc
-description: A Helm chart for Kubernetes
+description: A Helm chart for Tractus-X Eclipse Data Space Connector
 
 # A chart can be either an 'application' or a 'library' chart.
 #
