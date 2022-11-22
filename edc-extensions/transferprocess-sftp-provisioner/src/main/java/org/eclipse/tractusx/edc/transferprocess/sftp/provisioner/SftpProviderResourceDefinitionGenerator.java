@@ -14,23 +14,31 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.transfer.provision.ProviderResourceDefinitionGenerator;
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefinition;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.Nullable;
+
+import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.DATA_ADDRESS_TYPE;
+import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
 
 @RequiredArgsConstructor
 public class SftpProviderResourceDefinitionGenerator
     implements ProviderResourceDefinitionGenerator {
-  @NonNull private final String dataAddressType;
 
   @Override
   public @Nullable ResourceDefinition generate(
       DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
-    return null;
+    if (!(assetAddress instanceof SftpDataAddress) || !assetAddress.getType().equals(DATA_ADDRESS_TYPE))
+    {
+      throw new EdcSftpException(String.format("Data Address %s is not an SFTP Data Address", assetAddress.getKeyName()));
+    }
+    SftpDataAddress sftpDataAddress = (SftpDataAddress) assetAddress;
+    return new SftpProviderResourceDefinition(sftpDataAddress.getType(), PROVIDER_TYPE, sftpDataAddress.getSftpUserName(), sftpDataAddress.getSftpUserPassword(), sftpDataAddress.getSftpUserPrivateKey(), sftpDataAddress.getSftpLocationHost(),sftpDataAddress.getSftpLocationPort(), sftpDataAddress.getSftpLocationPath());
   }
 }

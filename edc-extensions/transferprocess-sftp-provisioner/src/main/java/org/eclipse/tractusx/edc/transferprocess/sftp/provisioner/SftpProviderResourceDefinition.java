@@ -30,7 +30,7 @@ public class SftpProviderResourceDefinition extends ResourceDefinition {
   @NonNull private String sftpUserName;
   @ToString.Exclude private String sftpUserPassword;
   @ToString.Exclude private byte[] sftpUserPrivateKey;
-  @NonNull private String sftpLocationUrl;
+  @NonNull private String sftpLocationHost;
   @NonNull private Integer sftpLocationPort;
   @NonNull private String sftpLocationPath;
 

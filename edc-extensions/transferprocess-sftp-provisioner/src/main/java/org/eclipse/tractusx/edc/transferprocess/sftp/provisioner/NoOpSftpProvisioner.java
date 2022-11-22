@@ -14,8 +14,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.policy.model.Policy;
@@ -33,11 +31,14 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocationFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserFactory;
 
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
 @RequiredArgsConstructor
 public class NoOpSftpProvisioner
     implements Provisioner<SftpProviderResourceDefinition, SftpProvisionedContentResource> {
-  private static final String DATA_ADDRESS_TYPE = "sftp";
-  private static final String PROVIDER_TYPE = "NoOp";
+  static final String DATA_ADDRESS_TYPE = "sftp";
+  static final String PROVIDER_TYPE = "NoOp";
 
   @NonNull private final PolicyEngine policyEngine;
 
@@ -84,7 +85,7 @@ public class NoOpSftpProvisioner
             location =
                 Objects.requireNonNull(
                     sftpLocationFactory.createSftpLocation(
-                        sftpProviderResourceDefinition.getSftpLocationUrl(),
+                        sftpProviderResourceDefinition.getSftpLocationHost(),
                         sftpProviderResourceDefinition.getSftpLocationPort(),
                         sftpProviderResourceDefinition.getSftpLocationPath()));
             user =
