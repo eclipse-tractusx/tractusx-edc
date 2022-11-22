@@ -210,6 +210,10 @@ controlplane:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
@@ -339,6 +343,10 @@ dataplane:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+  opentelemetry:
+    properties: |-
+      otel.javaagent.enabled=false
+      otel.javaagent.debug=false
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }

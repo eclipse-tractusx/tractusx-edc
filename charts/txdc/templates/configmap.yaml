@@ -8,8 +8,7 @@ metadata:
     {{- include "txdc.controlplane.labels" . | nindent 4 }}
 data:
   opentelemetry.properties: |-
-    otel.javaagent.enabled=false
-    otel.javaagent.debug=false
+    {{- .Values.controlplane.opentelemetry.properties | nindent 4 }}
 
   logging.properties: |-
     .level={{- .Values.controlplane.logLevel }}
@@ -28,8 +27,7 @@ metadata:
     {{- include "txdc.dataplane.labels" . | nindent 4 }}
 data:
   opentelemetry.properties: |-
-    otel.javaagent.enabled=false
-    otel.javaagent.debug=false
+    {{- .Values.dataplane.opentelemetry.properties | nindent 4 }}
 
   logging.properties: |-
     .level={{- .Values.dataplane.logLevel }}
