@@ -58,7 +58,7 @@ dependencies:
     alias: backendservice
     condition: install.backendservice
 
-   # Minio
+  # Minio
   - name: minio
     alias: minio
     repository: https://charts.min.io/
