@@ -112,6 +112,8 @@ minio:
   fullnameOverride: minio
   replicas: 2
   drivesPerNode: 0
+  serviceAccount:
+    create: false
   persistence:
     size: 128Mi
   resources:

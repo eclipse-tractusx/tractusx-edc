@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.edc.tests.Environment;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -34,6 +35,7 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -43,11 +45,23 @@ import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+@Slf4j
 public class S3Client {
 
   private final software.amazon.awssdk.services.s3.S3Client s3;
 
   public S3Client(Environment environment) {
+
+    log.info("###################");
+    log.info("###################");
+    log.info("###################");
+    log.info("#{}#", environment.getAwsSecretAccessKey());
+    log.info("#{}#", environment.getAwsAccessKey());
+    log.info("#{}#", environment.getAwsEndpointOverride());
+    log.info("###################");
+    log.info("###################");
+    log.info("###################");
+
     s3 =
         software.amazon.awssdk.services.s3.S3Client.builder()
             .region(Region.US_EAST_1)
@@ -61,7 +75,11 @@ public class S3Client {
   }
 
   public void createBucket(String bucketName) {
-    s3.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+    try {
+      s3.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+    } catch (BucketAlreadyOwnedByYouException e) {
+      log.info("'{}' bucket already owned - skipped bucket creation", bucketName);
+    }
   }
 
   public File uploadFile(String bucketName, String fileName) throws IOException {

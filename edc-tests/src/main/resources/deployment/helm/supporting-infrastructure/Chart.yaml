@@ -53,7 +53,7 @@ dependencies:
     condition: install.postgresql
 
   - name: backend-service
-    version: "0.0.6"
+    version: 0.0.6
     repository: https://denisneuling.github.io/cx-backend-service
     alias: backendservice
     condition: install.backendservice
@@ -61,6 +61,6 @@ dependencies:
    # Minio
   - name: minio
     alias: minio
-    repository: https://charts.min.io
-    version: 4.1.0
+    repository: https://charts.min.io/
+    version: 5.0.1
     condition: install.minio

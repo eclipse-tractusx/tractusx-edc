@@ -75,7 +75,7 @@ controlplane:
       # -- port for incoming api calls
       port: 8082
       # -- path for incoming api calls
-      path: /validation# -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
+      path: /validation
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls

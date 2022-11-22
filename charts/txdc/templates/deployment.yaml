@@ -231,7 +231,7 @@ spec:
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/data-plane-transfer
             - name: EDC_TRANSFER_PROXY_ENDPOINT
-              value: {{ include "txdc.dataplane.url.public" . }}
+              value: {{ include "txdc.dataplane.url.public" . }}/
             - name: EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey | quote }}
             - name: EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
