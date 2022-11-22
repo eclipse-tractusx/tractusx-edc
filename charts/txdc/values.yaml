@@ -262,7 +262,7 @@ dataplane:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-  # runAsUser: 1000
+    # runAsUser: 1000
   ## Ingress declaration to expose the network service.
   ingresses:
     ## Public / Internet facing Ingress
