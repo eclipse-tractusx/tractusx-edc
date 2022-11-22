@@ -132,7 +132,7 @@ minio:
       policy: customBucketPolicy
   buckets:
     # in some cases the minio API acts strange if there exists no bucket at all
-    - name: dummyBucket
+    - name: dummybucket
       policy: none
       purge: true
   policies:
