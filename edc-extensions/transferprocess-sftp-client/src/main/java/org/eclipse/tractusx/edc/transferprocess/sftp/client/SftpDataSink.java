@@ -14,15 +14,34 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import java.io.IOException;
 import java.util.List;
+import lombok.Builder;
+import lombok.NonNull;
+import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.ParallelSink;
+import org.eclipse.dataspaceconnector.spi.response.ResponseStatus;
 import org.eclipse.dataspaceconnector.spi.response.StatusResult;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
+@Builder
 public class SftpDataSink extends ParallelSink {
+  @NonNull private final SftpUser sftpUser;
+  @NonNull private final SftpLocation sftpLocation;
+  @NonNull private final SftpClientWrapper sftpClientWrapper;
 
   @Override
   protected StatusResult<Void> transferParts(List<DataSource.Part> parts) {
-    return null;
+    for (DataSource.Part part : parts) {
+      try {
+        sftpClientWrapper.uploadFile(
+            sftpUser, sftpLocation, part.openStream(), SftpClient.OpenMode.Append);
+      } catch (IOException e) {
+        return StatusResult.failure(ResponseStatus.FATAL_ERROR, e.getMessage());
+      }
+    }
+    return StatusResult.success();
   }
 }

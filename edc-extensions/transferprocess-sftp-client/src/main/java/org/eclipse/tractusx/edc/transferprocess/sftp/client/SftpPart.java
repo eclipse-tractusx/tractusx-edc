@@ -19,8 +19,8 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 @Builder
 public class SftpPart implements DataSource.Part {

@@ -14,19 +14,14 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocationFactory;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocationFactory;
 
 @RequiredArgsConstructor
-public class ConfigBackedSftpLocationFactory implements SftpLocationFactory {
-  @NonNull private final String sftpHost;
-  @NonNull private final Integer sftpPort;
-  @NonNull private final String sftpPath;
-
+public class NoOpSftpLocationFactory implements SftpLocationFactory {
   @Override
-  public SftpLocation createSftpLocation(String transferProcessId) {
+  public SftpLocation createSftpLocation(String sftpHost, Integer sftpPort, String sftpPath) {
     return SftpLocation.builder().host(sftpHost).port(sftpPort).path(sftpPath).build();
   }
 }

@@ -28,30 +28,32 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DeprovisionedRes
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionResponse;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionedResource;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefinition;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocationFactory;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpProvider;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUserFactory;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocationFactory;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserFactory;
 
 @RequiredArgsConstructor
-public class SftpProvisioner
+public class NoOpSftpProvisioner
     implements Provisioner<SftpProviderResourceDefinition, SftpProvisionedContentResource> {
   private static final String DATA_ADDRESS_TYPE = "sftp";
+  private static final String PROVIDER_TYPE = "NoOp";
 
   @NonNull private final PolicyEngine policyEngine;
 
-  @NonNull private final SftpLocationFactory sftpLocationFactory;
+  @NonNull private final NoOpSftpProvider sftpProvider;
 
-  @NonNull private final SftpUserFactory sftpUserFactory;
+  private final SftpLocationFactory sftpLocationFactory = new NoOpSftpLocationFactory();
 
-  @NonNull private final SftpProvider sftpProvider;
+  private final SftpUserFactory sftpUserFactory = new NoOpSftpUserFactory();
 
   @Override
   public boolean canProvision(@NonNull ResourceDefinition resourceDefinition) {
     return resourceDefinition instanceof SftpProviderResourceDefinition
         && DATA_ADDRESS_TYPE.equals(
-            ((SftpProviderResourceDefinition) resourceDefinition).getDataAddressType());
+            ((SftpProviderResourceDefinition) resourceDefinition).getDataAddressType())
+        && PROVIDER_TYPE.equals(
+            ((SftpProviderResourceDefinition) resourceDefinition).getProviderType());
   }
 
   @Override
@@ -64,12 +66,15 @@ public class SftpProvisioner
     if (dataAddress == null) {
       return false;
     }
-    return DATA_ADDRESS_TYPE.equals(dataAddress.getType());
+    return DATA_ADDRESS_TYPE.equals(dataAddress.getType())
+        && PROVIDER_TYPE.equals(
+            ((SftpProvisionedContentResource) provisionedResource).getProviderType());
   }
 
   @Override
   public CompletableFuture<StatusResult<ProvisionResponse>> provision(
       SftpProviderResourceDefinition sftpProviderResourceDefinition, Policy policy) {
+
     return CompletableFuture.supplyAsync(
         () -> {
           SftpLocation location;
@@ -79,11 +84,15 @@ public class SftpProvisioner
             location =
                 Objects.requireNonNull(
                     sftpLocationFactory.createSftpLocation(
-                        sftpProviderResourceDefinition.getTransferProcessId()));
+                        sftpProviderResourceDefinition.getSftpLocationUrl(),
+                        sftpProviderResourceDefinition.getSftpLocationPort(),
+                        sftpProviderResourceDefinition.getSftpLocationPath()));
             user =
                 Objects.requireNonNull(
                     sftpUserFactory.createSftpUser(
-                        sftpProviderResourceDefinition.getTransferProcessId()));
+                        sftpProviderResourceDefinition.getSftpUserName(),
+                        sftpProviderResourceDefinition.getSftpUserPassword(),
+                        sftpProviderResourceDefinition.getSftpUserPrivateKey()));
             sftpProvider.createLocation(location);
             sftpProvider.createUser(user);
           } catch (Exception e) {
@@ -92,7 +101,10 @@ public class SftpProvisioner
 
           SftpProvisionedContentResource sftpProvisionedContentResource =
               new SftpProvisionedContentResource(
-                  user, location, sftpProviderResourceDefinition.getTransferProcessId());
+                  user,
+                  location,
+                  sftpProviderResourceDefinition.getTransferProcessId(),
+                  PROVIDER_TYPE);
 
           return StatusResult.success(
               ProvisionResponse.Builder.newInstance()

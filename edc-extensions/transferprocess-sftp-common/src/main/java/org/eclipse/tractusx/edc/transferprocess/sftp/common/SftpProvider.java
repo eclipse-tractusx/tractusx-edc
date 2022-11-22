@@ -12,20 +12,14 @@
  *
  */
 
-package org.eclipse.tractusx.edc.trasnferprocess.sftp.common;
+package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 
-import java.security.KeyPair;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+public interface SftpProvider {
+  void createUser(SftpUser user);
 
-@Builder
-@Getter
-@ToString(of = "name")
-@EqualsAndHashCode
-public class SftpUser {
-  private final String name;
-  private final String password;
-  private final KeyPair keyPair;
+  void deleteUser(SftpUser user);
+
+  void createLocation(SftpLocation location);
+
+  void deleteLocation(SftpLocation location);
 }

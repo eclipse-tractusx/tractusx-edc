@@ -14,11 +14,11 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpProvider;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpProvider;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
-public class NoopSftpProvider implements SftpProvider {
+public class NoOpSftpProvider implements SftpProvider {
   @Override
   public void createUser(SftpUser user) {}
 

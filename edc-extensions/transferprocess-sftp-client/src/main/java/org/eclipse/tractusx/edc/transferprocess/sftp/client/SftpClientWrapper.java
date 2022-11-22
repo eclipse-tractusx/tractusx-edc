@@ -16,10 +16,18 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.trasnferprocess.sftp.common.SftpUser;
+import org.apache.sshd.sftp.client.SftpClient;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 public interface SftpClientWrapper {
+  void uploadFile(
+      SftpUser sftpUser,
+      SftpLocation sftpLocation,
+      InputStream inputStream,
+      SftpClient.OpenMode openMode)
+      throws IOException;
+
   void uploadFile(SftpUser sftpUser, SftpLocation sftpLocation, InputStream inputStream)
       throws IOException;
 
