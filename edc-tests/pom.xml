@@ -36,7 +36,7 @@
         <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
         <com.google.code.gson.version>2.10</com.google.code.gson.version>
         <org.apache.httpcomponents.httpclient.version>4.5.13</org.apache.httpcomponents.httpclient.version>
-        <ch.qos.logback.version>1.4.4</ch.qos.logback.version>
+        <ch.qos.logback.version>1.4.5</ch.qos.logback.version>
         <org.slf4j.api.version>2.0.3</org.slf4j.api.version>
         <software.amazon.awssdk>2.18.20</software.amazon.awssdk>
     </properties>
