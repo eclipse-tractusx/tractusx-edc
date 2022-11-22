@@ -54,27 +54,48 @@ controlplane:
     failureThreshold: 6
     # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
+  # -- endpoints of the control plane
   endpoints:
+    # -- default api for health checks, should not be added to any ingress
     default:
+      # -- port for incoming api calls
       port: 8080
+      # -- path for incoming api calls
       path: /api
+    # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
     data:
+      # -- port for incoming api calls
       port: 8081
+      # -- path for incoming api calls
       path: /data
+      # -- authentication key, must be attached to each 'X-Api-Key' request header
       authKey: ""
+    # -- validation api, only used by the data plane and should not be added to any ingress
     validation:
+      # -- port for incoming api calls
       port: 8082
-      path: /validation
+      # -- path for incoming api calls
+      path: /validation# -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
+    # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
+      # -- port for incoming api calls
       port: 8083
+      # -- path for incoming api calls
       path: /control
+    # -- ids api, used for inter connector communication and must be internet facing
     ids:
+      # -- port for incoming api calls
       port: 8084
+      # -- path for incoming api calls
       path: /api/v1/ids
+    # -- metrics api, used for application metrics, must not be internet facing
     metrics:
+      # -- port for incoming api calls
       port: 8085
+      # -- path for incoming api calls
       path: /metrics
   service:
+    # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
     annotations: { }
   podLabels: { }
@@ -205,6 +226,7 @@ dataplane:
     # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   service:
+    # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
     port: 80
   endpoints:
