@@ -220,7 +220,7 @@ spec:
 
             # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL
-              value: {{ include "txdc.dataplane.url.control" . }}
+              value: {{ include "txdc.dataplane.url.control" . }}/transfer
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES
               value: HttpData,AmazonS3
             - name: EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES

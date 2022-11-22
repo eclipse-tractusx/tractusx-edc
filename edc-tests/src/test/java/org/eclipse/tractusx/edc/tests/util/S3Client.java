@@ -52,16 +52,6 @@ public class S3Client {
 
   public S3Client(Environment environment) {
 
-    log.info("###################");
-    log.info("###################");
-    log.info("###################");
-    log.info("#{}#", environment.getAwsSecretAccessKey());
-    log.info("#{}#", environment.getAwsAccessKey());
-    log.info("#{}#", environment.getAwsEndpointOverride());
-    log.info("###################");
-    log.info("###################");
-    log.info("###################");
-
     s3 =
         software.amazon.awssdk.services.s3.S3Client.builder()
             .region(Region.US_EAST_1)

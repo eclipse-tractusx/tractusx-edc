@@ -130,6 +130,11 @@ minio:
     - accessKey: sokratesqwerty123
       secretKey: sokratesqwerty123
       policy: customBucketPolicy
+  buckets:
+    # in some cases the minio API acts strange if there exists no bucket at all
+    - name: dummyBucket
+      policy: none
+      purge: true
   policies:
     - name: customBucketPolicy
       statements:
