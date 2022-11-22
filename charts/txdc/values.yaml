@@ -219,6 +219,7 @@ dataplane:
   readinessProbe:
     # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
+    # -- seconds to wait before performing the first readiness check
     initialDelaySeconds: 30
     # -- this fields specifies that kubernetes should perform a liveness check every 10 seconds
     periodSeconds: 10
