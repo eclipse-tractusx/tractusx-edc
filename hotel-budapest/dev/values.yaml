@@ -27,7 +27,8 @@ txdc:
           - ids
           - metrics
         className: "nginx"
-        tls: true
+        tls:
+          enabled: true
   dataplane:
     ingresses:
       - enabled: true
@@ -39,7 +40,8 @@ txdc:
           - metrics
         className: "nginx"
         # -- Enables TLS on the ingress resource
-        tls: true
+        tls:
+          enabled: true
   postgresql:
     enabled: true
     jdbcUrl: "jdbc:postgresql://txdc-postgresql:5432/edc"
