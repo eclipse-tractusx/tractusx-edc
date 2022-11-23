@@ -19,32 +19,6 @@ txdc:
     endpoints:
       data:
         authKey: ""
-    ingresses:
-      - enabled: true
-        hostname: "txdc.dev.catena-x.net"
-        endpoints:
-          - default
-          - data
-          - validation
-          - control
-          - ids
-          - metrics
-        className: "nginx"
-        tls:
-          enabled: true
-  dataplane:
-    ingresses:
-      - enabled: true
-        hostname: "txdc.dev.catena-x.net"
-        endpoints:
-          - default
-          - public
-          - control
-          - metrics
-        className: "nginx"
-        # -- Enables TLS on the ingress resource
-        tls:
-          enabled: true
   postgresql:
     enabled: true
     jdbcUrl: "jdbc:postgresql://txdc-postgres:5432/edc"

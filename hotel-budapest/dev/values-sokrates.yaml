@@ -2,10 +2,25 @@
 txdc:
   dataplane:
     ingresses:
-      - hostname: "sokrates-txdc.dev.catena-x.net"
+      - enabled: true
+        hostname: "sokrates-txdc.dev.catena-x.net"
+        endpoints:
+          - public
+        className: "nginx"
+        # -- Enables TLS on the ingress resource
+        tls:
+          enabled: true
   controlplane:
     ingresses:
-      - hostname: "sokrates-txdc.dev.catena-x.net"
+      - enabled: true
+        hostname: "sokrates-txdc.dev.catena-x.net"
+        endpoints:
+          - data
+          - ids
+        className: "nginx"
+        # -- Enables TLS on the ingress resource
+        tls:
+          enabled: true
   daps:
     clientId: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
   backendService:
