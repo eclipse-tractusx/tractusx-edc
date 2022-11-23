@@ -1,0 +1,62 @@
+---
+backend:
+  enabled: true
+  service:
+    frontend:
+      port: 80
+
+postgres:
+  enabled: true
+  auth:
+    password: &psqlPassword "psql_password"
+    username: &psqlUsername "postgresql_sandbox_user"
+    database: "edc"
+  persistence:
+    enabled: true
+
+txdc:
+  controlplane:
+    ingresses:
+      - enabled: true
+        hostname: "{{ .Release.Name }}.dev.catena-x.net"
+        endpoints:
+          - default
+          - data
+          - validation
+          - control
+          - ids
+          - metrics
+        className: "nginx"
+        tls: true
+  dataplane:
+    ingresses:
+      - enabled: true
+        hostname: "{{ .Release.Name }}.dev.catena-x.net"
+        endpoints:
+          - default
+          - public
+          - control
+          - metrics
+        className: "nginx"
+        # -- Enables TLS on the ingress resource
+        tls: true
+  postgresql:
+    enabled: true
+    jdbcUrl: {{ printf "jdbc:postgresql://%s-postgresql:5432/edc" .Release.Name }}
+    username: *psqlUsername
+    password: *psqlPassword
+  vault:
+    hashicorp:
+      enabled: true
+      url: "https://vault.demo.catena-x.net"
+      paths:
+        secret: "/v1/edc"
+      healthCheck:
+        enabled: true
+        standbyOk: true
+  daps:
+    url: "http://daps:4567"
+  backendService:
+    httpProxyTokenReceiverUrl: {{ printf "http://%s-backend" .Release.Name }}
+  serviceAccount:
+    create: false

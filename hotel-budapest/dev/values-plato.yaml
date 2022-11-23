@@ -1,0 +1,16 @@
+---
+txdc:
+  dataplane:
+      - hostname: "plato.dev.catena-x.net"
+  controlplane:
+    ingresses:
+      - hostname: "plato.dev.catena-x.net"
+  vault:
+    secretNames:
+      dapsPrivateKey: dev-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS
+      dapsPublicKey: dev-plato-EDC_OAUTH_PUBLIC_KEY_ALIAS
+      transferProxyTokenEncryptionAesKey: dev-plato-EDC_DATA_ENCRYPTION_KEYS_ALIAS
+      transferProxyTokenSignerPrivateKey: dev-plato-EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
+      transferProxyTokenSignerPublicKey: dev-plato-EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
+
+

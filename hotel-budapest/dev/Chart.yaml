@@ -6,24 +6,15 @@ type: application
 version: 0.0.1
 appVersion: "0.0.1"
 dependencies:
-  # PLATO CONNECTOR
-  - name: edc-controlplane
-    alias: controlplane
+  - name: txdc
+    alias: txdc
     version: ">=0.0.1"
-    repository: file://../../../charts/edc-controlplane
-    condition: controlplane.enabled
-  - name: edc-dataplane
-    alias: dataplane
-    version: ">=0.0.1"
-    repository: file://../../../charts/edc-dataplane
-    condition: dataplane.enabled
+    repository: file://../../charts/txdc
   - name: backend-service
     alias: backend
     version: "0.0.5"
     repository: https://denisneuling.github.io/cx-backend-service
-    condition: platobackendapplication.enabled
   - name: postgresql
     alias: postgres
     version: 11.2.4
     repository: https://charts.bitnami.com/bitnami
-    condition: postgres.enabled

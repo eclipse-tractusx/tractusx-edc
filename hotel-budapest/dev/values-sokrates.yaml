@@ -1,0 +1,15 @@
+---
+txdc:
+  dataplane:
+    ingresses:
+      - hostname: "sokrates.dev.catena-x.net"
+  controlplane:
+    ingresses:
+      - hostname: "sokrates.dev.catena-x.net"
+  vault:
+    secretNames:
+      dapsPrivateKey: dev-sokrates-EDC_OAUTH_PRIVATE_KEY_ALIAS
+      dapsPublicKey: dev-sokrates-EDC_OAUTH_PUBLIC_KEY_ALIAS
+      transferProxyTokenEncryptionAesKey: dev-sokrates-EDC_DATA_ENCRYPTION_KEYS_ALIAS
+      transferProxyTokenSignerPrivateKey: dev-sokrates-EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
+      transferProxyTokenSignerPublicKey: dev-sokrates-EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
