@@ -2,16 +2,16 @@
 txdc:
   dataplane:
     ingresses:
-      - hostname: "txdc-sokrates.dev.catena-x.net"
+      - hostname: "sokrates-txdc.dev.catena-x.net"
   controlplane:
     ingresses:
-      - hostname: "txdc-sokrates.dev.catena-x.net"
+      - hostname: "sokrates-txdc.dev.catena-x.net"
   daps:
     clientId: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
   backendService:
-    httpProxyTokenReceiverUrl: "http://txdc-sokrates-backend"
+    httpProxyTokenReceiverUrl: "http://sokrates-txdc-backend"
   postgresql:
-    jdbcUrl: "jdbc:postgresql://txdc-sokrates-postgresql:5432/edc"
+    jdbcUrl: "jdbc:postgresql://sokrates-txdc-postgresql:5432/edc"
   vault:
     secretNames:
       dapsPrivateKey: dev-sokrates-EDC_OAUTH_PRIVATE_KEY_ALIAS
