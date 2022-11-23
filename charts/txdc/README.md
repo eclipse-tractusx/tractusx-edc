@@ -2,7 +2,13 @@
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+A Helm chart for Tractus-X Eclipse Data Space Connector
+
+## TL;DR
+```shell
+$ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
+$ helm install tractus-x-connector catenax-ng-product-edc/tractus-x-connector --version 0.1.0
+```
 
 ## Values
 
@@ -10,10 +16,11 @@ A Helm chart for Kubernetes
 |-----|------|---------|-------------|
 | backendService.httpProxyTokenReceiverUrl | string | `""` |  |
 | controlplane.affinity | object | `{}` |  |
-| controlplane.autoscaling.enabled | bool | `false` |  |
-| controlplane.autoscaling.maxReplicas | int | `100` |  |
-| controlplane.autoscaling.minReplicas | int | `1` |  |
-| controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| controlplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
+| controlplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
+| controlplane.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
+| controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
+| controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
@@ -41,9 +48,9 @@ A Helm chart for Kubernetes
 | controlplane.envConfigMapNames | list | `[]` |  |
 | controlplane.envSecretNames | list | `[]` |  |
 | controlplane.envValueFrom | object | `{}` |  |
-| controlplane.image.pullPolicy | string | `"IfNotPresent"` |  |
-| controlplane.image.repository | string | `""` |  |
-| controlplane.image.tag | string | `""` |  |
+| controlplane.image.pullPolicy | string | `"IfNotPresent"` | [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use |
+| controlplane.image.repository | string | `""` | Which derivate of the control plane to use. when left empty the deployment will select the correct image automatically |
+| controlplane.image.tag | string | `"0.1.2"` | Overrides the image tag whose default is the chart appVersion |
 | controlplane.ingresses[0].annotations | object | `{}` | Additional ingress annotations to add |
 | controlplane.ingresses[0].certManager.clusterIssuer | string | `""` | If preset enables certificate generation via cert-manager cluster-wide issuer |
 | controlplane.ingresses[0].certManager.issuer | string | `""` | If preset enables certificate generation via cert-manager namespace scoped issuer |
@@ -77,11 +84,16 @@ A Helm chart for Kubernetes
 | controlplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | controlplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
-| controlplane.logLevel | string | `"INFO"` |  |
+| controlplane.logging | string | `".level=INFO\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
 | controlplane.nodeSelector | object | `{}` |  |
-| controlplane.podAnnotations | object | `{}` |  |
-| controlplane.podLabels | object | `{}` |  |
-| controlplane.podSecurityContext | object | `{}` |  |
+| controlplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
+| controlplane.podAnnotations | object | `{}` | additional annotations for the pod |
+| controlplane.podLabels | object | `{}` | additional labels for the pod |
+| controlplane.podSecurityContext | object | `{"fsGroup":10001,"runAsGroup":10001,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}}` | The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment |
+| controlplane.podSecurityContext.fsGroup | int | `10001` | The owner for volumes and any files created within volumes will belong to this guid |
+| controlplane.podSecurityContext.runAsGroup | int | `10001` | Processes within a pod will belong to this guid |
+| controlplane.podSecurityContext.runAsUser | int | `10001` | Runs all processes within a pod with a special uid |
+| controlplane.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Restrict a Container's Syscalls with seccomp |
 | controlplane.readinessProbe.enabled | bool | `true` | Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | controlplane.readinessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | controlplane.readinessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first readiness check |
@@ -89,8 +101,13 @@ A Helm chart for Kubernetes
 | controlplane.readinessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | controlplane.replicaCount | int | `1` |  |
-| controlplane.resources | object | `{}` |  |
-| controlplane.securityContext | object | `{}` |  |
+| controlplane.resources | object | `{}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
+| controlplane.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
+| controlplane.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |
+| controlplane.securityContext.capabilities.drop | list | `["ALL"]` | Specifies which capabilities to drop to reduce syscall attack surface |
+| controlplane.securityContext.readOnlyRootFilesystem | bool | `true` | Whether the root filesystem is mounted in read-only mode |
+| controlplane.securityContext.runAsNonRoot | bool | `true` | Requires the container to run without root privileges |
+| controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | controlplane.tolerations | list | `[]` |  |
@@ -102,10 +119,11 @@ A Helm chart for Kubernetes
 | daps.paths.token | string | `"/token"` |  |
 | daps.url | string | `""` |  |
 | dataplane.affinity | object | `{}` |  |
-| dataplane.autoscaling.enabled | bool | `false` |  |
-| dataplane.autoscaling.maxReplicas | int | `100` |  |
-| dataplane.autoscaling.minReplicas | int | `1` |  |
-| dataplane.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| dataplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
+| dataplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
+| dataplane.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
+| dataplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
+| dataplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | dataplane.aws.accessKeyId | string | `""` |  |
 | dataplane.aws.endpointOverride | string | `""` |  |
 | dataplane.aws.secretAccessKey | string | `""` |  |
@@ -122,9 +140,9 @@ A Helm chart for Kubernetes
 | dataplane.endpoints.public.port | int | `8081` |  |
 | dataplane.endpoints.validation.path | string | `"/validation"` |  |
 | dataplane.endpoints.validation.port | int | `8082` |  |
-| dataplane.image.pullPolicy | string | `"IfNotPresent"` |  |
-| dataplane.image.repository | string | `""` |  |
-| dataplane.image.tag | string | `""` |  |
+| dataplane.image.pullPolicy | string | `"IfNotPresent"` | [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use |
+| dataplane.image.repository | string | `""` | Which derivate of the data plane to use. when left empty the deployment will select the correct image automatically |
+| dataplane.image.tag | string | `"0.1.2"` | Overrides the image tag whose default is the chart appVersion |
 | dataplane.ingresses[0].annotations | object | `{}` | Additional ingress annotations to add |
 | dataplane.ingresses[0].certManager.clusterIssuer | string | `""` | If preset enables certificate generation via cert-manager cluster-wide issuer |
 | dataplane.ingresses[0].certManager.issuer | string | `""` | If preset enables certificate generation via cert-manager namespace scoped issuer |
@@ -143,10 +161,16 @@ A Helm chart for Kubernetes
 | dataplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | dataplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | dataplane.logLevel | string | `"INFO"` |  |
+| dataplane.logging | string | `".level=INFO\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
 | dataplane.nodeSelector | object | `{}` |  |
-| dataplane.podAnnotations | object | `{}` |  |
-| dataplane.podLabels | object | `{}` |  |
-| dataplane.podSecurityContext | object | `{}` |  |
+| dataplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
+| dataplane.podAnnotations | object | `{}` | additional annotations for the pod |
+| dataplane.podLabels | object | `{}` | additional labels for the pod |
+| dataplane.podSecurityContext | object | `{"fsGroup":10001,"runAsGroup":10001,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}}` | The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment |
+| dataplane.podSecurityContext.fsGroup | int | `10001` | The owner for volumes and any files created within volumes will belong to this guid |
+| dataplane.podSecurityContext.runAsGroup | int | `10001` | Processes within a pod will belong to this guid |
+| dataplane.podSecurityContext.runAsUser | int | `10001` | Runs all processes within a pod with a special uid |
+| dataplane.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Restrict a Container's Syscalls with seccomp |
 | dataplane.readinessProbe.enabled | bool | `true` | Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | dataplane.readinessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | dataplane.readinessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first readiness check |
@@ -154,8 +178,13 @@ A Helm chart for Kubernetes
 | dataplane.readinessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | dataplane.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | dataplane.replicaCount | int | `1` |  |
-| dataplane.resources | object | `{}` |  |
-| dataplane.securityContext | object | `{}` |  |
+| dataplane.resources | object | `{}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
+| dataplane.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
+| dataplane.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |
+| dataplane.securityContext.capabilities.drop | list | `["ALL"]` | Specifies which capabilities to drop to reduce syscall attack surface |
+| dataplane.securityContext.readOnlyRootFilesystem | bool | `true` | Whether the root filesystem is mounted in read-only mode |
+| dataplane.securityContext.runAsNonRoot | bool | `true` | Requires the container to run without root privileges |
+| dataplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | dataplane.service.port | int | `80` |  |
 | dataplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | dataplane.tolerations | list | `[]` |  |

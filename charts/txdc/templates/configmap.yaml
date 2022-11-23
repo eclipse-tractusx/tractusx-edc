@@ -8,15 +8,10 @@ metadata:
     {{- include "txdc.controlplane.labels" . | nindent 4 }}
 data:
   opentelemetry.properties: |-
-    {{- .Values.controlplane.opentelemetry.properties | nindent 4 }}
+    {{- .Values.controlplane.opentelemetry | nindent 4 }}
 
   logging.properties: |-
-    .level={{- .Values.controlplane.logLevel }}
-    org.eclipse.dataspaceconnector.level=ALL
-    handlers=java.util.logging.ConsoleHandler
-    java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
-    java.util.logging.ConsoleHandler.level=ALL
-    java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+    {{- .Values.controlplane.logging | nindent 4 }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -27,12 +22,7 @@ metadata:
     {{- include "txdc.dataplane.labels" . | nindent 4 }}
 data:
   opentelemetry.properties: |-
-    {{- .Values.dataplane.opentelemetry.properties | nindent 4 }}
+    {{- .Values.dataplane.opentelemetry | nindent 4 }}
 
   logging.properties: |-
-    .level={{- .Values.dataplane.logLevel }}
-    org.eclipse.dataspaceconnector.level=ALL
-    handlers=java.util.logging.ConsoleHandler
-    java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
-    java.util.logging.ConsoleHandler.level=ALL
-    java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+    {{- .Values.dataplane.logging | nindent 4 }}
