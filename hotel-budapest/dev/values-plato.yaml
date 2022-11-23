@@ -10,7 +10,7 @@ txdc:
         # -- Enables TLS on the ingress resource
         tls:
           enabled: true
-          secretname: tls-secret
+          secretName: tls-secret
   controlplane:
     ingresses:
       - enabled: true
@@ -22,7 +22,7 @@ txdc:
         # -- Enables TLS on the ingress resource
         tls:
           enabled: true
-          secretname: tls-secret
+          secretName: tls-secret
   daps:
     clientId: 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
   backendService:
