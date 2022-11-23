@@ -118,12 +118,18 @@ spec:
             #######
             # AWS #
             #######
+            {{- if .Values.dataplane.aws.endpointOverride }}
             - name: "EDC_AWS_ENDPOINT_OVERRIDE"
               value: {{ .Values.dataplane.aws.endpointOverride | quote }}
+            {{- end   }}
+            {{- if .Values.dataplane.aws.secretAccessKey }}
             - name: "AWS_SECRET_ACCESS_KEY"
               value: {{ .Values.dataplane.aws.secretAccessKey | quote }}
+            {{- end }}
+            {{- if .Values.dataplane.aws.accessKeyId }}
             - name: "AWS_ACCESS_KEY_ID"
               value: {{ .Values.dataplane.aws.accessKeyId | quote }}
+            {{- end }}
 
             ###########
             ## VAULT ##
@@ -139,7 +145,7 @@ spec:
               value: {{ .Values.vault.hashicorp.timeout | quote }}
             - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED"
               value: {{ .Values.vault.hashicorp.healthCheck.enabled | quote }}
-            - name: "EDC_VAULT_HASHICORP_HEALTH_STANDBY_OK"
+            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK"
               value: {{ .Values.vault.hashicorp.healthCheck.standbyOk | quote }}
             - name: "EDC_VAULT_HASHICORP_API_SECRET_PATH"
               value: {{ .Values.vault.hashicorp.paths.secret | quote }}

@@ -261,7 +261,7 @@ spec:
               value: {{ .Values.vault.hashicorp.timeout | quote }}
             - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED"
               value: {{ .Values.vault.hashicorp.healthCheck.enabled | quote }}
-            - name: "EDC_VAULT_HASHICORP_HEALTH_STANDBY_OK"
+            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK"
               value: {{ .Values.vault.hashicorp.healthCheck.standbyOk | quote }}
             - name: "EDC_VAULT_HASHICORP_API_SECRET_PATH"
               value: {{ .Values.vault.hashicorp.paths.secret | quote }}
