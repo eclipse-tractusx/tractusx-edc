@@ -61,7 +61,7 @@ txdc:
         enabled: true
         standbyOk: true
   daps:
-    url: "http://daps:4567"
+    url: "https://daps1.int.demo.catena-x.net/"
   backendService:
     httpProxyTokenReceiverUrl: "http://txdc-backend"
   serviceAccount:
