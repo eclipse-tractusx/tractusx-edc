@@ -2,10 +2,10 @@
 txdc:
   dataplane:
     ingresses:
-      - hostname: "sokrates.dev.catena-x.net"
+      - hostname: "txdc-sokrates.dev.catena-x.net"
   controlplane:
     ingresses:
-      - hostname: "sokrates.dev.catena-x.net"
+      - hostname: "txdc-sokrates.dev.catena-x.net"
   vault:
     secretNames:
       dapsPrivateKey: dev-sokrates-EDC_OAUTH_PRIVATE_KEY_ALIAS

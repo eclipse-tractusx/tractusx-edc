@@ -1,10 +1,10 @@
 ---
 txdc:
   dataplane:
-      - hostname: "plato.dev.catena-x.net"
+      - hostname: "txdc-plato.dev.catena-x.net"
   controlplane:
     ingresses:
-      - hostname: "plato.dev.catena-x.net"
+      - hostname: "txdc-plato.dev.catena-x.net"
   vault:
     secretNames:
       dapsPrivateKey: dev-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS
