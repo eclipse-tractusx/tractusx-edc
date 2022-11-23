@@ -19,6 +19,9 @@ spec:
       {{- end }}
       labels:
         {{- include "txdc.controlplane.selectorLabels" . | nindent 8 }}
+        {{- with .Values.controlplane.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -27,6 +30,8 @@ spec:
       serviceAccount: {{ include "txdc.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.controlplane.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- toYaml .Values.controlplane.initContainers | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -332,6 +337,9 @@ spec:
       {{- end }}
       labels:
         {{- include "txdc.dataplane.selectorLabels" . | nindent 8 }}
+        {{- with .Values.dataplane.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -340,6 +348,8 @@ spec:
       serviceAccount: {{ include "txdc.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.dataplane.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- toYaml .Values.dataplane.initContainers | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
