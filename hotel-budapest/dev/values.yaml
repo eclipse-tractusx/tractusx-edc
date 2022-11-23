@@ -51,6 +51,7 @@ txdc:
     hashicorp:
       enabled: true
       url: "https://vault.demo.catena-x.net"
+      token: ""
       paths:
         secret: "/v1/edc"
       healthCheck:
