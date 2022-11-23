@@ -6,6 +6,8 @@ txdc:
   controlplane:
     ingresses:
       - hostname: "txdc-plato.dev.catena-x.net"
+  daps:
+    clientId: 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
   vault:
     secretNames:
       dapsPrivateKey: dev-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS
