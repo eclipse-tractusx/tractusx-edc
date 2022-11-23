@@ -20,8 +20,8 @@ spec:
       {{- end }}
       labels:
         {{- include "txdc.dataplane.selectorLabels" . | nindent 8 }}
-        {{- if .Values.dataplane.podLabels }}
-        {{- toYaml .Values.dataplane.podLabels | nindent 8 }}
+        {{- with .Values.dataplane.podLabels }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
