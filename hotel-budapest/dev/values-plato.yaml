@@ -11,7 +11,7 @@ txdc:
   backendService:
     httpProxyTokenReceiverUrl: "http://plato-txdc-backend"
   postgresql:
-    jdbcUrl: "jdbc:postgresql://plato-txdc-postgresql:5432/edc"
+    jdbcUrl: "jdbc:postgresql://plato-txdc-postgres:5432/edc"
   vault:
     secretNames:
       dapsPrivateKey: dev-plato-EDC_OAUTH_PRIVATE_KEY_ALIAS

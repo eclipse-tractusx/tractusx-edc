@@ -47,7 +47,7 @@ txdc:
           enabled: true
   postgresql:
     enabled: true
-    jdbcUrl: "jdbc:postgresql://txdc-postgresql:5432/edc"
+    jdbcUrl: "jdbc:postgresql://txdc-postgres:5432/edc"
     username: *psqlUsername
     password: *psqlPassword
   vault:

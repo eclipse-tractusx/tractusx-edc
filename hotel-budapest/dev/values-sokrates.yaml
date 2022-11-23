@@ -11,7 +11,7 @@ txdc:
   backendService:
     httpProxyTokenReceiverUrl: "http://sokrates-txdc-backend"
   postgresql:
-    jdbcUrl: "jdbc:postgresql://sokrates-txdc-postgresql:5432/edc"
+    jdbcUrl: "jdbc:postgresql://sokrates-txdc-postgres:5432/edc"
   vault:
     secretNames:
       dapsPrivateKey: dev-sokrates-EDC_OAUTH_PRIVATE_KEY_ALIAS
