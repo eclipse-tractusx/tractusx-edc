@@ -65,7 +65,7 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $gitVersion }}
               service:
-                name: {{ $fullName }}-controlPlane
+                name: {{ $fullName }}-controlplane
                 port:
                   number: {{ $mapping.port }}
               {{- else }}
