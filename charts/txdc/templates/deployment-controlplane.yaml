@@ -158,6 +158,9 @@ spec:
               value: "idsc:IDS_CONNECTORS_ALL"
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
               value: {{ printf "%s%s%s" (include "txdc.controlplane.url.ids" . ) .Values.controlplane.endpoints.ids.path "/data" | quote }}
+            # this is the old setting name for 'EDC_OAUTH_ENDPOINT_AUDIENCE' and is mandatory for Produce EDC v0.1.2 and older
+            - name: "EDC_IDS_ENDPOINT_AUDIENCE"
+              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.ids" . ) .Values.controlplane.endpoints.ids.path "/data" | quote }}
 
           {{- if .Values.postgresql.enabled }}
 
