@@ -18,7 +18,7 @@ txdc:
   controlplane:
     ingresses:
       - enabled: true
-        hostname: "{{ .Release.Name }}.dev.catena-x.net"
+        hostname: "txdc.dev.catena-x.net"
         endpoints:
           - default
           - data
@@ -31,7 +31,7 @@ txdc:
   dataplane:
     ingresses:
       - enabled: true
-        hostname: "{{ .Release.Name }}.dev.catena-x.net"
+        hostname: "txdc.dev.catena-x.net"
         endpoints:
           - default
           - public
@@ -42,7 +42,7 @@ txdc:
         tls: true
   postgresql:
     enabled: true
-    jdbcUrl: {{ printf "jdbc:postgresql://%s-postgresql:5432/edc" .Release.Name }}
+    jdbcUrl: "jdbc:postgresql://txdc-postgresql:5432/edc"
     username: *psqlUsername
     password: *psqlPassword
   vault:
@@ -57,6 +57,6 @@ txdc:
   daps:
     url: "http://daps:4567"
   backendService:
-    httpProxyTokenReceiverUrl: {{ printf "http://%s-backend" .Release.Name }}
+    httpProxyTokenReceiverUrl: "http://txdc-backend"
   serviceAccount:
     create: false
