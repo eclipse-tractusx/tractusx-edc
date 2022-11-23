@@ -172,51 +172,51 @@ spec:
             - name: EDC_DATASOURCE_ASSET_NAME
               value: asset
             - name: EDC_DATASOURCE_ASSET_USER
-              value: {{- .Values.postgresql.username | required ".Values.postgresql.username is required" | quote -}}
+              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
             - name: EDC_DATASOURCE_ASSET_PASSWORD
-              value: {{- .Values.postgresql.password | required ".Values.postgresql.password is required" | quote -}}
+              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
             - name: EDC_DATASOURCE_ASSET_URL
-              value: {{- .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote -}}
+              value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_NAME
               value: contractdefinition
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_USER
-              value: {{- .Values.postgresql.username | required ".Values.postgresql.username is required" | quote -}}
+              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD
-              value: {{- .Values.postgresql.password | required ".Values.postgresql.password is required" | quote -}}
+              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
             - name: EDC_DATASOURCE_CONTRACTDEFINITION_URL
-              value: {{- .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote -}}
+              value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME
               value: contractnegotiation
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_USER
-              value: {{- .Values.postgresql.username | required ".Values.postgresql.username is required" | quote -}}
+              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD
-              value: {{- .Values.postgresql.password | required ".Values.postgresql.password is required" | quote -}}
+              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
             - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_URL
-              value: {{- .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote -}}
+              value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/policy-store-sql
             - name: EDC_DATASOURCE_POLICY_NAME
               value: policy
             - name: EDC_DATASOURCE_POLICY_USER
-              value: {{- .Values.postgresql.username | required ".Values.postgresql.username is required" | quote -}}
+              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
             - name: EDC_DATASOURCE_POLICY_PASSWORD
-              value: {{- .Values.postgresql.password | required ".Values.postgresql.password is required" | quote -}}
+              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
             - name: EDC_DATASOURCE_POLICY_URL
-              value: {{- .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote -}}
+              value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
 
             # see extension https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
             - name: EDC_DATASOURCE_TRANSFERPROCESS_NAME
               value: transferprocess
             - name: EDC_DATASOURCE_TRANSFERPROCESS_USER
-              value: {{- .Values.postgresql.username | required ".Values.postgresql.username is required" | quote -}}
+              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
             - name: EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD
-              value: {{- .Values.postgresql.password | required ".Values.postgresql.password is required" | quote -}}
+              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
             - name: EDC_DATASOURCE_TRANSFERPROCESS_URL
-              value: {{- .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote -}}
+              value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
             {{- end }}
 
             ################
