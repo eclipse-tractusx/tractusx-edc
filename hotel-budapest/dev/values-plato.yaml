@@ -1,6 +1,7 @@
 ---
 txdc:
   dataplane:
+    ingresses:
       - hostname: "txdc-plato.dev.catena-x.net"
   controlplane:
     ingresses:
