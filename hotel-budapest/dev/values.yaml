@@ -16,6 +16,9 @@ postgres:
 
 txdc:
   controlplane:
+    endpoints:
+      data:
+        authKey: ""
     ingresses:
       - enabled: true
         hostname: "txdc.dev.catena-x.net"
