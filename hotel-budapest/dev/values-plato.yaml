@@ -3,7 +3,7 @@ txdc:
   dataplane:
     ingresses:
       - enabled: true
-        hostname: "plato-txdc.dev.catena-x.net"
+        hostname: "plato.dev.demo.catena-x.net"
         endpoints:
           - public
         className: "nginx"
@@ -13,7 +13,7 @@ txdc:
   controlplane:
     ingresses:
       - enabled: true
-        hostname: "plato-txdc.dev.catena-x.net"
+        hostname: "plato.dev.demo.catena-x.net"
         endpoints:
           - data
           - ids
