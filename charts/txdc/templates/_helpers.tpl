@@ -162,28 +162,6 @@ Data Public URL
 {{- end }}
 
 {{/*
-PostgreSQL Password
-*/}}
-{{- define "txdc.postgresql.password" -}}
-{{- print .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
-{{- end }}
-
-{{/*
-PostgreSQL User
-*/}}
-{{- define "txdc.postgresql.username" -}}
-{{- print .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
-{{- end }}
-
-{{/*
-PostgreSQL Connection String
-{{ printf "jdbc:postgresql://%s:%s/%s" .Values.postgresql.host .Values.postgresql.port .Values.postgresql.database }}
-*/}}
-{{- define "txdc.postgresql.jdbcUrl" -}}
-{{- print .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
-{{- end }}
-
-{{/*
 Create the name of the service account to use
 */}}
 {{- define "txdc.serviceAccountName" -}}
