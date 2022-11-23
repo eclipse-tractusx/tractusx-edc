@@ -7,4 +7,5 @@ home: https://github.com/catenax-ng/product-edc/charts/edc-dataplane
 type: application
 appVersion: "0.1.2"
 version: 0.1.2
+deprecated: true
 maintainers: []

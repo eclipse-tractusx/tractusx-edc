@@ -26,4 +26,5 @@ public class Timeouts {
   private Timeouts() {}
 
   public static final Duration CONTRACT_NEGOTIATION = Duration.ofSeconds(90);
+  public static final Duration FILE_TRANSFER = Duration.ofSeconds(90);
 }

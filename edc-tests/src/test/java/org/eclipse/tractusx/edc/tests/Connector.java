@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.tractusx.edc.tests.util.DatabaseCleaner;
+import org.eclipse.tractusx.edc.tests.util.S3Client;
 
 @RequiredArgsConstructor
 public class Connector {
@@ -41,6 +42,9 @@ public class Connector {
   @Getter(lazy = true)
   private final DatabaseCleaner databaseCleaner = loadDatabaseCleaner();
 
+  @Getter(lazy = true)
+  private final S3Client s3Client = createS3Client();
+
   private DataManagementAPI loadDataManagementAPI() {
     return new DataManagementAPI(
         environment.getDataManagementUrl(), environment.getDataManagementAuthKey());
@@ -55,5 +59,9 @@ public class Connector {
 
   private BackendServiceBackendAPI loadBackendServiceBackendAPI() {
     return new BackendServiceBackendAPI(environment.getBackendServiceBackendApiUrl());
+  }
+
+  private S3Client createS3Client() {
+    return new S3Client(environment);
   }
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,15 +41,19 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.tractusx.edc.tests.data.Asset;
+import org.eclipse.tractusx.edc.tests.data.AssetWithDataAddress;
 import org.eclipse.tractusx.edc.tests.data.BusinessPartnerNumberConstraint;
 import org.eclipse.tractusx.edc.tests.data.Constraint;
 import org.eclipse.tractusx.edc.tests.data.ContractDefinition;
 import org.eclipse.tractusx.edc.tests.data.ContractNegotiation;
 import org.eclipse.tractusx.edc.tests.data.ContractNegotiationState;
 import org.eclipse.tractusx.edc.tests.data.ContractOffer;
+import org.eclipse.tractusx.edc.tests.data.DataAddress;
 import org.eclipse.tractusx.edc.tests.data.PayMeConstraint;
 import org.eclipse.tractusx.edc.tests.data.Permission;
 import org.eclipse.tractusx.edc.tests.data.Policy;
+import org.eclipse.tractusx.edc.tests.data.TransferProcess;
+import org.eclipse.tractusx.edc.tests.data.TransferProcessState;
 
 @Slf4j
 public class DataManagementAPI {
@@ -58,6 +63,7 @@ public class DataManagementAPI {
   private static final String CONTRACT_DEFINITIONS_PATH = "/contractdefinitions";
   private static final String CATALOG_PATH = "/catalog";
   private static final String NEGOTIATIONS_PATH = "/contractnegotiations";
+  private static final String TRANSFER_PATH = "/transferprocess";
 
   private final String dataMgmtUrl;
   private final String dataMgmtAuthKey;
@@ -111,6 +117,40 @@ public class DataManagementAPI {
     return response.getId();
   }
 
+  public String initiateTransferProcess(
+      String receivingConnectorUrl,
+      String contractAgreementId,
+      String assetId,
+      DataAddress dataAddress)
+      throws IOException {
+    final DataManagementApiTransfer transfer = new DataManagementApiTransfer();
+
+    transfer.connectorAddress = receivingConnectorUrl;
+    transfer.contractId = contractAgreementId;
+    transfer.assetId = assetId;
+    transfer.transferType = new DataManagementApiTransferType();
+    transfer.managedResources = false;
+    transfer.dataDestination = mapDataAddress(dataAddress);
+    transfer.protocol = "ids-multipart";
+
+    final DataManagementApiTransferResponse response =
+        post(TRANSFER_PATH, transfer, new TypeToken<DataManagementApiTransferResponse>() {});
+
+    if (response == null)
+      throw new RuntimeException(
+          "Initiated transfer process. Connector did not answer with transfer process ID.");
+
+    log.info("Initiated transfer process ( id= " + response.getId() + " )");
+
+    return response.getId();
+  }
+
+  public TransferProcess getTransferProcess(String id) throws IOException {
+    final DataManagementApiTransferProcess transferProcess =
+        get(TRANSFER_PATH + "/" + id, new TypeToken<DataManagementApiTransferProcess>() {});
+    return mapTransferProcess(transferProcess);
+  }
+
   public ContractNegotiation getNegotiation(String id) throws IOException {
     final DataManagementApiNegotiation negotiation =
         get(NEGOTIATIONS_PATH + "/" + id, new TypeToken<DataManagementApiNegotiation>() {});
@@ -129,6 +169,14 @@ public class DataManagementAPI {
     final DataManagementApiAssetCreate assetCreate = new DataManagementApiAssetCreate();
     assetCreate.asset = mapAsset(asset);
     assetCreate.dataAddress = dataAddress;
+
+    post(ASSET_PATH, assetCreate);
+  }
+
+  public void createAsset(AssetWithDataAddress assetWithDataAddress) throws IOException {
+    final DataManagementApiAssetCreate assetCreate = new DataManagementApiAssetCreate();
+    assetCreate.asset = mapAsset(assetWithDataAddress.getAsset());
+    assetCreate.dataAddress = mapDataAddress(assetWithDataAddress.getDataAddress());
 
     post(ASSET_PATH, assetCreate);
   }
@@ -220,7 +268,28 @@ public class DataManagementAPI {
         state = ContractNegotiationState.UNKNOWN;
     }
 
-    return new ContractNegotiation(negotiation.id, negotiation.agreementId, state);
+    return new ContractNegotiation(negotiation.id, negotiation.contractAgreementId, state);
+  }
+
+  private TransferProcess mapTransferProcess(DataManagementApiTransferProcess transferProcess) {
+
+    TransferProcessState state;
+
+    switch (transferProcess.state) {
+      case "COMPLETED":
+        state = TransferProcessState.COMPLETED;
+        break;
+      default:
+        state = TransferProcessState.UNKNOWN;
+    }
+
+    return new TransferProcess(transferProcess.id, state);
+  }
+
+  private DataManagementApiDataAddress mapDataAddress(@NonNull DataAddress dataAddress) {
+    final DataManagementApiDataAddress apiObject = new DataManagementApiDataAddress();
+    apiObject.setProperties(dataAddress.getProperties());
+    return apiObject;
   }
 
   private DataManagementApiAsset mapAsset(Asset asset) {
@@ -381,7 +450,13 @@ public class DataManagementAPI {
   private static class DataManagementApiNegotiation {
     private String id;
     private String state;
-    private String agreementId;
+    private String contractAgreementId;
+  }
+
+  @Data
+  private static class DataManagementApiTransferProcess {
+    private String id;
+    private String state;
   }
 
   @Data
@@ -389,6 +464,29 @@ public class DataManagementAPI {
     private String offerId;
     private String assetId;
     private DataManagementApiPolicy policy;
+  }
+
+  @Data
+  private static class DataManagementApiTransfer {
+    private String connectorId = "foo";
+    private String connectorAddress;
+    private String contractId;
+    private String assetId;
+    private String protocol;
+    private DataManagementApiDataAddress dataDestination;
+    private boolean managedResources;
+    private DataManagementApiTransferType transferType;
+  }
+
+  @Data
+  private static class DataManagementApiTransferType {
+    private String contentType = "application/octet-stream";
+    private boolean isFinite = true;
+  }
+
+  @Data
+  private static class DataManagementApiTransferResponse {
+    private String id;
   }
 
   @Data
