@@ -30,7 +30,7 @@ public class SftpProvisionerConfiguration {
   @NonNull @Builder.Default
   private final ProvisionerType provisionerType = ProvisionerType.PROVIDER;
 
-  private final String dataAddressType;
+  @NonNull private final String dataAddressType;
   @NonNull private final String policyScope;
   @NonNull private final URL endpoint;
 

@@ -14,6 +14,8 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.policy.model.Policy;
@@ -30,9 +32,6 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocationFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserFactory;
-
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 public class NoOpSftpProvisioner

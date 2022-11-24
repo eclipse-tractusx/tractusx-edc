@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import java.security.KeyPair;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSinkFactory;
@@ -24,8 +25,6 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserKeyPairGenerator;
 import org.jetbrains.annotations.NotNull;
-
-import java.security.KeyPair;
 
 @RequiredArgsConstructor
 public class SftpDataSinkFactory implements DataSinkFactory {

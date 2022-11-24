@@ -20,32 +20,32 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import lombok.SneakyThrows;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-
 public class NoOpSftpUserFactoryTest {
-    private NoOpSftpUserFactory noOpSftpUserFactory = new NoOpSftpUserFactory();
+  private final NoOpSftpUserFactory noOpSftpUserFactory = new NoOpSftpUserFactory();
 
-    @Test
-    @SneakyThrows
-    void generateSftpLocation() {
-        String name = "name";
-        String password = "password";
+  @Test
+  @SneakyThrows
+  void generateSftpLocation() {
+    String name = "name";
+    String password = "password";
 
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048); KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    keyPairGenerator.initialize(2048);
+    KeyPair keyPair = keyPairGenerator.generateKeyPair();
+    byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
 
-        SftpUser sftpUser = noOpSftpUserFactory.createSftpUser(name, password, privateKeyBytes);
+    SftpUser sftpUser = noOpSftpUserFactory.createSftpUser(name, password, privateKeyBytes);
 
-        Assertions.assertEquals(name, sftpUser.getName());
-        Assertions.assertEquals(password, sftpUser.getPassword());
+    Assertions.assertEquals(name, sftpUser.getName());
+    Assertions.assertEquals(password, sftpUser.getPassword());
 
-        Assertions.assertArrayEquals(privateKeyBytes, sftpUser.getKeyPair().getPrivate().getEncoded());
-    }
+    Assertions.assertArrayEquals(privateKeyBytes, sftpUser.getKeyPair().getPrivate().getEncoded());
+  }
 }

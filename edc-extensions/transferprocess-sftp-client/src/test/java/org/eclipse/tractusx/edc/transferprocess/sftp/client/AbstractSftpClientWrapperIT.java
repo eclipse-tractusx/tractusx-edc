@@ -52,7 +52,7 @@ public abstract class AbstractSftpClientWrapperIT {
   static final Path keyDirectory;
   static final Path publicKeyPath;
   static final KeyPair keyPair;
-  static final SshdSftpClient sftpClient = new SshdSftpClient();
+  static final SshdSftpClientWrapper sftpClient = new SshdSftpClientWrapper();
   @Container @ClassRule private static final GenericContainer<?> sftpContainer;
 
   static {

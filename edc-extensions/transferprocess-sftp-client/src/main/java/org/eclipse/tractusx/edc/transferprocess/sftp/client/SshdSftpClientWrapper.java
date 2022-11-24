@@ -36,7 +36,7 @@ import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
-public class SshdSftpClient implements SftpClientWrapper {
+public class SshdSftpClientWrapper implements SftpClientWrapper {
   @Setter private int bufferSize = 4096;
   @Setter private boolean disableHostVerification = false;
   @Setter private Path knownHostFile = Paths.get(System.getenv("HOME"), ".ssh/known_hosts");
@@ -74,7 +74,7 @@ public class SshdSftpClient implements SftpClientWrapper {
   }
 
   @SneakyThrows
-  private SftpClient getSftpClient(SftpUser sftpUser, SftpLocation sftpLocation) {
+  SftpClient getSftpClient(SftpUser sftpUser, SftpLocation sftpLocation) {
     SshClient sshClient = ClientBuilder.builder().build();
     if (sftpUser.getKeyPair() != null) {
       sshClient.setKeyIdentityProvider(KeyIdentityProvider.wrapKeyPairs(sftpUser.getKeyPair()));

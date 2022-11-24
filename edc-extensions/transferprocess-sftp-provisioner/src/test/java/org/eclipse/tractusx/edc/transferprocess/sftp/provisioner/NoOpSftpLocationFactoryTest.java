@@ -25,18 +25,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NoOpSftpLocationFactoryTest {
-    private NoOpSftpLocationFactory noOpSftpLocationFactory = new NoOpSftpLocationFactory();
+  private final NoOpSftpLocationFactory noOpSftpLocationFactory = new NoOpSftpLocationFactory();
 
-    @Test
-    void generateSftpLocation() {
-        String host = "host";
-        Integer port = 22;
-        String path = "path";
+  @Test
+  void generateSftpLocation() {
+    String host = "host";
+    Integer port = 22;
+    String path = "path";
 
-        SftpLocation location = noOpSftpLocationFactory.createSftpLocation(host, port, path);
+    SftpLocation location = noOpSftpLocationFactory.createSftpLocation(host, port, path);
 
-        Assertions.assertEquals(host, location.getHost());
-        Assertions.assertEquals(port, location.getPort());
-        Assertions.assertEquals(path, location.getPath());
-    }
+    Assertions.assertEquals(host, location.getHost());
+    Assertions.assertEquals(port, location.getPort());
+    Assertions.assertEquals(path, location.getPath());
+  }
 }
