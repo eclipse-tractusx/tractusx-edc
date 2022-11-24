@@ -20,6 +20,9 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import java.io.ByteArrayInputStream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
@@ -28,10 +31,6 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import java.io.ByteArrayInputStream;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SftpDataSourceTest {
   private final SshdSftpClientWrapper sftpClientWrapper = Mockito.spy(new SshdSftpClientWrapper());
