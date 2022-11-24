@@ -3,7 +3,7 @@ txdc:
   dataplane:
     ingresses:
       - enabled: true
-        hostname: "sokrates-txdc.int.catena-x.net"
+        hostname: "sokrates-txdc.int.demo.catena-x.net"
         endpoints:
           - public
         className: "nginx"
@@ -14,7 +14,7 @@ txdc:
   controlplane:
     ingresses:
       - enabled: true
-        hostname: "sokrates-txdc.int.catena-x.net"
+        hostname: "sokrates-txdc.int.demo.catena-x.net"
         endpoints:
           - data
           - ids
