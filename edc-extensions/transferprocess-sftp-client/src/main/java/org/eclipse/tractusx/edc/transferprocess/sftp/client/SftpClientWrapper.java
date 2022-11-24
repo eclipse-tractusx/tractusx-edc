@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
@@ -25,7 +26,7 @@ public interface SftpClientWrapper {
       SftpUser sftpUser,
       SftpLocation sftpLocation,
       InputStream inputStream,
-      SftpClient.OpenMode openMode)
+      Collection<SftpClient.OpenMode> openModes)
       throws IOException;
 
   void uploadFile(SftpUser sftpUser, SftpLocation sftpLocation, InputStream inputStream)

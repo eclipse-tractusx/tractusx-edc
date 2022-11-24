@@ -37,7 +37,10 @@ public class SftpDataSink extends ParallelSink {
     for (DataSource.Part part : parts) {
       try {
         sftpClientWrapper.uploadFile(
-            sftpUser, sftpLocation, part.openStream(), SftpClient.OpenMode.Append);
+            sftpUser,
+            sftpLocation,
+            part.openStream(),
+            List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append));
       } catch (IOException e) {
         return StatusResult.failure(ResponseStatus.FATAL_ERROR, e.getMessage());
       }

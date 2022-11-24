@@ -49,9 +49,7 @@ public class SftpDataSinkTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
-    Mockito.when(
-            sftpClientMock.write(
-                Mockito.any(), Mockito.anyInt(), Mockito.any(SftpClient.OpenMode.class)))
+    Mockito.when(sftpClientMock.write(Mockito.any(), Mockito.anyInt(), Mockito.anyCollection()))
         .thenReturn(outputStream);
     Mockito.when(locationMock.getPath()).thenReturn("path");
 
@@ -63,7 +61,7 @@ public class SftpDataSinkTest {
 
     Assertions.assertArrayEquals(expected, outputStream.toByteArray());
     Mockito.verify(sftpClientMock, Mockito.times(2))
-        .write("path", 4096, SftpClient.OpenMode.Append);
+        .write("path", 4096, List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append));
   }
 
   @AllArgsConstructor

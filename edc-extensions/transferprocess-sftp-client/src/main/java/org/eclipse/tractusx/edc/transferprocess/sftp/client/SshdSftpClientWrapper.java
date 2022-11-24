@@ -20,6 +20,8 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -47,11 +49,11 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
       @NonNull final SftpUser sftpUser,
       @NonNull final SftpLocation sftpLocation,
       @NonNull final InputStream inputStream,
-      @NonNull SftpClient.OpenMode openMode)
+      @NonNull Collection<SftpClient.OpenMode> openModes)
       throws IOException {
     try (final SftpClient sftpClient = getSftpClient(sftpUser, sftpLocation)) {
       try (OutputStream outputStream =
-          sftpClient.write(sftpLocation.getPath(), bufferSize, openMode)) {
+          sftpClient.write(sftpLocation.getPath(), bufferSize, openModes)) {
         inputStream.transferTo(outputStream);
       }
     }
@@ -63,7 +65,9 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
       @NonNull final SftpLocation sftpLocation,
       @NonNull final InputStream inputStream)
       throws IOException {
-    uploadFile(sftpUser, sftpLocation, inputStream, SftpClient.OpenMode.Write);
+    Collection<SftpClient.OpenMode> openModes =
+        List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Write);
+    uploadFile(sftpUser, sftpLocation, inputStream, openModes);
   }
 
   @Override
