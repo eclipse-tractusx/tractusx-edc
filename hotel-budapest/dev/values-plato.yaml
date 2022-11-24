@@ -36,5 +36,3 @@ txdc:
       transferProxyTokenEncryptionAesKey: dev-plato-EDC_DATA_ENCRYPTION_KEYS_ALIAS
       transferProxyTokenSignerPrivateKey: dev-plato-EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS
       transferProxyTokenSignerPublicKey: dev-plato-EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS
-
-
