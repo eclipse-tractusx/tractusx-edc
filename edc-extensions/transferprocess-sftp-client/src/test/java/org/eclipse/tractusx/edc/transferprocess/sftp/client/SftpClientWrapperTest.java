@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class SshdSftpClientWrapperTest {
+public class SftpClientWrapperTest {
   private final SshdSftpClientWrapper sftpClientWrapper = Mockito.spy(new SshdSftpClientWrapper());
 
   @Test
@@ -40,9 +40,7 @@ public class SshdSftpClientWrapperTest {
     SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
     SftpUser userMock = Mockito.mock(SftpUser.class);
     SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    byte[] content = new byte[3];
-    content[1] = 1;
-    content[2] = 2;
+    byte[] content = new byte[] {0, 1, 2};
     InputStream inputStream = new ByteArrayInputStream(content);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -62,14 +60,12 @@ public class SshdSftpClientWrapperTest {
     SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
     SftpUser userMock = Mockito.mock(SftpUser.class);
     SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    byte[] content = new byte[3];
-    content[1] = 1;
-    content[2] = 2;
+    byte[] content = new byte[] {0, 1, 2};
     InputStream inputStream = new ByteArrayInputStream(content);
 
     Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
-    Mockito.when(sftpClientMock.read(Mockito.anyString(), Mockito.anyInt()))
-        .thenReturn(inputStream);
+    Mockito.when(sftpClientMock.read("path", 4096)).thenReturn(inputStream);
+    Mockito.when(locationMock.getPath()).thenReturn("path");
 
     InputStream resultStream = sftpClientWrapper.downloadFile(userMock, locationMock);
 
