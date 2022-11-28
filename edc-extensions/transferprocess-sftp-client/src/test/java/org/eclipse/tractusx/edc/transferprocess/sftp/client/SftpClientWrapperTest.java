@@ -45,9 +45,7 @@ public class SftpClientWrapperTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
-    Mockito.when(
-            sftpClientMock.write(
-                Mockito.any(), Mockito.anyInt(), Mockito.any(SftpClient.OpenMode.class)))
+    Mockito.when(sftpClientMock.write(Mockito.any(), Mockito.anyInt(), Mockito.anyCollection()))
         .thenReturn(outputStream);
     sftpClientWrapper.uploadFile(userMock, locationMock, inputStream);
 
