@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class SftpDataSinkTest {
-  private final SshdSftpClientWrapper sftpClientWrapper = Mockito.spy(new SshdSftpClientWrapper());
+  private final SftpClientWrapperImpl sftpClientWrapper = Mockito.spy(new SftpClientWrapperImpl());
 
   @Test
   @SneakyThrows

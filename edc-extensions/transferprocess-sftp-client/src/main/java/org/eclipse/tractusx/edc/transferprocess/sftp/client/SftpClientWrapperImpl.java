@@ -25,7 +25,6 @@ import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.sshd.client.ClientBuilder;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.auth.password.PasswordIdentityProvider;
@@ -39,7 +38,7 @@ import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
-public class SshdSftpClientWrapper implements SftpClientWrapper {
+public class SftpClientWrapperImpl implements SftpClientWrapper {
   private static final int DEFAULT_BUFFER_SIZE = 4096;
   private static final boolean DEFAULT_DISABLE_HOST_VERIFICATION = false;
   private static final Path DEFAULT_KNOWN_HOST_FILE =
@@ -97,10 +96,37 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
     return new SftpInputStreamWrapper(sftpClient, delegateInputStream);
   }
 
-  @SneakyThrows
   SftpClient getSftpClient(
-      @NonNull final SftpUser sftpUser, @NonNull final SftpLocation sftpLocation) {
+      @NonNull final SftpUser sftpUser, @NonNull final SftpLocation sftpLocation)
+      throws IOException {
+
+    final ClientSession session = getSshClientSession(sftpUser, sftpLocation);
+
+    final SftpClientFactory factory = SftpClientFactory.instance();
+    final SftpClient sftpClient = factory.createSftpClient(session);
+    return sftpClient.singleSessionInstance();
+  }
+
+  private ClientSession getSshClientSession(
+      @NonNull final SftpUser sftpUser, @NonNull final SftpLocation sftpLocation)
+      throws IOException {
+    final SshClient sshClient = getSshClient(sftpUser);
+
+    sshClient.start();
+
+    final ClientSession session =
+        sshClient
+            .connect(sftpUser.getName(), sftpLocation.getHost(), sftpLocation.getPort())
+            .verify()
+            .getSession();
+    session.auth().await(Duration.ofSeconds(connectionTimeoutSeconds));
+
+    return session;
+  }
+
+  private SshClient getSshClient(@NonNull final SftpUser sftpUser) {
     final SshClient sshClient = ClientBuilder.builder().build();
+
     if (sftpUser.getKeyPair() != null) {
       sshClient.setKeyIdentityProvider(KeyIdentityProvider.wrapKeyPairs(sftpUser.getKeyPair()));
     } else if (sftpUser.getPassword() != null) {
@@ -116,18 +142,7 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
       sshClient.setServerKeyVerifier(keyVerifier);
     }
 
-    sshClient.start();
-
-    final ClientSession session =
-        sshClient
-            .connect(sftpUser.getName(), sftpLocation.getHost(), sftpLocation.getPort())
-            .verify()
-            .getSession();
-    session.auth().await(Duration.ofSeconds(connectionTimeoutSeconds));
-
-    final SftpClientFactory factory = SftpClientFactory.instance();
-    final SftpClient sftpClient = factory.createSftpClient(session);
-    return sftpClient.singleSessionInstance();
+    return sshClient;
   }
 
   @RequiredArgsConstructor
@@ -142,15 +157,15 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
 
     public void close() {
       try {
-        sftpClient.close();
-      } catch (IOException ignored) {
-        // ignore - just release allocated resources
-      }
-
-      try {
         delegateInputStream.close();
       } catch (IOException ignored) {
         // ignore - just close the stream
+      }
+
+      try {
+        sftpClient.close();
+      } catch (IOException ignored) {
+        // ignore - just release allocated resources
       }
     }
   }
