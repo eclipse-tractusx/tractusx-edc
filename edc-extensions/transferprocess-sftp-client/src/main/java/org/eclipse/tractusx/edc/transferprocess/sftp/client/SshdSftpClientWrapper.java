@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.sshd.client.ClientBuilder;
@@ -39,10 +40,18 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 public class SshdSftpClientWrapper implements SftpClientWrapper {
-  @Setter private int bufferSize = 4096;
-  @Setter private boolean disableHostVerification = false;
-  @Setter private Path knownHostFile = Paths.get(System.getenv("HOME"), ".ssh/known_hosts");
-  @Setter private int connectionTimeoutSeconds = 10;
+  private static final int DEFAULT_BUFFER_SIZE = 4096;
+  private static final boolean DEFAULT_DISABLE_HOST_VERIFICATION = false;
+  private static final Path DEFAULT_KNOWN_HOST_FILE =
+      Paths.get(System.getenv("HOME"), ".ssh/known_hosts");
+  private static final int DEFAULT_CONNECTION_TIMEOUT_SECONDS = 10;
+  private static final Collection<SftpClient.OpenMode> DEFAULT_UPLOAD_OPEN_MODES =
+      List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Write);
+
+  @Setter private int bufferSize = DEFAULT_BUFFER_SIZE;
+  @Setter private boolean disableHostVerification = DEFAULT_DISABLE_HOST_VERIFICATION;
+  @Setter private Path knownHostFile = DEFAULT_KNOWN_HOST_FILE;
+  @Setter private int connectionTimeoutSeconds = DEFAULT_CONNECTION_TIMEOUT_SECONDS;
 
   @Override
   public void uploadFile(
@@ -52,7 +61,7 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
       @NonNull Collection<SftpClient.OpenMode> openModes)
       throws IOException {
     try (final SftpClient sftpClient = getSftpClient(sftpUser, sftpLocation)) {
-      try (OutputStream outputStream =
+      try (final OutputStream outputStream =
           sftpClient.write(sftpLocation.getPath(), bufferSize, openModes)) {
         inputStream.transferTo(outputStream);
       }
@@ -65,21 +74,33 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
       @NonNull final SftpLocation sftpLocation,
       @NonNull final InputStream inputStream)
       throws IOException {
-    Collection<SftpClient.OpenMode> openModes =
-        List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Write);
-    uploadFile(sftpUser, sftpLocation, inputStream, openModes);
+    uploadFile(sftpUser, sftpLocation, inputStream, DEFAULT_UPLOAD_OPEN_MODES);
   }
 
   @Override
   public InputStream downloadFile(
       @NonNull final SftpUser sftpUser, @NonNull final SftpLocation sftpLocation)
       throws IOException {
-    return getSftpClient(sftpUser, sftpLocation).read(sftpLocation.getPath(), bufferSize);
+    final SftpClient sftpClient = getSftpClient(sftpUser, sftpLocation);
+
+    // Hint:  In case opening the delegate InputStream causes an exception
+    //        the SftpClient needs to be closed to free allocated resources
+    final InputStream delegateInputStream;
+    try {
+      delegateInputStream = sftpClient.read(sftpLocation.getPath(), bufferSize);
+    } catch (final IOException ioException) {
+      sftpClient.close();
+
+      throw ioException;
+    }
+
+    return new SftpInputStreamWrapper(sftpClient, delegateInputStream);
   }
 
   @SneakyThrows
-  SftpClient getSftpClient(SftpUser sftpUser, SftpLocation sftpLocation) {
-    SshClient sshClient = ClientBuilder.builder().build();
+  SftpClient getSftpClient(
+      @NonNull final SftpUser sftpUser, @NonNull final SftpLocation sftpLocation) {
+    final SshClient sshClient = ClientBuilder.builder().build();
     if (sftpUser.getKeyPair() != null) {
       sshClient.setKeyIdentityProvider(KeyIdentityProvider.wrapKeyPairs(sftpUser.getKeyPair()));
     } else if (sftpUser.getPassword() != null) {
@@ -97,15 +118,40 @@ public class SshdSftpClientWrapper implements SftpClientWrapper {
 
     sshClient.start();
 
-    ClientSession session =
+    final ClientSession session =
         sshClient
             .connect(sftpUser.getName(), sftpLocation.getHost(), sftpLocation.getPort())
             .verify()
             .getSession();
     session.auth().await(Duration.ofSeconds(connectionTimeoutSeconds));
 
-    SftpClientFactory factory = SftpClientFactory.instance();
-    SftpClient sftpClient = factory.createSftpClient(session);
+    final SftpClientFactory factory = SftpClientFactory.instance();
+    final SftpClient sftpClient = factory.createSftpClient(session);
     return sftpClient.singleSessionInstance();
+  }
+
+  @RequiredArgsConstructor
+  private static class SftpInputStreamWrapper extends InputStream {
+    @NonNull private final SftpClient sftpClient;
+    @NonNull private final InputStream delegateInputStream;
+
+    @Override
+    public int read() throws IOException {
+      return delegateInputStream.read();
+    }
+
+    public void close() {
+      try {
+        sftpClient.close();
+      } catch (IOException ignored) {
+        // ignore - just release allocated resources
+      }
+
+      try {
+        delegateInputStream.close();
+      } catch (IOException ignored) {
+        // ignore - just close the stream
+      }
+    }
   }
 }
