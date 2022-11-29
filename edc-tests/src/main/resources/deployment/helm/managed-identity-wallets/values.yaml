@@ -126,6 +126,11 @@ cxkeycloak:
     password: "cx_password"
   keycloakConfigCli:
     enabled: true
+    # command is workaround see https://github.com/bitnami/charts/issues/12699#issuecomment-1259989740
+    command:
+      - java
+      - -jar
+      - /opt/bitnami/keycloak-config-cli/keycloak-config-cli-19.0.1.jar
     configuration:
       realm1.json: |
         {
