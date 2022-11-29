@@ -82,8 +82,6 @@ public class SftpClientWrapperImpl implements SftpClientWrapper {
       throws IOException {
     final SftpClient sftpClient = getSftpClient(sftpUser, sftpLocation);
 
-    // Hint:  In case opening the delegate InputStream causes an exception
-    //        the SftpClient needs to be closed to free allocated resources
     final InputStream delegateInputStream;
     try {
       delegateInputStream = sftpClient.read(sftpLocation.getPath(), bufferSize);
@@ -158,15 +156,11 @@ public class SftpClientWrapperImpl implements SftpClientWrapper {
     public void close() {
       try {
         delegateInputStream.close();
-      } catch (IOException ignored) {
-        // ignore - just close the stream
-      }
+      } catch (IOException ignored) {}
 
       try {
         sftpClient.close();
-      } catch (IOException ignored) {
-        // ignore - just release allocated resources
-      }
+      } catch (IOException ignored) {}
     }
   }
 }
