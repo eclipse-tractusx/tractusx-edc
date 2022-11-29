@@ -37,6 +37,7 @@ import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
+import org.jetbrains.annotations.NotNull;
 
 public class SftpClientWrapperImpl implements SftpClientWrapper {
   private static final int DEFAULT_BUFFER_SIZE = 4096;
@@ -153,14 +154,22 @@ public class SftpClientWrapperImpl implements SftpClientWrapper {
       return delegateInputStream.read();
     }
 
+    @Override
+    public int read(byte @NotNull [] b, int off, int len) throws IOException {
+      return delegateInputStream.read(b, off, len);
+    }
+
+    @Override
     public void close() {
       try {
         delegateInputStream.close();
-      } catch (IOException ignored) {}
+      } catch (IOException ignored) {
+      }
 
       try {
         sftpClient.close();
-      } catch (IOException ignored) {}
+      } catch (IOException ignored) {
+      }
     }
   }
 }

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class SftpClientWrapperTest {
+class SftpClientWrapperTest {
   private final SftpClientWrapperImpl sftpClientWrapper = Mockito.spy(new SftpClientWrapperImpl());
 
   @Test

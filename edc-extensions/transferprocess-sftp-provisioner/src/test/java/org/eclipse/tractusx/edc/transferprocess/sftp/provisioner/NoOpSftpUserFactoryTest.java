@@ -27,7 +27,7 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class NoOpSftpUserFactoryTest {
+class NoOpSftpUserFactoryTest {
   private final NoOpSftpUserFactory noOpSftpUserFactory = new NoOpSftpUserFactory();
 
   @Test

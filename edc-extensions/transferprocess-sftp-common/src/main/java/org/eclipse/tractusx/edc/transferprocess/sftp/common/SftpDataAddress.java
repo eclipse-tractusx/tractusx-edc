@@ -11,7 +11,7 @@ import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 @Builder
 @Getter
 public class SftpDataAddress extends DataAddress {
-  private final String type = "sftp";
+  @Getter private static final String connectionType = "sftp";
   @NonNull private String sftpUserName;
   @ToString.Exclude private String sftpUserPassword;
   @ToString.Exclude private byte[] sftpUserPrivateKey;

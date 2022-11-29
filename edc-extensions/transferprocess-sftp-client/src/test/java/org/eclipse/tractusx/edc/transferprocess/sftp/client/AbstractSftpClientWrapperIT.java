@@ -38,7 +38,7 @@ import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomUtils;
 import org.testcontainers.utility.DockerImageName;
 
-public abstract class AbstractSftpClientWrapperIT {
+abstract class AbstractSftpClientWrapperIT {
   static final String DOCKER_IMAGE_NAME = "atmoz/sftp:alpine-3.6";
   static final String sftpPathPrefix = "transfer";
   static final Map<String, String> DOCKER_ENV =

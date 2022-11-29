@@ -20,14 +20,26 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 public class NoOpSftpProvider implements SftpProvider {
   @Override
-  public void createUser(SftpUser user) {}
+  public void createUser(SftpUser user) {
+    // This provisioner does not create cloud resources.
+    // The assumption is that users and locations already exist cloud-side.
+  }
 
   @Override
-  public void deleteUser(SftpUser user) {}
+  public void deleteUser(SftpUser user) {
+    // This provisioner does not create cloud resources.
+    // The assumption is that users and locations already exist cloud-side.
+  }
 
   @Override
-  public void createLocation(SftpLocation location) {}
+  public void createLocation(SftpLocation location) {
+    // This provisioner does not create cloud resources.
+    // The assumption is that users and locations already exist cloud-side.
+  }
 
   @Override
-  public void deleteLocation(SftpLocation location) {}
+  public void deleteLocation(SftpLocation location) {
+    // This provisioner does not create cloud resources.
+    // The assumption is that users and locations already exist cloud-side.
+  }
 }

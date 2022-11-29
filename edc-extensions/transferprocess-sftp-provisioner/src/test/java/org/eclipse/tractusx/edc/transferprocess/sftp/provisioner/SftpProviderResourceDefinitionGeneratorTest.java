@@ -21,14 +21,16 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.DATA_ADDRESS_TYPE;
+import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
 
 import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SftpProviderResourceDefinitionGeneratorTest {
+class SftpProviderResourceDefinitionGeneratorTest {
   private final SftpProviderResourceDefinitionGenerator generator =
       new SftpProviderResourceDefinitionGenerator();
 
@@ -46,6 +48,17 @@ public class SftpProviderResourceDefinitionGeneratorTest {
     DataAddress dataAddress = new SftpDataAddress(name, password, privateKey, host, port, path);
     Policy policy = Policy.Builder.newInstance().build();
 
-    generator.generate(dataRequest, dataAddress, policy);
+    SftpProviderResourceDefinition resourceDefinition =
+        (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
+
+    Assertions.assertNotNull(resourceDefinition);
+    Assertions.assertEquals(DATA_ADDRESS_TYPE, resourceDefinition.getDataAddressType());
+    Assertions.assertEquals(PROVIDER_TYPE, resourceDefinition.getProviderType());
+    Assertions.assertEquals(host, resourceDefinition.getSftpLocationHost());
+    Assertions.assertEquals(port, resourceDefinition.getSftpLocationPort());
+    Assertions.assertEquals(path, resourceDefinition.getSftpLocationPath());
+    Assertions.assertEquals(name, resourceDefinition.getSftpUserName());
+    Assertions.assertEquals(password, resourceDefinition.getSftpUserPassword());
+    Assertions.assertArrayEquals(privateKey, resourceDefinition.getSftpUserPrivateKey());
   }
 }

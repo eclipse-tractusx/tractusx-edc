@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class SftpDataSourceTest {
+class SftpDataSourceTest {
   private final SftpClientWrapperImpl sftpClientWrapper = Mockito.spy(new SftpClientWrapperImpl());
 
   @Test

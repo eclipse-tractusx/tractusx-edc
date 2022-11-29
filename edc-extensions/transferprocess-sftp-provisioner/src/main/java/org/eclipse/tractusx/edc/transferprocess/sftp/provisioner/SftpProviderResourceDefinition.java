@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class SftpProviderResourceDefinition extends ResourceDefinition {
   @NonNull private String sftpLocationPath;
 
   @Override
-  public <RD extends ResourceDefinition, B extends Builder<RD, B>> B toBuilder() {
+  public <R extends ResourceDefinition, B extends Builder<R, B>> B toBuilder() {
     return null;
   }
 }

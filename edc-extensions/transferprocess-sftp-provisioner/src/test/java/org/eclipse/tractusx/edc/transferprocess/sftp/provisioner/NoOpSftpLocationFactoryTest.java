@@ -24,7 +24,7 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class NoOpSftpLocationFactoryTest {
+class NoOpSftpLocationFactoryTest {
   private final NoOpSftpLocationFactory noOpSftpLocationFactory = new NoOpSftpLocationFactory();
 
   @Test

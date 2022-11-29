@@ -14,7 +14,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.DATA_ADDRESS_TYPE;
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
 
 import lombok.RequiredArgsConstructor;
@@ -34,14 +33,13 @@ public class SftpProviderResourceDefinitionGenerator
   @Override
   public @Nullable ResourceDefinition generate(
       DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
-    if (!(assetAddress instanceof SftpDataAddress)
-        || !assetAddress.getType().equals(DATA_ADDRESS_TYPE)) {
+    if (!(assetAddress instanceof SftpDataAddress)) {
       throw new EdcSftpException(
           String.format("Data Address %s is not an SFTP Data Address", assetAddress.getKeyName()));
     }
     SftpDataAddress sftpDataAddress = (SftpDataAddress) assetAddress;
     return new SftpProviderResourceDefinition(
-        sftpDataAddress.getType(),
+        SftpDataAddress.getConnectionType(),
         PROVIDER_TYPE,
         sftpDataAddress.getSftpUserName(),
         sftpDataAddress.getSftpUserPassword(),

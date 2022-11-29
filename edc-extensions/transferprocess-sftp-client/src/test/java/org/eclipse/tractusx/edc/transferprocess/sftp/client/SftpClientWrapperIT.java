@@ -33,7 +33,7 @@ import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 @Testcontainers
 @ExtendWith(EdcExtension.class)
-public class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
+class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
 
   @ParameterizedTest
   @SneakyThrows
