@@ -143,7 +143,6 @@ public class S3FileTransferStepsDefs {
   public void consumerHasAStorageBucketWithFileTransferred(
       Connector connector, String bucketName, String fileName) throws IOException {
     S3Client s3 = connector.getS3Client();
-
     await()
         .pollDelay(Duration.ofMillis(500))
         .atMost(Timeouts.FILE_TRANSFER)

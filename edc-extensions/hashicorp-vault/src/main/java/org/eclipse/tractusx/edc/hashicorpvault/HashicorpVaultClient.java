@@ -171,7 +171,7 @@ class HashicorpVaultClient {
         .newBuilder()
         .addPathSegments(PathUtil.trimLeadingOrEndingSlash(vaultApiPath))
         .addPathSegment(entryType)
-        .addPathSegment(key)
+        .addPathSegments(key)
         .build();
   }
 

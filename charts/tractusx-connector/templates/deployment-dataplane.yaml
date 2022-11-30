@@ -1,0 +1,219 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "txdc.fullname" . }}-dataplane
+  labels:
+    {{- include "txdc.dataplane.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.dataplane.autoscaling.enabled }}
+  replicas: {{ .Values.dataplane.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "txdc.dataplane.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.dataplane.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "txdc.dataplane.selectorLabels" . | nindent 8 }}
+        {{- with .Values.dataplane.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "txdc.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.dataplane.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- toYaml .Values.dataplane.initContainers | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.dataplane.securityContext | nindent 12 }}
+          {{- if .Values.dataplane.image.repository }}
+          image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- else if and .Values.vault.hashicorp }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- else if .Values.vault.azure }}
+          image: "ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          {{- fail "cannot choose data-plane image automatically based on configuration" }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.dataplane.image.pullPolicy }}
+          ports:
+          {{- range $key,$value := .Values.dataplane.endpoints }}
+            - name: {{ $key }}
+              containerPort: {{ $value.port }}
+              protocol: TCP
+          {{- end }}
+          {{- if .Values.dataplane.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.dataplane.endpoints.default.path }}/check/liveness
+              port: {{ .Values.dataplane.endpoints.default.port }}
+            initialDelaySeconds: {{ .Values.dataplane.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.dataplane.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.dataplane.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.dataplane.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.dataplane.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.dataplane.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.dataplane.endpoints.default.path }}/check/readiness
+              port: {{ .Values.dataplane.endpoints.default.port }}
+            initialDelaySeconds: {{ .Values.dataplane.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.dataplane.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.dataplane.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.dataplane.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.dataplane.readinessProbe.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.dataplane.resources | nindent 12 }}
+          env:
+          {{- if .Values.dataplane.debug.enabled }}
+            - name: "JAVA_TOOL_OPTIONS"
+            {{- if and .Values.dataplane.debug.enabled .Values.dataplane.debug.suspendOnStart }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.dataplane.debug.port }}
+            {{- else }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.dataplane.debug.port }}
+            {{- end }}
+          {{- end }}
+
+            #######
+            # API #
+            #######
+            - name: "WEB_HTTP_DEFAULT_PORT"
+              value: {{ .Values.dataplane.endpoints.default.port | quote }}
+            - name: "WEB_HTTP_DEFAULT_PATH"
+              value: {{ .Values.dataplane.endpoints.default.path | quote }}
+            - name: "WEB_HTTP_CONTROL_PORT"
+              value: {{ .Values.dataplane.endpoints.control.port | quote }}
+            - name: "WEB_HTTP_CONTROL_PATH"
+              value: {{ .Values.dataplane.endpoints.control.path | quote }}
+            - name: "WEB_HTTP_VALIDATION_PORT"
+              value: {{ .Values.dataplane.endpoints.validation.port | quote }}
+            - name: "WEB_HTTP_VALIDATION_PATH"
+              value: {{ .Values.dataplane.endpoints.validation.path | quote }}
+            - name: "WEB_HTTP_METRICS_PORT"
+              value: {{ .Values.dataplane.endpoints.metrics.port | quote }}
+            - name: "WEB_HTTP_METRICS_PATH"
+              value: {{ .Values.dataplane.endpoints.metrics.path | quote }}
+            - name: "WEB_HTTP_PUBLIC_PORT"
+              value: {{ .Values.dataplane.endpoints.public.port | quote }}
+            - name: "WEB_HTTP_PUBLIC_PATH"
+              value: {{ .Values.dataplane.endpoints.public.path | quote }}
+            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
+              value:  {{ include "txdc.controlplane.url.validation" .}}
+
+            #######
+            # AWS #
+            #######
+            {{- if .Values.dataplane.aws.endpointOverride }}
+            - name: "EDC_AWS_ENDPOINT_OVERRIDE"
+              value: {{ .Values.dataplane.aws.endpointOverride | quote }}
+            {{- end   }}
+            {{- if .Values.dataplane.aws.secretAccessKey }}
+            - name: "AWS_SECRET_ACCESS_KEY"
+              value: {{ .Values.dataplane.aws.secretAccessKey | quote }}
+            {{- end }}
+            {{- if .Values.dataplane.aws.accessKeyId }}
+            - name: "AWS_ACCESS_KEY_ID"
+              value: {{ .Values.dataplane.aws.accessKeyId | quote }}
+            {{- end }}
+
+            ###########
+            ## VAULT ##
+            ###########
+
+          {{- if .Values.vault.hashicorp.enabled }}
+            # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+            - name: "EDC_VAULT_HASHICORP_URL"
+              value: {{ .Values.vault.hashicorp.url | required ".Values.vault.hashicorp.url is required" | quote }}
+            - name: "EDC_VAULT_HASHICORP_TOKEN"
+              value: {{ .Values.vault.hashicorp.token | required ".Values.vault.hashicorp.token is required" | quote }}
+            - name: "EDC_VAULT_HASHICORP_TIMEOUT_SECONDS"
+              value: {{ .Values.vault.hashicorp.timeout | quote }}
+            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED"
+              value: {{ .Values.vault.hashicorp.healthCheck.enabled | quote }}
+            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK"
+              value: {{ .Values.vault.hashicorp.healthCheck.standbyOk | quote }}
+            - name: "EDC_VAULT_HASHICORP_API_SECRET_PATH"
+              value: {{ .Values.vault.hashicorp.paths.secret | quote }}
+            - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
+              value: {{ .Values.vault.hashicorp.paths.health | quote }}
+          {{- end }}
+
+          {{- if .Values.vault.azure.enabled }}
+            - name: "EDC_VAULT_CLIENTID"
+              value: {{ .Values.vault.azure.client | quote  }}
+            - name: "EDC_VAULT_TENANTID"
+              value: {{ .Values.vault.azure.tenant | quote }}
+            - name: "EDC_VAULT_NAME"
+              value: {{ .Values.vault.azure.name | quote }}
+            - name: "EDC_VAULT_CLIENTSECRET"
+              value: {{ .Values.vault.azure.secret | quote }}
+            - name: "EDC_VAULT_CERTIFICATE"
+              value: {{ .Values.vault.azure.certificate | quote }}
+          {{- end }}
+
+          ######################################
+          ## Additional environment variables ##
+          ######################################
+          {{- range $key, $value := .Values.controlplane.envValueFrom }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                {{- tpl (toYaml $value) $ | nindent 16 }}
+          {{- end }}
+          {{- range $key, $value := .Values.controlplane.env }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- if and (or .Values.dataplane.envSecretNames .Values.dataplane.envConfigMapNames) (or (gt (len .Values.dataplane.envSecretNames) 0) (gt (len .Values.dataplane.envConfigMapNames) 0)) }}
+          envFrom:
+            {{- with .Values.controlplane.envSecretNames }}
+            - secretRef:
+                name: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.controlplane.envConfigMapNames }}
+            - configMapRef:
+                name: {{ . | quote }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: "configuration"
+              mountPath: "/app/opentelemetry.properties"
+              subPath: "opentelemetry.properties"
+            - name: "configuration"
+              mountPath: "/app/logging.properties"
+              subPath: "logging.properties"
+      volumes:
+        - name: "configuration"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-dataplane
+            items:
+              - key: "opentelemetry.properties"
+                path: "opentelemetry.properties"
+              - key: "logging.properties"
+                path: "logging.properties"
+      {{- with .Values.dataplane.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dataplane.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dataplane.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
