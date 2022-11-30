@@ -1,13 +1,13 @@
 # tractusx-connector
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector
 
 ## TL;DR
 ```shell
 $ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install tractus-x-connector catenax-ng-product-edc/tractus-x-connector --version 0.1.0
+$ helm install tractus-x-connector catenax-ng-product-edc/tractus-x-connector --version 0.1.3
 ```
 
 ## Values
@@ -198,7 +198,7 @@ $ helm install tractus-x-connector catenax-ng-product-edc/tractus-x-connector --
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
-| postgresql.enabled | bool | `true` |  |
+| postgresql.enabled | bool | `false` |  |
 | postgresql.jdbcUrl | string | `""` |  |
 | postgresql.password | string | `""` |  |
 | postgresql.username | string | `""` |  |

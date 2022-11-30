@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2022-11-30
+
 ### Added
 
 -   New Postman collection for developers `/docs/development/postman`
@@ -32,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Moved helm charts from `deployment/helm` to `charts`
+-   Moved helm charts from `deployment/helm` to `charts`
 
 ## [0.1.1] - 2022-09-04
 
@@ -123,7 +125,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.3...HEAD
+
+[0.1.3]: https://github.com/catenax-ng/product-edc/compare/0.1.2...0.1.3
 
 [0.1.2]: https://github.com/catenax-ng/product-edc/compare/0.1.1...0.1.2
 
