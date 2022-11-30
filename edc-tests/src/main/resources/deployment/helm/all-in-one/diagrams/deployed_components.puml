@@ -1,40 +1,40 @@
 @startuml
 
-!define sokratesColor 66CCFF
-!define platoColor CCFF99
+!define aliceColor 66CCFF
+!define bobColor CCFF99
 !define dapsColor FFFF99
 
 node PlatoSetup as "Plato Connector Setup" {
-    database PlatoPsql as "PostgreSQL" #platoColor
-    database PlatoKeyVault as "HashiCorp Vault" #platoColor
+    database PlatoPsql as "PostgreSQL" #bobColor
+    database PlatoKeyVault as "HashiCorp Vault" #bobColor
     component PlatoConnector as "Eclipse Dataspace Connector" {
-        artifact PlatoControlPlane as "Control Plane" #platoColor
-        artifact PlatoDataPlane as "Data Plane" #platoColor
+        artifact BobControlPlane as "Control Plane" #bobColor
+        artifact BobDataPlane as "Data Plane" #bobColor
     }
-    component PlatoBackendService as "Backend Application" #platoColor
+    component PlatoBackendService as "Backend Application" #bobColor
 }
 
-PlatoControlPlane -- PlatoPsql
-PlatoControlPlane -- PlatoKeyVault
-PlatoDataPlane -- PlatoKeyVault
-PlatoDataPlane -left- PlatoControlPlane
-PlatoControlPlane -left- PlatoBackendService
+BobControlPlane -- PlatoPsql
+BobControlPlane -- PlatoKeyVault
+BobDataPlane -- PlatoKeyVault
+BobDataPlane -left- BobControlPlane
+BobControlPlane -left- PlatoBackendService
 
 node SokratesSetup as "Sokrates Connector Setup" {
-    database SokratesPsql as "PostgreSQL" #sokratesColor
-    database SokratesKeyVault as "HashiCorp Vault" #sokratesColor
+    database SokratesPsql as "PostgreSQL" #aliceColor
+    database SokratesKeyVault as "HashiCorp Vault" #aliceColor
     component SokratesConnector as "Eclipse Dataspace Connector" {
-        artifact SokratesControlPlane as "Control Plane" #sokratesColor
-        artifact SokratesDataPlane as "Data Plane" #sokratesColor
+        artifact AliceControlPlane as "Control Plane" #aliceColor
+        artifact AliceDataPlane as "Data Plane" #aliceColor
     }
-    component SokratesBackendService as "Backend Application" #sokratesColor
+    component AliceBackendService as "Backend Application" #aliceColor
 }
 
-SokratesControlPlane -- SokratesPsql
-SokratesControlPlane -- SokratesKeyVault
-SokratesDataPlane -- SokratesKeyVault
-SokratesDataPlane -left- SokratesControlPlane
-SokratesControlPlane -left- SokratesBackendService
+AliceControlPlane -- SokratesPsql
+AliceControlPlane -- SokratesKeyVault
+AliceDataPlane -- SokratesKeyVault
+AliceDataPlane -left- AliceControlPlane
+AliceControlPlane -left- AliceBackendService
 
 
 node IdentityProvider as "Identity Provider" {
@@ -42,6 +42,6 @@ node IdentityProvider as "Identity Provider" {
 }
 
 PlatoPsql -[hidden]down- OmejdnDaps
-SokratesControlPlane -[hidden]up- OmejdnDaps
+AliceControlPlane -[hidden]up- OmejdnDaps
 
 @enduml
