@@ -451,7 +451,7 @@ dataplane:
     public: ""
 
 postgresql:
-  enabled: true
+  enabled: false
   jdbcUrl: ""
   username: ""
   password: ""
