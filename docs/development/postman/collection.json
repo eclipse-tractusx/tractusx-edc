@@ -244,33 +244,6 @@
 			"response": []
 		},
 		{
-			"name": "Policy (BPNs)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": [\n                    {\n                        \"edctype\": \"AtomicConstraint\",\n                        \"leftExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"BusinessPartnerNumber\"\n                        },\n                        \"rightExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": [\n                                \"BPNFOO\",\n                                \"{{POLICY_BPN}}\"\n                            ]\n                        },\n                        \"operator\": \"IN\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/data/policydefinitions",
-					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
-					],
-					"path": [
-						"data",
-						"policydefinitions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Policy",
 			"request": {
 				"method": "DELETE",
@@ -590,48 +563,6 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_IDS_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": [\n                        {\n                            \"edctype\": \"AtomicConstraint\",\n                            \"leftExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"BusinessPartnerNumber\"\n                            },\n                            \"rightExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"{{POLICY_BPN}}\"\n                            },\n                            \"operator\": \"EQ\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/data/contractnegotiations",
-					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
-					],
-					"path": [
-						"data",
-						"contractnegotiations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Negotation (BPNs)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Body matches string\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
-							"",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_IDS_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": [\n                        {\n                            \"edctype\": \"AtomicConstraint\",\n                            \"leftExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"BusinessPartnerNumber\"\n                            },\n                            \"rightExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": [\n                                    \"BPNFOO\",\n                                    \"{{POLICY_BPN}}\"\n                                ]\n                            },\n                            \"operator\": \"IN\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
