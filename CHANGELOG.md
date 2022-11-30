@@ -10,17 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 -   New Postman collection for developers `/docs/development/postman`
--   New XSUAA Authenticator Extension ([Readme](/edc-extensions/xsuaa-authenticator/README.md))
+-   New EDC Image with HashiCorp Vault and InMemory Storage
+-   (Experimental) Simplified deployment of the EDC in `/charts/tractusx-connector`
 
-### Updated
+### Changed
 
 -   Set EDC version to `0.0.1-20221006-SNAPSHOT`
 -   Business Partner Number Extension no longer supports the 'IN' constraint operator
 -   HashiCorp Vault Extension now allows sub directories for secrets
+-   Update package structure/namespace from `net.catenax` to `org.eclipse.tractusx`
 
-### Changed
+### Fixed
 
-- Update package structure/namespace from `net.catenax` to `org.eclipse.tractusx`
+-   S3 Data Transfer
 
 ## [0.1.2] - 2022-09-30
 
