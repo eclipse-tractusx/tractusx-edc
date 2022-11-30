@@ -21,6 +21,8 @@ FROM alpine:3.17.0 as otel
 
 ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.1/opentelemetry-javaagent.jar"
 
+HEALTHCHECK NONE
+
 RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
 FROM alpine:3.17.0
@@ -52,6 +54,8 @@ WORKDIR /app
 COPY --from=otel /tmp/opentelemetry-javaagent.jar .
 COPY ${JAR} edc-dataplane.jar
 COPY ${LIB} ./lib/
+
+HEALTHCHECK NONE
 
 CMD ["java", \
      "-javaagent:/app/opentelemetry-javaagent.jar", \
