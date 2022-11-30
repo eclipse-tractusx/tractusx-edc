@@ -17,13 +17,13 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 #
-FROM alpine:3.16.3 as otel
+FROM alpine:3.17.0 as otel
 
 ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.1/opentelemetry-javaagent.jar"
 
 RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
-FROM alpine:3.16.3
+FROM alpine:3.17.0
 
 ARG JAR
 ARG LIB
@@ -32,7 +32,7 @@ ARG APP_USER=docker
 ARG APP_UID=10100
 
 RUN apk update && \
-     apk add openjdk11-jre-headless=11.0.17_p8-r1 --no-cache && \
+     apk add openjdk11-jre-headless=11.0.17_p8-r3 --no-cache && \
      rm -rf /var/cache/apk/*
 
 RUN addgroup --system "$APP_USER"
