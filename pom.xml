@@ -384,6 +384,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.tractusx.edc</groupId>
+                <artifactId>edc-controlplane-memory-hashicorp-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-controlplane-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>

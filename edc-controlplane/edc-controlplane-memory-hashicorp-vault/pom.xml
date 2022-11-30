@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
-  Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+  Copyright (c) 2022 Contributors to the Eclipse Foundation
 
   See the NOTICE file(s) distributed with this work for additional
   information regarding copyright ownership.
@@ -18,16 +17,17 @@
 
   SPDX-License-Identifier: Apache-2.0
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.eclipse.tractusx.edc</groupId>
         <artifactId>edc-controlplane</artifactId>
+        <groupId>org.eclipse.tractusx.edc</groupId>
         <version>0.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
+    <artifactId>edc-controlplane-memory-hashicorp-vault</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -88,16 +88,14 @@
 
 
     <dependencies>
-        <!-- Base Control-Plane \w psql, \wo Azure KeyVault -->
+        <!-- Base Control-Plane -->
         <dependency>
             <groupId>org.eclipse.tractusx.edc</groupId>
-            <artifactId>edc-controlplane-postgresql</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.eclipse.dataspaceconnector</groupId>
-                    <artifactId>azure-vault</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>edc-controlplane-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>control-plane-core</artifactId>
         </dependency>
 
         <!-- Vault -->
@@ -105,8 +103,12 @@
             <groupId>org.eclipse.tractusx.edc.extensions</groupId>
             <artifactId>hashicorp-vault</artifactId>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-transfer-client</artifactId>
+        </dependency>
+    </dependencies>
 
     <profiles>
         <profile>

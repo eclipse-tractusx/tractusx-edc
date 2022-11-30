@@ -159,6 +159,10 @@
             <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>data-plane-selector-spi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-transfer-client</artifactId>
+        </dependency>
 
         <!-- Telemetry -->
         <dependency>

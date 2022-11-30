@@ -198,6 +198,10 @@
                 </dependency>
                 <dependency>
                     <groupId>org.eclipse.tractusx.edc</groupId>
+                    <artifactId>edc-controlplane-memory-hashicorp-vault</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.tractusx.edc</groupId>
                     <artifactId>edc-controlplane-postgresql</artifactId>
                 </dependency>
                 <dependency>

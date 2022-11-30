@@ -39,5 +39,6 @@
         <module>edc-controlplane-memory</module>
         <module>edc-controlplane-postgresql</module>
         <module>edc-controlplane-postgresql-hashicorp-vault</module>
+        <module>edc-controlplane-memory-hashicorp-vault</module>
     </modules>
 </project>

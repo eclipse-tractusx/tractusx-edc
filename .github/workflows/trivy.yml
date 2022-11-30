@@ -70,6 +70,7 @@ jobs:
       matrix:
         image:
           - edc-controlplane-memory
+          - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-azure-vault
