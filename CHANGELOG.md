@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2022-11-30
+
+### Added
+
+-   New Postman collection for developers `/docs/development/postman`
+-   New EDC Image with HashiCorp Vault and InMemory Storage
+-   (Experimental) Simplified deployment of the EDC in `/charts/tractusx-connector`
+
+### Changed
+
+-   Set EDC version to `0.0.1-20221006-SNAPSHOT`
+-   Business Partner Number Extension no longer supports the 'IN' constraint operator
+-   HashiCorp Vault Extension now allows sub directories for secrets
+-   Update package structure/namespace from `net.catenax` to `org.eclipse.tractusx`
+
+### Fixed
+
+-   S3 Data Transfer
+
 ## [0.1.2] - 2022-09-30
 
 ### Added
@@ -16,8 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 -   Moved helm charts from `deployment/helm` to `charts`
--   Replaced distroless image with alpine in all docker images
--   Update EDC commit to `740c100ac162bc41b1968c232ad81f7d739aefa9`
 
 ## [0.1.1] - 2022-09-04
 
@@ -108,7 +125,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.3...HEAD
+
+[0.1.3]: https://github.com/catenax-ng/product-edc/compare/0.1.2...0.1.3
 
 [0.1.2]: https://github.com/catenax-ng/product-edc/compare/0.1.1...0.1.2
 

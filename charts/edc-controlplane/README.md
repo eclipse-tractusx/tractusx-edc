@@ -1,6 +1,6 @@
 # edc-controlplane
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
 
 EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with responsibility of resource management and govern contracts and data transfers
 
@@ -9,7 +9,7 @@ EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with res
 ## TL;DR
 ```shell
 $ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install my-release catenax-ng-product-edc/edc-controlplane --version 0.1.2
+$ helm install my-release catenax-ng-product-edc/edc-controlplane --version 0.1.3
 ```
 
 ## Values
@@ -24,6 +24,7 @@ $ helm install my-release catenax-ng-product-edc/edc-controlplane --version 0.1.
 | autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | configuration.properties | string | `"# edc.api.auth.key=\n# edc.atomikos.checkpoint.interval=\n# edc.atomikos.directory=\n# edc.atomikos.logging=\n# edc.atomikos.threaded2pc=\n# edc.atomikos.timeout=\n# edc.aws.access.key=\n# edc.aws.provision.retry.retries.max=\n# edc.aws.provision.role.duration.session.max=\n# edc.aws.secret.access.key=\n# edc.blobstore.endpoint=\n# edc.dataplane.token.validation.endpoint=\n# edc.core.retry.backoff.max=\n# edc.core.retry.backoff.min=\n# edc.core.retry.retries.max=\n# edc.core.system.health.check.liveness-period=\n# edc.core.system.health.check.readiness-period=\n# edc.core.system.health.check.startup-period=\n# edc.core.system.health.check.threadpool-size=\n# edc.dataplane.queue.capacity=\n# edc.dataplane.wait=\n# edc.dataplane.workers=\n# edc.datasource.asset.name=\"default\"\n# edc.datasource.contractdefinition.name=\"default\"\n# edc.datasource.contractnegotiation.name=\"default\"\n# edc.datasource.policy.name=\"default\"\n# edc.datasource.transferprocess.name=\"default\"\n# edc.datasource.default.pool.maxIdleConnections=\n# edc.datasource.default.pool.maxTotalConnections=\n# edc.datasource.default.pool.minIdleConnections=\n# edc.datasource.default.pool.testConnectionOnBorrow=\n# edc.datasource.default.pool.testConnectionOnCreate=\n# edc.datasource.default.pool.testConnectionOnReturn=\n# edc.datasource.default.pool.testConnectionWhileIdle=\n# edc.datasource.default.pool.testQuery=\n# edc.datasource.default.url=\n# edc.datasource.default.user=\n# edc.datasource.default.password=\n# edc.dpf.selector.url=\n# edc.events.topic.endpoint=\n# edc.events.topic.name=\n# edc.fs.config=\n# edc.hostname=\n# edc.identity.did.url=\n# edc.ids.catalog.id=\n# edc.ids.curator=\n# edc.ids.description=\n# edc.ids.endpoint=\n# edc.ids.id=\n# edc.ids.maintainer=\n# edc.ids.security.profile=\n# edc.ids.title=\n# edc.ids.validation.referringconnector=\n# edc.ion.crawler.did-type=\n# edc.ion.crawler.interval-minutes=\n# edc.ion.crawler.ion.url=\n# edc.metrics.enabled=\n# edc.metrics.executor.enabled=\n# edc.metrics.jersey.enabled=\n# edc.metrics.jetty.enabled=\n# edc.metrics.okhttp.enabled=\n# edc.metrics.system.enabled=\n# edc.negotiation.consumer.state-machine.batch-size=\n# edc.negotiation.provider.state-machine.batch-size=\n# edc.oauth.client.id=\n# edc.oauth.private.key.alias=\n# edc.oauth.provider.audience=\n# edc.oauth.provider.jwks.refresh=\n# edc.oauth.provider.jwks.url=\n# edc.oauth.public.key.alias=\n# edc.oauth.token.url=\n# edc.oauth.validation.nbf.leeway=\n# edc.receiver.http.auth-code=\n# edc.receiver.http.auth-key=\n# edc.receiver.http.endpoint=\n# edc.transfer.proxy.endpoint=\n# edc.transfer.proxy.token.validity.seconds=\n# edc.transfer.proxy.token.signer.privatekey.alias=\n# edc.transfer.functions.check.endpoint=\n# edc.transfer.functions.enabled.protocols=\n# edc.transfer.functions.transfer.endpoint=\n# edc.transfer-process-store.database.name=\n# edc.transfer.state-machine.batch-size=\n# edc.vault=\n# edc.vault.certificate=\n# edc.vault.clientid=\n# edc.vault.clientsecret=\n# edc.vault.name=\n# edc.vault.tenantid=\n# edc.vault.hashicorp.url=\n# edc.vault.hashicorp.token=\n# edc.vault.hashicorp.timeout.seconds=\n# edc.webdid.doh.url=\n# edc.web.rest.cors.enabled=\n# edc.web.rest.cors.headers=\n# edc.web.rest.cors.methods=\n# edc.web.rest.cors.origins=\n# ids.webhook.address="` | EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) |
+| customLabels | object | `{}` | Additional custom Labels to add |
 | edc.endpoints.control.path | string | `"/api/controlplane/control"` | The path mapping the "control" api is going to be exposed at |
 | edc.endpoints.control.port | string | `"9999"` | The network port, which the "control" api is going to be exposed by the container, pod and service |
 | edc.endpoints.data.path | string | `"/data"` | The path mapping the "data" management api is going to be exposed at |
@@ -91,6 +92,8 @@ $ helm install my-release catenax-ng-product-edc/edc-controlplane --version 0.1.
 | startupProbe.failureThreshold | int | `12` | Minimum consecutive failures for the probe to be considered failed after having succeeded |
 | startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before liveness probes are initiated. |
 | tolerations | list | `[]` | [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) are applied to Pods to schedule onto nodes with matching taints. |
+| volumeMounts | list | `[]` | Additional volumeMounts to the controlplane main container |
+| volumes | list | `[]` | Additional volumes to the controlplane pod |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.10.0](https://github.com/norwoodj/helm-docs/releases/v1.10.0)
