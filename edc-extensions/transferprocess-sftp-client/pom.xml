@@ -131,6 +131,10 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
+            <artifactId>data-plane-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.dataspaceconnector</groupId>
             <artifactId>policy-spi</artifactId>
         </dependency>
         <dependency>

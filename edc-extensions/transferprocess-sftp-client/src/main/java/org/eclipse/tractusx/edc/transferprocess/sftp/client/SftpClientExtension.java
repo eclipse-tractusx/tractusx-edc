@@ -14,6 +14,8 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.PipelineService;
+import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
 import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -21,16 +23,16 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 @Provides(SftpClientWrapper.class)
 public class SftpClientExtension implements ServiceExtension {
 
-  // @Inject PipelineService pipelineService;
+  @Inject PipelineService pipelineService;
 
   @Override
   public void initialize(ServiceExtensionContext context) {
     SftpClientWrapperImpl sftpClientWrapper = new SftpClientWrapperImpl();
-    // SftpDataSinkFactory sftpDataSinkFactory = new SftpDataSinkFactory(sftpClientWrapper);
-    // SftpDataSourceFactory sftpDataSourceFactory = new SftpDataSourceFactory(sftpClientWrapper);
+    SftpDataSinkFactory sftpDataSinkFactory = new SftpDataSinkFactory(sftpClientWrapper);
+    SftpDataSourceFactory sftpDataSourceFactory = new SftpDataSourceFactory(sftpClientWrapper);
 
     context.registerService(SftpClientWrapper.class, sftpClientWrapper);
-    // pipelineService.registerFactory(sftpDataSinkFactory);
-    // pipelineService.registerFactory(sftpDataSourceFactory);
+    pipelineService.registerFactory(sftpDataSinkFactory);
+    pipelineService.registerFactory(sftpDataSourceFactory);
   }
 }

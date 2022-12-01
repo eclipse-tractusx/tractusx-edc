@@ -818,6 +818,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.dataspaceconnector</groupId>
+                <artifactId>data-plane-core</artifactId>
+                <version>${org.eclipse.dataspaceconnector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.dataspaceconnector</groupId>
                 <artifactId>data-plane-azure-storage</artifactId>
                 <version>${org.eclipse.dataspaceconnector.version}</version>
             </dependency>
