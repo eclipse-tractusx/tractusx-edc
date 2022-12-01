@@ -22,7 +22,6 @@ import org.eclipse.dataspaceconnector.spi.transfer.provision.ProviderResourceDef
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefinition;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,19 +32,11 @@ public class SftpProviderResourceDefinitionGenerator
   @Override
   public @Nullable ResourceDefinition generate(
       DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
-    if (!(assetAddress instanceof SftpDataAddress)) {
-      throw new EdcSftpException(
-          String.format("Data Address %s is not an SFTP Data Address", assetAddress.getKeyName()));
-    }
-    SftpDataAddress sftpDataAddress = (SftpDataAddress) assetAddress;
+    SftpDataAddress sftpDataAddress = SftpDataAddress.fromDataAddress(assetAddress);
     return new SftpProviderResourceDefinition(
         SftpDataAddress.getConnectionType(),
         PROVIDER_TYPE,
-        sftpDataAddress.getSftpUserName(),
-        sftpDataAddress.getSftpUserPassword(),
-        sftpDataAddress.getSftpUserPrivateKey(),
-        sftpDataAddress.getSftpLocationHost(),
-        sftpDataAddress.getSftpLocationPort(),
-        sftpDataAddress.getSftpLocationPath());
+        sftpDataAddress.getSftpUser(),
+        sftpDataAddress.getSftpLocation());
   }
 }

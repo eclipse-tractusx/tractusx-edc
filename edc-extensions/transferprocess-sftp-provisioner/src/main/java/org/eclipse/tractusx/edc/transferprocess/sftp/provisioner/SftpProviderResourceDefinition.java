@@ -14,26 +14,20 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefinition;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class SftpProviderResourceDefinition extends ResourceDefinition {
   @NonNull private String dataAddressType;
   @NonNull private String providerType;
-  @NonNull private String sftpUserName;
-  @ToString.Exclude private String sftpUserPassword;
-  @ToString.Exclude private byte[] sftpUserPrivateKey;
-  @NonNull private String sftpLocationHost;
-  @NonNull private Integer sftpLocationPort;
-  @NonNull private String sftpLocationPath;
+  @NonNull private SftpUser sftpUser;
+  @NonNull private SftpLocation sftpLocation;
 
   @Override
   public <R extends ResourceDefinition, B extends Builder<R, B>> B toBuilder() {

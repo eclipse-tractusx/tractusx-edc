@@ -17,6 +17,7 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 
 @Builder
@@ -24,7 +25,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class SftpLocation {
-  private final String host;
-  private final Integer port;
-  private final String path;
+  @NonNull private final String host;
+  @NonNull private final Integer port;
+  @NonNull private final String path;
 }

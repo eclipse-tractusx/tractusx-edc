@@ -39,7 +39,8 @@ public class SftpProvisionerExtension implements ServiceExtension {
   public void initialize(ServiceExtensionContext context) {
     NoOpSftpProvider sftpProvider = new NoOpSftpProvider();
     NoOpSftpProvisioner noOpSftpProvisioner = new NoOpSftpProvisioner(policyEngine, sftpProvider);
-    SftpProviderResourceDefinitionGenerator generator = new SftpProviderResourceDefinitionGenerator();
+    SftpProviderResourceDefinitionGenerator generator =
+        new SftpProviderResourceDefinitionGenerator();
     provisionManager.register(noOpSftpProvisioner);
     context.registerService(ProviderResourceDefinitionGenerator.class, generator);
 

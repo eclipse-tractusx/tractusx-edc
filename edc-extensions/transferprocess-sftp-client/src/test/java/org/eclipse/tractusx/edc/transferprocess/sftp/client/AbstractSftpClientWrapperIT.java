@@ -155,13 +155,6 @@ abstract class AbstractSftpClientWrapperIT {
     }
   }
 
-  @SneakyThrows
-  private static KeyPair generateKeyPair() {
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-    keyPairGenerator.initialize(2048);
-    return keyPairGenerator.generateKeyPair();
-  }
-
   protected SftpUser getPasswordUser() {
     return SftpUser.builder().name("user").password("password").build();
   }
@@ -218,5 +211,12 @@ abstract class AbstractSftpClientWrapperIT {
       }
       return path.toFile();
     }
+  }
+
+  @SneakyThrows
+  private static KeyPair generateKeyPair() {
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    keyPairGenerator.initialize(2048);
+    return keyPairGenerator.generateKeyPair();
   }
 }

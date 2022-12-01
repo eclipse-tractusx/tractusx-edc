@@ -18,6 +18,7 @@ import java.security.KeyPair;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 
 @Builder
@@ -25,7 +26,7 @@ import lombok.ToString;
 @ToString(of = "name")
 @EqualsAndHashCode
 public class SftpUser {
-  private final String name;
+  @NonNull private final String name;
   private final String password;
   private final KeyPair keyPair;
 }

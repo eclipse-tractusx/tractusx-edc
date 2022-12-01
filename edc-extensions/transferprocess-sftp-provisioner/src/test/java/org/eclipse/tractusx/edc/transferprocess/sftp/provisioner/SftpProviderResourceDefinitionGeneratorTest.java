@@ -23,10 +23,15 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.DATA_ADDRESS_TYPE;
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import lombok.SneakyThrows;
 import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -38,14 +43,16 @@ class SftpProviderResourceDefinitionGeneratorTest {
   void generate() {
     String name = "name";
     String password = "password";
-    byte[] privateKey = new byte[1];
+    KeyPair keyPair = generateKeyPair();
     String host = "host";
     Integer port = 22;
     String path = "path";
 
     DataRequest dataRequest =
         DataRequest.Builder.newInstance().destinationType(DATA_ADDRESS_TYPE).build();
-    DataAddress dataAddress = new SftpDataAddress(name, password, privateKey, host, port, path);
+    SftpUser sftpUser = SftpUser.builder().name(name).password(password).keyPair(keyPair).build();
+    SftpLocation sftpLocation = SftpLocation.builder().host(host).port(port).path(path).build();
+    DataAddress dataAddress = new SftpDataAddress(sftpUser, sftpLocation);
     Policy policy = Policy.Builder.newInstance().build();
 
     SftpProviderResourceDefinition resourceDefinition =
@@ -54,11 +61,18 @@ class SftpProviderResourceDefinitionGeneratorTest {
     Assertions.assertNotNull(resourceDefinition);
     Assertions.assertEquals(DATA_ADDRESS_TYPE, resourceDefinition.getDataAddressType());
     Assertions.assertEquals(PROVIDER_TYPE, resourceDefinition.getProviderType());
-    Assertions.assertEquals(host, resourceDefinition.getSftpLocationHost());
-    Assertions.assertEquals(port, resourceDefinition.getSftpLocationPort());
-    Assertions.assertEquals(path, resourceDefinition.getSftpLocationPath());
-    Assertions.assertEquals(name, resourceDefinition.getSftpUserName());
-    Assertions.assertEquals(password, resourceDefinition.getSftpUserPassword());
-    Assertions.assertArrayEquals(privateKey, resourceDefinition.getSftpUserPrivateKey());
+    Assertions.assertEquals(host, resourceDefinition.getSftpLocation().getHost());
+    Assertions.assertEquals(port, resourceDefinition.getSftpLocation().getPort());
+    Assertions.assertEquals(path, resourceDefinition.getSftpLocation().getPath());
+    Assertions.assertEquals(name, resourceDefinition.getSftpUser().getName());
+    Assertions.assertEquals(password, resourceDefinition.getSftpUser().getPassword());
+    Assertions.assertEquals(keyPair, resourceDefinition.getSftpUser().getKeyPair());
+  }
+
+  @SneakyThrows
+  static KeyPair generateKeyPair() {
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    keyPairGenerator.initialize(2048);
+    return keyPairGenerator.generateKeyPair();
   }
 }

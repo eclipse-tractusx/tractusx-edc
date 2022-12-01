@@ -29,9 +29,7 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionRespons
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionedResource;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ResourceDefinition;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocationFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserFactory;
 
 @RequiredArgsConstructor
 public class NoOpSftpProvisioner
@@ -42,10 +40,6 @@ public class NoOpSftpProvisioner
   @NonNull private final PolicyEngine policyEngine;
 
   @NonNull private final NoOpSftpProvider sftpProvider;
-
-  private final SftpLocationFactory sftpLocationFactory = new NoOpSftpLocationFactory();
-
-  private final SftpUserFactory sftpUserFactory = new NoOpSftpUserFactory();
 
   @Override
   public boolean canProvision(@NonNull ResourceDefinition resourceDefinition) {
@@ -81,18 +75,8 @@ public class NoOpSftpProvisioner
           SftpUser user;
           try {
             // TODO: policyEngine.filter()
-            location =
-                Objects.requireNonNull(
-                    sftpLocationFactory.createSftpLocation(
-                        sftpProviderResourceDefinition.getSftpLocationHost(),
-                        sftpProviderResourceDefinition.getSftpLocationPort(),
-                        sftpProviderResourceDefinition.getSftpLocationPath()));
-            user =
-                Objects.requireNonNull(
-                    sftpUserFactory.createSftpUser(
-                        sftpProviderResourceDefinition.getSftpUserName(),
-                        sftpProviderResourceDefinition.getSftpUserPassword(),
-                        sftpProviderResourceDefinition.getSftpUserPrivateKey()));
+            location = Objects.requireNonNull(sftpProviderResourceDefinition.getSftpLocation());
+            user = Objects.requireNonNull(sftpProviderResourceDefinition.getSftpUser());
             sftpProvider.createLocation(location);
             sftpProvider.createUser(user);
           } catch (Exception e) {
