@@ -36,6 +36,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -54,6 +55,7 @@ import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+@Slf4j
 public class BackendServiceBackendAPI {
   private static final String HTTP_HEADER_ACCEPT = "Accept";
   private static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
@@ -76,6 +78,8 @@ public class BackendServiceBackendAPI {
     final HttpGet get = new HttpGet(uri);
     get.setHeader(HTTP_HEADER_ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
 
+    log.debug(String.format("Send %-6s %s", get.getMethod(), get.getURI()));
+
     return httpClient.execute(get, ListResponseHandler.INSTANCE);
   }
 
@@ -84,6 +88,8 @@ public class BackendServiceBackendAPI {
   public boolean exists(@NonNull final String path) {
     final URI uri = new URIBuilder(backendServiceBackendApiUrl).setPath(path).build();
     final HttpHead head = new HttpHead(uri);
+
+    log.debug(String.format("Send %-6s %s", head.getMethod(), head.getURI()));
 
     return httpClient.execute(head, ExistsResponseHandler.INSTANCE);
   }
@@ -94,6 +100,8 @@ public class BackendServiceBackendAPI {
     final URI uri = new URIBuilder(backendServiceBackendApiUrl).setPath(path).build();
     final HttpGet get = new HttpGet(uri);
     get.setHeader(HTTP_HEADER_ACCEPT, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+
+    log.debug(String.format("Send %-6s %s", get.getMethod(), get.getURI()));
 
     return httpClient.execute(get, GetResponseHandler.INSTANCE);
   }
@@ -113,6 +121,8 @@ public class BackendServiceBackendAPI {
     entity.setContentLength(length);
 
     post.setEntity(entity);
+
+    log.debug(String.format("Send %-6s %s", post.getMethod(), post.getURI()));
 
     httpClient.execute(post, PostResponseHandler.INSTANCE);
   }
@@ -240,7 +250,7 @@ public class BackendServiceBackendAPI {
     public static final ListResponseHandler INSTANCE = new ListResponseHandler();
 
     private ListResponseHandler() {
-      super(new TypeToken<List<String>>() {}); // JVM type erasure: Keep generic args!
+      super(new TypeToken<>() {}); // JVM type erasure: Keep generic args!
     }
   }
 

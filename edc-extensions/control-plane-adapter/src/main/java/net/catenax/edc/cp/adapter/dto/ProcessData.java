@@ -39,7 +39,7 @@ public class ProcessData {
   // contract data
   @Setter private String contractNegotiationId;
   @Setter private String contractAgreementId;
-  @Setter private boolean isContractConfirmed = false;
+  @Builder.Default @Setter private boolean isContractConfirmed = false;
 
   // result/response data
   @Setter private EndpointDataReference endpointDataReference;

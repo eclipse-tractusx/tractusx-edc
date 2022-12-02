@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.eclipse.tractusx.edc.tests.data.Asset;
+import org.eclipse.tractusx.edc.tests.data.NullDataAddress;
 
 public class AssetStepDefs {
 
@@ -43,7 +44,9 @@ public class AssetStepDefs {
     final DataManagementAPI api = connector.getDataManagementAPI();
 
     for (var i = 0; i < assetCount; i++)
-      api.createAsset(new Asset(UUID.randomUUID().toString(), i + 1 + " / " + assetCount));
+      api.createAsset(
+          new Asset(
+              UUID.randomUUID().toString(), i + 1 + " / " + assetCount, NullDataAddress.INSTANCE));
   }
 
   private List<Asset> parseDataTable(DataTable table) {
@@ -52,7 +55,7 @@ public class AssetStepDefs {
     for (Map<String, String> map : table.asMaps()) {
       String id = map.get("id");
       String description = map.get("description");
-      assets.add(new Asset(id, description));
+      assets.add(new Asset(id, description, NullDataAddress.INSTANCE));
     }
 
     return assets;

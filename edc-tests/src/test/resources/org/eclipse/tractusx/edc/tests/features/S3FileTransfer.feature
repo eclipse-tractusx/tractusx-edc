@@ -28,10 +28,10 @@ Feature: S3 File Transfer
   Scenario: Request file transfer via S3
     Given 'Plato' has the following S3 assets
       | id      | description   | data_address_type | data_address_s3_bucket_name | data_address_s3_key_name | data_address_s3_region |
-      | asset-1 | Example Asset | AmazonS3          | sourcebucket               | testfile                  | us-east-1              |
+      | asset-1 | Example Asset | AmazonS3          | sourcebucket                | testfile                 | us-east-1              |
     And 'Plato' has the following policies
-      | id            | action | payMe |
-      | policy-1      | USE    |       |
+      | id       | action | payMe |
+      | policy-1 | USE    |       |
     And 'Plato' has the following contract definitions
       | id                    | access policy | contract policy | asset   |
       | contract-definition-1 | policy-1      | policy-1        | asset-1 |
@@ -42,7 +42,7 @@ Feature: S3 File Transfer
     Then 'Sokrates' negotiates the contract successfully with 'Plato'
       | contract offer id     | asset id | policy id |
       | contract-definition-1 | asset-1  | policy-1  |
-    Then 'Sokrates' initiate transfer process from 'Plato'
-      | data_address_type | data_address_s3_bucket_name | data_address_s3_key_name | data_address_s3_region |
-      | AmazonS3          | destinationbucket          | testfile                | us-east-1              |
+    Then 'Sokrates' initiate S3 transfer process from 'Plato'
+      | data_address_s3_bucket_name | data_address_s3_key_name | data_address_s3_region |
+      | destinationbucket           | testfile                 | us-east-1              |
     Then 'Sokrates' has a storage bucket called 'destinationbucket' with transferred file called 'testfile'

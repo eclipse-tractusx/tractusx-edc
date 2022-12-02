@@ -130,6 +130,7 @@ jobs:
           sleep 5s
 
           # Wait for supporting infrastructure to become ready (control-/data-plane, backend service)
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=backend --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=backend --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=idsdaps --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=idsdaps --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=vault --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokrates-postgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokrates-postgresql --tail 500 && exit 1 )
@@ -165,7 +166,7 @@ jobs:
             --set dataplane.aws.endpointOverride=http://minio:9000 \
             --set dataplane.aws.secretAccessKey=platoqwerty123 \
             --set dataplane.aws.accessKeyId=platoqwerty123 \
-            --set backendService.httpProxyTokenReceiverUrl=http://example.com \
+            --set backendService.httpProxyTokenReceiverUrl=http://backend:80 \
             --wait-for-jobs --timeout=120s
           
           # Install Sokrates
@@ -197,15 +198,13 @@ jobs:
             --set dataplane.aws.endpointOverride=http://minio:9000 \
             --set dataplane.aws.secretAccessKey=sokratesqwerty123 \
             --set dataplane.aws.accessKeyId=sokratesqwerty123 \
-            --set backendService.httpProxyTokenReceiverUrl=http://example.com \
+            --set backendService.httpProxyTokenReceiverUrl=http://backend:80 \
             --wait-for-jobs --timeout=120s
 
           # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s
           sleep 5s
 
           # Wait for Control-/DataPlane and backend-service to become ready
-          #kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokratesbackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=sokratesbackendapplication --tail 500 && exit 1 )
-          #kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=platobackendapplication --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=platobackendapplication --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokrates-controlplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=sokrates-controlplane --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokrates-dataplane --timeout=120s || ( kubectl logs -l app.kubernetes.io/instance=sokrates-dataplane --tail 500 && exit 1 )
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=plato-controlplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/instance=plato-controlplane --tail 500 && exit 1 )
@@ -241,14 +240,14 @@ jobs:
                     {"name": "SOKRATES_DATA_MANAGEMENT_URL", "value": "${SOKRATES_DATA_MANAGEMENT_URL}"},
                     {"name": "SOKRATES_IDS_URL", "value": "${SOKRATES_IDS_URL}"},
                     {"name": "SOKRATES_DATA_PLANE_URL", "value": "${SOKRATES_DATA_PLANE_URL}"},
-                    {"name": "SOKRATES_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://sokrates-backend-application:8081" },
+                    {"name": "SOKRATES_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://backend:8081" },
                     {"name": "SOKRATES_DATABASE_URL", "value": "${SOKRATES_DATABASE_URL}"},
                     {"name": "SOKRATES_DATABASE_USER", "value": "${SOKRATES_DATABASE_USER}"},
                     {"name": "SOKRATES_DATABASE_PASSWORD", "value": "${SOKRATES_DATABASE_PASSWORD}"},
                     {"name": "PLATO_DATA_MANAGEMENT_URL", "value": "${PLATO_DATA_MANAGEMENT_URL}"},
                     {"name": "PLATO_IDS_URL", "value": "${PLATO_IDS_URL}"},
                     {"name": "PLATO_DATA_PLANE_URL", "value": "${PLATO_DATA_PLANE_URL}"},
-                    {"name": "PLATO_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://plato-backend-application:8081"},
+                    {"name": "PLATO_BACKEND_SERVICE_BACKEND_API_URL", "value": "http://backend:8081"},
                     {"name": "PLATO_DATABASE_URL", "value": "${PLATO_DATABASE_URL}"},
                     {"name": "PLATO_DATABASE_USER", "value": "${PLATO_DATABASE_USER}"},
                     {"name": "PLATO_DATABASE_PASSWORD", "value": "${PLATO_DATABASE_PASSWORD}"},

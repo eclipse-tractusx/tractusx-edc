@@ -20,27 +20,26 @@
 
 package org.eclipse.tractusx.edc.tests;
 
-import static org.awaitility.Awaitility.await;
-
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.edc.tests.data.ContractNegotiation;
 import org.eclipse.tractusx.edc.tests.data.ContractNegotiationState;
+import org.eclipse.tractusx.edc.tests.data.Negotiation;
 import org.eclipse.tractusx.edc.tests.data.Permission;
 import org.eclipse.tractusx.edc.tests.data.Policy;
-import org.eclipse.tractusx.edc.tests.util.Timeouts;
 import org.junit.jupiter.api.Assertions;
 
 @Slf4j
 public class NegotiationSteps {
+
+  private static final String DEFINITION_ID = "definition id";
+  private static final String ASSET_ID = "asset id";
 
   private ContractNegotiation lastInitiatedNegotiation;
 
@@ -52,38 +51,44 @@ public class NegotiationSteps {
     final String receiverIdsUrl = receiver.getEnvironment().getIdsUrl() + "/data";
 
     for (Map<String, String> map : table.asMaps()) {
-      final String definitionId = map.get("definition id");
-      final String assetId = map.get("asset id");
+      final String definitionId = map.get(DEFINITION_ID);
+      final String assetId = map.get(ASSET_ID);
 
       final Permission permission = new Permission("USE", null, new ArrayList<>());
       final Policy policy = new Policy("foo", List.of(permission));
 
-      final String negotiationId =
+      final Negotiation negotiation =
           dataManagementAPI.initiateNegotiation(receiverIdsUrl, definitionId, assetId, policy);
 
       // wait for negotiation to complete
-      await()
-          .pollDelay(Duration.ofMillis(500))
-          .atMost(Timeouts.CONTRACT_NEGOTIATION)
-          .until(() -> isNegotiationComplete(dataManagementAPI, negotiationId));
+      negotiation.waitUntilComplete(dataManagementAPI);
 
-      lastInitiatedNegotiation = dataManagementAPI.getNegotiation(negotiationId);
+      lastInitiatedNegotiation = dataManagementAPI.getNegotiation(negotiation.getId());
     }
+  }
+
+  @When("'{connector}' successfully negotiation a contract agreement with '{connector}'")
+  public void sokratesSuccessfullyNegotiationAContractAgreementPlatoFor(
+      Connector consumer, Connector provider, DataTable table) throws IOException {
+    final DataManagementAPI api = consumer.getDataManagementAPI();
+
+    final Map<String, String> map = table.asMap();
+    final String definitionId = map.get(DEFINITION_ID);
+    final String assetId = map.get(ASSET_ID);
+
+    // as default always the "allow all" policy is used. So we can assume this here, too.
+    final Permission permission = new Permission("USE", null, new ArrayList<>());
+    final Policy policy = new Policy("policy-id", List.of(permission));
+
+    final String receiverUrl = provider.getEnvironment().getIdsUrl();
+    final Negotiation negotiation =
+        api.initiateNegotiation(receiverUrl, assetId, definitionId, policy);
+
+    negotiation.waitUntilComplete(api);
   }
 
   @Then("the negotiation is declined")
   public void assertLastNegotiationDeclined() {
     Assertions.assertEquals(ContractNegotiationState.DECLINED, lastInitiatedNegotiation.getState());
-  }
-
-  static boolean isNegotiationComplete(DataManagementAPI dataManagementAPI, String negotiationId)
-      throws IOException {
-    var negotiation = dataManagementAPI.getNegotiation(negotiationId);
-    return negotiation != null
-        && Stream.of(
-                ContractNegotiationState.ERROR,
-                ContractNegotiationState.CONFIRMED,
-                ContractNegotiationState.DECLINED)
-            .anyMatch((l) -> l.equals(negotiation.getState()));
   }
 }

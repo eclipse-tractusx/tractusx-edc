@@ -27,4 +27,6 @@ public class Asset {
   @NonNull String Id;
 
   @NonNull String description;
+
+  @NonNull DataAddress dataAddress;
 }

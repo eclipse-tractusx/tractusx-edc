@@ -1,7 +1,7 @@
 ---
 
 ###########
-# INSTALL #
+# Install #
 ###########
 install:
   daps: true
@@ -16,6 +16,7 @@ install:
 backend:
   fullnameOverride: "backend"
   service:
+    type: NodePort
     frontend:
       port: 80
 

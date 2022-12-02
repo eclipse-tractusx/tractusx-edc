@@ -41,7 +41,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.tractusx.edc.tests.data.Asset;
-import org.eclipse.tractusx.edc.tests.data.AssetWithDataAddress;
 import org.eclipse.tractusx.edc.tests.data.BusinessPartnerNumberConstraint;
 import org.eclipse.tractusx.edc.tests.data.Constraint;
 import org.eclipse.tractusx.edc.tests.data.ContractDefinition;
@@ -49,9 +48,15 @@ import org.eclipse.tractusx.edc.tests.data.ContractNegotiation;
 import org.eclipse.tractusx.edc.tests.data.ContractNegotiationState;
 import org.eclipse.tractusx.edc.tests.data.ContractOffer;
 import org.eclipse.tractusx.edc.tests.data.DataAddress;
+import org.eclipse.tractusx.edc.tests.data.HttpProxySinkDataAddress;
+import org.eclipse.tractusx.edc.tests.data.HttpProxySourceDataAddress;
+import org.eclipse.tractusx.edc.tests.data.Negotiation;
+import org.eclipse.tractusx.edc.tests.data.NullDataAddress;
 import org.eclipse.tractusx.edc.tests.data.PayMeConstraint;
 import org.eclipse.tractusx.edc.tests.data.Permission;
 import org.eclipse.tractusx.edc.tests.data.Policy;
+import org.eclipse.tractusx.edc.tests.data.S3DataAddress;
+import org.eclipse.tractusx.edc.tests.data.Transfer;
 import org.eclipse.tractusx.edc.tests.data.TransferProcess;
 import org.eclipse.tractusx.edc.tests.data.TransferProcessState;
 
@@ -88,7 +93,7 @@ public class DataManagementAPI {
     return catalog.contractOffers.stream().map(this::mapOffer).collect(Collectors.toList());
   }
 
-  public String initiateNegotiation(
+  public Negotiation initiateNegotiation(
       String receivingConnectorUrl, String definitionId, String assetId, Policy policy)
       throws IOException {
     final DataManagementApiOffer offer = new DataManagementApiOffer();
@@ -112,12 +117,13 @@ public class DataManagementAPI {
       throw new RuntimeException(
           "Initiated negotiation. Connector did not answer with negotiation ID.");
 
-    log.debug("Initiated negotiation ( id= " + response.getId() + " )");
+    log.info(String.format("Initiated negotiation (id=%s)", response.getId()));
 
-    return response.getId();
+    final String negotiationId = response.getId();
+    return new Negotiation(negotiationId);
   }
 
-  public String initiateTransferProcess(
+  public Transfer initiateTransferProcess(
       String receivingConnectorUrl,
       String contractAgreementId,
       String assetId,
@@ -140,9 +146,10 @@ public class DataManagementAPI {
       throw new RuntimeException(
           "Initiated transfer process. Connector did not answer with transfer process ID.");
 
-    log.info("Initiated transfer process ( id= " + response.getId() + " )");
+    log.info(String.format("Initiated transfer process (id=%s)", response.getId()));
 
-    return response.getId();
+    final String transferId = response.getId();
+    return new Transfer(transferId);
   }
 
   public TransferProcess getTransferProcess(String id) throws IOException {
@@ -157,26 +164,16 @@ public class DataManagementAPI {
     return mapNegotiation(negotiation);
   }
 
-  public void createAsset(Asset asset) throws IOException {
-    final DataManagementApiDataAddress dataAddress = new DataManagementApiDataAddress();
-    dataAddress.properties =
-        Map.of(
-            DataManagementApiDataAddress.TYPE,
-            "HttpData",
-            "baseUrl",
-            "https://jsonplaceholder.typicode.com/todos/1");
-
-    final DataManagementApiAssetCreate assetCreate = new DataManagementApiAssetCreate();
-    assetCreate.asset = mapAsset(asset);
-    assetCreate.dataAddress = dataAddress;
-
-    post(ASSET_PATH, assetCreate);
+  public List<ContractNegotiation> getNegotiations() throws IOException {
+    final List<DataManagementApiNegotiation> negotiations =
+        get(NEGOTIATIONS_PATH + "/", new TypeToken<List<DataManagementApiNegotiation>>() {});
+    return negotiations.stream().map(this::mapNegotiation).collect(Collectors.toList());
   }
 
-  public void createAsset(AssetWithDataAddress assetWithDataAddress) throws IOException {
+  public void createAsset(Asset asset) throws IOException {
     final DataManagementApiAssetCreate assetCreate = new DataManagementApiAssetCreate();
-    assetCreate.asset = mapAsset(assetWithDataAddress.getAsset());
-    assetCreate.dataAddress = mapDataAddress(assetWithDataAddress.getDataAddress());
+    assetCreate.asset = mapAsset(asset);
+    assetCreate.dataAddress = mapDataAddress(asset.getDataAddress());
 
     post(ASSET_PATH, assetCreate);
   }
@@ -279,6 +276,9 @@ public class DataManagementAPI {
       case "COMPLETED":
         state = TransferProcessState.COMPLETED;
         break;
+      case "ERROR":
+        state = TransferProcessState.ERROR;
+        break;
       default:
         state = TransferProcessState.UNKNOWN;
     }
@@ -288,7 +288,33 @@ public class DataManagementAPI {
 
   private DataManagementApiDataAddress mapDataAddress(@NonNull DataAddress dataAddress) {
     final DataManagementApiDataAddress apiObject = new DataManagementApiDataAddress();
-    apiObject.setProperties(dataAddress.getProperties());
+
+    if (dataAddress instanceof HttpProxySourceDataAddress) {
+      final HttpProxySourceDataAddress a = (HttpProxySourceDataAddress) dataAddress;
+      apiObject.setProperties(Map.of("type", "HttpData", "baseUrl", a.getBaseUrl()));
+    } else if (dataAddress instanceof HttpProxySinkDataAddress) {
+      apiObject.setProperties(Map.of("type", "HttpProxy"));
+    } else if (dataAddress instanceof S3DataAddress) {
+      final S3DataAddress a = (S3DataAddress) dataAddress;
+      apiObject.setProperties(
+          Map.of(
+              "type",
+              "AmazonS3",
+              "bucketName",
+              a.getBucketName(),
+              "region",
+              a.getRegion(),
+              "keyName",
+              a.getKeyName()));
+    } else if (dataAddress instanceof NullDataAddress) {
+      // set something that passes validation
+      apiObject.setProperties(Map.of("type", "HttpData", "baseUrl", "http://localhost"));
+    } else {
+      throw new UnsupportedOperationException(
+          String.format(
+              "Cannot map data address of type %s to EDC domain", dataAddress.getClass()));
+    }
+
     return apiObject;
   }
 
