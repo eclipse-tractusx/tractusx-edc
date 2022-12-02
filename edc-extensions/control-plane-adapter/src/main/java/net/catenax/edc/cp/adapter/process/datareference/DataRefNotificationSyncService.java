@@ -15,7 +15,7 @@
 package net.catenax.edc.cp.adapter.process.datareference;
 
 import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
-import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
 public interface DataRefNotificationSyncService {
   EndpointDataReference exchangeDto(DataReferenceRetrievalDto dto, String contractAgreementId);

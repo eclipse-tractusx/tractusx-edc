@@ -16,7 +16,7 @@ package net.catenax.edc.cp.adapter.process.contractdatastore;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.agreement.ContractAgreement;
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 
 public class InMemoryContractDataStore implements ContractDataStore {
   private static final Map<String, ContractAgreementData> contractMap = new HashMap<>();

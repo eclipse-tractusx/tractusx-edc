@@ -14,7 +14,7 @@
 
 package net.catenax.edc.cp.adapter;
 
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 public class ApiAdapterConfig {
   private static final String DEFAULT_MESSAGE_RETRY_NUMBER =

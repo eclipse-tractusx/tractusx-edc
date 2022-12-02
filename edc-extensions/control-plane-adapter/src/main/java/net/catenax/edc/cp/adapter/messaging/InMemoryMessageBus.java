@@ -19,7 +19,7 @@ import static java.util.Objects.isNull;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.edc.spi.monitor.Monitor;
 
 public class InMemoryMessageBus implements MessageBus {
   private final Monitor monitor;
