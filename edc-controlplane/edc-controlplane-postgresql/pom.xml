@@ -104,7 +104,7 @@
         <!-- Vault -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>azure-vault</artifactId>
+            <artifactId>vault-azure</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>
@@ -124,11 +124,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractdefinition-store-sql</artifactId>
+            <artifactId>contract-definition-store-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractnegotiation-store-sql</artifactId>
+            <artifactId>contract-negotiation-store-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -136,13 +136,13 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-store-sql</artifactId>
+            <artifactId>policy-definition-store-sql</artifactId>
         </dependency>
 
         <!-- Supportive -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>apache-commons-pool-sql</artifactId>
+            <artifactId>sql-pool-apache-commons</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>

@@ -73,7 +73,7 @@
         <!-- Supportive -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>common-sql</artifactId>
+            <artifactId>sql-core</artifactId>
         </dependency>
 
         <!-- Other -->

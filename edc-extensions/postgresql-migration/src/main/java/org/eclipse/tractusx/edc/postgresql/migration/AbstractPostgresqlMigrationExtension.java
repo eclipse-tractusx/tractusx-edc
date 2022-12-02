@@ -22,11 +22,11 @@ package org.eclipse.tractusx.edc.postgresql.migration;
 
 import java.util.Objects;
 import java.util.Properties;
-import org.eclipse.dataspaceconnector.spi.persistence.EdcPersistenceException;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.system.configuration.Config;
-import org.eclipse.dataspaceconnector.sql.datasource.ConnectionFactoryDataSource;
+import org.eclipse.edc.spi.persistence.EdcPersistenceException;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.output.MigrateResult;

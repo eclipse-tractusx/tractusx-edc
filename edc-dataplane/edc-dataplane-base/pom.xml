@@ -59,13 +59,13 @@
         <!-- Config -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>filesystem-configuration</artifactId>
+            <artifactId>configuration-filesystem</artifactId>
         </dependency>
 
         <!-- Transfer -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-s3</artifactId>
+            <artifactId>data-plane-aws-s3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -83,27 +83,27 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>observability-api</artifactId>
+            <artifactId>api-observability</artifactId>
         </dependency>
 
         <!-- Core -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
+            <artifactId>connector-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-boot</artifactId>
+            <artifactId>boot</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>s3-core</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.dataspaceconnector</groupId>-->
+<!--            <artifactId>s3-core</artifactId>-->
+<!--        </dependency>-->
 
         <!-- Telemetry -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-micrometer</artifactId>
+            <artifactId>micrometer-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -117,7 +117,7 @@
         <!-- Logging -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jdk-logger-monitor</artifactId>
+            <artifactId>monitor-jdk-logger</artifactId>
         </dependency>
 
         <!-- Supportive -->

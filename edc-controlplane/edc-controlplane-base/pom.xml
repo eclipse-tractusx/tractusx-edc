@@ -83,7 +83,7 @@
         <!-- Config -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>filesystem-configuration</artifactId>
+            <artifactId>configuration-filesystem</artifactId>
         </dependency>
 
         <!-- Security -->
@@ -97,7 +97,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>iam-daps</artifactId>
+            <artifactId>oauth2-daps</artifactId>
         </dependency>
 
         <!-- APIs -->
@@ -107,7 +107,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>observability-api</artifactId>
+            <artifactId>api-observability</artifactId>
         </dependency>
 
         <!-- IDS -->
@@ -125,7 +125,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>ids-api-transform-v1</artifactId>
+            <artifactId>ids-transform-v1</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -167,7 +167,7 @@
         <!-- Telemetry -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-micrometer</artifactId>
+            <artifactId>micrometer-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
@@ -181,7 +181,7 @@
         <!-- Logging -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jdk-logger-monitor</artifactId>
+            <artifactId>monitor-jdk-logger</artifactId>
         </dependency>
 
         <!-- Supportive -->

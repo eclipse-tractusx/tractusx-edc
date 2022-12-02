@@ -96,7 +96,7 @@
         <!-- Vault -->
         <dependency>
             <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>azure-vault</artifactId>
+            <artifactId>vault-azure</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>

@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
-import org.eclipse.dataspaceconnector.sql.assetindex.ConfigurationKeys;
+import org.eclipse.edc.connector.store.sql.assetindex.ConfigurationKeys;
 
 public class AssetPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
   private static final String NAME_SUBSYSTEM = "asset";

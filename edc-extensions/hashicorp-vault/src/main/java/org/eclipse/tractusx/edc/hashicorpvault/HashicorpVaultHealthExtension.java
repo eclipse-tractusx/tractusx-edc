@@ -21,10 +21,10 @@
 package org.eclipse.tractusx.edc.hashicorpvault;
 
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckService;
+import org.eclipse.edc.runtime.metamodel.annotation.Requires;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.health.HealthCheckService;
 
 @Requires(HealthCheckService.class)
 public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtension

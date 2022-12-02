@@ -16,11 +16,11 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckResult;
-import org.eclipse.dataspaceconnector.spi.system.health.LivenessProvider;
-import org.eclipse.dataspaceconnector.spi.system.health.ReadinessProvider;
-import org.eclipse.dataspaceconnector.spi.system.health.StartupStatusProvider;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.health.HealthCheckResult;
+import org.eclipse.edc.spi.system.health.LivenessProvider;
+import org.eclipse.edc.spi.system.health.ReadinessProvider;
+import org.eclipse.edc.spi.system.health.StartupStatusProvider;
 
 @RequiredArgsConstructor
 public class HashicorpVaultHealthCheck

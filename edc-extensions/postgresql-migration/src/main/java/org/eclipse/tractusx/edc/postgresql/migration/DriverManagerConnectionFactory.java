@@ -24,8 +24,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Objects;
 import java.util.Properties;
-import org.eclipse.dataspaceconnector.spi.persistence.EdcPersistenceException;
-import org.eclipse.dataspaceconnector.sql.ConnectionFactory;
+import org.eclipse.edc.spi.persistence.EdcPersistenceException;
+import org.eclipse.edc.sql.ConnectionFactory;
 
 class DriverManagerConnectionFactory implements ConnectionFactory {
   private final String jdbcUrl;
