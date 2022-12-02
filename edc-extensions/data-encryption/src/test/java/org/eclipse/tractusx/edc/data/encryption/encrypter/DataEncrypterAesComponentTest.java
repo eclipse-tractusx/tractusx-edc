@@ -20,9 +20,9 @@
 package org.eclipse.tractusx.edc.data.encryption.encrypter;
 
 import lombok.SneakyThrows;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
-import org.eclipse.dataspaceconnector.transfer.dataplane.spi.security.DataEncrypter;
+import org.eclipse.edc.connector.dataplane.transfer.spi.security.DataEncrypter;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.data.encryption.algorithms.CryptoAlgorithm;
 import org.eclipse.tractusx.edc.data.encryption.algorithms.aes.AesAlgorithm;
 import org.eclipse.tractusx.edc.data.encryption.data.CryptoDataFactory;
