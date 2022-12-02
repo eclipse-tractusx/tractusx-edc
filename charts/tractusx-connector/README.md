@@ -7,7 +7,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector
 ## TL;DR
 ```shell
 $ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install tractus-x-connector catenax-ng-product-edc/tractus-x-connector --version 0.1.3
+$ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --version 0.1.3
 ```
 
 ## Values
