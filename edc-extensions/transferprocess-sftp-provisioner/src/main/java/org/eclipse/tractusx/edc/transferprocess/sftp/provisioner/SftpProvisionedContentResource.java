@@ -13,6 +13,7 @@
  */
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,9 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 @Getter
 @RequiredArgsConstructor
+@Builder
 public class SftpProvisionedContentResource extends ProvisionedContentResource {
   @NonNull private SftpUser sftpUser;
   @NonNull private SftpLocation sftpLocation;
-  @NonNull private String transferProcessId;
   @NonNull private String providerType;
 }

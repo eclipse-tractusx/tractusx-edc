@@ -9,9 +9,9 @@ import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class SftpUserKeyPairGenerator {
   public static KeyPair getKeyPairFromPrivateKey(byte[] privateKeyBytes, String sftpUserName) {
     if (privateKeyBytes == null) {

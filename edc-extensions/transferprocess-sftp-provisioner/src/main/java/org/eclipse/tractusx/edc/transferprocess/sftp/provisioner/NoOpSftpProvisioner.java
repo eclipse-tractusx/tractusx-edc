@@ -84,11 +84,11 @@ public class NoOpSftpProvisioner
           }
 
           SftpProvisionedContentResource sftpProvisionedContentResource =
-              new SftpProvisionedContentResource(
-                  user,
-                  location,
-                  sftpProviderResourceDefinition.getTransferProcessId(),
-                  PROVIDER_TYPE);
+              SftpProvisionedContentResource.builder()
+                  .sftpUser(user)
+                  .sftpLocation(location)
+                  .providerType(PROVIDER_TYPE)
+                  .build();
 
           return StatusResult.success(
               ProvisionResponse.Builder.newInstance()

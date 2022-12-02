@@ -164,11 +164,13 @@ public class SftpClientWrapperImpl implements SftpClientWrapper {
       try {
         delegateInputStream.close();
       } catch (IOException ignored) {
+        // Ignored. The exception should only be thrown of the stream is already closed.
       }
 
       try {
         sftpClient.close();
       } catch (IOException ignored) {
+        // Ignored. The exception should only be thrown of the client is already closed.
       }
     }
   }

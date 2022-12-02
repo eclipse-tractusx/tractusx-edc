@@ -34,7 +34,7 @@ public class SftpProviderResourceDefinitionGenerator
       DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
     SftpDataAddress sftpDataAddress = SftpDataAddress.fromDataAddress(assetAddress);
     return new SftpProviderResourceDefinition(
-        SftpDataAddress.getConnectionType(),
+        SftpDataAddress.getCONNECTION_TYPE(),
         PROVIDER_TYPE,
         sftpDataAddress.getSftpUser(),
         sftpDataAddress.getSftpLocation());

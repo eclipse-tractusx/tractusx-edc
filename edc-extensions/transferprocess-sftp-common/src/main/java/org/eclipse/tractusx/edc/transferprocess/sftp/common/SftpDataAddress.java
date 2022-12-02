@@ -18,7 +18,7 @@ public class SftpDataAddress extends DataAddress {
   private static final String USER_PASSWORD = "userPassword";
   private static final String USER_PRIVATE_KEY = "userPrivateKey";
 
-  @Getter private static final String connectionType = "sftp";
+  @Getter private static final String CONNECTION_TYPE = "sftp";
   @NonNull private final SftpUser sftpUser;
   @NonNull private final SftpLocation sftpLocation;
 
