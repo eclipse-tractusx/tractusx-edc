@@ -169,24 +169,24 @@ spec:
           ######################################
           ## Additional environment variables ##
           ######################################
-          {{- range $key, $value := .Values.controlplane.envValueFrom }}
+          {{- range $key, $value := .Values.dataplane.envValueFrom }}
             - name: {{ $key | quote }}
               valueFrom:
                 {{- tpl (toYaml $value) $ | nindent 16 }}
           {{- end }}
-          {{- range $key, $value := .Values.controlplane.env }}
+          {{- range $key, $value := .Values.dataplane.env }}
             - name: {{ $key | quote }}
               value: {{ $value | quote }}
           {{- end }}
           {{- if and (or .Values.dataplane.envSecretNames .Values.dataplane.envConfigMapNames) (or (gt (len .Values.dataplane.envSecretNames) 0) (gt (len .Values.dataplane.envConfigMapNames) 0)) }}
           envFrom:
-            {{- with .Values.controlplane.envSecretNames }}
+          {{- range $value := .Values.dataplane.envSecretNames }}
             - secretRef:
-                name: {{ . | quote }}
-            {{- end }}
-            {{- with .Values.controlplane.envConfigMapNames }}
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- range $value := .Values.dataplane.envConfigMapNames }}
             - configMapRef:
-                name: {{ . | quote }}
+                name: {{ $value | quote }}
           {{- end }}
           {{- end }}
           volumeMounts:

@@ -306,13 +306,13 @@ spec:
           {{- end }}
           {{- if and (or .Values.controlplane.envSecretNames .Values.controlplane.envConfigMapNames) (or (gt (len .Values.controlplane.envSecretNames) 0) (gt (len .Values.controlplane.envConfigMapNames) 0)) }}
           envFrom:
-          {{- with .Values.controlplane.envSecretNames }}
+          {{- range $value := .Values.controlplane.envSecretNames }}
             - secretRef:
-                name: {{ . | quote }}
+                name: {{ $value | quote }}
           {{- end }}
-          {{- with .Values.controlplane.envConfigMapNames }}
+          {{- range $value := .Values.controlplane.envConfigMapNames }}
             - configMapRef:
-                name: {{ . | quote }}
+                name: {{ $value | quote }}
           {{- end }}
           {{- end }}
           volumeMounts:
