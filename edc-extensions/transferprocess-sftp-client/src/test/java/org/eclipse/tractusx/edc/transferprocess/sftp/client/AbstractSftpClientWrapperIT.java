@@ -52,12 +52,10 @@ abstract class AbstractSftpClientWrapperIT {
   static final Path keyDirectory;
   static final Path publicKeyPath;
   static final KeyPair keyPair;
-  static final SftpClientWrapperImpl sftpClient = new SftpClientWrapperImpl();
   @Container @ClassRule private static final GenericContainer<?> sftpContainer;
 
   static {
     keyPair = generateKeyPair();
-    sftpClient.setDisableHostVerification(true);
 
     try {
       Set<PosixFilePermission> fullPermission = new HashSet<PosixFilePermission>();
@@ -169,6 +167,16 @@ abstract class AbstractSftpClientWrapperIT {
         .port(sftpContainer.getFirstMappedPort())
         .path(path)
         .build();
+  }
+
+  protected SftpClientWrapper getSftpClient(SftpLocation location, SftpUser sftpUser) {
+    SftpClientConfig config =
+        SftpClientConfig.builder()
+            .sftpLocation(location)
+            .sftpUser(sftpUser)
+            .hostVerification(false)
+            .build();
+    return new SftpClientWrapperImpl(config);
   }
 
   @NoArgsConstructor

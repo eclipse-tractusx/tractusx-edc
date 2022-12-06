@@ -18,18 +18,14 @@ import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.NonNull;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSource;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 
 @Builder
 public class SftpDataSource implements DataSource {
-  @NonNull private final SftpUser sftpUser;
-  @NonNull private final SftpLocation sftpLocation;
   @NonNull private final SftpClientWrapper sftpClientWrapper;
 
   @Override
   public Stream<Part> openPartStream() {
-    Part sftpPart = new SftpPart(sftpUser, sftpLocation, sftpClientWrapper);
+    Part sftpPart = new SftpPart(sftpClientWrapper);
     return Stream.of(sftpPart);
   }
 }

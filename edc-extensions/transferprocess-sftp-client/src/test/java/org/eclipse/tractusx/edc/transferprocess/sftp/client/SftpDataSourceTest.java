@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
@@ -33,27 +34,30 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class SftpDataSourceTest {
-  private final SftpClientWrapperImpl sftpClientWrapper = Mockito.spy(new SftpClientWrapperImpl());
-
   @Test
   @SneakyThrows
   void openPartStream() {
-    SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
-    SftpUser userMock = Mockito.mock(SftpUser.class);
-    SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    SftpDataSource sftpDataSource =
-        Mockito.spy(new SftpDataSource(userMock, locationMock, sftpClientWrapper));
+    final SftpUser userMock = Mockito.mock(SftpUser.class);
+    final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
+    final SftpClientConfig sftpClientConfig =
+        SftpClientConfig.builder().sftpUser(userMock).sftpLocation(locationMock).build();
+    final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
+    final SftpClientWrapperImpl sftpClientWrapper =
+        Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
+    SftpDataSource sftpDataSource = Mockito.spy(new SftpDataSource(sftpClientWrapper));
     byte[] expected = new byte[] {0, 1, 2, 3};
     ByteArrayInputStream outputStream = new ByteArrayInputStream(expected);
 
-    Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
-    Mockito.when(sftpClientMock.read("path", 4096)).thenReturn(outputStream);
     Mockito.when(locationMock.getPath()).thenReturn("path");
+    Mockito.when(
+            sftpClientMock.read(Mockito.anyString(), Mockito.anyInt(), Mockito.anyCollection()))
+        .thenReturn(outputStream);
 
     Stream<DataSource.Part> partStream = sftpDataSource.openPartStream();
     DataSource.Part part = partStream.collect(Collectors.toList()).get(0);
 
     Assertions.assertArrayEquals(expected, part.openStream().readAllBytes());
-    Mockito.verify(sftpClientMock, Mockito.times(1)).read("path", 4096);
+    Mockito.verify(sftpClientMock, Mockito.times(1))
+        .read("path", 4096, List.of(SftpClient.OpenMode.Read));
   }
 }

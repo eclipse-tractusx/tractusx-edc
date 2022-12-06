@@ -27,11 +27,9 @@ public class SftpClientExtension implements ServiceExtension {
 
   @Override
   public void initialize(ServiceExtensionContext context) {
-    SftpClientWrapperImpl sftpClientWrapper = new SftpClientWrapperImpl();
-    SftpDataSinkFactory sftpDataSinkFactory = new SftpDataSinkFactory(sftpClientWrapper);
-    SftpDataSourceFactory sftpDataSourceFactory = new SftpDataSourceFactory(sftpClientWrapper);
+    SftpDataSinkFactory sftpDataSinkFactory = new SftpDataSinkFactory();
+    SftpDataSourceFactory sftpDataSourceFactory = new SftpDataSourceFactory();
 
-    context.registerService(SftpClientWrapper.class, sftpClientWrapper);
     pipelineService.registerFactory(sftpDataSinkFactory);
     pipelineService.registerFactory(sftpDataSourceFactory);
   }

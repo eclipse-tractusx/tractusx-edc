@@ -50,7 +50,7 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
 
     @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
 
-    sftpClient.uploadFile(sftpUser, sftpLocation, fileStream);
+    getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
 
     final Path uploadedFilePath = remotePasswordUploadDirectory.resolve(file.getName());
     Assertions.assertTrue(Files.exists(uploadedFilePath));
@@ -79,7 +79,7 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
 
     @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
 
-    sftpClient.uploadFile(sftpUser, sftpLocation, fileStream);
+    getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
 
     final Path uploadedFilePath = remoteKeypairUploadDirectory.resolve(file.getName());
     Assertions.assertTrue(Files.exists(uploadedFilePath));
@@ -113,7 +113,7 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
         StandardCopyOption.REPLACE_EXISTING);
 
     @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-    @Cleanup final InputStream target = sftpClient.downloadFile(sftpUser, sftpLocation);
+    @Cleanup final InputStream target = getSftpClient(sftpLocation, sftpUser).downloadFile();
 
     Assertions.assertTrue(
         IOUtils.contentEquals(source, target),
@@ -141,7 +141,7 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
         StandardCopyOption.REPLACE_EXISTING);
 
     @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-    @Cleanup final InputStream target = sftpClient.downloadFile(sftpUser, sftpLocation);
+    @Cleanup final InputStream target = getSftpClient(sftpLocation, sftpUser).downloadFile();
 
     Assertions.assertTrue(
         IOUtils.contentEquals(source, target),

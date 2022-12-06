@@ -14,7 +14,9 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.dataspaceconnector.dataplane.spi.pipeline.DataSinkFactory;
 import org.eclipse.dataspaceconnector.spi.result.Result;
@@ -24,9 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class SftpDataSinkFactory implements DataSinkFactory {
-
-  @NotNull SftpClientWrapper sftpClientWrapper;
-
   @Override
   public boolean canHandle(DataFlowRequest request) {
     try {
@@ -51,7 +50,16 @@ public class SftpDataSinkFactory implements DataSinkFactory {
   public DataSink createSink(DataFlowRequest request) {
     SftpDataAddress destination =
         SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
-    return new SftpDataSink(
-        destination.getSftpUser(), destination.getSftpLocation(), sftpClientWrapper);
+
+    SftpClientConfig sftpClientConfig =
+        SftpClientConfig.builder()
+            .writeOpenModes(List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append))
+            .sftpUser(destination.getSftpUser())
+            .sftpLocation(destination.getSftpLocation())
+            .build();
+
+    SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
+
+    return new SftpDataSink(sftpClientWrapper);
   }
 }

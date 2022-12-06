@@ -36,19 +36,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class SftpDataSinkTest {
-  private final SftpClientWrapperImpl sftpClientWrapper = Mockito.spy(new SftpClientWrapperImpl());
-
   @Test
   @SneakyThrows
   void transferParts() {
-    SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
-    SftpUser userMock = Mockito.mock(SftpUser.class);
-    SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    SftpDataSink sftpDataSink =
-        Mockito.spy(new SftpDataSink(userMock, locationMock, sftpClientWrapper));
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    final SftpUser userMock = Mockito.mock(SftpUser.class);
+    final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
+    final SftpClientConfig sftpClientConfig =
+        SftpClientConfig.builder()
+            .sftpUser(userMock)
+            .sftpLocation(locationMock)
+            .writeOpenModes(List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append))
+            .build();
+    final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
+    final SftpClientWrapperImpl sftpClientWrapper =
+        Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
+    final SftpDataSink sftpDataSink = Mockito.spy(new SftpDataSink(sftpClientWrapper));
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
     Mockito.when(sftpClientMock.write(Mockito.any(), Mockito.anyInt(), Mockito.anyCollection()))
         .thenReturn(outputStream);
     Mockito.when(locationMock.getPath()).thenReturn("path");

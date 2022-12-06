@@ -24,9 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class SftpDataSourceFactory implements DataSourceFactory {
-
-  @NotNull SftpClientWrapper sftpClientWrapper;
-
   @Override
   public boolean canHandle(DataFlowRequest request) {
     try {
@@ -50,6 +47,14 @@ public class SftpDataSourceFactory implements DataSourceFactory {
   @Override
   public DataSource createSource(DataFlowRequest request) {
     SftpDataAddress source = SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
-    return new SftpDataSource(source.getSftpUser(), source.getSftpLocation(), sftpClientWrapper);
+
+    SftpClientConfig sftpClientConfig =
+        SftpClientConfig.builder()
+            .sftpUser(source.getSftpUser())
+            .sftpLocation(source.getSftpLocation())
+            .build();
+
+    SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
+    return new SftpDataSource(sftpClientWrapper);
   }
 }

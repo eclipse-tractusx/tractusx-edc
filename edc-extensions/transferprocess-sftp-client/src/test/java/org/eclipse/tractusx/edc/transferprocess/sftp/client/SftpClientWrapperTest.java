@@ -23,6 +23,7 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
@@ -32,41 +33,53 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class SftpClientWrapperTest {
-  private final SftpClientWrapperImpl sftpClientWrapper = Mockito.spy(new SftpClientWrapperImpl());
-
   @Test
   @SneakyThrows
   void uploadFile() {
-    SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
-    SftpUser userMock = Mockito.mock(SftpUser.class);
-    SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    byte[] content = new byte[] {0, 1, 2};
-    InputStream inputStream = new ByteArrayInputStream(content);
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    final SftpUser userMock = Mockito.mock(SftpUser.class);
+    final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
+    final SftpClientConfig sftpClientConfig =
+        SftpClientConfig.builder().sftpUser(userMock).sftpLocation(locationMock).build();
+    final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
+    final SftpClientWrapperImpl sftpClientWrapper =
+        Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
+    final byte[] content = new byte[] {0, 1, 2};
+    final InputStream inputStream = new ByteArrayInputStream(content);
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
-    Mockito.when(sftpClientMock.write(Mockito.any(), Mockito.anyInt(), Mockito.anyCollection()))
+    Mockito.when(locationMock.getPath()).thenReturn("path");
+    Mockito.when(
+            sftpClientMock.write(Mockito.anyString(), Mockito.anyInt(), Mockito.anyCollection()))
         .thenReturn(outputStream);
-    sftpClientWrapper.uploadFile(userMock, locationMock, inputStream);
+    sftpClientWrapper.uploadFile(inputStream);
 
     Assertions.assertArrayEquals(content, outputStream.toByteArray());
+    Mockito.verify(sftpClientMock, Mockito.times(1))
+        .write("path", 4096, List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Write));
   }
 
   @Test
   @SneakyThrows
   void downloadFile() {
-    SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
-    SftpUser userMock = Mockito.mock(SftpUser.class);
-    SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    byte[] content = new byte[] {0, 1, 2};
-    InputStream inputStream = new ByteArrayInputStream(content);
+    final SftpUser userMock = Mockito.mock(SftpUser.class);
+    final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
+    final SftpClientConfig sftpClientConfig =
+        SftpClientConfig.builder().sftpUser(userMock).sftpLocation(locationMock).build();
+    final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
+    final SftpClientWrapperImpl sftpClientWrapper =
+        Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
+    final byte[] content = new byte[] {0, 1, 2};
+    final InputStream inputStream = new ByteArrayInputStream(content);
 
-    Mockito.doReturn(sftpClientMock).when(sftpClientWrapper).getSftpClient(userMock, locationMock);
-    Mockito.when(sftpClientMock.read("path", 4096)).thenReturn(inputStream);
     Mockito.when(locationMock.getPath()).thenReturn("path");
+    Mockito.when(
+            sftpClientMock.read(Mockito.anyString(), Mockito.anyInt(), Mockito.anyCollection()))
+        .thenReturn(inputStream);
 
-    InputStream resultStream = sftpClientWrapper.downloadFile(userMock, locationMock);
+    InputStream resultStream = sftpClientWrapper.downloadFile();
 
     Assertions.assertArrayEquals(content, resultStream.readAllBytes());
+    Mockito.verify(sftpClientMock, Mockito.times(1))
+        .read("path", 4096, List.of(SftpClient.OpenMode.Read));
   }
 }
