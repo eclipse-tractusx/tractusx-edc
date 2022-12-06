@@ -27,8 +27,8 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class NoOpSftpUserFactoryTest {
-  private final NoOpSftpUserFactory noOpSftpUserFactory = new NoOpSftpUserFactory();
+class SftpUserFactoryImplTest {
+  private final SftpUserFactoryImpl sftpUserFactoryImpl = new SftpUserFactoryImpl();
 
   @Test
   @SneakyThrows
@@ -41,7 +41,7 @@ class NoOpSftpUserFactoryTest {
     KeyPair keyPair = keyPairGenerator.generateKeyPair();
     byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
 
-    SftpUser sftpUser = noOpSftpUserFactory.createSftpUser(name, password, privateKeyBytes);
+    SftpUser sftpUser = sftpUserFactoryImpl.createSftpUser(name, password, privateKeyBytes);
 
     Assertions.assertEquals(name, sftpUser.getName());
     Assertions.assertEquals(password, sftpUser.getPassword());

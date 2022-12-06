@@ -21,7 +21,7 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserKeyPairGenerator;
 
 @Builder
-public class NoOpSftpUserFactory implements SftpUserFactory {
+public class SftpUserFactoryImpl implements SftpUserFactory {
 
   @Override
   public SftpUser createSftpUser(

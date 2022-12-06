@@ -19,7 +19,7 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocationFactory;
 
 @RequiredArgsConstructor
-public class NoOpSftpLocationFactory implements SftpLocationFactory {
+public class SftpLocationFactoryImpl implements SftpLocationFactory {
   @Override
   public SftpLocation createSftpLocation(String sftpHost, Integer sftpPort, String sftpPath) {
     return SftpLocation.builder().host(sftpHost).port(sftpPort).path(sftpPath).build();

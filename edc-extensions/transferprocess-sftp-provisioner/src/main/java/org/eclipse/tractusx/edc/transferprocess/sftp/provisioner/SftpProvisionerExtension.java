@@ -30,6 +30,9 @@ public class SftpProvisionerExtension implements ServiceExtension {
   @Inject Monitor monitor;
   @Inject PolicyEngine policyEngine;
 
+  private static final String POLICY_SCOPE_CONFIG_PATH = "provisioner.sftp.policy.scope";
+  private static final String DEFAULT_POLICY_SCOPE = "sftp.provisioner";
+
   @Override
   public String name() {
     return "Sftp Provisioner";
@@ -37,9 +40,13 @@ public class SftpProvisionerExtension implements ServiceExtension {
 
   @Override
   public void initialize(ServiceExtensionContext context) {
-    NoOpSftpProvider sftpProvider = new NoOpSftpProvider();
-    NoOpSftpProvisioner noOpSftpProvisioner = new NoOpSftpProvisioner(policyEngine, sftpProvider);
-    SftpProviderResourceDefinitionGenerator generator =
+    final String policyScope =
+        context.getConfig().getString(POLICY_SCOPE_CONFIG_PATH, DEFAULT_POLICY_SCOPE);
+
+    final NoOpSftpProvider sftpProvider = new NoOpSftpProvider();
+    final NoOpSftpProvisioner noOpSftpProvisioner =
+        new NoOpSftpProvisioner(policyScope, policyEngine, sftpProvider);
+    final SftpProviderResourceDefinitionGenerator generator =
         new SftpProviderResourceDefinitionGenerator();
     provisionManager.register(noOpSftpProvisioner);
     context.registerService(ProviderResourceDefinitionGenerator.class, generator);

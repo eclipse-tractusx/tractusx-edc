@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.types.domain.transfer.ProvisionedContentResource;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
@@ -28,4 +29,5 @@ public class SftpProvisionedContentResource extends ProvisionedContentResource {
   @NonNull private SftpUser sftpUser;
   @NonNull private SftpLocation sftpLocation;
   @NonNull private String providerType;
+  @NonNull private Policy scopedPolicy;
 }

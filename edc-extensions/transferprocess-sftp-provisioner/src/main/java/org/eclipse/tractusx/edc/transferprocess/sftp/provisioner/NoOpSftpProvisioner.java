@@ -37,8 +37,8 @@ public class NoOpSftpProvisioner
   static final String DATA_ADDRESS_TYPE = "sftp";
   static final String PROVIDER_TYPE = "NoOp";
 
+  @NonNull private final String policyScope;
   @NonNull private final PolicyEngine policyEngine;
-
   @NonNull private final NoOpSftpProvider sftpProvider;
 
   @Override
@@ -73,8 +73,11 @@ public class NoOpSftpProvisioner
         () -> {
           SftpLocation location;
           SftpUser user;
+          // As of the time of writing, policies don't actually do anything in this context.
+          // They are included here in case EDC wants to use them eventually.
+          Policy scopedPolicy;
           try {
-            // TODO: policyEngine.filter()
+            scopedPolicy = policyEngine.filter(policy, policyScope);
             location = Objects.requireNonNull(sftpProviderResourceDefinition.getSftpLocation());
             user = Objects.requireNonNull(sftpProviderResourceDefinition.getSftpUser());
             sftpProvider.createLocation(location);
@@ -88,6 +91,7 @@ public class NoOpSftpProvisioner
                   .sftpUser(user)
                   .sftpLocation(location)
                   .providerType(PROVIDER_TYPE)
+                  .scopedPolicy(scopedPolicy)
                   .build();
 
           return StatusResult.success(
@@ -104,8 +108,14 @@ public class NoOpSftpProvisioner
         () -> {
           SftpLocation location;
           SftpUser user;
+          Policy scopedPolicy;
           try {
-            // TODO: policyEngine.filter()
+            scopedPolicy = policyEngine.filter(policy, policyScope);
+            if (!sftpProvisionedContentResource.getScopedPolicy().equals(scopedPolicy)) {
+              return StatusResult.failure(
+                  ResponseStatus.FATAL_ERROR,
+                  "Policy scope of DeprovisionedResource does not match provided policy scope.");
+            }
             location = Objects.requireNonNull(sftpProvisionedContentResource.getSftpLocation());
             user = Objects.requireNonNull(sftpProvisionedContentResource.getSftpUser());
             sftpProvider.deleteLocation(location);

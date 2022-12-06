@@ -24,8 +24,8 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class NoOpSftpLocationFactoryTest {
-  private final NoOpSftpLocationFactory noOpSftpLocationFactory = new NoOpSftpLocationFactory();
+class SftpLocationFactoryImplTest {
+  private final SftpLocationFactoryImpl sftpLocationFactoryImpl = new SftpLocationFactoryImpl();
 
   @Test
   void generateSftpLocation() {
@@ -33,7 +33,7 @@ class NoOpSftpLocationFactoryTest {
     Integer port = 22;
     String path = "path";
 
-    SftpLocation location = noOpSftpLocationFactory.createSftpLocation(host, port, path);
+    SftpLocation location = sftpLocationFactoryImpl.createSftpLocation(host, port, path);
 
     Assertions.assertEquals(host, location.getHost());
     Assertions.assertEquals(port, location.getPort());
