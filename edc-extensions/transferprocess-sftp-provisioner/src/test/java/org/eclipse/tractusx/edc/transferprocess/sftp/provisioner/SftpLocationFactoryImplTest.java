@@ -29,11 +29,11 @@ class SftpLocationFactoryImplTest {
 
   @Test
   void generateSftpLocation() {
-    String host = "host";
-    Integer port = 22;
-    String path = "path";
+    final String host = "host";
+    final Integer port = 22;
+    final String path = "path";
 
-    SftpLocation location = sftpLocationFactoryImpl.createSftpLocation(host, port, path);
+    final SftpLocation location = sftpLocationFactoryImpl.createSftpLocation(host, port, path);
 
     Assertions.assertEquals(host, location.getHost());
     Assertions.assertEquals(port, location.getPort());

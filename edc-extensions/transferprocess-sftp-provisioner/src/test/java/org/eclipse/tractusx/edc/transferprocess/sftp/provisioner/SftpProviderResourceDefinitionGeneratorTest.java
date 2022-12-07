@@ -40,22 +40,24 @@ class SftpProviderResourceDefinitionGeneratorTest {
       new SftpProviderResourceDefinitionGenerator();
 
   @Test
-  void generate() {
-    String name = "name";
-    String password = "password";
-    KeyPair keyPair = generateKeyPair();
-    String host = "host";
-    Integer port = 22;
-    String path = "path";
+  void generate__successful() {
+    final String name = "name";
+    final String password = "password";
+    final KeyPair keyPair = generateKeyPair();
+    final String host = "host";
+    final Integer port = 22;
+    final String path = "path";
 
-    DataRequest dataRequest =
+    final DataRequest dataRequest =
         DataRequest.Builder.newInstance().destinationType(DATA_ADDRESS_TYPE).build();
-    SftpUser sftpUser = SftpUser.builder().name(name).password(password).keyPair(keyPair).build();
-    SftpLocation sftpLocation = SftpLocation.builder().host(host).port(port).path(path).build();
-    DataAddress dataAddress = new SftpDataAddress(sftpUser, sftpLocation);
-    Policy policy = Policy.Builder.newInstance().build();
+    final SftpUser sftpUser =
+        SftpUser.builder().name(name).password(password).keyPair(keyPair).build();
+    final SftpLocation sftpLocation =
+        SftpLocation.builder().host(host).port(port).path(path).build();
+    final DataAddress dataAddress = new SftpDataAddress(sftpUser, sftpLocation);
+    final Policy policy = Policy.Builder.newInstance().build();
 
-    SftpProviderResourceDefinition resourceDefinition =
+    final SftpProviderResourceDefinition resourceDefinition =
         (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
 
     Assertions.assertNotNull(resourceDefinition);
@@ -69,9 +71,22 @@ class SftpProviderResourceDefinitionGeneratorTest {
     Assertions.assertEquals(keyPair, resourceDefinition.getSftpUser().getKeyPair());
   }
 
+  @Test
+  void generate__wrongDataAddressType() {
+    final DataRequest dataRequest =
+        DataRequest.Builder.newInstance().destinationType(DATA_ADDRESS_TYPE).build();
+    final DataAddress dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
+    final Policy policy = Policy.Builder.newInstance().build();
+
+    final SftpProviderResourceDefinition resourceDefinition =
+        (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
+
+    Assertions.assertNull(resourceDefinition);
+  }
+
   @SneakyThrows
   static KeyPair generateKeyPair() {
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
     keyPairGenerator.initialize(2048);
     return keyPairGenerator.generateKeyPair();
   }

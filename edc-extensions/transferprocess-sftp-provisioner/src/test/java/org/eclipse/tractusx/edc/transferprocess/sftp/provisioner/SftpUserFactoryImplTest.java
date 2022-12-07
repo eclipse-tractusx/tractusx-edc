@@ -33,15 +33,15 @@ class SftpUserFactoryImplTest {
   @Test
   @SneakyThrows
   void generateSftpLocation() {
-    String name = "name";
-    String password = "password";
+    final String name = "name";
+    final String password = "password";
 
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
     keyPairGenerator.initialize(2048);
-    KeyPair keyPair = keyPairGenerator.generateKeyPair();
-    byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
+    final KeyPair keyPair = keyPairGenerator.generateKeyPair();
+    final byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
 
-    SftpUser sftpUser = sftpUserFactoryImpl.createSftpUser(name, password, privateKeyBytes);
+    final SftpUser sftpUser = sftpUserFactoryImpl.createSftpUser(name, password, privateKeyBytes);
 
     Assertions.assertEquals(name, sftpUser.getName());
     Assertions.assertEquals(password, sftpUser.getPassword());
