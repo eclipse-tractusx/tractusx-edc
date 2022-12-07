@@ -363,6 +363,21 @@
                 <artifactId>control-plane-adapter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>transferprocess-sftp-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>transferprocess-sftp-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>transferprocess-sftp-provisioner</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- CX Control-/Data-Plane modules -->
             <dependency>

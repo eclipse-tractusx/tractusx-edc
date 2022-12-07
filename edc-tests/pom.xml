@@ -187,6 +187,18 @@
                     <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                     <artifactId>control-plane-adapter</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                    <artifactId>transferprocess-sftp-client</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                    <artifactId>transferprocess-sftp-common</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                    <artifactId>transferprocess-sftp-provisioner</artifactId>
+                </dependency>
                 <!-- edc-controlplane -->
                 <dependency>
                     <groupId>org.eclipse.tractusx.edc</groupId>
