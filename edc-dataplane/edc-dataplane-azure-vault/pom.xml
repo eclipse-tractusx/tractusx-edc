@@ -62,7 +62,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime</mainClass>
+                            <mainClass>org.eclipse.edc.boot.system.runtime.BaseRuntime</mainClass>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
@@ -95,8 +95,8 @@
 
         <!-- Vault -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>azure-vault</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>vault-azure</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>

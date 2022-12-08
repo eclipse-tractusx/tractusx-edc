@@ -21,13 +21,13 @@
 package org.eclipse.tractusx.edc.hashicorpvault;
 
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
-import org.eclipse.dataspaceconnector.spi.security.CertificateResolver;
-import org.eclipse.dataspaceconnector.spi.security.PrivateKeyResolver;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
-import org.eclipse.dataspaceconnector.spi.security.VaultPrivateKeyResolver;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.spi.security.CertificateResolver;
+import org.eclipse.edc.spi.security.PrivateKeyResolver;
+import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 @Provides({Vault.class, CertificateResolver.class, PrivateKeyResolver.class})
 public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtension

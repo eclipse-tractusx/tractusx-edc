@@ -87,24 +87,32 @@
     <dependencies>
         <!-- EDC Depencencies -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>core-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>policy-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-management-api</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>management-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>catalog-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>transaction-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>ids-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>aggregate-service-spi</artifactId>
         </dependency>
 
         <!-- External Dependencies -->

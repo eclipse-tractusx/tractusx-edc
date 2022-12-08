@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.edc.spi.EdcException;
 
 public class HashicorpVaultException extends EdcException {
 

@@ -55,25 +55,25 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>transaction-datasource-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>transaction-spi</artifactId>
         </dependency>
 
         <!-- Stores -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>asset-index-sql</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <!-- Supportive -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>common-sql</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>sql-core</artifactId>
         </dependency>
 
         <!-- Other -->

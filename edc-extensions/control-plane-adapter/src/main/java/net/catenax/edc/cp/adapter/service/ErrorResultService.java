@@ -25,7 +25,7 @@ import net.catenax.edc.cp.adapter.exception.ResourceNotFoundException;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
 import net.catenax.edc.cp.adapter.messaging.MessageBus;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.edc.spi.monitor.Monitor;
 
 @RequiredArgsConstructor
 public class ErrorResultService implements Listener<DataReferenceRetrievalDto> {

@@ -63,7 +63,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>
-                            org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
+                            org.eclipse.edc.boot.system.runtime.BaseRuntime
                         </mainClass>
                         <useUniqueVersions>false</useUniqueVersions> 
                         </manifest>
@@ -103,8 +103,8 @@
 
         <!-- Vault -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>azure-vault</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>vault-azure</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>
@@ -119,33 +119,33 @@
 
         <!-- Stores -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>asset-index-sql</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractdefinition-store-sql</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>contract-definition-store-sql</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>contractnegotiation-store-sql</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>contract-negotiation-store-sql</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>transfer-process-store-sql</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>policy-store-sql</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>policy-definition-store-sql</artifactId>
         </dependency>
 
         <!-- Supportive -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>apache-commons-pool-sql</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>sql-pool-apache-commons</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>transaction-local</artifactId>
         </dependency>
 

@@ -132,7 +132,7 @@ Control IDS URL
 Control IDS URL
 */}}
 {{- define "txdc.controlplane.url.validation" -}}
-{{- printf "http://%s-controlplane:%v%s" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.validation.port $.Values.controlplane.endpoints.validation.path -}}
+{{- printf "http://%s-controlplane:%v%s/token" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.validation.port $.Values.controlplane.endpoints.validation.path -}}
 {{- end }}
 
 {{/*

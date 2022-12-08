@@ -8,9 +8,9 @@ import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
-import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationListener;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
+import org.eclipse.edc.connector.contract.spi.negotiation.observe.ContractNegotiationListener;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.spi.monitor.Monitor;
 
 @RequiredArgsConstructor
 public class ContractNegotiationListenerImpl implements ContractNegotiationListener {

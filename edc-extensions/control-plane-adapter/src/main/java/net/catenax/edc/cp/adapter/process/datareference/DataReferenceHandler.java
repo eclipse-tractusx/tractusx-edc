@@ -21,8 +21,8 @@ import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.messaging.Channel;
 import net.catenax.edc.cp.adapter.messaging.Listener;
 import net.catenax.edc.cp.adapter.messaging.MessageBus;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
 @RequiredArgsConstructor
 public class DataReferenceHandler implements Listener<DataReferenceRetrievalDto> {

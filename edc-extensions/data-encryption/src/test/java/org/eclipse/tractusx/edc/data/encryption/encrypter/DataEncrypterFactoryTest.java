@@ -20,9 +20,9 @@
 package org.eclipse.tractusx.edc.data.encryption.encrypter;
 
 import java.time.Duration;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
-import org.eclipse.dataspaceconnector.transfer.dataplane.spi.security.DataEncrypter;
+import org.eclipse.edc.connector.dataplane.transfer.spi.security.DataEncrypter;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.data.encryption.key.CryptoKeyFactoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

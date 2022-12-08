@@ -30,14 +30,14 @@ import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
-import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
-import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.query.QuerySpec;
-import org.eclipse.dataspaceconnector.spi.types.domain.catalog.Catalog;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractOfferRequest;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.offer.ContractOffer;
+import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractOfferRequest;
+import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.connector.spi.catalog.CatalogService;
+import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor

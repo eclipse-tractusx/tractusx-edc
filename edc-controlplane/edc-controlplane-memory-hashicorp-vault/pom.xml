@@ -62,7 +62,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime</mainClass>
+                            <mainClass>org.eclipse.edc.boot.system.runtime.BaseRuntime</mainClass>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
@@ -94,7 +94,7 @@
             <artifactId>edc-controlplane-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>control-plane-core</artifactId>
         </dependency>
 
@@ -105,7 +105,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>data-plane-transfer-client</artifactId>
         </dependency>
     </dependencies>

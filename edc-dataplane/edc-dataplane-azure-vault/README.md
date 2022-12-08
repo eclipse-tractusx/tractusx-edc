@@ -64,7 +64,7 @@ EOF
 export LOGGING_PROPERTIES_FILE=$(mktemp /tmp/logging.properties.XXXXXX)
 cat << 'EOF' > ${LOGGING_PROPERTIES_FILE}
 .level=INFO
-org.eclipse.dataspaceconnector.level=ALL
+org.eclipse.edc.level=ALL
 handlers=java.util.logging.ConsoleHandler
 java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
 java.util.logging.ConsoleHandler.level=ALL

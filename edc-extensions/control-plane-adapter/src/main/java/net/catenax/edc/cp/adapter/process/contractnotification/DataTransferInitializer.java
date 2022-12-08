@@ -3,12 +3,12 @@ package net.catenax.edc.cp.adapter.process.contractnotification;
 import lombok.RequiredArgsConstructor;
 import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
 import net.catenax.edc.cp.adapter.exception.ExternalRequestException;
-import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
-import org.eclipse.dataspaceconnector.api.result.ServiceResult;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
-import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataRequest;
-import org.eclipse.dataspaceconnector.spi.types.domain.transfer.TransferType;
+import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
+import org.eclipse.edc.connector.transfer.spi.types.TransferType;
+import org.eclipse.edc.service.spi.result.ServiceResult;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 
 @RequiredArgsConstructor
 public class DataTransferInitializer {

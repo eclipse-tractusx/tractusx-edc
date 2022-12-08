@@ -22,12 +22,12 @@ package org.eclipse.tractusx.edc.dataplane.selector.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.dataspaceconnector.dataplane.selector.DataPlaneSelectorService;
-import org.eclipse.dataspaceconnector.junit.extensions.EdcExtension;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
+import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
+import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

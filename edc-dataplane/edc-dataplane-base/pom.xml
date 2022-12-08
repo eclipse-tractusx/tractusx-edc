@@ -58,72 +58,72 @@
     <dependencies>
         <!-- Config -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>filesystem-configuration</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>configuration-filesystem</artifactId>
         </dependency>
 
         <!-- Transfer -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>data-plane-s3</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>data-plane-aws-s3</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>data-plane-http</artifactId>
         </dependency>
 
         <!-- APIs -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>data-plane-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>data-plane-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>observability-api</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>api-observability</artifactId>
         </dependency>
 
         <!-- Core -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-base</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>connector-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-boot</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>boot</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>s3-core</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.edc</groupId>-->
+<!--            <artifactId>s3-core</artifactId>-->
+<!--        </dependency>-->
 
         <!-- Telemetry -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>core-micrometer</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>micrometer-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>jersey-micrometer</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>jetty-micrometer</artifactId>
         </dependency>
 
         <!-- Logging -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>jdk-logger-monitor</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>monitor-jdk-logger</artifactId>
         </dependency>
 
         <!-- Supportive -->
         <dependency>
             <!-- includes jetty and jersey -->
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>http</artifactId>
         </dependency>
 

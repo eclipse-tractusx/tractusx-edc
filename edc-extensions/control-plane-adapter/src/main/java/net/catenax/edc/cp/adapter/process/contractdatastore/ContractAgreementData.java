@@ -16,7 +16,7 @@ package net.catenax.edc.cp.adapter.process.contractdatastore;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.agreement.ContractAgreement;
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 
 @Getter
 @Setter

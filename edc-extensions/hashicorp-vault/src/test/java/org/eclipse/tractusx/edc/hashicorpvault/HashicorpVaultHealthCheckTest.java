@@ -21,8 +21,8 @@
 package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.io.IOException;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckResult;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

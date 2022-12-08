@@ -17,7 +17,7 @@ controlplane:
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
-    tag: "0.1.2"
+    tag: ""
   initContainers: []
   debug:
     enabled: false
@@ -263,7 +263,7 @@ dataplane:
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
-    tag: "0.1.2"
+    tag: ""
   initContainers: []
   debug:
     enabled: false
@@ -458,7 +458,7 @@ postgresql:
 
 vault:
   hashicorp:
-    enabled: true
+    enabled: false
     url: ""
     token: ""
     timeout: 30

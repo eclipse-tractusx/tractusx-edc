@@ -62,7 +62,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime</mainClass>
+                            <mainClass>org.eclipse.edc.boot.system.runtime.BaseRuntime</mainClass>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>

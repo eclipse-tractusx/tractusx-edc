@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.util.encoders.Base64;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.data.encryption.DataEncryptionExtension;
 import org.eclipse.tractusx.edc.data.encryption.key.AesKey;
 import org.eclipse.tractusx.edc.data.encryption.key.CryptoKeyFactory;

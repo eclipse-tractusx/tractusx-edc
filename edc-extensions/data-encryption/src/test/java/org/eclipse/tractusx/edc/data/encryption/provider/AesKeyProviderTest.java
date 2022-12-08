@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.data.encryption.provider;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.data.encryption.key.AesKey;
 import org.eclipse.tractusx.edc.data.encryption.key.CryptoKeyFactoryImpl;
 import org.junit.jupiter.api.Assertions;

@@ -21,7 +21,7 @@
 package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.util.UUID;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
+import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

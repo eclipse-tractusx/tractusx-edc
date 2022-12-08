@@ -62,7 +62,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>
-                            org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime
+                            org.eclipse.edc.boot.system.runtime.BaseRuntime
                         </mainClass>
                         <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
@@ -94,14 +94,14 @@
             <artifactId>edc-controlplane-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
+            <groupId>org.eclipse.edc</groupId>
             <artifactId>control-plane-core</artifactId>
         </dependency>
 
         <!-- Vault -->
         <dependency>
-            <groupId>org.eclipse.dataspaceconnector</groupId>
-            <artifactId>azure-vault</artifactId>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>vault-azure</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>

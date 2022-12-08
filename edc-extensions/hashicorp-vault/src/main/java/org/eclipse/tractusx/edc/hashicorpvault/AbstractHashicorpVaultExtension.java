@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import java.time.Duration;
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 /**
  * Temporary solution as long as the Vault components needs to be loaded as dedicated vault

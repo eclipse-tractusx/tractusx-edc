@@ -22,7 +22,11 @@ import net.catenax.edc.cp.adapter.messaging.ListenerService;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractdatastore.InMemoryContractDataStore;
 import net.catenax.edc.cp.adapter.process.contractnegotiation.ContractNegotiationHandler;
-import net.catenax.edc.cp.adapter.process.contractnotification.*;
+import net.catenax.edc.cp.adapter.process.contractnotification.ContractInMemorySyncService;
+import net.catenax.edc.cp.adapter.process.contractnotification.ContractNegotiationListenerImpl;
+import net.catenax.edc.cp.adapter.process.contractnotification.ContractNotificationHandler;
+import net.catenax.edc.cp.adapter.process.contractnotification.ContractNotificationSyncService;
+import net.catenax.edc.cp.adapter.process.contractnotification.DataTransferInitializer;
 import net.catenax.edc.cp.adapter.process.datareference.DataRefInMemorySyncService;
 import net.catenax.edc.cp.adapter.process.datareference.DataRefNotificationSyncService;
 import net.catenax.edc.cp.adapter.process.datareference.DataReferenceHandler;
@@ -31,29 +35,28 @@ import net.catenax.edc.cp.adapter.service.ErrorResultService;
 import net.catenax.edc.cp.adapter.service.ResultService;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
 import net.catenax.edc.cp.adapter.util.LockMap;
-import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogServiceImpl;
-import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
-import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
-import org.eclipse.dataspaceconnector.api.datamanagement.transferprocess.service.TransferProcessService;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
-import org.eclipse.dataspaceconnector.spi.WebService;
-import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationListener;
-import org.eclipse.dataspaceconnector.spi.contract.negotiation.observe.ContractNegotiationObservable;
-import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiver;
-import org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiverRegistry;
+import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.connector.contract.spi.negotiation.observe.ContractNegotiationListener;
+import org.eclipse.edc.connector.contract.spi.negotiation.observe.ContractNegotiationObservable;
+import org.eclipse.edc.connector.spi.catalog.CatalogService;
+import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.connector.transfer.spi.edr.EndpointDataReferenceReceiver;
+import org.eclipse.edc.connector.transfer.spi.edr.EndpointDataReferenceReceiverRegistry;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.web.spi.WebService;
 
 public class ApiAdapterExtension implements ServiceExtension {
   @Inject private Monitor monitor;
   @Inject private ContractNegotiationObservable negotiationObservable;
   @Inject private WebService webService;
   @Inject private ContractNegotiationService contractNegotiationService;
-  @Inject private RemoteMessageDispatcherRegistry dispatcher;
+  @Inject private CatalogService catalogService;
   @Inject private EndpointDataReferenceReceiverRegistry receiverRegistry;
-  @Inject private DataManagementApiConfiguration apiConfig;
+  @Inject private ManagementApiConfiguration apiConfig;
   @Inject private TransferProcessService transferProcessService;
 
   @Override
@@ -127,7 +130,7 @@ public class ApiAdapterExtension implements ServiceExtension {
         monitor,
         messageBus,
         contractNegotiationService,
-        new CatalogServiceImpl(dispatcher),
+        catalogService,
         contractDataStore,
         new ExpiringMap<>());
   }

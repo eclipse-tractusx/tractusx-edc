@@ -154,6 +154,7 @@ jobs:
             --set postgresql.username=user \
             --set postgresql.password=password \
             --set postgresql.jdbcUrl=jdbc:postgresql://plato-postgresql:5432/edc \
+            --set vault.hashicorp.enabled=true \
             --set vault.hashicorp.url=http://vault:8200 \
             --set vault.hashicorp.token=root \
             --set vault.secretNames.transferProxyTokenSignerPublicKey=plato/daps/my-plato-daps-crt \
@@ -166,7 +167,7 @@ jobs:
             --set dataplane.aws.endpointOverride=http://minio:9000 \
             --set dataplane.aws.secretAccessKey=platoqwerty123 \
             --set dataplane.aws.accessKeyId=platoqwerty123 \
-            --set backendService.httpProxyTokenReceiverUrl=http://backend:80 \
+            --set backendService.httpProxyTokenReceiverUrl=http://backend:8080 \
             --wait-for-jobs --timeout=120s
           
           # Install Sokrates
@@ -186,6 +187,7 @@ jobs:
             --set postgresql.username=user \
             --set postgresql.password=password \
             --set postgresql.jdbcUrl=jdbc:postgresql://sokrates-postgresql:5432/edc \
+            --set vault.hashicorp.enabled=true \
             --set vault.hashicorp.url=http://vault:8200 \
             --set vault.hashicorp.token=root \
             --set vault.secretNames.transferProxyTokenSignerPublicKey=sokrates/daps/my-sokrates-daps-crt \
@@ -198,7 +200,7 @@ jobs:
             --set dataplane.aws.endpointOverride=http://minio:9000 \
             --set dataplane.aws.secretAccessKey=sokratesqwerty123 \
             --set dataplane.aws.accessKeyId=sokratesqwerty123 \
-            --set backendService.httpProxyTokenReceiverUrl=http://backend:80 \
+            --set backendService.httpProxyTokenReceiverUrl=http://backend:8080 \
             --wait-for-jobs --timeout=120s
 
           # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s

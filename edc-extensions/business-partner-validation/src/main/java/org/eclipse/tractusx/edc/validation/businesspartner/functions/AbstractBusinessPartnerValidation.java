@@ -22,10 +22,10 @@ package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
 import java.util.Map;
 import java.util.Objects;
-import org.eclipse.dataspaceconnector.policy.model.Operator;
-import org.eclipse.dataspaceconnector.spi.agent.ParticipantAgent;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
+import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.spi.monitor.Monitor;
 
 /**
  * Abstract class for BusinessPartnerNumber validation. This class may be inherited from the EDC

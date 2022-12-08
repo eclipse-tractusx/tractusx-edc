@@ -62,7 +62,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime</mainClass>
+                            <mainClass>org.eclipse.edc.boot.system.runtime.BaseRuntime</mainClass>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
@@ -91,13 +91,51 @@
         <!-- Base Control-Plane \w psql, \wo Azure KeyVault -->
         <dependency>
             <groupId>org.eclipse.tractusx.edc</groupId>
-            <artifactId>edc-controlplane-postgresql</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.eclipse.dataspaceconnector</groupId>
-                    <artifactId>azure-vault</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>edc-controlplane-base</artifactId>
+        </dependency>
+
+        <!-- CX Extensions -->
+        <dependency>
+            <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+            <artifactId>postgresql-migration</artifactId>
+        </dependency>
+
+        <!-- Stores -->
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>asset-index-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>contract-definition-store-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>contract-negotiation-store-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>transfer-process-store-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>policy-definition-store-sql</artifactId>
+        </dependency>
+
+        <!-- Supportive -->
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>sql-pool-apache-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.edc</groupId>
+            <artifactId>transaction-local</artifactId>
+        </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
 
         <!-- Vault -->

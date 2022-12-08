@@ -22,9 +22,9 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.result.Result;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.security.Vault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

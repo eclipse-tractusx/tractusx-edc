@@ -27,10 +27,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.dataspaceconnector.spi.EdcException;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.security.CertificateResolver;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.CertificateResolver;
+import org.eclipse.edc.spi.security.Vault;
 
 /** Resolves an X.509 certificate in Hashicorp vault. */
 @RequiredArgsConstructor

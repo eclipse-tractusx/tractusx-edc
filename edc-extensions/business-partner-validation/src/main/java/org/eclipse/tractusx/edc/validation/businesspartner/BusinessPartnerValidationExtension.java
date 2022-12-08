@@ -20,17 +20,17 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
 
-import static org.eclipse.dataspaceconnector.spi.policy.engine.PolicyEngine.ALL_SCOPES;
+import static org.eclipse.edc.policy.engine.spi.PolicyEngine.ALL_SCOPES;
 
-import org.eclipse.dataspaceconnector.policy.model.Duty;
-import org.eclipse.dataspaceconnector.policy.model.Permission;
-import org.eclipse.dataspaceconnector.policy.model.Prohibition;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyEngine;
-import org.eclipse.dataspaceconnector.spi.policy.engine.RuleBindingRegistry;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.policy.engine.spi.PolicyEngine;
+import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
+import org.eclipse.edc.policy.model.Duty;
+import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Prohibition;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerDutyFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerPermissionFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerProhibitionFunction;

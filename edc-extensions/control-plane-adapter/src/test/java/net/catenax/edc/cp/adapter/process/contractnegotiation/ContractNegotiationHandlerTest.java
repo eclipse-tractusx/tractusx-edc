@@ -16,9 +16,12 @@ package net.catenax.edc.cp.adapter.process.contractnegotiation;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.catenax.edc.cp.adapter.dto.DataReferenceRetrievalDto;
@@ -28,14 +31,14 @@ import net.catenax.edc.cp.adapter.messaging.MessageBus;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractAgreementData;
 import net.catenax.edc.cp.adapter.process.contractdatastore.ContractDataStore;
 import net.catenax.edc.cp.adapter.util.ExpiringMap;
-import org.eclipse.dataspaceconnector.api.datamanagement.catalog.service.CatalogService;
-import org.eclipse.dataspaceconnector.api.datamanagement.contractnegotiation.service.ContractNegotiationService;
-import org.eclipse.dataspaceconnector.policy.model.Policy;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.spi.types.domain.catalog.Catalog;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.negotiation.ContractNegotiation;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.offer.ContractOffer;
+import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.connector.spi.catalog.CatalogService;
+import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -159,6 +162,8 @@ public class ContractNegotiationHandlerTest {
     return ContractOffer.Builder.newInstance()
         .id("id")
         .asset(asset)
+        .contractEnd(ZonedDateTime.now().plusDays(1))
+        .contractStart(ZonedDateTime.now())
         .policy(Policy.Builder.newInstance().build())
         .build();
   }

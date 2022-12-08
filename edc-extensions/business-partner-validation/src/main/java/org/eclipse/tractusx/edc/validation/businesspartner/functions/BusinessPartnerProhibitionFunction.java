@@ -20,11 +20,11 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.dataspaceconnector.policy.model.Operator;
-import org.eclipse.dataspaceconnector.policy.model.Prohibition;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.policy.engine.AtomicConstraintFunction;
-import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
+import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Prohibition;
+import org.eclipse.edc.spi.monitor.Monitor;
 
 /** AtomicConstraintFunction to validate business partner numbers for edc prohibitions. */
 public class BusinessPartnerProhibitionFunction extends AbstractBusinessPartnerValidation
