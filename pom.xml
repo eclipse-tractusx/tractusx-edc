@@ -70,7 +70,7 @@
         <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
         <org.postgresql.version>42.5.0</org.postgresql.version>
         <org.flywaydb.version>9.3.1</org.flywaydb.version>
-        <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
+        <com.nimbus.jose.jwt.version>9.25.6</com.nimbus.jose.jwt.version>
 
         <!-- test dependency version -->
         <junit.jupiter.version>5.9.1</junit.jupiter.version>
