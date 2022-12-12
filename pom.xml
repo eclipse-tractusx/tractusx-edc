@@ -77,7 +77,7 @@
         <org.postgresql.version>42.5.1</org.postgresql.version>
         <org.flywaydb.version>9.8.3</org.flywaydb.version>
         <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
-        <com.fasterxml.jackson.version>2.14.0-rc2</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.14.1</com.fasterxml.jackson.version>
 
         <!-- test dependency version -->
         <junit.jupiter.version>5.9.1</junit.jupiter.version>
