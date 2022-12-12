@@ -38,7 +38,7 @@
         <org.apache.httpcomponents.httpclient.version>4.5.14</org.apache.httpcomponents.httpclient.version>
         <ch.qos.logback.version>1.4.5</ch.qos.logback.version>
         <org.slf4j.api.version>2.0.3</org.slf4j.api.version>
-        <software.amazon.awssdk>2.18.33</software.amazon.awssdk>
+        <software.amazon.awssdk>2.18.35</software.amazon.awssdk>
     </properties>
 
     <dependencies>
