@@ -1,0 +1,30 @@
+apiVersion: v1
+entries:
+  edc-controlplane:
+  - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2022-12-20T16:20:22.37871445Z"
+    description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
+      layer with responsibility of resource management and govern contracts and data
+      transfers
+    digest: 874e2fe44207aa5de5f0f857de1dacbd9327ccd9b32cdf94a58b45a159c11d15
+    home: https://github.com/eclipse-tractusx/tractusx-edc
+    name: edc-controlplane
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/edc-controlplane-0.1.2/edc-controlplane-0.1.2.tgz
+    version: 0.1.2
+  edc-dataplane:
+  - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2022-12-20T16:20:22.582233487Z"
+    description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
+      of transferring and receiving data streams
+    digest: 99335fce007a0b270077801c6cffe4d82e0c8d87521d47943d3144d7af00b5a5
+    home: https://github.com/eclipse-tractusx/tractusx-edc
+    name: edc-dataplane
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/edc-dataplane-0.1.2/edc-dataplane-0.1.2.tgz
+    version: 0.1.2
+generated: "2022-12-20T16:20:22.582238187Z"
