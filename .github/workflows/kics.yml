@@ -20,7 +20,7 @@ jobs:
       security-events: write
 
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
 
       - name: KICS scan
         uses: checkmarx/kics-github-action@master
