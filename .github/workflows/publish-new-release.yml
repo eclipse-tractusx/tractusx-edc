@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+      - support/*
     types:
       - closed
 
@@ -186,6 +187,7 @@ jobs:
           cache: 'maven'
       -
         name: Merge main back into develop and set new snapshot version
+        if: github.event.pull_request.base.ref == 'main'
         run: |
           # Prepare git env
           git config user.name "GitHub actions"
