@@ -67,7 +67,7 @@ public class DataManagementAPI {
     final DataManagementApiContractOfferCatalog catalog =
         get(
             CATALOG_PATH,
-            "providerUrl=" + encodedUrl,
+            "providerUrl=" + encodedUrl + "&limit=1000",
             new TypeToken<DataManagementApiContractOfferCatalog>() {});
 
     log.debug("Received " + catalog.contractOffers.size() + " offers");

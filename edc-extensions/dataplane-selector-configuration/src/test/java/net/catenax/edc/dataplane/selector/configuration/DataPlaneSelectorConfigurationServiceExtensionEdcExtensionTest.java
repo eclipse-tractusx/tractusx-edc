@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.dataspaceconnector.dataplane.selector.DataPlaneSelectorService;
 import org.eclipse.dataspaceconnector.junit.extensions.EdcExtension;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
+import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;

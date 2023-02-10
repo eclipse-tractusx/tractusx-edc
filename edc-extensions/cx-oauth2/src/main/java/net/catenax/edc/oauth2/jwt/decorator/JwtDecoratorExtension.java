@@ -21,14 +21,10 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.Setter;
 import org.eclipse.dataspaceconnector.iam.oauth2.spi.Oauth2JwtDecoratorRegistry;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
 import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.security.CertificateResolver;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.spi.system.*;
 
 @Provides(Oauth2JwtDecoratorRegistry.class)
 @Requires(CertificateResolver.class)
