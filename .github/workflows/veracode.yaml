@@ -1,2 +1,136 @@
-# file to satisfy check in https://gh-org-checks.core.demo.catena-x.net/
-# veracode runs inside the build.yaml
+---
+name: "Veracode"
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  secret-presence:
+    runs-on: ubuntu-latest
+    outputs:
+      ORG_VERACODE_API_ID: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_ID }}
+      ORG_VERACODE_API_KEY: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_KEY }}
+    steps:
+      -
+        name: Check whether secrets exist
+        id: secret-presence
+        run: |
+          [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
+          [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
+          exit 0
+  verify-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+      -
+        name: Set up JDK 11
+        uses: actions/setup-java@v3.10.0
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'maven'
+      -
+        name: Verify proper formatting
+        run: ./mvnw -s settings.xml -B spotless:check
+
+  build-controlplane:
+    runs-on: ubuntu-latest
+    needs: [ secret-presence, verify-formatting ]
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - edc-controlplane-memory
+          - edc-controlplane-memory-hashicorp-vault
+          - edc-controlplane-postgresql
+          - edc-controlplane-postgresql-hashicorp-vault
+    steps:
+      # Set-Up
+      -
+        name: Checkout
+        uses: actions/checkout@v3.3.0
+      -
+        name: Set up JDK 11
+        uses: actions/setup-java@v3.10.0
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'maven'
+      # Build
+      -
+        name: Build Controlplane
+        run: |-
+          ./mvnw -s settings.xml -B -pl .,edc-controlplane/${{ matrix.name }} -am package
+        env:
+          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+      -
+        name: Tar gzip files for veracode upload
+        run: |-
+          tar -czvf edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-controlplane/${{ matrix.name }}/target/lib/*.jar
+      -
+        name: Veracode Upload And Scan
+        uses: veracode/veracode-uploadandscan-action@v1.0
+        if: |
+          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY
+        continue-on-error: true
+        with:
+          appname: product-edc/${{ matrix.name }}
+          createprofile: true
+          version: ${{ matrix.name }}-${{ github.sha }}
+          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
+          vid: ${{ secrets.ORG_VERACODE_API_ID }}
+          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
+
+  build-dataplane:
+    runs-on: ubuntu-latest
+    needs: [ secret-presence, verify-formatting ]
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - edc-dataplane-azure-vault
+          - edc-dataplane-hashicorp-vault
+    steps:
+      # Set-Up
+      -
+        name: Checkout
+        uses: actions/checkout@v3.3.0
+      -
+        name: Set up JDK 11
+        uses: actions/setup-java@v3.10.0
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'maven'
+      # Build
+      -
+        name: Build Dataplane
+        run: |-
+          ./mvnw -s settings.xml -B -pl .,edc-dataplane/${{ matrix.name }} -am package
+        env:
+          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+      -
+        name: Tar gzip files for veracode upload
+        run: |-
+          tar -czvf edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-dataplane/${{ matrix.name }}/target/lib/*.jar
+      -
+        name: Veracode Upload And Scan
+        uses: veracode/veracode-uploadandscan-action@v1.0
+        if: |
+          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY
+        continue-on-error: true
+        with:
+          appname: product-edc/${{ matrix.name }}
+          createprofile: true
+          version: ${{ matrix.name }}-${{ github.sha }}
+          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
+          vid: ${{ secrets.ORG_VERACODE_API_ID }}
+          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
