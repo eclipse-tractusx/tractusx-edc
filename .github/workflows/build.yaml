@@ -125,7 +125,6 @@ jobs:
       matrix:
         name:
           - edc-controlplane-memory
-          - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
     steps:
