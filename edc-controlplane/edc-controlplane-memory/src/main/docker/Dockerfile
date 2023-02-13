@@ -16,7 +16,7 @@ ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-in
 
 RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
-FROM alpine:3.16.2
+FROM alpine:3.17.1
 
 ARG JAR
 ARG LIB
@@ -53,6 +53,6 @@ CMD ["java", \
      "-Dotel.javaagent.configuration-file=/app/opentelemetry.properties", \
      "-Dotel.metrics.exporter=prometheus", \
      "-Dotel.exporter.prometheus.port=9090", \
-     "-Djava.security.edg=file:/dev/.urandom", \
+     "-Djava.security.egd=file:/dev/urandom", \
      "-jar", \
      "edc-controlplane.jar"]
