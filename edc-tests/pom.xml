@@ -19,7 +19,7 @@
     <parent>
         <groupId>net.catenax.edc</groupId>
         <artifactId>product-edc-parent</artifactId>
-        <version>0.1.2</version>
+        <version>0.1.5</version>
     </parent>
 
     <groupId>net.catenax.edc.tests</groupId>
