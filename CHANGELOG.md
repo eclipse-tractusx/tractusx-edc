@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.5] - 2023-02-13
 
+### Fixed
+
+-   Use patched EDC version: 0.0.1-20220922.2-SNAPSHOT to fix catalog pagination bug
+-   Data Encryption extension: fixed usage of a blocking algorithm
+
 ## [0.1.2] - 2022-09-30
 
 ### Added
