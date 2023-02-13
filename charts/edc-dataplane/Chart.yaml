@@ -5,6 +5,6 @@ description: >-
   EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
 home: https://github.com/catenax-ng/product-edc/charts/edc-dataplane
 type: application
-appVersion: "0.1.2"
-version: 0.1.2
+appVersion: "0.1.5"
+version: 0.1.5
 maintainers: []
