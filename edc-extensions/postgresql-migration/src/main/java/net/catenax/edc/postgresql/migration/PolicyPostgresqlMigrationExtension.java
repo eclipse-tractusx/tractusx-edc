@@ -14,7 +14,7 @@
 
 package net.catenax.edc.postgresql.migration;
 
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
+import org.eclipse.dataspaceconnector.spi.EdcSetting;
 
 public class PolicyPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
   private static final String NAME_SUBSYSTEM = "policy";
