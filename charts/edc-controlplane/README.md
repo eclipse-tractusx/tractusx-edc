@@ -8,8 +8,8 @@ EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with res
 
 ## TL;DR
 ```shell
-$ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install my-release catenax-ng-product-edc/edc-controlplane --version 0.1.5
+$ helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
+$ helm install my-release tractusx-edc/edc-controlplane --version 0.1.5
 ```
 
 ## Values

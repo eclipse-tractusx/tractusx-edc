@@ -4,12 +4,12 @@
 
 EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
 
-**Homepage:** <https://github.com/catenax-ng/product-edc/charts/edc-dataplane>
+**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc>
 
 ## TL;DR
 ```shell
-$ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install my-release catenax-ng-product-edc/edc-dataplane --version 0.1.5
+$ helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
+$ helm install my-release tractusx-edc/edc-dataplane --version 0.1.5
 ```
 
 ## Values
