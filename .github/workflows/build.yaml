@@ -10,20 +10,21 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
   release:
     types:
-      - released
+      - published
   pull_request:
     paths-ignore:
       - 'charts/**'
+      - 'docs/**'
+      - '**/*.md'
     branches:
       - '*'
+  workflow_dispatch:
 
 jobs:
   secret-presence:
     runs-on: ubuntu-latest
     outputs:
       CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
-      ORG_VERACODE_API_ID: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_ID }}
-      ORG_VERACODE_API_KEY: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_KEY }}
       SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
     steps:
       -
@@ -31,22 +32,19 @@ jobs:
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
-          [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
-          [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
           [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "::set-output name=SONAR_TOKEN::true"
           exit 0
-
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -64,23 +62,16 @@ jobs:
       # Set-Up
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
           distribution: 'adopt'
           cache: 'maven'
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Cache SonarCloud packages
         uses: actions/cache@v3
@@ -102,7 +93,6 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.jacoco.xmlReportPaths=${GITHUB_WORKSPACE}/edc-tests/target/site/jacoco-aggregate/jacoco.xml \
             -Dsonar.verbose=true
-
   build-extensions:
     runs-on: ubuntu-latest
     needs: [ secret-presence, verify-formatting ]
@@ -110,22 +100,15 @@ jobs:
       # Set-Up
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
           distribution: 'adopt'
           cache: 'maven'
       # Build
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build Extensions
         run: |-
@@ -148,7 +131,7 @@ jobs:
       # Set-Up
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
       -
         name: Login to GitHub Container Registry
         if: |
@@ -160,19 +143,12 @@ jobs:
           password: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
           distribution: 'adopt'
           cache: 'maven'
       # Build
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build Controlplane
         run: |-
@@ -195,7 +171,7 @@ jobs:
             type=sha
       -
         name: Build Docker Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: edc-controlplane/${{ matrix.name }}/src/main/docker/Dockerfile
@@ -206,23 +182,6 @@ jobs:
             ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
           tags: ${{ steps.edc_controlplane_meta.outputs.tags }}
           labels: ${{ steps.edc_controlplane_meta.outputs.labels }}
-      -
-        name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-            refs/heads/develop
-            refs/heads/release/
-            refs/tags/
-            refs/heads/main', github.ref)
-        continue-on-error: true
-        with:
-          appname: product-edc/${{ matrix.name }}
-          createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
-          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
   build-dataplane:
     runs-on: ubuntu-latest
@@ -237,7 +196,7 @@ jobs:
       # Set-Up
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
       -
         name: Login to GitHub Container Registry
         if: |
@@ -249,19 +208,12 @@ jobs:
           password: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
           distribution: 'adopt'
           cache: 'maven'
       # Build
-      -
-        name: Init git submodule
-        run: git submodule update --init
-      -
-        name: Build edc with Gradle to get specific snapshot
-        run: ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220922-SNAPSHOT -xjavadoc
-        working-directory: edc
       -
         name: Build Dataplane
         run: |-
@@ -284,7 +236,7 @@ jobs:
             type=sha
       -
         name: Build Docker Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: edc-dataplane/${{ matrix.name }}/src/main/docker/Dockerfile
@@ -295,20 +247,3 @@ jobs:
             ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
           tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
           labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
-      -
-        name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY && contains('
-            refs/heads/develop
-            refs/heads/release/
-            refs/tags/
-            refs/heads/main', github.ref)
-        continue-on-error: true
-        with:
-          appname: product-edc/${{ matrix.name }}
-          createprofile: true
-          version: ${{ github.ref }}-${{ github.sha }}
-          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}

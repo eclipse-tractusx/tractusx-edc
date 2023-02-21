@@ -16,19 +16,20 @@ package net.catenax.edc.data.encryption.algorithms.aes;
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import lombok.SneakyThrows;
 import net.catenax.edc.data.encryption.util.ArrayUtil;
 
 public class AesInitializationVectorIterator implements Iterator<byte[]> {
 
   public static final int RANDOM_SIZE = 12;
   public static final int COUNTER_SIZE = 4;
-  public static final int VECTOR_SIZE = RANDOM_SIZE + COUNTER_SIZE;
 
   private final ByteCounter counter;
 
-  public AesInitializationVectorIterator() {
-    counter = new ByteCounter(COUNTER_SIZE);
+  private SecureRandom secureRandom;
+
+  public AesInitializationVectorIterator(SecureRandom secureRandom) {
+    this.counter = new ByteCounter(COUNTER_SIZE);
+    this.secureRandom = secureRandom;
   }
 
   public AesInitializationVectorIterator(ByteCounter byteCounter) {
@@ -52,11 +53,9 @@ public class AesInitializationVectorIterator implements Iterator<byte[]> {
     return ArrayUtil.concat(random, counter.getBytes());
   }
 
-  @SneakyThrows
   public byte[] getNextRandom() {
-    SecureRandom random = SecureRandom.getInstanceStrong();
     byte[] newVector = new byte[RANDOM_SIZE];
-    random.nextBytes(newVector);
+    secureRandom.nextBytes(newVector);
     return newVector;
   }
 }

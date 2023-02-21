@@ -16,14 +16,10 @@ package net.catenax.edc.oauth2.jwt.generator;
 import java.security.PrivateKey;
 import lombok.NonNull;
 import lombok.Setter;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Inject;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Provides;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
+import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.jwt.TokenGenerationService;
 import org.eclipse.dataspaceconnector.spi.security.PrivateKeyResolver;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
-import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.spi.system.*;
 
 @Provides(TokenGenerationService.class)
 @Requires(PrivateKeyResolver.class)
