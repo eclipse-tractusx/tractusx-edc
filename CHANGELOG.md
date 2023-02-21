@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2023-02-20
+
+### Fixed
+
+-   SQL leakage issue
+-   Catalog pagination 
+
 ## [0.1.5] - 2023-02-13
 
 ### Fixed
@@ -115,7 +122,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.5...HEAD
+[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.6...HEAD
+
+[0.1.6]: https://github.com/catenax-ng/product-edc/compare/0.1.5...0.1.6
 
 [0.1.5]: https://github.com/catenax-ng/product-edc/compare/0.1.2...0.1.5
 
