@@ -27,8 +27,8 @@ description: >-
   EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
 home: https://github.com/eclipse-tractusx/tractusx-edc
 type: application
-appVersion: "0.1.5"
-version: 0.1.5
+appVersion: "0.1.6"
+version: 0.1.6
 maintainers: []
 sources:
   - https://github.com/eclipse-tractusx/tractusx-edc
