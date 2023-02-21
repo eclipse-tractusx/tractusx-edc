@@ -22,10 +22,10 @@ import net.catenax.edc.validation.businesspartner.functions.BusinessPartnerProhi
 import org.eclipse.dataspaceconnector.policy.model.Duty;
 import org.eclipse.dataspaceconnector.policy.model.Permission;
 import org.eclipse.dataspaceconnector.policy.model.Prohibition;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.Requires;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.policy.engine.PolicyEngine;
 import org.eclipse.dataspaceconnector.spi.policy.engine.RuleBindingRegistry;
+import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 

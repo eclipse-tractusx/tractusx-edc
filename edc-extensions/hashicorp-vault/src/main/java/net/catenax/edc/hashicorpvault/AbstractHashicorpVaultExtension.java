@@ -16,7 +16,7 @@ package net.catenax.edc.hashicorpvault;
 
 import java.time.Duration;
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.runtime.metamodel.annotation.EdcSetting;
+import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
 /**

@@ -54,7 +54,7 @@ dependencies:
     alias: platovault
     condition: platovault.enabled
   - name: postgresql
-    version: 11.2.4
+    version: 12.1.6
     repository: https://charts.bitnami.com/bitnami
     alias: platopostgresql
     condition: platopostgresql.enabled
@@ -81,7 +81,7 @@ dependencies:
     alias: sokratesvault
     condition: sokratesvault.enabled
   - name: postgresql
-    version: 11.2.4
+    version: 12.1.6
     repository: https://charts.bitnami.com/bitnami
     alias: sokratespostgresql
     condition: sokratespostgresql.enabled
