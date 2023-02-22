@@ -20,6 +20,7 @@ jobs:
           [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
           [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
           exit 0
+
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
@@ -47,6 +48,7 @@ jobs:
       matrix:
         name:
           - edc-controlplane-memory
+          - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
     steps:
@@ -133,3 +135,4 @@ jobs:
           filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
+

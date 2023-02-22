@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
+  Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+
+  See the NOTICE file(s) distributed with this work for additional
+  information regarding copyright ownership.
 
   This program and the accompanying materials are made available under the
   terms of the Apache License, Version 2.0 which is available at
   https://www.apache.org/licenses/LICENSE-2.0
 
-  SPDX-License-Identifier: Apache-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  License for the specific language governing permissions and limitations
+  under the License.
 
-  Contributors:
-       Mercedes-Benz Tech Innovation GmbH - Initial POM
+  SPDX-License-Identifier: Apache-2.0
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.catenax.edc</groupId>
+    <groupId>org.eclipse.tractusx.edc</groupId>
     <artifactId>product-edc-parent</artifactId>
-    <version>0.1.6</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
 
     <name>product-edc</name>
@@ -34,7 +41,7 @@
     <licenses>
         <license>
             <name>Apache License 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -45,17 +52,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- plugins -->
-        <org.apache.maven.plugins.maven.dependency.plugin.version>3.3.0
-        </org.apache.maven.plugins.maven.dependency.plugin.version>
+        <org.apache.maven.plugins.maven.dependency.plugin.version>3.5.0</org.apache.maven.plugins.maven.dependency.plugin.version>
         <org.apache.maven.plugins.maven.jar.plugin.version>3.3.0</org.apache.maven.plugins.maven.jar.plugin.version>
-        <com.diffplug.spotless.maven.plugin.version>2.27.1</com.diffplug.spotless.maven.plugin.version>
+        <com.diffplug.spotless.maven.plugin.version>2.32.0</com.diffplug.spotless.maven.plugin.version>
         <org.codehaus.mojo.exec.maven.plugin.version>3.1.0</org.codehaus.mojo.exec.maven.plugin.version>
         <org.apache.maven.plugins.javadoc.version>3.4.1</org.apache.maven.plugins.javadoc.version>
         <org.codehaus.mojo.license.maven.plugin>2.0.0</org.codehaus.mojo.license.maven.plugin>
         <org.apache.maven.plugins.failsafe.version>2.22.2</org.apache.maven.plugins.failsafe.version>
-        <org.apache.maven.plugins.deploy.version>3.0.0</org.apache.maven.plugins.deploy.version>
+        <org.apache.maven.plugins.deploy.version>3.1.0</org.apache.maven.plugins.deploy.version>
         <org.apache.maven.plugins.source.version>3.2.1</org.apache.maven.plugins.source.version>
-        <org.apache.maven.plugins.surefire.version>3.0.0-M7</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.surefire.version>3.0.0-M8</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.compiler.version>3.10.1</org.apache.maven.plugins.compiler.version>
         <org.apache.maven.plugins.resources.version>3.3.0</org.apache.maven.plugins.resources.version>
         <org.projectlombok.lombok.maven.plugin.version>1.18.20.0</org.projectlombok.lombok.maven.plugin.version>
@@ -66,26 +72,27 @@
         <org.eclipse.dash.license.tool.plugin.version>0.0.1-SNAPSHOT</org.eclipse.dash.license.tool.plugin.version>
 
         <!-- dependency version -->
-        <org.eclipse.dataspaceconnector.version>0.0.1-20220922.4-SNAPSHOT</org.eclipse.dataspaceconnector.version>
-        <com.azure.sdk.bom.version>1.2.2</com.azure.sdk.bom.version>
-        <org.postgresql.version>42.5.0</org.postgresql.version>
-        <org.flywaydb.version>9.3.1</org.flywaydb.version>
-        <com.nimbus.jose.jwt.version>8.23</com.nimbus.jose.jwt.version>
+        <org.eclipse.edc.version>0.0.1-20230220-SNAPSHOT</org.eclipse.edc.version>
+        <com.azure.sdk.bom.version>1.2.9</com.azure.sdk.bom.version>
+        <org.postgresql.version>42.5.3</org.postgresql.version>
+        <org.flywaydb.version>9.14.1</org.flywaydb.version>
+        <com.nimbus.jose.jwt.version>9.30.1</com.nimbus.jose.jwt.version>
 
         <!-- test dependency version -->
-        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <junit.jupiter.version>5.9.2</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
-        <cucumber.version>7.8.0</cucumber.version>
-        <io.rest.assured.version>5.2.0</io.rest.assured.version>
+        <cucumber.version>7.11.1</cucumber.version>
+        <io.rest.assured.version>5.3.0</io.rest.assured.version>
         <org.junit.platform.surefire.provider.version>1.1.0</org.junit.platform.surefire.provider.version>
-        <mockito.version>4.8.0</mockito.version>
-        <org.projectlombok.lombok.version>1.18.24</org.projectlombok.lombok.version>
+        <mockito.version>5.1.1</mockito.version>
+        <org.projectlombok.lombok.version>1.18.26</org.projectlombok.lombok.version>
         <org.bouncycastle.bcpkix-jdk15on.version>1.70</org.bouncycastle.bcpkix-jdk15on.version>
         <com.squareup.okhttp3.okhttp.version>4.9.3</com.squareup.okhttp3.okhttp.version>
-        <org.testcontainers.version>1.17.3</org.testcontainers.version>
-        <org.slf4j.version>2.0.0-beta1</org.slf4j.version>
-        <ch.qos.logback.logback-core.version>1.4.1</ch.qos.logback.logback-core.version>
+        <org.testcontainers.version>1.17.6</org.testcontainers.version>
+        <org.slf4j.version>2.0.3</org.slf4j.version>
+        <ch.qos.logback.logback-core.version>1.4.5</ch.qos.logback.logback-core.version>
         <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
+        <org.apache.sshd.version>2.9.2</org.apache.sshd.version>
 
         <!-- TODO: parametrize so that forks can utilize sonar also -->
         <sonar.organization>catenax-ng</sonar.organization>
@@ -321,73 +328,103 @@
         <dependencies>
             <!-- CX Extensions -->
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>business-partner-validation</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>postgresql-migration</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>hashicorp-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>dataplane-selector-configuration</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>data-encryption</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc.extensions</groupId>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
                 <artifactId>cx-oauth2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>control-plane-adapter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>provision-additional-headers</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>transferprocess-sftp-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>transferprocess-sftp-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc.extensions</groupId>
+                <artifactId>transferprocess-sftp-provisioner</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- CX Control-/Data-Plane modules -->
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-controlplane-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-dataplane-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- CX edc-controlplane -->
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-controlplane-memory</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
+                <artifactId>edc-controlplane-memory-hashicorp-vault</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-controlplane-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-controlplane-postgresql-hashicorp-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- CX edc-dataplane -->
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-dataplane-azure-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.catenax.edc</groupId>
+                <groupId>org.eclipse.tractusx.edc</groupId>
                 <artifactId>edc-dataplane-hashicorp-vault</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -438,657 +475,682 @@
                 <artifactId>logback-core</artifactId>
                 <version>${ch.qos.logback.logback-core.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-core</artifactId>
+                <version>${org.apache.sshd.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-sftp</artifactId>
+                <version>${org.apache.sshd.version}</version>
+            </dependency>
 
             <!-- EDC Extensions -->
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>apache-commons-pool-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>sql-pool-apache-commons</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>api-configuration</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>api-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>asset-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>assetindex-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>asset-index-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>auth-basic</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>auth-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>auth-tokenbased</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>aws-s3</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>aws-test</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>azure-eventgrid</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>azure-eventgrid-config</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>azure-test</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>azure-vault</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>vault-azure</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>blob-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>blob-operator</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>blob-provision</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>blobstorage</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>catalog</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>catalog-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>catalog-cache</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>catalog-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>common-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>sql-core</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>common-util</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>aggregate-service-spi</artifactId>
+                <version>${org.eclipse.edc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contract</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contractagreement-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contractdefinition-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contract-definition-store-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractdefinition-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>contract-definition-store-sql</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contractnegotiation-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contract-negotiation-store-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>contractnegotiation-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>contract-negotiation-store-sql</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>contract-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>control-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>control-plane-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>core-base</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>connector-core</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>core-boot</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>boot</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>core-defaults</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>core-micrometer</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>micrometer-core</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>core-policy</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>core-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>cosmos-common</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>dataloading</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-management-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>management-api</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>data-plane-core</artifactId>
+                <version>${org.eclipse.edc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>data-plane-util</artifactId>
+                <version>${org.eclipse.edc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-azure-storage</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-framework</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-http</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-s3</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>data-plane-http-oauth2</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>data-plane-aws-s3</artifactId>
+                <version>${org.eclipse.edc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-selector-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-selector-client</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-selector-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-selector-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>data-plane-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-transfer</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>transfer-data-plane-spi</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-transfer-client</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>transfer-data-plane</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-transfer-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>data-plane-transfer-sync</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>decentralized-identity</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>dummy-credentials-verifier</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>fcc-node-directory-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>federated-catalog-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>filesystem-configuration</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>configuration-filesystem</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>filesystem-vault</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>http</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>http-provisioner</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>http-receiver</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>transfer-pull-http-dynamic-receiver</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>iam-daps</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>oauth2-daps</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>iam-mock</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>identity-common-test</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>identity-did-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>identity-did-crypto</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>identity-did-service</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>identity-did-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>identity-did-web</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-api-configuration</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-api-multipart-dispatcher-v1</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-api-multipart-endpoint-v1</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>ids-api-transform-v1</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>ids-transform-v1</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-policy</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>ids-token-validation</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>jdk-logger-monitor</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>ids-jsonld-serdes</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>monitor-jdk-logger</artifactId>
+                <version>${org.eclipse.edc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>jersey</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>jersey-micrometer</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>jetty</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>jetty-micrometer</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>lease-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>oauth2-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>oauth2-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>jwt-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>jwt-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>observability-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>api-observability</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>policydefinition-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>policy-engine</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>policy-engine-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>policy-evaluator</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>policy-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>policy-store-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>policy-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <groupId>org.eclipse.edc</groupId>
+                <artifactId>policy-definition-store-sql</artifactId>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>registration-service</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>registration-service-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.eclipse.edc</groupId>-->
+<!--                <artifactId>s3-core</artifactId>-->
+<!--                <version>${org.eclipse.edc.version}</version>-->
+<!--            </dependency>-->
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
-                <artifactId>s3-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>s3-operator</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>s3-provision</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>state-machine-lib</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>token-generation-lib</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>token-validation-lib</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transaction-atomikos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transaction-datasource-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transaction-local</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transaction-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transfer</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transfer-functions-core</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transfer-functions-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transferprocess-api</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transfer-process-store-cosmos</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transfer-process-store-sql</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transfer-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>transport-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>web-spi</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>junit</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.dataspaceconnector</groupId>
+                <groupId>org.eclipse.edc</groupId>
                 <artifactId>junit</artifactId>
-                <version>${org.eclipse.dataspaceconnector.version}</version>
+                <version>${org.eclipse.edc.version}</version>
                 <classifier>test-fixtures</classifier>
             </dependency>
 
@@ -1119,6 +1181,12 @@
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>junit-jupiter</artifactId>
+                <version>${org.testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
                 <version>${org.testcontainers.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -1201,7 +1269,7 @@
                             <dependency>
                                 <groupId>org.glassfish.jaxb</groupId>
                                 <artifactId>jaxb-runtime</artifactId>
-                                <version>4.0.1</version>
+                                <version>4.0.2</version>
                             </dependency>
                         </dependencies>
                         <configuration>

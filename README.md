@@ -9,20 +9,20 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector">
-    <img src="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/raw/main/docs/_media/icon.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/eclipse-edc/Connector">
+    <img src="https://raw.githubusercontent.com/eclipse-edc/Connector/main/resources/media/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Product Eclipse Dataspace Connector</h3>
   <h4 align="center">Catena-X</h4>
 
   <p align="center">
-    Container images and deployments of the Eclipse Dataspace Connector open source project.
+    Container images and deployments of the Eclipse Dataspace Components open source project.
     <br />
-    <a href="https://github.com/catenax-ng/product-edc/tree/feature/update-readme-md/docs"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/catenax-ng/product-edc/tree/main/docs"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector">View Eclipse Dataspace Connector</a>
+    <a href="https://github.com/eclipse-edc/Connector">View Eclipse Dataspace Components</a>
     ·
     <a href="https://github.com/catenax-ng/product-edc/releases">Releases</a>
     ·
@@ -53,7 +53,7 @@
 
 ## About The Project
 
-The project provides pre-built control- and data-plane [docker](https://www.docker.com/) images and [helm](https://helm.sh/) charts of the [Eclipse DataSpaceConnector Project](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector).
+The project provides pre-built control- and data-plane [docker](https://www.docker.com/) images and [helm](https://helm.sh/) charts of the [Eclipse DataSpaceConnector Project](https://github.com/eclipse-edc/Connector).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -90,13 +90,7 @@ Derivatives of the Data-Plane can be found here
 
 ### Build
 
-1. Build EDC Submodule Dependencies
-```shell
-git submodule update --init
-cd edc && ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-20220902-SNAPSHOT -xjavadoc && cd ..
-```
-
-2. Build Product-EDC Container Images
+Build Product-EDC together with its Container Images
 ```shell
 ./mvnw package -Pwith-docker-image
 ```
