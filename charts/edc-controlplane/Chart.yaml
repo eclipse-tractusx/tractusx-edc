@@ -28,7 +28,7 @@ description: >-
 home: https://github.com/eclipse-tractusx/tractusx-edc
 type: application
 appVersion: "0.1.6"
-version: 0.1.6
+version: 0.1.7
 maintainers: []
 sources:
   - https://github.com/eclipse-tractusx/tractusx-edc
