@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   edc-controlplane:
   - apiVersion: v2
+    appVersion: 0.1.6
+    created: "2023-02-28T15:07:11.104352976Z"
+    description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
+      layer with responsibility of resource management and govern contracts and data
+      transfers
+    digest: 40c22e9a304aef11bb11a7b0c7cee57897eeb8199655510b4585313c3f24cd2d
+    home: https://github.com/eclipse-tractusx/tractusx-edc
+    name: edc-controlplane
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/edc-controlplane-0.1.7/edc-controlplane-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
     appVersion: 0.1.2
     created: "2022-12-20T16:20:22.37871445Z"
     description: EDC Control-Plane - The Eclipse DataSpaceConnector administration
@@ -16,6 +31,20 @@ entries:
     version: 0.1.2
   edc-dataplane:
   - apiVersion: v2
+    appVersion: 0.1.6
+    created: "2023-02-28T15:07:11.324588304Z"
+    description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
+      of transferring and receiving data streams
+    digest: 8d416b95048568fadf3bfb93a5f95be80fe476c34a0f4072a0b3af7871c077dc
+    home: https://github.com/eclipse-tractusx/tractusx-edc
+    name: edc-dataplane
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/edc-dataplane-0.1.7/edc-dataplane-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
     appVersion: 0.1.2
     created: "2022-12-20T16:20:22.582233487Z"
     description: EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility
@@ -27,4 +56,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/edc-dataplane-0.1.2/edc-dataplane-0.1.2.tgz
     version: 0.1.2
-generated: "2022-12-20T16:20:22.582238187Z"
+generated: "2023-02-28T15:07:11.324601104Z"
