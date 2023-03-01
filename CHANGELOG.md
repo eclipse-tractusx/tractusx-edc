@@ -81,7 +81,7 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Fixed
 
--   Fixes [release 0.0.5](https://github.com/catenax-ng/product-edc/releases/tag/0.0.5), which introduced classpath issues due to usage of [net.jodah:failsafe:2.4.3](https://search.maven.org/artifact/net.jodah/failsafe/2.4.3/jar) library 
+-   Fixes [release 0.0.5](https://github.com/eclipse-tractusx/tractusx-edc/releases/tag/0.0.5), which introduced classpath issues due to usage of [net.jodah:failsafe:2.4.3](https://search.maven.org/artifact/net.jodah/failsafe/2.4.3/jar) library 
 
 ## [0.0.5] - 2022-07-28
 
@@ -122,26 +122,26 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/catenax-ng/product-edc/compare/0.1.6...HEAD
+[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.1.6...HEAD
 
-[0.1.6]: https://github.com/catenax-ng/product-edc/compare/0.1.5...0.1.6
+[0.1.6]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.1.5...0.1.6
 
-[0.1.5]: https://github.com/catenax-ng/product-edc/compare/0.1.2...0.1.5
+[0.1.5]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.1.2...0.1.5
 
-[0.1.2]: https://github.com/catenax-ng/product-edc/compare/0.1.1...0.1.2
+[0.1.2]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.1.1...0.1.2
 
-[0.1.1]: https://github.com/catenax-ng/product-edc/compare/0.1.0...0.1.1
+[0.1.1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.1.0...0.1.1
 
-[0.1.0]: https://github.com/catenax-ng/product-edc/compare/0.0.6...0.1.0
+[0.1.0]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.0.6...0.1.0
 
-[0.0.6]: https://github.com/catenax-ng/product-edc/compare/0.0.5...0.0.6
+[0.0.6]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.0.5...0.0.6
 
-[0.0.5]: https://github.com/catenax-ng/product-edc/compare/0.0.4...0.0.5
+[0.0.5]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.0.4...0.0.5
 
-[0.0.4]: https://github.com/catenax-ng/product-edc/compare/0.0.3...0.0.4
+[0.0.4]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.0.3...0.0.4
 
-[0.0.3]: https://github.com/catenax-ng/product-edc/compare/0.0.2...0.0.3
+[0.0.3]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.0.2...0.0.3
 
-[0.0.2]: https://github.com/catenax-ng/product-edc/compare/0.0.1...0.0.2
+[0.0.2]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.0.1...0.0.2
 
-[0.0.1]: https://github.com/catenax-ng/product-edc/compare/a02601306fed39a88a3b3b18fae98b80791157b9...0.0.1
+[0.0.1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/a02601306fed39a88a3b3b18fae98b80791157b9...0.0.1

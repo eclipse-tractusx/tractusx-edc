@@ -69,7 +69,7 @@
 <script crossorigin="anonymous" defer="defer" type="application/javascript" src="https://github.githubassets.com/assets/diffs-f6a367514594.js"></script>
   
 
-  <title>product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc</title>
+  <title>product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc</title>
 
 
 
@@ -111,13 +111,13 @@
 
     <meta name="viewport" content="width=device-width">
     
-      <meta name="description" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc">
+      <meta name="description" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc">
       <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
     <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
     <meta property="fb:app_id" content="1401488693436528">
     <meta name="apple-itunes-app" content="app-id=1477376905" />
-      <meta name="twitter:image:src" content="https://opengraph.githubassets.com/3065bca8a4f422ac3f60a7ab9ce6582b17de7685cd3a5cf6d07459b635cce3ba/catenax-ng/product-edc" /><meta name="twitter:site" content="@github" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc" /><meta name="twitter:description" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc" />
-      <meta property="og:image" content="https://opengraph.githubassets.com/3065bca8a4f422ac3f60a7ab9ce6582b17de7685cd3a5cf6d07459b635cce3ba/catenax-ng/product-edc" /><meta property="og:image:alt" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="600" /><meta property="og:site_name" content="GitHub" /><meta property="og:type" content="object" /><meta property="og:title" content="product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc" /><meta property="og:url" content="https://github.com/catenax-ng/product-edc" /><meta property="og:description" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · catenax-ng/product-edc" />
+      <meta name="twitter:image:src" content="https://opengraph.githubassets.com/3065bca8a4f422ac3f60a7ab9ce6582b17de7685cd3a5cf6d07459b635cce3ba/eclipse-tractusx/tractusx-edc" /><meta name="twitter:site" content="@github" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc" /><meta name="twitter:description" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc" />
+      <meta property="og:image" content="https://opengraph.githubassets.com/3065bca8a4f422ac3f60a7ab9ce6582b17de7685cd3a5cf6d07459b635cce3ba/eclipse-tractusx/tractusx-edc" /><meta property="og:image:alt" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="600" /><meta property="og:site_name" content="GitHub" /><meta property="og:type" content="object" /><meta property="og:title" content="product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc" /><meta property="og:url" content="https://github.com/eclipse-tractusx/tractusx-edc" /><meta property="og:description" content="Repository for Catena-X specific eclipse dataspace connector apps - product-edc/CONTRIBUTING.md at develop · eclipse-tractusx/tractusx-edc" />
       
     <link rel="assets" href="https://github.githubassets.com/">
       <link rel="shared-web-socket" href="wss://alive.github.com/_sockets/u/84396022/ws?session=eyJ2IjoiVjMiLCJ1Ijo4NDM5NjAyMiwicyI6MTAyNzcyNzk0NCwiYyI6MTkxNzk0NzcwOCwidCI6MTY3NzY3NDk2M30=--05af48f19ed861e1e15252197fc3d3986831378872c47d9fdd1eb31e85ed36d7" data-refresh-url="/_alive" data-session-id="372bddd67956eabbd0e72c650ea9905f1000f92788dbe22228ec69a4d35b854b">
@@ -144,13 +144,13 @@
 
         <meta data-hydrostats="publish">
 
-  <meta name="go-import" content="github.com/catenax-ng/product-edc git https://github.com/catenax-ng/product-edc.git">
+  <meta name="go-import" content="github.com/eclipse-tractusx/tractusx-edc git https://github.com/eclipse-tractusx/tractusx-edc.git">
 
-  <meta name="octolytics-dimension-user_id" content="100771185" /><meta name="octolytics-dimension-user_login" content="catenax-ng" /><meta name="octolytics-dimension-repository_id" content="471286805" /><meta name="octolytics-dimension-repository_nwo" content="catenax-ng/product-edc" /><meta name="octolytics-dimension-repository_public" content="true" /><meta name="octolytics-dimension-repository_is_fork" content="false" /><meta name="octolytics-dimension-repository_network_root_id" content="471286805" /><meta name="octolytics-dimension-repository_network_root_nwo" content="catenax-ng/product-edc" />
+  <meta name="octolytics-dimension-user_id" content="100771185" /><meta name="octolytics-dimension-user_login" content="eclipse-tractusx" /><meta name="octolytics-dimension-repository_id" content="471286805" /><meta name="octolytics-dimension-repository_nwo" content="eclipse-tractusx/tractusx-edc" /><meta name="octolytics-dimension-repository_public" content="true" /><meta name="octolytics-dimension-repository_is_fork" content="false" /><meta name="octolytics-dimension-repository_network_root_id" content="471286805" /><meta name="octolytics-dimension-repository_network_root_nwo" content="eclipse-tractusx/tractusx-edc" />
 
 
 
-    <link rel="canonical" href="https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md" data-turbo-transient>
+    <link rel="canonical" href="https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md" data-turbo-transient>
   <meta name="turbo-body-classes" content="logged-in env-production page-responsive page-blob">
 
 
@@ -222,7 +222,7 @@
 <div class="header-search flex-auto position-relative js-site-search flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"
 >
   <div class="position-relative">
-    <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="js-site-search-form" role="search" aria-label="Site" data-scope-type="Repository" data-scope-id="471286805" data-scoped-search-url="/catenax-ng/product-edc/search" data-owner-scoped-search-url="/orgs/catenax-ng/search" data-unscoped-search-url="/search" data-turbo="false" action="/catenax-ng/product-edc/search" accept-charset="UTF-8" method="get">
+    <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="js-site-search-form" role="search" aria-label="Site" data-scope-type="Repository" data-scope-id="471286805" data-scoped-search-url="/eclipse-tractusx/tractusx-edc/search" data-owner-scoped-search-url="/orgs/eclipse-tractusx/search" data-unscoped-search-url="/search" data-turbo="false" action="/eclipse-tractusx/tractusx-edc/search" accept-charset="UTF-8" method="get">
       <label class="form-control header-search-wrapper input-sm p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center">
         <input type="text"
           class="form-control js-site-search-focus header-search-input jump-to-field js-jump-to-field js-site-search-field is-clearable"
@@ -442,7 +442,7 @@
 
   <a class="js-selected-navigation-item Header-link mt-md-n3 mb-md-n3 py-2 py-md-3 mr-0 mr-md-3 border-top border-md-top-0 border-white-fade" data-ga-click="Header, click, Nav menu - item:explore" data-turbo="false" data-selected-links="/explore /trending /trending/developers /integrations /integrations/feature/code /integrations/feature/collaborate /integrations/feature/ship showcases showcases_search showcases_landing /explore" href="/explore">Explore</a>
 
-      <a class="js-selected-navigation-item Header-link d-block d-md-none py-2 py-md-3 border-top border-md-top-0 border-white-fade" data-ga-click="Header, click, Nav menu - item:Sponsors" data-hydro-click="{&quot;event_type&quot;:&quot;sponsors.button_click&quot;,&quot;payload&quot;:{&quot;button&quot;:&quot;HEADER_SPONSORS_DASHBOARD&quot;,&quot;sponsorable_login&quot;:&quot;stephanbcbauer&quot;,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="11d4642155860ff8891cd0210d73349608bfad008bcf1ab2393124bb665e7dfb" data-turbo="false" data-selected-links=" /sponsors/accounts" href="/sponsors/accounts">Sponsors</a>
+      <a class="js-selected-navigation-item Header-link d-block d-md-none py-2 py-md-3 border-top border-md-top-0 border-white-fade" data-ga-click="Header, click, Nav menu - item:Sponsors" data-hydro-click="{&quot;event_type&quot;:&quot;sponsors.button_click&quot;,&quot;payload&quot;:{&quot;button&quot;:&quot;HEADER_SPONSORS_DASHBOARD&quot;,&quot;sponsorable_login&quot;:&quot;stephanbcbauer&quot;,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="11d4642155860ff8891cd0210d73349608bfad008bcf1ab2393124bb665e7dfb" data-turbo="false" data-selected-links=" /sponsors/accounts" href="/sponsors/accounts">Sponsors</a>
 
     <a class="Header-link d-block d-md-none mr-0 mr-md-3 py-2 py-md-3 border-top border-md-top-0 border-white-fade" data-turbo="false" href="/settings/profile">Settings</a>
 
@@ -645,7 +645,7 @@
   <details-dialog class="command-palette-details-dialog d-flex flex-column flex-justify-center height-fit" aria-label="command palette">
     <command-palette
       class="command-palette color-bg-default rounded-3 border color-shadow-small"
-      return-to=/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md
+      return-to=/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md
       user-id="84396022"
       activation-hotkey="Mod+k,Mod+Alt+k"
       command-mode-hotkey="Mod+Shift+k"
@@ -749,14 +749,14 @@
         <command-palette-scope >
           <div data-target="command-palette-scope.placeholder" hidden class="color-fg-subtle">/&nbsp;&nbsp;<span class="text-semibold color-fg-default">...</span>&nbsp;&nbsp;/&nbsp;&nbsp;</div>
               <command-palette-token
-                data-text="catenax-ng"
+                data-text="eclipse-tractusx"
                 data-id="O_kgDOBgGlcQ"
                 data-type="owner"
-                data-value="catenax-ng"
+                data-value="eclipse-tractusx"
                 data-targets="command-palette-scope.tokens"
                 class="color-fg-default text-semibold"
                 style="white-space:nowrap;line-height:20px;"
-                >catenax-ng<span class="color-fg-subtle text-normal">&nbsp;&nbsp;/&nbsp;&nbsp;</span></command-palette-token>
+                >eclipse-tractusx<span class="color-fg-subtle text-normal">&nbsp;&nbsp;/&nbsp;&nbsp;</span></command-palette-token>
               <command-palette-token
                 data-text="product-edc"
                 data-id="R_kgDOHBdEFQ"
@@ -1227,7 +1227,7 @@
             </command-palette-item-group>
 
             <command-palette-page
-              data-page-title="catenax-ng"
+              data-page-title="eclipse-tractusx"
               data-scope-id="O_kgDOBgGlcQ"
               data-scope-type="owner"
               data-targets="command-palette-page-stack.defaultPages"
@@ -1247,7 +1247,7 @@
         <command-palette-page data-is-root>
         </command-palette-page>
           <command-palette-page
-            data-page-title="catenax-ng"
+            data-page-title="eclipse-tractusx"
             data-scope-id="O_kgDOBgGlcQ"
             data-scope-type="owner"
           >
@@ -1588,12 +1588,12 @@
 </svg>
     
     <span class="author flex-self-stretch" itemprop="author">
-      <a class="url fn" rel="author" data-hovercard-type="organization" data-hovercard-url="/orgs/catenax-ng/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="/catenax-ng">
-        catenax-ng
+      <a class="url fn" rel="author" data-hovercard-type="organization" data-hovercard-url="/orgs/eclipse-tractusx/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="/eclipse-tractusx">
+        eclipse-tractusx
 </a>    </span>
     <span class="mx-1 flex-self-stretch color-fg-muted">/</span>
     <strong itemprop="name" class="mr-2 flex-self-stretch">
-      <a data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" href="/catenax-ng/product-edc">product-edc</a>
+      <a data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" href="/eclipse-tractusx/tractusx-edc">product-edc</a>
     </strong>
 
     <span></span><span class="Label Label--secondary v-align-middle mr-1">Public</span>
@@ -1613,7 +1613,7 @@
 </svg>Edit Pins
           <span class="dropdown-caret"></span>
 </summary>        <details-menu class="SelectMenu" role="menu">
-          <!-- '"` --><!-- </textarea></xmp> --></option></form><form id="pin-organization-repo-update-form" data-target="pin-organization-repo.form" data-turbo="false" action="/catenax-ng/product-edc/pin_organization_repo" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="DkAbjXFEYshtWKE5RQ5c4daMH3qMJQR55fZUM233ne7fiHkxNnV_3eyHNpdXMhb4QDiEigo6rOqf3rNwNc_EwQ" autocomplete="off" />
+          <!-- '"` --><!-- </textarea></xmp> --></option></form><form id="pin-organization-repo-update-form" data-target="pin-organization-repo.form" data-turbo="false" action="/eclipse-tractusx/tractusx-edc/pin_organization_repo" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="DkAbjXFEYshtWKE5RQ5c4daMH3qMJQR55fZUM233ne7fiHkxNnV_3eyHNpdXMhb4QDiEigo6rOqf3rNwNc_EwQ" autocomplete="off" />
             <div class="SelectMenu-modal">
               <header class="SelectMenu-header">
                 <span class="SelectMenu-title">Pin to… </span>
@@ -1662,7 +1662,7 @@
         data-action="toggle:notifications-list-subscription-form#detailsToggled"
       >
 
-        <summary data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;WATCH_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="517ef42de339ea0ee9984e68cdef6886e59567ba875e084c8018888d0699ac80" data-ga-click="Repository, click Watch settings, action:blob#show" aria-label="Notification settings" data-view-component="true" class="btn-sm btn">    <span data-menu-button>
+        <summary data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;WATCH_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="517ef42de339ea0ee9984e68cdef6886e59567ba875e084c8018888d0699ac80" data-ga-click="Repository, click Watch settings, action:blob#show" aria-label="Notification settings" data-view-component="true" class="btn-sm btn">    <span data-menu-button>
             <span
               hidden
               
@@ -1984,11 +1984,11 @@
   <li>
         <div data-view-component="true" class="d-flex">
         <div data-view-component="true" class="position-relative d-inline-block">
-    <a icon="repo-forked" id="fork-button" href="/catenax-ng/product-edc/fork" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;FORK_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="6fe926752aed3d7671e1694d7adc0237d66e2cd36caa2e2fe09f16e94bf7ca98" data-ga-click="Repository, show fork modal, action:blob#show; text:Fork" data-view-component="true" class="btn-sm btn BtnGroup-item border-right-0">      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-repo-forked mr-2">
+    <a icon="repo-forked" id="fork-button" href="/eclipse-tractusx/tractusx-edc/fork" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;FORK_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="6fe926752aed3d7671e1694d7adc0237d66e2cd36caa2e2fe09f16e94bf7ca98" data-ga-click="Repository, show fork modal, action:blob#show; text:Fork" data-view-component="true" class="btn-sm btn BtnGroup-item border-right-0">      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-repo-forked mr-2">
     <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
 </svg>Fork
           <span id="repo-network-counter" data-pjax-replace="true" data-turbo-replace="true" title="24" data-view-component="true" class="Counter">24</span>
-</a>    <tool-tip id="tooltip-3584aee3-1a2d-4fb8-ba7f-58166cdcdbc2" for="fork-button" data-direction="s" data-type="description" data-view-component="true" class="sr-only position-absolute">Fork your own copy of catenax-ng/product-edc</tool-tip>
+</a>    <tool-tip id="tooltip-3584aee3-1a2d-4fb8-ba7f-58166cdcdbc2" for="fork-button" data-direction="s" data-type="description" data-view-component="true" class="sr-only position-absolute">Fork your own copy of eclipse-tractusx/tractusx-edc</tool-tip>
 </div>
       <details group_item="true" id="my-forks-menu-471286805" data-view-component="true" class="details-reset details-overlay BtnGroup-parent d-inline-block position-relative">
               <summary aria-label="See your forks of this repository" data-view-component="true" class="btn-sm btn BtnGroup-item px-2 float-none">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-triangle-down">
@@ -1997,7 +1997,7 @@
 </summary>
   <details-menu
     class="SelectMenu right-0"
-      src="/catenax-ng/product-edc/my_forks_menu_content?can_fork=true"
+      src="/eclipse-tractusx/tractusx-edc/my_forks_menu_content?can_fork=true"
       
       role="menu"
       
@@ -2051,10 +2051,10 @@
 
   <div data-view-component="true" class="js-toggler-container js-social-container starring-container d-flex">
     <div data-view-component="true" class="starred BtnGroup flex-1">
-      <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="js-social-form BtnGroup-parent flex-auto js-deferred-toggler-target" data-turbo="false" action="/catenax-ng/product-edc/unstar" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="ka6gK9YWrEWUxeAu0VpUOoJEw_j8S9FJaH30T7fTWcG1MejFFqVstaMHwTxIs-a--IlY_wz4TLyQNVDdPedIpA" autocomplete="off" />
+      <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="js-social-form BtnGroup-parent flex-auto js-deferred-toggler-target" data-turbo="false" action="/eclipse-tractusx/tractusx-edc/unstar" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="ka6gK9YWrEWUxeAu0VpUOoJEw_j8S9FJaH30T7fTWcG1MejFFqVstaMHwTxIs-a--IlY_wz4TLyQNVDdPedIpA" autocomplete="off" />
           <input type="hidden" value="yfurfnQj0ajK-pHOD3dTiV5Z-_TuZsXasVbTtShltcPtZOOQtJARWP04sNyWnuENJJRg8x7VWC9JHncnolGkpg" data-csrf="true" class="js-confirm-csrf-token" />
         <input type="hidden" name="context" value="repository">
-          <button data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;UNSTAR_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="26c1e6ed57c4f4ae9749cebea84ae9769eb5f7dd0051eb1adc32a329602e0601" data-ga-click="Repository, click unstar button, action:blob#show; text:Unstar" aria-label="Unstar this repository (15)" type="submit" data-view-component="true" class="rounded-left-2 btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star-fill starred-button-icon d-inline-block mr-2">
+          <button data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;UNSTAR_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="26c1e6ed57c4f4ae9749cebea84ae9769eb5f7dd0051eb1adc32a329602e0601" data-ga-click="Repository, click unstar button, action:blob#show; text:Unstar" aria-label="Unstar this repository (15)" type="submit" data-view-component="true" class="rounded-left-2 btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star-fill starred-button-icon d-inline-block mr-2">
     <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
 </svg><span data-view-component="true" class="d-inline">
             Starred
@@ -2066,7 +2066,7 @@
 </summary>
   <details-menu
     class="SelectMenu right-0"
-      src="/catenax-ng/product-edc/lists"
+      src="/eclipse-tractusx/tractusx-edc/lists"
       
       role="menu"
       
@@ -2099,9 +2099,9 @@
 </details>
 </div>
     <div data-view-component="true" class="unstarred BtnGroup flex-1">
-      <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="js-social-form BtnGroup-parent flex-auto" data-turbo="false" action="/catenax-ng/product-edc/star" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="uWSrmDzhIcMEZaFCL5RqU7D7V06XZuLTMcPoUi1f19aQTIS0nG6aOPVGpnqdCdVfOJvJjgsGFzVkUladfBt8WQ" autocomplete="off" />
+      <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="js-social-form BtnGroup-parent flex-auto" data-turbo="false" action="/eclipse-tractusx/tractusx-edc/star" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="uWSrmDzhIcMEZaFCL5RqU7D7V06XZuLTMcPoUi1f19aQTIS0nG6aOPVGpnqdCdVfOJvJjgsGFzVkUladfBt8WQ" autocomplete="off" />
         <input type="hidden" name="context" value="repository">
-          <button data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;STAR_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="bc487dd7d2d1cc6384e16335666ffaafb34f9eec72ad8912da3455b4a400b1d4" data-ga-click="Repository, click star button, action:blob#show; text:Star" aria-label="Star this repository (15)" type="submit" data-view-component="true" class="js-toggler-target rounded-left-2 btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star d-inline-block mr-2">
+          <button data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;STAR_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="bc487dd7d2d1cc6384e16335666ffaafb34f9eec72ad8912da3455b4a400b1d4" data-ga-click="Repository, click star button, action:blob#show; text:Star" aria-label="Star this repository (15)" type="submit" data-view-component="true" class="js-toggler-target rounded-left-2 btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star d-inline-block mr-2">
     <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path>
 </svg><span data-view-component="true" class="d-inline">
             Star
@@ -2113,7 +2113,7 @@
 </summary>
   <details-menu
     class="SelectMenu right-0"
-      src="/catenax-ng/product-edc/lists"
+      src="/eclipse-tractusx/tractusx-edc/lists"
       
       role="menu"
       
@@ -2161,7 +2161,7 @@
 
   <ul data-view-component="true" class="UnderlineNav-body list-style-none">
       <li data-view-component="true" class="d-inline-flex">
-  <a id="code-tab" href="/catenax-ng/product-edc" data-tab-item="i0code-tab" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches repo_packages repo_deployments /catenax-ng/product-edc" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g c" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Code&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" aria-current="page" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item selected">
+  <a id="code-tab" href="/eclipse-tractusx/tractusx-edc" data-tab-item="i0code-tab" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches repo_packages repo_deployments /eclipse-tractusx/tractusx-edc" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g c" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Code&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" aria-current="page" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item selected">
     
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M4.72 3.22a.75.75 0 011.06 1.06L2.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L.47 8.53a.75.75 0 010-1.06l4.25-4.25zm6.56 0a.75.75 0 10-1.06 1.06L13.94 8l-3.72 3.72a.75.75 0 101.06 1.06l4.25-4.25a.75.75 0 000-1.06l-4.25-4.25z"></path>
@@ -2173,7 +2173,7 @@
     
 </a></li>
       <li data-view-component="true" class="d-inline-flex">
-  <a id="pull-requests-tab" href="/catenax-ng/product-edc/pulls" data-tab-item="i1pull-requests-tab" data-selected-links="repo_pulls checks /catenax-ng/product-edc/pulls" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g p" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Pull requests&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+  <a id="pull-requests-tab" href="/eclipse-tractusx/tractusx-edc/pulls" data-tab-item="i1pull-requests-tab" data-selected-links="repo_pulls checks /eclipse-tractusx/tractusx-edc/pulls" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g p" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Pull requests&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
     
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-git-pull-request UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z"></path>
@@ -2185,9 +2185,9 @@
     
 </a></li>
       <li data-view-component="true" class="d-inline-flex">
-  <a id="discussions-tab" href="/catenax-ng/product-edc/discussions" data-tab-item="i2discussions-tab" data-selected-links="repo_discussions /catenax-ng/product-edc/discussions" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g g" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Discussions&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+  <a id="discussions-tab" href="/eclipse-tractusx/tractusx-edc/discussions" data-tab-item="i2discussions-tab" data-selected-links="repo_discussions /eclipse-tractusx/tractusx-edc/discussions" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g g" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Discussions&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
     
-                <include-fragment src="/catenax-ng/product-edc/discussions/activity_indicator">
+                <include-fragment src="/eclipse-tractusx/tractusx-edc/discussions/activity_indicator">
             <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-comment-discussion UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M1.5 2.75a.25.25 0 01.25-.25h8.5a.25.25 0 01.25.25v5.5a.25.25 0 01-.25.25h-3.5a.75.75 0 00-.53.22L3.5 11.44V9.25a.75.75 0 00-.75-.75h-1a.25.25 0 01-.25-.25v-5.5zM1.75 1A1.75 1.75 0 000 2.75v5.5C0 9.216.784 10 1.75 10H2v1.543a1.457 1.457 0 002.487 1.03L7.061 10h3.189A1.75 1.75 0 0012 8.25v-5.5A1.75 1.75 0 0010.25 1h-8.5zM14.5 4.75a.25.25 0 00-.25-.25h-.5a.75.75 0 110-1.5h.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0114.25 12H14v1.543a1.457 1.457 0 01-2.487 1.03L9.22 12.28a.75.75 0 111.06-1.06l2.22 2.22v-2.19a.75.75 0 01.75-.75h1a.25.25 0 00.25-.25v-5.5z"></path>
 </svg>
@@ -2199,7 +2199,7 @@
     
 </a></li>
       <li data-view-component="true" class="d-inline-flex">
-  <a id="actions-tab" href="/catenax-ng/product-edc/actions" data-tab-item="i3actions-tab" data-selected-links="repo_actions /catenax-ng/product-edc/actions" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g a" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Actions&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+  <a id="actions-tab" href="/eclipse-tractusx/tractusx-edc/actions" data-tab-item="i3actions-tab" data-selected-links="repo_actions /eclipse-tractusx/tractusx-edc/actions" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g a" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Actions&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
     
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-play UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0zM8 0a8 8 0 100 16A8 8 0 008 0zM6.379 5.227A.25.25 0 006 5.442v5.117a.25.25 0 00.379.214l4.264-2.559a.25.25 0 000-.428L6.379 5.227z"></path>
@@ -2211,18 +2211,18 @@
     
 </a></li>
       <li data-view-component="true" class="d-inline-flex">
-  <a id="security-tab" href="/catenax-ng/product-edc/security" data-tab-item="i4security-tab" data-selected-links="security overview alerts policy token_scanning code_scanning /catenax-ng/product-edc/security" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g s" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Security&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+  <a id="security-tab" href="/eclipse-tractusx/tractusx-edc/security" data-tab-item="i4security-tab" data-selected-links="security overview alerts policy token_scanning code_scanning /eclipse-tractusx/tractusx-edc/security" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g s" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Security&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
     
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-shield UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M7.467.133a1.75 1.75 0 011.066 0l5.25 1.68A1.75 1.75 0 0115 3.48V7c0 1.566-.32 3.182-1.303 4.682-.983 1.498-2.585 2.813-5.032 3.855a1.7 1.7 0 01-1.33 0c-2.447-1.042-4.049-2.357-5.032-3.855C1.32 10.182 1 8.566 1 7V3.48a1.75 1.75 0 011.217-1.667l5.25-1.68zm.61 1.429a.25.25 0 00-.153 0l-5.25 1.68a.25.25 0 00-.174.238V7c0 1.358.275 2.666 1.057 3.86.784 1.194 2.121 2.34 4.366 3.297a.2.2 0 00.154 0c2.245-.956 3.582-2.104 4.366-3.298C13.225 9.666 13.5 8.36 13.5 7V3.48a.25.25 0 00-.174-.237l-5.25-1.68zM9 10.5a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.75a.75.75 0 10-1.5 0v3a.75.75 0 001.5 0v-3z"></path>
 </svg>
         <span data-content="Security">Security</span>
-          <include-fragment src="/catenax-ng/product-edc/security/overall-count" accept="text/fragment+html"></include-fragment>
+          <include-fragment src="/eclipse-tractusx/tractusx-edc/security/overall-count" accept="text/fragment+html"></include-fragment>
 
     
 </a></li>
       <li data-view-component="true" class="d-inline-flex">
-  <a id="insights-tab" href="/catenax-ng/product-edc/pulse" data-tab-item="i5insights-tab" data-selected-links="repo_graphs repo_contributors dependency_graph dependabot_updates pulse people community /catenax-ng/product-edc/pulse" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Insights&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+  <a id="insights-tab" href="/eclipse-tractusx/tractusx-edc/pulse" data-tab-item="i5insights-tab" data-selected-links="repo_graphs repo_contributors dependency_graph dependabot_updates pulse people community /eclipse-tractusx/tractusx-edc/pulse" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Insights&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
     
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-graph UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M1.5 1.75a.75.75 0 00-1.5 0v12.5c0 .414.336.75.75.75h14.5a.75.75 0 000-1.5H1.5V1.75zm14.28 2.53a.75.75 0 00-1.06-1.06L10 7.94 7.53 5.47a.75.75 0 00-1.06 0L3.22 8.72a.75.75 0 001.06 1.06L7 7.06l2.47 2.47a.75.75 0 001.06 0l5.25-5.25z"></path>
@@ -2234,7 +2234,7 @@
     
 </a></li>
       <li data-view-component="true" class="d-inline-flex">
-  <a id="settings-tab" href="/catenax-ng/product-edc/settings" data-tab-item="i6settings-tab" data-selected-links="code_review_limits codespaces_repository_settings collaborators custom_tabs hooks integration_installations interaction_limits issue_template_editor key_links_settings notifications repo_actions_settings repo_announcements repo_branch_settings repo_keys_settings repo_pages_settings repo_rule_insights repo_rulesets repo_protected_tags_settings repo_settings repository_runtime reported_content repo_custom_properties repository_actions_settings_add_new_runner repository_actions_settings_general repository_actions_settings_runners repository_environments role_details secrets secrets_settings_actions secrets_settings_codespaces secrets_settings_dependabot security_analysis /catenax-ng/product-edc/settings" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Settings&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+  <a id="settings-tab" href="/eclipse-tractusx/tractusx-edc/settings" data-tab-item="i6settings-tab" data-selected-links="code_review_limits codespaces_repository_settings collaborators custom_tabs hooks integration_installations interaction_limits issue_template_editor key_links_settings notifications repo_actions_settings repo_announcements repo_branch_settings repo_keys_settings repo_pages_settings repo_rule_insights repo_rulesets repo_protected_tags_settings repo_settings repository_runtime reported_content repo_custom_properties repository_actions_settings_add_new_runner repository_actions_settings_general repository_actions_settings_runners repository_environments role_details secrets secrets_settings_actions secrets_settings_codespaces secrets_settings_dependabot security_analysis /eclipse-tractusx/tractusx-edc/settings" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Settings&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
     
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-gear UnderlineNav-octicon d-none d-sm-inline">
     <path fill-rule="evenodd" d="M7.429 1.525a6.593 6.593 0 011.142 0c.036.003.108.036.137.146l.289 1.105c.147.56.55.967.997 1.189.174.086.341.183.501.29.417.278.97.423 1.53.27l1.102-.303c.11-.03.175.016.195.046.219.31.41.641.573.989.014.031.022.11-.059.19l-.815.806c-.411.406-.562.957-.53 1.456a4.588 4.588 0 010 .582c-.032.499.119 1.05.53 1.456l.815.806c.08.08.073.159.059.19a6.494 6.494 0 01-.573.99c-.02.029-.086.074-.195.045l-1.103-.303c-.559-.153-1.112-.008-1.529.27-.16.107-.327.204-.5.29-.449.222-.851.628-.998 1.189l-.289 1.105c-.029.11-.101.143-.137.146a6.613 6.613 0 01-1.142 0c-.036-.003-.108-.037-.137-.146l-.289-1.105c-.147-.56-.55-.967-.997-1.189a4.502 4.502 0 01-.501-.29c-.417-.278-.97-.423-1.53-.27l-1.102.303c-.11.03-.175-.016-.195-.046a6.492 6.492 0 01-.573-.989c-.014-.031-.022-.11.059-.19l.815-.806c.411-.406.562-.957.53-1.456a4.587 4.587 0 010-.582c.032-.499-.119-1.05-.53-1.456l-.815-.806c-.08-.08-.073-.159-.059-.19a6.44 6.44 0 01.573-.99c.02-.029.086-.075.195-.045l1.103.303c.559.153 1.112.008 1.529-.27.16-.107.327-.204.5-.29.449-.222.851-.628.998-1.189l.289-1.105c.029-.11.101-.143.137-.146zM8 0c-.236 0-.47.01-.701.03-.743.065-1.29.615-1.458 1.261l-.29 1.106c-.017.066-.078.158-.211.224a5.994 5.994 0 00-.668.386c-.123.082-.233.09-.3.071L3.27 2.776c-.644-.177-1.392.02-1.82.63a7.977 7.977 0 00-.704 1.217c-.315.675-.111 1.422.363 1.891l.815.806c.05.048.098.147.088.294a6.084 6.084 0 000 .772c.01.147-.038.246-.088.294l-.815.806c-.474.469-.678 1.216-.363 1.891.2.428.436.835.704 1.218.428.609 1.176.806 1.82.63l1.103-.303c.066-.019.176-.011.299.071.213.143.436.272.668.386.133.066.194.158.212.224l.289 1.106c.169.646.715 1.196 1.458 1.26a8.094 8.094 0 001.402 0c.743-.064 1.29-.614 1.458-1.26l.29-1.106c.017-.066.078-.158.211-.224a5.98 5.98 0 00.668-.386c.123-.082.233-.09.3-.071l1.102.302c.644.177 1.392-.02 1.82-.63.268-.382.505-.789.704-1.217.315-.675.111-1.422-.364-1.891l-.814-.806c-.05-.048-.098-.147-.088-.294a6.1 6.1 0 000-.772c-.01-.147.039-.246.088-.294l.814-.806c.475-.469.679-1.216.364-1.891a7.992 7.992 0 00-.704-1.218c-.428-.609-1.176-.806-1.82-.63l-1.103.303c-.066.019-.176.011-.299-.071a5.991 5.991 0 00-.668-.386c-.133-.066-.194-.158-.212-.224L10.16 1.29C9.99.645 9.444.095 8.701.031A8.094 8.094 0 008 0zm1.5 8a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM11 8a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -2256,31 +2256,31 @@
 </summary>
   <details-menu role="menu" data-view-component="true" class="dropdown-menu dropdown-menu-sw">          <ul>
               <li data-menu-item="i0code-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item selected dropdown-item" aria-current="page" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches repo_packages repo_deployments /catenax-ng/product-edc" href="/catenax-ng/product-edc">
+                <a role="menuitem" class="js-selected-navigation-item selected dropdown-item" aria-current="page" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches repo_packages repo_deployments /eclipse-tractusx/tractusx-edc" href="/eclipse-tractusx/tractusx-edc">
                   Code
 </a>              </li>
               <li data-menu-item="i1pull-requests-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_pulls checks /catenax-ng/product-edc/pulls" href="/catenax-ng/product-edc/pulls">
+                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_pulls checks /eclipse-tractusx/tractusx-edc/pulls" href="/eclipse-tractusx/tractusx-edc/pulls">
                   Pull requests
 </a>              </li>
               <li data-menu-item="i2discussions-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_discussions /catenax-ng/product-edc/discussions" href="/catenax-ng/product-edc/discussions">
+                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_discussions /eclipse-tractusx/tractusx-edc/discussions" href="/eclipse-tractusx/tractusx-edc/discussions">
                   Discussions
 </a>              </li>
               <li data-menu-item="i3actions-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_actions /catenax-ng/product-edc/actions" href="/catenax-ng/product-edc/actions">
+                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_actions /eclipse-tractusx/tractusx-edc/actions" href="/eclipse-tractusx/tractusx-edc/actions">
                   Actions
 </a>              </li>
               <li data-menu-item="i4security-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="security overview alerts policy token_scanning code_scanning /catenax-ng/product-edc/security" href="/catenax-ng/product-edc/security">
+                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="security overview alerts policy token_scanning code_scanning /eclipse-tractusx/tractusx-edc/security" href="/eclipse-tractusx/tractusx-edc/security">
                   Security
 </a>              </li>
               <li data-menu-item="i5insights-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_graphs repo_contributors dependency_graph dependabot_updates pulse people community /catenax-ng/product-edc/pulse" href="/catenax-ng/product-edc/pulse">
+                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="repo_graphs repo_contributors dependency_graph dependabot_updates pulse people community /eclipse-tractusx/tractusx-edc/pulse" href="/eclipse-tractusx/tractusx-edc/pulse">
                   Insights
 </a>              </li>
               <li data-menu-item="i6settings-tab" hidden>
-                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="code_review_limits codespaces_repository_settings collaborators custom_tabs hooks integration_installations interaction_limits issue_template_editor key_links_settings notifications repo_actions_settings repo_announcements repo_branch_settings repo_keys_settings repo_pages_settings repo_rule_insights repo_rulesets repo_protected_tags_settings repo_settings repository_runtime reported_content repo_custom_properties repository_actions_settings_add_new_runner repository_actions_settings_general repository_actions_settings_runners repository_environments role_details secrets secrets_settings_actions secrets_settings_codespaces secrets_settings_dependabot security_analysis /catenax-ng/product-edc/settings" href="/catenax-ng/product-edc/settings">
+                <a role="menuitem" class="js-selected-navigation-item dropdown-item" data-selected-links="code_review_limits codespaces_repository_settings collaborators custom_tabs hooks integration_installations interaction_limits issue_template_editor key_links_settings notifications repo_actions_settings repo_announcements repo_branch_settings repo_keys_settings repo_pages_settings repo_rule_insights repo_rulesets repo_protected_tags_settings repo_settings repository_runtime reported_content repo_custom_properties repository_actions_settings_add_new_runner repository_actions_settings_general repository_actions_settings_runners repository_environments role_details secrets secrets_settings_actions secrets_settings_codespaces secrets_settings_dependabot security_analysis /eclipse-tractusx/tractusx-edc/settings" href="/eclipse-tractusx/tractusx-edc/settings">
                   Settings
 </a>              </li>
           </ul>
@@ -2322,7 +2322,7 @@
 
 
     
-<a class="d-none js-permalink-shortcut" data-hotkey="y" href="/catenax-ng/product-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md">Permalink</a>
+<a class="d-none js-permalink-shortcut" data-hotkey="y" href="/eclipse-tractusx/tractusx-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md">Permalink</a>
 
 <div class="d-flex flex-items-start flex-shrink-0 pb-3 flex-wrap flex-md-nowrap flex-justify-between flex-md-justify-start">
   
@@ -2330,7 +2330,7 @@
   <details
     class="js-branch-select-menu details-reset details-overlay mr-0 mb-0 "
     id="branch-select-menu"
-    data-hydro-click-payload="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;REFS_SELECTOR_MENU&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="0d05d61ec8ca91daa04375d2aae34fb3ffda94d454f9431bb58f31914a03e8a5">
+    data-hydro-click-payload="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;REFS_SELECTOR_MENU&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="0d05d61ec8ca91daa04375d2aae34fb3ffda94d454f9431bb58f31914a03e8a5">
     <summary class="btn css-truncate"
             data-hotkey="w"
             title="Switch branches or tags">
@@ -2381,7 +2381,7 @@
               tab-selected:ref-selector#tabSelected
               focus-list:ref-selector#focusFirstListMember
             "
-            query-endpoint="/catenax-ng/product-edc/refs"
+            query-endpoint="/eclipse-tractusx/tractusx-edc/refs"
             can-create
             cache-key="v0:1677658473.0"
             current-committish="ZGV2ZWxvcA=="
@@ -2396,9 +2396,9 @@
 
               <template data-target="ref-selector.noMatchTemplate">
     <create-repo-from-selector
-      check-tag-name-exists-path="/catenax-ng/product-edc/branches/check_tag_name_exists"
+      check-tag-name-exists-path="/eclipse-tractusx/tractusx-edc/branches/check_tag_name_exists"
     >
-      <!-- '"` --><!-- </textarea></xmp> --></option></form><form data-turbo="false" action="/catenax-ng/product-edc/branches" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="xcVkFY5EZgRBdEtwsFOWth6afw95qZk-TCwjlXy_WEmF8r5IvWAn2ZTfKuNl24ov3vimYylBYS1RxsP8iJCXWA" />
+      <!-- '"` --><!-- </textarea></xmp> --></option></form><form data-turbo="false" action="/eclipse-tractusx/tractusx-edc/branches" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="xcVkFY5EZgRBdEtwsFOWth6afw95qZk-TCwjlXy_WEmF8r5IvWAn2ZTfKuNl24ov3vimYylBYS1RxsP8iJCXWA" />
         <input data-target="create-repo-from-selector.refName" type="hidden" name="name" value="{{ refName }}">
         <input type="hidden" name="branch"  value="develop">
         <input type="hidden" name="path_binary" value="Q09OVFJJQlVUSU5HLm1k">
@@ -2409,7 +2409,7 @@
           role="menuitem"
           data-index="{{ index }}"
           data-action="click:create-repo-from-selector#createBranch"
-          data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;REFS_SELECTOR_MENU_CREATE_BRANCH&quot;,&quot;repository_id&quot;:471286805,&quot;ref_name&quot;:&quot;{{ refName }}&quot;,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="faeffde043afca010a302ddcd2bea56129be21c69d73f1522e27898e753841f5">
+          data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;REFS_SELECTOR_MENU_CREATE_BRANCH&quot;,&quot;repository_id&quot;:471286805,&quot;ref_name&quot;:&quot;{{ refName }}&quot;,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="faeffde043afca010a302ddcd2bea56129be21c69d73f1522e27898e753841f5">
           <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-git-branch SelectMenu-icon flex-self-baseline">
     <path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path>
 </svg>
@@ -2435,7 +2435,7 @@
               
 
 <template data-target="ref-selector.itemTemplate">
-  <a href="https://github.com/catenax-ng/product-edc/blob/{{ urlEncodedRefName }}/CONTRIBUTING.md" class="SelectMenu-item" role="menuitemradio" rel="nofollow" aria-checked="{{ isCurrent }}" data-index="{{ index }}" >
+  <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/{{ urlEncodedRefName }}/CONTRIBUTING.md" class="SelectMenu-item" role="menuitemradio" rel="nofollow" aria-checked="{{ isCurrent }}" data-index="{{ index }}" >
     <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check SelectMenu-icon SelectMenu-icon--check">
     <path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path>
 </svg>
@@ -2445,7 +2445,7 @@
 </template>
 
 
-              <footer class="SelectMenu-footer"><a href="/catenax-ng/product-edc/branches">View all branches</a></footer>
+              <footer class="SelectMenu-footer"><a href="/eclipse-tractusx/tractusx-edc/branches">View all branches</a></footer>
           </ref-selector>
 
         </div>
@@ -2459,7 +2459,7 @@
               focus-list:ref-selector#focusFirstListMember
             "
             data-targets="input-demux.sinks"
-            query-endpoint="/catenax-ng/product-edc/refs"
+            query-endpoint="/eclipse-tractusx/tractusx-edc/refs"
             cache-key="v0:1677658473.0"
             current-committish="ZGV2ZWxvcA=="
             default-branch="ZGV2ZWxvcA=="
@@ -2477,7 +2477,7 @@
               
 
 <template data-target="ref-selector.itemTemplate">
-  <a href="https://github.com/catenax-ng/product-edc/blob/{{ urlEncodedRefName }}/CONTRIBUTING.md" class="SelectMenu-item" role="menuitemradio" rel="nofollow" aria-checked="{{ isCurrent }}" data-index="{{ index }}" >
+  <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/{{ urlEncodedRefName }}/CONTRIBUTING.md" class="SelectMenu-item" role="menuitemradio" rel="nofollow" aria-checked="{{ isCurrent }}" data-index="{{ index }}" >
     <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check SelectMenu-icon SelectMenu-icon--check">
     <path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path>
 </svg>
@@ -2495,7 +2495,7 @@
 </svg>
               </div>
             </div>
-              <footer class="SelectMenu-footer"><a href="/catenax-ng/product-edc/tags">View all tags</a></footer>
+              <footer class="SelectMenu-footer"><a href="/eclipse-tractusx/tractusx-edc/tags">View all tags</a></footer>
           </ref-selector>
         </div>
       </tab-container>
@@ -2538,9 +2538,9 @@
 
 
   <h2 id="blob-path" class="breadcrumb flex-auto flex-self-center min-width-0 text-normal mx-2 width-full width-md-auto flex-order-1 flex-md-order-none mt-3 mt-md-0">
-    <span class="js-repo-root text-bold"><span class="js-path-segment d-inline-block wb-break-all"><a data-turbo-frame="repo-content-turbo-frame" href="/catenax-ng/product-edc"><span>product-edc</span></a></span></span><span class="separator">/</span><strong class="final-path">CONTRIBUTING.md</strong>
+    <span class="js-repo-root text-bold"><span class="js-path-segment d-inline-block wb-break-all"><a data-turbo-frame="repo-content-turbo-frame" href="/eclipse-tractusx/tractusx-edc"><span>product-edc</span></a></span></span><span class="separator">/</span><strong class="final-path">CONTRIBUTING.md</strong>
   </h2>
-    <a href="/catenax-ng/product-edc/find/develop" data-pjax="" data-hotkey="t" data-view-component="true" class="btn mr-2 d-none d-md-block">    Go to file
+    <a href="/eclipse-tractusx/tractusx-edc/find/develop" data-pjax="" data-hotkey="t" data-view-component="true" class="btn mr-2 d-none d-md-block">    Go to file
 </a>
   <details id="blob-more-options-details" data-view-component="true" class="details-overlay details-reset position-relative">
     <summary role="button" data-view-component="true" class="btn">    <svg aria-label="More options" role="img" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-kebab-horizontal">
@@ -2549,7 +2549,7 @@
 </summary>
   <div data-view-component="true">      <ul class="dropdown-menu dropdown-menu-sw">
         <li class="d-block d-md-none">
-          <a class="dropdown-item d-flex flex-items-baseline" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;FIND_FILE_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="e9ba336353ce53b463a97895c9a524b4966dfdb066b7f7848a4cb8ae39b99c69" data-ga-click="Repository, find file, location:repo overview" data-hotkey="t" href="/catenax-ng/product-edc/find/develop">
+          <a class="dropdown-item d-flex flex-items-baseline" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;FIND_FILE_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="e9ba336353ce53b463a97895c9a524b4966dfdb066b7f7848a4cb8ae39b99c69" data-ga-click="Repository, find file, location:repo overview" data-hotkey="t" href="/eclipse-tractusx/tractusx-edc/find/develop">
             <span class="flex-auto">Go to file</span>
             <span class="text-small color-fg-muted" aria-hidden="true">T</span>
 </a>        </li>
@@ -2567,7 +2567,7 @@
 
 </clipboard-copy>        </li>
         <li>
-          <clipboard-copy data-toggle-for="blob-more-options-details" aria-label="Copy permalink" value="https://github.com/catenax-ng/product-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" data-view-component="true" class="dropdown-item cursor-pointer">
+          <clipboard-copy data-toggle-for="blob-more-options-details" aria-label="Copy permalink" value="https://github.com/eclipse-tractusx/tractusx-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" data-view-component="true" class="dropdown-item cursor-pointer">
     
             <span class="d-flex flex-items-baseline">
               <span class="flex-auto">Copy permalink</span>
@@ -2596,10 +2596,10 @@
   
 </div></div>
 
-    <include-fragment src="/catenax-ng/product-edc/spoofed_commit_check/85709f7cccd8b22f4767a48edb4780315079df03" data-test-selector="spoofed-commit-check"></include-fragment>
+    <include-fragment src="/eclipse-tractusx/tractusx-edc/spoofed_commit_check/85709f7cccd8b22f4767a48edb4780315079df03" data-test-selector="spoofed-commit-check"></include-fragment>
 
     <div class="Box d-flex flex-column flex-shrink-0 mb-3">
-  <include-fragment src="/catenax-ng/product-edc/contributors/develop/CONTRIBUTING.md" class="commit-loader">
+  <include-fragment src="/eclipse-tractusx/tractusx-edc/contributors/develop/CONTRIBUTING.md" class="commit-loader">
     <div class="Box-header d-flex flex-items-center">
       <div class="Skeleton avatar avatar-user flex-shrink-0 ml-n1 mr-n1 mt-n1 mb-n1" style="width:24px;height:24px;"></div>
       <div class="Skeleton Skeleton--text col-5 ml-2">&nbsp;</div>
@@ -2633,7 +2633,7 @@
 
       <details
   data-target="readme-toc.trigger"
-  data-menu-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;trigger&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}"
+  data-menu-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;trigger&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}"
   data-menu-hydro-click-hmac="55519035ba66a92813082751957822110a1cfdf535bb1e05f6bd1f118b8f0b95"
   class="dropdown details-reset details-overlay"
 >
@@ -2652,12 +2652,12 @@
 
 
       <div class="SelectMenu-list SelectMenu-list--borderless p-2" style="overscroll-behavior: contain;">
-          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 text-emphasized" style="-webkit-box-orient: vertical; padding-left: 12px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#contributing-to-eclipse-tractus-x">Contributing to Eclipse Tractus-X</a>
-          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#project-description">Project description</a>
-          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#developer-resources">Developer resources</a>
-          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#eclipse-development-process">Eclipse Development Process</a>
-          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#eclipse-contributor-agreement">Eclipse Contributor Agreement</a>
-          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#contact">Contact</a>
+          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 text-emphasized" style="-webkit-box-orient: vertical; padding-left: 12px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#contributing-to-eclipse-tractus-x">Contributing to Eclipse Tractus-X</a>
+          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#project-description">Project description</a>
+          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#developer-resources">Developer resources</a>
+          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#eclipse-development-process">Eclipse Development Process</a>
+          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#eclipse-contributor-agreement">Eclipse Contributor Agreement</a>
+          <a role="menuitem" class="filter-item SelectMenu-item ws-normal wb-break-word line-clamp-2 py-1 " style="-webkit-box-orient: vertical; padding-left: 24px;" data-action="click:readme-toc#blur" data-targets="readme-toc.entries" data-hydro-click="{&quot;event_type&quot;:&quot;repository_toc_menu.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;entry&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="b4a30158cfb6985ec40868794e0caf397a6389de4913175fd3dccd1461e001eb" href="#contact">Contact</a>
       </div>
     </div>
   </details-menu>
@@ -2673,24 +2673,24 @@
 
   <div class="d-flex py-1 py-md-0 flex-auto flex-order-1 flex-md-order-2 flex-sm-grow-0 flex-justify-between hide-sm hide-md">
         <div class="BtnGroup">
-      <a href="/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md?plain=1" data-permalink-href="/catenax-ng/product-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md?plain=1" aria-label="Display the source blob" data-view-component="true" class="source tooltipped tooltipped tooltipped-n  js-permalink-replaceable-link btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code">
+      <a href="/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md?plain=1" data-permalink-href="/eclipse-tractusx/tractusx-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md?plain=1" aria-label="Display the source blob" data-view-component="true" class="source tooltipped tooltipped tooltipped-n  js-permalink-replaceable-link btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code">
     <path fill-rule="evenodd" d="M4.72 3.22a.75.75 0 011.06 1.06L2.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L.47 8.53a.75.75 0 010-1.06l4.25-4.25zm6.56 0a.75.75 0 10-1.06 1.06L13.94 8l-3.72 3.72a.75.75 0 101.06 1.06l4.25-4.25a.75.75 0 000-1.06l-4.25-4.25z"></path>
 </svg>
-</a>      <a href="/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md" data-permalink-href="/catenax-ng/product-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" aria-label="Display the rendered blob" data-view-component="true" class="rendered tooltipped tooltipped tooltipped-n selected js-permalink-replaceable-link btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-file">
+</a>      <a href="/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md" data-permalink-href="/eclipse-tractusx/tractusx-edc/blob/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" aria-label="Display the rendered blob" data-view-component="true" class="rendered tooltipped tooltipped tooltipped-n selected js-permalink-replaceable-link btn-sm btn BtnGroup-item">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-file">
     <path fill-rule="evenodd" d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 019 4.25V1.5H3.75zm6.75.062V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z"></path>
 </svg>
 </a>  </div>
 
 
     <div class="BtnGroup">
-        <a data-permalink-href="/catenax-ng/product-edc/raw/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" href="/catenax-ng/product-edc/raw/develop/CONTRIBUTING.md" id="raw-url" data-view-component="true" class="js-permalink-replaceable-link btn-sm btn BtnGroup-item">    Raw
-</a>          <a data-permalink-href="/catenax-ng/product-edc/blame/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" href="/catenax-ng/product-edc/blame/develop/CONTRIBUTING.md" data-hotkey="b" data-view-component="true" class="js-update-url-with-hash js-permalink-replaceable-link btn-sm btn BtnGroup-item">    Blame
+        <a data-permalink-href="/eclipse-tractusx/tractusx-edc/raw/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" href="/eclipse-tractusx/tractusx-edc/raw/develop/CONTRIBUTING.md" id="raw-url" data-view-component="true" class="js-permalink-replaceable-link btn-sm btn BtnGroup-item">    Raw
+</a>          <a data-permalink-href="/eclipse-tractusx/tractusx-edc/blame/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" href="/eclipse-tractusx/tractusx-edc/blame/develop/CONTRIBUTING.md" data-hotkey="b" data-view-component="true" class="js-update-url-with-hash js-permalink-replaceable-link btn-sm btn BtnGroup-item">    Blame
 </a>    </div>
 
     <div class="d-flex">
         
 <div class="ml-1" >
-  <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="BtnGroup-parent js-update-url-with-hash " data-turbo="false" action="/catenax-ng/product-edc/edit/develop/CONTRIBUTING.md" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="GOHEmmWmnrTH-wh8sdAyifgauuN37F8fcwZbBCsgvjUedsQis1WNWq43aJQFYGHpMF1qjTUVEzfHJiZQ3Kc01A" autocomplete="off" />
+  <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="BtnGroup-parent js-update-url-with-hash " data-turbo="false" action="/eclipse-tractusx/tractusx-edc/edit/develop/CONTRIBUTING.md" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="GOHEmmWmnrTH-wh8sdAyifgauuN37F8fcwZbBCsgvjUedsQis1WNWq43aJQFYGHpMF1qjTUVEzfHJiZQ3Kc01A" autocomplete="off" />
       <button title="Edit this file" data-hotkey="e" data-disable-with="" type="submit" data-view-component="true" class="btn-sm BtnGroup-item btn">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-pencil">
     <path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.249.249 0 00.108-.064l6.286-6.286z"></path>
 </svg>
@@ -2700,7 +2700,7 @@
 </summary>    <div class="SelectMenu right-0">
       <div class="SelectMenu-modal width-full">
         <div class="SelectMenu-list SelectMenu-list--borderless py-2">
-          <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="SelectMenu-item js-update-url-with-hash " data-turbo="false" action="/catenax-ng/product-edc/edit/develop/CONTRIBUTING.md" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="ChXUQn638hwSgj9E_j2OKId7E1Z0vbddVbWCecKaUN8MgtT6qETh8ntOX6xKjd1ITzzDODZE-3Xhlf8tNR3aPg" autocomplete="off" />
+          <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="SelectMenu-item js-update-url-with-hash " data-turbo="false" action="/eclipse-tractusx/tractusx-edc/edit/develop/CONTRIBUTING.md" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="ChXUQn638hwSgj9E_j2OKId7E1Z0vbddVbWCecKaUN8MgtT6qETh8ntOX6xKjd1ITzzDODZE-3Xhlf8tNR3aPg" autocomplete="off" />
               <button title="Edit this file" type="submit" data-view-component="true" class="btn-invisible btn width-full d-flex flex-justify-between color-fg-default text-normal p-0">    <div class="mr-5">Edit this file</div>
               <div class="color-fg-muted">E</div>
 </button></form>
@@ -2708,7 +2708,7 @@
               <div class="mr-5 no-wrap">Open in github.dev</div>
               <div class="color-fg-muted">.</div>
 </a>
-            <a data-platforms="windows,mac" aria-label="Open this file in GitHub Desktop" href="x-github-client://openRepo/https://github.com/catenax-ng/product-edc?branch=develop&amp;filepath=CONTRIBUTING.md" data-view-component="true" class="SelectMenu-item no-wrap js-remove-unless-platform width-full text-normal color-fg-default f5">
+            <a data-platforms="windows,mac" aria-label="Open this file in GitHub Desktop" href="x-github-client://openRepo/https://github.com/eclipse-tractusx/tractusx-edc?branch=develop&amp;filepath=CONTRIBUTING.md" data-view-component="true" class="SelectMenu-item no-wrap js-remove-unless-platform width-full text-normal color-fg-default f5">
               Open in GitHub Desktop
 </a>        </div>
       </div>
@@ -2719,10 +2719,10 @@
 
         
 <div >
-  <remote-clipboard-copy class="d-inline-block btn-octicon" style="height: 26px" data-src="/catenax-ng/product-edc/raw/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" data-action="click:remote-clipboard-copy#remoteCopy">
+  <remote-clipboard-copy class="d-inline-block btn-octicon" style="height: 26px" data-src="/eclipse-tractusx/tractusx-edc/raw/85709f7cccd8b22f4767a48edb4780315079df03/CONTRIBUTING.md" data-action="click:remote-clipboard-copy#remoteCopy">
   
 
-  <span data-target="remote-clipboard-copy.idle">      <span class="tooltipped tooltipped-nw cursor-pointer" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;COPY_RAW_CONTENTS_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="59fc287205673c4bd0243704f897bb24777f81d1a6cd69602d047f118a1b3792" aria-label="Copy raw contents">
+  <span data-target="remote-clipboard-copy.idle">      <span class="tooltipped tooltipped-nw cursor-pointer" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;COPY_RAW_CONTENTS_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="59fc287205673c4bd0243704f897bb24777f81d1a6cd69602d047f118a1b3792" aria-label="Copy raw contents">
         <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy">
     <path fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path><path fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
 </svg>
@@ -2747,7 +2747,7 @@
 </remote-clipboard-copy></div>
 
 
-          <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="inline-form" data-turbo="false" action="/catenax-ng/product-edc/delete/develop/CONTRIBUTING.md" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="-iK3EYc2noIMi3PyNp54BwVpESajszI3zffJgE6f1YqH2wtLSxkYC-BiGs1zO6c_AgG4RWs6XUrKOdA5Ra5jlQ" />
+          <!-- '"` --><!-- </textarea></xmp> --></option></form><form class="inline-form" data-turbo="false" action="/eclipse-tractusx/tractusx-edc/delete/develop/CONTRIBUTING.md" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="-iK3EYc2noIMi3PyNp54BwVpESajszI3zffJgE6f1YqH2wtLSxkYC-BiGs1zO6c_AgG4RWs6XUrKOdA5Ra5jlQ" />
             <button class="btn-octicon btn-octicon-danger tooltipped tooltipped-nw" type="submit"
               aria-label="Delete this file" data-disable-with>
               <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-trash">
@@ -2775,20 +2775,20 @@
             <li>
                 <a class="dropdown-item tooltipped tooltipped-nw js-remove-unless-platform"
                    data-platforms="windows,mac"
-                   href="x-github-client://openRepo/https://github.com/catenax-ng/product-edc?branch=develop&amp;filepath=CONTRIBUTING.md">
+                   href="x-github-client://openRepo/https://github.com/eclipse-tractusx/tractusx-edc?branch=develop&amp;filepath=CONTRIBUTING.md">
                   Open with Desktop
                 </a>
             </li>
           <li>
-            <a class="dropdown-item" href="/catenax-ng/product-edc/raw/develop/CONTRIBUTING.md">
+            <a class="dropdown-item" href="/eclipse-tractusx/tractusx-edc/raw/develop/CONTRIBUTING.md">
               View raw
             </a>
           </li>
             <li>
-              <remote-clipboard-copy class="dropdown-item" data-src="/catenax-ng/product-edc/raw/develop/CONTRIBUTING.md" data-action="click:remote-clipboard-copy#remoteCopy">
+              <remote-clipboard-copy class="dropdown-item" data-src="/eclipse-tractusx/tractusx-edc/raw/develop/CONTRIBUTING.md" data-action="click:remote-clipboard-copy#remoteCopy">
   
 
-  <span data-target="remote-clipboard-copy.idle">                  <span class="cursor-pointer" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;COPY_RAW_CONTENTS_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/catenax-ng/product-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="59fc287205673c4bd0243704f897bb24777f81d1a6cd69602d047f118a1b3792">
+  <span data-target="remote-clipboard-copy.idle">                  <span class="cursor-pointer" data-hydro-click="{&quot;event_type&quot;:&quot;repository.click&quot;,&quot;payload&quot;:{&quot;target&quot;:&quot;COPY_RAW_CONTENTS_BUTTON&quot;,&quot;repository_id&quot;:471286805,&quot;originating_url&quot;:&quot;https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/CONTRIBUTING.md&quot;,&quot;user_id&quot;:84396022}}" data-hydro-click-hmac="59fc287205673c4bd0243704f897bb24777f81d1a6cd69602d047f118a1b3792">
                     Copy raw contents
 </span></span>
   <span data-target="remote-clipboard-copy.fetching" hidden="hidden">                  Copy raw contents
@@ -2811,20 +2811,20 @@
 </span>
 </remote-clipboard-copy>            </li>
             <li>
-              <a class="dropdown-item" href="/catenax-ng/product-edc/blame/develop/CONTRIBUTING.md">
+              <a class="dropdown-item" href="/eclipse-tractusx/tractusx-edc/blame/develop/CONTRIBUTING.md">
                 View blame
               </a>
             </li>
 
               <li class="dropdown-divider" role="none"></li>
               <li>
-                <a class="dropdown-item" href="/catenax-ng/product-edc/edit/develop/CONTRIBUTING.md">Edit file</a>
+                <a class="dropdown-item" href="/eclipse-tractusx/tractusx-edc/edit/develop/CONTRIBUTING.md">Edit file</a>
               </li>
                 <li>
                   <a data-dropdown-tracking="{&quot;type&quot;:&quot;blob_edit_dropdown.dev_link_click&quot;,&quot;context&quot;:{&quot;repository_id&quot;:471286805,&quot;actor_id&quot;:84396022,&quot;edit_enabled&quot;:true,&quot;small_screen&quot;:true}}" href="https://github.dev/" data-view-component="true" class="dropdown-item js-github-dev-shortcut js-blob-dropdown-click">Open with github.dev</a>
                 </li>
               <li>
-                <a class="dropdown-item menu-item-danger" href="/catenax-ng/product-edc/delete/develop/CONTRIBUTING.md">Delete file</a>
+                <a class="dropdown-item menu-item-danger" href="/eclipse-tractusx/tractusx-edc/delete/develop/CONTRIBUTING.md">Delete file</a>
               </li>
         </ul>
       </details>
@@ -2912,7 +2912,7 @@ fulfills the DCO's requirement that you sign-off on your contributions.</p>
   <details-dialog
     class="Box d-flex flex-column anim-fade-in fast Box--overlay overflow-visible"
       aria-label="Provide feedback"
-      src="/catenax-ng/product-edc/repos/code_nav_survey"
+      src="/eclipse-tractusx/tractusx-edc/repos/code_nav_survey"
       
     >
     <div class="Box-header">
