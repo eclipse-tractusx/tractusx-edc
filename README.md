@@ -19,12 +19,12 @@
   <p align="center">
     Container images and deployments of the Eclipse Dataspace Components open source project.
     <br />
-    <a href="https://github.com/catenax-ng/product-edc/tree/main/docs"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/eclipse-tractusx/tractusx-edc/tree/feature/update-readme-md/docs"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/eclipse-edc/Connector">View Eclipse Dataspace Components</a>
     ·
-    <a href="https://github.com/catenax-ng/product-edc/releases">Releases</a>
+    <a href="https://github.com/eclipse-tractusx/tractusx-edc/releases">Releases</a>
     ·
     <a href="https://jira.catena-x.net/projects/A1IDSC/summary">Report Bug / Request Feature</a>
   </p>
@@ -99,17 +99,17 @@ Build Product-EDC together with its Container Images
 
 ## License
 
-Distributed under the Apache 2.0 License. See [LICENSE](https://github.com/catenax-ng/product-edc/blob/main/LICENSE) for more information.
+Distributed under the Apache 2.0 License. See [LICENSE](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/catenax-ng/product-edc.svg?style=for-the-badge
-[contributors-url]: https://github.com/catenax-ng/product-edc/graphs/contributors
-[stars-shield]: https://img.shields.io/github/stars/catenax-ng/product-edc.svg?style=for-the-badge
-[stars-url]: https://github.com/catenax-ng/product-edc/stargazers
-[license-shield]: https://img.shields.io/github/license/catenax-ng/product-edc.svg?style=for-the-badge
-[license-url]: https://github.com/catenax-ng/product-edc/blob/main/LICENSE
-[release-shield]: https://img.shields.io/github/v/release/catenax-ng/product-edc.svg?style=for-the-badge
-[release-url]: https://github.com/catenax-ng/product-edc/releases
+[contributors-shield]: https://img.shields.io/github/contributors/eclipse-tractusx/tractusx-edc.svg?style=for-the-badge
+[contributors-url]: https://github.com/eclipse-tractusx/tractusx-edc/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/eclipse-tractusx/tractusx-edc.svg?style=for-the-badge
+[stars-url]: https://github.com/eclipse-tractusx/tractusx-edc/stargazers
+[license-shield]: https://img.shields.io/github/license/eclipse-tractusx/tractusx-edc.svg?style=for-the-badge
+[license-url]: https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE
+[release-shield]: https://img.shields.io/github/v/release/eclipse-tractusx/tractusx-edc.svg?style=for-the-badge
+[release-url]: https://github.com/eclipse-tractusx/tractusx-edc/releases
