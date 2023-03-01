@@ -88,8 +88,8 @@
         <org.hamcrest.hamcrest.version>2.2</org.hamcrest.hamcrest.version>
 
         <!-- TODO: parametrize so that forks can utilize sonar also -->
-        <sonar.organization>catenax-ng</sonar.organization>
-        <sonar.projectKey>catenax-ng_product-edc</sonar.projectKey>
+        <sonar.organization>eclipse-tractusx</sonar.organization>
+        <sonar.projectKey>eclipse-tractusx_product-edc</sonar.projectKey>
         <sonar.moduleKey>${project.groupId}_${project.artifactId}</sonar.moduleKey>
     </properties>
 
