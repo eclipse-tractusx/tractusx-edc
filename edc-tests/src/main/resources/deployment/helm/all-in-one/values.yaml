@@ -176,7 +176,7 @@ platoedcdataplane:
   enabled: true
   fullnameOverride: "plato-edc-dataplane"
   image:
-    repository: &edcDataPlaneImage ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
+    repository: &edcDataPlaneImage ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault
     tag: &edcDataPlaneImageTag develop
     pullPolicy: &pullPolicy Always
   envSecretName: "aio-plato-data-secret"
@@ -203,7 +203,7 @@ platoedcdataplane:
     ## KEY VAULT ##
     ###############
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
 platoedccontrolplane:
   enabled: true
@@ -220,7 +220,7 @@ platoedccontrolplane:
       java.util.logging.ConsoleHandler.level=ALL
       java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   image:
-    repository: &edcControlPlaneImage ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
+    repository: &edcControlPlaneImage ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql-hashicorp-vault
     tag: &edcControlPlaneImageTag develop
     pullPolicy: *pullPolicy
   opentelemetry:
@@ -235,7 +235,7 @@ platoedccontrolplane:
     ## DAPS CONFIGURATION ##
     ########################
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/cx-oauth2
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/cx-oauth2
     EDC_OAUTH_CLIENT_ID: *platoDapsClientId
     EDC_OAUTH_PROVIDER_JWKS_URL: &edcControlPlaneOauthJwksUrl "http://ids-daps:4567/jwks.json"
     EDC_OAUTH_TOKEN_URL: &edcControlPlaneOauthTokenUrl "http://ids-daps:4567/token"
@@ -287,7 +287,7 @@ platoedccontrolplane:
     ## DATA PLANE ##
     ################
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
     EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control
     EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData
     EDC_DATAPLANE_SELECTOR_PLATOPLANE_DESTINATIONTYPES: HttpProxy
@@ -308,14 +308,14 @@ platoedccontrolplane:
     ## KEY VAULT ##
     ###############
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://plato-vault:8200
 
     #####################
     ## DATA ENCRYPTION ##
     #####################
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/data-encryption
     EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
     EDC_DATA_ENCRYPTION_ALGORITHM: AES
 
@@ -451,7 +451,7 @@ sokratesedcdataplane:
     ## KEY VAULT ##
     ###############
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
     EDC_VAULT_HASHICORP_TOKEN: *sokratesVaultToken
 sokratesedccontrolplane:
@@ -532,7 +532,7 @@ sokratesedccontrolplane:
     ## DATA PLANE ##
     ################
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_URL: http://sokrates-edc-dataplane:9999/api/dataplane/control
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_SOURCETYPES : HttpData
     EDC_DATAPLANE_SELECTOR_SOKRATESPLANE_DESTINATIONTYPES: HttpProxy
@@ -553,13 +553,13 @@ sokratesedccontrolplane:
     ## KEY VAULT ##
     ###############
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
     EDC_VAULT_HASHICORP_URL: http://sokrates-vault:8200
 
     #####################
     ## DATA ENCRYPTION ##
     #####################
 
-    # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+    # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/data-encryption
     EDC_DATA_ENCRYPTION_KEYS_ALIAS: data-encryption-aes-keys
     EDC_DATA_ENCRYPTION_ALGORITHM: AES
