@@ -30,7 +30,7 @@ Some of these confidential settings are
 
 As it is possible to configure EDC settings via environment variables, one way to do it would be via Kubernetes Secrets. For other deployment scenarios than Kubernetes equivalent measures should be taken.
 
-# Known Control Plane Issues
+## Known Control Plane Issues
 
 Please have a look at the open issues in the open source repository. The list below might not be maintained well and
 only contains the most important issues.
@@ -43,25 +43,25 @@ EDC commit the Product-EDC uses.
 
 ---
 
-**Persistence**
+### Persistence
 
 - ContractDefinition-AssetSelector of InMemory Connector selects 50 Asset max.([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1779))
 
-**Negotiation**
+### Negotiation
 
 - Connector blocks negotiation when `rightExpression` of a `Constraint` contains multiple elements/an array ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2026))
 
 - Provider must pass its own `ContractPolicy` for the negotiation to succeed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1975))
 
-**Transfer**
+### Transfer
 
 - Transfer Process remains 'InProgress' on provider side ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1287))
 
-**Data Management API**
+### Data Management API
 
 - Pagination is not correctly applied during catalog request ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2008))
 
-**Configuration**
+### Configuration
 
 - Contract negotiation not working when `web.http.ids.path` is configured/changed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1249))
   - **Workaround:** Don't configure `web.http.ids.path`, so that the default path is used.
@@ -71,7 +71,7 @@ EDC commit the Product-EDC uses.
 
 - Non-telling logs when `edc.transfer.proxy.token.verifier.publickey.alias` setting is missing([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1889))
 
-**Other**
+### Other
 
 - Non-IDS-Transformable-ContractDefinition causes connector to be unable to send out self-descriptions/catalogs([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1265))
   - **Workaround:** Delete non-transformable ContractDefinition or Policy.
