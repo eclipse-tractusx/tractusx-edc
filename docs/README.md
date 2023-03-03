@@ -1,8 +1,9 @@
-# Product EDC
+# TractusX EDC
 
-The Catena-X Product EDC Repository creates runnable applications out of EDC extensions from the [Eclipse DataSpace Connector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) repository.
+The eclipse-tractusx tractusx-edc repository creates runnable applications out of EDC extensions from the [Eclipse DataSpace Connector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) repository.
 
-When running a EDC connector from the Product EDC repository there are three setups to choose from. They only vary by using different extensions for 
+When running a EDC connector from the Product EDC repository there are three setups to choose from. They only vary by using different extensions for
+
 - Resolving of Connector-Identities
 - Persistence of the Control-Plane-State
 - Persistence of Secrets (Vault)
@@ -35,7 +36,7 @@ The three supported setups are.
 
 ## Recommended Documentation
 
-**This Repository**
+### This Repository
 
 - [Update EDC Version from 0.0.x - 0.1.x](migration/Version_0.0.x_0.1.x.md)
 - [Application: Control Plane](../edc-controlplane)
@@ -44,13 +45,13 @@ The three supported setups are.
 - [Example: Connector Configuration (Helm)](../edc-tests/src/main/resources/deployment/helm/all-in-one/README.md)
 - [Example: Data Transfer](./data-transfer/Transfer%20Data.md)
 
-**Eclipse Dataspace Connector**
+### Eclipse Dataspace Connector
 
 - [EDC Domain Model](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/docs/developer/architecture/domain-model.md)
 - [EDC Open API Spec](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/resources/openapi/openapi.yaml)
 - [HTTP Receiver Extension](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/http-receiver)
 
-**Catena-X**
+### Catena-X
 
 _Only accessible for Catena-X Members._
 

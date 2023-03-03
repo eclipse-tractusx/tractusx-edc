@@ -14,7 +14,7 @@ Please install [jq](https://stedolan.github.io/jq/), as it is used in the bash c
 For this transfer connector **Plato** will act as data provider, and connector **Sokrates** will act as data
 consumer. But the roles could be inverse as well.
 
-**Contents**
+## Contents
 
 0. Before running the demo
     1. Ensure all pods are running
@@ -32,7 +32,7 @@ consumer. But the roles could be inverse as well.
 Get all the pods and wait until all pods are in a `Running` state before executing the next steps.
 Please ignore that the EDC applications will crash 2-3 times during the start-up phase. This is normal.
 
-**Run**
+#### Run
 
 ```bash
 minikube kubectl -- -n edc-all-in-one get pods
@@ -42,7 +42,7 @@ minikube kubectl -- -n edc-all-in-one get pods
 
 Initialize the following environment variables, that are used in the upcoming API calls.
 
-**Run**
+#### Run
 
 ```bash
 export PLATO_DATAMGMT_URL=$(minikube service plato-edc-controlplane -n edc-all-in-one --url | sed -n 3p)
@@ -62,8 +62,7 @@ source documentation ([link](https://github.com/eclipse-dataspaceconnector/DataS
 
 ![Sequence 1](diagrams/transfer_sequence_1.png)
 
-**Run**
-
+### Run
 
 The following commands will create an Asset, a Policy and a Contract Definition.
 For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data source of the asset, but could be any
@@ -111,7 +110,6 @@ curl -X POST "${PLATO_DATAMGMT_URL}/data/policydefinitions" \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
-
 ```bash
 curl -X POST "${PLATO_DATAMGMT_URL}/data/contractdefinitions" \
     --header 'X-Api-Key: password' \
@@ -141,7 +139,7 @@ connectors, that intent to send messages to each other, have the same DAPS insta
 
 ![Sequence 1](diagrams/transfer_sequence_2.png)
 
-**Run**
+### Run
 
 ```bash
 curl -G -X GET "${SOKRATES_DATAMGMT_URL}/data/catalog" \
@@ -164,7 +162,7 @@ and checking whether the `contractAgreementId` is set. This might take a few sec
 
 ![Sequence 1](diagrams/transfer_sequence_3.png)
 
-**Run**
+### Run
 
 ```bash
 export NEGOTIATION_ID=$( \
@@ -195,7 +193,6 @@ export NEGOTIATION_ID=$( \
     -s | jq -r '.id')
 ```
 
-
 ```bash
 curl -X GET "${SOKRATES_DATAMGMT_URL}/data/contractnegotiations/${NEGOTIATION_ID}" \
     --header 'X-Api-Key: password' \
@@ -210,7 +207,7 @@ the transfer process is `COMPLETED`.
 
 ![Sequence 1](diagrams/transfer_sequence_4.png)
 
-**Run**
+### Run
 
 ```bash
 export CONTRACT_AGREEMENT_ID=$( \
@@ -258,7 +255,7 @@ curl -X GET "${SOKRATES_BACKEND_URL}/${TRANSFER_PROCESS_ID}" \
     -s | jq
 ```
 
-# Delete All Data
+## Delete All Data
 
 ```bash
 minikube kubectl -- delete pvc -n edc-all-in-one --all

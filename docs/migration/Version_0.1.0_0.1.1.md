@@ -16,7 +16,6 @@ Due to a change in the DAPS authentication mechanism this version cannot exchang
 2. Connector Configuration
    1. CX OAuth Extension
 
-
 ## 1. Data Management API
 
 It might be necessary to update applications and scripts that use the Data Management API. This section covers the most
@@ -26,11 +25,8 @@ important changes in endpoints and payloads.
 
 The id field of the PolicyDefinition was renamed from `uid` to `id`.
 
-<details>
+#### Old Call
 
-<summary>Example</summary>
-
-Old Call
 ```json
 {
     "uid": "1",
@@ -50,7 +46,8 @@ Old Call
 }
 ```
 
-New call
+#### New call
+
 ```json
 {
     "id": "1",
@@ -70,22 +67,16 @@ New call
 }
 ```
 
-</details>
-
 ## 2. Connector Configuration
+
 ### 2.1. CX OAuth Extension
 
 All connectors are now shipped with a new OAuth extension. This extension has an additional mandatory setting called `edc.ids.endpoint.audience`, that must be set to the IDS path.
 
 [Documentation](/edc-extensions/cx-oauth2/README.md)
 
+#### Example
 
-<details>
-
-<summary>Example</summary>
-
-```
+```properties
 edc.ids.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
 ```
-
-</details>

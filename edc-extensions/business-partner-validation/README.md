@@ -1,8 +1,8 @@
-# Important for Milestone 3!
+# Important for Milestone 3
 
 Please note, that with the start of the **Milestone 3** release (v0.0.1) there exists an issue, where the BPN number cannot be retrieved from the DAPS token. The missing token BPN makes offers, protected by a BPN constraint, unavailable to all connectors.
 
-# Business Partner Validation Extension
+## Business Partner Validation Extension
 
 Using the Business Partner Validation Extension it's possible to add configurable validation against
 Catena-X `Participants` in the `ContractDefinition.AccessPolicy`.
@@ -44,7 +44,8 @@ The most simple BPN policy would allow the usage of certain data to a single Bus
 shown below. In this example the `edctype` properties are added, so that this policy may even be sent to the Data
 Management API.
 
-**Example 1 for single BPN:**
+### Example 1 for single BPN
+
 ```json
 {
   "uid": "<PolicyId>",
@@ -75,7 +76,8 @@ Management API.
 }
 ```
 
-**Example 2 for multiple BPN:**
+### Example 2 for multiple BPN
+
 ```json
 {
   "uid": "<PolicyId>",
@@ -106,13 +108,14 @@ Management API.
 }
 ```
 
-# Important: EDC Policies are input sensitive
+## Important: EDC Policies are input sensitive
 
 Please be aware that the EDC ignores all Rules and Constraint it does not understand. This could cause your constrained policies to be public.
 
 ---
 
-**Example 3 for accidentially public:**
+### Example 3 for accidentially public
+
 ```json
 {
   "uid": "1",
@@ -147,7 +150,7 @@ This policy is public available, even though the constraint is described correct
 
 ---
 
-**Example 4 for accidentially public:**
+### Example 4 for accidentially public
 
 ```json
 {

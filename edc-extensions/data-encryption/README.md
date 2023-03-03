@@ -2,7 +2,7 @@
 
 The Eclipse Dataspace Connector encrypts sensitive information inside a token it sends to other applications (from possibly other companies). This extension implements the encryption of this data and should be used with secure keys and algorithms at all times.
 
-## Algorithm Configuration 
+## Algorithm Configuration
 
 | Key                                         | Description                                                                                                      | Mandatory | Default          |
 |:--------------------------------------------|:-----------------------------------------------------------------------------------------------------------------|-----------|------------------|
@@ -17,6 +17,7 @@ The Advanced Encryption Standard (AES) is the default encryption algorithm. For 
 When using AES-GCM the key length must be ether 128-, 196- or 256bit. Keys must be stored stored Base64 encoded in the Vault, separated by a comma.
 
 It's possible to generate Keys using OpenSSL
+
 ```bash
 # 128 Bit
 openssl rand -base64 16
@@ -35,7 +36,6 @@ openssl rand -base64 32
 | edc.data.encryption.keys.alias              | Symmetric Keys stored in the Vault under the configured alias.           | X          |                  |
 | edc.data.encryption.caching.enabled         | Enable caching to request only keys from the vault after the cache expires.                             |           | false            |
 | edc.data.encryption.caching.seconds         | Duration in seconds until the cache expires.                                                                     |           | 3600             |
-
 
 ### 2. NONE
 

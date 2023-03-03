@@ -1,11 +1,11 @@
 # Release Notes Version 0.1.1
+
 31.08.2022
 
-
 > **BREAKING CHANGES**
-> 
+>
 > Please consolidate the migration documentation ([link](../migration/Version_0.1.0_0.1.1.md)).
-
+>
 > **Important Notice**
 >
 > The **InMemoryControlPlane** image is broken. Please use another control plane instead.
@@ -33,10 +33,9 @@ Using the open source OAuth Extension it is possible for a connector to re-use a
 
 [Documentation](../../edc-extensions/cx-oauth2/README.md)
 
+#### New Audience Configuration
 
-**New Audience Configuration**
-
-```
+```properties
 edc.ids.endpoint.audience=http://plato-edc-controlplane:8282/api/v1/ids/data
 ```
 
