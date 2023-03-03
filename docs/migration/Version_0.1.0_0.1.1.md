@@ -73,7 +73,7 @@ The id field of the PolicyDefinition was renamed from `uid` to `id`.
 
 All connectors are now shipped with a new OAuth extension. This extension has an additional mandatory setting called `edc.ids.endpoint.audience`, that must be set to the IDS path.
 
-[Documentation](/edc-extensions/cx-oauth2/README.md)
+[Documentation](../../edc-extensions/cx-oauth2/README.md)
 
 #### Example
 

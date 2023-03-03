@@ -301,4 +301,4 @@ With this version a new feature was introduced which allows to have separate Dat
 transfer-flows (HttpProxy, S3, etc.). The Catena-X EDC team has additionally a new extension created which allows a
 simpler registration of additional dataplanes. Therefor some changes needs to be applied. Further documentation can
 be found in the extension folder:
-[dataplane-selector-configuration](/edc-extensions/dataplane-selector-configuration/README.md)
+[dataplane-selector-configuration](../../edc-extensions/dataplane-selector-configuration/README.md)
