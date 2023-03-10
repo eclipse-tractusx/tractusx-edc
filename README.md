@@ -103,6 +103,10 @@ cd edc && ./gradlew publishToMavenLocal -Pskip.signing=true -PedcVersion=0.0.1-2
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## All-In-One Deployment
+
+The learn about how to use the All-In-One Deployment is found in the [INSTALL section](./INSTALL.md) 
+
 ## License
 
 Distributed under the Apache 2.0 License. See [LICENSE](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE) for more information.
