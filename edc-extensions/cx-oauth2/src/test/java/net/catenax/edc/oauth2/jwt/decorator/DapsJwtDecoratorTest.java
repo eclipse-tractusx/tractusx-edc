@@ -11,6 +11,7 @@
  *       Mercedes-Benz Tech Innovation GmbH - Initial Test
  *
  */
+
 package net.catenax.edc.oauth2.jwt.decorator;
 
 import org.junit.jupiter.api.Assertions;

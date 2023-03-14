@@ -11,6 +11,7 @@
  *       Mercedes-Benz Tech Innovation GmbH - Initial API and Implementation
  *
  */
+
 package net.catenax.edc.data.encryption.algorithms;
 
 import java.security.InvalidAlgorithmParameterException;
