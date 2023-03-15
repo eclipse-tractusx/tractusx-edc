@@ -1,6 +1,6 @@
 # EDC Data-Plane Base Module
 
-### Building
+## Building
 
 ```shell
 ./mvnw -pl .,edc-dataplane/edc-dataplane-base -am package

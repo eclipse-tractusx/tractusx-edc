@@ -9,14 +9,15 @@ Per data plane instance the following settings must be configured. As `<data-pla
 
 | Key                                                     | Description                                       | Mandatory | Example                                                           |
 |:--------------------------------------------------------|:--------------------------------------------------|-----------|-------------------------------------------------------------------|
-| edc.dataplane.selector.``<data-plane-id>``.url              | URL to connect to the Data Plane Instance.        | X         | http://plato-edc-dataplane:9999/api/dataplane/control             |
+| edc.dataplane.selector.``<data-plane-id>``.url              | URL to connect to the Data Plane Instance.        | X         | <http://plato-edc-dataplane:9999/api/dataplane/control>             |
 | edc.dataplane.selector.``<data-plane-id>``.sourcetypes      | Source Types in a comma separated List.           | X         | HttpData                                                          |
 | edc.dataplane.selector.``<data-plane-id>``.destinationtypes | Destination Types in a comma separated List.      | X         | HttpProxy                                                         |
 | edc.dataplane.selector.``<data-plane-id>``.properties       | Additional properties of the Data Plane Instance. | (X)       | { "publicApiUrl": "http://plato-edc-dataplane:8185/api/public" } |
 
 The property `publicApiUrl` is mandatory for Data Plane Instances with destination type `HttpProxy`.
 
-**Helm Example Configuration using environment variables**
+### Helm Example Configuration using environment variables
+
 ```yaml
 EDC_DATAPLANE_SELECTOR_PLATOPLANE_URL: http://plato-edc-dataplane:9999/api/dataplane/control
 EDC_DATAPLANE_SELECTOR_PLATOPLANE_SOURCETYPES : HttpData

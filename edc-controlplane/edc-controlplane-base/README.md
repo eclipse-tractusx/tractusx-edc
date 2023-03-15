@@ -1,6 +1,6 @@
 # EDC Control-Plane Base Module
 
-### Building
+## Building
 
 ```shell
 ./mvnw -pl .,edc-controlplane/edc-controlplane-base -am package

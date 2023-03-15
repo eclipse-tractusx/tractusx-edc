@@ -1,12 +1,12 @@
 # EDC Data-Plane [Hashicorp Vault](https://www.vaultproject.io/)
 
-### Building
+## Building
 
 ```shell
 ./mvnw -pl .,edc-dataplane/edc-dataplane-hashicorp-vault -am package -Pwith-docker-image
 ```
 
-### Configuration
+## Configuration
 
 Listed below are configuration keys needed to get the `edc-dataplane-hashicorp-vault` up and running.
 Details regarding each configuration property can be found at the [documentary section of the EDC](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/docs).
@@ -19,15 +19,15 @@ Details regarding each configuration property can be found at the [documentary s
 | web.http.public.path                                  | X         |         | |
 | web.http.control.port                                 | X         | 9999 | |
 | web.http.control.path                                 | X         | /api/controlplane/control | |
-| edc.receiver.http.endpoint                            | X         | http://backend-service | |
+| edc.receiver.http.endpoint                            | X         | <http://backend-service> | |
 | edc.hostname                                          |           | localhost | |
 | edc.oauth.client.id                                   | X         | daps-oauth-client-id | |
-| edc.vault.hashicorp.url                               | X         | http://vault | |
+| edc.vault.hashicorp.url                               | X         | <http://vault> | |
 | edc.vault.hashicorp.token                             | X         | 55555555-6666-7777-8888-999999999999 | |
 | edc.vault.hashicorp.timeout.seconds                   |           | 30 | |
-| edc.dataplane.token.validation.endpoint                  | X         | http://controlplane:8182/validation/token | |
+| edc.dataplane.token.validation.endpoint                  | X         | <http://controlplane:8182/validation/token> | |
 
-#### Example configuration.properties
+### Example configuration.properties
 
 JDK properties-style configuration of the EDC Control-Plane is expected to be mounted to `/app/configuration.properties` within the container.
 
@@ -56,7 +56,8 @@ edc.vault.hashicorp.timeout.seconds=30
 EOF
 ```
 
-#### Example logging.properties
+### Example logging.properties
+
 ```shell
 # Create logging.properties
 export LOGGING_PROPERTIES_FILE=$(mktemp /tmp/logging.properties.XXXXXX)
@@ -70,7 +71,8 @@ java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [
 EOF
 ```
 
-#### Example opentelemetry.properties
+### Example opentelemetry.properties
+
 ```shell
 # Create opentelemetry.properties
 export OPENTELEMETRY_PROPERTIES_FILE=$(mktemp /tmp/opentelemetry.properties.XXXXXX)
@@ -80,7 +82,7 @@ otel.javaagent.debug=false
 EOF
 ```
 
-### Running
+## Running
 
 ```shell
 docker run \
