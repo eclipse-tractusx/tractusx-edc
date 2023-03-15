@@ -7,7 +7,6 @@ assignees: ''
 
 ---
 
-_If you are missing a feature or have an idea how to improve this project that should first be 
 discussed, please feel free to open up a [discussion](https://github.com/eclipse-tractusx/tractusx-edc/discussions/categories/ideas)._
 
 **Is your feature request related to a problem? Please describe.**

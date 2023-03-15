@@ -1,4 +1,5 @@
 # Release Notes Version 0.1.2
+
 30.09.2022
 
 > This version introduced mostly bugfixes and thread mitigation by updating libraries.

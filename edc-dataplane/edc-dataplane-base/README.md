@@ -1,6 +1,6 @@
 # EDC Data-Plane Base Module
 
-### Building
+## Building
 
 ```shell
 ./gardlew :edc-dataplane:edc-dataplane-base:build

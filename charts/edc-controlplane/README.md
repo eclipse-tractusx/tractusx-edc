@@ -6,9 +6,10 @@
 
 EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with responsibility of resource management and govern contracts and data transfers
 
-**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc>
+- **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-controlplane>
 
 ## TL;DR
+
 ```shell
 $ helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
 $ helm install my-release tractusx-edc/edc-controlplane --version 0.3.1
