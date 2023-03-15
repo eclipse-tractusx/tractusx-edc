@@ -1,6 +1,6 @@
 # EDC Control-Plane Base Module
 
-### Building
+## Building
 
 ```shell
 ./gradlew edc-controlplane:edc-controlplane-base:build

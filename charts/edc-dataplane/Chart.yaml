@@ -25,7 +25,7 @@ apiVersion: v2
 name: edc-dataplane
 description: >-
   EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
-home: https://github.com/eclipse-tractusx/tractusx-edc
+home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-dataplane
 type: application
 appVersion: "0.3.0"
 version: 0.3.0
