@@ -10,5 +10,5 @@
 #  Contributors:
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
-net.catenax.edc.hashicorpvault.HashicorpVaultHealthExtension
-net.catenax.edc.hashicorpvault.HashicorpVaultVaultExtension
+org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultHealthExtension
+org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension

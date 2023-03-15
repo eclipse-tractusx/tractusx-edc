@@ -11,4 +11,4 @@
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
 #
-net.catenax.edc.data.encryption.DataEncryptionExtension
+org.eclipse.tractusx.edc.data.encryption.DataEncryptionExtension

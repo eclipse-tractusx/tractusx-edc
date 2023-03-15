@@ -11,4 +11,4 @@
 #       Mercedes-Benz Tech Innovation GmbH - Initial ServiceExtension file
 #
 #
-net.catenax.edc.validation.businesspartner.BusinessPartnerValidationExtension
+org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerValidationExtension
