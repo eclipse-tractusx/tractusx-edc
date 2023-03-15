@@ -7,6 +7,7 @@ Two Eclipse Dataspace Connectors need to be registered at the same DAPS instance
 New connectors are configured in the omejdn _values.yaml_.
 
 In each Eclipse Dataspace Connector configure the following properties to use the DAPS.
+
 ```properties
     edc.oauth.client.id=<client ID from omejdn values.yaml>
 

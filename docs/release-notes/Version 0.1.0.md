@@ -1,8 +1,9 @@
 # Release Notes Version 0.1.0
+
 19.08.2022
 
 > **BREAKING CHANGES**
-> 
+>
 > When upgrading from version 0.0.x please consolidate the migration documentation before ([link](../migration/Version_0.0.x_0.1.x.md)).
 
 ## 0. Summary
@@ -19,11 +20,10 @@
 Upgraded the Eclipse Dataspace Connector Extensions to version 0.0.1-20220818-SNAPSHOT. Please be aware that this introduces some breaking changes.
 
 Code Repository
-https://github.com/eclipse-dataspaceconnector/DataSpaceConnector
+<https://github.com/eclipse-edc/Connector>
 
 Snapshot Artifact Repository
-https://oss.sonatype.org/#nexus-search;quick~org.eclipse.dataspaceconnector
-
+<https://oss.sonatype.org/#nexus-search;quick~org.eclipse.dataspaceconnector>
 
 ## 2. New Extensions
 
