@@ -1,6 +1,6 @@
 # Postgresql SQL Migration Extension
 
-This extension applies SQL migrations to 
+This extension applies SQL migrations to
 
 * the asset-index
 * the contract-definition store
