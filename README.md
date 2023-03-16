@@ -9,8 +9,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector">
-    <img src="https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/raw/main/docs/_media/icon.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/eclipse-edc/Connector">
+    <img src="https://raw.githubusercontent.com/eclipse-edc/Connector/main/resources/media/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Product Eclipse Dataspace Connector</h3>
