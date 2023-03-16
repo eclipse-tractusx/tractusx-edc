@@ -12,4 +12,4 @@ Please be aware that there are several confidential settings, that should not be
 As it is possible to configure EDC settings via environment variables, one way to do it would be via Kubernetes Secrets. For other deployment scenarios than Kubernetes equivalent measures should be taken.
 
 # Known Data Plane Issues
-Please have a look at the open issues in the open source repository: [EDC Github Repository](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues)
+Please have a look at the open issues in the open source repository: [EDC Github Repository](https://github.com/eclipse-edc/Connector/issues)

@@ -32,7 +32,7 @@ As it is possible to configure EDC settings via environment variables, one way t
 
 Please have a look at the open issues in the open source repository. The list below might not be maintained well and
 only contains the most important issues.
-EDC Github Repository https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues
+EDC Github Repository https://github.com/eclipse-edc/Connector/issues
 
 ---
 
@@ -42,30 +42,8 @@ EDC commit the Product-EDC uses.
 ---
 
 **Persistence**
-- ContractDefinition-AssetSelector of InMemory Connector selects 50 Asset max.([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1779))
-
-**Negotiation**
-
-- Connector blocks negotiation when `rightExpression` of a `Constraint` contains multiple elements/an array ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2026))
-
-- Provider must pass its own `ContractPolicy` for the negotiation to succeed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1975))
-
-**Transfer**
-- Transfer Process remains 'InProgress' on provider side ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1287))
-
-**Data Management API**
-
-- Pagination is not correctly applied during catalog request ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2008))
-
-**Configuration**
-- Contract negotiation not working when `web.http.ids.path` is configured/changed ([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1249))
-  - **Workaround:** Don't configure `web.http.ids.path`, so that the default path is used.
-
-- HttpProxy Transfer: Provider Control Plane spams Consumer Control Plane + HttpProxy Backend Application with requests([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1840))
-  - **Possible Workaround:** Reconfigure data plane URL from `http://dataplane:8185/api/public` to `http://dataplane:8185/api/public/`
-
-- Non-telling logs when `edc.transfer.proxy.token.verifier.publickey.alias` setting is missing([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1889))
+- ContractDefinition-AssetSelector of InMemory Connector selects 50 Asset max.([issue](https://github.com/eclipse-edc/Connector/issues/1779))
 
 **Other**
-- Non-IDS-Transformable-ContractDefinition causes connector to be unable to send out self-descriptions/catalogs([issue](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1265))
+- Non-IDS-Transformable-ContractDefinition causes connector to be unable to send out self-descriptions/catalogs([issue](https://github.com/eclipse-edc/Connector/issues/1265))
   - **Workaround:** Delete non-transformable ContractDefinition or Policy.

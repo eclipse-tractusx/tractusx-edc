@@ -3,5 +3,5 @@
 ### Building
 
 ```shell
-./mvnw -pl .,edc-dataplane/edc-dataplane-base -am package
+./gardlew :edc-dataplane:edc-dataplane-base:build
 ```

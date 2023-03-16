@@ -31,8 +31,8 @@ replicaCount: 1
 
 image:
   # -- Which derivate of the edc data-plane to use.
-  # One of: [ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault, ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-azure-vault]
-  repository: ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault
+  # One of: [ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault]
+  repository: ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
@@ -52,6 +52,9 @@ nameOverride: ""
 
 # -- Overrides the releases full name
 fullnameOverride: ""
+
+# -- Additional custom Labels to add
+customLabels: {}
 
 serviceAccount:
   # -- Specifies whether a [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) should be created per release
@@ -218,7 +221,7 @@ logging:
   # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
   properties: |-
     .level=INFO
-    org.eclipse.dataspaceconnector.level=ALL
+    org.eclipse.edc.level=ALL
     handlers=java.util.logging.ConsoleHandler
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
@@ -231,7 +234,7 @@ opentelemetry:
     otel.javaagent.debug=false
 
 configuration:
-  # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
+  # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-edc/Connector)
   properties: |-
     # edc.atomikos.checkpoint.interval=
     # edc.atomikos.directory=

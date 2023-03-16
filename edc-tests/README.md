@@ -1,7 +1,7 @@
 # Invoke Business-Tests via Maven
 
 ```shell
-./mvnw -pl edc-tests -Pbusiness-tests -pl edc-tests test -Dtest=net.catenax.edc.tests.features.RunCucumberTest
+./gradlew :edc-tests:test -Dcucumber=true
 ```
 
 # Test locally using Act Tool
@@ -11,3 +11,6 @@
 ```shell
 act -j business-test
 ```
+
+# Run and debug Business-Tests local within IDE
+Please refer to [run-local documentation in docs](../docs/development/Run-business-tests-local.md)

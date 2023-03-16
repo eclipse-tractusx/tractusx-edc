@@ -1,25 +1,12 @@
-# Important for Milestone 3!
-
-Please note, that with the start of the **Milestone 3** release (v0.0.1) there exists an issue, where the BPN number cannot be retrieved from the DAPS token. The missing token BPN makes offers, protected by a BPN constraint, unavailable to all connectors.
-
 # Business Partner Validation Extension
 
 Using the Business Partner Validation Extension it's possible to add configurable validation against
-Catena-X `Participants` in the `ContractDefinition.AccessPolicy`.
+Catena-X `Participants` in the `ContractDefinition.AccessPolicy`. Using a BPN in `ContractDefinition.ContractPolicy` is possible, too, but once the contract is complete there is no policy enforcement in place from the EDC.
 
-**Why only AccessPolicy?** Because when a custom validation is used in the `ContractPolicy`, it is necessary
-to send it to the other connector. But nether is it possible to send a generic constraint using the IDS Protocol,
-nor is it possible for another connector to enforce a generic constraint reliable. Hence, the limit
-to `AccessPolicy`. This limitation is not technically enforceable, therefore adding Business Partner constraints to the
-contract policy simply won't work.
-
-This extension is already included in all the Catena-X control-planes and can be used accordingly.
 It is recommended to have a basic understanding of the EDC contract/policy domain before using this extension. The
-corresponding documentation can
-be found in the [EDC GitHub Repository](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector). For a
-simplified overview of the EDC domain please have a look at the Catena-X Control Plane documentation.
+corresponding documentation can be found in the [EDC GitHub Repository](https://github.com/eclipse-edc/Connector).
 
-The business partner number of another connector is part of the DAPS token. Once a BPN constraint is used in an access
+The business partner number of another connector is part of its DAPS token. Once a BPN constraint is used in an access
 policy the connector checks the token before sending out contract offers.
 
 Example of business partner constraint:
@@ -40,16 +27,14 @@ The `leftExpression` must always contain 'BusinessPartner', so that the policy f
 Additionally, the only `operator` that is supported by these policy functions is 'EQ'. Finally, the `rightExpression`
 must contain the Business Partner Number.
 
-The most simple BPN policy would allow the usage of certain data to a single Business Partner. An example `Policy` is
-shown below. In this example the `edctype` properties are added, so that this policy may even be sent to the Data
-Management API.
+## Single BusinessPartnerNumber example
 
-**Example 1 for single BPN:**
+The most simple BPN policy would allow the usage of certain data to a single Business Partner. An example `Policy` is
+shown below. 
+In this example the `edctype` properties are added, so that this policy may even be sent to the Management API.
+
 ```json
 {
-  "uid": "<PolicyId>",
-  "prohibitions": [],
-  "obligations": [],
   "permissions": [
     {
       "edctype": "dataspaceconnector:permission",
@@ -75,32 +60,54 @@ Management API.
 }
 ```
 
-**Example 2 for multiple BPN:**
+## Multiple BusinessPartnerNumber example
+
+To define multiple BPN and allow multiple participants to use the data the `orconstraint` should be used.
+It will permit the constraints contained to be evaluated using the `OR` operator.
 ```json
 {
-  "uid": "<PolicyId>",
-  "prohibitions": [],
-  "obligations": [],
   "permissions": [
     {
       "edctype": "dataspaceconnector:permission",
       "action": {
-        "type": "USE"
+        "type": "USE",
       },
       "constraints": [
         {
-          "edctype": "AtomicConstraint",
-          "leftExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "BusinessPartnerNumber"
-          },
-          "rightExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": [ "<BPN1>", "<BPN2>" ]
-          },
-          "operator": "IN"
+          "edctype": "dataspaceconnector:orconstraint",
+          "constraints": [
+            {
+              "edctype": "AtomicConstraint",
+              "leftExpression": {
+                "edctype": "dataspaceconnector:literalexpression",
+                "value": "BusinessPartnerNumber"
+              },
+              "rightExpression": {
+                "edctype": "dataspaceconnector:literalexpression",
+                "value": "<BPN1>"
+              },
+              "operator": "EQ"
+            },
+            {
+              "edctype": "AtomicConstraint",
+              "leftExpression": {
+                "edctype": "dataspaceconnector:literalexpression",
+                "value": "BusinessPartnerNumber"
+              },
+              "rightExpression": {
+                "edctype": "dataspaceconnector:literalexpression",
+                "value": "<BPN2>"
+              },
+              "operator": "EQ"
+            },
+            
+            ...
+            
+            // other constraints can be added
+          ]
         }
-      ]
+      ],
+      "duties": []
     }
   ]
 }
@@ -112,7 +119,7 @@ Please be aware that the EDC ignores all Rules and Constraint it does not unders
 
 ---
 
-**Example 3 for accidentially public:**
+**Example 1 for accidentially public:**
 ```json
 {
   "uid": "1",
@@ -147,7 +154,7 @@ This policy is public available, even though the constraint is described correct
 
 ---
 
-**Example 4 for accidentially public:**
+**Example 2 for accidentally public:**
 
 ```json
 {
@@ -179,4 +186,4 @@ This policy is public available, even though the constraint is described correct
 }
 ```
 
-This policy is public available, too. The cause is a typo in the left-expression of the constraint. This extension only registeres the Constraint.LeftExpression `BusinessPartnerNumber` within the EDC. Any other term will have the EDC ignore the corresponding constraint, hence interpret the polics as public policy.
+This policy is public available, too. The cause is a typo in the left-expression of the constraint. This extension only registers the `Constraint.LeftExpression` `BusinessPartnerNumber` within the EDC. Any other term will have the EDC ignore the corresponding constraint, hence interpret the policies as public policy.

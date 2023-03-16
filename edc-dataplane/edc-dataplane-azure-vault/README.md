@@ -3,13 +3,13 @@
 ### Building
 
 ```shell
-./mvnw -pl .,edc-dataplane/edc-dataplane-azure-vault -am package -Pwith-docker-image
+./gardlew :edc-dataplane:edc-dataplane-azure-vault:dockerize
 ```
 
 ### Configuration
 
 Listed below are configuration keys needed to get the `edc-dataplane-azure-vault` up and running.
-Details regarding each configuration property can be found at the [documentary section of the EDC](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/docs).
+Details regarding each configuration property can be found at the [documentary section of the EDC](https://github.com/eclipse-edc/Connector/tree/main/docs).
 
 | Key  	                                                | Required  | Example | Description |
 |---	                                                |---        |---	  |---          |
@@ -64,7 +64,7 @@ EOF
 export LOGGING_PROPERTIES_FILE=$(mktemp /tmp/logging.properties.XXXXXX)
 cat << 'EOF' > ${LOGGING_PROPERTIES_FILE}
 .level=INFO
-org.eclipse.dataspaceconnector.level=ALL
+org.eclipse.edc.level=ALL
 handlers=java.util.logging.ConsoleHandler
 java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
 java.util.logging.ConsoleHandler.level=ALL

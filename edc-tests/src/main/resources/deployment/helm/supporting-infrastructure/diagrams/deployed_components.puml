@@ -1,0 +1,20 @@
+@startuml
+
+node Infrastructure as "Tractus-X Connector\nSupporting Infrastructure" {
+    node SokratesSetup as "Persistence / PostgreSQL" {
+        database SokratesPsql as "Sokrates PSQL"
+        database PlatoPsql as "Plato PSQL"
+    }
+    node SharedComponents as "Additional Components" {
+        component Vault as "HashiCorp Vault"
+        component BackendService as "Backend Application"
+    }
+    node IdentityProvider as "Identity Provider" {
+        component OmejdnDaps as "Omejdn DAPS"
+    }
+}
+
+IdentityProvider -[hidden]down- SharedComponents
+IdentityProvider -[hidden]right- SokratesSetup
+
+@enduml
