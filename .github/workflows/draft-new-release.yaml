@@ -13,7 +13,7 @@ jobs:
     name: "Draft a new release"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.3.0
       -
         name: Create release branch
         run: git checkout -b release/${{ github.event.inputs.version }}
@@ -29,21 +29,22 @@ jobs:
           git config user.email noreply@github.com
       -
         name: Set up JDK 11
-        uses: actions/setup-java@v3.5.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
           distribution: 'adopt'
-          cache: 'maven'
+          cache: 'gradle'
       -
         name: Bump version in pom.xml
         run: |-
-          ./mvnw -s settings.xml -B versions:set -DnewVersion=${{ github.event.inputs.version }} -DprocessAllModules
+           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
+           sed -i  's/defaultVersion=.*/defaultVersion=${{ github.event.inputs.version }}/g' gradle.properties
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
       -
         name: Bump version in /charts
-        uses: mikefarah/yq@v4.27.5
+        uses: mikefarah/yq@v4.31.2
         with:
           cmd: |-
             find charts -name Chart.yaml | xargs -n1 yq -i '.appVersion = "${{ github.event.inputs.version }}" | .version = "${{ github.event.inputs.version }}"'
@@ -68,7 +69,7 @@ jobs:
         run: git push origin release/${{ github.event.inputs.version }}
       -
         name: Create pull request
-        uses: thomaseizinger/create-pull-request@1.2.2
+        uses: thomaseizinger/create-pull-request@1.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
