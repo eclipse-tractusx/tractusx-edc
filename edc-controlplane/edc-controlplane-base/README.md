@@ -3,5 +3,5 @@
 ### Building
 
 ```shell
-./mvnw -pl .,edc-controlplane/edc-controlplane-base -am package
+./gradlew edc-controlplane:edc-controlplane-base:build
 ```

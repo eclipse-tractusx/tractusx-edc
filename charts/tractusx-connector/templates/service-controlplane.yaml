@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "txdc.fullname" . }}-controlplane
+  namespace: {{ .Release.Namespace | default "default" | quote }}
+  labels:
+    {{- include "txdc.controlplane.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.controlplane.service.type }}
+  ports:
+    - port: {{ .Values.controlplane.endpoints.default.port }}
+      targetPort: default
+      protocol: TCP
+      name: default
+    - port: {{ .Values.controlplane.endpoints.control.port }}
+      targetPort: control
+      protocol: TCP
+      name: control
+    - port: {{ .Values.controlplane.endpoints.data.port }}
+      targetPort: data
+      protocol: TCP
+      name: data
+    - port: {{ .Values.controlplane.endpoints.validation.port }}
+      targetPort: validation
+      protocol: TCP
+      name: validation
+    - port: {{ .Values.controlplane.endpoints.ids.port }}
+      targetPort: ids
+      protocol: TCP
+      name: ids
+    - port: {{ .Values.controlplane.endpoints.metrics.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "txdc.controlplane.selectorLabels" . | nindent 4 }}

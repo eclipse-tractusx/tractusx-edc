@@ -31,8 +31,8 @@ replicaCount: 1
 
 image:
   # -- Which derivate of the edc control-plane to use.
-  # One of: [ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql-hashicorp-vault, ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql, ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-memory]
-  repository: ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql-hashicorp-vault
+  # One of: [ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql, ghcr.io/catenax-ng/product-edc/edc-controlplane-memory]
+  repository: ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
@@ -52,6 +52,9 @@ nameOverride: ""
 
 # -- Overrides the releases full name
 fullnameOverride: ""
+
+# -- Additional custom Labels to add
+customLabels: {}
 
 serviceAccount:
   # -- Specifies whether a [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) should be created per release
@@ -111,6 +114,12 @@ startupProbe:
   failureThreshold: 12
   # -- Number of seconds after the container has started before liveness probes are initiated.
   initialDelaySeconds: 10
+
+# -- Additional volumeMounts to the controlplane main container
+volumeMounts: []
+
+# -- Additional volumes to the controlplane pod
+volumes: []
 
 ## EDC endpoints exposed by the control-plane
 edc:
@@ -255,7 +264,7 @@ logging:
   # -- EDC logging.properties configuring the [java.util.logging subsystem](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html#a1.8)
   properties: |-
     .level=INFO
-    org.eclipse.dataspaceconnector.level=ALL
+    org.eclipse.edc.level=ALL
     handlers=java.util.logging.ConsoleHandler
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
@@ -268,7 +277,7 @@ opentelemetry:
     otel.javaagent.debug=false
 
 configuration:
-  # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
+  # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-edc/Connector)
   properties: |-
     # edc.api.auth.key=
     # edc.atomikos.checkpoint.interval=

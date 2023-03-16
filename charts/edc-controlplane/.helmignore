@@ -23,7 +23,3 @@
 .vscode/
 
 README.md.gotmpl
-
-# Accept only values.yaml
-values?*.yaml
-values?*.yml

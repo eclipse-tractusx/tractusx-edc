@@ -5,10 +5,10 @@
 ## 0. Summary
 
 1. [Version updates](#1-version-updates)
-   - Use patched EDC version: 0.0.1-20220922.2-SNAPSHOT
+    - Use patched EDC version: 0.0.1-20220922.2-SNAPSHOT
 2. [Extensions](#2-extensions)
-   - [2.1 Data Encryption Extension](#22-data-encryption-extension)
-       - Fixed usage of a blocking algorithm
+    - [2.1 Data Encryption Extension](#22-data-encryption-extension)
+        - Fixed usage of a blocking algorithm
 
 ## 1. Version Updates
 
