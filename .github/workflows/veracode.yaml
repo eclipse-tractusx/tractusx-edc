@@ -20,6 +20,7 @@ jobs:
           [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
           [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
           exit 0
+
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
@@ -34,10 +35,10 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-          cache: 'maven'
+          cache: 'gradle'
       -
         name: Verify proper formatting
-        run: ./mvnw -s settings.xml -B spotless:check
+        run: ./gradlew spotlessCheck
 
   build-controlplane:
     runs-on: ubuntu-latest
@@ -47,6 +48,7 @@ jobs:
       matrix:
         name:
           - edc-controlplane-memory
+          - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
     steps:
@@ -60,12 +62,12 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-          cache: 'maven'
+          cache: 'gradle'
       # Build
       -
         name: Build Controlplane
         run: |-
-          ./mvnw -s settings.xml -B -pl .,edc-controlplane/${{ matrix.name }} -am package
+          ./gradlew -p edc-controlplane/${{ matrix.name }} build
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
@@ -107,12 +109,12 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-          cache: 'maven'
+          cache: 'gradle'
       # Build
       -
         name: Build Dataplane
         run: |-
-          ./mvnw -s settings.xml -B -pl .,edc-dataplane/${{ matrix.name }} -am package
+          ./gradlew -p edc-dataplane/${{ matrix.name }} build
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
@@ -133,3 +135,4 @@ jobs:
           filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
+
