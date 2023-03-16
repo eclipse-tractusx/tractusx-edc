@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3.1.0
 
       - name: KICS scan
-        uses: checkmarx/kics-github-action@master
+        uses: checkmarx/kics-github-action@v1.5
         with:
           path: "."
           fail_on: high
