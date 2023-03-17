@@ -1,6 +1,7 @@
 # Migration from 0.1.x to 0.3.x
 
 ## Deprecation
+
 - the `edc-controlplane` and `edc-dataplane` charts are deprecated, please use `tractusx-connector` which combines the former ones
 
 ## Management API changes
@@ -15,6 +16,7 @@ details at the [official documentation on swaggerhub](https://app.swaggerhub.com
 - added the `GET /assets/{id}/address` endpoint to being able to retrieve the stored `DataAddress`
 
 ## Settings changes
+
 - refactored the HTTP server contexts (more details on the [related decision record](https://eclipse-edc.github.io/docs/#/submodule/Connector/docs/developer/decision-records/2022-11-09-api-refactoring/renaming)). They need to be refactored as:
   - `web.http.data` becomes `web.http.management`
   - `web.http.ids` becomes `web.http.protocol`
@@ -26,6 +28,7 @@ details at the [official documentation on swaggerhub](https://app.swaggerhub.com
 - renamed `edc.oauth.public.key.alias` setting to `edc.oauth.certificate.alias`
 
 ## Other changes:
+
 - Supported `/public` data plane endpoint without trailing slash, that can be eventually removed from the configuration
 - packages name changed from `org.eclipse.dataspaceconnector` to `org.eclipse.edc`
 - To specify multiple BPN into Policies the operator `OR` can be used. More details in the [business-partner-validation extension documentation](../../edc-extensions/business-partner-validation)
