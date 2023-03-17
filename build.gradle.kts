@@ -13,9 +13,9 @@ plugins {
 }
 
 val javaVersion: String by project
-val scmConnection: String by project
-val websiteUrl: String by project
-val scmUrl: String by project
+val txScmConnection: String by project
+val txWebsiteUrl: String by project
+val txScmUrl: String by project
 val groupId: String by project
 val defaultVersion: String by project
 val annotationProcessorVersion: String by project
@@ -80,9 +80,9 @@ allprojects {
             groupId = gid
             projectName.set(project.name)
             description.set("edc :: ${project.name}")
-            projectUrl.set(websiteUrl)
-            scmConnection.set(scmConnection)
-            scmUrl.set(scmUrl)
+            projectUrl.set(txWebsiteUrl)
+            scmConnection.set(txScmConnection)
+            scmUrl.set(txScmUrl)
         }
         swagger {
             title.set((project.findProperty("apiTitle") ?: "Tractus-X REST API") as String)
