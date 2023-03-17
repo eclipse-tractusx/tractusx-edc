@@ -37,8 +37,8 @@ buildscript {
 }
 
 // include all subprojects in the jacoco report aggregation
-project.subprojects.forEach{
-    dependencies{
+project.subprojects.forEach {
+    dependencies {
         jacocoAggregation(project(it.path))
     }
 }
@@ -74,7 +74,7 @@ allprojects {
             metaModel.set(metaModelVersion)
 
         }
-        val gid = groupId;
+        val gid = groupId
         pom {
             // this is actually important, so we can publish under the correct GID
             groupId = gid
@@ -96,15 +96,18 @@ allprojects {
     }
 
     configure<CheckstyleExtension> {
-        configFile = rootProject.file("resources/edc-checkstyle-config.xml")
+        configFile = rootProject.file("resources/tx-checkstyle-config.xml")
         configDirectory.set(rootProject.file("resources"))
+
+        //checkstyle violations are reported at the WARN level
+        this.isShowViolations = System.getProperty("checkstyle.verbose", "false").toBoolean()
     }
 
 
     // this is a temporary workaround until we're fully moved to TractusX:
     // publishing to OSSRH is handled by the build plugin, but publishing to GH packages
     // must be configured separately
-    publishing{
+    publishing {
         repositories {
             maven {
                 name = "GitHubPackages"
