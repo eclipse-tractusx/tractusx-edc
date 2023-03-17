@@ -97,7 +97,8 @@ builds as actual releases (as opposed to: snapshots) to a separate OSSRH-operate
 [this EDC decision record](https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-02-10-nightly-builds)).
 
 Unfortunately there is no way to automatically trigger the tractusx-edc build whenever a new EDC nightly is
-created. The most reliable method is to periodically query for the latest EDC nightly, e.g. leveraging GitHub's `dependabot` feature, or using the method highlighted in the aforementioned Jira issue:
+created. The most reliable method is to periodically query for the latest EDC nightly, e.g. leveraging GitHub's
+`dependabot` feature, or using the following `curl` command:
 
 ```shell
 curl <OSSHR_RELEASES_REPO_URL>/org/eclipse/edc/connector-core/maven-metadata.xml | xmllint --xpath "//metadata/versioning/versions/version[last()]" -
