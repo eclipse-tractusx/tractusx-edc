@@ -9,7 +9,7 @@ To improve stability, reproducibility and maintainability of releases, tractusx-
   is a clear and concise reason to do so.
 - slightly update branching model
 - if possible, bugs/defects should be fixed on `develop` and be backported to the respective `hotfix/` branch
-- Catena-X/Tractus-X will only provide hotfixes for critical security bugs as defined by the committers for the
+- only hotfixes for critical security bugs will be provided as defined by the committers for the
   currently released version. Nothing else.
 - feature development happens _in developers' forks only_ to keep the Git reflog of the `origin` clean.
 
@@ -52,6 +52,7 @@ part of the release process. For reference_:
 - Creating tags using GitHub's
   API: https://github.com/eclipse-edc/Connector/blob/b24a5cacbc9fcabdfd8020d779399b3e56856661/.github/workflows/release-edc.yml#L21 (
   example)
+- Create GitHub Release: https://github.com/eclipse-edc/Connector/blob/b24a5cacbc9fcabdfd8020d779399b3e56856661/.github/workflows/release-edc.yml#L56 (example)
 
 Once a release is created, the EDC upstream version must not change anymore, unless there is good reason to do so, for
 example, a defect, that needs to be fixed upstream. At that point a decision can also be made to employ a cherry-pick model, in case the
@@ -91,8 +92,7 @@ readability and make a release's history readily apparent.
 
 ### Nightly builds
 
-Nightly builds are generated according to a fixed schedule (as suggested
-in [this Jira issue](https://jira.catena-x.net/browse/A1IDSC-408)). Upstream EDC will soon begin to publish nightly
+Nightly builds are generated according to a fixed schedule. Upstream EDC will soon begin to publish nightly
 builds as actual releases (as opposed to: snapshots) to a separate OSSRH-operated repository (see
 [this EDC decision record](https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-02-10-nightly-builds)).
 
@@ -111,7 +111,7 @@ current date, we can start the nightly. If the EDC nightly doesn't appear within
 - All artifacts (docker images, helm charts, Maven artifacts) should be published to well-known and publicly accessible
   locations such as MavenCentral, DockerHub, etc. The GitHub Packages repository is only accessible to authenticated
   users.
-- When and if Tractus-X becomes an Eclipse project, we'll have to adopt the Eclipse Foundation's publishing guidelines,
+- When the project was migrated to be an Eclipse project, we'll have to adopt the Eclipse Foundation's publishing guidelines,
   which prescribes the use of Jenkins for publishing to MavenCentral and OSSRH.
 - Typically, GitHub Actions should perform all verification tasks, running tests, etc. and Jenkins' only purpose is to
   publish.
