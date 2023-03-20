@@ -33,5 +33,9 @@ spec:
       targetPort: metrics
       protocol: TCP
       name: metrics
+    - port: {{ .Values.controlplane.endpoints.observability.port}}
+      targetPort: observability
+      protocol: TCP
+      name: observability
   selector:
     {{- include "txdc.controlplane.selectorLabels" . | nindent 4 }}

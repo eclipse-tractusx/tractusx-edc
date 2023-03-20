@@ -37,7 +37,6 @@ public class TxObservabilityApiExtension implements ServiceExtension {
         String contextName = "management";
         if (allowInsecure(context)) {
             contextName = OBSERVABILITY_CONTEXT_NAME;
-        } else {
         }
         webService.registerResource(contextName, controller);
     }
