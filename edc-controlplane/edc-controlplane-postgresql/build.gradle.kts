@@ -8,12 +8,12 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-controlplane:edc-controlplane-base"))
-    implementation(project(":edc-extensions:postgresql-migration"))
-    implementation(edc.azure.vault)
-    implementation(edc.bundles.sqlstores)
-    implementation(edc.core.controlplane)
-    implementation(edc.dpf.transfer)
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
+    runtimeOnly(project(":edc-extensions:postgresql-migration"))
+    runtimeOnly(edc.azure.vault)
+    runtimeOnly(edc.bundles.sqlstores)
+    runtimeOnly(edc.core.controlplane)
+    runtimeOnly(edc.dpf.transfer)
 
 }
 

@@ -54,7 +54,6 @@ WORKDIR /app
 
 COPY --from=otel /tmp/opentelemetry-javaagent.jar .
 COPY ${JAR} edc-controlplane.jar
-COPY ${LIB} ./lib/
 
 HEALTHCHECK NONE
 

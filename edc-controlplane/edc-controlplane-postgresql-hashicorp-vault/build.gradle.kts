@@ -8,14 +8,14 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-controlplane:edc-controlplane-base"))
-    implementation(project(":edc-extensions:postgresql-migration"))
-    implementation(project(":edc-extensions:hashicorp-vault"))
-    implementation(edc.bundles.sqlstores)
-    implementation(edc.transaction.local)
-    implementation(edc.sql.pool)
-    implementation(edc.core.controlplane)
-    implementation(edc.dpf.transfer)
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
+    runtimeOnly(project(":edc-extensions:postgresql-migration"))
+    runtimeOnly(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(edc.bundles.sqlstores)
+    runtimeOnly(edc.transaction.local)
+    runtimeOnly(edc.sql.pool)
+    runtimeOnly(edc.core.controlplane)
+    runtimeOnly(edc.dpf.transfer)
 
 }
 

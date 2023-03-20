@@ -7,10 +7,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-controlplane:edc-controlplane-base"))
-    implementation(edc.core.controlplane)
-    implementation(edc.azure.vault)
-    implementation(edc.azure.identity)
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
+    runtimeOnly(edc.core.controlplane)
+    runtimeOnly(edc.azure.vault)
+    runtimeOnly(edc.azure.identity)
 
 }
 
