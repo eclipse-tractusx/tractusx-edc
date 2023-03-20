@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":edc-extensions:cx-oauth2"))
     implementation(project(":edc-extensions:control-plane-adapter"))
     implementation(project(":edc-extensions:provision-additional-headers"))
+    implementation(project(":edc-extensions:observability-api-customization"))
 
     implementation(edc.core.controlplane)
     implementation(edc.config.filesystem)
@@ -17,7 +18,7 @@ dependencies {
     implementation(edc.auth.oauth2.core)
     implementation(edc.auth.oauth2.daps)
     implementation(edc.api.management)
-    implementation(edc.api.observability)
+//    implementation(edc.api.observability)
     implementation(edc.ids)
     implementation(edc.spi.jwt)
     implementation(edc.bundles.dpf)
