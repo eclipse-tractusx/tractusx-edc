@@ -60,8 +60,8 @@ spec:
           {{- if .Values.controlplane.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.controlplane.endpoints.default.path }}/check/liveness
-              port: {{ .Values.controlplane.endpoints.default.port }}
+              path: {{ .Values.controlplane.endpoints.observability.path }}/check/liveness
+              port: {{ .Values.controlplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.controlplane.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.controlplane.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.controlplane.livenessProbe.timeoutSeconds }}
@@ -71,8 +71,8 @@ spec:
           {{- if .Values.controlplane.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.controlplane.endpoints.default.path }}/check/readiness
-              port: {{ .Values.controlplane.endpoints.default.port }}
+              path: {{ .Values.controlplane.endpoints.observability.path }}/check/readiness
+              port: {{ .Values.controlplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.controlplane.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.controlplane.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.controlplane.readinessProbe.timeoutSeconds }}
@@ -145,6 +145,12 @@ spec:
               value: {{ .Values.controlplane.endpoints.ids.port | quote }}
             - name: "WEB_HTTP_IDS_PATH"
               value: {{ .Values.controlplane.endpoints.ids.path | quote }}
+            - name: "WEB_HTTP_OBSERVABILITY_PORT"
+              value: {{ .Values.controlplane.endpoints.observability.port | quote}}
+            - name: "WEB_HTTP_OBSERVABILITY_PATH"
+              value: {{ .Values.controlplane.endpoints.observability.path | quote}}
+            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
+              value: {{ .Values.controlplane.endpoints.observability.insecure | quote }}
 
             #########
             ## IDS ##
