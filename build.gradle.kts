@@ -108,7 +108,7 @@ allprojects {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/catenax-ng/product-edc")
+                url = uri("https://maven.pkg.github.com/${System.getenv("REPO")}")
                 credentials {
                     username = System.getenv("GITHUB_PACKAGE_USERNAME")
                     password = System.getenv("GITHUB_PACKAGE_PASSWORD")
