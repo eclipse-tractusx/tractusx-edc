@@ -1,4 +1,4 @@
-rootProject.name = "product-edc"
+rootProject.name = "tractusx-edc"
 
 include(":edc-extensions:business-partner-validation")
 include(":edc-extensions:control-plane-adapter")
