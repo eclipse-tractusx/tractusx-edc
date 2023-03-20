@@ -7,10 +7,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-controlplane:edc-controlplane-base"))
-    implementation(project(":edc-extensions:hashicorp-vault"))
-    implementation(edc.core.controlplane)
-    implementation(edc.dpf.transfer)
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
+    runtimeOnly(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(edc.core.controlplane)
+    runtimeOnly(edc.dpf.transfer)
 
 }
 
