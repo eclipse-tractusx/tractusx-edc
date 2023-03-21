@@ -175,7 +175,7 @@ curl -X POST "${BOB_DATAMGMT_URL}/data/assets" \
              "asset": {
                 "properties": {
                         "asset:prop:id": "1",
-                        "asset:prop:description": "Product EDC Demo Asset"
+                        "asset:prop:description": "Tractus-X EDC Demo Asset"
                     }
                 },
                 "dataAddress": {

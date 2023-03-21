@@ -88,7 +88,7 @@ Derivatives of the Data-Plane can be found here
 
 ### Build
 
-Build Product-EDC together with its Container Images
+Build Tractus-X EDC together with its Container Images
 
 ```shell
 ./gradlew dockerize

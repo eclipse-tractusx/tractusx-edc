@@ -59,7 +59,7 @@ spec:
               cp /opt/config/scope_mapping.yml /etc/daps/scope_mapping.yml
               apk add --update openssl
               openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/keys/omejdn/omejdn.key \
-                -subj "/C=DE/ST=Berlin/L=Berlin/O=Product-EDC-Test, Inc./OU=DE"
+                -subj "/C=DE/ST=Berlin/L=Berlin/O=TractusX-EDC-Test, Inc./OU=DE"
           volumeMounts:
             - mountPath: /etc/daps
               name: config-dir
