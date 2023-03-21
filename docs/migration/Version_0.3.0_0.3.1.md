@@ -2,7 +2,7 @@
 
 ## Observability API changes
 
-All endpoints of the Observability API now support unauthenticated access, if configured. That will put the
+All endpoints (`/health`, `/startup`, `/liveness`, `/readiness`) of the Observability API now support unauthenticated access, if configured. That will put the
 Observability API under a new context named `"observability"`, which consequently requires proper web context
 configuration for it. Note that the name of the context cannot be changed.
 
