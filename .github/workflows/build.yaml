@@ -28,15 +28,17 @@ jobs:
   secret-presence:
     runs-on: ubuntu-latest
     outputs:
-      CXNG_GHCR_PAT: ${{ steps.secret-presence.outputs.CXNG_GHCR_PAT }}
       SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
+      GPG_PRIVATE_KEY: ${{ steps.secret-presence.outputs.GPG_PRIVATE_KEY }}
+      GPG_PASSPHRASE: ${{ steps.secret-presence.outputs.GPG_PASSPHRASE }}
     steps:
       -
         name: Check whether secrets exist
         id: secret-presence
         run: |
-          [ ! -z "${{ secrets.CXNG_GHCR_PAT }}" ] && echo "::set-output name=CXNG_GHCR_PAT::true"
           [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "::set-output name=SONAR_TOKEN::true"
+          [ ! -z "${{ secrets.GPG_PRIVATE_KEY }}" ] && echo "::set-output name=GPG_PRIVATE_KEY::true"
+          [ ! -z "${{ secrets.GPG_PASSPHRASE }}" ] && echo "::set-output name=GPG_PASSPHRASE::true"
           exit 0
 
   verify-formatting:
@@ -126,10 +128,13 @@ jobs:
           ./gradlew -p edc-extensions build
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
   build-controlplane:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: [ secret-presence, verify-formatting ]
     strategy:
       fail-fast: false
@@ -147,12 +152,12 @@ jobs:
       -
         name: Login to GitHub Container Registry
         if: |
-          needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
+          github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.CXNG_GHCR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Set up JDK 11
         uses: actions/setup-java@v3.10.0
@@ -167,7 +172,7 @@ jobs:
           ./gradlew -p edc-controlplane/${{ matrix.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: edc-controlplane Docker Metadata
         id: edc_controlplane_meta
@@ -190,12 +195,15 @@ jobs:
           build-args: |
             JAR=edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
           push: |
-            ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
+            ${{ (github.event_name != 'pull_request' && 'true') || 'false' }}
           tags: ${{ steps.edc_controlplane_meta.outputs.tags }}
           labels: ${{ steps.edc_controlplane_meta.outputs.labels }}
 
   build-dataplane:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: [ secret-presence, verify-formatting ]
     strategy:
       fail-fast: false
@@ -211,12 +219,12 @@ jobs:
       -
         name: Login to GitHub Container Registry
         if: |
-          needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request'
+          github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.CXNG_GHCR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Set up JDK 11
         uses: actions/setup-java@v3.10.0
@@ -231,7 +239,7 @@ jobs:
           ./gradlew -p edc-dataplane/${{ matrix.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: edc-dataplane Docker Metadata
         id: edc_dataplane_meta
@@ -254,6 +262,41 @@ jobs:
           build-args: |
             JAR=edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
           push: |
-            ${{ (needs.secret-presence.outputs.CXNG_GHCR_PAT && github.event_name != 'pull_request' && 'true') || 'false' }}
+            ${{ (github.event_name != 'pull_request' && 'true') || 'false' }}
           tags: ${{ steps.edc_dataplane_meta.outputs.tags }}
           labels: ${{ steps.edc_dataplane_meta.outputs.labels }}
+
+  publish-to-github-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [secret-presence, verify-formatting, build-controlplane, build-dataplane, build-extensions]
+    if: |
+      needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request'
+    steps:
+      # Set-Up
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3.10.0
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'gradle'
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v1
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      # publish snapshots
+      - name: Publish snapshot versions
+        run: |-
+          echo "Publishing Version $(grep -e "defaultVersion" gradle.properties | cut -f2 -d"=") to Github Packages"
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository
+        env:
+          REPO: ${{ github.repository }}
+          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

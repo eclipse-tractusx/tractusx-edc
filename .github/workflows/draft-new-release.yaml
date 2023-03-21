@@ -12,6 +12,9 @@ jobs:
   draft-new-release:
     name: "Draft a new release"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v3.3.0
       -
@@ -41,7 +44,7 @@ jobs:
            sed -i  's/defaultVersion=.*/defaultVersion=${{ github.event.inputs.version }}/g' gradle.properties
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Bump version in /charts
         uses: mikefarah/yq@v4.31.2
