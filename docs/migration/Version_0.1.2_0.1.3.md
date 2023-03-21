@@ -6,15 +6,18 @@ This document contains a list of breaking changes that are introduced in version
 
 As the images now use the official OAuth2 Extension, the audience settings need to the updated.
 
-**Add the following settings**
+Add the following settings:
+
 - EDC_OAUTH_PROVIDER_AUDIENCE
 - EDC_OAUTH_ENDPOINT_AUDIENCE
 
-**Remove the following setting**
+Remove the following setting:
+
 - EDC_IDS_ENDPOINT_AUDIENCE
 
-Example
-```
+Example:
+
+```yaml
 EDC_OAUTH_PROVIDER_AUDIENCE: idsc:IDS_CONNECTORS_ALL
 EDC_OAUTH_ENDPOINT_AUDIENCE: http://plato-edc-controlplane:8282/api/v1/ids/data
 ```

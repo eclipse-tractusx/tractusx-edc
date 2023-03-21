@@ -68,19 +68,19 @@ Follow these steps to get a fully functional EDC demo environment out of the box
 Install on your machine:
 
 - Minikube
-    - Documentation https://minikube.sigs.k8s.io/docs/start/
+  - Documentation <https://minikube.sigs.k8s.io/docs/start/>
 - Helm
-    - Documentation https://helm.sh/docs/intro/install/
+  - Documentation <https://helm.sh/docs/intro/install/>
 
 ## Start Demo Environment
 
-**Update Helm Dependencies**
+Update Helm Dependencies:
 
 ```bash
 helm dependency update
 ```
 
-**Install Demo Chart**
+Install Demo Chart:
 
 ```bash
 helm install tx-infrastructure --namespace tx --create-namespace .
@@ -88,7 +88,7 @@ helm install tx-infrastructure --namespace tx --create-namespace .
 
 ## Stop Demo Environment
 
-**Uninstall Demo Chart**
+Uninstall Demo Chart:
 
 ```bash
 helm uninstall tx-infrastructure --namespace tx

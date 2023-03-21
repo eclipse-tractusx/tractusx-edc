@@ -43,6 +43,6 @@ parallelization resulting in faster and more responsive builds.
 
 ## Further consideration
 
-Planned improvements regarding the testing procedure (PR https://github.com/catenax-ng/product-edc/pull/781) will also greatly benefit from the EDC build tools such
+Planned improvements regarding the testing procedure (PR <https://github.com/catenax-ng/product-edc/pull/781>) will also greatly benefit from the EDC build tools such
 as JUnit tags and conditional evaluation of the tagged tests. Much of EDC's testing framework is based on Gradle and can
 be seamlessly integrated in product-edc.
