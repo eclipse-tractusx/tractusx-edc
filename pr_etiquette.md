@@ -43,7 +43,7 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
 - Please complete reviews within two business days or delegate to another committer, removing yourself as a reviewer.
 - If you have been requested as reviewer, but cannot do the review for any reason (lack of time or expertise in a
   particular area, etc.) please comment that in the PR and remove yourself as a reviewer, suggesting a stand-in.
-  The [code wners document](CODEOWNERS) should help with that.
+  The [code owners document](CODEOWNERS) should help with that.
 - Don't be overly pedantic.
 - Don't argue basic principles (code style, architectural decisions, etc.)
 - Use the `suggestion` feature of GitHub for small/simple changes.

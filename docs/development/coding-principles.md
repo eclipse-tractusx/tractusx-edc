@@ -8,20 +8,19 @@
    via their constructor.
 3. Service configuration requirements should always be explicit; as a general rule, do not pass a single configuration
    object with many values to multiple services.
-   For example, see `HttpFunctionConfiguration.java`.
 4. Annotate configuration keys with `@Setting` so that they may be tracked.
 
 ## Errors
 
-1. Do not throw checked exceptions; use unchecked exceptions. If an unchecked exception type needs to be defined,
-   inherit from EdcException.
+1. Do not throw checked exceptions; always use unchecked exceptions. If an unchecked exception type needs to be defined,
+   inherit from `EdcException`.
 2. Do not throw exceptions to signal a validation error; report the error (preferably collated) and return an error
    response.
 3. Throw an unchecked exception if something unexpected happens (e.g. a backing store connection is down after a number
    of retries). Note that validation errors are expected.
-   For example, see `Result.java`.
 4. Only throw an exception when there is no remediation possible, i.e. the exception is fatal. Do not throw an exception
    if an operation can be retried.
+5. Generally, services should return a `org.eclipse.spi.result.Result` (or a suitable subclass).
 
 ## Simplicity
 
@@ -33,10 +32,10 @@
 1. Use `var` instead of explicit types (helps with clarity)
 2. Avoid `final` in method args and local variables
 3. Use `final` in field declarations
-4. Avoid `static` fields except in constants or when absolutely necessary. (you should be able to provide a reason).
+4. Avoid `static` fields except in constants or when absolutely necessary (you should be able to provide a reason).
 5. Use interfaces to define shared constants
-6. Use "minimally required types" (or "smallest possible API"), e.g. use `ObjectMapper` instead of `TypeManager`
-   , or use a `String` instead of a more complex object containing the String, etc.
+6. Use "minimally required types" (or "smallest possible API"), e.g. use `ObjectMapper` instead of `TypeManager`, or use
+   a `String` instead of a more complex object containing the String, etc.
 7. Use either `public` members, which are documented and tested, or `private` members.
 8. Avoid package-private members, especially if only needed for testing
 9. Avoid `protected` members unless they're intended to be overridden.
@@ -72,7 +71,6 @@
     - there are any number of optional constructor args
     - there are more than 3 constructor args
     - inheriting from an object that fulfills any of the above. In this case use derived builders as well.
-
 2. Although serializability is not the reason we use the builder pattern, it is a strong indication that a builder
    should be used.
 2. Builders should be named just `Builder` and be static nested classes.
@@ -132,7 +130,7 @@
 ## Observability
 
 Services can implement one the following interfaces: `ReadinessProvider`, `LivenessProvider`, `StartupStatusProvider`
-and register with the `HealthCheckService`, thus reporting the service's readiness status through the observability API. 
+and register with the `HealthCheckService`, thus reporting the service's readiness status through the observability API.
 
 ## Streams
 
