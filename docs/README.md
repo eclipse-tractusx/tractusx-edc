@@ -2,7 +2,7 @@
 
 The Tractus-X EDC repository creates runnable applications out of EDC extensions from the [Eclipse DataSpace Connector](https://github.com/eclipse-edc/Connector) repository.
 
-When running a EDC connector from the Product EDC repository there are three setups to choose from. They only vary by using different extensions for
+When running a EDC connector from the Tractus-X EDC repository there are three setups to choose from. They only vary by using different extensions for
 
 - Resolving of Connector-Identities
 - Persistence of the Control-Plane-State

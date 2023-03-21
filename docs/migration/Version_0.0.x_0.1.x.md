@@ -18,7 +18,7 @@ This document contains a list of breaking changes that are introduced in version
 
 ## 1. PostgreSQL Database
 
-The Product EDC [PostgreSQL Migration Extension](../../edc-extensions/postgresql-migration/README.md) is able to run
+The Tractus-X EDC [PostgreSQL Migration Extension](../../edc-extensions/postgresql-migration/README.md) is able to run
 normal migrations. But the extension will never cause a data loss automatically, therefore part of this migration must
 be done by the user itself.
 
@@ -285,7 +285,7 @@ property is mostly used when creating assets.
 #### Example Call
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Tractus-X EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ## 3. Connector Configuration

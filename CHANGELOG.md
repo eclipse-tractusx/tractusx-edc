@@ -280,7 +280,7 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Changed
 
-- Release Workflow now publishes Product EDC Extensions as Maven Artifacts
+- Release Workflow now publishes EDC Extensions as Maven Artifacts
 
 ### Fixed
 
