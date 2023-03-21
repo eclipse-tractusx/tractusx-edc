@@ -13,14 +13,14 @@
 ## Errors
 
 1. Do not throw checked exceptions; always use unchecked exceptions. If an unchecked exception type needs to be defined,
-   inherit from `EdcException`.
+   inherit from `org.eclipse.edc.spi.EdcException`.
 2. Do not throw exceptions to signal a validation error; report the error (preferably collated) and return an error
    response.
 3. Throw an unchecked exception if something unexpected happens (e.g. a backing store connection is down after a number
    of retries). Note that validation errors are expected.
 4. Only throw an exception when there is no remediation possible, i.e. the exception is fatal. Do not throw an exception
    if an operation can be retried.
-5. Generally, services should return a `org.eclipse.spi.result.Result` (or a suitable subclass).
+5. Generally, services should return a `org.eclipse.edc.spi.result.Result` (or a suitable subclass).
 
 ## Simplicity
 
