@@ -28,7 +28,7 @@ import org.eclipse.edc.spi.system.health.HealthStatus;
 @Tag(name = "Application Observability")
 public interface TxObservabilityApi {
 
-    @Operation(description = "Performs a liveness probe to determine whether the runtime is working properly.",
+    @Operation(description = "Performs a health check to determine whether the runtime is working properly.",
             responses = {
                     @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = HealthStatus.class)))) }
     )

@@ -2,7 +2,7 @@
 
 This extension is a (temporary) replacement for - and a 1:1 stand-in for the EDC `observability-api` module. It exposes
 the same endpoints as the upstream module, with one important distinction: users can configure in which HTTP context the
-API gets registered, and whether or not insecure (= unauthenticated) access is allowed.
+API gets registered, and whether insecure (= unauthenticated) access is allowed.
 
 ## Default behaviour
 
@@ -14,13 +14,13 @@ web.http.management.port=<PORT>
 web.http.management.path=/some/api/path
 ```
 
-Further, the ObservabilityApi is secured with the default `AuthenticationService`, most likely a token-based one.
+Further, the Observability API is secured with the default `AuthenticationService`, most likely a token-based one.
 
 ## Allowing insecure access
 
 If the Observability API should be unauthenticated, the following configuration is required:
 
-```
+```properties
 tractusx.api.observability.allow-insecure=true
 web.http.observability.port=<PORT>
 web.http.observability.path=/some/api/path

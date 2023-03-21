@@ -34,13 +34,6 @@ import org.jetbrains.annotations.NotNull;
 public class TxObservabilityApiController implements TxObservabilityApi {
 
     private final HealthCheckService healthCheckService;
-
-    /**
-     * This deprecation is used to permit a softer transition from the deprecated `web.http` (default) config group to the
-     * current `web.http.management`
-     *
-     */
-
     public TxObservabilityApiController(HealthCheckService provider) {
         healthCheckService = provider;
     }

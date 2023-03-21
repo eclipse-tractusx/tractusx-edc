@@ -29,7 +29,6 @@ RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 FROM alpine:3.17.2
 
 ARG JAR
-ARG LIB
 
 ARG APP_USER=docker
 ARG APP_UID=10100

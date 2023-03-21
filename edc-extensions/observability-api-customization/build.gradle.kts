@@ -1,4 +1,3 @@
-
 plugins {
     `maven-publish`
     `java-library`
@@ -20,7 +19,5 @@ dependencies {
 
     // provides token-based authentication at test runtime
     testRuntimeOnly(edc.auth.tokenbased)
-
-
 }
 
