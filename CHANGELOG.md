@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+- Support unauthenticated access to the ObservabilityAPI (#126)
+
+### Fixed
+
 ## [0.3.0] - 2023-02-20
 
 **Important Note**: This version introduces multiple breaking changes. Before updating **always** consolidate the

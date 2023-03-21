@@ -1,3 +1,25 @@
+#
+#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -60,8 +82,8 @@ spec:
           {{- if .Values.controlplane.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.controlplane.endpoints.default.path }}/check/liveness
-              port: {{ .Values.controlplane.endpoints.default.port }}
+              path: {{ .Values.controlplane.endpoints.observability.path }}/check/liveness
+              port: {{ .Values.controlplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.controlplane.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.controlplane.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.controlplane.livenessProbe.timeoutSeconds }}
@@ -71,8 +93,8 @@ spec:
           {{- if .Values.controlplane.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.controlplane.endpoints.default.path }}/check/readiness
-              port: {{ .Values.controlplane.endpoints.default.port }}
+              path: {{ .Values.controlplane.endpoints.observability.path }}/check/readiness
+              port: {{ .Values.controlplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.controlplane.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.controlplane.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.controlplane.readinessProbe.timeoutSeconds }}
@@ -145,6 +167,12 @@ spec:
               value: {{ .Values.controlplane.endpoints.ids.port | quote }}
             - name: "WEB_HTTP_IDS_PATH"
               value: {{ .Values.controlplane.endpoints.ids.path | quote }}
+            - name: "WEB_HTTP_OBSERVABILITY_PORT"
+              value: {{ .Values.controlplane.endpoints.observability.port | quote}}
+            - name: "WEB_HTTP_OBSERVABILITY_PATH"
+              value: {{ .Values.controlplane.endpoints.observability.path | quote}}
+            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
+              value: {{ .Values.controlplane.endpoints.observability.insecure | quote }}
 
             #########
             ## IDS ##
