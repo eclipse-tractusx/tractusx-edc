@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 - Support unauthenticated access to the ObservabilityAPI (#126)
 
 ### Fixed
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 
 ### Added
+
 - Add contract id to data source http call (#732)
 - Support also support releases in ci pipeline
 - Introduce typed object for oauth2 provisioning
@@ -40,6 +42,7 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - Feature: Sftp Provisioner and Client (#554)
 
 ### Changed
+
 - Support horizontal edc scaling in cp adapter extension (#678)
 - Use upstream jackson version (#741)
 - Replace provision-oauth2 with data-plane-http-oauth2
@@ -61,12 +64,14 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - update description  of supporting infrastructure deployment (#616)
 
 ### Fixed
+
 - bugfix: Fix slow AES encryption (#746)
 - Fix typo in tractusx-connector values.yaml comment
 - Fix not working docu link in README.md
 - Fix typo in control-plane adapter README
 
 ### Dependency updates
+
 - Bump EDC to 20220220 (#767)
 - Bump alpine (#749)
 - Bump alpine (#750)
