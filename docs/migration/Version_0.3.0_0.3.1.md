@@ -1,7 +1,5 @@
 # Migration from 0.3.0 to 0.3.1
 
-## Deprecation
-
 ## Observability API changes
 
 All endpoints of the Observability API now support unauthenticated access, if configured. That will put the
@@ -15,5 +13,3 @@ configuration for it. Note that the name of the context cannot be changed.
   unauthenticated access is enabled!**
 - `web.http.observability.path`: string value that specifies the path of the `observability` context. **Mandatory if
   unauthenticated access is enabled!**
-
-## Other changes:
