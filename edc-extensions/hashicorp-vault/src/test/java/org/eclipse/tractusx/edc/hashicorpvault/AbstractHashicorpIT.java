@@ -20,17 +20,8 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultClient.VAULT_DATA_ENTRY_NAME;
-import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_TOKEN;
-import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_URL;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.Getter;
+import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.security.CertificateResolver;
 import org.eclipse.edc.spi.security.Vault;
@@ -50,6 +41,18 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.vault.VaultContainer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultClient.VAULT_DATA_ENTRY_NAME;
+import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_TOKEN;
+import static org.eclipse.tractusx.edc.hashicorpvault.HashicorpVaultVaultExtension.VAULT_URL;
+
+@ComponentTest
 @Testcontainers
 @ExtendWith(EdcExtension.class)
 class AbstractHashicorpIT {

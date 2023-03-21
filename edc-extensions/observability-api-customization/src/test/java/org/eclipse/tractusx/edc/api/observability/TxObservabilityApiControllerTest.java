@@ -22,6 +22,7 @@ import org.eclipse.edc.connector.spi.contractdefinition.ContractDefinitionServic
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.spi.policydefinition.PolicyDefinitionService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.asset.DataAddressResolver;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +39,7 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.mock;
 
-//todo: uncomment after test refactoring
-//@ApiTest
+@ApiTest
 @ExtendWith(EdcExtension.class)
 public class TxObservabilityApiControllerTest {
 
