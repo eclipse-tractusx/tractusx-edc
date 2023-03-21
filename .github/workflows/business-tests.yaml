@@ -19,6 +19,9 @@ concurrency:
 jobs:
   business-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       ##############
       ### Set-Up ###
@@ -87,7 +90,7 @@ jobs:
            ./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.CXNG_GHCR_PAT }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Load images into KinD
         run: |-
