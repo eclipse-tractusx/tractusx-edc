@@ -2,33 +2,24 @@
 name: "Build"
 
 on:
-#  push:
-#    branches:
-#      - main
-#      - develop
-#    tags:
-#      - '[0-9]+.[0-9]+.[0-9]+'
-#  release:
-#    types:
-#      - published
-#  pull_request:
-#    paths-ignore:
-#      - 'charts/**'
-#      - 'docs/**'
-#      - '**/*.md'
-#    branches:
-#      - '*'
-#  workflow_dispatch:
-  workflow_run:
-    workflows: ["Verify"]
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  release:
+    types:
+      - published
+  pull_request:
     paths-ignore:
       - 'charts/**'
       - 'docs/**'
       - '**/*.md'
     branches:
       - '*'
-    types:
-      - completed
+  workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -36,7 +27,6 @@ concurrency:
 
 jobs:
   secret-presence:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
       SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
@@ -217,7 +207,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [secret-presence, verify-formatting, build-controlplane, build-dataplane, build-extensions]
+    needs: [secret-presence, build-controlplane, build-dataplane, build-extensions]
 
     # do not run on PR branches, do not run on main
     if: |
