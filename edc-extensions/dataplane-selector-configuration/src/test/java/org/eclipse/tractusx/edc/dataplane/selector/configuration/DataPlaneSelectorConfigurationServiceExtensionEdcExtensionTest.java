@@ -20,9 +20,8 @@
 
 package org.eclipse.tractusx.edc.dataplane.selector.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
+import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -33,6 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@ComponentTest
 @ExtendWith(EdcExtension.class)
 class DataPlaneSelectorConfigurationServiceExtensionEdcExtensionTest {
 

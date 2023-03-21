@@ -31,71 +31,78 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 class BusinessPartnerValidationExtensionTest {
 
-  private BusinessPartnerValidationExtension extension;
+    private BusinessPartnerValidationExtension extension;
 
-  // mocks
-  private ServiceExtensionContext serviceExtensionContext;
-  private PolicyEngine policyEngine;
-  private RuleBindingRegistry ruleBindingRegistry;
+    // mocks
+    private ServiceExtensionContext serviceExtensionContext;
+    private PolicyEngine policyEngine;
+    private RuleBindingRegistry ruleBindingRegistry;
 
-  @BeforeEach
-  void setup() {
+    @BeforeEach
+    void setup() {
 
-    policyEngine = Mockito.mock(PolicyEngine.class);
-    ruleBindingRegistry = Mockito.mock(RuleBindingRegistry.class);
+        policyEngine = mock(PolicyEngine.class);
+        ruleBindingRegistry = mock(RuleBindingRegistry.class);
 
-    final Monitor monitor = Mockito.mock(Monitor.class);
-    serviceExtensionContext = Mockito.mock(ServiceExtensionContext.class);
+        var monitor = mock(Monitor.class);
+        serviceExtensionContext = mock(ServiceExtensionContext.class);
 
-    Mockito.when(serviceExtensionContext.getMonitor()).thenReturn(monitor);
+        when(serviceExtensionContext.getMonitor()).thenReturn(monitor);
 
-    extension = new BusinessPartnerValidationExtension(ruleBindingRegistry, policyEngine);
-  }
+        extension = new BusinessPartnerValidationExtension(ruleBindingRegistry, policyEngine);
+    }
 
-  @Test
-  void testRegisterDutyFunction() {
+    @Test
+    void testRegisterDutyFunction() {
 
-    // invoke
-    extension.initialize(serviceExtensionContext);
+        // invoke
+        extension.initialize(serviceExtensionContext);
 
-    // verify
-    Mockito.verify(policyEngine, Mockito.times(1))
-        .registerFunction(
-            Mockito.anyString(),
-            Mockito.eq(Duty.class),
-            Mockito.eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
-            Mockito.any());
-  }
+        // verify
+        verify(policyEngine)
+                .registerFunction(
+                        anyString(),
+                        eq(Duty.class),
+                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        any());
+    }
 
-  @Test
-  void testRegisterPermissionFunction() {
+    @Test
+    void testRegisterPermissionFunction() {
 
-    // invoke
-    extension.initialize(serviceExtensionContext);
+        // invoke
+        extension.initialize(serviceExtensionContext);
 
-    // verify
-    Mockito.verify(policyEngine, Mockito.times(1))
-        .registerFunction(
-            Mockito.anyString(),
-            Mockito.eq(Permission.class),
-            Mockito.eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
-            Mockito.any());
-  }
+        // verify
+        verify(policyEngine, Mockito.times(1))
+                .registerFunction(
+                        anyString(),
+                        eq(Permission.class),
+                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        any());
+    }
 
-  @Test
-  void testRegisterProhibitionFunction() {
+    @Test
+    void testRegisterProhibitionFunction() {
 
-    // invoke
-    extension.initialize(serviceExtensionContext);
+        // invoke
+        extension.initialize(serviceExtensionContext);
 
-    // verify
-    Mockito.verify(policyEngine, Mockito.times(1))
-        .registerFunction(
-            Mockito.anyString(),
-            Mockito.eq(Prohibition.class),
-            Mockito.eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
-            Mockito.any());
-  }
+        // verify
+        verify(policyEngine, Mockito.times(1))
+                .registerFunction(
+                        anyString(),
+                        eq(Prohibition.class),
+                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        any());
+    }
 }
