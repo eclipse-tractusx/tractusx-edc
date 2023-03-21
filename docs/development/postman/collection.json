@@ -63,7 +63,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"asset\": {\n        \"properties\": {\n            \"asset:prop:id\": \"{{ASSET_ID}}\",\n            \"asset:prop:description\": \"Product EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"properties\": {\n            \"type\": \"HttpData\",\n            \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\"\n        }\n    }\n}",
+					"raw": "{\n    \"asset\": {\n        \"properties\": {\n            \"asset:prop:id\": \"{{ASSET_ID}}\",\n            \"asset:prop:description\": \"Tractus-X EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"properties\": {\n            \"type\": \"HttpData\",\n            \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\"\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"

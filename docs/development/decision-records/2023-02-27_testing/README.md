@@ -1,4 +1,4 @@
-# Testing concept for product-edc
+# Testing concept for tractusx-edc
 
 ## Decision
 
@@ -13,7 +13,7 @@ Henceforth, testing shall be done in accordance with the herein outlined rules a
 
 ## Rationale
 
-Past experiences with product-edc's testing setup has shown that it is time- and resource-consuming, which also makes it unreliable at times.
+Past experiences with tractusx-edc's testing setup has shown that it is time- and resource-consuming, which also makes it unreliable at times.
 Furthermore, a finer-grained test classification such as the one outlined in this document is currently neither present nor documented.
 
 ### Definitions and distinction
