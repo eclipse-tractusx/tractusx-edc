@@ -2,6 +2,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    id("io.swagger.core.v3.swagger-gradle-plugin")
 }
 
 dependencies {
