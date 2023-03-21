@@ -9,7 +9,7 @@
 ### 1. Setup Eclipse Dash License Tool locally
 
 For instructions on how to download the Eclipse Dash Tool executable, refer to the
-project's [GitHub page](https://github.com/eclipse/dash-licenses#get-it). 
+project's [GitHub page](https://github.com/eclipse/dash-licenses#get-it).
 
 ### 2. Generate DEPENDENCIES file
 
@@ -27,7 +27,7 @@ First, the dependencies of this module are calculated with gradle and passed to 
 gradle allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s]+" | sort | uniq | java -jar /path/org.eclipse.dash.licenses-0.0.1-SNAPSHOT.jar - -summary DEPENDENCIES
 ```
 
-_Note: on some machines (e.g. macOS) [the ack tool](https://beyondgrep.com/install/) should be used instead of `grep`._ 
+_Note: on some machines (e.g. macOS) [the ack tool](https://beyondgrep.com/install/) should be used instead of `grep`._
 
 ### 3. Resolve restricted Dependencies
 
