@@ -1,4 +1,4 @@
-# Eclipse Tractus-X Code Style Guide
+# Eclipse Tractus-X EDC Code Style Guide
 
 In order to maintain a coherent code style throughout the project we ask every contributor to adhere to a few simple
 style guidelines. We assume most developers will use at least something like `vim` and therefore have support for
@@ -51,7 +51,7 @@ If you absolutely want to make sure that no piece of ever-so-slightly misformatt
 advise you to use the [SaveActions plugin](https://plugins.jetbrains.com/plugin/7642-save-actions) for IntelliJ IDEA. It
 takes care that your code is always correctly formatted. Unfortunately SaveActions has no export feature, so please just
 copy this configuration:
-![](resources/save_actions_screenshot.png)
+![](resources/save_actions_scr.png)
 
 ## [Optional] Generic `.editorConfig`
 
