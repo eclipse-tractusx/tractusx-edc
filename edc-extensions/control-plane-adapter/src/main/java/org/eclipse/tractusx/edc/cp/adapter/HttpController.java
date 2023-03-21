@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.cp.adapter;
 
 import static java.util.Objects.isNull;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -35,6 +36,7 @@ import org.eclipse.tractusx.edc.cp.adapter.service.ResultService;
 @Produces({MediaType.APPLICATION_JSON})
 @Path("/adapter/asset")
 @RequiredArgsConstructor
+@Tag(name = "Control Plane Adapter")
 public class HttpController {
   private final Monitor monitor;
   private final ResultService resultService;
