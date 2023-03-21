@@ -69,14 +69,14 @@ jobs:
       -
         name: Build Controlplane
         run: |-
-          ./gradlew -p edc-controlplane/${{ matrix.name }} build
+          ./gradlew -p edc-controlplane/${{ matrix.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Tar gzip files for veracode upload
         run: |-
-          tar -czvf edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-controlplane/${{ matrix.name }}/target/lib/*.jar
+          tar -czvf edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -87,7 +87,7 @@ jobs:
           appname: product-edc/${{ matrix.name }}
           createprofile: true
           version: ${{ matrix.name }}-${{ github.sha }}
-          filepath: edc-controlplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
+          filepath: edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
@@ -118,14 +118,14 @@ jobs:
       -
         name: Build Dataplane
         run: |-
-          ./gradlew -p edc-dataplane/${{ matrix.name }} build
+          ./gradlew -p edc-dataplane/${{ matrix.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Tar gzip files for veracode upload
         run: |-
-          tar -czvf edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.jar edc-dataplane/${{ matrix.name }}/target/lib/*.jar
+          tar -czvf edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
       -
         name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
@@ -136,7 +136,7 @@ jobs:
           appname: product-edc/${{ matrix.name }}
           createprofile: true
           version: ${{ matrix.name }}-${{ github.sha }}
-          filepath: edc-dataplane/${{ matrix.name }}/target/${{ matrix.name }}.tar.gz
+          filepath: edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
 
