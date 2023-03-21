@@ -11,13 +11,10 @@ dependencies {
     implementation(project(":edc-extensions:hashicorp-vault"))
     implementation(project(":edc-extensions:postgresql-migration"))
     implementation(project(":edc-extensions:provision-additional-headers"))
-    implementation(project(":edc-extensions:transferprocess-sftp-client"))
-    implementation(project(":edc-extensions:transferprocess-sftp-common"))
-    implementation(project(":edc-extensions:transferprocess-sftp-provisioner"))
 
 
     testImplementation("com.google.code.gson:gson:2.10")
-    testImplementation("org.apache.httpcomponents:httpclient:4.5.14")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     testImplementation("org.junit.platform:junit-platform-suite:1.9.2")
     testImplementation("io.cucumber:cucumber-java:7.11.1")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.11.1")

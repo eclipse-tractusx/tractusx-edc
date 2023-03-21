@@ -12,7 +12,4 @@ dependencies {
     implementation(project(":edc-extensions:hashicorp-vault"))
     implementation(project(":edc-extensions:postgresql-migration"))
     implementation(project(":edc-extensions:provision-additional-headers"))
-    implementation(project(":edc-extensions:transferprocess-sftp-client"))
-    implementation(project(":edc-extensions:transferprocess-sftp-common"))
-    implementation(project(":edc-extensions:transferprocess-sftp-provisioner"))
 }

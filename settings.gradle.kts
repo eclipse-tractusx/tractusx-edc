@@ -9,9 +9,6 @@ include(":edc-extensions:hashicorp-vault")
 include(":edc-extensions:postgresql-migration")
 include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:observability-api-customization")
-include(":edc-extensions:transferprocess-sftp-client")
-include(":edc-extensions:transferprocess-sftp-common")
-include(":edc-extensions:transferprocess-sftp-provisioner")
 include(":edc-tests")
 
 // modules for controlplane artifacts
