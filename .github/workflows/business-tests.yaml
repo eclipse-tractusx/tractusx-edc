@@ -133,10 +133,10 @@ jobs:
           retry_on: error
           command: |-
             # Update helm dependencies
-            helm dependency update edc-tests/src/main/resources/deployment/helm/supporting-infrastructure
+            helm dependency update edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure
   
             # Install the all-in-one supporting infrastructure environment (daps, vault, pgsql, minio)
-            helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure \
+            helm install infrastructure edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure \
               --wait-for-jobs --timeout=120s
   
             # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s
@@ -240,7 +240,7 @@ jobs:
                 {
                   "args": [
                     "-c",
-                    "cd /product-edc && ./gradlew edc-tests:test -Dcucumber=true"
+                    "cd /product-edc && ./gradlew edc-tests:cucumber:test -Dcucumber=true"
                   ],
                   "command": [
                     "/bin/sh"
@@ -276,7 +276,7 @@ jobs:
 
           cat << EOF >> pod.json
                   "image": "openjdk:11-jdk-slim",
-                  "name": "edc-tests",
+                  "name": "edc-tests-cucumber",
                   "volumeMounts": [
                     {
                       "mountPath": "/product-edc",
@@ -309,7 +309,7 @@ jobs:
           }
           EOF
 
-          kubectl run -i --image=openjdk:11-jdk-slim --restart=Never --rm edc-tests --overrides="$(cat pod.json)"
+          kubectl run -i --image=openjdk:11-jdk-slim --restart=Never --rm edc-tests-cucumber --overrides="$(cat pod.json)"
 
       #################
       ### Tear Down ###

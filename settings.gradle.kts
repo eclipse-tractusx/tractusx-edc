@@ -12,7 +12,9 @@ include(":edc-extensions:observability-api-customization")
 include(":edc-extensions:transferprocess-sftp-client")
 include(":edc-extensions:transferprocess-sftp-common")
 include(":edc-extensions:transferprocess-sftp-provisioner")
-include(":edc-tests")
+include(":edc-tests:e2e-tests")
+include(":edc-tests:runtime")
+include(":edc-tests:cucumber")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
@@ -27,6 +29,9 @@ include(":edc-dataplane")
 include(":edc-dataplane:edc-dataplane-azure-vault")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
+
+// for testing
+include(":launchers:simple")
 
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
@@ -62,6 +67,7 @@ dependencyResolutionManagement {
             library("spi-transfer", "org.eclipse.edc", "transfer-spi").versionRef("edc")
             library("spi-core", "org.eclipse.edc", "core-spi").versionRef("edc")
             library("spi-policy", "org.eclipse.edc", "policy-spi").versionRef("edc")
+            library("spi-contract", "org.eclipse.edc", "contract-spi").versionRef("edc")
             library("spi-policyengine", "org.eclipse.edc", "policy-engine-spi").versionRef("edc")
             library("spi-transaction-datasource", "org.eclipse.edc", "transaction-datasource-spi").versionRef("edc")
             library("spi-transactionspi", "org.eclipse.edc", "transaction-spi").versionRef("edc")
@@ -72,13 +78,16 @@ dependencyResolutionManagement {
             library("util", "org.eclipse.edc", "util").versionRef("edc")
             library("boot", "org.eclipse.edc", "boot").versionRef("edc")
             library("config-filesystem", "org.eclipse.edc", "configuration-filesystem").versionRef("edc")
+            library("vault-filesystem", "org.eclipse.edc", "vault-filesystem").versionRef("edc")
             library("core-controlplane", "org.eclipse.edc", "control-plane-core").versionRef("edc")
             library("core-connector", "org.eclipse.edc", "connector-core").versionRef("edc")
             library("core-jetty", "org.eclipse.edc", "jetty-core").versionRef("edc")
             library("core-jersey", "org.eclipse.edc", "jersey-core").versionRef("edc")
+            library("core-api", "org.eclipse.edc", "api-core").versionRef("edc")
             library("junit", "org.eclipse.edc", "junit").versionRef("edc")
             library("api-management-config", "org.eclipse.edc", "management-api-configuration").versionRef("edc")
             library("api-management", "org.eclipse.edc", "management-api").versionRef("edc")
+            library("api-catalog", "org.eclipse.edc", "catalog-api").versionRef("edc")
             library("api-observability", "org.eclipse.edc", "api-observability").versionRef("edc")
             library("ext-http", "org.eclipse.edc", "http").versionRef("edc")
             library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
