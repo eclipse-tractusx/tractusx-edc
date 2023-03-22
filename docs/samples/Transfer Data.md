@@ -10,7 +10,7 @@ consumer. But the roles could be inverse as well.
 
 ## Table of Content
 
-1. [Optional: Local Setup](#1-optional---local-setup)
+1. [Optional - Local Setup](#1-optional---local-setup)
 2. [Setup Data Offer](#2-setup-data-offer)
 3. [Request Contract Offers](#3-request-contract-offer-catalog)
 4. [Negotiate Contract](#4-negotiate-contract)
