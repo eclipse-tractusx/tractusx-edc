@@ -1,0 +1,38 @@
+---
+id: get-all-assets
+title: "getAllAssets"
+description: "Gets all assets according to a particular query"
+sidebar_label: "getAllAssets"
+hide_title: true
+hide_table_of_contents: true
+api: {"tags":["Asset"],"description":"Gets all assets according to a particular query","operationId":"getAllAssets","parameters":[{"name":"offset","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"integer","format":"int32"}},{"name":"limit","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"integer","format":"int32"}},{"name":"filter","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"string"}},{"name":"sort","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"string","enum":["ASC","DESC"]}},{"name":"sortField","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"string"}}],"responses":{"200":{"content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"createdAt":{"type":"integer","format":"int64"},"id":{"type":"string"},"properties":{"type":"object","additionalProperties":{"type":"object"}}}}}}}},"400":{"description":"Request body was malformed","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"invalidValue":{"type":"string"},"message":{"type":"string"},"path":{"type":"string"},"type":{"type":"string"}}}}}}}},"deprecated":true,"method":"get","path":"/assets","servers":[{"url":"/"}],"info":{"title":"management-api","description":"REST API documentation for the management-api","version":"0.0.1-SNAPSHOT"},"postman":{"name":"get All Assets","description":{"content":"Gets all assets according to a particular query","type":"text/plain"},"url":{"path":["assets"],"host":["{{baseUrl}}"],"query":[{"disabled":false,"key":"offset","value":""},{"disabled":false,"key":"limit","value":""},{"disabled":false,"key":"filter","value":""},{"disabled":false,"key":"sort","value":""},{"disabled":false,"key":"sortField","value":""}],"variable":[]},"header":[{"key":"Accept","value":"application/json"}],"method":"GET"}}
+sidebar_class_name: "get api-method"
+info_path: ./docs/kits/product-edc/docs/kit/development-view/openAPI/management-api/management-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import TabItem from "@theme/TabItem";
+
+## getAllAssets
+
+:::caution deprecated
+
+This endpoint has been deprecated and may be removed in future versions of the API.
+
+:::
+
+Gets all assets according to a particular query
+
+<details style={{"marginBottom":"1rem"}} data-collapsed={false} open={true}><summary style={{}}><strong>Query Parameters</strong></summary><div><ul><ParamsItem className={"paramsItem"} param={{"name":"offset","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"integer","format":"int32"}}}></ParamsItem><ParamsItem className={"paramsItem"} param={{"name":"limit","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"integer","format":"int32"}}}></ParamsItem><ParamsItem className={"paramsItem"} param={{"name":"filter","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"string"}}}></ParamsItem><ParamsItem className={"paramsItem"} param={{"name":"sort","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"string","enum":["ASC","DESC"]}}}></ParamsItem><ParamsItem className={"paramsItem"} param={{"name":"sortField","in":"query","required":false,"style":"form","explode":true,"schema":{"type":"string"}}}></ParamsItem></ul></div></details><div><ApiTabs><TabItem label={"200"} value={"200"}><div></div><div><MimeTabs schemaType={"response"}><TabItem label={"application/json"} value={"application/json"}><SchemaTabs><TabItem label={"Schema"} value={"Schema"}><details style={{}} data-collapsed={false} open={true}><summary style={{"textAlign":"left"}}><strong>Schema</strong><span style={{"opacity":"0.6"}}> array</span></summary><div style={{"textAlign":"left","marginLeft":"1rem"}}></div><ul style={{"marginLeft":"1rem"}}><SchemaItem collapsible={false} name={"createdAt"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"int64"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"id"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={true} className={"schemaItem"}><details style={{}}><summary style={{}}><strong>properties</strong><span style={{"opacity":"0.6"}}> object</span></summary><div style={{"marginLeft":"1rem"}}><li><div><code>property name*</code><span style={{"opacity":"0.6"}}> object</span></div></li></div></details></SchemaItem></ul></details></TabItem><TabItem label={"Example (from schema)"} value={"Example (from schema)"}><ResponseSamples responseExample={"[\n  {\n    \"createdAt\": 0,\n    \"id\": \"string\",\n    \"properties\": {}\n  }\n]"} language={"json"}></ResponseSamples></TabItem></SchemaTabs></TabItem></MimeTabs></div></TabItem><TabItem label={"400"} value={"400"}><div>
+
+Request body was malformed
+
+</div><div><MimeTabs schemaType={"response"}><TabItem label={"application/json"} value={"application/json"}><SchemaTabs><TabItem label={"Schema"} value={"Schema"}><details style={{}} data-collapsed={false} open={true}><summary style={{"textAlign":"left"}}><strong>Schema</strong><span style={{"opacity":"0.6"}}> array</span></summary><div style={{"textAlign":"left","marginLeft":"1rem"}}></div><ul style={{"marginLeft":"1rem"}}><SchemaItem collapsible={false} name={"invalidValue"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"message"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"path"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"type"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem></ul></details></TabItem><TabItem label={"Example (from schema)"} value={"Example (from schema)"}><ResponseSamples responseExample={"[\n  {\n    \"invalidValue\": \"string\",\n    \"message\": \"string\",\n    \"path\": \"string\",\n    \"type\": \"string\"\n  }\n]"} language={"json"}></ResponseSamples></TabItem></SchemaTabs></TabItem></MimeTabs></div></TabItem></ApiTabs></div>
+      

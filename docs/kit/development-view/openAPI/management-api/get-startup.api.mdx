@@ -1,0 +1,30 @@
+---
+id: get-startup
+title: "getStartup"
+description: "Performs a startup probe to determine whether the runtime has completed startup."
+sidebar_label: "getStartup"
+hide_title: true
+hide_table_of_contents: true
+api: {"tags":["Application Observability"],"description":"Performs a startup probe to determine whether the runtime has completed startup.","operationId":"getStartup","responses":{"200":{"content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"componentResults":{"type":"array","items":{"type":"object","properties":{"component":{"type":"string"},"failure":{"type":"object","properties":{"failureDetail":{"type":"string"},"messages":{"type":"array","items":{"type":"string"}}}},"isHealthy":{"type":"boolean"}}}},"isSystemHealthy":{"type":"boolean"}}}}}}}},"method":"get","path":"/check/startup","servers":[{"url":"/"}],"info":{"title":"management-api","description":"REST API documentation for the management-api","version":"0.0.1-SNAPSHOT"},"postman":{"name":"get Startup","description":{"content":"Performs a startup probe to determine whether the runtime has completed startup.","type":"text/plain"},"url":{"path":["check","startup"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Accept","value":"application/json"}],"method":"GET"}}
+sidebar_class_name: "get api-method"
+info_path: ./docs/kits/product-edc/docs/kit/development-view/openAPI/management-api/management-api
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import TabItem from "@theme/TabItem";
+
+## getStartup
+
+
+
+Performs a startup probe to determine whether the runtime has completed startup.
+
+<div><ApiTabs><TabItem label={"200"} value={"200"}><div></div><div><MimeTabs schemaType={"response"}><TabItem label={"application/json"} value={"application/json"}><SchemaTabs><TabItem label={"Schema"} value={"Schema"}><details style={{}} data-collapsed={false} open={true}><summary style={{"textAlign":"left"}}><strong>Schema</strong><span style={{"opacity":"0.6"}}> array</span></summary><div style={{"textAlign":"left","marginLeft":"1rem"}}></div><ul style={{"marginLeft":"1rem"}}><SchemaItem collapsible={true} className={"schemaItem"}><details style={{}}><summary style={{}}><strong>componentResults</strong><span style={{"opacity":"0.6"}}> object[]</span></summary><div style={{"marginLeft":"1rem"}}><SchemaItem collapsible={false} name={"component"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={true} className={"schemaItem"}><details style={{}}><summary style={{}}><strong>failure</strong><span style={{"opacity":"0.6"}}> object</span></summary><div style={{"marginLeft":"1rem"}}><SchemaItem collapsible={false} name={"failureDetail"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"messages"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"string[]"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem></div></details></SchemaItem><SchemaItem collapsible={false} name={"isHealthy"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"boolean"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem></div></details></SchemaItem><SchemaItem collapsible={false} name={"isSystemHealthy"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"boolean"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem></ul></details></TabItem><TabItem label={"Example (from schema)"} value={"Example (from schema)"}><ResponseSamples responseExample={"[\n  {\n    \"componentResults\": [\n      {\n        \"component\": \"string\",\n        \"failure\": {\n          \"failureDetail\": \"string\",\n          \"messages\": [\n            \"string\"\n          ]\n        },\n        \"isHealthy\": true\n      }\n    ],\n    \"isSystemHealthy\": true\n  }\n]"} language={"json"}></ResponseSamples></TabItem></SchemaTabs></TabItem></MimeTabs></div></TabItem></ApiTabs></div>
+      
