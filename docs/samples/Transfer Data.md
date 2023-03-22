@@ -6,18 +6,18 @@ For this transfer connector **Bob** will act as data provider, and connector **A
 consumer. But the roles could be inverse as well.
 
 > Please note: Before running the examples the corresponding environment variables must be set.
-> How such an environment can be setup locally is documented in [chapter 1](#1--optional--local-setup).
+> How such an environment can be setup locally is documented in [chapter 1](#1-optional---local-setup).
 
 ## Table of Content
 
-1. [(optional) Local Setup](#1--optional--local-setup)
+1. [Optional: Local Setup](#1-optional---local-setup)
 2. [Setup Data Offer](#2-setup-data-offer)
 3. [Request Contract Offers](#3-request-contract-offer-catalog)
 4. [Negotiate Contract](#4-negotiate-contract)
 5. [Transfer Data](#5-transfer-data)
 6. [Verify Data Transfer](#6-verify-data-transfer)
 
-## 1. (optional) Local Setup
+## 1. Optional - Local Setup
 
 To create a local setup with two connectors have a look at
 the [Local TXDC Setup Documentation](Local%20TXDC%20Setup.md).
