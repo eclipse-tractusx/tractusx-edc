@@ -52,8 +52,6 @@ Build Tractus-X EDC together with its Container Images
 ./gradlew dockerize
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ## License
 
 Distributed under the Apache 2.0 License. See [LICENSE](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE) for more information.
