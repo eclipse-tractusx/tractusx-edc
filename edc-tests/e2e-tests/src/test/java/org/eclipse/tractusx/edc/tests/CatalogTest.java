@@ -8,9 +8,8 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.PolicyType;
 import org.eclipse.edc.spi.iam.IdentityService;
-import org.eclipse.tractusx.edc.token.TestIdentityService;
+import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,20 +22,19 @@ import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPart
 public class CatalogTest extends MultiRuntimeTest {
 
 
-    private static TestIdentityService sokratesIsMock;
-    private static TestIdentityService platoIsMock;
+    private static MockDapsService sokratesIsMock;
+    private static MockDapsService platoIsMock;
 
     @BeforeAll
     static void setup() {
-        platoIsMock = new TestIdentityService("PLATOBPN");
-        sokratesIsMock = new TestIdentityService("SOKRATESBPN");
+        platoIsMock = new MockDapsService("PLATOBPN");
+        sokratesIsMock = new MockDapsService("SOKRATESBPN");
 
         sokrates.registerServiceMock(IdentityService.class, sokratesIsMock);
         plato.registerServiceMock(IdentityService.class, platoIsMock);
     }
 
     @Test
-    @Disabled
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
         // arrange
         sokrates.createAsset("test-asset", Map.of("fooprop", "fooval"));

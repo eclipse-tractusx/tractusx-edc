@@ -59,6 +59,9 @@ allprojects {
     dependencies {
         implementation("org.projectlombok:lombok:1.18.26")
         implementation("org.slf4j:slf4j-api:2.0.5")
+        // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
+        // and the one expected by IntelliJ
+        testImplementation(platform("org.junit:junit-bom:5.9.2"))
     }
 
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
