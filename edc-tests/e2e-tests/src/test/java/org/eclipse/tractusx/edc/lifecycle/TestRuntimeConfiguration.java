@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 

@@ -8,11 +8,10 @@ import org.eclipse.edc.policy.model.Action;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.PolicyType;
+import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
@@ -56,8 +55,8 @@ public class CatalogTest extends MultiRuntimeTest {
     @Test
     @DisplayName("Verify that Plato receives only the offers he is permitted to")
     void requestCatalog_filteredByBpn_shouldReject() {
-        var onlyPlatoPolicy = businessPartnerNumberPolicy("ap", "BPN1", "BPN2", "PLATOBPN");
-        var onlyDiogenesPolicy = businessPartnerNumberPolicy("dp", "DIOGENESBPN");
+        var onlyPlatoPolicy = businessPartnerNumberPolicy("ap", "BPN1", "BPN2", plato.getBpn());
+        var onlyDiogenesPolicy = businessPartnerNumberPolicy("dp", "ARISTOTELES-BPN");
         var noConstraintPolicyId = "no-constraint";
 
         sokrates.createPolicy(onlyPlatoPolicy);
@@ -82,7 +81,7 @@ public class CatalogTest extends MultiRuntimeTest {
     void requestCatalog_multipleOffersForAsset() {
         sokrates.createAsset("asset-1", Map.of("test-key", "test-val"));
         sokrates.createPolicy(noConstraintPolicy("policy-1"));
-        sokrates.createPolicy(businessPartnerNumberPolicy("policy-2", "PLATOBPN"));
+        sokrates.createPolicy(businessPartnerNumberPolicy("policy-2", plato.getBpn()));
 
         sokrates.createContractDefinition("asset-1", "def1", "policy-1", "policy-1", 60);
         sokrates.createContractDefinition("asset-1", "def2", "policy-2", "policy-1", 60);
@@ -98,7 +97,7 @@ public class CatalogTest extends MultiRuntimeTest {
     @Test
     @DisplayName("Catalog with 1000 offers")
     void requestCatalog_of1000Assets_shouldContainAll() {
-        var policy = businessPartnerNumberPolicy("policy-1", "PLATOBPN");
+        var policy = businessPartnerNumberPolicy("policy-1", plato.getBpn());
         sokrates.createPolicy(policy);
         sokrates.createPolicy(noConstraintPolicy("noconstraint"));
 
