@@ -1,20 +1,22 @@
 package org.eclipse.tractusx.edc.tests;
 
 
+import org.eclipse.edc.api.query.QuerySpecDto;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.policy.model.Action;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.PolicyType;
-import org.eclipse.edc.spi.iam.IdentityService;
-import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
+import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPartnerNumberPolicy;
 
@@ -22,16 +24,9 @@ import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPart
 public class CatalogTest extends MultiRuntimeTest {
 
 
-    private static MockDapsService sokratesIsMock;
-    private static MockDapsService platoIsMock;
-
     @BeforeAll
     static void setup() {
-        platoIsMock = new MockDapsService("PLATOBPN");
-        sokratesIsMock = new MockDapsService("SOKRATESBPN");
 
-        sokrates.registerServiceMock(IdentityService.class, sokratesIsMock);
-        plato.registerServiceMock(IdentityService.class, platoIsMock);
     }
 
     @Test
@@ -61,22 +56,68 @@ public class CatalogTest extends MultiRuntimeTest {
     @Test
     @DisplayName("Verify that Plato receives only the offers he is permitted to")
     void requestCatalog_filteredByBpn_shouldReject() {
-        var bpnAccessPolicy = businessPartnerNumberPolicy("ap", "BPN1", "BPN2", "PLATOBPN");
+        var onlyPlatoPolicy = businessPartnerNumberPolicy("ap", "BPN1", "BPN2", "PLATOBPN");
+        var onlyDiogenesPolicy = businessPartnerNumberPolicy("dp", "DIOGENESBPN");
         var noConstraintPolicyId = "no-constraint";
 
-        sokrates.createPolicy(bpnAccessPolicy);
+        sokrates.createPolicy(onlyPlatoPolicy);
         sokrates.createPolicy(noConstraintPolicy(noConstraintPolicyId));
 
         sokrates.createAsset("test-asset1", Map.of("canSee", "true"));
-        sokrates.createAsset("test-asset2", Map.of("canSee", "false"));
+        sokrates.createAsset("test-asset2", Map.of("canSee", "true"));
+        sokrates.createAsset("test-asset3", Map.of("canSee", "false"));
 
         sokrates.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId, 60);
-        sokrates.createContractDefinition("test-asset2", "def2", "ap", noConstraintPolicyId, 60);
+        sokrates.createContractDefinition("test-asset2", "def2", onlyPlatoPolicy.getId(), noConstraintPolicyId, 60);
+        sokrates.createContractDefinition("test-asset3", "def3", onlyDiogenesPolicy.getId(), noConstraintPolicyId, 60);
 
 
         // act
         var catalog = plato.requestCatalog(sokrates);
         assertThat(catalog.getContractOffers()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Multiple ContractDefinitions exist for one Asset")
+    void requestCatalog_multipleOffersForAsset() {
+        sokrates.createAsset("asset-1", Map.of("test-key", "test-val"));
+        sokrates.createPolicy(noConstraintPolicy("policy-1"));
+        sokrates.createPolicy(businessPartnerNumberPolicy("policy-2", "PLATOBPN"));
+
+        sokrates.createContractDefinition("asset-1", "def1", "policy-1", "policy-1", 60);
+        sokrates.createContractDefinition("asset-1", "def2", "policy-2", "policy-1", 60);
+
+        var catalog = plato.requestCatalog(sokrates);
+        assertThat(catalog.getContractOffers()).hasSize(2)
+                .allSatisfy(cd -> assertThat(cd.getAsset().getId()).isEqualTo("asset-1"))
+                // .hasToString is advisable as it handles NPEs better:
+                .allSatisfy(cd -> assertThat(cd.getConsumer()).hasToString(plato.idsId()))
+                .allSatisfy(cd -> assertThat(cd.getProvider()).hasToString(sokrates.idsId()));
+    }
+
+    @Test
+    @DisplayName("Catalog with 1000 offers")
+    void requestCatalog_of1000Assets_shouldContainAll() {
+        var policy = businessPartnerNumberPolicy("policy-1", "PLATOBPN");
+        sokrates.createPolicy(policy);
+        sokrates.createPolicy(noConstraintPolicy("noconstraint"));
+
+        range(0, 1000)
+                .forEach(i -> {
+                    var assetId = "asset-" + i;
+                    sokrates.createAsset(assetId, Map.of());
+                    sokrates.createContractDefinition(assetId, "def-" + i, policy.getId(), "noconstraint", 60);
+                });
+
+        // request all at once
+        var o = plato.requestCatalog(sokrates, QuerySpecDto.Builder.newInstance().limit(1000).offset(0).build()).getContractOffers();
+        assertThat(o).hasSize(1000);
+
+        // request in chunks
+        var o2 = plato.requestCatalog(sokrates, QuerySpecDto.Builder.newInstance().limit(500).offset(0).build()).getContractOffers();
+        var o3 = plato.requestCatalog(sokrates, QuerySpecDto.Builder.newInstance().limit(500).offset(500).build()).getContractOffers();
+        assertThat(o2).doesNotContainAnyElementsOf(o3);
+
     }
 
     private PolicyDefinition noConstraintPolicy(String id) {

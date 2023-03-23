@@ -1,6 +1,8 @@
 package org.eclipse.tractusx.edc.tests;
 
 
+import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
@@ -27,7 +29,8 @@ public class MultiRuntimeTest {
 
     public static final String SOKRATES_ASSET_PATH = format("%s/%s.txt", tempDirectory(), SOKRATES_ASSET_FILE);
 
-
+    private static MockDapsService sokratesIsMock;
+    private static MockDapsService platoIsMock;
     @RegisterExtension
     protected static Participant sokrates = new Participant(
             ":edc-tests:runtime",
@@ -49,8 +52,8 @@ public class MultiRuntimeTest {
             "PLATO",
             Map.of(
                     "edc.ids.id", "urn:connector:plato",
-                    "web.http.port", String.valueOf(PLATO_CONNECTOR_PORT),
-                    "web.http.path", PLATO_CONNECTOR_PATH,
+                    "web.http.default.port", String.valueOf(PLATO_CONNECTOR_PORT),
+                    "web.http.default.path", PLATO_CONNECTOR_PATH,
                     "web.http.management.port", String.valueOf(PLATO_MANAGEMENT_PORT),
                     "web.http.management.path", PLATO_MANAGEMENT_PATH,
                     "web.http.ids.port", String.valueOf(PLATO_IDS_API_PORT),
@@ -58,5 +61,14 @@ public class MultiRuntimeTest {
                     "edc.api.auth.key", "testkey",
                     "ids.webhook.address", PLATO_IDS_API));
 
+    // this needs to be in a static initializer block, because it must be invoked before
+    // the BeforeEach and BeforeAll callbacks of the participants
+    static {
+        platoIsMock = new MockDapsService("PLATOBPN");
+        sokratesIsMock = new MockDapsService("SOKRATESBPN");
+
+        sokrates.registerServiceMock(IdentityService.class, sokratesIsMock);
+        plato.registerServiceMock(IdentityService.class, platoIsMock);
+    }
 
 }
