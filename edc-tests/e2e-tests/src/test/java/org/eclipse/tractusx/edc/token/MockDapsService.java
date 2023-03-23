@@ -11,6 +11,10 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
+/**
+ * An {@link IdentityService} that will mimic the behaviour of DAPS by inserting the "referringConnector" claim into any token.
+ * Please only use in testing scenarios!
+ */
 public class MockDapsService implements IdentityService {
 
     private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";

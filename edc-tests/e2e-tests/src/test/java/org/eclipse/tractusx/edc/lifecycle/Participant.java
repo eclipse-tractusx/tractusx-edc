@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.lifecycle;
 
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.api.query.QuerySpecDto;
@@ -7,10 +7,12 @@ import org.eclipse.edc.connector.api.management.catalog.model.CatalogRequestDto;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.asset.AssetSelectorExpression;
+import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -33,6 +35,7 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     private final TypeManager typeManager = new TypeManager();
     private final String idsId;
     private DataWiper wiper;
+    private final String bpn;
 
     public Participant(String moduleName, String runtimeName, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
@@ -40,6 +43,8 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         this.idsEndpoint = URI.create(format("http://localhost:%s%s", properties.get("web.http.ids.port"), properties.get("web.http.ids.path"))).toString();
         this.apiKey = properties.get("edc.api.auth.key");
         this.idsId = properties.get("edc.ids.id");
+        this.bpn = runtimeName + "-BPN";
+        this.registerServiceMock(IdentityService.class, new MockDapsService(getBpn()));
     }
 
     @Override
@@ -58,6 +63,9 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         wiper = new DataWiper(context);
     }
 
+    /**
+     * Creates an asset with the given ID and props using the participant's Data Management API
+     */
     public void createAsset(String id, Map<String, String> properties) {
         properties = new HashMap<>(properties);
         properties.put("asset:prop:id", id);
@@ -84,6 +92,9 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
 
     }
 
+    /**
+     * Creates a {@link org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition} using the participant's Data Management API
+     */
     public void createContractDefinition(String assetId, String definitionId, String accessPolicyId, String contractPolicyId, long contractValidityDurationSeconds) {
         var contractDefinition = Map.of(
                 "id", definitionId,
@@ -102,6 +113,9 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                 .contentType(JSON).contentType(JSON);
     }
 
+    /**
+     * Creates a {@link PolicyDefinition} using the participant's Data Management API
+     */
     public void createPolicy(PolicyDefinition policyDefinition) {
         baseRequest()
                 .body(policyDefinition)
@@ -112,15 +126,21 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                 .contentType(JSON).contentType(JSON);
     }
 
+    /**
+     * Requests the {@link Catalog} from another participant using this participant's Data Management API
+     */
     public Catalog requestCatalog(Participant other) {
         return requestCatalog(other, QuerySpecDto.Builder.newInstance().build());
     }
 
+    /**
+     * Requests the {@link Catalog} from another participant using this participant's Data Management API
+     */
     public Catalog requestCatalog(Participant other, QuerySpecDto query) {
         var response = baseRequest()
                 .when()
                 .body(CatalogRequestDto.Builder.newInstance()
-                        .providerUrl(other.idsEndpoint() + "/data")
+                        .providerUrl(other.idsEndpoint + "/data")
                         .querySpec(query)
                         .build())
                 .post("/catalog/request")
@@ -134,8 +154,18 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return typeManager.readValue(body, Catalog.class);
     }
 
+    /**
+     * Returns this participant's IDS ID
+     */
     public String idsId() {
         return idsId;
+    }
+
+    /**
+     * Returns this participant's BusinessPartnerNumber (=BPN). This is constructed of the runtime name plus "-BPN"
+     */
+    public String getBpn() {
+        return bpn;
     }
 
     @Override
@@ -147,10 +177,6 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         super.afterTestExecution(context);
-    }
-
-    private String idsEndpoint() {
-        return idsEndpoint;
     }
 
     private RequestSpecification baseRequest() {

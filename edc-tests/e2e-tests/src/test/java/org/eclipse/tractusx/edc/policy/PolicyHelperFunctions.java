@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PolicyHelperFunctions {
+    /**
+     * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
+     * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
+     */
     public static PolicyDefinition businessPartnerNumberPolicy(String id, String... bpns) {
 
         var bpnConstraints = Stream.of(bpns)

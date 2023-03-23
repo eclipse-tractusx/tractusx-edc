@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.lifecycle;
 
 import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
 import org.eclipse.edc.connector.policy.spi.store.PolicyDefinitionStore;
@@ -8,6 +8,9 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import java.util.stream.Collectors;
 
+/**
+ * Helper class to delete all objects from a runtime's data stores.
+ */
 public class DataWiper {
 
     private final ServiceExtensionContext context;
@@ -22,18 +25,18 @@ public class DataWiper {
         clearContractDefinitions();
     }
 
-    private void clearContractDefinitions() {
+    public void clearContractDefinitions() {
         var cds = context.getService(ContractDefinitionStore.class);
         cds.findAll(QuerySpec.max()).forEach(cd -> cds.deleteById(cd.getId()));
     }
 
-    private void clearPolicies() {
+    public void clearPolicies() {
         var ps = context.getService(PolicyDefinitionStore.class);
         // must .collect() here, otherwise we'll get a ConcurrentModificationException
         ps.findAll(QuerySpec.max()).collect(Collectors.toList()).forEach(p -> ps.deleteById(p.getId()));
     }
 
-    private void clearAssetIndex() {
+    public void clearAssetIndex() {
         var index = context.getService(AssetIndex.class);
         index.queryAssets(QuerySpec.max()).forEach(asset -> index.deleteById(asset.getId()));
     }
