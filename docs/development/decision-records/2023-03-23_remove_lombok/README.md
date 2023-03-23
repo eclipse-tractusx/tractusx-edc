@@ -24,7 +24,7 @@ refactoring (`@ToString(of = <FIELDNAME>)`) and more dangerous (`@SneakyThrows`)
 Fourth and finally bytecode modification could conceivably cause problems in use cases where audited/certified code is
 required. Since the code gets modified during compilation in a way not covered by any spec, technically the runtime code
 could be significantly different from the source code. Although this problem is admittedly theoretical at the moment, we
-should build those obstructions into the code base.
+should not build those obstructions into the code base.
 
 ## Approach
 
