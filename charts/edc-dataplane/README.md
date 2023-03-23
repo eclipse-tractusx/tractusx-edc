@@ -6,7 +6,7 @@
 
 EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility of transferring and receiving data streams
 
-- **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-dataplane>
+**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-dataplane>
 
 ## TL;DR
 
@@ -14,6 +14,10 @@ EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility o
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
 helm install my-release tractusx-edc/edc-dataplane --version 0.3.0
 ```
+
+## Source Code
+
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-dataplane>
 
 ## Values
 
@@ -40,7 +44,7 @@ helm install my-release tractusx-edc/edc-dataplane --version 0.3.0
 | envSecretName | string | `nil` | [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) name to load environment variables from |
 | fullnameOverride | string | `""` | Overrides the releases full name |
 | image.pullPolicy | string | `"IfNotPresent"` | [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use |
-| image.repository | string | `"ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault"` | Which derivate of the edc data-plane to use. One of: [ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault, ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-azure-vault] |
+| image.repository | string | `"ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault"` | Which derivate of the edc data-plane to use. One of: [ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault] |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
 | imagePullSecret.dockerconfigjson | string | `""` | Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) Note: This value needs to adhere to the [(base64 encoded) .dockerconfigjson format](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials). Furthermore, if 'imagePullSecret.dockerconfigjson' is defined, it takes precedence over 'imagePullSecrets'. |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
