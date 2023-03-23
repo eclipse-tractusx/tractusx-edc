@@ -9,19 +9,22 @@ import org.eclipse.edc.spi.types.TypeManager;
 
 import java.util.Map;
 
-public class TestIdentityService implements IdentityService {
+import static java.lang.String.format;
 
-    private static final String BUSINESS_PARTNER_NUMBER = "BusinessPartnerNumber";
+public class MockDapsService implements IdentityService {
+
+    private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";
+    private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     private final String businessPartnerNumber;
     private TypeManager typeManager = new TypeManager();
 
-    public TestIdentityService(String businessPartnerNumber) {
+    public MockDapsService(String businessPartnerNumber) {
         this.businessPartnerNumber = businessPartnerNumber;
     }
 
     @Override
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        var token = Map.of(BUSINESS_PARTNER_NUMBER, businessPartnerNumber);
+        var token = Map.of(BUSINESS_PARTNER_NUMBER_CLAIM, businessPartnerNumber);
 
         TokenRepresentation tokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(typeManager.writeValueAsString(token))
@@ -33,10 +36,12 @@ public class TestIdentityService implements IdentityService {
     public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, String audience) {
 
         var token = typeManager.readValue(tokenRepresentation.getToken(), Map.class);
-        if (token.containsKey(BUSINESS_PARTNER_NUMBER)) {
-            return Result.success(ClaimToken.Builder.newInstance().claim(BUSINESS_PARTNER_NUMBER, token.get(BUSINESS_PARTNER_NUMBER)).claim("referringConnector", token.get(BUSINESS_PARTNER_NUMBER)).build());
+        if (token.containsKey(BUSINESS_PARTNER_NUMBER_CLAIM)) {
+            return Result.success(ClaimToken.Builder.newInstance()
+                    .claim(BUSINESS_PARTNER_NUMBER_CLAIM, token.get(BUSINESS_PARTNER_NUMBER_CLAIM))
+                    .claim(REFERRING_CONNECTOR_CLAIM, token.get(BUSINESS_PARTNER_NUMBER_CLAIM)).build());
         }
-        return Result.failure("Expected businessPartnerNumber, but token did not contain the claim");
+        return Result.failure(format("Expected %s and %s claims, but token did not contain them", BUSINESS_PARTNER_NUMBER_CLAIM, REFERRING_CONNECTOR_CLAIM));
     }
 
 }
