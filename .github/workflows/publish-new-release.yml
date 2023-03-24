@@ -63,11 +63,19 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           cache: 'gradle'
-      -
-        name: Deploy
-        run: |
-          ./gradlew build -x test publishAllPublicationsToGithubPackagesRepository
+
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v1
         env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Publish release version
+        run: |
+          echo "Publishing Version $(grep -e "defaultVersion" gradle.properties | cut -f2 -d"=") to Github Packages"
+          ./gradlew publishAllPublicationsToGithubPackagesRepository
+        env:
+          REPO: ${{ github.repository }}
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
@@ -77,8 +85,10 @@ jobs:
     needs: [ release-version ]
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
+      pages: write
+
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
       -
@@ -122,6 +132,11 @@ jobs:
     name: Publish new github release
     needs: [ release-version ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pages: write
+      pull-requests: write
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
       -
@@ -190,7 +205,7 @@ jobs:
 
 
           # Commit and push to origin develop
-          git add $(find -name pom.xml)
+          git add gradle.properties
           git commit --message "Introduce new snapshot version $SNAPSHOT_VERSION"
 
           git push origin develop
