@@ -272,8 +272,9 @@ jobs:
       contents: read
       packages: write
     needs: [secret-presence, verify-formatting, build-controlplane, build-dataplane, build-extensions]
+
+    # do not run on PR branches, do not run on main
     if: |
-      # do not run on PR branches, do not run on main
       needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request' && github.ref != 'refs/heads/main'
     steps:
       # Set-Up
