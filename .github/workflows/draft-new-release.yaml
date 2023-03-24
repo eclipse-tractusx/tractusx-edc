@@ -13,8 +13,10 @@ jobs:
     name: "Draft a new release"
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
+      pages: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v3.3.0
       -
@@ -38,7 +40,7 @@ jobs:
           distribution: 'adopt'
           cache: 'gradle'
       -
-        name: Bump version in pom.xml
+        name: Bump version in gradle.properties
         run: |-
            # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
            sed -i  's/defaultVersion=.*/defaultVersion=${{ github.event.inputs.version }}/g' gradle.properties
@@ -63,7 +65,7 @@ jobs:
         name: Commit changelog and manifest files
         id: make-commit
         run: |
-          git add CHANGELOG.md $(find -name pom.xml) $(find charts -name Chart.yaml) $(find charts -name README.md)
+          git add CHANGELOG.md gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
           git commit --message "Prepare release ${{ github.event.inputs.version }}"
 
           echo "::set-output name=commit::$(git rev-parse HEAD)"
