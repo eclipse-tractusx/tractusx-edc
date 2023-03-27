@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.api.observability;
 
+import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@ComponentTest
 @ExtendWith(DependencyInjectionExtension.class)
 class TxObservabilityApiExtensionTest {
 

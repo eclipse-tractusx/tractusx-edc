@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
 
-import static org.eclipse.edc.policy.engine.spi.PolicyEngine.ALL_SCOPES;
-
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Duty;
@@ -34,6 +32,8 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerDutyFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerPermissionFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerProhibitionFunction;
+
+import static org.eclipse.edc.policy.engine.spi.PolicyEngine.ALL_SCOPES;
 
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
