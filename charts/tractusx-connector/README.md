@@ -1,13 +1,13 @@
 # tractusx-connector
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.0](https://img.shields.io/badge/AppVersion-0.3.0-informational?style=flat-square)
+![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.1](https://img.shields.io/badge/AppVersion-0.3.1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector
 
 ## TL;DR
 ```shell
 $ helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-$ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --version 0.3.0
+$ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --version 0.3.1
 ```
 
 ## Values
@@ -24,7 +24,7 @@ $ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --ve
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"data":{"authKey":"","path":"/data","port":8081},"default":{"path":"/api","port":8080},"ids":{"path":"/api/v1/ids","port":8084},"metrics":{"path":"/metrics","port":8085},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"data":{"authKey":"","path":"/data","port":8081},"default":{"path":"/api","port":8080},"ids":{"path":"/api/v1/ids","port":8084},"metrics":{"path":"/metrics","port":9090},"observability":{"insecure":true,"path":"/observability","port":8085},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | controlplane.endpoints.control.port | int | `8083` | port for incoming api calls |
@@ -38,9 +38,13 @@ $ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --ve
 | controlplane.endpoints.ids | object | `{"path":"/api/v1/ids","port":8084}` | ids api, used for inter connector communication and must be internet facing |
 | controlplane.endpoints.ids.path | string | `"/api/v1/ids"` | path for incoming api calls |
 | controlplane.endpoints.ids.port | int | `8084` | port for incoming api calls |
-| controlplane.endpoints.metrics | object | `{"path":"/metrics","port":8085}` | metrics api, used for application metrics, must not be internet facing |
+| controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
 | controlplane.endpoints.metrics.path | string | `"/metrics"` | path for incoming api calls |
-| controlplane.endpoints.metrics.port | int | `8085` | port for incoming api calls |
+| controlplane.endpoints.metrics.port | int | `9090` | port for incoming api calls |
+| controlplane.endpoints.observability | object | `{"insecure":true,"path":"/observability","port":8085}` | observability api with unsecured access, must not be internet facing |
+| controlplane.endpoints.observability.insecure | bool | `true` | allow or disallow insecure access, i.e. access without authentication |
+| controlplane.endpoints.observability.path | string | `"/observability"` | observability api, provides /health /readiness and /liveness endpoints |
+| controlplane.endpoints.observability.port | int | `8085` | port for incoming API calls |
 | controlplane.endpoints.validation | object | `{"path":"/validation","port":8082}` | validation api, only used by the data plane and should not be added to any ingress |
 | controlplane.endpoints.validation.path | string | `"/validation"` | path for incoming api calls |
 | controlplane.endpoints.validation.port | int | `8082` | port for incoming api calls |
@@ -84,7 +88,7 @@ $ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --ve
 | controlplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | controlplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
-| controlplane.logging | string | `".level=INFO\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
+| controlplane.logging | string | `".level=INFO\norg.eclipse.dataspaceconnector.level=ALL\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
 | controlplane.nodeSelector | object | `{}` |  |
 | controlplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | controlplane.podAnnotations | object | `{}` | additional annotations for the pod |
@@ -136,7 +140,7 @@ $ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --ve
 | dataplane.endpoints.default.path | string | `"/api"` |  |
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
-| dataplane.endpoints.metrics.port | int | `8084` |  |
+| dataplane.endpoints.metrics.port | int | `9090` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
 | dataplane.endpoints.public.port | int | `8081` |  |
 | dataplane.endpoints.validation.path | string | `"/validation"` |  |
@@ -165,7 +169,7 @@ $ helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --ve
 | dataplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | dataplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | dataplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
-| dataplane.logging | string | `".level=INFO\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
+| dataplane.logging | string | `".level=INFO\norg.eclipse.dataspaceconnector.level=ALL\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
 | dataplane.nodeSelector | object | `{}` |  |
 | dataplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | dataplane.podAnnotations | object | `{}` | additional annotations for the pod |
