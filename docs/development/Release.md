@@ -44,6 +44,5 @@ As part of the [kits documentation provided for docusaurus](../kit/development-v
 This refers to the [EDC API](https://github.com/eclipse-edc/Connector/tree/main/resources/openapi) and needs to be updated to the current release.
 The yaml files found there are then converted with the [docusaurus openapi plugin](https://www.npmjs.com/package/docusaurus-plugin-openapi-docs).
 
-
 [maven-shield]: https://img.shields.io/badge/Apache%20Maven-URL-blue
 [maven-url]: https://maven.apache.org
