@@ -20,18 +20,16 @@ source code repository logs.
 
 This program and the accompanying materials are made available under the terms
 of the Apache License, Version 2.0 which is available at
-https://www.apache.org/licenses/LICENSE-2.0
+https://www.apache.org/licenses/LICENSE-2.0.
 
 SPDX-License-Identifier: Apache-2.0
 
 ## Source Code
 
-The project maintains the following source code repositories 
+The project maintains the following source code repositories
 in the GitHub organization https://github.com/eclipse-tractusx:
 
-* https://github.com/eclipse-tractusx/<my_product_repo1>
-* https://github.com/eclipse-tractusx/<my_product_repo2>
-
+* https://github.com/eclipse-tractusx/tractusx-edc
 
 ## Third-party Content
 
