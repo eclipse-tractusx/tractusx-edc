@@ -27,8 +27,8 @@ description: >-
   EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with responsibility of resource management and govern contracts and data transfers
 home: https://github.com/eclipse-tractusx/tractusx-edc
 type: application
-appVersion: "0.3.0"
-version: 0.3.0
+appVersion: "0.3.1"
+version: 0.3.1
 deprecated: true
 maintainers: []
 sources:
