@@ -27,9 +27,6 @@ dependencies {
         exclude(module= "data-encryption")
         exclude(module= "control-plane-adapter")
     }
-
-    // mocked IdentityService
-//    runtimeOnly(edc.iam.mock)
 }
 
 application {
