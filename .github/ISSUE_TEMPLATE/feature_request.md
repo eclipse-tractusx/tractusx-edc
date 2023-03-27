@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 _If you are missing a feature or have an idea how to improve this project that should first be 
-discussed, please feel free to open up a [discussion](https://github.com/catenax-ng/catena-x-edc/discussions/categories/ideas)._
+discussed, please feel free to open up a [discussion](https://github.com/eclipse-tractusx/tractusx-edc/discussions/categories/ideas)._
 
 **Is your feature request related to a problem? Please describe.**
 _A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]_

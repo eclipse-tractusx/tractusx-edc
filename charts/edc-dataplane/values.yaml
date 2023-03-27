@@ -31,8 +31,8 @@ replicaCount: 1
 
 image:
   # -- Which derivate of the edc data-plane to use.
-  # One of: [ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault]
-  repository: ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault
+  # One of: [ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault, ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-azure-vault]
+  repository: ghcr.io/eclipse-tractusx/tractusx-edc/edc-dataplane-hashicorp-vault
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
