@@ -22,4 +22,5 @@ dependencies {
 
 
     implementation(edc.spi.aggregateservices)
+    testImplementation(libs.awaitility)
 }
