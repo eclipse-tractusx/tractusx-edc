@@ -1,4 +1,3 @@
-#********************************************************************************
 # Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -15,7 +14,6 @@
 # under the License.
 #
 # SPDX-License-Identifier: Apache-2.0
-#*******************************************************************************/
 
 
 "default": true
