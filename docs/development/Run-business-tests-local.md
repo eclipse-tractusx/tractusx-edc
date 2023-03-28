@@ -147,7 +147,8 @@ business-tests/sokrates-controlplane - data: 30538(8081) -> SOKRATES_DATA_MANAGE
 business-tests/backend - backend: 30556(8081)            -> SOKRATES_BACKEND_SERVICE_BACKEND_API_URL= http://localhost:30556
 ```
 
-### 6. Update your components
+## 6. Update your components
+
 Once everything is installed you just need to update your services when you have a new image.
 
 ```shell
