@@ -14,7 +14,7 @@ Prerequisites:
 ## 2. Install the all-in-one supporting infrastructure environment (Daps, Vault, PostgreSql, Minio, Backend-Service)
 
 ```shel
-helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure -n business-tests --create-namespace
+helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure -n business-tests --dependency-update --create-namespace
 ```
 
 To access the PostgreSql databases you could use following kubectl port forwardings:
@@ -139,8 +139,15 @@ kubectl get svc -n business-tests -o go-template='{{range .items}}{{ $save := . 
 This will return all NodePorts which are available in business-tests namespace where you can pick the ports to use in your environment variables.
 Now you are able to run it in IDE either as normal "Run" mode or in "Debug" mode where you can debug the business-tests by setting debugging points.
 
-## 6. Update your components
+Example of mapping to environment variables needed for the business tests:
 
+```shell
+business-tests/plato-controlplane - data: 30955(8081)    -> PLATO_DATA_MANAGEMENT_URL=http://localhost:30955/data;
+business-tests/sokrates-controlplane - data: 30538(8081) -> SOKRATES_DATA_MANAGEMENT_URL=http://localhost:30538/data;
+business-tests/backend - backend: 30556(8081)            -> SOKRATES_BACKEND_SERVICE_BACKEND_API_URL= http://localhost:30556
+```
+
+### 6. Update your components
 Once everything is installed you just need to update your services when you have a new image.
 
 ```shell
