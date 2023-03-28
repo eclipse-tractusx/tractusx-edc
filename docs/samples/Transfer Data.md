@@ -6,18 +6,18 @@ For this transfer connector **Bob** will act as data provider, and connector **A
 consumer. But the roles could be inverse as well.
 
 > Please note: Before running the examples the corresponding environment variables must be set.
-> How such an environment can be setup locally is documented in [chapter 0](#0--optional--local-setup).
+> How such an environment can be setup locally is documented in [chapter 1](#1-optional---local-setup).
 
-**Contents**
+## Table of Content
 
-0. [(optional) Local Setup](#0--optional--local-setup)
-1. [Setup Data Offer](#1-setup-data-offer)
-2. [Request Contract Offers](#2-request-contract-offer-catalog)
-3. [Negotiate Contract](#3-negotiate-contract)
-4. [Transfer Data](#4-transfer-data)
-5. [Verify Data Transfer](#5-verify-data-transfer)
+1. [Optional - Local Setup](#1-optional---local-setup)
+2. [Setup Data Offer](#2-setup-data-offer)
+3. [Request Contract Offers](#3-request-contract-offer-catalog)
+4. [Negotiate Contract](#4-negotiate-contract)
+5. [Transfer Data](#5-transfer-data)
+6. [Verify Data Transfer](#6-verify-data-transfer)
 
-## 0. (optional) Local Setup
+## 1. Optional - Local Setup
 
 To create a local setup with two connectors have a look at
 the [Local TXDC Setup Documentation](Local%20TXDC%20Setup.md).
@@ -33,7 +33,7 @@ minkube service list
 
 Minikube will then print out something like this:
 
-```shell
+```plain
 |-------------|-----------------------|-----------------|---------------------------|
 |  NAMESPACE  |         NAME          |   TARGET PORT   |            URL            |
 |-------------|-----------------------|-----------------|---------------------------|
@@ -83,7 +83,7 @@ kubectl describe service -n cx sokrates-controlplane
 
 Kubernetes will then print out something like this.
 
-```shell
+```plain
 Name:                     plato-controlplane
 Namespace:                cx
 Labels:                   app.kubernetes.io/component=edc-controlplane
@@ -138,6 +138,7 @@ required. Where to get the IP may vary depending on how Kubernetes is deployed.
 ### Set Environment Variables, used by this example
 
 Environment Variables, containing a URL, used by this example are
+
 - BOB_DATAMGMT_URL
 - ALICE_DATAMGMT_URL
 - BOB_IDS_URL
@@ -153,7 +154,7 @@ Let's assume we will use Sokrates as Bob, and Plato as Alice.
 
 **ALICE_BACKEND_URL** must the Node URL. In this local setup it would be `http://192.168.49.2:30193`
 
-## 1. Setup Data Offer
+## 2. Setup Data Offer
 
 Set up a data offer in **Bob**, so that **Alice** has something to consume.
 
@@ -161,8 +162,6 @@ In case you are unfamiliar with the EDC terms `Asset`, `Policy` or `ContractDefi
 official open source documentation ([link](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/architecture/domain-model.md)).
 
 ![Sequence 1](diagrams/transfer_sequence_1.png)
-
-**Run**
 
 The following commands will create an Asset, a Policy and a Contract Definition.
 For simplicity `https://jsonplaceholder.typicode.com/todos/1` is used as data source of the asset, but could be any
@@ -176,7 +175,7 @@ curl -X POST "${BOB_DATAMGMT_URL}/data/assets" \
              "asset": {
                 "properties": {
                         "asset:prop:id": "1",
-                        "asset:prop:description": "Product EDC Demo Asset"
+                        "asset:prop:description": "Tractus-X EDC Demo Asset"
                     }
                 },
                 "dataAddress": {
@@ -229,7 +228,7 @@ curl -X POST "${BOB_DATAMGMT_URL}/data/contractdefinitions" \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
-## 2. Request Contract Offer Catalog
+## 3. Request Contract Offer Catalog
 
 In this step Alice gets told to request contract offers from another connector (in this case Bob). Alice will
 then request the catalog over IDS messaging.
@@ -239,7 +238,7 @@ connectors, that intent to send messages to each other, have the same DAPS insta
 
 ![Sequence 1](diagrams/transfer_sequence_2.png)
 
-**Run**
+Run:
 
 ```bash
 curl -G -X GET "${ALICE_DATAMGMT_URL}/data/catalog" \
@@ -249,7 +248,7 @@ curl -G -X GET "${ALICE_DATAMGMT_URL}/data/catalog" \
     -s | jq
 ```
 
-## 3. Negotiate Contract
+## 4. Negotiate Contract
 
 Initiate a contract negotiation for the asset (from step 1). Part of the negotiation payload is the contract
 offer (received in step 2).
@@ -262,7 +261,7 @@ and checking whether the `contractAgreementId` is set. This might take a few sec
 
 ![Sequence 1](diagrams/transfer_sequence_3.png)
 
-**Run**
+Run:
 
 ```bash
 export NEGOTIATION_ID=$( \
@@ -300,14 +299,14 @@ curl -X GET "${ALICE_DATAMGMT_URL}/data/contractnegotiations/${NEGOTIATION_ID}" 
     -s | jq
 ```
 
-## 4. Transfer Data
+## 5. Transfer Data
 
 Initiate a data transfer using the contract agreement from the negotiation (from step 3). Then wait until the state of
 the transfer process is `COMPLETED`.
 
 ![Sequence 1](diagrams/transfer_sequence_4.png)
 
-**Run**
+Run:
 
 ```bash
 export CONTRACT_AGREEMENT_ID=$( \
@@ -342,7 +341,7 @@ curl -X GET "${ALICE_DATAMGMT_URL}/data/transferprocess/${TRANSFER_ID}" \
     -s | jq
 ```
 
-## 5. Verify Data Transfer
+## 6. Verify Data Transfer
 
 After the transfer is complete the Backend Application has downloaded the data. The Backend Application stores the data
 locally. In this demo the transfer can be verified by executing a simple `cat` call in the Pod.
@@ -355,7 +354,7 @@ curl -X GET "${ALICE_BACKEND_URL}/${TRANSFER_PROCESS_ID}" \
     -s | jq
 ```
 
-# Delete All Data
+## Delete All Data
 
 ```bash
 minikube kubectl -- delete pvc -n edc-all-in-one --all
