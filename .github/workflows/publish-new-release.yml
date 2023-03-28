@@ -72,7 +72,7 @@ jobs:
 
       - name: Publish release version
         run: |
-          echo "Publishing Version $(grep -e "defaultVersion" gradle.properties | cut -f2 -d"=") to Github Packages"
+          echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
           ./gradlew publishAllPublicationsToGithubPackagesRepository
         env:
           REPO: ${{ github.repository }}
@@ -200,9 +200,8 @@ jobs:
           VERSION="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$((RELEASE_VERSION_PATCH+1))-SNAPSHOT"
           SNAPSHOT_VERSION=$VERSION
 
-          # Persist the "defaultVersion" in the gradle.properties
-          sed -i  's/defaultVersion=.*/defaultVersion=${{ github.event.inputs.version }}/g' gradle.properties
-
+          # Persist the "version" in the gradle.properties
+          sed -i "s/version=.*/version=$SNAPSHOT_VERSION/g" gradle.properties
 
           # Commit and push to origin develop
           git add gradle.properties
