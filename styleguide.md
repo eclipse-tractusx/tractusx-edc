@@ -51,7 +51,8 @@ If you absolutely want to make sure that no piece of ever-so-slightly misformatt
 advise you to use the [SaveActions plugin](https://plugins.jetbrains.com/plugin/7642-save-actions) for IntelliJ IDEA. It
 takes care that your code is always correctly formatted. Unfortunately SaveActions has no export feature, so please just
 copy this configuration:
-![](resources/save_actions_scr.png)
+
+![SaveActions configuration](resources/save_actions_scr.png)
 
 ## [Optional] Generic `.editorConfig`
 

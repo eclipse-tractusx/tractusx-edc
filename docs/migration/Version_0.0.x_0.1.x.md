@@ -6,7 +6,7 @@ This document contains a list of breaking changes that are introduced in version
 
 1. PostgreSQL Database
    1. Criteria in Policy & Contract Definitions Table
-   2. Delete Contract Agreements 
+   2. Delete Contract Agreements
 2. Data Management API
    1. Policy Path
    2. Policy Payload
@@ -18,7 +18,7 @@ This document contains a list of breaking changes that are introduced in version
 
 ## 1. PostgreSQL Database
 
-The Product EDC [PostgreSQL Migration Extension](../../edc-extensions/postgresql-migration/README.md) is able to run
+The Tractus-X EDC [PostgreSQL Migration Extension](../../edc-extensions/postgresql-migration/README.md) is able to run
 normal migrations. But the extension will never cause a data loss automatically, therefore part of this migration must
 be done by the user itself.
 
@@ -27,14 +27,9 @@ be done by the user itself.
 Criteria in Policies and Contract Definitions are serialized as JSON and put into the database. The Criteria schema
 changed and already existing database entries will cause _NullPointerExceptions_.
 
-
-
-<details>
-  <summary>Example Exception</summary>
-
 #### Example Exception
 
-```
+```plain
 [2022-08-02 09:32:37] [SEVERE ] Could not handle multipart request: null
 org.eclipse.dataspaceconnector.spi.EdcException
         at org.eclipse.dataspaceconnector.transaction.local.LocalTransactionContext.execute(LocalTransactionContext.java:70)
@@ -122,13 +117,7 @@ Caused by: java.lang.NullPointerException
         ... 69 more
 ```
 
-</details>
-
-<details>
-
-  <summary>Solution 1: Update all Criteria manually</summary>
-
-#### Update all Criteria manually
+#### Solution 1: Update all Criteria manually
 
 Root of this issue is that the operator, left- and right-operand Criteria field names changed.
 
@@ -141,23 +130,17 @@ Root of this issue is that the operator, left- and right-operand Criteria field 
 It is possible to resolve this issue by updating the content of the column, that contain JSON serialized constraints,
 from
 
-```
+```json
 {"criteria":[{"left":"asset:prop:id","op":"=","right":"asset-1"}]}
 ```
 
 to
 
-```
+```json
 {"criteria":[{"operandLeft":"asset:prop:id","operator":"=","operandRight":"asset-1"}]}
 ```
 
-</details>
-
-<details>
-
-  <summary>Solution 2: Delete all rows containing Constraints</summary>
-
-#### Delete all rows containing Criteria
+#### Solution 2: Delete all rows containing Constraints
 
 Instead of updating each row in the database it's also possible to delete all Contract Definitions and Policies.
 Additionally it's necessary to delete all Negotiations, as they might reference existing Contract Definitions and/or
@@ -166,7 +149,7 @@ Policies.
 Theoretically it's also necessary to delete Contract Agreements. As their deletion is already described in another
 section, we can skip them here.
 
-**Required Queries**
+##### Required Queries
 
 ```sql
 DELETE
@@ -183,22 +166,17 @@ DELETE
 FROM edc_policydefinitins;
 ```
 
-</details>
-
 ### 1.2 Delete Contract Agreements
 
 In the new version contract agreement rows contain a serialized policy at the time, the contract was concluded.
 With the EDC update all existing Contract Agreements must be deleted.
 
-<details>
-    <summary>Required Query</summary>
+#### Required Query
 
 ```sql
 DELETE
 FROM edc_contract_agreement;
 ```
-
-</details>
 
 ## 2. Data Management API
 
@@ -210,26 +188,17 @@ important changes in endpoints and payloads.
 The Data Management API Path for Policies changes from
 `/policies` to `/policydefinitions`.
 
-<details>
-  <summary>Example Call</summary>
-
 #### Get All Policies
 
 ```bash
 curl -X GET "${DATA_MGMT_ENDPOINT}/data/policydefinitions" --header "X-Api-Key: <key>" --header "Content-Type: application/json"
 ```
 
-</details>
-
 ### 2.2 Policy Payload
 
 The Policy Payload now wraps the policy details in an additional policy object.
 
-<details>
-
-<summary>Payload Comparison</summary>
-
-**New Payload**
+#### New Payload
 
 ```json
 {
@@ -242,7 +211,7 @@ The Policy Payload now wraps the policy details in an additional policy object.
 }
 ```
 
-**Old Payload**
+#### Old Payload
 
 ```json
 {
@@ -253,46 +222,36 @@ The Policy Payload now wraps the policy details in an additional policy object.
 }
 ```
 
-</details>
-
 ### 2.3 Criteria in Payload of Contract Definitions and Policies
 
 The payload of a Policy or a Contract Definition may contain one or more Criteria. The format of these serialized Criteria changed.
 Please note that there is no input validation, that detects errors when the old Criteria format is used!
 
-<details>
+#### Old Criterion Format
 
-<summary>Criterion Format Change</summary>
-
-**Old Criterion Format**
-```
+```json
 { "left": "asset:prop:id", "op": "=", "right": "1" }
 ```
 
-**New Criterion Format**
-```
+#### New Criterion Format
+
+```json
 { "operandLeft": "asset:prop:id", "operator": "=", "operandRight": "1" }
 ```
 
-**Example Call**
+#### Example Call
 
 ```bash
 curl -X POST "${DATA_MGMT_ENDPOINT}/data/contractdefinitions" --header "X-Api-Key: <key>" --header "Content-Type: application/json" --data "{ \"id\": \"1\", \"criteria\": [ { \"operandLeft\": \"asset:prop:id\", \"operator\": \"=\", \"operandRight\": \"1\" } ], \"accessPolicyId\": \"1\", \"contractPolicyId\": \"1\" }"
 ```
-
-</details>
 
 ### 2.4 Data Address
 
 When using a Data Address of type `HttpData` please notice that the property `endpoint` changed to `baseUrl`. This
 property is mostly used when creating assets.
 
+#### Old Asset format
 
-<details>
-
-<summary>DataAddress Comparison</summary>
-
-**Old Asset format**:
 ```json
 {
   "asset": {
@@ -307,7 +266,8 @@ property is mostly used when creating assets.
 }
 ```
 
-**New Asset format**:
+#### New Asset format
+
 ```json
 {
   "asset": {
@@ -321,17 +281,12 @@ property is mostly used when creating assets.
   }
 }
 ```
-</details>
 
-<details>
-
-<summary>Example Call</summary>
+#### Example Call
 
 ```bash
-curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Product EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
+curl -X POST "$PLATO_DATAMGMT_URL/data/assets" --header "X-Api-Key: password" --header "Content-Type: application/json" --data "{ \"asset\": { \"properties\": { \"asset:prop:id\": \"1\", \"asset:prop:description\": \"Tractus-X EDC Demo Asset\" } }, \"dataAddress\": { \"properties\": { \"type\": \"HttpData\", \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\" } } }" -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
-
-</details>
 
 ## 3. Connector Configuration
 
@@ -346,4 +301,4 @@ With this version a new feature was introduced which allows to have separate Dat
 transfer-flows (HttpProxy, S3, etc.). The Catena-X EDC team has additionally a new extension created which allows a
 simpler registration of additional dataplanes. Therefor some changes needs to be applied. Further documentation can
 be found in the extension folder:
-[dataplane-selector-configuration](/edc-extensions/dataplane-selector-configuration/README.md)
+[dataplane-selector-configuration](../../edc-extensions/dataplane-selector-configuration/README.md)

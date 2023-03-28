@@ -9,7 +9,7 @@ API gets registered, and whether insecure (= unauthenticated) access is allowed.
 If no additional configuration is done, the Observability API is registered into the `"management"` context of EDC.
 That means the following configuration values **must be present**
 
-```
+```properties
 web.http.management.port=<PORT>
 web.http.management.path=/some/api/path
 ```
@@ -30,4 +30,4 @@ If the `tractusx.api.observability.allow-insecure=true` is set, then the Observa
 into the `observability` context, which is unsecured.
 
 > Disclaimer: allowing unsecured access to APIs is dangerous and a potential security risk! Using authenticated access
-> to all APIs is highly recommended. Never expose unsecured APIs to the public! 
+> to all APIs is highly recommended. Never expose unsecured APIs to the public!

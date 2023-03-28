@@ -6,7 +6,7 @@
 
 ## Management API changes
 
-details at the [official documentation on swaggerhub](https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api/0.0.1-SNAPSHOT)
+Details at the [official documentation on swaggerhub](https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api/0.0.1-SNAPSHOT)
 
 - Management API for creating resources (assets, policydefinitions, contractdefinitions, ...) will return a body containing the id of the created resource
 - Added a `POST /request` for every management endpoint (assets, policydefinitions, ...) to query all the resources. The existent `GET /` have been deprecated
@@ -27,7 +27,7 @@ details at the [official documentation on swaggerhub](https://app.swaggerhub.com
 - renamed `edc.receiver.http.endpoint` to `edc.receiver.http.dynamic.endpoint`
 - renamed `edc.oauth.public.key.alias` setting to `edc.oauth.certificate.alias`
 
-## Other changes:
+## Other changes
 
 - Supported `/public` data plane endpoint without trailing slash, that can be eventually removed from the configuration
 - packages name changed from `org.eclipse.dataspaceconnector` to `org.eclipse.edc`
