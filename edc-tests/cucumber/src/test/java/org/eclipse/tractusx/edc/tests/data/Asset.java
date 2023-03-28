@@ -19,14 +19,28 @@
  */
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
 public class Asset {
-  @NonNull String Id;
+    private final String id;
+    private final String description;
+    private final DataAddress dataAddress;
 
-  @NonNull String description;
+    public Asset(String id, String description, DataAddress dataAddress) {
+        this.id = Objects.requireNonNull(id);
+        this.description = Objects.requireNonNull(description);
+        this.dataAddress = Objects.requireNonNull(dataAddress);
+    }
 
-  @NonNull DataAddress dataAddress;
+    public String getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public DataAddress getDataAddress() {
+        return dataAddress;
+    }
 }

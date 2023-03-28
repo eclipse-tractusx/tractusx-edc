@@ -1,11 +1,18 @@
 package org.eclipse.tractusx.edc.tests.data;
 
 import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
+
 public class OrConstraint implements Constraint {
 
-  @NonNull List<? extends Constraint> constraints;
+    private final List<? extends Constraint> constraints;
+
+    public OrConstraint(List<? extends Constraint> constraints) {
+        this.constraints = Objects.requireNonNull(constraints);
+    }
+
+    public List<? extends Constraint> getConstraints() {
+        return constraints;
+    }
 }

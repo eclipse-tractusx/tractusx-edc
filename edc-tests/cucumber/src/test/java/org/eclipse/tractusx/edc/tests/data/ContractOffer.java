@@ -19,12 +19,28 @@
  */
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
 public class ContractOffer {
-  @NonNull String id;
-  Policy policy;
-  String assetId;
+    private final String id;
+    private final Policy policy;
+    private final String assetId;
+
+    public ContractOffer(String id, Policy policy, String assetId) {
+        this.id = Objects.requireNonNull(id);
+        this.policy = policy;
+        this.assetId = assetId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Policy getPolicy() {
+        return policy;
+    }
+
+    public String getAssetId() {
+        return assetId;
+    }
 }

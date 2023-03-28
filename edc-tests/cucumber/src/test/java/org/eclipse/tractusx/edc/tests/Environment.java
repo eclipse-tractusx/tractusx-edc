@@ -20,6 +20,9 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import java.util.Locale;
+import java.util.Objects;
+
 import static org.eclipse.tractusx.edc.tests.Constants.AWS_ACCESS_KEY_ID;
 import static org.eclipse.tractusx.edc.tests.Constants.AWS_SECRET_ACCESS_KEY;
 import static org.eclipse.tractusx.edc.tests.Constants.BACKEND_SERVICE_BACKEND_API_URL;
@@ -32,45 +35,165 @@ import static org.eclipse.tractusx.edc.tests.Constants.DATA_PLANE_URL;
 import static org.eclipse.tractusx.edc.tests.Constants.EDC_AWS_ENDPOINT_OVERRIDE;
 import static org.eclipse.tractusx.edc.tests.Constants.IDS_URL;
 
-import java.util.Locale;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-
-@Builder(access = AccessLevel.PRIVATE)
-@Getter
-@ToString
 public class Environment {
-  @NonNull private final String dataManagementAuthKey;
-  @NonNull private final String dataManagementUrl;
-  @NonNull private final String idsUrl;
-  @NonNull private final String dataPlaneUrl;
-  @NonNull private final String backendServiceBackendApiUrl;
-  @NonNull private final String databaseUrl;
-  @NonNull private final String databaseUser;
-  @NonNull private final String databasePassword;
-  @NonNull private final String awsEndpointOverride;
-  @NonNull private final String awsAccessKey;
-  @NonNull private final String awsSecretAccessKey;
 
-  public static Environment byName(String name) {
-    name = name.toUpperCase(Locale.ROOT);
+    private String awsEndpointOverride;
+    private String awsAccessKey;
+    private String awsSecretAccessKey;
+    private String dataManagementAuthKey;
+    private String dataManagementUrl;
+    private String idsUrl;
+    private String dataPlaneUrl;
+    private String backendServiceBackendApiUrl;
+    private String databaseUrl;
+    private String databaseUser;
+    private String databasePassword;
 
-    return Environment.builder()
-        .dataManagementUrl(System.getenv(String.join("_", name, DATA_MANAGEMENT_URL)))
-        .dataManagementAuthKey(System.getenv(String.join("_", name, DATA_MANAGEMENT_API_AUTH_KEY)))
-        .idsUrl(System.getenv(String.join("_", name, IDS_URL)))
-        .dataPlaneUrl(System.getenv(String.join("_", name, DATA_PLANE_URL)))
-        .backendServiceBackendApiUrl(
-            System.getenv(String.join("_", name, BACKEND_SERVICE_BACKEND_API_URL)))
-        .databaseUrl(System.getenv(String.join("_", name, DATABASE_URL)))
-        .databaseUser(System.getenv(String.join("_", name, DATABASE_USER)))
-        .databasePassword(System.getenv(String.join("_", name, DATABASE_PASSWORD)))
-        .awsEndpointOverride(System.getenv(EDC_AWS_ENDPOINT_OVERRIDE))
-        .awsAccessKey(System.getenv(String.join("_", name, AWS_ACCESS_KEY_ID)))
-        .awsSecretAccessKey(System.getenv(String.join("_", name, AWS_SECRET_ACCESS_KEY)))
-        .build();
-  }
+    private Environment() {
+
+    }
+
+
+    public static Environment byName(String name) {
+        var upperName = name.toUpperCase(Locale.ROOT);
+
+        return Environment.Builder.newInstance()
+                .dataManagementUrl(System.getenv(String.join("_", upperName, DATA_MANAGEMENT_URL)))
+                .dataManagementAuthKey(System.getenv(String.join("_", upperName, DATA_MANAGEMENT_API_AUTH_KEY)))
+                .idsUrl(System.getenv(String.join("_", upperName, IDS_URL)))
+                .dataPlaneUrl(System.getenv(String.join("_", upperName, DATA_PLANE_URL)))
+                .backendServiceBackendApiUrl(
+                        System.getenv(String.join("_", upperName, BACKEND_SERVICE_BACKEND_API_URL)))
+                .databaseUrl(System.getenv(String.join("_", upperName, DATABASE_URL)))
+                .databaseUser(System.getenv(String.join("_", upperName, DATABASE_USER)))
+                .databasePassword(System.getenv(String.join("_", upperName, DATABASE_PASSWORD)))
+                .awsEndpointOverride(System.getenv(EDC_AWS_ENDPOINT_OVERRIDE))
+                .awsAccessKey(System.getenv(String.join("_", upperName, AWS_ACCESS_KEY_ID)))
+                .awsSecretAccessKey(System.getenv(String.join("_", upperName, AWS_SECRET_ACCESS_KEY)))
+                .build();
+    }
+
+    public String getIdsUrl() {
+        return idsUrl;
+    }
+
+    public String getAwsEndpointOverride() {
+        return awsEndpointOverride;
+    }
+
+    public String getAwsSecretAccessKey() {
+        return awsSecretAccessKey;
+    }
+
+    public String getAwsAccessKey() {
+        return awsAccessKey;
+    }
+
+    public String getBackendServiceBackendApiUrl() {
+        return backendServiceBackendApiUrl;
+    }
+
+    public String getDatabasePassword() {
+        return databasePassword;
+    }
+
+    public String getDatabaseUrl() {
+        return databaseUrl;
+    }
+
+    public String getDatabaseUser() {
+        return databaseUser;
+    }
+
+    public String getDataManagementAuthKey() {
+        return dataManagementAuthKey;
+    }
+
+    public String getDataManagementUrl() {
+        return dataManagementUrl;
+    }
+
+    private static class Builder {
+
+
+        private final Environment environment;
+
+        private Builder() {
+            environment = new Environment();
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder awsEndpointOverride(String val) {
+            environment.awsEndpointOverride = val;
+            return this;
+        }
+
+        public Builder awsAccessKey(String val) {
+            environment.awsAccessKey = val;
+            return this;
+        }
+
+        public Builder awsSecretAccessKey(String val) {
+            environment.awsSecretAccessKey = val;
+            return this;
+        }
+
+        public Builder dataManagementAuthKey(String val) {
+            environment.dataManagementAuthKey = val;
+            return this;
+        }
+
+        public Builder dataManagementUrl(String val) {
+            environment.dataManagementUrl = val;
+            return this;
+        }
+
+        public Builder idsUrl(String val) {
+            environment.idsUrl = val;
+            return this;
+        }
+
+        public Builder dataPlaneUrl(String val) {
+            environment.dataPlaneUrl = val;
+            return this;
+        }
+
+        public Builder backendServiceBackendApiUrl(String val) {
+            environment.backendServiceBackendApiUrl = val;
+            return this;
+        }
+
+        public Builder databaseUrl(String val) {
+            environment.databaseUrl = val;
+            return this;
+        }
+
+        public Builder databaseUser(String val) {
+            environment.databaseUser = val;
+            return this;
+        }
+
+        public Builder databasePassword(String val) {
+            environment.databasePassword = val;
+            return this;
+        }
+
+        public Environment build() {
+            Objects.requireNonNull(environment.awsAccessKey);
+            Objects.requireNonNull(environment.awsEndpointOverride);
+            Objects.requireNonNull(environment.awsSecretAccessKey);
+            Objects.requireNonNull(environment.backendServiceBackendApiUrl);
+            Objects.requireNonNull(environment.databaseUrl);
+            Objects.requireNonNull(environment.databasePassword);
+            Objects.requireNonNull(environment.databaseUser);
+            Objects.requireNonNull(environment.dataManagementUrl);
+            Objects.requireNonNull(environment.dataPlaneUrl);
+            Objects.requireNonNull(environment.dataManagementAuthKey);
+            Objects.requireNonNull(environment.idsUrl);
+            return environment;
+        }
+    }
 }
