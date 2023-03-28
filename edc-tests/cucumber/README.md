@@ -1,6 +1,6 @@
 # Invoke Business-Tests via Maven
 
-THIS MODULE IS DEPRECATED AND WILL NOT BE MAINTAINED ANYMORE. 
+THIS MODULE IS DEPRECATED AND WILL NOT BE MAINTAINED ANYMORE.
 
 ```shell
 ./gradlew :edc-tests:test -Dcucumber=true
