@@ -201,8 +201,7 @@ jobs:
           SNAPSHOT_VERSION=$VERSION
 
           # Persist the "version" in the gradle.properties
-          sed -i  's/version=.*/version=${{ github.event.inputs.version }}/g' gradle.properties
-
+          sed -i "s/version=.*/version=$SNAPSHOT_VERSION/g" gradle.properties
 
           # Commit and push to origin develop
           git add gradle.properties
