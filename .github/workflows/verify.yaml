@@ -90,7 +90,7 @@ jobs:
 
       - name: Run markdownlint
         run: |
-          markdownlint-cli2-config .markdownlint.yaml "**/*.md" "#node_modules"
+          markdownlint-cli2-config .markdownlint.yaml "**/*.md"
 
   unit-tests:
     runs-on: ubuntu-latest
