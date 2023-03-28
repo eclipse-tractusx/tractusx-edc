@@ -31,8 +31,8 @@ replicaCount: 1
 
 image:
   # -- Which derivate of the edc control-plane to use.
-  # One of: [ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql, ghcr.io/catenax-ng/product-edc/edc-controlplane-memory]
-  repository: ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault
+  # One of: [ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql-hashicorp-vault, ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql, ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-memory]
+  repository: ghcr.io/eclipse-tractusx/tractusx-edc/edc-controlplane-postgresql-hashicorp-vault
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
