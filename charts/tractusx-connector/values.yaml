@@ -509,8 +509,8 @@ vault:
     name: ""
     client: ""
     tenant: ""
-    secret: ""
-    certificate: ""
+    secret:
+    certificate:
   secretNames:
     transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
     transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
