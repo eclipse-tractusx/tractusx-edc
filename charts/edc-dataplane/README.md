@@ -12,7 +12,7 @@ EDC Data-Plane - The Eclipse DataSpaceConnector data layer with responsibility o
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/edc-dataplane --version 0.3.0
+helm install my-release tractusx-edc/edc-dataplane --version 0.3.1
 ```
 
 ## Source Code

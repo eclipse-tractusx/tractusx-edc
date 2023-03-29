@@ -12,7 +12,7 @@ EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with res
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/edc-controlplane --version 0.3.0
+helm install my-release tractusx-edc/edc-controlplane --version 0.3.1
 ```
 
 ## Source Code
