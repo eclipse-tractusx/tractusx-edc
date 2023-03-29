@@ -75,8 +75,8 @@ _Other guidelines w.r.t. the review process, merging etc. will follow in a later
 
 ### A word on Bugfixes/Hotfixes
 
-Once a release is published, for example `0.3.0` it will receive no further development other than hotfixes. Similarly,
-hotfix branches are created based off of the release branch, here `releases/0.3.0`, thus, `hotfix/0.3.1`. From this,
+Once a release is published, for example `0.3.1` it will receive no further development other than hotfixes. Similarly,
+hotfix branches are created based off of the release branch, here `releases/0.3.1`, thus, `hotfix/0.3.1`. From this,
 three scenarios emerge:
 
 1. The actual fix is done on `develop` and can be cherry-picked into the `hotfix/0.3.1` branch. No new commits are
