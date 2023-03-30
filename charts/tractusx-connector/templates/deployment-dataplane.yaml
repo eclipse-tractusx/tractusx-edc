@@ -40,9 +40,9 @@ spec:
           {{- if .Values.dataplane.image.repository }}
           image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.vault.hashicorp }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose data-plane image automatically based on configuration" }}
           {{- end }}
