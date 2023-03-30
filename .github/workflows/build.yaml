@@ -259,5 +259,5 @@ jobs:
         env:
           #REPO: ${{ github.repository }}
           REPO: "catenax-ng/product-edc"
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PACKAGE_USERNAME: ${{ secrets.TEMP_GHPKG_USER }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.TEMP_GHPKG_PASSWORD }}
