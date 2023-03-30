@@ -26,16 +26,11 @@ HEALTHCHECK NONE
 
 RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
-FROM alpine:3.17.2
-
+FROM eclipse-temurin:11.0.18_10-jre-alpine
 ARG JAR
 
 ARG APP_USER=docker
 ARG APP_UID=10100
-
-RUN apk update && \
-     apk add openjdk11-jre-headless=11.0.18_p10-r0 --no-cache && \
-     rm -rf /var/cache/apk/*
 
 RUN addgroup --system "$APP_USER"
 

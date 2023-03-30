@@ -1,27 +1,33 @@
 # Run and debug Business-Tests local within IDE
-**Prerequisites:**
+
+Prerequisites:
+
 - You need a local kubernetes cluster to install the services (Docker Desktop is recommended).
 - You need kubectl and helm command line tools installed.
 
-### 1. Build all modules with maven and produce docker images
+## 1. Build all modules with maven and produce docker images
 
 ```shell
 ./gradlew dockerize
 ```
 
-### 2. Install the all-in-one supporting infrastructure environment (Daps, Vault, PostgreSql, Minio, Backend-Service)
+## 2. Install the all-in-one supporting infrastructure environment (Daps, Vault, PostgreSql, Minio, Backend-Service)
+
 ```shel
-helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure -n business-tests --create-namespace
+helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure -n business-tests --dependency-update --create-namespace
 ```
 
 To access the PostgreSql databases you could use following kubectl port forwardings:
+
 ```shell
 kubectl port-forward plato-postgresql-0 -n business-tests 5555:5432
 kubectl port-forward sokrates-postgresql-0 -n business-tests 6666:5432
 ```
+
 Please use the same ports later for your environment variables.
 
-### 3. Install Plato as provider EDC
+## 3. Install Plato as provider EDC
+
 ```shell
 helm install plato charts/tractusx-connector -n business-tests --create-namespace \
   --set fullnameOverride=plato \
@@ -56,7 +62,8 @@ helm install plato charts/tractusx-connector -n business-tests --create-namespac
   --wait-for-jobs --timeout=120s
 ```
 
-###  4. Install Socrates as consumer EDC
+## 4. Install Socrates as consumer EDC
+
 ```shell
 helm install sokrates charts/tractusx-connector -n business-tests --create-namespace \
   --set fullnameOverride=sokrates \
@@ -91,9 +98,11 @@ helm install sokrates charts/tractusx-connector -n business-tests --create-names
   --wait-for-jobs --timeout=120s
 ```
 
-###  5. Set environment variables and run configuration in IDE
+## 5. Set environment variables and run configuration in IDE
+
 You can create a run configuration in IntelliJ like bellow screenshot and copy/paste the whole set of environments variables if you use ";" after each line.
-![](run-config.png)
+
+![Example run config](run-config.png)
 
 ```shell
 PLATO_BACKEND_SERVICE_BACKEND_API_URL=http://localhost:<PORT>;
@@ -122,18 +131,31 @@ EDC_AWS_ENDPOINT_OVERRIDE=http://localhost:32000
 
 The services are using NodePort to expose the endpoints therefore the ports are not fix and needs to be determined after each deployment.
 To determine the current ports you can use the following kubectl command:
+
 ```shell
 kubectl get svc -n business-tests -o go-template='{{range .items}}{{ $save := . }}{{range.spec.ports}}{{if .nodePort}}{{$save.metadata.namespace}}{{"/"}}{{$save.metadata.name}}{{" - "}}{{.name}}{{": "}}{{.nodePort}}{{"("}}{{.port}}{{")"}}{{"\n"}}{{end}}{{end}}{{end}}'
 ```
+
 This will return all NodePorts which are available in business-tests namespace where you can pick the ports to use in your environment variables.
 Now you are able to run it in IDE either as normal "Run" mode or in "Debug" mode where you can debug the business-tests by setting debugging points.
 
-### 6. Update your components
+Example of mapping to environment variables needed for the business tests:
+
+```shell
+business-tests/plato-controlplane - data: 30955(8081)    -> PLATO_DATA_MANAGEMENT_URL=http://localhost:30955/data;
+business-tests/sokrates-controlplane - data: 30538(8081) -> SOKRATES_DATA_MANAGEMENT_URL=http://localhost:30538/data;
+business-tests/backend - backend: 30556(8081)            -> SOKRATES_BACKEND_SERVICE_BACKEND_API_URL= http://localhost:30556
+```
+
+## 6. Update your components
+
 Once everything is installed you just need to update your services when you have a new image.
+
 ```shell
 helm upgrade plato charts/tractusx-connector --recreate-pods
 helm upgrade sokrates charts/tractusx-connector --recreate-pods
 ```
 
-### 7. Tips
+## 7. Tips
+
 If you use the kubernetes within Docker Desktop you have direct access to the images which you have created with Docker Desktop they are using the same docker daemon. So you don't need to transfer it in your k8s cluster.

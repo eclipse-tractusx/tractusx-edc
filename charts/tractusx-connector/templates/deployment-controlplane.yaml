@@ -62,13 +62,13 @@ spec:
           {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.postgresql.enabled .Values.vault.hashicorp.enabled }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.postgresql.enabled .Values.vault.azure.enabled }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-postgresql-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-postgresql:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.hashicorp.enabled }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure.enabled }}
-          image: "ghcr.io/catenax-ng/product-edc/edc-controlplane-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose control-plane image automatically based on configuration" }}
           {{- end }}
@@ -262,7 +262,7 @@ spec:
             ## DATA PLANE ##
             ################
 
-            # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
               value: {{ include "txdc.dataplane.url.control" . }}/transfer
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
@@ -291,7 +291,7 @@ spec:
             ###########
 
           {{- if .Values.vault.hashicorp.enabled }}
-            # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/hashicorp-vault
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
             - name: "EDC_VAULT_HASHICORP_URL"
               value: {{ .Values.vault.hashicorp.url | required ".Values.vault.hashicorp.url is required" | quote }}
             - name: "EDC_VAULT_HASHICORP_TOKEN"
@@ -315,10 +315,16 @@ spec:
               value: {{ .Values.vault.azure.tenant | required ".Values.vault.azure.tenant is required" | quote }}
             - name: "EDC_VAULT_NAME"
               value: {{ .Values.vault.azure.name | required ".Values.vault.azure.name is required" | quote }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.secret }}
             - name: "EDC_VAULT_CLIENTSECRET"
               value: {{ .Values.vault.azure.secret | quote }}
+            {{- end }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.certificate }}
             - name: "EDC_VAULT_CERTIFICATE"
               value: {{ .Values.vault.azure.certificate | quote }}
+            {{- end }}
           {{- end }}
 
             #####################
@@ -326,7 +332,7 @@ spec:
             ## DATA ENCRYPTION ##
             #####################
 
-            # see extension https://github.com/catenax-ng/product-edc/tree/develop/edc-extensions/data-encryption
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/data-encryption
             - name: "EDC_DATA_ENCRYPTION_KEYS_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
             - name: "EDC_DATA_ENCRYPTION_ALGORITHM"

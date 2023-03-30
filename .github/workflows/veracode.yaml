@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: 'gradle'
       -
         name: Verify proper formatting
@@ -63,7 +63,7 @@ jobs:
         uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: 'gradle'
       # Build
       -
@@ -112,7 +112,7 @@ jobs:
         uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: 'gradle'
       # Build
       -

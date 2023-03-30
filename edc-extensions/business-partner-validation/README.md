@@ -30,11 +30,13 @@ must contain the Business Partner Number.
 ## Single BusinessPartnerNumber example
 
 The most simple BPN policy would allow the usage of certain data to a single Business Partner. An example `Policy` is
-shown below. 
-In this example the `edctype` properties are added, so that this policy may even be sent to the Management API.
+shown below. In this example the `edctype` properties are added, so that this policy may even be sent to the Management API.
 
 ```json
 {
+  "uid": "<PolicyId>",
+  "prohibitions": [],
+  "obligations": [],
   "permissions": [
     {
       "edctype": "dataspaceconnector:permission",
@@ -64,6 +66,7 @@ In this example the `edctype` properties are added, so that this policy may even
 
 To define multiple BPN and allow multiple participants to use the data the `orconstraint` should be used.
 It will permit the constraints contained to be evaluated using the `OR` operator.
+
 ```json
 {
   "permissions": [
@@ -113,13 +116,12 @@ It will permit the constraints contained to be evaluated using the `OR` operator
 }
 ```
 
-# Important: EDC Policies are input sensitive
+## Important: EDC Policies are input sensitive
 
 Please be aware that the EDC ignores all Rules and Constraint it does not understand. This could cause your constrained policies to be public.
 
----
+### Example 1 for accidentially public
 
-**Example 1 for accidentially public:**
 ```json
 {
   "uid": "1",
@@ -152,9 +154,7 @@ Please be aware that the EDC ignores all Rules and Constraint it does not unders
 
 This policy is public available, even though the constraint is described correct. The reason is, that this extension only registeres the Policy.Action `USE` within the EDC. Any other Action Type will have the EDC ignore the corresponding permission, hence interpret the polics as public policy.
 
----
-
-**Example 2 for accidentally public:**
+### Example 2 for accidentially public
 
 ```json
 {

@@ -56,7 +56,7 @@ jobs:
         uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: 'gradle'
       -
         name: Cache ContainerD Image Layers
@@ -84,7 +84,7 @@ jobs:
           - role: control-plane
             extraMounts:
               - hostPath: ${PWD}
-                containerPath: /srv/product-edc
+                containerPath: /srv/tractusx-edc
               - hostPath: ${MAVEN_REPOSITORY}
                 containerPath: /srv/m2-repository
               - hostPath: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
@@ -262,7 +262,7 @@ jobs:
                 {
                   "args": [
                     "-c",
-                    "cd /product-edc && ./gradlew edc-tests:cucumber:test -Dcucumber=true"
+                    "cd /tractusx-edc && ./gradlew edc-tests:cucumber:test -Dcucumber=true"
                   ],
                   "command": [
                     "/bin/sh"
@@ -301,8 +301,8 @@ jobs:
                   "name": "edc-tests-cucumber",
                   "volumeMounts": [
                     {
-                      "mountPath": "/product-edc",
-                      "name": "product-edc"
+                      "mountPath": "/tractusx-edc",
+                      "name": "tractusx-edc"
                     },
                     {
                       "mountPath": "/root/.m2/repository",
@@ -316,9 +316,9 @@ jobs:
               "volumes": [
                 {
                   "hostPath": {
-                    "path": "/srv/product-edc"
+                    "path": "/srv/tractusx-edc"
                   },
-                  "name": "product-edc"
+                  "name": "tractusx-edc"
                 },
                 {
                   "hostPath": {

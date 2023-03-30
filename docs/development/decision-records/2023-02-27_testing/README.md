@@ -1,4 +1,4 @@
-# Testing concept for product-edc
+# Testing concept for tractusx-edc
 
 ## Decision
 
@@ -13,7 +13,7 @@ Henceforth, testing shall be done in accordance with the herein outlined rules a
 
 ## Rationale
 
-Past experiences with product-edc's testing setup has shown that it is time- and resource-consuming, which also makes it unreliable at times. 
+Past experiences with tractusx-edc's testing setup has shown that it is time- and resource-consuming, which also makes it unreliable at times.
 Furthermore, a finer-grained test classification such as the one outlined in this document is currently neither present nor documented.
 
 ### Definitions and distinction
@@ -51,7 +51,7 @@ EDC provides a way to launch (multiple) embedded connector runtimes from within 
 
 External systems such as databases or identity providers should be setup "out-of-band" of the test, using a script or the CI pipeline's declarative syntax (e.g. GitHub Actions' `services` feature). If possible, we should employ external systems in a self-contained way, e.g. using docker containers, because that increases portability and decreases the potential for conflict, e.g. in always-on databases.
 
-### DO:
+### DO
 
 - use integration tests sparingly and only when unit tests are not practical
 - deploy the external system as service directly in the workflow or
@@ -63,7 +63,7 @@ External systems such as databases or identity providers should be setup "out-of
   system does not get destroyed after the test.
 - use the class annotations provided by EDC to categorize and configure test execution
 
-### DO NOT:
+### DO NOT
 
 - try to cover everything with integration tests. It's typically a code smell if there are no corresponding unit tests
   for an integration test.
@@ -78,7 +78,7 @@ External systems such as databases or identity providers should be setup "out-of
 This section explains _at which point in time_ we should execute which test. This is intended to minimize the impact on overall test execution time on CI, while still maintaining sufficient coverage.
 
 | Test type              | When to run                                                                         | Remarks |
-| ---------------------- | ----------------------------------------------------------------------------------- | ------- |
+|------------------------|-------------------------------------------------------------------------------------|---------|
 | Unit test              | when running tests locally, without any parameters, on every commit on every branch |         |
 | Integration test       | on every commit on every branch                                                     |         |
 | System/End-To-End test | on pull request branches except when marked as `draft`                              |         |
