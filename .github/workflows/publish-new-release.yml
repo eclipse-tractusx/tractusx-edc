@@ -75,7 +75,8 @@ jobs:
           echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
           ./gradlew publishAllPublicationsToGithubPackagesRepository
         env:
-          REPO: ${{ github.repository }}
+          #REPO: ${{ github.repository }}
+          REPO: "catenax-ng/product-edc"
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
