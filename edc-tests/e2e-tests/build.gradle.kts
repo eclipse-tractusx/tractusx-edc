@@ -30,3 +30,8 @@ dependencies {
     testImplementation(edc.api.catalog)
     testImplementation(testFixtures(edc.junit))
 }
+
+// do not publish
+edcBuild {
+    publish.set(false)
+}
