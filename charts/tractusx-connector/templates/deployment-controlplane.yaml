@@ -315,10 +315,16 @@ spec:
               value: {{ .Values.vault.azure.tenant | required ".Values.vault.azure.tenant is required" | quote }}
             - name: "EDC_VAULT_NAME"
               value: {{ .Values.vault.azure.name | required ".Values.vault.azure.name is required" | quote }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.secret }}
             - name: "EDC_VAULT_CLIENTSECRET"
               value: {{ .Values.vault.azure.secret | quote }}
+            {{- end }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.certificate }}
             - name: "EDC_VAULT_CERTIFICATE"
               value: {{ .Values.vault.azure.certificate | quote }}
+            {{- end }}
           {{- end }}
 
             #####################
