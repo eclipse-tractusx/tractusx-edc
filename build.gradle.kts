@@ -128,7 +128,9 @@ allprojects {
 // the "dockerize" task is added to all projects that use the `shadowJar` plugin
 subprojects {
     afterEvaluate {
-        if (project.plugins.hasPlugin("com.github.johnrengelman.shadow")) {
+        if (project.plugins.hasPlugin("com.github.johnrengelman.shadow") &&
+            file("${project.projectDir}/src/main/docker/Dockerfile").exists()
+        ) {
 
             //actually apply the plugin to the (sub-)project
 
@@ -139,6 +141,8 @@ subprojects {
                 dockerFile.set(file("${project.projectDir}/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
+                // uncomment the following line if building on Apple Silicon
+                // platform.set("linux/x86_64")
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 inputDir.set(file(project.projectDir))
             }

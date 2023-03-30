@@ -30,9 +30,6 @@ include(":edc-dataplane:edc-dataplane-azure-vault")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 
-// for testing
-include(":launchers:simple")
-
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
     repositories {
