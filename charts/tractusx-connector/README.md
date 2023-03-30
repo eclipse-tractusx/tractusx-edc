@@ -1,6 +1,6 @@
 # tractusx-connector
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.1](https://img.shields.io/badge/AppVersion-0.3.1-informational?style=flat-square)
+![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.2](https://img.shields.io/badge/AppVersion-0.3.2-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector
 
@@ -10,7 +10,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector --version 0.3.1
+helm install my-release tractusx-edc/tractusx-connector --version 0.3.2
 ```
 
 ## Source Code
@@ -217,11 +217,11 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.1
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | serviceAccount.name | string | `""` |  |
-| vault.azure.certificate | string | `""` |  |
+| vault.azure.certificate | string | `nil` |  |
 | vault.azure.client | string | `""` |  |
 | vault.azure.enabled | bool | `false` |  |
 | vault.azure.name | string | `""` |  |
-| vault.azure.secret | string | `""` |  |
+| vault.azure.secret | string | `nil` |  |
 | vault.azure.tenant | string | `""` |  |
 | vault.hashicorp.enabled | bool | `false` |  |
 | vault.hashicorp.healthCheck.enabled | bool | `true` |  |
