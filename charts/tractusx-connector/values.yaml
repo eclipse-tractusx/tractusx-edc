@@ -273,7 +273,7 @@ controlplane:
   # -- configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html)
   logging: |-
     .level=INFO
-    org.eclipse.dataspaceconnector.level=ALL
+    org.eclipse.edc.level=ALL
     handlers=java.util.logging.ConsoleHandler
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
@@ -470,7 +470,7 @@ dataplane:
   # -- configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html)
   logging: |-
     .level=INFO
-    org.eclipse.dataspaceconnector.level=ALL
+    org.eclipse.edc.level=ALL
     handlers=java.util.logging.ConsoleHandler
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
@@ -509,8 +509,8 @@ vault:
     name: ""
     client: ""
     tenant: ""
-    secret: ""
-    certificate: ""
+    secret:
+    certificate:
   secretNames:
     transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
     transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key

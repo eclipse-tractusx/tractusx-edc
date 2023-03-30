@@ -21,11 +21,11 @@ plugins {
 
 dependencies {
 
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")){
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
         exclude("org.eclipse.edc", "oauth2-core")
         exclude("org.eclipse.edc", "oauth2-daps")
-        exclude(module= "data-encryption")
-        exclude(module= "control-plane-adapter")
+        exclude(module = "data-encryption")
+        exclude(module = "control-plane-adapter")
     }
 }
 
@@ -36,4 +36,9 @@ application {
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
     archiveFileName.set("app.jar")
+}
+
+// do not publish
+edcBuild {
+    publish.set(false)
 }

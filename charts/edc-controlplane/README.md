@@ -2,21 +2,22 @@
 
 > **:exclamation: This Helm Chart is deprecated!**
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.1](https://img.shields.io/badge/AppVersion-0.3.1-informational?style=flat-square)
+![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.2](https://img.shields.io/badge/AppVersion-0.3.2-informational?style=flat-square)
 
 EDC Control-Plane - The Eclipse DataSpaceConnector administration layer with responsibility of resource management and govern contracts and data transfers
 
-**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc>
+**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-controlplane>
 
 ## TL;DR
+
 ```shell
-$ helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-$ helm install my-release tractusx-edc/edc-controlplane --version 0.3.1
+helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
+helm install my-release tractusx-edc/edc-controlplane --version 0.3.2
 ```
 
 ## Source Code
 
-* <https://github.com/eclipse-tractusx/tractusx-edc>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/edc-controlplane>
 
 ## Values
 

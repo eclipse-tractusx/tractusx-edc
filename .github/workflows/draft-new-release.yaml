@@ -37,7 +37,7 @@ jobs:
         uses: actions/setup-java@v3.10.0
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: 'gradle'
       -
         name: Bump version in gradle.properties

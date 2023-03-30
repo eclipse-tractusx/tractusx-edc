@@ -21,7 +21,7 @@ from breaking changes, such as Java SPIs, APIs and changes in service contracts.
 
 Up until now, the only way out was cherry-picking, which is extremely cumbersome and error-prone, and requires a
 parallel build pipeline to publish the cherry-picked artifacts of EDC (and potentially others). With the approach
-presented here, cherry-picking is still an option, but there are easier alternatives to it. 
+presented here, cherry-picking is still an option, but there are easier alternatives to it.
 
 Every release version published by tractusx-edc must be reproducible at any time.
 
@@ -47,12 +47,12 @@ created on March 27th 2023, the most recent nightly would be `0.0.1-20230326`.
 _Updating Gradle files or Maven POMs, creating branches and tags in Git should be automated through GitHub Actions as
 part of the release process. For reference_:
 
-- Modifying and committing files: https://github.com/orgs/community/discussions/26842#discussioncomment-3253612
-- Creating branches: https://github.com/marketplace/actions/create-branch
+- Modifying and committing files: <https://github.com/orgs/community/discussions/26842#discussioncomment-3253612>
+- Creating branches: <https://github.com/marketplace/actions/create-branch>
 - Creating tags using GitHub's
-  API: https://github.com/eclipse-edc/Connector/blob/b24a5cacbc9fcabdfd8020d779399b3e56856661/.github/workflows/release-edc.yml#L21 (
+  API: <https://github.com/eclipse-edc/Connector/blob/b24a5cacbc9fcabdfd8020d779399b3e56856661/.github/workflows/release-edc.yml#L21> (
   example)
-- Create GitHub Release: https://github.com/eclipse-edc/Connector/blob/b24a5cacbc9fcabdfd8020d779399b3e56856661/.github/workflows/release-edc.yml#L56 (example)
+- Create GitHub Release: <https://github.com/eclipse-edc/Connector/blob/b24a5cacbc9fcabdfd8020d779399b3e56856661/.github/workflows/release-edc.yml#L56> (example)
 
 Once a release is created, the EDC upstream version must not change anymore, unless there is good reason to do so, for
 example, a defect, that needs to be fixed upstream. At that point a decision can also be made to employ a cherry-pick model, in case the
@@ -75,8 +75,8 @@ _Other guidelines w.r.t. the review process, merging etc. will follow in a later
 
 ### A word on Bugfixes/Hotfixes
 
-Once a release is published, for example `0.3.0` it will receive no further development other than hotfixes. Similarly,
-hotfix branches are created based off of the release branch, here `releases/0.3.0`, thus, `hotfix/0.3.1`. From this,
+Once a release is published, for example `0.3.1` it will receive no further development other than hotfixes. Similarly,
+hotfix branches are created based off of the release branch, here `releases/0.3.1`, thus, `hotfix/0.3.1`. From this,
 three scenarios emerge:
 
 1. The actual fix is done on `develop` and can be cherry-picked into the `hotfix/0.3.1` branch. No new commits are

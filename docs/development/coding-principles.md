@@ -73,15 +73,15 @@
     - inheriting from an object that fulfills any of the above. In this case use derived builders as well.
 2. Although serializability is not the reason we use the builder pattern, it is a strong indication that a builder
    should be used.
-2. Builders should be named just `Builder` and be static nested classes.
-3. Create a `public static Builder newInstance(){...}` method to instantiate the builder
-4. Builders have non-public constructors
-5. Use single-field builders: a `Builder` instantiates the object it builds in its constructor, and sets the properties
+3. Builders should be named just `Builder` and be static nested classes.
+4. Create a `public static Builder newInstance(){...}` method to instantiate the builder
+5. Builders have non-public constructors
+6. Use single-field builders: a `Builder` instantiates the object it builds in its constructor, and sets the properties
    in its builder methods. The `build()` method then only performs verification (optional) and returns the instance.
-6. Use `private` constructors for the objects that the builder builds.
-7. If there is a builder for an object, use it to deserialize an object, i.e. put Jackson annotations such
+7. Use `private` constructors for the objects that the builder builds.
+8. If there is a builder for an object, use it to deserialize an object, i.e. put Jackson annotations such
    as `JsonCreator` and `@JsonBuilder` on builders.
-8. Note that the motivation behind use of builders is not for immutability (although that may be good in certain
+9. Note that the motivation behind use of builders is not for immutability (although that may be good in certain
    circumstances). Rather, it is to make code less error-prone and
    simpler given the lack of named arguments and optional parameters in Java.
 

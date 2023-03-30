@@ -33,10 +33,10 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
   to either accept the decision or withdraw your PR.
 - Be civil and objective. No foul language, insulting or otherwise abusive language will be tolerated.
 - The PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
-    - The title must follow the format as `<type>(<optional scope>): <description>`.
-      `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test` are allowed for
-      the `<type>`.
-    - The length must be kept under 80 characters.
+  - The title must follow the format as `<type>(<optional scope>): <description>`.
+    `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test` are allowed for
+    the `<type>`.
+  - The length must be kept under 80 characters.
 
 ## As a reviewer
 
@@ -48,12 +48,12 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
 - Don't argue basic principles (code style, architectural decisions, etc.)
 - Use the `suggestion` feature of GitHub for small/simple changes.
 - The following could serve you as a review checklist:
-    - no unnecessary dependencies in `build.gradle.kts`
-    - sensible unit tests, prefer unit tests over integration tests wherever possible (test runtime). Also check the
-      usage of test tags.
-    - code style
-    - simplicity and "uncluttered-ness" of the code
-    - overall focus of the PR
+  - no unnecessary dependencies in `build.gradle.kts`
+  - sensible unit tests, prefer unit tests over integration tests wherever possible (test runtime). Also check the
+    usage of test tags.
+  - code style
+  - simplicity and "uncluttered-ness" of the code
+  - overall focus of the PR
 - Don't just wave through any PR. Please take the time to look at them carefully.
 - Be civil and objective. No foul language, insulting or otherwise abusive language will be tolerated. The goal is to
   _encourage_ contributions.
