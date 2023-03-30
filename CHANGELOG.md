@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2023-03-30
+
+### Fixed
+
+- Fixed mutually-exclusive config values for Azure KeyVault
+
 ## [0.3.1] - 2023-03-27
 
 ### Added
@@ -23,6 +29,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 
 ### Added
+
+- Add contract id to data source http call (#732)
+- Support also support releases in ci pipeline
+- Introduce typed object for oauth2 provisioning
+- Add documentation
+- Add test case
+- Add client to omejdn
+- add hydra deployment
+- Configure dynamically HTTP Receiver callback endpoints. (#685)
+- cp-adapter : code review, rollbacke name change (#664)
+- Feature/cp adapter task 355 356 357 (#621)
+- Add Validity Mapping in ContractDefinitionStepDefs class
+- Add feature and create SendAnOfferwithoutConstraints method in class negotiationSteps
+- Add validity attribute in class ContractDefinition
+- Add Validity Mapping in ContractDefinitionStepDefs class
+- Add feature and create SendAnOfferwithoutConstraints method in class negotiationSteps
+- Add validity attribute in class ContractDefinition
+- Local TXDC Setup Documentation (#618)
+- Feature: Sftp Provisioner and Client (#554)
 
 - Add contract id to data source http call (#732)
 - Support also support releases in ci pipeline
@@ -65,7 +90,32 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - update link to edc logo in README.md (#612)
 - update description  of supporting infrastructure deployment (#616)
 
+- Support horizontal edc scaling in cp adapter extension (#678)
+- Use upstream jackson version (#741)
+- Replace provision-oauth2 with data-plane-http-oauth2
+- docs: Update sample documentation (#671)
+- chore: Disable build ci pipeline if just docu was updated (#705)
+- Increase trivy timeout
+- Remove not useful anymore custom-jsonld extension (#683)
+- update setup docu (#654)
+- remove trailing slash (#652)
+- update alpine from 3.17.0 to 3.17.1 for controlplane-memory-hashicorp-vault (#665)
+- Feature/set charts deprecated (#628)
+- update setup docu (#627)
+- Feature/update txdc deployment downward capabilities (#625)
+- remove git submodule (#619)
+- Feature/update postman (#624)
+- update control plane docu (#623)
+- update postgresql version in Chart.yaml supporting-infrastructure (#622)
+- update link to edc logo in README.md (#612)
+- update description  of supporting infrastructure deployment (#616)
+
 ### Fixed
+
+- bugfix: Fix slow AES encryption (#746)
+- Fix typo in tractusx-connector values.yaml comment
+- Fix not working docu link in README.md
+- Fix typo in control-plane adapter README
 
 - bugfix: Fix slow AES encryption (#746)
 - Fix typo in tractusx-connector values.yaml comment
@@ -239,7 +289,7 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 ### Fixed
 
 - [#1515](https://github.com/eclipse-edc/Connector/issues/1515) SQL: Connector sends out 50
-    contract offers max.
+      contract offers max.
 
 ### Removed
 
@@ -252,7 +302,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.3.1...HEAD
+[Unreleased]: https://github.com/catenax-ng/tx-tractusx-edc/compare/0.3.2...HEAD
+
+[0.3.2]: https://github.com/catenax-ng/tx-tractusx-edc/compare/0.3.1...0.3.2
 
 [0.3.1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.3.0...0.3.1
 
