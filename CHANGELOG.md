@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2023-03-30
+
+### Fixed
+
+- Fixed mutually-exclusive config values for Azure KeyVault
+
 ## [0.3.1] - 2023-03-27
 
 ### Added
@@ -66,6 +72,11 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - update description  of supporting infrastructure deployment (#616)
 
 ### Fixed
+
+- bugfix: Fix slow AES encryption (#746)
+- Fix typo in tractusx-connector values.yaml comment
+- Fix not working docu link in README.md
+- Fix typo in control-plane adapter README
 
 - bugfix: Fix slow AES encryption (#746)
 - Fix typo in tractusx-connector values.yaml comment
@@ -239,7 +250,7 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 ### Fixed
 
 - [#1515](https://github.com/eclipse-edc/Connector/issues/1515) SQL: Connector sends out 50
-    contract offers max.
+      contract offers max.
 
 ### Removed
 
@@ -252,7 +263,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.3.1...HEAD
+[Unreleased]: https://github.com/catenax-ng/tx-tractusx-edc/compare/0.3.2...HEAD
+
+[0.3.2]: https://github.com/catenax-ng/tx-tractusx-edc/compare/0.3.1...0.3.2
 
 [0.3.1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.3.0...0.3.1
 

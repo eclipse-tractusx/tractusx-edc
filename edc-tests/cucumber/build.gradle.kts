@@ -34,3 +34,8 @@ tasks.withType(Test::class) {
         System.getProperty("cucumber") == "true"
     }
 }
+
+// do not publish
+edcBuild {
+    publish.set(false)
+}
