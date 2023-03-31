@@ -78,11 +78,6 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - Fix not working docu link in README.md
 - Fix typo in control-plane adapter README
 
-- bugfix: Fix slow AES encryption (#746)
-- Fix typo in tractusx-connector values.yaml comment
-- Fix not working docu link in README.md
-- Fix typo in control-plane adapter README
-
 ### Dependency updates
 
 - Bump EDC to 20220220 (#767)
