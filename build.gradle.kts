@@ -141,8 +141,9 @@ subprojects {
                 dockerFile.set(file("${project.projectDir}/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
-                // uncomment the following line if building on Apple Silicon
-                // platform.set("linux/x86_64")
+                // specify platform with the -Dplatform flag:
+                if (System.getProperty("platform") != null)
+                    platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 inputDir.set(file(project.projectDir))
             }

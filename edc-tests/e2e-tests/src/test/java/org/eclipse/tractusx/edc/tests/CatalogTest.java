@@ -16,14 +16,8 @@ package org.eclipse.tractusx.edc.tests;
 
 
 import org.eclipse.edc.api.query.QuerySpecDto;
-import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.policy.model.Action;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.policy.model.PolicyType;
 import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,15 +26,10 @@ import java.util.Map;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.noConstraintPolicy;
 
 @EndToEndTest
 public class CatalogTest extends MultiRuntimeTest {
-
-
-    @BeforeAll
-    static void setup() {
-
-    }
 
     @Test
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
@@ -133,16 +122,6 @@ public class CatalogTest extends MultiRuntimeTest {
 
     }
 
-    private PolicyDefinition noConstraintPolicy(String id) {
-        return PolicyDefinition.Builder.newInstance()
-                .id(id)
-                .policy(Policy.Builder.newInstance()
-                        .permission(Permission.Builder.newInstance()
-                                .action(Action.Builder.newInstance().type("USE").build())
-                                .build())
-                        .type(PolicyType.SET)
-                        .build())
-                .build();
-    }
+
 }
 
