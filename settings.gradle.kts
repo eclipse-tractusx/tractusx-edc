@@ -52,9 +52,9 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             from("org.eclipse.edc:edc-versions:0.0.1-20230220-SNAPSHOT")
-            library("testcontainers-junit", "org.testcontainers","junit-jupiter").version("1.17.6")
-            library("apache-sshd-core", "org.apache.sshd","sshd-core").version("2.9.2")
-            library("apache-sshd-sftp", "org.apache.sshd","sshd-sftp").version("2.9.2")
+            library("testcontainers-junit", "org.testcontainers", "junit-jupiter").version("1.17.6")
+            library("apache-sshd-core", "org.apache.sshd", "sshd-core").version("2.9.2")
+            library("apache-sshd-sftp", "org.apache.sshd", "sshd-sftp").version("2.9.2")
         }
         // create version catalog for all EDC modules
         create("edc") {
@@ -86,6 +86,9 @@ dependencyResolutionManagement {
             library("api-management", "org.eclipse.edc", "management-api").versionRef("edc")
             library("api-catalog", "org.eclipse.edc", "catalog-api").versionRef("edc")
             library("api-observability", "org.eclipse.edc", "api-observability").versionRef("edc")
+            library("api-contractnegotiation", "org.eclipse.edc", "contract-negotiation-api").versionRef("edc")
+            library("api-dataplane", "org.eclipse.edc", "data-plane-api").versionRef("edc")
+            library("api-transferprocess", "org.eclipse.edc", "transfer-process-api").versionRef("edc")
             library("ext-http", "org.eclipse.edc", "http").versionRef("edc")
             library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
             library("ids", "org.eclipse.edc", "ids").versionRef("edc")
@@ -139,6 +142,8 @@ dependencyResolutionManagement {
                 "org.eclipse.edc",
                 "transfer-pull-http-dynamic-receiver"
             ).versionRef("edc")
+
+            library("transfer.receiver", "org.eclipse.edc", "transfer-pull-http-receiver").versionRef("edc")
 
             bundle(
                 "connector",
