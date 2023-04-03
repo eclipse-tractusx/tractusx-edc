@@ -6,11 +6,9 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.edc.tests.data.Asset;
-import org.eclipse.tractusx.edc.tests.data.ContractNegotiation;
 import org.eclipse.tractusx.edc.tests.data.DataAddress;
 import org.eclipse.tractusx.edc.tests.data.HttpProxySinkDataAddress;
 import org.eclipse.tractusx.edc.tests.data.HttpProxySourceDataAddress;
-import org.eclipse.tractusx.edc.tests.data.Transfer;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
@@ -61,19 +59,17 @@ public class HttpProxyTransferSteps {
     @When("'{connector}' initiates HttpProxy transfer from '{connector}'")
     public void sokratesInitiateHttpProxyTransferProcessFromPlato(
             Connector consumer, Connector provider, DataTable dataTable) throws IOException {
-        final DataManagementAPI api = consumer.getDataManagementAPI();
-        final String receiverUrl = provider.getEnvironment().getIdsUrl() + "/data";
+        var api = consumer.getDataManagementAPI();
+        var receiverUrl = provider.getEnvironment().getIdsUrl() + "/data";
 
-        final List<ContractNegotiation> negotiation = api.getNegotiations();
-        final String agreementId = negotiation.get(0).getAgreementId();
-        final DataAddress dataAddress = new HttpProxySinkDataAddress();
+        var negotiation = api.getNegotiations();
+        var agreementId = negotiation.get(0).getAgreementId();
+        var dataAddress = new HttpProxySinkDataAddress();
 
         for (var map : dataTable.asMaps()) {
             final String assetId = map.get(ASSET_ID);
             final String receiverHttpEndpoint = map.get(RECEIVER_HTTP_ENDPOINT);
-            final Transfer transfer =
-                    api.initiateTransferProcess(
-                            receiverUrl, agreementId, assetId, dataAddress, receiverHttpEndpoint);
+            var transfer = api.initiateTransferProcess(receiverUrl, agreementId, assetId, dataAddress, receiverHttpEndpoint);
 
             transfer.waitUntilComplete(api);
         }
