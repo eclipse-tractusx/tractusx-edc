@@ -24,6 +24,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.OrConstraint;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.policy.model.PolicyType;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,5 +53,17 @@ public class PolicyHelperFunctions {
                                         .constraints(bpnConstraints)
                                         .build())
                                 .build()).build()).build();
+    }
+
+    public static PolicyDefinition noConstraintPolicy(String id) {
+        return PolicyDefinition.Builder.newInstance()
+                .id(id)
+                .policy(Policy.Builder.newInstance()
+                        .permission(Permission.Builder.newInstance()
+                                .action(Action.Builder.newInstance().type("USE").build())
+                                .build())
+                        .type(PolicyType.SET)
+                        .build())
+                .build();
     }
 }
