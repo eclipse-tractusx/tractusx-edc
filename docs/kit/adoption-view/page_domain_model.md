@@ -5,8 +5,8 @@ description: 'Connector Kit'
 sidebar_position: 2
 ---
 
-
 ![domain-model](images/domain-model.png)
+
 > The shown picture illustrates only a generic view of the Domain Model and is not intended to show all aspects of the project.
 
 ## Asset
