@@ -44,7 +44,7 @@ section outlines the exact sequence of steps. Note that "upstream" refers to `ec
 fork" refers to `catenax-ng/tx-tractusx-edc`.
 
 - create a new branch `upstream/releases`
-- create a new branch `fork/releaes`, set it to track `upstream/releases`
+- create a new branch `fork/releases`, set it to track `upstream/releases`
 - push the contents of `fork/main` -> `upstream/releases`
 - synchronize `upstream/develop` with `fork/develop`
 - force-push the contents of `develop` -> `upstream/main` (do **not** update the tracking branch!)
