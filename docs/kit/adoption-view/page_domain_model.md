@@ -37,8 +37,7 @@ passes several stages which are explained below:
   generate contract offers only for contract definitions dedicated to the organization or data space participant
   operating the requesting connector acting as data consumer. A contract offer is always related to a single asset of
   the `ContractDefinition` object (e.g. for a `ContractDefinition` containing three `Asset` objects, the connector will
-  generate three `ContractOffer` objects)
-  .
+  generate three `ContractOffer` objects).
 
 * ### Contract negotiation
 
