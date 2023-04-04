@@ -19,63 +19,69 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.algorithms.aes;
 
-/** Big Endian Byte Counter */
+/**
+ * Big Endian Byte Counter
+ */
 public class ByteCounter {
 
-  private final byte[] counter;
+    private final byte[] counter;
 
-  /**
-   * Constructs a new ByteCounter with the given number of bytes. E.g. a ByteCounter with 4 bytes
-   * will have a counter value of [0, 0, 0, 0].
-   *
-   * @param size number of bytes used by the counter
-   */
-  public ByteCounter(int size) {
-    this.counter = new byte[size];
-  }
-
-  /**
-   * Constructs a new ByteCounter with the given counter value. Counter cannot grow bigger than the
-   * size of the array.
-   *
-   * @param counter initial counter value
-   */
-  public ByteCounter(byte[] counter) {
-    this.counter = counter;
-  }
-
-  /** Returns the counter value as a byte array. */
-  public byte[] getBytes() {
-    return counter;
-  }
-
-  /** Returns true if counter is maxed */
-  public boolean isMaxed() {
-    for (byte b : counter) {
-      if (b != (byte) 0xff) return false;
-    }
-    return true;
-  }
-
-  /**
-   * Increments the counter by one.
-   *
-   * @throws IllegalStateException if the counter is already maxed
-   */
-  public void increment() {
-    incrementByte(counter.length - 1);
-  }
-
-  private void incrementByte(int index) {
-    if (isMaxed()) {
-      throw new IllegalStateException("Counter is already maxed");
+    /**
+     * Constructs a new ByteCounter with the given number of bytes. E.g. a ByteCounter with 4 bytes
+     * will have a counter value of [0, 0, 0, 0].
+     *
+     * @param size number of bytes used by the counter
+     */
+    public ByteCounter(int size) {
+        this.counter = new byte[size];
     }
 
-    if (counter[index] == (byte) 0xff) {
-      incrementByte(index - 1);
-      counter[index] = (byte) 0x00;
-    } else {
-      counter[index]++;
+    /**
+     * Constructs a new ByteCounter with the given counter value. Counter cannot grow bigger than the
+     * size of the array.
+     *
+     * @param counter initial counter value
+     */
+    public ByteCounter(byte[] counter) {
+        this.counter = counter;
     }
-  }
+
+    /**
+     * Returns the counter value as a byte array.
+     */
+    public byte[] getBytes() {
+        return counter;
+    }
+
+    /**
+     * Returns true if counter is maxed
+     */
+    public boolean isMaxed() {
+        for (byte b : counter) {
+            if (b != (byte) 0xff) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Increments the counter by one.
+     *
+     * @throws IllegalStateException if the counter is already maxed
+     */
+    public void increment() {
+        incrementByte(counter.length - 1);
+    }
+
+    private void incrementByte(int index) {
+        if (isMaxed()) {
+            throw new IllegalStateException("Counter is already maxed");
+        }
+        
+        if (counter[index] == (byte) 0xff) {
+            incrementByte(index - 1);
+            counter[index] = (byte) 0x00;
+        } else {
+            counter[index]++;
+        }
+    }
 }

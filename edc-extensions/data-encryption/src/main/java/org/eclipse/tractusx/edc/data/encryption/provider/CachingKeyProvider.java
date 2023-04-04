@@ -20,60 +20,73 @@
 
 package org.eclipse.tractusx.edc.data.encryption.provider;
 
+import org.eclipse.tractusx.edc.data.encryption.key.CryptoKey;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
-import lombok.Value;
-import org.eclipse.tractusx.edc.data.encryption.key.CryptoKey;
 
 public class CachingKeyProvider<T extends CryptoKey> implements KeyProvider<T> {
 
-  @NonNull private final KeyProvider<T> decoratedProvider;
-  @NonNull private final Clock clock;
-  @NonNull private final Duration cacheExpiration;
+    private final KeyProvider<T> decoratedProvider;
+    private final Clock clock;
+    private final Duration cacheExpiration;
 
-  private CachedKeys<T> cachedKeys;
+    private CachedKeys<T> cachedKeys;
 
-  public CachingKeyProvider(KeyProvider<T> keyProvider, Duration cacheExpiration) {
-    this(keyProvider, cacheExpiration, Clock.systemUTC());
-  }
-
-  public CachingKeyProvider(KeyProvider<T> keyProvider, Duration cacheExpiration, Clock clock) {
-
-    this.decoratedProvider = keyProvider;
-    this.cacheExpiration = cacheExpiration;
-    this.clock = clock;
-  }
-
-  @Override
-  public T getEncryptionKey() {
-    checkCache();
-    return cachedKeys.getEncryptionKey();
-  }
-
-  @Override
-  public Stream<T> getDecryptionKeySet() {
-    checkCache();
-    return cachedKeys.getDecryptionKeys().stream();
-  }
-
-  private void checkCache() {
-    if (cachedKeys == null || cachedKeys.expiration.isBefore(clock.instant())) {
-      T encryptionKey = decoratedProvider.getEncryptionKey();
-      List<T> decryptionKeys = decoratedProvider.getDecryptionKeySet().collect(Collectors.toList());
-      cachedKeys =
-          new CachedKeys<>(encryptionKey, decryptionKeys, clock.instant().plus(cacheExpiration));
+    public CachingKeyProvider(KeyProvider<T> keyProvider, Duration cacheExpiration) {
+        this(keyProvider, cacheExpiration, Clock.systemUTC());
     }
-  }
 
-  @Value
-  private static class CachedKeys<T> {
-    T encryptionKey;
-    List<T> decryptionKeys;
-    @NonNull Instant expiration;
-  }
+    public CachingKeyProvider(KeyProvider<T> keyProvider, Duration cacheExpiration, Clock clock) {
+        this.decoratedProvider = Objects.requireNonNull(keyProvider);
+        this.cacheExpiration = Objects.requireNonNull(cacheExpiration);
+        this.clock = Objects.requireNonNull(clock);
+    }
+
+    @Override
+    public T getEncryptionKey() {
+        checkCache();
+        return cachedKeys.getEncryptionKey();
+    }
+
+    @Override
+    public Stream<T> getDecryptionKeySet() {
+        checkCache();
+        return cachedKeys.getDecryptionKeys().stream();
+    }
+
+    private void checkCache() {
+        if (cachedKeys == null || cachedKeys.expiration.isBefore(clock.instant())) {
+            T encryptionKey = decoratedProvider.getEncryptionKey();
+            List<T> decryptionKeys = decoratedProvider.getDecryptionKeySet().collect(Collectors.toList());
+            cachedKeys =
+                    new CachedKeys<>(encryptionKey, decryptionKeys, clock.instant().plus(cacheExpiration));
+        }
+    }
+
+
+    private static class CachedKeys<T> {
+        private final T encryptionKey;
+        private final List<T> decryptionKeys;
+        private final Instant expiration;
+
+        private CachedKeys(T encryptionKey, List<T> decryptionKeys, Instant expiration) {
+            this.encryptionKey = encryptionKey;
+            this.decryptionKeys = decryptionKeys;
+            this.expiration = Objects.requireNonNull(expiration);
+        }
+
+        public List<T> getDecryptionKeys() {
+            return decryptionKeys;
+        }
+
+        public T getEncryptionKey() {
+            return encryptionKey;
+        }
+    }
 }

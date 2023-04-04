@@ -19,51 +19,56 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.provider;
 
-import java.util.Arrays;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
 import org.bouncycastle.util.encoders.Base64;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.data.encryption.DataEncryptionExtension;
 import org.eclipse.tractusx.edc.data.encryption.key.AesKey;
 import org.eclipse.tractusx.edc.data.encryption.key.CryptoKeyFactory;
 
-@RequiredArgsConstructor
+import java.util.Arrays;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 public class AesKeyProvider implements KeyProvider<AesKey> {
 
-  private static final String KEY_SEPARATOR = ",";
+    private static final String KEY_SEPARATOR = ",";
 
-  private final Vault vault;
-  private final String vaultKeyAlias;
-  private final CryptoKeyFactory cryptoKeyFactory;
+    private final Vault vault;
+    private final String vaultKeyAlias;
+    private final CryptoKeyFactory cryptoKeyFactory;
 
-  @Override
-  public Stream<AesKey> getDecryptionKeySet() {
-    return getKeysStream();
-  }
+    public AesKeyProvider(Vault vault, String vaultKeyAlias, CryptoKeyFactory cryptoKeyFactory) {
+        this.vault = vault;
+        this.vaultKeyAlias = vaultKeyAlias;
+        this.cryptoKeyFactory = cryptoKeyFactory;
+    }
 
-  @Override
-  public AesKey getEncryptionKey() {
-    return getKeysStream()
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new RuntimeException(
-                    DataEncryptionExtension.EXTENSION_NAME
-                        + ": Vault must contain at least one key."));
-  }
+    @Override
+    public AesKey getEncryptionKey() {
+        return getKeysStream()
+                .findFirst()
+                .orElseThrow(
+                        () ->
+                                new RuntimeException(
+                                        DataEncryptionExtension.EXTENSION_NAME
+                                                + ": Vault must contain at least one key."));
+    }
 
-  private Stream<AesKey> getKeysStream() {
-    return Arrays.stream(getKeys().split(KEY_SEPARATOR))
-        .map(String::trim)
-        .filter(Predicate.not(String::isEmpty))
-        .map(Base64::decode)
-        .map(cryptoKeyFactory::fromBytes);
-  }
+    @Override
+    public Stream<AesKey> getDecryptionKeySet() {
+        return getKeysStream();
+    }
 
-  private String getKeys() {
-    String keys = vault.resolveSecret(vaultKeyAlias);
-    return keys == null ? "" : keys;
-  }
+    private Stream<AesKey> getKeysStream() {
+        return Arrays.stream(getKeys().split(KEY_SEPARATOR))
+                .map(String::trim)
+                .filter(Predicate.not(String::isEmpty))
+                .map(Base64::decode)
+                .map(cryptoKeyFactory::fromBytes);
+    }
+
+    private String getKeys() {
+        String keys = vault.resolveSecret(vaultKeyAlias);
+        return keys == null ? "" : keys;
+    }
 }

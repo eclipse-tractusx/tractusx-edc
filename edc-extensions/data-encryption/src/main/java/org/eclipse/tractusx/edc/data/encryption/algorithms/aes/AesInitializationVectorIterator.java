@@ -20,51 +20,50 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.algorithms.aes;
 
+import org.eclipse.tractusx.edc.data.encryption.util.ArrayUtil;
+
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import lombok.SneakyThrows;
-import org.eclipse.tractusx.edc.data.encryption.util.ArrayUtil;
 
 public class AesInitializationVectorIterator implements Iterator<byte[]> {
 
-  public static final int RANDOM_SIZE = 12;
-  public static final int COUNTER_SIZE = 4;
+    public static final int RANDOM_SIZE = 12;
+    public static final int COUNTER_SIZE = 4;
 
-  private final ByteCounter counter;
+    private final ByteCounter counter;
 
-  private SecureRandom secureRandom;
+    private SecureRandom secureRandom;
 
-  public AesInitializationVectorIterator(SecureRandom secureRandom) {
-    this.counter = new ByteCounter(COUNTER_SIZE);
-    this.secureRandom = secureRandom;
-  }
-
-  public AesInitializationVectorIterator(ByteCounter byteCounter) {
-    this.counter = byteCounter;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return !counter.isMaxed();
-  }
-
-  @Override
-  public byte[] next() {
-    if (counter.isMaxed()) {
-      throw new NoSuchElementException(getClass().getSimpleName() + " has no more elements");
+    public AesInitializationVectorIterator(SecureRandom secureRandom) {
+        this.counter = new ByteCounter(COUNTER_SIZE);
+        this.secureRandom = secureRandom;
     }
 
-    byte[] random = getNextRandom();
-    counter.increment();
+    public AesInitializationVectorIterator(ByteCounter byteCounter) {
+        this.counter = byteCounter;
+    }
 
-    return ArrayUtil.concat(random, counter.getBytes());
-  }
+    @Override
+    public boolean hasNext() {
+        return !counter.isMaxed();
+    }
 
-  @SneakyThrows
-  public byte[] getNextRandom() {
-    byte[] newVector = new byte[RANDOM_SIZE];
-    secureRandom.nextBytes(newVector);
-    return newVector;
-  }
+    @Override
+    public byte[] next() {
+        if (counter.isMaxed()) {
+            throw new NoSuchElementException(getClass().getSimpleName() + " has no more elements");
+        }
+
+        byte[] random = getNextRandom();
+        counter.increment();
+
+        return ArrayUtil.concat(random, counter.getBytes());
+    }
+    
+    public byte[] getNextRandom() {
+        byte[] newVector = new byte[RANDOM_SIZE];
+        secureRandom.nextBytes(newVector);
+        return newVector;
+    }
 }
