@@ -48,7 +48,7 @@ fork" refers to `catenax-ng/tx-tractusx-edc`.
 - push the contents of `fork/main` -> `upstream/releases`
 - synchronize `upstream/develop` with `fork/develop`
 - force-push the contents of `develop` -> `upstream/main` (do **not** update the tracking branch!)
-- synchronize `upstream/main` -> `fork/main`.
+- synchronize `upstream/main` -> `fork/main`
 - delete/archive `upstream/develop` and `fork/develop`
 
 _Note that most of this will likely need to be done manually, since GitHub does not allow for advanced Git operations
