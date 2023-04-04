@@ -18,7 +18,5 @@ Other branches should follow the naming conventions of `feature/x` or `hotfix/x`
 ## Tooling
 
 We use Java 11 with Gradle for dependencies and builds.
-We use [Lombok](https://projectlombok.org/features/) annotations.
 We use [Spotless](https://github.com/diffplug/spotless) for code formatting.
-We cannot use Spring, as Core EDC does not support it.
 Releases are in the form of Docker containers and Helm charts.

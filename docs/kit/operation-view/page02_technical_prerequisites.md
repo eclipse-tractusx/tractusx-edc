@@ -21,12 +21,12 @@ Seeing as these are standard tools, TractusX EDC will run on any cloud environme
 
 The EDC requires backend services for persistence of data and secrets. The following backends are currently supported.
 
-**Data Storage**
+Data Storage:
 
 - PostgreSQL database
 - In memory database
 
-**Secret Storage**
+Secret Storage:
 
 - Hashicorp Vault
 - Azure Vault
@@ -36,9 +36,8 @@ In memory storage is only recommended for running tests.
 Hashicorp Vault is the default secret provider, because it is platform-agnostic.
 
 Helm charts are provided to set up these services locally.
-These are not suited for production environments.
+**These are not suited for production environments.**
 
 ## All-in-one deployment
 
-We do not currently provide any Terraform scripts for complete cloud deployments.
-This feature is currently under consideration.
+An all-in-one deployment is no longer in scope and will not be provided.

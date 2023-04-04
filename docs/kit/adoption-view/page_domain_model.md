@@ -24,12 +24,12 @@ A contract always contains one or more [`Assets`](#asset) and a single [`Policy`
 used to define the arrangement between two parties ("consumer" and "provider"). Regarding this arrangement, the contract
 passes several stages which are explained below:
 
-* ### Contract definition
+### Contract definition
 
-  Contract definitions associate a policy with assets. A `ContractDefinition` object contains access policies, contract
-  policies, and an asset selector which links the contract to one or more assets.
+  Contract definitions associate a policy with assets. A `ContractDefinition` object contains an access policy, a contract
+  policy, and an asset selector which links the contract to one or more assets.
 
-* ### Contract offer
+### Contract offer
 
   The contract offer is a dynamic representation of the [`ContractDefinition`](#contract-definition)
   for a specific consumer and serves as protocol's data transfer object (DTO) for a particular contract negotiation.
@@ -39,13 +39,13 @@ passes several stages which are explained below:
   the `ContractDefinition` object (e.g. for a `ContractDefinition` containing three `Asset` objects, the connector will
   generate three `ContractOffer` objects).
 
-* ### Contract negotiation
+### Contract negotiation
 
   A `ContractNegotiation` captures the current state of the negotiation of a contract (`ContractOffer` ->
   `ContractAgreement`) between two parties. This process is inherently asynchronous, so the `ContractNegotiation`
   objects are stored in a backing data store (`ContractNegotiationStore`).
 
-* ### Contract agreement
+### Contract agreement
 
   A contract agreement represents the agreed-upon terms of access and usage of an asset's data between two data space
   participants, including a start and an end date and further relevant information.

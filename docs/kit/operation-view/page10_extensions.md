@@ -11,7 +11,7 @@ This extension allows for validation of business partners after the creation of 
 
 The goal of this extension is to simplify the process of retrieving data out of EDC.
 It returns `EndpointDataReference` object, hiding all the communication details for contract offers,
-contract negotiation process and retrieving `DataReference` from EDC control-plane.
+contract negotiation, transfer process and retrieving the underlying data through the data-planes.
 
 ### CX OAuth2
 
@@ -25,14 +25,13 @@ This extension implements the encryption of this data and should be used with se
 
 ### Data Plane Selector
 
-This control plane extension makes it possible configure one or more data plane instances.
+This control plane extension makes it possible to configure one or more data plane instances.
 During a transfer the control plane will look for an instance with matching capabilities to transfer data.
 
 ### Hashicorp Vault
 
-The core EDC assumes secret storage via Azure Vault.
-This extension allows for usage of Hashicorp Vault instead,
-with the goal of platform agnosticism.
+This extension allows for usage of Hashicorp Vault for secret storage.
+It is the default used in TractusX EDC.
 
 ### PostrgreSQL Migration
 
