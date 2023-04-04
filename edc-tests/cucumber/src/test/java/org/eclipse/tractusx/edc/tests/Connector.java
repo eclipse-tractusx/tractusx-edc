@@ -26,42 +26,48 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.tractusx.edc.tests.util.DatabaseCleaner;
 import org.eclipse.tractusx.edc.tests.util.S3Client;
 
+import static org.mockito.Mockito.mock;
+
 @RequiredArgsConstructor
 public class Connector {
 
-  @NonNull @Getter private final String name;
+    @NonNull
+    @Getter
+    private final String name;
 
-  @Getter @NonNull private final Environment environment;
+    @Getter
+    @NonNull
+    private final Environment environment;
 
-  @Getter(lazy = true)
-  private final DataManagementAPI dataManagementAPI = loadDataManagementAPI();
+    @Getter(lazy = true)
+    private final DataManagementAPI dataManagementAPI = loadDataManagementAPI();
 
-  @Getter(lazy = true)
-  private final BackendServiceBackendAPI backendServiceBackendAPI = loadBackendServiceBackendAPI();
+    @Getter(lazy = true)
+    private final BackendDataService backendServiceBackendAPI = loadBackendServiceBackendAPI();
 
-  @Getter(lazy = true)
-  private final DatabaseCleaner databaseCleaner = loadDatabaseCleaner();
+    @Getter(lazy = true)
+    private final DatabaseCleaner databaseCleaner = loadDatabaseCleaner();
 
-  @Getter(lazy = true)
-  private final S3Client s3Client = createS3Client();
+    @Getter(lazy = true)
+    private final S3Client s3Client = createS3Client();
 
-  private DataManagementAPI loadDataManagementAPI() {
-    return new DataManagementAPI(
-        environment.getDataManagementUrl(), environment.getDataManagementAuthKey());
-  }
+    private DataManagementAPI loadDataManagementAPI() {
+        return new DataManagementAPI(
+                environment.getDataManagementUrl(), environment.getDataManagementAuthKey());
+    }
 
-  private DatabaseCleaner loadDatabaseCleaner() {
-    return new DatabaseCleaner(
-        environment.getDatabaseUrl(),
-        environment.getDatabaseUser(),
-        environment.getDatabasePassword());
-  }
+    private DatabaseCleaner loadDatabaseCleaner() {
+        return new DatabaseCleaner(
+                environment.getDatabaseUrl(),
+                environment.getDatabaseUser(),
+                environment.getDatabasePassword());
+    }
 
-  private BackendServiceBackendAPI loadBackendServiceBackendAPI() {
-    return new BackendServiceBackendAPI(environment.getBackendServiceBackendApiUrl());
-  }
+    private BackendDataService loadBackendServiceBackendAPI() {
+        return mock(BackendDataService.class);
+    }
 
-  private S3Client createS3Client() {
-    return new S3Client(environment);
-  }
+    private S3Client createS3Client() {
+        return new S3Client(environment);
+    }
 }
