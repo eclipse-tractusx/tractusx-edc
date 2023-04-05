@@ -19,58 +19,89 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.data;
 
-import lombok.Value;
 import org.bouncycastle.util.encoders.Base64;
 
 public class CryptoDataFactoryImpl implements CryptoDataFactory {
 
-  public DecryptedData decryptedFromText(String text) {
-    final byte[] bytes = text.getBytes();
-    final String base64 = Base64.toBase64String(bytes);
-    return new DecryptedDataImpl(bytes, base64, text);
-  }
+    public DecryptedData decryptedFromText(String text) {
+        final byte[] bytes = text.getBytes();
+        final String base64 = Base64.toBase64String(bytes);
+        return new DecryptedDataImpl(bytes, base64, text);
+    }
 
-  public DecryptedData decryptedFromBase64(String base64) {
-    final byte[] bytes = Base64.decode(base64);
-    final String text = new String(bytes);
-    return new DecryptedDataImpl(bytes, base64, text);
-  }
+    public DecryptedData decryptedFromBase64(String base64) {
+        final byte[] bytes = Base64.decode(base64);
+        final String text = new String(bytes);
+        return new DecryptedDataImpl(bytes, base64, text);
+    }
 
-  public DecryptedData decryptedFromBytes(byte[] bytes) {
-    final String base64 = Base64.toBase64String(bytes);
-    final String text = new String(bytes);
-    return new DecryptedDataImpl(bytes, base64, text);
-  }
+    public DecryptedData decryptedFromBytes(byte[] bytes) {
+        final String base64 = Base64.toBase64String(bytes);
+        final String text = new String(bytes);
+        return new DecryptedDataImpl(bytes, base64, text);
+    }
 
-  public EncryptedData encryptedFromText(String text) {
-    final byte[] bytes = text.getBytes();
-    final String base64 = Base64.toBase64String(bytes);
-    return new EncryptedDataImpl(bytes, base64, text);
-  }
+    public EncryptedData encryptedFromText(String text) {
+        final byte[] bytes = text.getBytes();
+        final String base64 = Base64.toBase64String(bytes);
+        return new EncryptedDataImpl(bytes, base64, text);
+    }
 
-  public EncryptedData encryptedFromBase64(String base64) {
-    final byte[] bytes = Base64.decode(base64);
-    final String text = new String(bytes);
-    return new EncryptedDataImpl(bytes, base64, text);
-  }
+    public EncryptedData encryptedFromBase64(String base64) {
+        final byte[] bytes = Base64.decode(base64);
+        final String text = new String(bytes);
+        return new EncryptedDataImpl(bytes, base64, text);
+    }
 
-  public EncryptedData encryptedFromBytes(byte[] bytes) {
-    final String base64 = Base64.toBase64String(bytes);
-    final String text = new String(bytes);
-    return new EncryptedDataImpl(bytes, base64, text);
-  }
+    public EncryptedData encryptedFromBytes(byte[] bytes) {
+        final String base64 = Base64.toBase64String(bytes);
+        final String text = new String(bytes);
+        return new EncryptedDataImpl(bytes, base64, text);
+    }
 
-  @Value
-  private static class DecryptedDataImpl implements DecryptedData {
-    byte[] bytes;
-    String base64;
-    String text;
-  }
 
-  @Value
-  private static class EncryptedDataImpl implements EncryptedData {
-    byte[] bytes;
-    String base64;
-    String text;
-  }
+    private static class DecryptedDataImpl implements DecryptedData {
+        private final byte[] bytes;
+        private final String base64;
+        private final String text;
+
+        private DecryptedDataImpl(byte[] bytes, String base64, String text) {
+            this.bytes = bytes;
+            this.base64 = base64;
+            this.text = text;
+        }
+
+        @Override
+        public byte[] getBytes() {
+            return bytes;
+        }
+
+        @Override
+        public String getBase64() {
+            return base64;
+        }
+    }
+
+
+    private static class EncryptedDataImpl implements EncryptedData {
+        private final byte[] bytes;
+        private final String base64;
+        private final String text;
+
+        private EncryptedDataImpl(byte[] bytes, String base64, String text) {
+            this.bytes = bytes;
+            this.base64 = base64;
+            this.text = text;
+        }
+
+        @Override
+        public byte[] getBytes() {
+            return bytes;
+        }
+
+        @Override
+        public String getBase64() {
+            return base64;
+        }
+    }
 }
