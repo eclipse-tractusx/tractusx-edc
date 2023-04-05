@@ -12,9 +12,10 @@ dependencies {
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
     runtimeOnly(edc.azure.vault)
     runtimeOnly(edc.bundles.sqlstores)
+    runtimeOnly(edc.transaction.local)
+    runtimeOnly(edc.sql.pool)
     runtimeOnly(edc.core.controlplane)
     runtimeOnly(edc.dpf.transfer)
-
 }
 
 
