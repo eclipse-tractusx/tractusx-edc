@@ -60,4 +60,11 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
 
 ## The technical committers
 
-- TBD
+Main committers for the TractusX-EDC project:
+
+- @paullatzelsperger
+- @florianrusch-zf
+
+Alternatively, the following Tractus-X committers can also step in:
+
+- @SebastianBezold
