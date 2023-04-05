@@ -75,8 +75,6 @@ class AesAlgorithmTest {
         try {
             final EncryptedData encryptedResult = strategy.encrypt(expected, aesKey);
             final DecryptedData result = strategy.decrypt(encryptedResult, aesKey);
-
-
             Assertions.assertEquals(expected.getBase64(), result.getBase64());
         } catch (Exception e) {
             throw new RuntimeException(e);
