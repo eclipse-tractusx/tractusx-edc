@@ -2,8 +2,7 @@
 version: 2
 updates:
   # Maven
-  -
-    package-ecosystem: "maven"
+  - package-ecosystem: "maven"
     target-branch: develop
     directory: /
     labels:
@@ -13,8 +12,7 @@ updates:
       interval: "daily"
 
   # Github Actions
-  -
-    package-ecosystem: "github-actions"
+  - package-ecosystem: "github-actions"
     target-branch: develop
     directory: /
     labels:
@@ -24,8 +22,7 @@ updates:
       interval: "daily"
 
   # Docker
-  -
-    package-ecosystem: "docker"
+  - package-ecosystem: "docker"
     target-branch: develop
     directory: ./edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/src/main/docker/
     labels:
@@ -33,8 +30,7 @@ updates:
       - "docker"
     schedule:
       interval: "daily"
-  -
-    package-ecosystem: "docker"
+  - package-ecosystem: "docker"
     target-branch: develop
     directory: ./edc-controlplane/edc-controlplane-postgresql/src/main/docker/
     labels:
@@ -42,17 +38,15 @@ updates:
       - "docker"
     schedule:
       interval: "daily"
-  -
-    package-ecosystem: "docker"
+  - package-ecosystem: "docker"
     target-branch: develop
-    directory: ./edc-controlplane/edc-controlplane-memory/src/main/docker/
+    directory: ./edc-controlplane/edc-runtime-memory/src/main/docker/
     labels:
       - "dependabot"
       - "docker"
     schedule:
       interval: "daily"
-  -
-    package-ecosystem: "docker"
+  - package-ecosystem: "docker"
     target-branch: develop
     directory: ./edc-dataplane/edc-dataplane-azure-vault/src/main/docker/
     labels:
@@ -60,8 +54,7 @@ updates:
       - "docker"
     schedule:
       interval: "daily"
-  -
-    package-ecosystem: "docker"
+  - package-ecosystem: "docker"
     target-branch: develop
     directory: ./edc-dataplane/edc-dataplane-hashicorp-vault/src/main/docker/
     labels:

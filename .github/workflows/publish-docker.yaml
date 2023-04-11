@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         name:
-          - edc-controlplane-memory
+          - edc-runtime-memory
           - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
