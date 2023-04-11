@@ -1,0 +1,185 @@
+---
+
+###########
+# Install #
+###########
+install:
+  daps: true
+  postgresql: true
+  vault: true
+  minio: false
+
+
+########
+# DAPS #
+########
+idsdaps:
+  fullnameOverride: "ids-daps"
+  connectors:
+    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
+      name: sokrates
+      attributes:
+        referringConnector: http://sokrates-controlplane/BPNSOKRATES
+      # Must be the same certificate that is stores in section 'sokrates-vault'
+      certificate: |-
+        -----BEGIN CERTIFICATE-----
+        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
+        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
+        DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
+        DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
+        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
+        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
+        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
+        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
+        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
+        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
+        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
+        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
+        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
+        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
+        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
+        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        -----END CERTIFICATE-----
+
+##############
+# PostgreSQL #
+##############
+postgresql:
+  fullnameOverride: "postgresql"
+  primary:
+    persistence:
+      enabled: false
+  readReplicas:
+    persistence:
+      enabled: false
+  auth:
+    database: "edc"
+    username: "user"
+    password: "password"
+
+#########
+# MINIO #
+#########
+minio:
+  fullnameOverride: minio
+  replicas: 2
+  drivesPerNode: 0
+  serviceAccount:
+    create: false
+  persistence:
+    size: 128Mi
+  resources:
+    requests:
+      memory: 128Mi
+  service:
+    type: NodePort
+    control:
+      port: 9000
+  users:
+    - accessKey: qwerty123
+      secretKey: qwerty123
+      policy: customBucketPolicy
+  buckets:
+    # in some cases the minio API acts strange if there exists no bucket at all
+    - name: dummybucket
+      policy: none
+      purge: true
+  policies:
+    - name: customBucketPolicy
+      statements:
+        - resources:
+            - 'arn:aws:s3:::*'
+          actions:
+            - "s3:PutObject"
+            - "s3:ListBucket"
+            - "s3:CreateBucket"
+            - "s3:GetObject"
+            - "s3:DeleteObject"
+            - "s3:DeleteBucket"
+
+#########
+# VAULT #
+#########
+vault:
+  fullnameOverride: "vault"
+  injector:
+    enabled: false
+  server:
+    dev:
+      enabled: true
+      devRootToken: "root"
+    # Must be the same certificate that is configured in section 'ids-daps'
+    postStart:
+      - "sh"
+      - "-c"
+      - |
+        { 
+        
+        sleep 5
+
+        /bin/vault kv put secret/sokrates/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
+        
+        cat << EOF | /bin/vault kv put secret/sokrates/daps/daps-key content=-
+        -----BEGIN PRIVATE KEY-----
+        MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCv+NUvK7ppJPiM
+        wZPaQQxE745T5pV38O/Mkay5m82nnd5BoMoCdhhRTy3Efy79FhvBfGruFBLLGzsQ
+        FOEUY53Albeumo2gmpZSKjJR/M2ifK4MTaRniVOWL5mEcZSKPhsItKpxdLaiYfB6
+        8uzqkqNICtmAQRSclYKzLBM9xHLEtxDWCbnzYFCHoOELGi+PTNIFsUnsT3QuKaJ/
+        ejb47vdA/EZbwCQdtTyJ6i54jGhZUp0WMwq1Go2uhzJsygPmT2da/ZZZc7BNNEQE
+        sUSMZSpMH807TG/TunstotrzO4ShhpV4zbJ2FV/VlxH7yuCawmnR84F/KnXs9fUc
+        RSrQfuYBAgMBAAECggEAO+KjsjTgcG3bhBNQnMLsSP15Y0Yicbn18ZlVvaivGS7Z
+        d14fwSytY+ZdPfTGaey/L16HCVSdfK9cr0Fbw9OO2P5ajzobnp9dLsMbctlkpbpm
+        hNtbarzKTF8QkIkSsuUl0BWjt46vpJ1N+Jl5VO7oUFkY4dPEDvG2lAEY3zlekWDm
+        cQeOC/YgpoW4xfRwPPS6QE0w3Q+H5NfNjfz+mSHeItTlVfTKDRliWQLPWeRZFuXh
+        FlRFUQnTmEE/9wpIe3Hn7WXJ3fQqcYDzxU7/zwwY9I7bB15SgVHlR0ENDPAD5X8F
+        MVZ3EcLlqGBy+WvTWALp6pc8YfhW3fiTWyuamXtNrQKBgQDonsIzBKEOOKdKGW0e
+        uyw79ErmnmzkY5nuMrMxrmTA4WKCfJ/YRRA+4sxiltWsIJ3UkHe3OBCSSCdj79hb
+        ugb/+UzE70hOdgrct2NUQqbrj3gvsVvU8ZRQgTRMqKpmC0zY7KOMx6NU85z3IvS1
+        z5fjszcUv4kLQlldYGSAuqPy+wKBgQDBqIkc8p/wcw7ygo1q/GerNeszfoxiIFp8
+        h4RWLVhkwrcXFz30wBlUWuv5/kxU8tmJcmXxe72EmUstd6wvNOAnYwCiile6zQiJ
+        vsr1axavZnGOtNGUp6DUAsd2iviBl7IZ7kAcqCrQo4ivGhfHmahH3hmg8wuAMjYB
+        8f+FSPgaMwKBgQC7W4tMrjDOFIFhJEOIWfcRvvxI7VcFSNelS76aiDzsQVwnfxr7
+        hPzFucQmsBgfUBHvMADMWGK4f1cCnh5kGtwidXgIsjVJxLeQ+EAPkLOCzQZfW3l8
+        dKshgD9QcxTzpaxal5ZPAEikVqaZQtVYToCmzCTUGETYBbOWitnH+Qut2wKBgQC6
+        Y6DcSLUhc0xOotLDxv1sbu/aVxF8nFEbDD+Vxf0Otc4MnmUWPRHj+8KlkVkcZcR0
+        IrP1kThd+EDAGS+TG9wmbIY+6tH3S8HM+eJUBWcHGJ1xUZ1p61DC3Y3nDWiTKlLT
+        3Fi+fCkBOHSku4Npq/2odh7Kp0JJd4o9oxJg0VNhuwKBgQDSFn7dqFE0Xmwc40Vr
+        0wJH8cPWXKGt7KJENpj894buk2DniLD4w2x874dzTjrOFi6fKxEzbBNA9Rq9UPo8
+        u9gKvl/IyWmV0c4zFCNMjRwVdnkMEte/lXcJZ67T4FXZByqAZlhrr/v0FD442Z9B
+        AjWFbUiBCFOo+gpAFcQGrkOQHA==
+        -----END PRIVATE KEY-----
+        EOF
+        
+        cat << EOF | /bin/vault kv put secret/sokrates/daps/daps-crt content=-
+        -----BEGIN CERTIFICATE-----
+        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
+        cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
+        bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
+        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
+        DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
+        DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
+        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
+        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
+        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
+        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
+        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
+        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
+        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
+        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
+        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
+        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
+        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
+        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        -----END CERTIFICATE-----
+        EOF
+        }

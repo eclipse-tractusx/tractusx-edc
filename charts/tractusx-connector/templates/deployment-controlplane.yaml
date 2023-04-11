@@ -68,7 +68,7 @@ spec:
           {{- else if .Values.vault.hashicorp.enabled }}
           image: "tractusx/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure.enabled }}
-          image: "tractusx/edc-controlplane-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-runtime-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose control-plane image automatically based on configuration" }}
           {{- end }}

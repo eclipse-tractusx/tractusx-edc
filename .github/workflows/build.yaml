@@ -55,6 +55,7 @@ jobs:
       SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
       GPG_PRIVATE_KEY: ${{ steps.secret-presence.outputs.GPG_PRIVATE_KEY }}
       GPG_PASSPHRASE: ${{ steps.secret-presence.outputs.GPG_PASSPHRASE }}
+      DOCKER_HUB_TOKEN: ${{ steps.secret-presence.outputs.DOCKER_HUB_TOKEN }}
     steps:
       - name: Check whether secrets exist
         id: secret-presence
@@ -62,6 +63,7 @@ jobs:
           [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "::set-output name=SONAR_TOKEN::true"
           [ ! -z "${{ secrets.GPG_PRIVATE_KEY }}" ] && echo "::set-output name=GPG_PRIVATE_KEY::true"
           [ ! -z "${{ secrets.GPG_PASSPHRASE }}" ] && echo "::set-output name=GPG_PASSPHRASE::true"
+          [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "::set-output name=DOCKER_HUB_TOKEN::true"
           exit 0
 
   build-extensions:
@@ -89,11 +91,13 @@ jobs:
     name: "Create Docker Images for the ControlPlane"
     runs-on: ubuntu-latest
     needs: [ secret-presence ]
+    if: |
+      needs.secret-presence.outputs.DOCKER_HUB_TOKEN
     strategy:
       fail-fast: false
       matrix:
         name:
-          - edc-controlplane-memory
+          - edc-runtime-memory
           - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
@@ -110,8 +114,11 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
   build-dataplane:
+    name: "Create Docker Images for the DataPlane"
     runs-on: ubuntu-latest
     needs: [ secret-presence ]
+    if: |
+      needs.secret-presence.outputs.DOCKER_HUB_TOKEN
     strategy:
       fail-fast: false
       matrix:
@@ -135,7 +142,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [ secret-presence, build-controlplane, build-dataplane, build-extensions ]
+    needs: [ secret-presence, build-extensions ]
 
     # do not run on PR branches, do not run on releases
     if: |
