@@ -34,8 +34,6 @@ on:
   pull_request:
     paths-ignore:
       - 'charts/**'
-      - 'docs/**'
-      - '**/*.md'
     branches:
       - '*'
   workflow_dispatch:
