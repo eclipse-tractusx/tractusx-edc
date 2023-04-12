@@ -1,4 +1,4 @@
-## Notice for Docker image
+# Notice for Docker image
 
 An EDC Control Plane using memory-based storage, and HashiCorp Vault as secret store.
 
@@ -6,14 +6,14 @@ DockerHub: https://hub.docker.com/r/tractusx/edc-controlplane-memory-hashicorp-v
 
 Eclipse Tractus-X product(s) installed within the image:
 
-### TractusX-EDC Control Plane
+## TractusX-EDC Control Plane
 
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
 - Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-controlplane/edc-controlplane-memory-hashicorp-vault/src/main/docker/Dockerfile
 - Project license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/LICENSE)
 
-**Used base image**
+## Used base image
 
 - [eclipse-temurin:11.0.18_10-jre-alpine](https://github.com/adoptium/containers)
 - Official Eclipse Temurin DockerHub page: https://hub.docker.com/_/eclipse-temurin
@@ -26,4 +26,3 @@ from the base distribution, along with any direct or indirect dependencies of th
 
 As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies
 with any relevant licenses for all software contained within.
-
