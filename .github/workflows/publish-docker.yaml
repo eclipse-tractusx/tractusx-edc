@@ -23,6 +23,11 @@ name: "Create Docker images"
 
 on:
   workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'The namespace (=repo) in DockerHub'
+        required: false
+        default: "tractusx"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -50,6 +55,7 @@ jobs:
         with:
           rootDir: edc-controlplane/${{ matrix.name }}
           imagename: ${{ matrix.name }}
+          namespace: ${{ inputs.namespace }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
@@ -73,5 +79,6 @@ jobs:
         with:
           rootDir: edc-dataplane/${{ matrix.name }}
           imagename: ${{ matrix.name }}
+          namespace: ${{ inputs.namespace }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
