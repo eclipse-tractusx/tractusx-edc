@@ -1,3 +1,25 @@
+#
+#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -40,9 +62,9 @@ spec:
           {{- if .Values.dataplane.image.repository }}
           image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.vault.hashicorp }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose data-plane image automatically based on configuration" }}
           {{- end }}
@@ -109,7 +131,7 @@ spec:
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.dataplane.endpoints.public.path | quote }}
             - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
-              value:  {{ include "txdc.controlplane.url.validation" .}}
+              value: {{ include "txdc.controlplane.url.validation" .}}
 
             #######
             # AWS #
@@ -162,9 +184,9 @@ spec:
               value: {{ .Values.vault.azure.certificate | quote }}
           {{- end }}
 
-          ######################################
-          ## Additional environment variables ##
-          ######################################
+            ######################################
+            ## Additional environment variables ##
+            ######################################
           {{- range $key, $value := .Values.dataplane.envValueFrom }}
             - name: {{ $key | quote }}
               valueFrom:
