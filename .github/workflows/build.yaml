@@ -98,7 +98,6 @@ jobs:
           - edc-controlplane-postgresql-hashicorp-vault
     permissions:
       contents: write
-      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -121,7 +120,6 @@ jobs:
           - edc-dataplane-hashicorp-vault
     permissions:
       contents: write
-      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3

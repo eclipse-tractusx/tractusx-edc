@@ -6,6 +6,8 @@ DockerHub: https://hub.docker.com/r/tractusx/edc-dataplane-azure-vault
 
 Eclipse Tractus-X product(s) installed within the image:
 
+### TractusX-EDC Data Plane
+
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
 - Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-dataplane/edc-dataplane-azure-vault/src/main/docker/Dockerfile
