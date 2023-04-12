@@ -6,10 +6,11 @@ DockerHub: https://hub.docker.com/r/tractusx/edc-dataplane-hashicorp-vault
 
 Eclipse Tractus-X product(s) installed within the image:
 
+### TractusX-EDC Data Plane
+
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
--
-Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-dataplane/edc-dataplane-hashicorp-vault/src/main/docker/Dockerfile
+- Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-dataplane/edc-dataplane-hashicorp-vault/src/main/docker/Dockerfile
 - Project license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/LICENSE)
 
 **Used base image**
