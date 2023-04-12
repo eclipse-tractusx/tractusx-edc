@@ -1,6 +1,6 @@
 ## Notice for Docker image
 
-This application provides container images for demonstration purposes.
+An EDC Control Plane using memory-based storage, and HashiCorp Vault as secret store.
 
 DockerHub: https://hub.docker.com/r/tractusx/edc-controlplane-memory-hashicorp-vault
 
