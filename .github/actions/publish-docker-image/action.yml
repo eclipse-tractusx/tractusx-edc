@@ -11,6 +11,12 @@ inputs:
   imagename:
     required: true
     description: "the name of the image"
+  docker_user:
+    required: false
+    description: "DockerHub user name. No push is done if omitted"
+  docker_token:
+    required: false
+    description: "DockerHub Token. No push is done if omitted"
 runs:
   using: "composite"
   steps:
@@ -24,8 +30,8 @@ runs:
       if: github.event_name != 'pull_request'
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_HUB_USER }}
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_token }}
 
     ###############################
     # Set metadata of docker image
@@ -63,10 +69,10 @@ runs:
     # https://github.com/peter-evans/dockerhub-description
     ###############################
     - name: Update Docker Hub description
-      if: github.event_name != 'pull_request' && ${{ secrets.DOCKER_HUB_USER }} && ${{ secrets.DOCKER_HUB_TOKEN }}
+      if: github.event_name != 'pull_request' && ${{ inputs.docker_user }} && ${{ inputs.docker_token }}
       uses: peter-evans/dockerhub-description@v3
       with:
         readme-filepath: ${{ inputs.rootDir }}/notice.md
-        username: ${{ secrets.DOCKER_HUB_USER }}
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_token }}
         repository: ${{ inputs.namespace }}/${{ inputs.imagename }}
