@@ -62,13 +62,13 @@ spec:
           {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.postgresql.enabled .Values.vault.hashicorp.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.postgresql.enabled .Values.vault.azure.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-postgresql:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-postgresql:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.hashicorp.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose control-plane image automatically based on configuration" }}
           {{- end }}
