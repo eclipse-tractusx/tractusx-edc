@@ -50,6 +50,8 @@ jobs:
         with:
           rootDir: edc-controlplane/${{ matrix.name }}
           imagename: ${{ matrix.name }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
 
   create-docker-image-dataplane:
@@ -71,3 +73,5 @@ jobs:
         with:
           rootDir: edc-dataplane/${{ matrix.name }}
           imagename: ${{ matrix.name }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
