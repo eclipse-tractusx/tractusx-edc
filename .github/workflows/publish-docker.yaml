@@ -23,17 +23,10 @@ name: "Create Docker images"
 
 on:
   workflow_dispatch:
-    inputs:
-      rootDir:
-        required: true
-        description: "The directory where the notice.md file and the src/main/docker directory are located"
-      namespace:
-        required: false
-        default: "tractusx"
-        description: "The Docker image namespace"
-      imagename:
-        required: true
-        description: "the name of the image"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   create-docker-image-controlplane:
