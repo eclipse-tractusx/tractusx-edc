@@ -1,19 +1,15 @@
 ## Notice for Docker image
 
-An EDC Control Plane using PostgreSQL as persistence backend, and HashiCorp Vault as secret store.
+An EDC Data Plane using the Azure KeyVault.
 
-DockerHub: https://hub.docker.com/r/tractusx/edc-controlplane-postgresql-hashicorp-vault
+DockerHub: https://hub.docker.com/r/tractusx/edc-dataplane-azure-vault
 
 Eclipse Tractus-X product(s) installed within the image:
 
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
--
-
-Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/src/main/docker/Dockerfile
-
-- Project
-  license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/LICENSE)
+- Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-dataplane/edc-dataplane-azure-vault/src/main/docker/Dockerfile
+- Project license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/LICENSE)
 
 **Used base image**
 

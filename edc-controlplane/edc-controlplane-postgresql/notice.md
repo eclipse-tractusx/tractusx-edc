@@ -1,6 +1,6 @@
 ## Notice for Docker image
 
-This application provides container images for demonstration purposes.
+An EDC Control Plane using PostgreSQL as persistence backend, and Azure KeyVault as secret store.
 
 DockerHub: https://hub.docker.com/r/tractusx/edc-controlplane-postgresql
 
