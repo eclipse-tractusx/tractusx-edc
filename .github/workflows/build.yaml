@@ -87,7 +87,7 @@ jobs:
   build-controlplane:
     name: "Create Docker Images for the ControlPlane"
     runs-on: ubuntu-latest
-    needs: [ secrets-presence ]
+    needs: [ secret-presence ]
     strategy:
       fail-fast: false
       matrix:
