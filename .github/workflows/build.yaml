@@ -105,7 +105,6 @@ jobs:
         with:
           rootDir: edc-controlplane/${{ matrix.name }}
           imagename: ${{ matrix.name }}
-          namespace: ${{ inputs.namespace }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
@@ -127,7 +126,6 @@ jobs:
         with:
           rootDir: edc-dataplane/${{ matrix.name }}
           imagename: ${{ matrix.name }}
-          namespace: ${{ inputs.namespace }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
