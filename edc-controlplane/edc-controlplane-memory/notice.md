@@ -15,7 +15,7 @@ Eclipse Tractus-X product(s) installed within the image:
 
 ## Used base image
 
-- [eclipse-temurin:11.0.18_10-jre-alpine](https://github.com/adoptium/containers)
+- [eclipse-temurin:17-jre-alpine](https://github.com/adoptium/containers)
 - Official Eclipse Temurin DockerHub page: https://hub.docker.com/_/eclipse-temurin
 - Eclipse Temurin Project: https://projects.eclipse.org/projects/adoptium.temurin
 - Additional information about the Eclipse Temurin
