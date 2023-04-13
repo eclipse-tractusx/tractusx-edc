@@ -15,7 +15,8 @@ dependencies {
     implementation(edc.core.connector)
     implementation(edc.boot)
 
-
     implementation(edc.bundles.monitoring)
     implementation(edc.ext.http)
+
+    runtimeOnly(project(":edc-extensions:observability-api-customization"))
 }
