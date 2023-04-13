@@ -58,6 +58,13 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
 - Be civil and objective. No foul language, insulting or otherwise abusive language will be tolerated. The goal is to
   _encourage_ contributions.
 
-## The technical committers
+## The technical committers (as of April 05, 2023)
 
-- TBD
+Main committers for the TractusX-EDC project:
+
+- @paullatzelsperger
+- @florianrusch-zf
+
+Alternatively, the following Tractus-X committers can also step in:
+
+- @SebastianBezold
