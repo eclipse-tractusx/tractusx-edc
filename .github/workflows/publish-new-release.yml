@@ -65,7 +65,7 @@ jobs:
           cache: 'gradle'
 
       - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v1
+        uses: crazy-max/ghaction-import-gpg@v5
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
