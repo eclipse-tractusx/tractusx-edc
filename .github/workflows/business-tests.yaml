@@ -176,7 +176,7 @@ jobs:
             helm install plato charts/tractusx-connector  \
               --set fullnameOverride=plato \
               --set controlplane.service.type=NodePort \
-              --set controlplane.endpoints.data.authKey=password \
+              --set controlplane.endpoints.management.authKey=password \
               --set controlplane.image.tag=business-test \
               --set controlplane.image.pullPolicy=Never \
               --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
@@ -209,7 +209,7 @@ jobs:
             helm install sokrates charts/tractusx-connector  \
               --set fullnameOverride=sokrates \
               --set controlplane.service.type=NodePort \
-              --set controlplane.endpoints.data.authKey=password \
+              --set controlplane.endpoints.management.authKey=password \
               --set controlplane.image.tag=business-test \
               --set controlplane.image.pullPolicy=Never \
               --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
