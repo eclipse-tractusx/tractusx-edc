@@ -82,5 +82,5 @@ This section explains _at which point in time_ we should execute which test. Thi
 | Unit test              | when running tests locally, without any parameters, on every commit on every branch |         |
 | Integration test       | on every commit on every branch                                                     |         |
 | System/End-To-End test | on pull request branches except when marked as `draft`                              |         |
-| Deployment test        | before merging pull requests and on every commit on `develop`                       |         |
+| Deployment test        | before merging pull requests and on every commit on `main`                       |         |
 | Performance test       | Only on a specific schedule, e.g. once per day or week                              |         |

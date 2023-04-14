@@ -27,7 +27,7 @@ on:
   push:
     branches:
       - main
-      - develop
+      - releases
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
   release:
@@ -136,9 +136,9 @@ jobs:
       packages: write
     needs: [ secret-presence, build-controlplane, build-dataplane, build-extensions ]
 
-    # do not run on PR branches, do not run on main
+    # do not run on PR branches, do not run on releases
     if: |
-      needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request' && github.ref != 'refs/heads/main'
+      needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
     steps:
       # Set-Up
       - name: Checkout
