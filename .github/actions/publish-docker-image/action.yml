@@ -27,7 +27,7 @@ inputs:
     description: "The directory where the notice.md file and the src/main/docker directory are located"
   namespace:
     required: false
-    default: "tractusx"
+    default: "beardyinc"
     description: "The Docker image namespace"
   imagename:
     required: true
