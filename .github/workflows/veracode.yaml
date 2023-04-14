@@ -33,7 +33,7 @@ jobs:
         name: Set up JDK 11
         uses: actions/setup-java@v3.11.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
       -
@@ -62,7 +62,7 @@ jobs:
         name: Set up JDK 11
         uses: actions/setup-java@v3.11.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
       # Build
@@ -111,7 +111,7 @@ jobs:
         name: Set up JDK 11
         uses: actions/setup-java@v3.11.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
       # Build
