@@ -5,8 +5,8 @@
 ###########
 install:
   daps: true
-  postgresql: false
-  vault: false
+  postgresql: true
+  vault: true
   minio: false
 
 
@@ -82,8 +82,8 @@ minio:
     control:
       port: 9000
   users:
-    - accessKey: platoqwerty123
-      secretKey: platoqwerty123
+    - accessKey: qwerty123
+      secretKey: qwerty123
       policy: customBucketPolicy
   buckets:
     # in some cases the minio API acts strange if there exists no bucket at all
@@ -125,7 +125,7 @@ vault:
 
         /bin/vault kv put secret/sokrates/data-encryption-aes-keys content=OcvxzWCK8ETSjt1jmZw3RA==
         
-        cat << EOF | /bin/vault kv put secret/sokrates/daps/my-sokrates-daps-key content=-
+        cat << EOF | /bin/vault kv put secret/sokrates/daps/daps-key content=-
         -----BEGIN PRIVATE KEY-----
         MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCv+NUvK7ppJPiM
         wZPaQQxE745T5pV38O/Mkay5m82nnd5BoMoCdhhRTy3Efy79FhvBfGruFBLLGzsQ
@@ -156,7 +156,7 @@ vault:
         -----END PRIVATE KEY-----
         EOF
         
-        cat << EOF | /bin/vault kv put secret/sokrates/daps/my-sokrates-daps-crt content=-
+        cat << EOF | /bin/vault kv put secret/sokrates/daps/daps-crt content=-
         -----BEGIN CERTIFICATE-----
         MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
         BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl

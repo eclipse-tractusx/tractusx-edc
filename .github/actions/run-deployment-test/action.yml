@@ -19,7 +19,7 @@
 #
 
 ---
-name: "Publish Docker Image"
+name: "Run Deployment Test"
 description: "Build and publish a Docker Image to DockerHub"
 inputs:
   imagename:
