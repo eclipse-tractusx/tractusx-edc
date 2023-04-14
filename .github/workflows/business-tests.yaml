@@ -29,7 +29,7 @@ on:
       - 'docs/**'
       - '**/*.md'
     branches:
-      - develop
+      - releases
       - release/**
       - main
   workflow_dispatch:
