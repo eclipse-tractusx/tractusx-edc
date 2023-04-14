@@ -80,15 +80,15 @@ runs:
         kind get clusters | xargs -n1 kind load docker-image ${{ inputs.imagename}}:${{ inputs.image_tag}} --name
 
     ###################################################
-    # Install example variant of the in-memory runtime
+    # Install the test infrastructure
     ###################################################
-    - name: Install DAPS
+    - name: Install Infrastructure
       shell: bash
       run: |-
         helm install infra edc-tests/deployment/src/main/resources/helm/test-infrastructure \
         --wait-for-jobs --timeout=30s --dependency-update
 
-    - name: Install In-Mem Runtime
+    - name: Install Runtime
       shell: bash
       run: ${{ inputs.helm_command }}
 
