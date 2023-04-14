@@ -3,7 +3,6 @@ rootProject.name = "tractusx-edc"
 include(":edc-extensions:business-partner-validation")
 include(":edc-extensions:control-plane-adapter")
 include(":edc-extensions:cx-oauth2")
-include(":edc-extensions:vault-memory")
 include(":edc-extensions:data-encryption")
 include(":edc-extensions:dataplane-selector-configuration")
 include(":edc-extensions:hashicorp-vault")

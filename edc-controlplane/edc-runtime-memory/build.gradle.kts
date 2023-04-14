@@ -5,11 +5,11 @@ plugins {
 }
 
 dependencies {
+    implementation(edc.spi.core)
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "data-encryption")
     }
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base"))
-    runtimeOnly(project(":edc-extensions:vault-memory"))
     runtimeOnly(edc.core.controlplane)
 }
 
