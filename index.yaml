@@ -56,4 +56,18 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/edc-dataplane-0.1.2/edc-dataplane-0.1.2.tgz
     version: 0.1.2
-generated: "2023-02-28T15:07:11.324601104Z"
+  tractusx-connector:
+  - apiVersion: v2
+    appVersion: 0.3.2
+    created: "2023-04-14T13:11:19.88940681Z"
+    description: A Helm chart for Tractus-X Eclipse Data Space Connector
+    digest: 419e01514f7f8a448715d8d5154ac7d9e21570f56554403a3fd619c55d33df8f
+    home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+    name: tractusx-connector
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-0.3.2/tractusx-connector-0.3.2.tgz
+    version: 0.3.2
+generated: "2023-04-14T13:11:19.88942081Z"
