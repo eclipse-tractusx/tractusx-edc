@@ -137,11 +137,7 @@ dependencyResolutionManagement {
             library("micrometer-jersey", "org.eclipse.edc", "jersey-micrometer").versionRef("edc")
             library("micrometer-jetty", "org.eclipse.edc", "jetty-micrometer").versionRef("edc")
             library("monitor-jdklogger", "org.eclipse.edc", "monitor-jdk-logger").versionRef("edc")
-            library(
-                    "transfer.dynamicreceiver",
-                    "org.eclipse.edc",
-                    "transfer-pull-http-dynamic-receiver"
-            ).versionRef("edc")
+            library("transfer.dynamicreceiver", "org.eclipse.edc", "transfer-pull-http-dynamic-receiver").versionRef("edc")
 
             library("transfer.receiver", "org.eclipse.edc", "transfer-pull-http-receiver").versionRef("edc")
 
