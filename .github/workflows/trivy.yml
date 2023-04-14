@@ -9,7 +9,7 @@ on:
     workflows: ["Build"]
     branches:
       - main
-      - develop
+      - releases
       - release/*
       - hotfix/*
     tags:

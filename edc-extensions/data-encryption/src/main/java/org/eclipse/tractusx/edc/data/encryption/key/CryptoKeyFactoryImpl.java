@@ -19,7 +19,6 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.key;
 
-import lombok.Value;
 import org.bouncycastle.util.encoders.Base64;
 
 public class CryptoKeyFactoryImpl implements CryptoKeyFactory {
@@ -37,9 +36,24 @@ public class CryptoKeyFactoryImpl implements CryptoKeyFactory {
     return new AesKeyImpl(key, Base64.toBase64String(key));
   }
 
-  @Value
+
   private static class AesKeyImpl implements AesKey {
-    byte[] bytes;
-    String base64;
+    private final byte[] bytes;
+    private final String base64;
+
+    private AesKeyImpl(byte[] bytes, String base64) {
+      this.bytes = bytes;
+      this.base64 = base64;
+    }
+
+    @Override
+    public byte[] getBytes() {
+      return bytes;
+    }
+
+    @Override
+    public String getBase64() {
+      return base64;
+    }
   }
 }

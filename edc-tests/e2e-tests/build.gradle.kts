@@ -17,6 +17,7 @@ plugins {
 }
 
 dependencies {
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.0.0-alpha.11")
     testImplementation(libs.restAssured)
     testImplementation(libs.postgres)
     testImplementation(libs.awaitility)
@@ -28,7 +29,10 @@ dependencies {
     testImplementation(edc.core.api)
     testImplementation(edc.spi.catalog)
     testImplementation(edc.api.catalog)
-    testImplementation(testFixtures(edc.junit))
+    testImplementation(edc.api.contractnegotiation)
+    testImplementation(edc.api.transferprocess)
+    testImplementation(edc.spi.dataplane.selector)
+
 }
 
 // do not publish

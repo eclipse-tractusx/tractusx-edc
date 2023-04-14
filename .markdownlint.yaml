@@ -19,6 +19,7 @@
 "default": true
 # Do not restrict line length: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD013
 "MD013": false
+"MD034":
 # Allow same content on headlines on siblings: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD024
 "MD024":
   "siblings_only": true

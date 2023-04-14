@@ -1,3 +1,25 @@
+#
+#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -40,9 +62,9 @@ spec:
           {{- if .Values.dataplane.image.repository }}
           image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.vault.hashicorp }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose data-plane image automatically based on configuration" }}
           {{- end }}
@@ -56,8 +78,8 @@ spec:
           {{- if .Values.dataplane.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.dataplane.endpoints.default.path }}/check/liveness
-              port: {{ .Values.dataplane.endpoints.default.port }}
+              path: {{ .Values.dataplane.endpoints.observability.path }}/check/liveness
+              port: {{ .Values.dataplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.dataplane.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.dataplane.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.dataplane.livenessProbe.timeoutSeconds }}
@@ -67,8 +89,8 @@ spec:
           {{- if .Values.dataplane.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.dataplane.endpoints.default.path }}/check/readiness
-              port: {{ .Values.dataplane.endpoints.default.port }}
+              path: {{ .Values.dataplane.endpoints.observability.path }}/check/readiness
+              port: {{ .Values.dataplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.dataplane.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.dataplane.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.dataplane.readinessProbe.timeoutSeconds }}
@@ -100,16 +122,18 @@ spec:
               value: {{ .Values.dataplane.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.dataplane.endpoints.control.path | quote }}
-            - name: "WEB_HTTP_VALIDATION_PORT"
-              value: {{ .Values.dataplane.endpoints.validation.port | quote }}
-            - name: "WEB_HTTP_VALIDATION_PATH"
-              value: {{ .Values.dataplane.endpoints.validation.path | quote }}
             - name: "WEB_HTTP_PUBLIC_PORT"
               value: {{ .Values.dataplane.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.dataplane.endpoints.public.path | quote }}
             - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
-              value:  {{ include "txdc.controlplane.url.validation" .}}
+              value: {{ include "txdc.controlplane.url.validation" .}}
+            - name: "WEB_HTTP_OBSERVABILITY_PORT"
+              value: {{ .Values.dataplane.endpoints.observability.port | quote }}
+            - name: "WEB_HTTP_OBSERVABILITY_PATH"
+              value: {{ .Values.dataplane.endpoints.observability.path | quote }}
+            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
+              value: {{ .Values.dataplane.endpoints.observability.insecure | quote }}
 
             #######
             # AWS #
@@ -132,7 +156,7 @@ spec:
             ###########
 
           {{- if .Values.vault.hashicorp.enabled }}
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/hashicorp-vault
             - name: "EDC_VAULT_HASHICORP_URL"
               value: {{ .Values.vault.hashicorp.url | required ".Values.vault.hashicorp.url is required" | quote }}
             - name: "EDC_VAULT_HASHICORP_TOKEN"
@@ -156,15 +180,21 @@ spec:
               value: {{ .Values.vault.azure.tenant | quote }}
             - name: "EDC_VAULT_NAME"
               value: {{ .Values.vault.azure.name | quote }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.secret }}
             - name: "EDC_VAULT_CLIENTSECRET"
               value: {{ .Values.vault.azure.secret | quote }}
+            {{- end }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.certificate }}
             - name: "EDC_VAULT_CERTIFICATE"
               value: {{ .Values.vault.azure.certificate | quote }}
+            {{- end }}
           {{- end }}
 
-          ######################################
-          ## Additional environment variables ##
-          ######################################
+            ######################################
+            ## Additional environment variables ##
+            ######################################
           {{- range $key, $value := .Values.dataplane.envValueFrom }}
             - name: {{ $key | quote }}
               valueFrom:
