@@ -13,13 +13,7 @@ This deployment should **never** be used
 - in **any** production or near production environments
 - in **any** long living internet facing connector setups
 
-## Components
-
-Overview of the installed components.
-
-![Deployed Components](diagrams/deployed_components.png)
-
-### Omejdn DAPS
+## Omejdn DAPS
 
 The Dynamic Attribute Provisioning Service (DAPS) is a component of the IDS Ecosystem.
 The Fraunhofer Institute has created a DAPS reference implementation, the Omejdn
@@ -41,55 +35,19 @@ productive environment.
 > potentially extend and modify functionality under the hood to support research projects. Use at your own
 > risk! ([source](https://github.com/Fraunhofer-AISEC/omejdn-server))
 
-### HashiCorp Vault
+## HashiCorp Vault
 
 The Control- and Data Plane persist confidential in the vault and persist and communicate using only the secret
 names. Hence, it is not possible to run a connector without an instance of a vault.
 
-### Backend Application
-
-After a Data Transfer is successfully prepared the control plane will contact the a configurable endpoint with the
-information it needs to initiate the data transfer. This transfer flow, where something like a Backend Application is
-required, is unique to the HTTP Proxy data transfer flow.
-
-The Backend Application has an API endpoint, that is configured in the control plane. After it gets called with the data
-transfer information, it will do the actual data transfer and store the data on disk.
-
-### PostgreSQL
+## PostgreSQL
 
 This database is used to persist the state of the Control Plane.
 
 ## Setup
 
-Follow these steps to get a fully functional EDC demo environment out of the box.
+simply execute the following comment in a shell:
 
-### Requirements
-
-Install on your machine:
-
-- Minikube
-  - Documentation <https://minikube.sigs.k8s.io/docs/start/>
-- Helm
-  - Documentation <https://helm.sh/docs/intro/install/>
-
-## Start Demo Environment
-
-Update Helm Dependencies:
-
-```bash
-helm dependency update
-```
-
-Install Demo Chart:
-
-```bash
-helm install tx-infrastructure --namespace tx --create-namespace .
-```
-
-## Stop Demo Environment
-
-Uninstall Demo Chart:
-
-```bash
-helm uninstall tx-infrastructure --namespace tx
+```shell
+helm install infra edc-tests/deployment/src/main/resources/helm/test-infrastructure --update-dependencies
 ```
