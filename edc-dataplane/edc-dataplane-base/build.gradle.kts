@@ -4,18 +4,18 @@ plugins {
 }
 
 dependencies {
-    implementation(edc.config.filesystem)
-    implementation(edc.dpf.awss3)
-    implementation(edc.dpf.oauth2)
-    implementation(edc.dpf.http)
+    runtimeOnly(project(":edc-extensions:observability-api-customization"))
 
-    implementation(edc.dpf.framework)
-    implementation(edc.dpf.api)
-    implementation(edc.api.observability)
-    implementation(edc.core.connector)
-    implementation(edc.boot)
+    runtimeOnly(edc.config.filesystem)
+    runtimeOnly(edc.dpf.awss3)
+    runtimeOnly(edc.dpf.oauth2)
+    runtimeOnly(edc.dpf.http)
 
+    runtimeOnly(edc.dpf.framework)
+    runtimeOnly(edc.dpf.api)
+    runtimeOnly(edc.core.connector)
+    runtimeOnly(edc.boot)
 
-    implementation(edc.bundles.monitoring)
-    implementation(edc.ext.http)
+    runtimeOnly(edc.bundles.monitoring)
+    runtimeOnly(edc.ext.http)
 }
