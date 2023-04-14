@@ -44,25 +44,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  secret-presence:
-    runs-on: ubuntu-latest
-    outputs:
-      VAULT_SECRETS: ${{ steps.secret-presence.outputs.VAULT_SECRETS }}
-    steps:
-      - name: Check whether secrets exist
-        id: secret-presence
-        run: |
-          [ ! -z "${{ secrets.VAULT_SECRETS }}" ] && echo "::set-output name=VAULT_SECRETS::true"
-          exit 0
   deployment-test-inmem:
     runs-on: ubuntu-latest
-    needs: [ secret-presence ]
-    if: |
-      needs.secret-presence.outputs.VAULT_SECRETS
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
-
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test for edc-runtime-memory"
         with:
@@ -71,7 +57,7 @@ jobs:
           helm_command: |-
             helm install tx-inmem charts/tractusx-connector-memory \
             -f charts/tractusx-connector-memory/example.yaml \
-            --set vault.secrets="${{ secrets.VAULT_SECRETS }}" \
+            --set vault.secrets="$(cat ./.github/workflows/deploy-test-secrets)" \
             --wait-for-jobs --timeout=120s
             
             # wait for the pod to become ready
