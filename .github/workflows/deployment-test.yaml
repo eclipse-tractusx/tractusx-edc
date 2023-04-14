@@ -44,13 +44,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deployment-test-inmem:
+  deployment-test-memory:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/run-deployment-test
-        name: "Run deployment test for edc-runtime-memory"
+        name: "Run deployment test using KinD and Helm"
         with:
           imagename: edc-runtime-memory
           rootDir: edc-controlplane/edc-runtime-memory
@@ -61,7 +61,6 @@ jobs:
             --wait-for-jobs --timeout=120s
             
             # wait for the pod to become ready
-            # kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=tx-inmem-runtime --timeout=600s || ( kubectl logs -l app.kubernetes.io/instance=tx-inmem-runtime --tail 500 && exit 1 )
             kubectl rollout status deployment tx-inmem
             
             # execute the helm test

@@ -21,12 +21,10 @@
 ## This file can be used to verify that the chart is working properly. It provides an exemplary configuration
 ## that is intended to be used with the supporting infrastructure.
 ## 1. install DAPS:
-##  helm install infrastructure edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure \                                                                                                                 ─╯
-##    --set install.postgresql=false \
-##    --set install.vault=false \
-##    --set install.minio=false --wait-for-jobs
+##  helm install infrastructure edc-tests/deployment/src/main/resources/helm/test-infrastructure \                                                                                                                 ─╯
+##    --wait-for-jobs
 ##
-## 2. install in-mem runtime. Note that the key and crt must match exactly the DAPS setup, c.f. edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure/values.yaml
+## 2. install in-mem runtime. Note that the key and crt must match exactly the DAPS setup, c.f. edc-tests/deployment/src/main/resources/helm/test-infrastructure/values.yaml
 ##  export DAPSKEY="<private-key-content>"
 ##  export DAPSCRT="<certificate-content>"
 ##  export YOUR_VAULT_SECRETS="daps-key:$DAPSKEY;daps-crt:$DAPSCRT"
