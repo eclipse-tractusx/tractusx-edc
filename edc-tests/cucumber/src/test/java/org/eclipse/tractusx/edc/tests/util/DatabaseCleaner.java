@@ -24,28 +24,33 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+
 public class DatabaseCleaner {
 
-  private static final String SQL =
-      "DELETE FROM edc_contract_negotiation;\n"
-          + "DELETE FROM edc_contract_agreement;\n"
-          + "DELETE FROM edc_transfer_process;\n"
-          + "DELETE FROM edc_contract_definitions;\n"
-          + "DELETE FROM edc_policydefinitions;\n"
-          + "DELETE FROM edc_asset;\n"
-          + "DELETE FROM edc_lease;";
+    private static final String SQL =
+            "DELETE FROM edc_contract_negotiation;\n"
+                    + "DELETE FROM edc_contract_agreement;\n"
+                    + "DELETE FROM edc_transfer_process;\n"
+                    + "DELETE FROM edc_contract_definitions;\n"
+                    + "DELETE FROM edc_policydefinitions;\n"
+                    + "DELETE FROM edc_asset;\n"
+                    + "DELETE FROM edc_lease;";
 
-  private final String url;
-  private final String user;
-  private final String password;
+    private final String url;
+    private final String user;
+    private final String password;
 
-  public void run() throws SQLException {
-    try (Connection con = DriverManager.getConnection(url, user, password)) {
-      Statement st = con.createStatement();
-      st.executeUpdate(SQL);
+    public DatabaseCleaner(String url, String user, String password) {
+        this.url = url;
+        this.user = user;
+        this.password = password;
     }
-  }
+
+    public void run() throws SQLException {
+        try (Connection con = DriverManager.getConnection(url, user, password)) {
+            Statement st = con.createStatement();
+            st.executeUpdate(SQL);
+        }
+    }
 }
