@@ -78,8 +78,8 @@ spec:
           {{- if .Values.dataplane.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.dataplane.endpoints.default.path }}/check/liveness
-              port: {{ .Values.dataplane.endpoints.default.port }}
+              path: {{ .Values.dataplane.endpoints.observability.path }}/check/liveness
+              port: {{ .Values.dataplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.dataplane.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.dataplane.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.dataplane.livenessProbe.timeoutSeconds }}
@@ -89,8 +89,8 @@ spec:
           {{- if .Values.dataplane.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.dataplane.endpoints.default.path }}/check/readiness
-              port: {{ .Values.dataplane.endpoints.default.port }}
+              path: {{ .Values.dataplane.endpoints.observability.path }}/check/readiness
+              port: {{ .Values.dataplane.endpoints.observability.port }}
             initialDelaySeconds: {{ .Values.dataplane.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.dataplane.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.dataplane.readinessProbe.timeoutSeconds }}
@@ -122,16 +122,18 @@ spec:
               value: {{ .Values.dataplane.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.dataplane.endpoints.control.path | quote }}
-            - name: "WEB_HTTP_VALIDATION_PORT"
-              value: {{ .Values.dataplane.endpoints.validation.port | quote }}
-            - name: "WEB_HTTP_VALIDATION_PATH"
-              value: {{ .Values.dataplane.endpoints.validation.path | quote }}
             - name: "WEB_HTTP_PUBLIC_PORT"
               value: {{ .Values.dataplane.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.dataplane.endpoints.public.path | quote }}
             - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
               value: {{ include "txdc.controlplane.url.validation" .}}
+            - name: "WEB_HTTP_OBSERVABILITY_PORT"
+              value: {{ .Values.dataplane.endpoints.observability.port | quote }}
+            - name: "WEB_HTTP_OBSERVABILITY_PATH"
+              value: {{ .Values.dataplane.endpoints.observability.path | quote }}
+            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
+              value: {{ .Values.dataplane.endpoints.observability.insecure | quote }}
 
             #######
             # AWS #
@@ -178,10 +180,16 @@ spec:
               value: {{ .Values.vault.azure.tenant | quote }}
             - name: "EDC_VAULT_NAME"
               value: {{ .Values.vault.azure.name | quote }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.secret }}
             - name: "EDC_VAULT_CLIENTSECRET"
               value: {{ .Values.vault.azure.secret | quote }}
+            {{- end }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.certificate }}
             - name: "EDC_VAULT_CERTIFICATE"
               value: {{ .Values.vault.azure.certificate | quote }}
+            {{- end }}
           {{- end }}
 
             ######################################

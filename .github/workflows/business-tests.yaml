@@ -128,14 +128,14 @@ jobs:
         run: |-
           # Define endpoints
           echo "SOKRATES_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
-          echo "SOKRATES_DATA_MANAGEMENT_URL=http://sokrates-controlplane:8081/data" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_DATA_MANAGEMENT_URL=http://sokrates-controlplane:8081/management" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_IDS_URL=http://sokrates-controlplane:8084/api/v1/ids" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATA_PLANE_URL=http://sokrates-dataplane:8081/api/public/" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_USER=user" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_PASSWORD=password" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
-          echo "PLATO_DATA_MANAGEMENT_URL=http://plato-controlplane:8081/data" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATA_MANAGEMENT_URL=http://plato-controlplane:8081/management" | tee -a ${GITHUB_ENV}
           echo "PLATO_IDS_URL=http://plato-controlplane:8084/api/v1/ids" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_PLANE_URL=http://plato-dataplane:8081/api/public/" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
@@ -176,7 +176,7 @@ jobs:
             helm install plato charts/tractusx-connector  \
               --set fullnameOverride=plato \
               --set controlplane.service.type=NodePort \
-              --set controlplane.endpoints.data.authKey=password \
+              --set controlplane.endpoints.management.authKey=password \
               --set controlplane.image.tag=business-test \
               --set controlplane.image.pullPolicy=Never \
               --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
@@ -209,7 +209,7 @@ jobs:
             helm install sokrates charts/tractusx-connector  \
               --set fullnameOverride=sokrates \
               --set controlplane.service.type=NodePort \
-              --set controlplane.endpoints.data.authKey=password \
+              --set controlplane.endpoints.management.authKey=password \
               --set controlplane.image.tag=business-test \
               --set controlplane.image.pullPolicy=Never \
               --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
