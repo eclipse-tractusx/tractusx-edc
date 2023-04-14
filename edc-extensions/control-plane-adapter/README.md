@@ -41,7 +41,7 @@ To run CP-Adapter in "PERSISTENT" mode, You need to create a proper tables with 
    ```plain
    {controlplaneUrl}:{web.http.management.port}/{web.http.management.path}/adapter/asset/sync/{assetId}?providerUrl={providerUrl}
    ```
-   
+
    | Name                       | Description                                                                      |
    |----------------------------|----------------------------------------------------------------------------------|
    | `controlplaneUrl`          | The URL where the control plane of the consumer connector is available           |
