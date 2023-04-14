@@ -28,7 +28,6 @@ its ephemeral nature makes it unsuitable for replicated/multi-instance scenarios
 
 > It is not a secure secret store, please do NOT use it in production workloads!
 
-
 ### Confidential Settings
 
 Please be aware that there are several confidential settings, that should not be part of the actual EDC configuration file.
