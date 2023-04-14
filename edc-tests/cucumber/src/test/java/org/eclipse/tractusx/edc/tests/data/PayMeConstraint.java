@@ -20,13 +20,19 @@
 
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.Value;
-
 /**
  * The PayMe constraint should be used when no constraint validation/enforcement in the EDC is
  * intended.
  */
-@Value
+
 public class PayMeConstraint implements Constraint {
-  double amount;
+    private final double amount;
+
+    public PayMeConstraint(double amount) {
+        this.amount = amount;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
 }

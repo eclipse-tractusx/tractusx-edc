@@ -1,31 +1,41 @@
 package org.eclipse.tractusx.edc.tests.data;
 
-import static org.awaitility.Awaitility.await;
-
-import java.io.IOException;
-import java.time.Duration;
-import lombok.Value;
 import org.eclipse.tractusx.edc.tests.DataManagementAPI;
 import org.eclipse.tractusx.edc.tests.util.Timeouts;
 
-@Value
+import java.io.IOException;
+import java.time.Duration;
+
+import static org.awaitility.Awaitility.await;
+
+
 public class Transfer {
 
-  String id;
+    private final String id;
 
-  public void waitUntilComplete(DataManagementAPI dataManagementAPI) {
-    await()
-        .pollDelay(Duration.ofMillis(2000))
-        .atMost(Timeouts.FILE_TRANSFER)
-        .until(() -> isComplete(dataManagementAPI));
-  }
+    public Transfer(String id) {
+        this.id = id;
+    }
 
-  public boolean isComplete(DataManagementAPI dataManagementAPI) throws IOException {
-    var transferProcess = dataManagementAPI.getTransferProcess(id);
-    if (transferProcess == null) return false;
+    public void waitUntilComplete(DataManagementAPI dataManagementAPI) {
+        await()
+                .pollDelay(Duration.ofMillis(2000))
+                .atMost(Timeouts.FILE_TRANSFER)
+                .until(() -> isComplete(dataManagementAPI));
+    }
 
-    var state = transferProcess.getState();
+    public boolean isComplete(DataManagementAPI dataManagementAPI) throws IOException {
+        var transferProcess = dataManagementAPI.getTransferProcess(id);
+        if (transferProcess == null) {
+            return false;
+        }
 
-    return state == TransferProcessState.COMPLETED || state == TransferProcessState.ERROR;
-  }
+        var state = transferProcess.getState();
+
+        return state == TransferProcessState.COMPLETED || state == TransferProcessState.ERROR;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

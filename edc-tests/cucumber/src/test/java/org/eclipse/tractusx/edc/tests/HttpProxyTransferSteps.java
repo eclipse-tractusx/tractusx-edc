@@ -4,12 +4,13 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.edc.tests.data.Asset;
 import org.eclipse.tractusx.edc.tests.data.DataAddress;
 import org.eclipse.tractusx.edc.tests.data.HttpProxySinkDataAddress;
 import org.eclipse.tractusx.edc.tests.data.HttpProxySourceDataAddress;
 import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -20,8 +21,9 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-@Slf4j
 public class HttpProxyTransferSteps {
+
+    private static final Logger log = LoggerFactory.getLogger(HttpProxyTransferSteps.class);
 
     private static final String ID = "id";
     private static final String DESCRIPTION = "description";

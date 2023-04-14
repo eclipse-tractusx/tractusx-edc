@@ -1,18 +1,52 @@
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
+
 public class HttpProxySourceDataAddress implements DataAddress {
-  @NonNull String baseUrl;
-  Oauth2Provision oauth2Provision;
+    private final String baseUrl;
+    private final Oauth2Provision oauth2Provision;
 
-  @Value
-  public static class Oauth2Provision {
-    @NonNull String tokenUrl;
-    @NonNull String clientId;
-    @NonNull String clientSecret;
-    String scope;
-  }
+    public HttpProxySourceDataAddress(String baseUrl, Oauth2Provision oauth2Provision) {
+        this.baseUrl = Objects.requireNonNull(baseUrl);
+        this.oauth2Provision = oauth2Provision;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public Oauth2Provision getOauth2Provision() {
+        return oauth2Provision;
+    }
+
+    public static class Oauth2Provision {
+        private final String tokenUrl;
+        private final String clientId;
+        private final String clientSecret;
+        private final String scope;
+
+        public Oauth2Provision(String tokenUrl, String clientId, String clientSecret, String scope) {
+            this.tokenUrl = Objects.requireNonNull(tokenUrl);
+            this.clientId = Objects.requireNonNull(clientId);
+            this.clientSecret = Objects.requireNonNull(clientSecret);
+            this.scope = scope;
+        }
+
+        public String getTokenUrl() {
+            return tokenUrl;
+        }
+
+        public String getScope() {
+            return scope;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+    }
 }

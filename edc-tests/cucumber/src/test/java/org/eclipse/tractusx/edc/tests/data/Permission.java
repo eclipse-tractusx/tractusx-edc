@@ -20,13 +20,30 @@
 package org.eclipse.tractusx.edc.tests.data;
 
 import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
+
 public class Permission {
-  @NonNull String action;
-  String target;
+    private final String action;
+    private final List<Constraint> constraints;
+    private final String target;
 
-  @NonNull List<Constraint> constraints;
+
+    public Permission(String action, List<Constraint> constraints, String target) {
+        this.action = Objects.requireNonNull(action);
+        this.constraints = Objects.requireNonNull(constraints);
+        this.target = target;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public List<Constraint> getConstraints() {
+        return constraints;
+    }
+
+    public String getTarget() {
+        return target;
+    }
 }
