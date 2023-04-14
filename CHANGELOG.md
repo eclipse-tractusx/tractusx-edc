@@ -69,7 +69,7 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - update control plane docu (#623)
 - update postgresql version in Chart.yaml supporting-infrastructure (#622)
 - update link to edc logo in README.md (#612)
-- update description  of supporting infrastructure deployment (#616)
+- update description of supporting infrastructure deployment (#616)
 
 ### Fixed
 
@@ -84,7 +84,7 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - Bump alpine (#749)
 - Bump alpine (#750)
 - Bump alpine (#752)
-- Bump alpine in /edc-controlplane/edc-controlplane-memory/src/main/docker (#753)
+- Bump alpine in /edc-controlplane/edc-runtime-memory/src/main/docker (#753)
 - Bump maven-deploy-plugin from 3.0.0 to 3.1.0 (#735)
 - Bump actions/setup-java from 3.9.0 to 3.10.0 (#730)
 - Bump s3 from 2.19.33 to 2.20.0
@@ -117,7 +117,7 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 - Bump s3 from 2.19.11 to 2.19.15 (#668)
 - Bump maven-surefire-plugin from 3.0.0-M7 to 3.0.0-M8 (#670)
 - Bump edc version to 0.0.1-20230109-SNAPSHOT (#666)
-- Bump alpine in /edc-controlplane/edc-controlplane-memory/src/main/docker (#659)
+- Bump alpine in /edc-controlplane/edc-runtime-memory/src/main/docker (#659)
 - Bump alpine in /edc-dataplane/edc-dataplane-azure-vault/src/main/docker (#660)
 - Bump alpine (#658)
 - Bump alpine (#661)
@@ -171,7 +171,8 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 
 ## [0.1.1] - 2022-09-04
 
-**Important Note**: Please consolidate the migration documentation before updating your connector. [documentation](/docs/migration/Version_0.1.0_0.1.1.md).
+**Important Note**: Please consolidate the migration documentation before updating your
+connector. [documentation](/docs/migration/Version_0.1.0_0.1.1.md).
 
 ### Added
 
@@ -184,7 +185,8 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 
 ### Fixed
 
-- Connectors with Azure Vault extension are now starting again [link](https://github.com/eclipse-edc/Connector/issues/1892)
+- Connectors with Azure Vault extension are now starting
+  again [link](https://github.com/eclipse-edc/Connector/issues/1892)
 
 ## [0.1.0] - 2022-08-19
 
@@ -193,11 +195,13 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Added
 
-- Control-Plane extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+- Control-Plane
+  extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
   - run the EDC with multiple data planes at once
 - Control-Plane extension ([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
   - add data plane instances to the control plane by configuration
-- Data-Plane extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
+- Data-Plane
+  extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
   - transfer from and to AWS S3 buckets
 - Control-Plane extension ([data-encryption](edc-extensions/data-encryption))
   - Data-Plane authentication attribute transmitted during data-plane-transfer can be encrypted symmetrically (AES)
@@ -205,19 +209,27 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 ### Changed
 
 - Update setting name (`edc.dataplane.token.validation.endpoint` -> `edc.dataplane.token.validation.endpoint`)
-- EDC has been updated to version [0.0.1-20220818-SNAPSHOT](https://oss.sonatype.org/#nexus-search;gav~org.eclipse.dataspaceconnector~~0.0.1-20220818-SNAPSHOT~~) - implications to the behavior of the connector have been covered in the [corresponding migration guide](docs/migration/Version_0.0.x_0.1.x.md)
+- EDC has been updated to
+  version [0.0.1-20220818-SNAPSHOT](https://oss.sonatype.org/#nexus-search;gav~org.eclipse.dataspaceconnector~~0.0.1-20220818-SNAPSHOT~~) -
+  implications to the behavior of the connector have been covered in
+  the [corresponding migration guide](docs/migration/Version_0.0.x_0.1.x.md)
 
 ### Fixed
 
-- Contract-Offer-Receiving-Connectors must also pass the ContractPolicy of the ContractDefinition before receiving offers([issue](https://github.com/eclipse-edc/Connector/issues/1331))
-- Deletion of Asset becomes impossible when Contract Negotiation exists([issue](https://github.com/eclipse-edc/Connector/issues/1403))
-- Deletion of Policy becomes impossible when Contract Definition exists([issue](https://github.com/eclipse-edc/Connector/issues/1410))
+- Contract-Offer-Receiving-Connectors must also pass the ContractPolicy of the ContractDefinition before receiving
+  offers([issue](https://github.com/eclipse-edc/Connector/issues/1331))
+- Deletion of Asset becomes impossible when Contract Negotiation
+  exists([issue](https://github.com/eclipse-edc/Connector/issues/1403))
+- Deletion of Policy becomes impossible when Contract Definition
+  exists([issue](https://github.com/eclipse-edc/Connector/issues/1410))
 
 ## [0.0.6] - 2022-07-29
 
 ### Fixed
 
-- Fixes [release 0.0.5](https://github.com/eclipse-tractusx/tractusx-edc/releases/tag/0.0.5), which introduced classpath issues due to usage of [net.jodah:failsafe:2.4.3](https://search.maven.org/artifact/net.jodah/failsafe/2.4.3/jar) library
+- Fixes [release 0.0.5](https://github.com/eclipse-tractusx/tractusx-edc/releases/tag/0.0.5), which introduced classpath
+  issues due to usage of [net.jodah:failsafe:2.4.3](https://search.maven.org/artifact/net.jodah/failsafe/2.4.3/jar)
+  library
 
 ## [0.0.5] - 2022-07-28
 
@@ -245,7 +257,7 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 ### Fixed
 
 - [#1515](https://github.com/eclipse-edc/Connector/issues/1515) SQL: Connector sends out 50
-      contract offers max.
+  contract offers max.
 
 ### Removed
 

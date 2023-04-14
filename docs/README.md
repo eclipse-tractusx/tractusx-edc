@@ -1,8 +1,10 @@
 # Tractus-X EDC
 
-The Tractus-X EDC repository creates runnable applications out of EDC extensions from the [Eclipse DataSpace Connector](https://github.com/eclipse-edc/Connector) repository.
+The Tractus-X EDC repository creates runnable applications out of EDC extensions from
+the [Eclipse DataSpace Connector](https://github.com/eclipse-edc/Connector) repository.
 
-When running a EDC connector from the Tractus-X EDC repository there are three setups to choose from. They only vary by using different extensions for
+When running a EDC connector from the Tractus-X EDC repository there are three setups to choose from. They only vary by
+using different extensions for
 
 - Resolving of Connector-Identities
 - Persistence of the Control-Plane-State
@@ -13,7 +15,7 @@ When running a EDC connector from the Tractus-X EDC repository there are three s
 The three supported setups are.
 
 - Setup 1: In Memory & Azure Vault
-  - [Control Plane](../edc-controlplane/edc-controlplane-memory/README.md)
+  - [Control Plane](../edc-controlplane/edc-runtime-memory/README.md)
     - [IDS DAPS Extensions](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/iam/oauth2/daps)
     - In Memory Persistence done by using no extension
     - [Azure Key Vault Extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/azure-vault)

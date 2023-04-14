@@ -2,7 +2,7 @@
 
 An EDC Control Plane using memory-based storage, and Azure KeyVault as secret store.
 
-DockerHub: https://hub.docker.com/r/tractusx/edc-controlplane-memory
+DockerHub: https://hub.docker.com/r/tractusx/edc-runtime-memory
 
 Eclipse Tractus-X product(s) installed within the image:
 
@@ -10,7 +10,7 @@ Eclipse Tractus-X product(s) installed within the image:
 
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
-- Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-controlplane/edc-controlplane-memory/src/main/docker/Dockerfile
+- Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-controlplane/edc-runtime-memory/src/main/docker/Dockerfile
 - Project license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/LICENSE)
 
 ## Used base image

@@ -8,19 +8,6 @@ install:
   postgresql: true
   vault: true
   minio: true
-  backendservice: true
-
-###################
-# Backend Service #
-###################
-backend:
-  fullnameOverride: "backend"
-  service:
-    type: NodePort
-    frontend:
-      port: 8080
-    backend:
-      port: 8081
 
 
 ########

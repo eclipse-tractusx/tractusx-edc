@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "txdc.fullname" . }}-test-readiness"
+  labels:
+    {{- include "txdc.runtime.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: curlimages/curl
+      command: ['curl']
+      args: ['{{ include "tdxc.runtime.url.readiness" . }}']
+  restartPolicy: Never

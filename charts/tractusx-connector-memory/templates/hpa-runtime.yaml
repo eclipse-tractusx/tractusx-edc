@@ -1,0 +1,29 @@
+{{- if .Values.runtime.autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "txdc.fullname" . }}-runtime
+  labels:
+    {{- include "txdc.runtime.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "txdc.fullname" . }}-runtime
+  minReplicas: {{ .Values.runtime.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.runtime.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.runtime.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.runtime.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.runtime.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.runtime.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
