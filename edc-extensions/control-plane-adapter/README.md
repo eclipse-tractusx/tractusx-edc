@@ -41,13 +41,14 @@ To run CP-Adapter in "PERSISTENT" mode, You need to create a proper tables with 
    ```plain
    {controlplaneUrl}:{web.http.management.port}/{web.http.management.path}/adapter/asset/sync/{assetId}?providerUrl={providerUrl}
    ```
-   | Name                       | Description                                                         |
-   |----------------------------|---------------------------------------------------------------------|
-   | `controlplaneUrl`          | The URL where the control plane of the consumer connector is hosted |
-   | `web.http.management.port` | Port of the management API provided by the control plane            |
-   | `web.http.management.path` | Path of the management API provided by the control plane            |
-   | `assetId`                  | ID of the wanted asset                                              |
-   | `providerUrl`              | URL leading to the provider connector                               |
+   
+   | Name                       | Description                                                                      |
+   |----------------------------|----------------------------------------------------------------------------------|
+   | `controlplaneUrl`          | The URL where the control plane of the consumer connector is available           |
+   | `web.http.management.port` | Port of the management API provided by the control plane                         |
+   | `web.http.management.path` | Path of the management API provided by the control plane                         |
+   | `assetId`                  | ID of the wanted asset                                                           |
+   | `providerUrl`              | URL pointing to the `data` endpoint of the IDS context of the provider connector |
 
    The example ULR could be:
 
