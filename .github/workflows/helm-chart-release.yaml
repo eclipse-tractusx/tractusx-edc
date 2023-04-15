@@ -23,7 +23,7 @@ on:
     paths:
       - 'charts/**'
     branches:
-      - main
+      - releases
   workflow_dispatch:
 
 jobs:

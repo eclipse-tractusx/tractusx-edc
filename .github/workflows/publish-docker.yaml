@@ -30,7 +30,8 @@ on:
         default: "tractusx"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # cancel only running jobs on pull requests
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:

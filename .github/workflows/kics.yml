@@ -2,9 +2,9 @@ name: "KICS"
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, releases]
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, releases]
   workflow_dispatch:
 
   schedule:

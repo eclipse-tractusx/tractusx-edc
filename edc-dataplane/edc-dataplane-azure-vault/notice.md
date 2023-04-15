@@ -10,8 +10,8 @@ Eclipse Tractus-X product(s) installed within the image:
 
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
-- Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/edc-dataplane/edc-dataplane-azure-vault/src/main/docker/Dockerfile
-- Project license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/develop/LICENSE)
+- Dockerfile: https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-dataplane/edc-dataplane-azure-vault/src/main/docker/Dockerfile
+- Project license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE)
 
 ## Used base image
 
