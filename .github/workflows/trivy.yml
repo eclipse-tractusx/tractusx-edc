@@ -9,7 +9,7 @@ on:
     workflows: ["Build"]
     branches:
       - main
-      - develop
+      - releases
       - release/*
       - hotfix/*
     tags:
@@ -84,7 +84,7 @@ jobs:
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository }}/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
+          image-ref: "tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
           format: "sarif"
           output: "trivy-results-${{ matrix.image }}.sarif"
           exit-code: "1"

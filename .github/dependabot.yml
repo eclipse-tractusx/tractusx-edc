@@ -3,8 +3,8 @@ version: 2
 updates:
   # Maven
   -
-    package-ecosystem: "maven"
-    target-branch: develop
+    package-ecosystem: "gradle"
+    target-branch: main
     directory: /
     labels:
       - "dependabot"
@@ -15,7 +15,7 @@ updates:
   # Github Actions
   -
     package-ecosystem: "github-actions"
-    target-branch: develop
+    target-branch: main
     directory: /
     labels:
       - "dependabot"
@@ -26,7 +26,7 @@ updates:
   # Docker
   -
     package-ecosystem: "docker"
-    target-branch: develop
+    target-branch: main
     directory: ./edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/src/main/docker/
     labels:
       - "dependabot"
@@ -35,7 +35,7 @@ updates:
       interval: "daily"
   -
     package-ecosystem: "docker"
-    target-branch: develop
+    target-branch: main
     directory: ./edc-controlplane/edc-controlplane-postgresql/src/main/docker/
     labels:
       - "dependabot"
@@ -44,7 +44,7 @@ updates:
       interval: "daily"
   -
     package-ecosystem: "docker"
-    target-branch: develop
+    target-branch: main
     directory: ./edc-controlplane/edc-controlplane-memory/src/main/docker/
     labels:
       - "dependabot"
@@ -53,7 +53,7 @@ updates:
       interval: "daily"
   -
     package-ecosystem: "docker"
-    target-branch: develop
+    target-branch: main
     directory: ./edc-dataplane/edc-dataplane-azure-vault/src/main/docker/
     labels:
       - "dependabot"
@@ -62,7 +62,7 @@ updates:
       interval: "daily"
   -
     package-ecosystem: "docker"
-    target-branch: develop
+    target-branch: main
     directory: ./edc-dataplane/edc-dataplane-hashicorp-vault/src/main/docker/
     labels:
       - "dependabot"

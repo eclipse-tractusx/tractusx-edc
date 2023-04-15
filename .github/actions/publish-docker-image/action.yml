@@ -86,6 +86,7 @@ runs:
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{raw}}
           type=match,pattern=\d.\d.\d
+          type=raw,value=latest,enable={{is_default_branch}}
           type=sha
 
     ###############################
