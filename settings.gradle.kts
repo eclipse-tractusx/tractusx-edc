@@ -19,7 +19,7 @@ include(":edc-tests:cucumber")
 // modules for controlplane artifacts
 include(":edc-controlplane")
 include(":edc-controlplane:edc-controlplane-base")
-include(":edc-controlplane:edc-controlplane-memory")
+include(":edc-controlplane:edc-runtime-memory")
 include(":edc-controlplane:edc-controlplane-memory-hashicorp-vault")
 include(":edc-controlplane:edc-controlplane-postgresql")
 include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
@@ -137,38 +137,34 @@ dependencyResolutionManagement {
             library("micrometer-jersey", "org.eclipse.edc", "jersey-micrometer").versionRef("edc")
             library("micrometer-jetty", "org.eclipse.edc", "jetty-micrometer").versionRef("edc")
             library("monitor-jdklogger", "org.eclipse.edc", "monitor-jdk-logger").versionRef("edc")
-            library(
-                "transfer.dynamicreceiver",
-                "org.eclipse.edc",
-                "transfer-pull-http-dynamic-receiver"
-            ).versionRef("edc")
+            library("transfer.dynamicreceiver", "org.eclipse.edc", "transfer-pull-http-dynamic-receiver").versionRef("edc")
 
             library("transfer.receiver", "org.eclipse.edc", "transfer-pull-http-receiver").versionRef("edc")
 
             bundle(
-                "connector",
-                listOf("boot", "core-connector", "core-jersey", "core-controlplane", "api-observability")
+                    "connector",
+                    listOf("boot", "core-connector", "core-jersey", "core-controlplane", "api-observability")
             )
 
             bundle(
-                "dpf",
-                listOf("dpf-transfer", "dpf-selector-core", "dpf-selector-client", "spi-dataplane-selector")
+                    "dpf",
+                    listOf("dpf-transfer", "dpf-selector-core", "dpf-selector-client", "spi-dataplane-selector")
             )
 
             bundle(
-                "sqlstores",
-                listOf(
-                    "sql-assetindex",
-                    "sql-contract-definition",
-                    "sql-contract-negotiation",
-                    "sql-transferprocess",
-                    "sql-policydef"
-                )
+                    "sqlstores",
+                    listOf(
+                            "sql-assetindex",
+                            "sql-contract-definition",
+                            "sql-contract-negotiation",
+                            "sql-transferprocess",
+                            "sql-policydef"
+                    )
             )
 
             bundle(
-                "monitoring",
-                listOf("micrometer-core", "micrometer-jersey", "micrometer-jetty")
+                    "monitoring",
+                    listOf("micrometer-core", "micrometer-jersey", "micrometer-jetty")
 //                listOf("micrometer-core", "micrometer-jersey", "micrometer-jetty", "monitor-jdklogger")
             )
         }

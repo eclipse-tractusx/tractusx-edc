@@ -1,4 +1,5 @@
 #
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 #  Copyright (c) 2023 ZF Friedrichshafen AG
 #  Copyright (c) 2022,2023 Mercedes-Benz Tech Innovation GmbH
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
@@ -18,13 +19,6 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 #
-FROM alpine:3.17.3 as otel
-
-ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.1/opentelemetry-javaagent.jar"
-
-HEALTHCHECK NONE
-
-RUN wget ${OTEL_AGENT_LOCATION} -O /tmp/opentelemetry-javaagent.jar
 
 FROM eclipse-temurin:17.0.6_10-jre-alpine
 ARG JAR
@@ -46,18 +40,10 @@ RUN adduser \
 USER "$APP_USER"
 WORKDIR /app
 
-COPY --from=otel /tmp/opentelemetry-javaagent.jar .
 COPY ${JAR} edc-controlplane.jar
 
 HEALTHCHECK NONE
 
-CMD ["java", \
-     "-javaagent:/app/opentelemetry-javaagent.jar", \
-     "-Dedc.fs.config=/app/configuration.properties", \
-     "-Djava.util.logging.config.file=/app/logging.properties", \
-     "-Dotel.javaagent.configuration-file=/app/opentelemetry.properties", \
-     "-Dotel.metrics.exporter=prometheus", \
-     "-Dotel.exporter.prometheus.port=9090", \
-     "-Djava.security.egd=file:/dev/urandom", \
-     "-jar", \
-     "edc-controlplane.jar"]
+# need the sh -c syntax so that the SECRETS variable gets expanded
+# use the "exec" syntax so that SIGINT reaches the JVM -> graceful termination
+CMD ["sh", "-c", "exec java -Dedc.fs.config=/app/configuration.properties -Dedc.vault.secrets=\"${SECRETS}\" -Djava.util.logging.config.file=/app/logging.properties -Djava.security.egd=file:/dev/urandom -jar edc-controlplane.jar"]

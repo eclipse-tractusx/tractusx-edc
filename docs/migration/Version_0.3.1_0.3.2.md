@@ -2,7 +2,7 @@
 
 ## Configuration of Azure KeyVault
 
-When using Helm Charts that use the Azure KeyVault (`edc-controlplane-memory`, `edc-controlplane-postgres`)
+When using Helm Charts that use the Azure KeyVault (`edc-runtime-memory`, `edc-controlplane-postgres`)
 it is now possible to select _either_ authentication via Client Secret (`azure.vault.secret`) or via
 certificate (`azure.vault.certificate`).
 

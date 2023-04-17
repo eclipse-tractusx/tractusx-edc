@@ -6,7 +6,7 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
   workflow_run:
-    workflows: ["Build"]
+    workflows: [ "Build" ]
     branches:
       - main
       - releases
@@ -24,8 +24,7 @@ jobs:
     outputs:
       value: ${{ steps.git-sha7.outputs.SHA7 }}
     steps:
-      -
-        name: Resolve git 7-chars sha
+      - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
           echo "::set-output name=SHA7::${GITHUB_SHA::7}"
@@ -37,11 +36,9 @@ jobs:
       contents: read
       security-events: write
     steps:
-      -
-        name: Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3.3.0
-      -
-        name: Run Trivy vulnerability scanner in repo mode
+      - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "config"
@@ -51,8 +48,7 @@ jobs:
           format: "sarif"
           output: "trivy-results-config.sarif"
           severity: "CRITICAL,HIGH"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
@@ -69,18 +65,16 @@ jobs:
       fail-fast: false # continue scanning other images although if the other has been vulnerable
       matrix:
         image:
-          - edc-controlplane-memory
+          - edc-runtime-memory
           - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-azure-vault
           - edc-dataplane-hashicorp-vault
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3.3.0
-      -
-        name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
@@ -90,8 +84,7 @@ jobs:
           exit-code: "1"
           severity: "CRITICAL,HIGH"
           timeout: "10m0s"
-      -
-        name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results to GitHub Security tab
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
