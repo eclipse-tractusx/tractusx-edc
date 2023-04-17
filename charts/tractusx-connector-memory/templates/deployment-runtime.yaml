@@ -237,7 +237,6 @@ spec:
               value: {{ .Values.vault.secrets | quote}}
 
             #####################
-
             ## DATA ENCRYPTION ##
             #####################
 
