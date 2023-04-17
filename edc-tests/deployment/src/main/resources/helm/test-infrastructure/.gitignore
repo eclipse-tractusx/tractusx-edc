@@ -1,0 +1,4 @@
+# ignore downloaded helm depdencies
+charts/
+
+Chart.lock

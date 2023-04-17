@@ -1,5 +1,3 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-
 plugins {
     `java-library`
     id("application")
@@ -7,11 +5,12 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
+    implementation(edc.spi.core)
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
+        exclude(module = "data-encryption")
+    }
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-base"))
     runtimeOnly(edc.core.controlplane)
-    runtimeOnly(edc.azure.vault)
-    runtimeOnly(edc.azure.identity)
-
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

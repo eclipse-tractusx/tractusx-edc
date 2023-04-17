@@ -166,7 +166,6 @@ jobs:
             sleep 5s
   
             # Wait for supporting infrastructure to become ready (control-/data-plane, backend service)
-            kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=backend --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=backend --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=idsdaps --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=idsdaps --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=vault --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokrates-postgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokrates-postgresql --tail 500 && exit 1 )

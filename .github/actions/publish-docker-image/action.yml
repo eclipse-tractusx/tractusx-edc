@@ -48,7 +48,6 @@ runs:
     # Login to DockerHub
     #####################
     - name: DockerHub login
-      if: github.event_name != 'pull_request'
       uses: docker/login-action@v2
       with:
         username: ${{ inputs.docker_user }}
@@ -108,7 +107,6 @@ runs:
     # https://github.com/peter-evans/dockerhub-description
     ###############################
     - name: Update Docker Hub description
-      if: github.event_name != 'pull_request'
       uses: peter-evans/dockerhub-description@v3
       with:
         readme-filepath: ${{ inputs.rootDir }}/notice.md

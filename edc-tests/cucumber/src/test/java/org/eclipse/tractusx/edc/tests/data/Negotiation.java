@@ -22,7 +22,7 @@ public class Negotiation {
 
     public void waitUntilComplete(DataManagementAPI dataManagementAPI) {
         await()
-                .pollDelay(Duration.ofMillis(2000))
+                .pollDelay(Duration.ofMillis(5000))
                 .atMost(Timeouts.CONTRACT_NEGOTIATION)
                 .until(() -> isComplete(dataManagementAPI));
     }
