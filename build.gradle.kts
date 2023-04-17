@@ -8,7 +8,7 @@ plugins {
     id("io.freefair.lombok") version "6.6.2"
     id("com.diffplug.spotless") version "6.15.0"
     id("com.github.johnrengelman.shadow") version "8.0.0"
-    id("com.bmuschko.docker-remote-api") version "9.2.1"
+    id("com.bmuschko.docker-remote-api") version "9.3.1"
     id("org.sonarqube") version "4.0.0.2929"
 }
 
