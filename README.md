@@ -29,8 +29,7 @@ The Data-Plane does the heavy lifting of transferring and receiving data streams
 
 Depending on your environment there are different derivatives of the control-plane prepared:
 
-- [edc-runtime-memory](edc-controlplane/edc-runtime-memory) with dependency onto
-  - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview)
+- [edc-runtime-memory](edc-controlplane/edc-runtime-memory)
 - [edc-controlplane-postgresql](edc-controlplane/edc-controlplane-postgresql) with dependency onto
   - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview)
   - [PostgreSQL 8.2 or newer](https://www.postgresql.org/)

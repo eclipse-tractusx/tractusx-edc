@@ -14,11 +14,11 @@ using different extensions for
 
 The three supported setups are.
 
-- Setup 1: In Memory & Azure Vault
+- Setup 1: Pure in Memory
   - [Control Plane](../edc-controlplane/edc-runtime-memory/README.md)
     - [IDS DAPS Extensions](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/iam/oauth2/daps)
     - In Memory Persistence done by using no extension
-    - [Azure Key Vault Extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/azure-vault)
+    - In Memory Keyvault with seedable secrets. **Not intended for production use!**
   - [Data Plane](../edc-dataplane/edc-dataplane-azure-vault/README.md)
     - [Azure Key Vault Extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/azure-vault)
 - Setup 2: PostgreSQL & Azure Vault

@@ -29,10 +29,11 @@ public class VaultMemoryExtension implements ServiceExtension {
 
     @Setting(value = "Secrets with which the vault gets initially populated. Specify as comma-separated list of key:secret pairs.")
     public static final String VAULT_MEMORY_SECRETS_PROPERTY = "edc.vault.secrets";
+    public static final String NAME = "In-Memory Vault Extension";
 
     @Override
     public String name() {
-        return "In-Memory Vault Extension";
+        return NAME;
     }
 
     @Provider
