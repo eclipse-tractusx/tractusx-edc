@@ -21,14 +21,10 @@
 ## This file can be used to verify that the chart is working properly. It provides an exemplary configuration
 ## that is intended to be used with the supporting infrastructure.
 ## 1. install DAPS:
-##  helm install infrastructure edc-tests/deployment/src/main/resources/helm/test-infrastructure \                                                                                                                 ─╯
-##    --wait-for-jobs
+##  helm install infrastructure edc-tests/deployment/src/main/resources/helm/test-infrastructure --wait-for-jobs
 ##
-## 2. install in-mem runtime. Note that the key and crt must match exactly the DAPS setup, c.f. edc-tests/deployment/src/main/resources/helm/test-infrastructure/values.yaml
-##  export DAPSKEY="<private-key-content>"
-##  export DAPSCRT="<certificate-content>"
-##  export YOUR_VAULT_SECRETS="daps-key:$DAPSKEY;daps-crt:$DAPSCRT"
-##  helm install trudy charts/tractusx-connector-memory -f charts/tractusx-connector-memory/example.yaml --set vault.secrets=$YOUR_VAULT_SECRETS
+## 2. install the connector plus its third-party dependencies (HashiCorp Vault and Postgres):
+##  helm install tx-prod charts/tractusx-connector-app -f charts/tractusx-connector-app/example.yaml --dependency-update
 
 fullnameOverride: tx-prod
 

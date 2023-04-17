@@ -88,8 +88,8 @@ jobs:
           imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
           rootDir: "."
           helm_command: |-
-            helm install tx-prod charts/tractusx-connector \
-            -f charts/tractusx-connector/example.yaml \
+            helm install tx-prod charts/tractusx-connector-app \
+            -f charts/tractusx-connector-app/example.yaml \
             --dependency-update \
             --wait-for-jobs --timeout=120s
 
