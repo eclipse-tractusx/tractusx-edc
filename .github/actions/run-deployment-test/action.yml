@@ -77,7 +77,7 @@ runs:
     - name: Load images into KinD
       shell: bash
       run: |
-        kind get clusters | xargs -n1 kind load docker-image ${{ inputs.imagename}}:${{ inputs.image_tag}} --name
+        kind get clusters | xargs -n1 kind load docker-image ${{ inputs.imagename }}:${{ inputs.image_tag }} --name
 
     ###################################################
     # Install the test infrastructure
@@ -101,4 +101,3 @@ runs:
       shell: bash
       run: >-
         kind get clusters | xargs -n1 kind delete cluster --name
-        

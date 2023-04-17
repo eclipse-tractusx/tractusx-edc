@@ -103,7 +103,6 @@ Control IDS URL
 {{- end }}{{/* end if .Values.runtime.url.ids */}}
 {{- end }}
 
-
 {{/*
 Observability URL
 */}}

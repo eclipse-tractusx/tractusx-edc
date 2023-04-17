@@ -20,7 +20,8 @@ The Fraunhofer Institute has created a DAPS reference implementation, the Omejdn
 DAPS ([link](https://github.com/Fraunhofer-AISEC/omejdn-server)). This deplyoment configures and deployes a instance of
 this reference implementation.
 
-Definition of DAPS from the IDS Reference architecture v3.0
+Definition of DAPS from the IDS Reference architecture v3.0:
+
 > The Identity Provider acts as an agent for the International
 > Data Spaces Association. It is responsible for issuing technical identities to parties that have been approved to become
 > Participants in the International Data Spaces. The Identity
@@ -46,7 +47,7 @@ This database is used to persist the state of the Control Plane.
 
 ## Setup
 
-simply execute the following comment in a shell:
+Simply execute the following comment in a shell:
 
 ```shell
 helm install infra edc-tests/deployment/src/main/resources/helm/test-infrastructure --update-dependencies
