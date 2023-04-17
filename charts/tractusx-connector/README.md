@@ -1,4 +1,4 @@
-# tractusx-runtime
+# tractusx-connector
 
 ![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
 
@@ -7,7 +7,7 @@ Control Plane and a Data Plane. Note that no external dependencies such as a Pos
 
 This chart is intended for use with an _existing_ PostgreSQL database and an _existing_ HashiCorp Vault.
 
-**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector/charts/tractusx-runtime>
+**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector/charts/tractusx-connector>
 
 ## TL;DR
 
@@ -18,7 +18,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.3
 
 ## Source Code
 
-* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector/charts/tractusx-runtime>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector/charts/tractusx-connector>
 
 ## Values
 
