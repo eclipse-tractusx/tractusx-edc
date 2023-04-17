@@ -44,8 +44,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deployment-test-memory:
+
+  test-prepare:
     runs-on: ubuntu-latest
+    steps:
+      - name: Cache ContainerD Image Layers
+        uses: actions/cache@v3
+        with:
+          path: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+          key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
+
+  test-in-memory:
+    runs-on: ubuntu-latest
+    needs: test-prepare
     steps:
       - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/run-deployment-test
@@ -64,3 +75,27 @@ jobs:
             
             # execute the helm test
             helm test tx-inmem
+
+  test-hashicorp-postgres:
+    runs-on: ubuntu-latest
+    needs: test-prepare
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/run-deployment-test
+        name: "Run deployment test using KinD and Helm"
+        with:
+          imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
+          rootDir: "."
+          helm_command: |-
+            helm install tx-prod charts/tractusx-connector \
+            -f charts/tractusx-connector/example.yaml \
+            --dependency-update \
+            --wait-for-jobs --timeout=120s
+
+            # wait for the pod to become ready
+            kubectl rollout status deployment tx-prod-runtime-controlplane
+            kubectl rollout status deployment tx-prod-runtime-dataplane
+
+            # execute the helm test
+            helm test tx-prod --logs

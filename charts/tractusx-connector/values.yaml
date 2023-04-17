@@ -38,7 +38,7 @@ controlplane:
   image:
     # -- Which derivate of the control plane to use. when left empty the deployment will select the correct image automatically
     repository: ""
-  # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
+    # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
     tag: ""
@@ -250,7 +250,7 @@ controlplane:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-    #   memory: 128Mi
+  #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
@@ -286,12 +286,13 @@ controlplane:
   url:
     # -- Explicitly declared url for reaching the ids api (e.g. if ingresses not used)
     ids: ""
+    readiness: ""
 
 dataplane:
   image:
     # -- Which derivate of the data plane to use. when left empty the deployment will select the correct image automatically
     repository: ""
-  # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
+    # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
     tag: ""
@@ -451,7 +452,7 @@ dataplane:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-    #   memory: 128Mi
+  #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
@@ -486,6 +487,7 @@ dataplane:
   url:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
+    readiness: ""
 
 postgresql:
   enabled: false
@@ -495,7 +497,7 @@ postgresql:
 
 vault:
   hashicorp:
-    enabled: false
+    enabled: true
     url: ""
     token: ""
     timeout: 30
@@ -505,13 +507,6 @@ vault:
     paths:
       secret: /v1/secret
       health: /v1/sys/health
-  azure:
-    enabled: false
-    name: ""
-    client: ""
-    tenant: ""
-    secret:
-    certificate:
   secretNames:
     transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
     transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key

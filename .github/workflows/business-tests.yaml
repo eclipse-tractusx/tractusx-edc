@@ -167,7 +167,7 @@ jobs:
             kubectl wait --for=condition=ready pod -l app=minio --timeout=120s || ( kubectl logs -l app=minio --tail 500 && exit 1 )
   
             # Install Plato
-            helm install plato charts/tractusx-connector  \
+            helm install plato charts/tractusx-runtime  \
               --set fullnameOverride=plato \
               --set controlplane.service.type=NodePort \
               --set controlplane.endpoints.management.authKey=password \
@@ -201,7 +201,7 @@ jobs:
               --wait-for-jobs --timeout=120s
             
             # Install Sokrates
-            helm install sokrates charts/tractusx-connector  \
+            helm install sokrates charts/tractusx-runtime  \
               --set fullnameOverride=sokrates \
               --set controlplane.service.type=NodePort \
               --set controlplane.endpoints.management.authKey=password \
