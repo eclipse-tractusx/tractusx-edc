@@ -1,4 +1,4 @@
-# tractusx-connector
+# tractusx-connector-app
 
 ![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.2](https://img.shields.io/badge/AppVersion-0.3.2-informational?style=flat-square)
 
@@ -7,17 +7,17 @@ and a data plane, and all third-party services such as PostgreSQL and HashiCorp 
 
 This chart is intended to be used as self-contained deployment, which only requires an external DAPS instance.
 
-**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+**Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-app>
 
 ## Source Code
 
-* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-app>
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../tractusx-runtime | runtime(tractusx-runtime) | 0.3.2 |
+| file://../tractusx-connector | runtime(tractusx-connector) | 0.3.2 |
 | https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.1.6 |
 | https://helm.releases.hashicorp.com | vault(vault) | 0.20.0 |
 

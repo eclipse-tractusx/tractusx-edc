@@ -46,6 +46,6 @@ version: 0.3.3
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "0.3.3"
-home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector/charts/tractusx-connector
+home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
 sources:
-  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector/charts/tractusx-connector
+  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
