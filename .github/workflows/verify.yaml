@@ -52,7 +52,7 @@ jobs:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
-          [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "{SONAR_TOKEN}={true}" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "SONAR_TOKEN=true" >> $GITHUB_OUTPUT
           exit 0
 
   verify-formatting:

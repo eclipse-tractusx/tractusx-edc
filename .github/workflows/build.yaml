@@ -60,10 +60,10 @@ jobs:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
-          [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "{SONAR_TOKEN}={true}" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.GPG_PRIVATE_KEY }}" ] && echo "{GPG_PRIVATE_KEY}={true}" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.GPG_PASSPHRASE }}" ] && echo "{GPG_PASSPHRASE}={true}" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "{DOCKER_HUB_TOKEN}={true}" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "SONAR_TOKEN=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.GPG_PRIVATE_KEY }}" ] && echo "GPG_PRIVATE_KEY=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.GPG_PASSPHRASE }}" ] && echo "GPG_PASSPHRASE=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
           exit 0
 
   build-extensions:
