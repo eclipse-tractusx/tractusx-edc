@@ -27,7 +27,7 @@ jobs:
       - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
-          echo "::set-output name=SHA7::${GITHUB_SHA::7}"
+          echo "{SHA7}={${GITHUB_SHA::7}}" >> $GITHUB_OUTPUT
 
   trivy-analyze-config:
     runs-on: ubuntu-latest
