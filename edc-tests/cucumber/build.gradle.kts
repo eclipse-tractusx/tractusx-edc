@@ -21,7 +21,7 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-suite:1.9.2")
     testImplementation("io.cucumber:cucumber-java:7.11.2")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.11.2")
-    testImplementation("org.slf4j:slf4j-api:2.0.3")
+    testImplementation("org.slf4j:slf4j-api:2.0.7")
     testImplementation(libs.restAssured)
     testImplementation(libs.postgres)
     testImplementation(libs.awaitility)
