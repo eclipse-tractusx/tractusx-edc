@@ -9,7 +9,7 @@ dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
     implementation(edc.azure.vault)
     implementation(edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.5.4")
+    implementation("com.azure:azure-security-keyvault-secrets:4.6.0")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
