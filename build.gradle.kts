@@ -5,7 +5,7 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("io.freefair.lombok") version "6.6.2"
+    id("io.freefair.lombok") version "8.0.1"
     id("com.diffplug.spotless") version "6.18.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
