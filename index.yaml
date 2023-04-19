@@ -59,16 +59,16 @@ entries:
   tractusx-connector:
   - apiVersion: v2
     appVersion: 0.3.3
-    created: "2023-04-19T15:17:02.9904757Z"
+    created: "2023-04-19T15:17:06.30577803Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector
-    digest: 377be8ad82679948591e10ee6139f7027e1f62dffbed23ada3f48911365dc672
+    digest: 74d55891a0323b4b75b641fecc76473655f8846d425bd0be8d8328e96ad8518e
     home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
     name: tractusx-connector
     sources:
     - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
     type: application
     urls:
-    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-0.3.3/tractusx-connector-0.3.3.tgz
+    - https://eclipse-tractusx.github.io/tractusx-edc/helm-charts/tractusx-connector-0.3.3.tgz
     version: 0.3.3
   - apiVersion: v2
     appVersion: 0.3.2
@@ -86,16 +86,16 @@ entries:
   tractusx-connector-memory:
   - apiVersion: v2
     appVersion: 0.3.3
-    created: "2023-04-19T15:17:03.156963608Z"
+    created: "2023-04-19T15:17:06.307085943Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory
-    digest: 2f9da535e5af40a9fa3bb3a2c26e93b69a3201fed54c5318004d615a2587bd83
+    digest: 0d5ad6c439c7ad0dd2e6b1d0adc06a0d8a27b2c5518154bb0dc3e2a9952a89e8
     home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory
     name: tractusx-connector-memory
     sources:
     - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory
     type: application
     urls:
-    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-memory-0.3.3/tractusx-connector-memory-0.3.3.tgz
+    - https://eclipse-tractusx.github.io/tractusx-edc/helm-charts/tractusx-connector-memory-0.3.3.tgz
     version: 0.3.3
-generated: "2023-04-19T15:17:03.156984309Z"
+generated: "2023-04-19T15:17:06.303773608Z"
