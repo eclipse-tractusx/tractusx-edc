@@ -1,6 +1,6 @@
 # tractusx-connector
 
-![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.2](https://img.shields.io/badge/AppVersion-0.3.2-informational?style=flat-square)
+![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector
 
@@ -10,7 +10,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector --version 0.3.2
+helm install my-release tractusx-edc/tractusx-connector --version 0.3.3
 ```
 
 ## Source Code
@@ -28,23 +28,21 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.2
 | controlplane.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
 | controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
+| controlplane.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"data":{"authKey":"","path":"/data","port":8081},"default":{"path":"/api","port":8080},"ids":{"path":"/api/v1/ids","port":8084},"metrics":{"path":"/metrics","port":9090},"observability":{"insecure":true,"path":"/observability","port":8085},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"observability":{"insecure":true,"path":"/observability","port":8085},"protocol":{"path":"/api/v1/ids","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | controlplane.endpoints.control.port | int | `8083` | port for incoming api calls |
-| controlplane.endpoints.data | object | `{"authKey":"","path":"/data","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
-| controlplane.endpoints.data.authKey | string | `""` | authentication key, must be attached to each 'X-Api-Key' request header |
-| controlplane.endpoints.data.path | string | `"/data"` | path for incoming api calls |
-| controlplane.endpoints.data.port | int | `8081` | port for incoming api calls |
 | controlplane.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | controlplane.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | controlplane.endpoints.default.port | int | `8080` | port for incoming api calls |
-| controlplane.endpoints.ids | object | `{"path":"/api/v1/ids","port":8084}` | ids api, used for inter connector communication and must be internet facing |
-| controlplane.endpoints.ids.path | string | `"/api/v1/ids"` | path for incoming api calls |
-| controlplane.endpoints.ids.port | int | `8084` | port for incoming api calls |
+| controlplane.endpoints.management | object | `{"authKey":"","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| controlplane.endpoints.management.authKey | string | `""` | authentication key, must be attached to each 'X-Api-Key' request header |
+| controlplane.endpoints.management.path | string | `"/management"` | path for incoming api calls |
+| controlplane.endpoints.management.port | int | `8081` | port for incoming api calls |
 | controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
 | controlplane.endpoints.metrics.path | string | `"/metrics"` | path for incoming api calls |
 | controlplane.endpoints.metrics.port | int | `9090` | port for incoming api calls |
@@ -52,9 +50,9 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.2
 | controlplane.endpoints.observability.insecure | bool | `true` | allow or disallow insecure access, i.e. access without authentication |
 | controlplane.endpoints.observability.path | string | `"/observability"` | observability api, provides /health /readiness and /liveness endpoints |
 | controlplane.endpoints.observability.port | int | `8085` | port for incoming API calls |
-| controlplane.endpoints.validation | object | `{"path":"/validation","port":8082}` | validation api, only used by the data plane and should not be added to any ingress |
-| controlplane.endpoints.validation.path | string | `"/validation"` | path for incoming api calls |
-| controlplane.endpoints.validation.port | int | `8082` | port for incoming api calls |
+| controlplane.endpoints.protocol | object | `{"path":"/api/v1/ids","port":8084}` | ids api, used for inter connector communication and must be internet facing |
+| controlplane.endpoints.protocol.path | string | `"/api/v1/ids"` | path for incoming api calls |
+| controlplane.endpoints.protocol.port | int | `8084` | port for incoming api calls |
 | controlplane.env | object | `{}` |  |
 | controlplane.envConfigMapNames | list | `[]` |  |
 | controlplane.envSecretNames | list | `[]` |  |
@@ -77,7 +75,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.2
 | controlplane.ingresses[1].certManager.issuer | string | `""` | If preset enables certificate generation via cert-manager namespace scoped issuer |
 | controlplane.ingresses[1].className | string | `""` | Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use |
 | controlplane.ingresses[1].enabled | bool | `false` |  |
-| controlplane.ingresses[1].endpoints | list | `["data","control"]` | EDC endpoints exposed by this ingress resource |
+| controlplane.ingresses[1].endpoints | list | `["management","control"]` | EDC endpoints exposed by this ingress resource |
 | controlplane.ingresses[1].hostname | string | `"edc-control.intranet"` | The hostname to be used to precisely map incoming traffic onto the underlying network service |
 | controlplane.ingresses[1].tls | object | `{"enabled":false,"secretName":""}` | TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource |
 | controlplane.ingresses[1].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
@@ -148,10 +146,11 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.2
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
 | dataplane.endpoints.metrics.port | int | `9090` |  |
+| dataplane.endpoints.observability.insecure | bool | `true` | allow or disallow insecure access, i.e. access without authentication |
+| dataplane.endpoints.observability.path | string | `"/observability"` | observability api, provides /health /readiness and /liveness endpoints |
+| dataplane.endpoints.observability.port | int | `8085` | port for incoming API calls |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
 | dataplane.endpoints.public.port | int | `8081` |  |
-| dataplane.endpoints.validation.path | string | `"/validation"` |  |
-| dataplane.endpoints.validation.port | int | `8082` |  |
 | dataplane.env | object | `{}` |  |
 | dataplane.envConfigMapNames | list | `[]` |  |
 | dataplane.envSecretNames | list | `[]` |  |
