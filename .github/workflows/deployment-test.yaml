@@ -47,8 +47,7 @@ jobs:
   deployment-test-memory:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/checkout
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
