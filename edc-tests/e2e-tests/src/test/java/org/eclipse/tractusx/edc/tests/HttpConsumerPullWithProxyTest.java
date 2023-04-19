@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.connector.transfer.dataplane.spi.TransferDataPlaneConstants.HTTP_PROXY;
-import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.noConstraintPolicy;
+import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPartnerNumberPolicy;
 
 @EndToEndTest
 public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
@@ -61,8 +61,8 @@ public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
                 .authKey(authCodeHeaderName)
                 .authCode(authCode)
                 .build());
-        plato.createPolicy(noConstraintPolicy("policy-1"));
-        plato.createPolicy(noConstraintPolicy("policy-2"));
+        plato.createPolicy(businessPartnerNumberPolicy("policy-1", sokrates.getBpn()));
+        plato.createPolicy(businessPartnerNumberPolicy("policy-2", sokrates.getBpn()));
         plato.createContractDefinition(assetId, "def-1", "policy-1", "policy-2", ONE_WEEK);
         var negotiationId = sokrates.negotiateContract(plato, assetId);
 

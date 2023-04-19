@@ -1,4 +1,3 @@
-
 plugins {
     `java-library`
     `maven-publish`
@@ -7,5 +6,6 @@ plugins {
 dependencies {
     api(edc.spi.core)
     implementation(edc.spi.policy)
+    implementation(edc.spi.contract)
     implementation(edc.spi.policyengine)
 }

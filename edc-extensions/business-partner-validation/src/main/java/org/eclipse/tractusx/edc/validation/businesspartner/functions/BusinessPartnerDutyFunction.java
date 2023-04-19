@@ -26,16 +26,18 @@ import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.monitor.Monitor;
 
-/** AtomicConstraintFunction to validate business partner numbers for edc duties. */
+/**
+ * AtomicConstraintFunction to validate business partner numbers for edc duties.
+ */
 public class BusinessPartnerDutyFunction extends AbstractBusinessPartnerValidation
-    implements AtomicConstraintFunction<Duty> {
+        implements AtomicConstraintFunction<Duty> {
 
-  public BusinessPartnerDutyFunction(Monitor monitor) {
-    super(monitor);
-  }
+    public BusinessPartnerDutyFunction(Monitor monitor, boolean shouldLogOnAgreementEvaluation) {
+        super(monitor, shouldLogOnAgreementEvaluation);
+    }
 
-  @Override
-  public boolean evaluate(Operator operator, Object rightValue, Duty rule, PolicyContext context) {
-    return evaluate(operator, rightValue, context);
-  }
+    @Override
+    public boolean evaluate(Operator operator, Object rightValue, Duty rule, PolicyContext context) {
+        return evaluate(operator, rightValue, context);
+    }
 }
