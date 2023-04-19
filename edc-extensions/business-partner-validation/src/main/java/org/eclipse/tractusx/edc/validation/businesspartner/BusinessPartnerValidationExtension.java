@@ -56,7 +56,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
      */
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
 
-    public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "false";
+    public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";
 
 
     @Setting(value = "Enable logging when evaluating the business partner constraints in the agreement validation", type = "boolean", defaultValue = DEFAULT_LOG_AGREEMENT_EVALUATION)
@@ -85,7 +85,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
         final Monitor monitor = context.getMonitor();
 
-        var logAgreementEvaluation = context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, false);
+        var logAgreementEvaluation = logAgreementEvaluationSetting(context);
 
         final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
         final BusinessPartnerPermissionFunction permissionFunction =
@@ -102,5 +102,9 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
                 ALL_SCOPES, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
         policyEngine.registerFunction(
                 ALL_SCOPES, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
+    }
+
+    private Boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
+        return Boolean.parseBoolean(context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, DEFAULT_LOG_AGREEMENT_EVALUATION));
     }
 }

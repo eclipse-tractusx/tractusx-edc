@@ -55,11 +55,7 @@ public abstract class AbstractBusinessPartnerValidation {
     private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     private final Monitor monitor;
     private final boolean logAgreementEvaluation;
-
-    protected AbstractBusinessPartnerValidation(Monitor monitor) {
-        this(monitor, false);
-    }
-
+    
     protected AbstractBusinessPartnerValidation(Monitor monitor, boolean logAgreementEvaluation) {
         this.monitor = Objects.requireNonNull(monitor);
         this.logAgreementEvaluation = logAgreementEvaluation;

@@ -112,7 +112,7 @@ class BusinessPartnerValidationExtensionTest {
     @Test
     void testLogConfiguration() {
 
-        when(serviceExtensionContext.getSetting(BusinessPartnerValidationExtension.BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, false)).thenReturn(true);
+        when(serviceExtensionContext.getSetting(BusinessPartnerValidationExtension.BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, "true")).thenReturn("false");
 
         var captor = ArgumentCaptor.forClass(BusinessPartnerPermissionFunction.class);
         // invoke
@@ -126,6 +126,6 @@ class BusinessPartnerValidationExtensionTest {
                         eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
                         captor.capture());
 
-        assertThat(captor.getValue().isLogAgreementEvaluation()).isTrue();
+        assertThat(captor.getValue().isLogAgreementEvaluation()).isFalse();
     }
 }
