@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
           ./gradlew publishAllPublicationsToGithubPackagesRepository
-        env:
+        with:
           REPO: ${{ github.repository }}
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
