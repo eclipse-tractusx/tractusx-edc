@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "omejdn.fullname" . }}
+  labels:
+    {{- include "omejdn.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "omejdn.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "omejdn.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.imagePullSecret.dockerconfigjson }}
+      imagePullSecrets:
+        - name: {{ include "omejdn.fullname" . }}-imagepullsecret
+      {{- else }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ include "omejdn.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: init-daps-pvc
+          image: alpine
+          command:
+            - "sh"
+            - "-c"
+          args:
+            - |
+              cp /opt/config/omejdn.yml /etc/daps/omejdn.yml
+              cp /opt/config/clients.yml /etc/daps/clients.yml
+              cp /opt/config/plugins.yml /etc/daps/plugins.yml
+              cp /opt/config/scope_mapping.yml /etc/daps/scope_mapping.yml
+              apk add --update openssl
+              openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/keys/omejdn/omejdn.key \
+                -subj "/C=DE/ST=Berlin/L=Berlin/O=TractusX-EDC-Test, Inc./OU=DE"
+          volumeMounts:
+            - mountPath: /etc/daps
+              name: config-dir
+            - mountPath: /etc/keys/omejdn
+              name: omejdn-key-dir
+            - mountPath: /opt/config/omejdn.yml
+              name: omejdn-config
+              subPath: omejdn.yml
+            - mountPath: /opt/config/scope_mapping.yml
+              name: scope-mapping
+              subPath: scope_mapping.yml
+            - mountPath: /opt/config/clients.yml
+              name: clients-config
+              subPath: clients.yml
+            - mountPath: /opt/config/plugins.yml
+              name: plugins-config
+              subPath: plugins.yml
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /opt/config/
+              name: config-dir
+            - mountPath: /opt/keys/omejdn/omejdn.key
+              name: omejdn-key-dir
+              subPath: omejdn.key
+            - mountPath: /opt/keys/clients/
+              name: client-certificates
+          ports:
+            - name: http
+              containerPort: 4567
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /jwks.json
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /jwks.json
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: OMEJDN_JWT_AUD_OVERRIDE
+            value: "idsc:IDS_CONNECTORS_ALL"
+          - name: OMEJDN_PLUGINS
+            value: "config/plugins.yml"
+      volumes:
+      - name: config-dir
+        emptyDir: {}
+      - name: omejdn-key-dir
+        emptyDir: {}
+      - name: omejdn-config
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: omejdn.yml
+            path: omejdn.yml
+      - name: scope-mapping
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: scope_mapping.yml
+            path: scope_mapping.yml
+      - name: clients-config
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: clients.yml
+            path: clients.yml
+      - name: plugins-config
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+          - key: plugins.yml
+            path: plugins.yml
+      - name: client-certificates
+        configMap:
+          name: {{ include "omejdn.fullname" . }}
+          items:
+            {{- range $i, $val :=  .Values.connectors }}
+            - key: {{ $val.name }}
+              path: {{ $val.id }}.cert
+            {{- end }}

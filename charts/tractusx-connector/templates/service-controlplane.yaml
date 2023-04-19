@@ -39,18 +39,14 @@ spec:
       targetPort: control
       protocol: TCP
       name: control
-    - port: {{ .Values.controlplane.endpoints.data.port }}
-      targetPort: data
+    - port: {{ .Values.controlplane.endpoints.management.port }}
+      targetPort: management
       protocol: TCP
-      name: data
-    - port: {{ .Values.controlplane.endpoints.validation.port }}
-      targetPort: validation
+      name: management
+    - port: {{ .Values.controlplane.endpoints.protocol.port }}
+      targetPort: protocol
       protocol: TCP
-      name: validation
-    - port: {{ .Values.controlplane.endpoints.ids.port }}
-      targetPort: ids
-      protocol: TCP
-      name: ids
+      name: protocol
     - port: {{ .Values.controlplane.endpoints.metrics.port }}
       targetPort: metrics
       protocol: TCP

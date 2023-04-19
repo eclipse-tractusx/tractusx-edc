@@ -20,45 +20,54 @@
 
 package org.eclipse.tractusx.edc.tests;
 
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
-
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
+import org.eclipse.tractusx.edc.tests.data.BusinessPartnerNumberConstraint;
+import org.eclipse.tractusx.edc.tests.data.Constraint;
+import org.eclipse.tractusx.edc.tests.data.OrConstraint;
+import org.eclipse.tractusx.edc.tests.data.PayMeConstraint;
+import org.eclipse.tractusx.edc.tests.data.Permission;
+import org.eclipse.tractusx.edc.tests.data.Policy;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.tractusx.edc.tests.data.*;
+
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 
 public class PolicyStepDefs {
 
-  @Given("'{connector}' has the following policies")
-  public void hasPolicies(Connector connector, DataTable table) throws Exception {
-    var api = connector.getDataManagementAPI();
-    var policies = table.asMaps().stream().map(this::parseRow).collect(toList());
+    @Given("'{connector}' has the following policies")
+    public void hasPolicies(Connector connector, DataTable table) throws Exception {
+        var api = connector.getDataManagementAPI();
+        var policies = table.asMaps().stream().map(this::parseRow).collect(toList());
 
-    for (var policy : policies) api.createPolicy(policy);
-  }
-
-  private Policy parseRow(Map<String, String> row) {
-    var id = row.get("id");
-    var action = row.get("action");
-    var constraints = new ArrayList<Constraint>();
-
-    var businessPartnerNumber = row.get("businessPartnerNumber");
-    if (businessPartnerNumber != null && !businessPartnerNumber.isBlank()) {
-      var bpnConstraints =
-          stream(businessPartnerNumber.split(","))
-              .map(BusinessPartnerNumberConstraint::new)
-              .collect(toList());
-      constraints.add(new OrConstraint(bpnConstraints));
+        for (var policy : policies) {
+            api.createPolicy(policy);
+        }
     }
 
-    var payMe = row.get("payMe");
-    if (payMe != null && !payMe.isBlank())
-      constraints.add(new PayMeConstraint(Double.parseDouble(payMe)));
+    private Policy parseRow(Map<String, String> row) {
+        var id = row.get("id");
+        var action = row.get("action");
+        var constraints = new ArrayList<Constraint>();
 
-    var permission = new Permission(action, null, constraints);
-    return new Policy(id, List.of(permission));
-  }
+        var businessPartnerNumber = row.get("businessPartnerNumber");
+        if (businessPartnerNumber != null && !businessPartnerNumber.isBlank()) {
+            var bpnConstraints =
+                    stream(businessPartnerNumber.split(","))
+                            .map(BusinessPartnerNumberConstraint::new)
+                            .collect(toList());
+            constraints.add(new OrConstraint(bpnConstraints));
+        }
+
+        var payMe = row.get("payMe");
+        if (payMe != null && !payMe.isBlank()) {
+            constraints.add(new PayMeConstraint(Double.parseDouble(payMe)));
+        }
+
+        var permission = new Permission(action, constraints, null);
+        return new Policy(id, List.of(permission));
+    }
 }

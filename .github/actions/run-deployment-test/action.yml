@@ -1,0 +1,97 @@
+#
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+name: "Run Deployment Test"
+description: "Build and publish a Docker Image to DockerHub"
+inputs:
+  imagename:
+    required: true
+    description: "name of the docker image, e.g. edc-runtime-memory"
+
+  image_tag:
+    required: false
+    default: "latest"
+    description: "docker image tag, defaults to 'latest'"
+
+  helm_command:
+    required: true
+    description: "command which is executed to install the chart. must also include verification commands, such as 'helm test'"
+
+  rootDir:
+    required: true
+    description: "The directory that contains the docker file, e.g. edc-controlplane/edc-runtime-memory"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3.3.0
+
+    - name: Cache ContainerD Image Layers
+      uses: actions/cache@v3
+      with:
+        path: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+        key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
+
+    - uses: ./.github/actions/setup-java
+
+    - name: Build docker images
+      shell: bash
+      run: |-
+        ./gradlew -p ${{ inputs.rootDir }} dockerize
+
+    - name: Setup Helm
+      uses: azure/setup-helm@v3.5
+      with:
+        version: v3.8.1
+
+    - name: Setup Kubectl
+      uses: azure/setup-kubectl@v3.2
+
+    - name: Create k8s Kind Cluster
+      uses: helm/kind-action@v1.5.0
+
+    - name: Load images into KinD
+      shell: bash
+      run: |
+        kind get clusters | xargs -n1 kind load docker-image ${{ inputs.imagename }}:${{ inputs.image_tag }} --name
+
+    ###################################################
+    # Install the test infrastructure
+    ###################################################
+    - name: Install Infrastructure
+      shell: bash
+      run: |-
+        helm install infra edc-tests/deployment/src/main/resources/helm/test-infrastructure \
+        --wait-for-jobs --timeout=30s --dependency-update
+
+    - name: Install Runtime
+      shell: bash
+      run: ${{ inputs.helm_command }}
+
+
+    #################
+    ### Tear Down ###
+    #################
+    - name: Destroy the kind cluster
+      if: always()
+      shell: bash
+      run: >-
+        kind get clusters | xargs -n1 kind delete cluster --name

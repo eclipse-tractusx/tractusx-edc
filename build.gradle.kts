@@ -5,10 +5,10 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("io.freefair.lombok") version "6.6.2"
-    id("com.diffplug.spotless") version "6.15.0"
-    id("com.github.johnrengelman.shadow") version "8.0.0"
-    id("com.bmuschko.docker-remote-api") version "9.2.1"
+    id("io.freefair.lombok") version "8.0.1"
+    id("com.diffplug.spotless") version "6.18.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.bmuschko.docker-remote-api") version "9.3.1"
     id("org.sonarqube") version "4.0.0.2929"
 }
 
@@ -52,7 +52,7 @@ allprojects {
     }
     dependencies {
         implementation("org.projectlombok:lombok:1.18.26")
-        implementation("org.slf4j:slf4j-api:2.0.5")
+        implementation("org.slf4j:slf4j-api:2.0.7")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
         testImplementation(platform("org.junit:junit-bom:5.9.2"))
@@ -141,8 +141,9 @@ subprojects {
                 dockerFile.set(file("${project.projectDir}/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
-                // uncomment the following line if building on Apple Silicon
-                // platform.set("linux/x86_64")
+                // specify platform with the -Dplatform flag:
+                if (System.getProperty("platform") != null)
+                    platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 inputDir.set(file(project.projectDir))
             }

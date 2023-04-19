@@ -20,10 +20,10 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import java.util.Collections;
-import java.util.List;
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.Assertions;
@@ -31,143 +31,180 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 
 class AbstractBusinessPartnerValidationTest {
 
-  private AbstractBusinessPartnerValidation validation;
+    private AbstractBusinessPartnerValidation validation;
 
-  // mocks
-  private Monitor monitor;
-  private PolicyContext policyContext;
-  private ParticipantAgent participantAgent;
+    // mocks
+    private Monitor monitor;
+    private PolicyContext policyContext;
+    private ParticipantAgent participantAgent;
 
-  @BeforeEach
-  void BeforeEach() {
-    this.monitor = Mockito.mock(Monitor.class);
-    this.policyContext = Mockito.mock(PolicyContext.class);
-    this.participantAgent = Mockito.mock(ParticipantAgent.class);
+    @BeforeEach
+    void BeforeEach() {
+        this.monitor = Mockito.mock(Monitor.class);
+        this.policyContext = Mockito.mock(PolicyContext.class);
+        this.participantAgent = Mockito.mock(ParticipantAgent.class);
 
-    Mockito.when(policyContext.getParticipantAgent()).thenReturn(participantAgent);
+        Mockito.when(policyContext.getParticipantAgent()).thenReturn(participantAgent);
 
-    validation = new AbstractBusinessPartnerValidation(monitor) {};
-  }
-
-  @ParameterizedTest
-  @EnumSource(Operator.class)
-  void testFailsOnUnsupportedOperations(Operator operator) {
-
-    if (operator == Operator.EQ) { // only allowed operator
-      return;
+        validation = new AbstractBusinessPartnerValidation(monitor, true) {
+        };
     }
 
-    // prepare
-    prepareContextProblems(null);
-    prepareBusinessPartnerClaim("yes");
+    @ParameterizedTest
+    @EnumSource(Operator.class)
+    void testFailsOnUnsupportedOperations(Operator operator) {
 
-    // invoke & assert
-    Assertions.assertFalse(validation.evaluate(operator, "foo", policyContext));
-  }
+        if (operator == Operator.EQ) { // only allowed operator
+            return;
+        }
 
-  @Test
-  void testFailsOnUnsupportedRightValue() {
+        // prepare
+        prepareContextProblems(null);
+        prepareBusinessPartnerClaim("yes");
 
-    // prepare
-    prepareContextProblems(null);
-    prepareBusinessPartnerClaim("yes");
-
-    // invoke & assert
-    Assertions.assertFalse(validation.evaluate(Operator.EQ, 1, policyContext));
-  }
-
-  @Test
-  void testValidationFailsWhenClaimMissing() {
-
-    // prepare
-    prepareContextProblems(null);
-
-    // invoke
-    final boolean isValid = validation.evaluate(Operator.EQ, "foo", policyContext);
-
-    // assert
-    Assertions.assertFalse(isValid);
-  }
-
-  @Test
-  void testValidationSucceedsWhenClaimContainsValue() {
-
-    // prepare
-    prepareContextProblems(null);
-
-    // prepare equals
-    prepareBusinessPartnerClaim("foo");
-    final boolean isEqualsTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
-
-    // prepare contains
-    prepareBusinessPartnerClaim("foobar");
-    final boolean isContainedTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
-
-    // assert
-    Assertions.assertTrue(isEqualsTrue);
-    Assertions.assertTrue(isContainedTrue);
-  }
-
-  @Test
-  void testValidationWhenParticipantHasProblems() {
-
-    // prepare
-    prepareContextProblems(Collections.singletonList("big problem"));
-    prepareBusinessPartnerClaim("foo");
-
-    // invoke
-    final boolean isValid = validation.evaluate(Operator.EQ, "foo", policyContext);
-
-    // Mockito.verify(monitor.debug(Mockito.anyString());
-    Assertions.assertFalse(isValid);
-  }
-
-  @Test
-  void testValidationWhenSingleParticipantIsValid() {
-
-    // prepare
-    prepareContextProblems(null);
-    prepareBusinessPartnerClaim("foo");
-
-    // invoke
-    final boolean isContainedTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
-
-    // Mockito.verify(monitor.debug(Mockito.anyString());
-    Assertions.assertTrue(isContainedTrue);
-  }
-
-  // In the past it was possible to use the 'IN' constraint with multiple BPNs as
-  // a list. This is no longer supported.
-  // The EDC must now always decline this kind of BPN format.
-  @Test
-  void testValidationForMultipleParticipants() {
-
-    // prepare
-    prepareContextProblems(null);
-    prepareBusinessPartnerClaim("foo");
-
-    // invoke & verify
-    Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("foo", "bar"), policyContext));
-    Assertions.assertFalse(validation.evaluate(Operator.IN, List.of(1, "foo"), policyContext));
-    Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("bar", "bar"), policyContext));
-  }
-
-  private void prepareContextProblems(List<String> problems) {
-    Mockito.when(policyContext.getProblems()).thenReturn(problems);
-
-    if (problems == null || problems.isEmpty()) {
-      Mockito.when(policyContext.hasProblems()).thenReturn(false);
-    } else {
-      Mockito.when(policyContext.hasProblems()).thenReturn(true);
+        // invoke & assert
+        Assertions.assertFalse(validation.evaluate(operator, "foo", policyContext));
     }
-  }
 
-  private void prepareBusinessPartnerClaim(String businessPartnerNumber) {
-    Mockito.when(participantAgent.getClaims())
-        .thenReturn(Collections.singletonMap("referringConnector", businessPartnerNumber));
-  }
+    @Test
+    void testFailsOnUnsupportedRightValue() {
+
+        // prepare
+        prepareContextProblems(null);
+        prepareBusinessPartnerClaim("yes");
+
+        // invoke & assert
+        Assertions.assertFalse(validation.evaluate(Operator.EQ, 1, policyContext));
+    }
+
+    @Test
+    void testValidationFailsWhenClaimMissing() {
+
+        // prepare
+        prepareContextProblems(null);
+
+        // invoke
+        final boolean isValid = validation.evaluate(Operator.EQ, "foo", policyContext);
+
+        // assert
+        Assertions.assertFalse(isValid);
+    }
+
+    @Test
+    void testValidationSucceedsWhenClaimContainsValue() {
+
+        // prepare
+        prepareContextProblems(null);
+
+        // prepare equals
+        prepareBusinessPartnerClaim("foo");
+        final boolean isEqualsTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
+
+        // prepare contains
+        prepareBusinessPartnerClaim("foobar");
+        final boolean isContainedTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
+
+        // assert
+        Assertions.assertTrue(isEqualsTrue);
+        Assertions.assertTrue(isContainedTrue);
+    }
+
+    @Test
+    void testValidationWhenParticipantHasProblems() {
+
+        // prepare
+        prepareContextProblems(Collections.singletonList("big problem"));
+        prepareBusinessPartnerClaim("foo");
+
+        // invoke
+        final boolean isValid = validation.evaluate(Operator.EQ, "foo", policyContext);
+
+        // Mockito.verify(monitor.debug(Mockito.anyString());
+        Assertions.assertFalse(isValid);
+    }
+
+    @Test
+    void testValidationWhenSingleParticipantIsValid() {
+
+        // prepare
+        prepareContextProblems(null);
+        prepareBusinessPartnerClaim("foo");
+
+        // invoke
+        final boolean isContainedTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
+
+        // Mockito.verify(monitor.debug(Mockito.anyString());
+        Assertions.assertTrue(isContainedTrue);
+    }
+
+    @Test
+    void testValidationWhenSingleParticipantIsValidWithAgreement() {
+
+        // prepare
+        prepareContextProblems(null);
+        prepareBusinessPartnerClaim("foo");
+
+        var captor = ArgumentCaptor.forClass(String.class);
+
+        var agreement = ContractAgreement.Builder.newInstance()
+                .id("agreementId")
+                .providerAgentId("provider")
+                .consumerAgentId("consumer")
+                .assetId("assetId")
+                .policy(Policy.Builder.newInstance().build())
+                .build();
+
+        Mockito.when(policyContext.getContextData(eq(ContractAgreement.class))).thenReturn(agreement);
+
+        // invoke
+        final boolean isContainedTrue = validation.evaluate(Operator.EQ, "foo", policyContext);
+
+        Assertions.assertTrue(isContainedTrue);
+
+        Mockito.verify(monitor).info(captor.capture());
+
+        assertThat(captor.getValue()).contains(agreement.getId()).contains("foo");
+    }
+
+    // In the past it was possible to use the 'IN' constraint with multiple BPNs as
+    // a list. This is no longer supported.
+    // The EDC must now always decline this kind of BPN format.
+    @Test
+    void testValidationForMultipleParticipants() {
+
+        // prepare
+        prepareContextProblems(null);
+        prepareBusinessPartnerClaim("foo");
+
+        // invoke & verify
+        Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("foo", "bar"), policyContext));
+        Assertions.assertFalse(validation.evaluate(Operator.IN, List.of(1, "foo"), policyContext));
+        Assertions.assertFalse(validation.evaluate(Operator.IN, List.of("bar", "bar"), policyContext));
+    }
+
+    private void prepareContextProblems(List<String> problems) {
+        Mockito.when(policyContext.getProblems()).thenReturn(problems);
+
+        if (problems == null || problems.isEmpty()) {
+            Mockito.when(policyContext.hasProblems()).thenReturn(false);
+        } else {
+            Mockito.when(policyContext.hasProblems()).thenReturn(true);
+        }
+    }
+
+    private void prepareBusinessPartnerClaim(String businessPartnerNumber) {
+        Mockito.when(participantAgent.getClaims())
+                .thenReturn(Collections.singletonMap("referringConnector", businessPartnerNumber));
+    }
 }

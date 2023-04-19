@@ -10,7 +10,7 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
 - No surprise PRs please. Before you submit a PR, open a discussion or an issue outlining your planned work and give
   people time to comment. It may even be advisable to contact committers using the `@mention` feature. Unsolicited PRs
   may get ignored or rejected.
-- Create your working branch in your fork of TractusX-EDC, and create the PR against the upstream `develop` branch
+- Create your working branch in your fork of TractusX-EDC, and create the PR against the upstream `main` branch
 - Create focused PRs: your work should be focused on one particular feature or bug. Do not create broad-scoped PRs that
   solve multiple issues as reviewers may reject those PR bombs outright.
 - Provide a clear description and motivation in the PR description in GitHub. This makes the reviewer's life much
@@ -58,6 +58,13 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
 - Be civil and objective. No foul language, insulting or otherwise abusive language will be tolerated. The goal is to
   _encourage_ contributions.
 
-## The technical committers
+## The technical committers (as of April 05, 2023)
 
-- TBD
+Main committers for the TractusX-EDC project:
+
+- @paullatzelsperger
+- @florianrusch-zf
+
+Alternatively, the following Tractus-X committers can also step in:
+
+- @SebastianBezold

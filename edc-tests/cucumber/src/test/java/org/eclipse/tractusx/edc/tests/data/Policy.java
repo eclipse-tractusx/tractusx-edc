@@ -21,11 +21,23 @@
 package org.eclipse.tractusx.edc.tests.data;
 
 import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
+
 public class Policy {
-  String id;
-  @NonNull List<Permission> Permission;
+    private final String id;
+    private final List<Permission> Permission;
+
+    public Policy(String id, List<Permission> permission) {
+        this.id = id;
+        Permission = Objects.requireNonNull(permission);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<Permission> getPermission() {
+        return Permission;
+    }
 }

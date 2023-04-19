@@ -4,7 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 dependencies {
@@ -12,9 +12,10 @@ dependencies {
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
     runtimeOnly(edc.azure.vault)
     runtimeOnly(edc.bundles.sqlstores)
+    runtimeOnly(edc.transaction.local)
+    runtimeOnly(edc.sql.pool)
     runtimeOnly(edc.core.controlplane)
     runtimeOnly(edc.dpf.transfer)
-
 }
 
 

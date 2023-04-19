@@ -1,0 +1,91 @@
+---
+# Default values for omejdn.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Specifies how many replicas of a deployed pod shall be created during the deployment
+# Note: If horizontal pod autoscaling is enabled this setting has no effect
+replicaCount: 1
+
+image:
+  # -- Which omjedn container image to use
+  repository: ghcr.io/fraunhofer-aisec/omejdn-server
+  # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: "1.7.1"
+
+imagePullSecret:
+  # -- Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
+  # Note: This value needs to adhere to the [(base64 encoded) .dockerconfigjson format](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials).
+  # Furthermore, if 'imagePullSecret.dockerconfigjson' is defined, it takes precedence over 'imagePullSecrets'.
+  dockerconfigjson: ""
+
+# -- Overrides the charts name
+nameOverride: ""
+
+# -- Overrides the releases full name
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) should be created per release
+  create: true
+  # -- [Annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) to add to the service account
+  annotations: {}
+  # -- The name of the service account to use. If not set and create is true, a name is generated using the release's fullname template
+  name: ""
+
+# -- Whether to [automount kubernetes API credentials](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server) into the pod
+automountServiceAccountToken: false
+
+# -- [Annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) added to deployed [pods](https://kubernetes.io/docs/concepts/workloads/pods/)
+podAnnotations: {}
+
+# The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment
+podSecurityContext: {}
+
+# The [container security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) defines privilege and access control settings for a Container within a pod
+securityContext: {}
+
+service:
+  # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
+  type: ClusterIP
+  # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service) to expose the running application on a set of Pods as a network service.
+  port: 4567
+
+# -- [Resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) applied to the deployed pod
+resources: {}
+
+autoscaling:
+  # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+  enabled: false
+  # -- Minimal replicas if resource consumption falls below resource threshholds
+  minReplicas: 1
+  # -- Maximum replicas if resource consumption exceeds resource threshholds
+  maxReplicas: 100
+  # -- targetAverageUtilization of cpu provided to a pod
+  targetCPUUtilizationPercentage: 80
+  # -- targetAverageUtilization of memory provided to a pod
+  targetMemoryUtilizationPercentage: 80
+
+# -- [Node-Selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain the Pod to nodes with specific labels.
+nodeSelector: {}
+
+# -- [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) are applied to Pods to schedule onto nodes with matching taints.
+tolerations: []
+
+# -- [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) constrains which nodes the Pod can be scheduled on based on node labels.
+affinity: {}
+
+# List of connector clients. Certificate and Client-ID must be configured in parallel.
+# <br/>
+# Example Connector:
+# - id: grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
+#   name: my-connector
+#   attributes:
+#     issuerConnector: http://localhost:8080/
+#   certificate: |-
+#     -----BEGIN CERTIFICATE-----
+#     foo
+#     -----END CERTIFICATE-----
+connectors: []

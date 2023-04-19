@@ -2,14 +2,14 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
     implementation(edc.azure.vault)
     implementation(edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.5.4")
+    implementation("com.azure:azure-security-keyvault-secrets:4.6.0")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

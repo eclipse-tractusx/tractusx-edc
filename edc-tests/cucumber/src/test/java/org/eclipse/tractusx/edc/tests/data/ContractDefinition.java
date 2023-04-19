@@ -20,17 +20,42 @@
 package org.eclipse.tractusx.edc.tests.data;
 
 import java.util.List;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
+
 public class ContractDefinition {
 
-  @NonNull String id;
+    private final String id;
 
-  @NonNull String contractPolicyId;
-  @NonNull String acccessPolicyId;
+    private final String contractPolicyId;
+    private final String acccessPolicyId;
 
-  List<String> assetIds;
-  Long validity;
+    private final List<String> assetIds;
+    private final Long validity;
+
+    public ContractDefinition(String id, String contractPolicyId, String acccessPolicyId, List<String> assetIds, Long validity) {
+        this.id = Objects.requireNonNull(id);
+        this.contractPolicyId = Objects.requireNonNull(contractPolicyId);
+        this.acccessPolicyId = Objects.requireNonNull(acccessPolicyId);
+        this.assetIds = assetIds;
+        this.validity = validity;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getContractPolicyId() {
+        return contractPolicyId;
+    }
+
+    public String getAcccessPolicyId() {
+        return acccessPolicyId;
+    }
+
+    public List<String> getAssetIds() {
+        return assetIds;
+    }
+
+
 }

@@ -29,13 +29,14 @@ on:
       - 'docs/**'
       - '**/*.md'
     branches:
-      - develop
+      - releases
       - release/**
       - main
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # cancel only running jobs on pull requests
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -49,15 +50,9 @@ jobs:
       ### Set-Up ###
       ##############
       -
-        name: Checkout
         uses: actions/checkout@v3.3.0
       -
-        name: Set-Up JDK 11
-        uses: actions/setup-java@v3.10.0
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
+        uses: ./.github/actions/setup-java
       -
         name: Cache ContainerD Image Layers
         uses: actions/cache@v3
@@ -128,14 +123,14 @@ jobs:
         run: |-
           # Define endpoints
           echo "SOKRATES_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
-          echo "SOKRATES_DATA_MANAGEMENT_URL=http://sokrates-controlplane:8081/data" | tee -a ${GITHUB_ENV}
+          echo "SOKRATES_DATA_MANAGEMENT_URL=http://sokrates-controlplane:8081/management" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_IDS_URL=http://sokrates-controlplane:8084/api/v1/ids" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATA_PLANE_URL=http://sokrates-dataplane:8081/api/public/" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_USER=user" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_DATABASE_PASSWORD=password" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
-          echo "PLATO_DATA_MANAGEMENT_URL=http://plato-controlplane:8081/data" | tee -a ${GITHUB_ENV}
+          echo "PLATO_DATA_MANAGEMENT_URL=http://plato-controlplane:8081/management" | tee -a ${GITHUB_ENV}
           echo "PLATO_IDS_URL=http://plato-controlplane:8084/api/v1/ids" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATA_PLANE_URL=http://plato-dataplane:8081/api/public/" | tee -a ${GITHUB_ENV}
           echo "PLATO_DATABASE_URL=jdbc:postgresql://plato-postgresql:5432/edc" | tee -a ${GITHUB_ENV}
@@ -165,7 +160,6 @@ jobs:
             sleep 5s
   
             # Wait for supporting infrastructure to become ready (control-/data-plane, backend service)
-            kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=backend --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=backend --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=idsdaps --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=idsdaps --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=vault --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokrates-postgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokrates-postgresql --tail 500 && exit 1 )
@@ -176,7 +170,7 @@ jobs:
             helm install plato charts/tractusx-connector  \
               --set fullnameOverride=plato \
               --set controlplane.service.type=NodePort \
-              --set controlplane.endpoints.data.authKey=password \
+              --set controlplane.endpoints.management.authKey=password \
               --set controlplane.image.tag=business-test \
               --set controlplane.image.pullPolicy=Never \
               --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
@@ -185,6 +179,7 @@ jobs:
               --set dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
               --set controlplane.debug.enabled=true \
               --set controlplane.suspendOnStart=false \
+              --set controlplane.businesspartnervalidation.log.agreement.validation=true \
               --set postgresql.enabled=true \
               --set postgresql.username=user \
               --set postgresql.password=password \
@@ -209,7 +204,7 @@ jobs:
             helm install sokrates charts/tractusx-connector  \
               --set fullnameOverride=sokrates \
               --set controlplane.service.type=NodePort \
-              --set controlplane.endpoints.data.authKey=password \
+              --set controlplane.endpoints.management.authKey=password \
               --set controlplane.image.tag=business-test \
               --set controlplane.image.pullPolicy=Never \
               --set controlplane.image.repository=docker.io/library/edc-controlplane-postgresql-hashicorp-vault \
@@ -218,6 +213,7 @@ jobs:
               --set dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
               --set controlplane.debug.enabled=true \
               --set controlplane.suspendOnStart=false \
+              --set controlplane.businesspartnervalidation.log.agreement.validation=true \
               --set postgresql.enabled=true \
               --set postgresql.username=user \
               --set postgresql.password=password \

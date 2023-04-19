@@ -21,6 +21,10 @@ spec:
       targetPort: public
       protocol: TCP
       name: public
+    - port: {{ .Values.dataplane.endpoints.observability.port }}
+      targetPort: observability
+      protocol: TCP
+      name: observability
     - port: {{ .Values.dataplane.endpoints.metrics.port }}
       targetPort: metrics
       protocol: TCP

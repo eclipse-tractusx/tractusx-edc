@@ -13,31 +13,21 @@ jobs:
       ORG_VERACODE_API_ID: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_ID }}
       ORG_VERACODE_API_KEY: ${{ steps.secret-presence.outputs.ORG_VERACODE_API_KEY }}
     steps:
-      -
-        name: Check whether secrets exist
+      - name: Check whether secrets exist
         id: secret-presence
         run: |
-          [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "::set-output name=ORG_VERACODE_API_ID::true"
-          [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "::set-output name=ORG_VERACODE_API_KEY::true"
+          [ ! -z "${{ secrets.ORG_VERACODE_API_ID }}" ] && echo "ORG_VERACODE_API_ID=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.ORG_VERACODE_API_KEY }}" ] && echo "ORG_VERACODE_API_KEY=true" >> $GITHUB_OUTPUT
           exit 0
 
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
-      -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.10.0
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
-      -
-        name: Verify proper formatting
+      - uses: ./.github/actions/setup-java
+      - name: Verify proper formatting
         run: ./gradlew spotlessCheck
 
   build-controlplane:
@@ -49,36 +39,25 @@ jobs:
       fail-fast: false
       matrix:
         name:
-          - edc-controlplane-memory
+          - edc-runtime-memory
           - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql
           - edc-controlplane-postgresql-hashicorp-vault
     steps:
       # Set-Up
-      -
-        name: Checkout
-        uses: actions/checkout@v3.3.0
-      -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.10.0
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
+      - uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/setup-java
       # Build
-      -
-        name: Build Controlplane
+      - name: Build Controlplane
         run: |-
           ./gradlew -p edc-controlplane/${{ matrix.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Tar gzip files for veracode upload
+      - name: Tar gzip files for veracode upload
         run: |-
           tar -czvf edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
-      -
-        name: Veracode Upload And Scan
+      - name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
         if: |
           needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY
@@ -104,30 +83,19 @@ jobs:
           - edc-dataplane-hashicorp-vault
     steps:
       # Set-Up
-      -
-        name: Checkout
-        uses: actions/checkout@v3.3.0
-      -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.10.0
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
+      - uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/setup-java
       # Build
-      -
-        name: Build Dataplane
+      - name: Build Dataplane
         run: |-
           ./gradlew -p edc-dataplane/${{ matrix.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Tar gzip files for veracode upload
+      - name: Tar gzip files for veracode upload
         run: |-
           tar -czvf edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
-      -
-        name: Veracode Upload And Scan
+      - name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
         if: |
           needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY

@@ -27,10 +27,13 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerPermissionFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -104,5 +107,25 @@ class BusinessPartnerValidationExtensionTest {
                         eq(Prohibition.class),
                         eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
+    }
+
+    @Test
+    void testLogConfiguration() {
+
+        when(serviceExtensionContext.getSetting(BusinessPartnerValidationExtension.BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, "true")).thenReturn("false");
+
+        var captor = ArgumentCaptor.forClass(BusinessPartnerPermissionFunction.class);
+        // invoke
+        extension.initialize(serviceExtensionContext);
+
+        // verify
+        verify(policyEngine)
+                .registerFunction(
+                        anyString(),
+                        eq(Permission.class),
+                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        captor.capture());
+
+        assertThat(captor.getValue().isLogAgreementEvaluation()).isFalse();
     }
 }
