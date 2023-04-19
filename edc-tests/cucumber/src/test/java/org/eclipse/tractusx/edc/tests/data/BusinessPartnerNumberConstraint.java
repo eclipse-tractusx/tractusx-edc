@@ -1,10 +1,16 @@
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
 public class BusinessPartnerNumberConstraint implements Constraint {
 
-  @NonNull String businessPartnerNumber;
+    private final String businessPartnerNumber;
+
+    public BusinessPartnerNumberConstraint(String businessPartnerNumber) {
+        this.businessPartnerNumber = Objects.requireNonNull(businessPartnerNumber);
+    }
+
+    public String getBusinessPartnerNumber() {
+        return businessPartnerNumber;
+    }
 }

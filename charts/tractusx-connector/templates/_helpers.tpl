@@ -110,9 +110,9 @@ Create the name of the service account to use
 {{/*
 Control IDS URL
 */}}
-{{- define "txdc.controlplane.url.ids" -}}
-{{- if .Values.controlplane.url.ids }}{{/* if ids api url has been specified explicitly */}}
-{{- .Values.controlplane.url.ids }}
+{{- define "txdc.controlplane.url.protocol" -}}
+{{- if .Values.controlplane.url.protocol }}{{/* if ids api url has been specified explicitly */}}
+{{- .Values.controlplane.url.protocol }}
 {{- else }}{{/* else when ids api url has not been specified explicitly */}}
 {{- with (index .Values.controlplane.ingresses 0) }}
 {{- if .enabled }}{{/* if ingress enabled */}}
@@ -122,17 +122,17 @@ Control IDS URL
 {{- printf "http://%s" .hostname -}}
 {{- end }}{{/* end if tls */}}
 {{- else }}{{/* else when ingress not enabled */}}
-{{- printf "http://%s-controlplane:%v" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.ids.port -}}
+{{- printf "http://%s-controlplane:%v" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.protocol.port -}}
 {{- end }}{{/* end if ingress */}}
 {{- end }}{{/* end with ingress */}}
-{{- end }}{{/* end if .Values.controlplane.url.ids */}}
+{{- end }}{{/* end if .Values.controlplane.url.protocol */}}
 {{- end }}
 
 {{/*
 Validation URL
 */}}
 {{- define "txdc.controlplane.url.validation" -}}
-{{- printf "http://%s-controlplane:%v%s/token" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.validation.port $.Values.controlplane.endpoints.validation.path -}}
+{{- printf "http://%s-controlplane:%v%s/token" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.control.port $.Values.controlplane.endpoints.control.path -}}
 {{- end }}
 
 {{/*

@@ -33,12 +33,7 @@ jobs:
           git config user.name "GitHub actions"
           git config user.email noreply@github.com
       -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.10.0
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
+        uses: ./.github/actions/setup-java
       -
         name: Bump version in gradle.properties
         run: |-
@@ -49,7 +44,7 @@ jobs:
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Bump version in /charts
-        uses: mikefarah/yq@v4.31.2
+        uses: mikefarah/yq@v4.33.3
         with:
           cmd: |-
             find charts -name Chart.yaml | xargs -n1 yq -i '.appVersion = "${{ github.event.inputs.version }}" | .version = "${{ github.event.inputs.version }}"'
@@ -68,7 +63,7 @@ jobs:
           git add CHANGELOG.md gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
           git commit --message "Prepare release ${{ github.event.inputs.version }}"
 
-          echo "::set-output name=commit::$(git rev-parse HEAD)"
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       -
         name: Push new branch
         run: git push origin release/${{ github.event.inputs.version }}
@@ -79,7 +74,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           head: release/${{ github.event.inputs.version }}
-          base: main
+          base: releases
           title: Release version ${{ github.event.inputs.version }}
           reviewers: ${{ github.actor }}
           body: |-

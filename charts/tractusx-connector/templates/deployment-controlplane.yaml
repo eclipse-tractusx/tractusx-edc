@@ -62,13 +62,13 @@ spec:
           {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.postgresql.enabled .Values.vault.hashicorp.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if and .Values.postgresql.enabled .Values.vault.azure.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-postgresql:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-postgresql:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.hashicorp.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-memory-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else if .Values.vault.azure.enabled }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-controlplane-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-runtime-memory:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           {{- fail "cannot choose control-plane image automatically based on configuration" }}
           {{- end }}
@@ -128,45 +128,30 @@ spec:
               value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.token }}
             - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
               value: {{ .Values.vault.secretNames.dapsPrivateKey | required ".Values.vault.secretNames.dapsPrivateKey is required" | quote }}
-            - name: EDC_OAUTH_PUBLIC_KEY_ALIAS
+            - name: EDC_OAUTH_CERTIFICATE_ALIAS
               value: {{ .Values.vault.secretNames.dapsPublicKey | required ".Values.vault.secretNames.dapsPublicKey is required" | quote }}
 
             #######
             # API #
             #######
             - name: "EDC_API_AUTH_KEY"
-              value: {{ .Values.controlplane.endpoints.data.authKey | required ".Values.controlplane.endpoints.data.authKey is required" | quote }}
+              value: {{ .Values.controlplane.endpoints.management.authKey | required ".Values.controlplane.endpoints.mangement.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.controlplane.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
               value: {{ .Values.controlplane.endpoints.default.path | quote }}
-            {{- if or (eq (substr 0 3 .Values.controlplane.image.tag) "0.1") (eq (substr 0 3 .Values.controlplane.image.tag) "0.2") }}
-            # WEB_HTTP_DATA_PORT is renamed to WEB_HTTP_MANAGEMENT_PORT from version 0.2.1 and newer
-            # we will keep both settings for downward capabilities
-            - name: "WEB_HTTP_DATA_PORT"
-              value: {{ .Values.controlplane.endpoints.data.port | quote }}
-            # WEB_HTTP_DATA_PATH is renamed to WEB_HTTP_MANAGEMENT_PATH from version 0.2.1 and newer
-            # we will keep both settings for downward capabilities
-            - name: "WEB_HTTP_DATA_PATH"
-              value: {{ .Values.controlplane.endpoints.data.path | quote }}
-            {{- else }}
             - name: "WEB_HTTP_MANAGEMENT_PORT"
-              value: {{ .Values.controlplane.endpoints.data.port | quote }}
+              value: {{ .Values.controlplane.endpoints.management.port | quote }}
             - name: "WEB_HTTP_MANAGEMENT_PATH"
-              value: {{ .Values.controlplane.endpoints.data.path | quote }}
-            {{- end }}
-            - name: "WEB_HTTP_VALIDATION_PORT"
-              value: {{ .Values.controlplane.endpoints.validation.port | quote }}
-            - name: "WEB_HTTP_VALIDATION_PATH"
-              value: {{ .Values.controlplane.endpoints.validation.path | quote }}
+              value: {{ .Values.controlplane.endpoints.management.path | quote }}
             - name: "WEB_HTTP_CONTROL_PORT"
               value: {{ .Values.controlplane.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.controlplane.endpoints.control.path | quote }}
-            - name: "WEB_HTTP_IDS_PORT"
-              value: {{ .Values.controlplane.endpoints.ids.port | quote }}
-            - name: "WEB_HTTP_IDS_PATH"
-              value: {{ .Values.controlplane.endpoints.ids.path | quote }}
+            - name: "WEB_HTTP_PROTOCOL_PORT"
+              value: {{ .Values.controlplane.endpoints.protocol.port | quote }}
+            - name: "WEB_HTTP_PROTOCOL_PATH"
+              value: {{ .Values.controlplane.endpoints.protocol.path | quote }}
             - name: "WEB_HTTP_OBSERVABILITY_PORT"
               value: {{ .Values.controlplane.endpoints.observability.port | quote}}
             - name: "WEB_HTTP_OBSERVABILITY_PATH"
@@ -178,9 +163,9 @@ spec:
             ## IDS ##
             #########
             - name: "IDS_WEBHOOK_ADDRESS"
-              value: {{ include "txdc.controlplane.url.ids" . | quote }}
+              value: {{ include "txdc.controlplane.url.protocol" . | quote }}
             - name: "EDC_IDS_ENDPOINT"
-              value: {{ printf "%s%s" (include "txdc.controlplane.url.ids" .) .Values.controlplane.endpoints.ids.path | quote }}
+              value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" .) .Values.controlplane.endpoints.protocol.path | quote }}
             - name: "EDC_IDS_ID"
               value: {{ printf "urn:connector:%s" (lower .Values.controlplane.internationalDataSpaces.id) | quote }}
             - name: "EDC_IDS_DESCRIPTION"
@@ -196,10 +181,10 @@ spec:
             - name: "EDC_OAUTH_PROVIDER_AUDIENCE"
               value: "idsc:IDS_CONNECTORS_ALL"
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.ids" . ) .Values.controlplane.endpoints.ids.path "/data" | quote }}
+              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path "/data" | quote }}
             # this is the old setting name for 'EDC_OAUTH_ENDPOINT_AUDIENCE' and is mandatory for Produce EDC v0.1.2 and older
             - name: "EDC_IDS_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.ids" . ) .Values.controlplane.endpoints.ids.path "/data" | quote }}
+              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path "/data" | quote }}
 
           {{- if .Values.postgresql.enabled }}
 
@@ -262,7 +247,7 @@ spec:
             ## DATA PLANE ##
             ################
 
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/dataplane-selector-configuration
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
               value: {{ include "txdc.dataplane.url.control" . }}/transfer
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
@@ -281,9 +266,9 @@ spec:
             - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/http-receiver
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver
 
-            - name: "EDC_RECEIVER_HTTP_ENDPOINT"
+            - name: "EDC_RECEIVER_HTTP_DYNAMIC_ENDPOINT"
               value: {{ .Values.backendService.httpProxyTokenReceiverUrl | required ".Values.backendService.httpProxyTokenReceiverUrl is required" | quote }}
 
             ###########
@@ -291,7 +276,7 @@ spec:
             ###########
 
           {{- if .Values.vault.hashicorp.enabled }}
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/hashicorp-vault
             - name: "EDC_VAULT_HASHICORP_URL"
               value: {{ .Values.vault.hashicorp.url | required ".Values.vault.hashicorp.url is required" | quote }}
             - name: "EDC_VAULT_HASHICORP_TOKEN"
@@ -332,7 +317,7 @@ spec:
             ## DATA ENCRYPTION ##
             #####################
 
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/data-encryption
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/data-encryption
             - name: "EDC_DATA_ENCRYPTION_KEYS_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
             - name: "EDC_DATA_ENCRYPTION_ALGORITHM"
@@ -345,6 +330,12 @@ spec:
               value: "0"
             - name: "EDC_CP_ADAPTER_REUSE_CONTRACT_AGREEMENT"
               value: "0"
+
+            ###########################
+            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
+            ###########################
+            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
+              value: {{ .Values.controlplane.businessPartnerValidation.log.agreementValidation | quote }}
 
             ######################################
             ## Additional environment variables ##

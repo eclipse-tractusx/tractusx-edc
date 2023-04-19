@@ -1,0 +1,316 @@
+#
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+# Default values for eclipse-dataspace-connector.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+fullnameOverride: ""
+nameOverride: ""
+
+# -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
+imagePullSecrets: []
+
+customLabels: {}
+
+runtime:
+  image:
+    repository: ""
+    # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag whose default is the chart appVersion
+    tag: ""
+  initContainers: []
+  debug:
+    enabled: false
+    port: 1044
+    suspendOnStart: false
+  internationalDataSpaces:
+    id: TXDC
+    description: Tractus-X Eclipse IDS Data Space Connector
+    title: ""
+    maintainer: ""
+    curator: ""
+    catalogId: TXDC-Catalog
+  livenessProbe:
+    # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+    enabled: true
+    # -- seconds to wait before performing the first liveness check
+    initialDelaySeconds: 30
+    # -- this fields specifies that kubernetes should perform a liveness check every 10 seconds
+    periodSeconds: 10
+    # -- number of seconds after which the probe times out
+    timeoutSeconds: 5
+    # -- when a probe fails kubernetes will try 6 times before giving up
+    failureThreshold: 6
+    # -- number of consecutive successes for the probe to be considered successful after having failed
+    successThreshold: 1
+  readinessProbe:
+    # -- Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+    enabled: true
+    # -- seconds to wait before performing the first readiness check
+    initialDelaySeconds: 30
+    # -- this fields specifies that kubernetes should perform a readiness check every 10 seconds
+    periodSeconds: 10
+    # -- number of seconds after which the probe times out
+    timeoutSeconds: 5
+    # -- when a probe fails kubernetes will try 6 times before giving up
+    failureThreshold: 6
+    # -- number of consecutive successes for the probe to be considered successful after having failed
+    successThreshold: 1
+  # -- endpoints of the control plane
+  endpoints:
+    # -- default api for health checks, should not be added to any ingress
+    default:
+      # -- port for incoming api calls
+      port: 8080
+      # -- path for incoming api calls
+      path: /api
+    # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
+    data:
+      # -- port for incoming api calls
+      port: 8081
+      # -- path for incoming api calls
+      path: /data
+      # -- authentication key, must be attached to each 'X-Api-Key' request header
+      authKey: ""
+    # -- validation api, only used by the data plane and should not be added to any ingress
+    validation:
+      # -- port for incoming api calls
+      port: 8082
+      # -- path for incoming api calls
+      path: /validation
+    # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
+    control:
+      # -- port for incoming api calls
+      port: 8083
+      # -- path for incoming api calls
+      path: /control
+    # -- ids api, used for inter connector communication and must be internet facing
+    ids:
+      # -- port for incoming api calls
+      port: 8084
+      # -- path for incoming api calls
+      path: /api/v1/ids
+    # -- observability api with unsecured access, must not be internet facing
+    observability:
+      # -- port for incoming API calls
+      port: 8085
+      # -- observability api, provides /health /readiness and /liveness endpoints
+      path: /observability
+      # -- allow or disallow insecure access, i.e. access without authentication
+      insecure: true
+    public:
+      port: 8086
+      path: /api/public
+  businessPartnerValidation:
+    log:
+      agreementValidation: true
+  service:
+    # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
+    type: ClusterIP
+    annotations: {}
+  # -- additional labels for the pod
+  podLabels: {}
+  # -- additional annotations for the pod
+  podAnnotations: {}
+  # -- The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment
+  podSecurityContext:
+    seccompProfile:
+      # -- Restrict a Container's Syscalls with seccomp
+      type: RuntimeDefault
+    # -- Runs all processes within a pod with a special uid
+    runAsUser: 10001
+    # -- Processes within a pod will belong to this guid
+    runAsGroup: 10001
+    # -- The owner for volumes and any files created within volumes will belong to this guid
+    fsGroup: 10001
+  # The [container security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) defines privilege and access control settings for a Container within a pod
+  securityContext:
+    capabilities:
+      # -- Specifies which capabilities to drop to reduce syscall attack surface
+      drop:
+        - ALL
+      # -- Specifies which capabilities to add to issue specialized syscalls
+      add: []
+    # -- Whether the root filesystem is mounted in read-only mode
+    readOnlyRootFilesystem: true
+    # -- Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID
+    allowPrivilegeEscalation: false
+    # -- Requires the container to run without root privileges
+    runAsNonRoot: true
+    # -- The container's process will run with the specified uid
+    runAsUser: 10001
+  # Extra environment variables that will be pass onto deployment pods
+  env: {}
+  #  ENV_NAME: value
+
+  # "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
+  # ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
+  envValueFrom: {}
+  #  ENV_NAME:
+  #    configMapKeyRef:
+  #      name: configmap-name
+  #      key: value_key
+  #    secretKeyRef:
+  #      name: secret-name
+  #      key: value_key
+
+  # [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
+  envSecretNames: []
+  #  - first-secret
+  #  - second-secret
+
+  # [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
+  envConfigMapNames: []
+  #  - first-config-map
+  #  - second-config-map
+
+  ## Ingress declaration to expose the network service.
+  ingresses:
+    ## Public / Internet facing Ingress
+    - enabled: false
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-control.local"
+      # -- Additional ingress annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this ingress resource
+      endpoints:
+        - ids
+      # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
+      className: ""
+      # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+      tls:
+        # -- Enables TLS on the ingress resource
+        enabled: false
+        # -- If present overwrites the default secret name
+        secretName: ""
+      ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
+      certManager:
+        # -- If preset enables certificate generation via cert-manager namespace scoped issuer
+        issuer: ""
+        # -- If preset enables certificate generation via cert-manager cluster-wide issuer
+        clusterIssuer: ""
+    ## Private / Intranet facing Ingress
+    - enabled: false
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-control.intranet"
+      # -- Additional ingress annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this ingress resource
+      endpoints:
+        - data
+        - control
+      # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
+      className: ""
+      # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+      tls:
+        # -- Enables TLS on the ingress resource
+        enabled: false
+        # -- If present overwrites the default secret name
+        secretName: ""
+      ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
+      certManager:
+        # -- If preset enables certificate generation via cert-manager namespace scoped issuer
+        issuer: ""
+        # -- If preset enables certificate generation via cert-manager cluster-wide issuer
+        clusterIssuer: ""
+  # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
+  volumeMounts: []
+  # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
+  volumes: []
+  # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
+  resources:
+    {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  replicaCount: 1
+  autoscaling:
+    # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+    enabled: false
+    # -- Minimal replicas if resource consumption falls below resource threshholds
+    minReplicas: 1
+    # -- Maximum replicas if resource consumption exceeds resource threshholds
+    maxReplicas: 100
+    # -- targetAverageUtilization of cpu provided to a pod
+    targetCPUUtilizationPercentage: 80
+    # -- targetAverageUtilization of memory provided to a pod
+    targetMemoryUtilizationPercentage: 80
+  # -- configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html)
+  logging: |-
+    .level=INFO
+    org.eclipse.edc.level=ALL
+    handlers=java.util.logging.ConsoleHandler
+    java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+    java.util.logging.ConsoleHandler.level=ALL
+    java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+
+  # [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
+  nodeSelector: {}
+  # [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
+  tolerations: []
+  # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
+  affinity: {}
+
+  url:
+    # -- Explicitly declared url for reaching the ids api (e.g. if ingresses not used)
+    ids: ""
+    public: ""
+    readiness: ""
+
+vault:
+  # secrets can be seeded by supplying them in a comma separated list key1:secret2,key2:secret2
+  secrets: ""
+  secretNames:
+    transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
+    transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
+    transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
+    dapsPrivateKey: daps-private-key
+    dapsPublicKey: daps-public-key
+
+daps:
+  url: ""
+  clientId: ""
+  paths:
+    jwks: /jwks.json
+    token: /token
+
+backendService:
+  httpProxyTokenReceiverUrl: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
+  imagePullSecrets: []

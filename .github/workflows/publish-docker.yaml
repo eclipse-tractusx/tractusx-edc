@@ -1,0 +1,83 @@
+#
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+name: "Create Docker images"
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'The namespace (=repo) in DockerHub'
+        required: false
+        default: "tractusx"
+
+concurrency:
+  # cancel only running jobs on pull requests
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  create-docker-image-controlplane:
+    name: "Create Docker Images for the ControlPlane"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - edc-runtime-memory
+          - edc-controlplane-memory-hashicorp-vault
+          - edc-controlplane-postgresql
+          - edc-controlplane-postgresql-hashicorp-vault
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/publish-docker-image
+        with:
+          rootDir: edc-controlplane/${{ matrix.name }}
+          imagename: ${{ matrix.name }}
+          namespace: ${{ inputs.namespace }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+
+  create-docker-image-dataplane:
+    name: "Create Docker Images for the DataPlane"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - edc-dataplane-azure-vault
+          - edc-dataplane-hashicorp-vault
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/publish-docker-image
+        with:
+          rootDir: edc-dataplane/${{ matrix.name }}
+          imagename: ${{ matrix.name }}
+          namespace: ${{ inputs.namespace }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}

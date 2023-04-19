@@ -15,31 +15,47 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import io.restassured.specification.RequestSpecification;
+import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.api.query.QuerySpecDto;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.connector.api.management.catalog.model.CatalogRequestDto;
+import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractNegotiationDto;
+import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
+import org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto;
+import org.eclipse.edc.connector.api.management.transferprocess.model.TransferProcessDto;
+import org.eclipse.edc.connector.api.management.transferprocess.model.TransferRequestDto;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.asset.AssetSelectorExpression;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.HttpDataAddress;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.net.URI;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThan;
 
 public class Participant extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
 
@@ -48,8 +64,9 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     private final String idsEndpoint;
     private final TypeManager typeManager = new TypeManager();
     private final String idsId;
-    private DataWiper wiper;
     private final String bpn;
+    private final String backend;
+    private DataWiper wiper;
 
     public Participant(String moduleName, String runtimeName, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
@@ -58,23 +75,32 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         this.apiKey = properties.get("edc.api.auth.key");
         this.idsId = properties.get("edc.ids.id");
         this.bpn = runtimeName + "-BPN";
+        this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
         this.registerServiceMock(IdentityService.class, new MockDapsService(getBpn()));
+
+        typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
+
     }
 
     @Override
-    public void beforeTestExecution(ExtensionContext extensionContext) throws Exception {
+    public void beforeTestExecution(ExtensionContext extensionContext) {
         //do nothing - we only want to start the runtime once
         wiper.clearPersistence();
     }
 
     @Override
-    public void afterTestExecution(ExtensionContext context) throws Exception {
+    public void afterTestExecution(ExtensionContext context) {
     }
 
     @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        super.bootExtensions(context, serviceExtensions);
-        wiper = new DataWiper(context);
+    public void beforeAll(ExtensionContext context) throws Exception {
+        //only run this once
+        super.beforeTestExecution(context);
+    }
+
+    @Override
+    public void afterAll(ExtensionContext context) throws Exception {
+        super.afterTestExecution(context);
     }
 
     /**
@@ -104,6 +130,31 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                 .statusCode(200)
                 .contentType(JSON);
 
+    }
+
+    /**
+     * Creates an asset with the given ID and props using the participant's Data Management API
+     */
+    public void createAsset(String id, Map<String, String> asserProperties, HttpDataAddress address) {
+        asserProperties = new HashMap<>(asserProperties);
+        asserProperties.put("asset:prop:id", id);
+        asserProperties.put("asset:prop:description", "test description");
+
+        var asset = Map.of(
+                "asset", Map.of(
+                        "id", id,
+                        "properties", asserProperties
+                ),
+                "dataAddress", address
+        );
+
+        baseRequest()
+                .body(asset)
+                .when()
+                .post("/assets")
+                .then()
+                .statusCode(200)
+                .contentType(JSON);
     }
 
     /**
@@ -168,6 +219,44 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return typeManager.readValue(body, Catalog.class);
     }
 
+    public String negotiateContract(Participant other, String assetId) {
+        var catalog = requestCatalog(other);
+        assertThat(catalog.getContractOffers()).withFailMessage("Catalog received from " + other.idsId + " was empty!").isNotEmpty();
+        var response = baseRequest()
+                .when()
+                .body(NegotiationInitiateRequestDto.Builder.newInstance()
+                        .connectorAddress(other.idsEndpoint + "/data")
+                        .connectorId(getBpn())
+                        .offer(catalog.getContractOffers().stream().filter(o -> o.getAsset().getId().equals(assetId))
+                                .findFirst().map(co -> ContractOfferDescription.Builder.newInstance()
+                                        .assetId(assetId)
+                                        .offerId(co.getId())
+                                        .policy(co.getPolicy())
+                                        .validity(ChronoUnit.SECONDS.between(co.getContractStart(), co.getContractEnd().plus(Duration.ofMillis(500)))) // the plus 1 is required due to https://github.com/eclipse-edc/Connector/issues/2650
+                                        .build())
+                                .orElseThrow((() -> new RuntimeException("A contract for assetId " + assetId + " could not be negotiated"))))
+                        .build()
+                )
+                .post("/contractnegotiations")
+                .then();
+
+        var body = response.extract().body().asString();
+        assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
+
+        return typeManager.readValue(body, IdResponseDto.class).getId();
+    }
+
+    public ContractNegotiationDto getNegotiation(String negotiationId) {
+        var response = baseRequest()
+                .when()
+                .get("/contractnegotiations/" + negotiationId)
+                .then();
+
+        var body = response.extract().body().asString();
+        assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
+        return typeManager.readValue(body, ContractNegotiationDto.class);
+    }
+
     /**
      * Returns this participant's IDS ID
      */
@@ -182,15 +271,71 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return bpn;
     }
 
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-        //only run this once
-        super.beforeTestExecution(context);
+    public String requestTransfer(String contractId, String assetId, Participant other, DataAddress destination, String dataRequestId) {
+        var response = baseRequest()
+                .when()
+                .body(TransferRequestDto.Builder.newInstance()
+                        .assetId(assetId)
+                        .id(dataRequestId)
+                        .connectorAddress(other.idsEndpoint + "/data")
+                        .managedResources(false)
+                        .contractId(contractId)
+                        .connectorId(bpn)
+                        .protocol("ids-multipart")
+                        .dataDestination(destination)
+                        .build())
+                .post("/transferprocess")
+                .then();
+
+        var body = response.extract().body().asString();
+        assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
+
+        return typeManager.readValue(body, IdResponseDto.class).getId();
+    }
+
+    public TransferProcessDto getTransferProcess(String transferProcessId) {
+        var json = baseRequest()
+                .when()
+                .get("/transferprocess/" + transferProcessId)
+                .then()
+                .statusCode(allOf(greaterThanOrEqualTo(200), lessThan(300)))
+                .extract().body().asString();
+
+        return typeManager.readValue(json, TransferProcessDto.class);
+
+    }
+
+    public EndpointDataReference getDataReference(String dataRequestId) {
+        var dataReference = new AtomicReference<EndpointDataReference>();
+
+        var result = given()
+                .when()
+                .get(backend + "/{id}", dataRequestId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(EndpointDataReference.class);
+        dataReference.set(result);
+
+        return dataReference.get();
+    }
+
+    public String pullData(EndpointDataReference edr, Map<String, String> queryParams) {
+        var response = given()
+                .baseUri(edr.getEndpoint())
+                .header(edr.getAuthKey(), edr.getAuthCode())
+                .queryParams(queryParams)
+                .when()
+                .get();
+        assertThat(response.statusCode()).isBetween(200, 300);
+        return response.body().asString();
     }
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
-        super.afterTestExecution(context);
+    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
+        super.bootExtensions(context, serviceExtensions);
+        wiper = new DataWiper(context);
     }
 
     private RequestSpecification baseRequest() {

@@ -21,12 +21,28 @@
 package org.eclipse.tractusx.edc.data.encryption.encrypter;
 
 import java.time.Duration;
-import lombok.NonNull;
-import lombok.Value;
 
-@Value
+
 public class AesDataEncrypterConfiguration {
-  @NonNull String keySetAlias;
-  boolean cachingEnabled;
-  @NonNull Duration cachingDuration;
+    private final String keySetAlias;
+    private final boolean cachingEnabled;
+    private final Duration cachingDuration;
+
+    public AesDataEncrypterConfiguration(String keySetAlias, boolean cachingEnabled, Duration cachingDuration) {
+        this.keySetAlias = keySetAlias;
+        this.cachingEnabled = cachingEnabled;
+        this.cachingDuration = cachingDuration;
+    }
+
+    public Duration getCachingDuration() {
+        return cachingDuration;
+    }
+    
+    public boolean isCachingEnabled() {
+        return cachingEnabled;
+    }
+
+    public String getKeySetAlias() {
+        return keySetAlias;
+    }
 }

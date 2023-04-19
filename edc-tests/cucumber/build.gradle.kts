@@ -16,12 +16,12 @@ dependencies {
     implementation(project(":edc-extensions:transferprocess-sftp-provisioner"))
 
 
-    testImplementation("com.google.code.gson:gson:2.10")
+    testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation("org.apache.httpcomponents:httpclient:4.5.14")
     testImplementation("org.junit.platform:junit-platform-suite:1.9.2")
-    testImplementation("io.cucumber:cucumber-java:7.11.1")
-    testImplementation("io.cucumber:cucumber-junit-platform-engine:7.11.1")
-    testImplementation("org.slf4j:slf4j-api:2.0.3")
+    testImplementation("io.cucumber:cucumber-java:7.11.2")
+    testImplementation("io.cucumber:cucumber-junit-platform-engine:7.11.2")
+    testImplementation("org.slf4j:slf4j-api:2.0.7")
     testImplementation(libs.restAssured)
     testImplementation(libs.postgres)
     testImplementation(libs.awaitility)

@@ -89,19 +89,13 @@ controlplane:
       # -- path for incoming api calls
       path: /api
     # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
-    data:
+    management:
       # -- port for incoming api calls
       port: 8081
       # -- path for incoming api calls
-      path: /data
+      path: /management
       # -- authentication key, must be attached to each 'X-Api-Key' request header
       authKey: ""
-    # -- validation api, only used by the data plane and should not be added to any ingress
-    validation:
-      # -- port for incoming api calls
-      port: 8082
-      # -- path for incoming api calls
-      path: /validation
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls
@@ -109,7 +103,7 @@ controlplane:
       # -- path for incoming api calls
       path: /control
     # -- ids api, used for inter connector communication and must be internet facing
-    ids:
+    protocol:
       # -- port for incoming api calls
       port: 8084
       # -- path for incoming api calls
@@ -128,6 +122,9 @@ controlplane:
       path: /observability
       # -- allow or disallow insecure access, i.e. access without authentication
       insecure: true
+  businessPartnerValidation:
+    log:
+      agreementValidation: true
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
@@ -221,7 +218,7 @@ controlplane:
       annotations: {}
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
-        - data
+        - management
         - control
       # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
       className: ""
@@ -340,12 +337,16 @@ dataplane:
     public:
       port: 8081
       path: /api/public
-    validation:
-      port: 8082
-      path: /validation
     control:
       port: 8083
       path: /api/dataplane/control
+    observability:
+      # -- port for incoming API calls
+      port: 8085
+      # -- observability api, provides /health /readiness and /liveness endpoints
+      path: /observability
+      # -- allow or disallow insecure access, i.e. access without authentication
+      insecure: true
     metrics:
       port: 9090
       path: /metrics

@@ -23,7 +23,7 @@ on:
     paths:
       - 'charts/**'
     branches:
-      - main
+      - releases
   workflow_dispatch:
 
 jobs:
@@ -38,8 +38,7 @@ jobs:
 
     steps:
       # fetch-depth: 0 is required to determine differences in chart(s)
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
 
