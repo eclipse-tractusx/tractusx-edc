@@ -58,6 +58,19 @@ entries:
     version: 0.1.2
   tractusx-connector:
   - apiVersion: v2
+    appVersion: 0.3.3
+    created: "2023-04-19T15:17:02.9904757Z"
+    description: A Helm chart for Tractus-X Eclipse Data Space Connector
+    digest: 377be8ad82679948591e10ee6139f7027e1f62dffbed23ada3f48911365dc672
+    home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+    name: tractusx-connector
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-0.3.3/tractusx-connector-0.3.3.tgz
+    version: 0.3.3
+  - apiVersion: v2
     appVersion: 0.3.2
     created: "2023-04-14T13:11:19.88940681Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector
@@ -70,4 +83,19 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-0.3.2/tractusx-connector-0.3.2.tgz
     version: 0.3.2
-generated: "2023-04-14T13:11:19.88942081Z"
+  tractusx-connector-memory:
+  - apiVersion: v2
+    appVersion: 0.3.3
+    created: "2023-04-19T15:17:03.156963608Z"
+    description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
+      memory
+    digest: 2f9da535e5af40a9fa3bb3a2c26e93b69a3201fed54c5318004d615a2587bd83
+    home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory
+    name: tractusx-connector-memory
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-memory-0.3.3/tractusx-connector-memory-0.3.3.tgz
+    version: 0.3.3
+generated: "2023-04-19T15:17:03.156984309Z"
