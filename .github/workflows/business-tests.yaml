@@ -185,6 +185,7 @@ jobs:
               --set dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
               --set controlplane.debug.enabled=true \
               --set controlplane.suspendOnStart=false \
+              --set controlplane.businesspartnervalidation.log.agreement.validation=true \
               --set postgresql.enabled=true \
               --set postgresql.username=user \
               --set postgresql.password=password \
@@ -218,6 +219,7 @@ jobs:
               --set dataplane.image.repository=docker.io/library/edc-dataplane-hashicorp-vault \
               --set controlplane.debug.enabled=true \
               --set controlplane.suspendOnStart=false \
+              --set controlplane.businesspartnervalidation.log.agreement.validation=true \
               --set postgresql.enabled=true \
               --set postgresql.username=user \
               --set postgresql.password=password \
