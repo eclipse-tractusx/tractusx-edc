@@ -27,7 +27,7 @@ jobs:
       - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
-          echo "::set-output name=SHA7::${GITHUB_SHA::7}"
+          echo "SHA7=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   trivy-analyze-config:
     runs-on: ubuntu-latest
@@ -72,8 +72,17 @@ jobs:
           - edc-dataplane-hashicorp-vault
     steps:
       - uses: ./.github/actions/checkout
+
+        ## This step will fail if the docker images is not found
+      - name: "Check if image exists"
+        id: imageCheck
+        run: |
+          docker manifest inspect tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}
+        continue-on-error: true
+
+        ## the next two steps will only execute if the image exists check was successful
       - name: Run Trivy vulnerability scanner
-        if: always()
+        if: success() && steps.imageCheck.outcome != 'failure'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
@@ -83,7 +92,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           timeout: "10m0s"
       - name: Upload Trivy scan results to GitHub Security tab
-        if: always()
+        if: success() && steps.imageCheck.outcome != 'failure'
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results-${{ matrix.image }}.sarif"
