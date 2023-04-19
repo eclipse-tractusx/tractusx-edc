@@ -71,7 +71,7 @@ jobs:
     needs: [ secret-presence ]
     steps:
       # Set-Up
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/setup-java
       # Build
       - name: Build Extensions
@@ -98,7 +98,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/publish-docker-image
         with:
           rootDir: edc-controlplane/${{ matrix.name }}
@@ -121,7 +121,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/publish-docker-image
         with:
           rootDir: edc-dataplane/${{ matrix.name }}
@@ -141,7 +141,7 @@ jobs:
       needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
     steps:
       # Set-Up
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - uses: ./.github/actions/setup-java
       - name: Import GPG Key

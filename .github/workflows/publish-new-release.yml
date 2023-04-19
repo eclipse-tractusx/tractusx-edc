@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        uses: ./.github/actions/checkout
+        uses: actions/checkout@v3.3.0
       -
         uses: ./.github/actions/setup-java
 
@@ -90,7 +90,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        uses: ./.github/actions/checkout
+        uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
       -
@@ -137,7 +137,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        uses: ./.github/actions/checkout
+        uses: actions/checkout@v3.3.0
         with:
           # 0 to fetch the full history due to upcoming merge of releases into main branch
           fetch-depth: 0

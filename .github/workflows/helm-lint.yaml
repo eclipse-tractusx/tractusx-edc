@@ -26,7 +26,7 @@ jobs:
     ### Set-Up ###
     ##############
     -
-      uses: ./.github/actions/checkout
+      uses: actions/checkout@v3.3.0
       with:
         fetch-depth: 0
     -

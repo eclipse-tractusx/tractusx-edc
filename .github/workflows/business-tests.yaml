@@ -50,7 +50,7 @@ jobs:
       ### Set-Up ###
       ##############
       -
-        uses: ./.github/actions/checkout
+        uses: actions/checkout@v3.3.0
       -
         uses: ./.github/actions/setup-java
       -

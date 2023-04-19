@@ -58,7 +58,7 @@ jobs:
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - uses: ./.github/actions/setup-java
       - name: Verify proper formatting
@@ -72,7 +72,7 @@ jobs:
   markdown-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - name: Install mardkdownlint
         run: npm install -g markdownlint-cli2
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting ]
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - uses: ./.github/actions/setup-java
 
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting ]
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - uses: ./.github/actions/setup-java
 
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting ]
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - uses: ./.github/actions/setup-java
 
@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting ]
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
 
       - uses: ./.github/actions/setup-java
 
@@ -132,7 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Set-Up
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-java
