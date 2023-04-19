@@ -26,6 +26,7 @@ import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -37,60 +38,73 @@ import static org.eclipse.edc.policy.engine.spi.PolicyEngine.ALL_SCOPES;
 
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
-  /**
-   * The key for business partner numbers constraints. Must be used as left operand when declaring
-   * constraints.
-   *
-   * <p>Example:
-   *
-   * <pre>
-   * {
-   *     "constraint": {
-   *         "leftOperand": "BusinessPartnerNumber",
-   *         "operator": "EQ",
-   *         "rightOperand": "BPNLCDQ90000X42KU"
-   *     }
-   * }
-   * </pre>
-   */
-  public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
+    /**
+     * The key for business partner numbers constraints. Must be used as left operand when declaring
+     * constraints.
+     *
+     * <p>Example:
+     *
+     * <pre>
+     * {
+     *     "constraint": {
+     *         "leftOperand": "BusinessPartnerNumber",
+     *         "operator": "EQ",
+     *         "rightOperand": "BPNLCDQ90000X42KU"
+     *     }
+     * }
+     * </pre>
+     */
+    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
 
-  public BusinessPartnerValidationExtension() {}
+    public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";
 
-  public BusinessPartnerValidationExtension(
-      final RuleBindingRegistry ruleBindingRegistry, final PolicyEngine policyEngine) {
-    this.ruleBindingRegistry = ruleBindingRegistry;
-    this.policyEngine = policyEngine;
-  }
 
-  @Inject private RuleBindingRegistry ruleBindingRegistry;
+    @Setting(value = "Enable logging when evaluating the business partner constraints in the agreement validation", type = "boolean", defaultValue = DEFAULT_LOG_AGREEMENT_EVALUATION)
+    public static final String BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION = "tractusx.businesspartnervalidation.log.agreement.validation";
+    @Inject
+    private RuleBindingRegistry ruleBindingRegistry;
+    @Inject
+    private PolicyEngine policyEngine;
 
-  @Inject private PolicyEngine policyEngine;
+    public BusinessPartnerValidationExtension() {
+    }
 
-  @Override
-  public String name() {
-    return "Business Partner Validation Extension";
-  }
+    public BusinessPartnerValidationExtension(
+            final RuleBindingRegistry ruleBindingRegistry, final PolicyEngine policyEngine) {
+        this.ruleBindingRegistry = ruleBindingRegistry;
+        this.policyEngine = policyEngine;
+    }
 
-  @Override
-  public void initialize(ServiceExtensionContext context) {
+    @Override
+    public String name() {
+        return "Business Partner Validation Extension";
+    }
 
-    final Monitor monitor = context.getMonitor();
+    @Override
+    public void initialize(ServiceExtensionContext context) {
 
-    final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor);
-    final BusinessPartnerPermissionFunction permissionFunction =
-        new BusinessPartnerPermissionFunction(monitor);
-    final BusinessPartnerProhibitionFunction prohibitionFunction =
-        new BusinessPartnerProhibitionFunction(monitor);
+        final Monitor monitor = context.getMonitor();
 
-    ruleBindingRegistry.bind("USE", ALL_SCOPES);
-    ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, ALL_SCOPES);
+        var logAgreementEvaluation = logAgreementEvaluationSetting(context);
 
-    policyEngine.registerFunction(
-        ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
-    policyEngine.registerFunction(
-        ALL_SCOPES, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
-    policyEngine.registerFunction(
-        ALL_SCOPES, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
-  }
+        final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
+        final BusinessPartnerPermissionFunction permissionFunction =
+                new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
+        final BusinessPartnerProhibitionFunction prohibitionFunction =
+                new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
+
+        ruleBindingRegistry.bind("USE", ALL_SCOPES);
+        ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, ALL_SCOPES);
+
+        policyEngine.registerFunction(
+                ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
+        policyEngine.registerFunction(
+                ALL_SCOPES, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
+        policyEngine.registerFunction(
+                ALL_SCOPES, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
+    }
+
+    private Boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
+        return Boolean.parseBoolean(context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, DEFAULT_LOG_AGREEMENT_EVALUATION));
+    }
 }
