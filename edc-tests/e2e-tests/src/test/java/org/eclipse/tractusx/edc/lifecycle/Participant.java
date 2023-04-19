@@ -26,6 +26,7 @@ import org.eclipse.edc.connector.api.management.transferprocess.model.TransferPr
 import org.eclipse.edc.connector.api.management.transferprocess.model.TransferRequestDto;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.asset.AssetSelectorExpression;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -76,6 +77,9 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         this.bpn = runtimeName + "-BPN";
         this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
         this.registerServiceMock(IdentityService.class, new MockDapsService(getBpn()));
+
+        typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
+
     }
 
     @Override
