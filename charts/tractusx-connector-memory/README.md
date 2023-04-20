@@ -10,7 +10,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector --version 0.3.3
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.3.3
 ```
 
 ## Source Code
