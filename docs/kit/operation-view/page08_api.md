@@ -31,7 +31,8 @@ Body
   },
   "dataAddress": {
     "properties": {
-      "URL": "www.path.to/the_asset"
+      "baseUrl": "https://path.to/the_asset",
+      "type": "HttpData"
     }
   }
 }
@@ -61,7 +62,3 @@ Body
   }
 }
 ```
-
-## Data Transfer
-
-!!!REFERENCE S3 DATA TRANSFER HERE, ONCE IT IS DOCUMENTED!!!

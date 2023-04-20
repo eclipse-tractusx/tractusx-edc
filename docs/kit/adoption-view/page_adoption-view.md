@@ -40,7 +40,6 @@ The architecture of the EDC combines various services that are necessary for the
 - The provision of possible offers (contract offering) which, on the one hand, stipulates the data offered and the associated terms of use (policies) in corresponding contracts.
 - An interface for manual selection of data and associated contract offers.
 - The actual data transfer via the data plane extension
-- Interfaces for using other services such as a broker service or a registration service
 - The connection of software systems on the customer and provider side
 
 

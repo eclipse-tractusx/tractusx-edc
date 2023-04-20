@@ -26,7 +26,7 @@ TractusX EDC is build with Gradle. The following command creates the default dat
 The following commands can be used to create the necessary configuration files for the EDC container.
 They assume sane - but unsafe - defaults. An explanation of the respective parameters can be found [here](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-dataplane/edc-dataplane-hashicorp-vault/README.md).
 
-::: Caution
+:::danger
 
 The following configuration is for testing purposes only. Do not use it in production.
 :::
@@ -46,7 +46,7 @@ web.http.control.port=9999
 web.http.control.path=/api/dataplane/control
 
 # Validation endpoint of controlplane
-edc.dataplane.token.validation.endpoint=http://controlplane:8182/validation/token
+edc.dataplane.token.validation.endpoint=http://controlplane:9999/api/controlplane/control/token
 
 # EDC hostname
 edc.hostname=localhost

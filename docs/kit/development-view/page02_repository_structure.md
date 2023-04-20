@@ -20,14 +20,7 @@ Therefor, different builds are available for both
 and [control plane](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-controlplane/README.md),
 
 ## Helm Charts for EDC Deployment
-`TODO: outdated`
+
 To facilitate deployment of these different builds and their prerequisites,
 Helm charts are provided. The charts and their documentation can be found
 [here](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/charts/README.md).
-
-## EDC Submodule
-
-The core EDC is included as a git submodule in this repository.
-It does not automatically track an EDC branch, but is updated with each core EDC version.
-This is purely to facilitate TractusX EDC builds and releases.
-Changes to upstream functionality are not in the scope of this repository.

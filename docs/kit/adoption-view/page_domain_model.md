@@ -42,8 +42,7 @@ passes several stages which are explained below:
 ### Contract negotiation
 
   A `ContractNegotiation` captures the current state of the negotiation of a contract (`ContractOffer` ->
-  `ContractAgreement`) between two parties. This process is inherently asynchronous, so the `ContractNegotiation`
-  objects are stored in a backing data store (`ContractNegotiationStore`).
+  `ContractAgreement`) between two parties. This process is inherently asynchronous.
 
 ### Contract agreement
 
@@ -55,13 +54,11 @@ passes several stages which are explained below:
 Contract policies represent permitted and prohibited actions over a certain asset. These actions can be limited further
 by constraints (temporal or spatial) and duties ("e.g. deletion of the data after 30 days").
 
-## Data request
+## Transfer process
 
 After a successful contract negotiation, a `DataRequest` is sent from a consumer connector to a provider connector to
 initiate the data transfer. It references the requested [`Asset`](#asset) and [`ContractAgreement`](#contract-agreement)
 as well as information about the [data destination](#data-address).
-
-## Transfer process
 
 Similar to the `ContractNegotiation`, this object captures the current state of a data transfer. This process is
 inherently asynchronous, so the `TransferProcess` objects are stored in a backing data store (`TransferProcessStore`).

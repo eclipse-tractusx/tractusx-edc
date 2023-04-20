@@ -5,7 +5,7 @@
 The following documentation will guide you through the TractusX EDC deployment.
 You will be setting up multiple controllers and enabling communication between them.
 
-::: TractusX EDC or Core EDC?
+:::note TractusX EDC or Core EDC?
 
 The following guide assumes the use of the TractusX EDC.
 It includes the Core EDC with all of its functionality.

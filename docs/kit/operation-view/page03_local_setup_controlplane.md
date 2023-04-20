@@ -26,8 +26,7 @@ TractusX EDC is build with Gradle. The following command creates the default con
 The following commands can be used to create the necessary configuration files for the EDC container.
 They assume sane - but unsafe - defaults. An explanation of the respective parameters can be found [here](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/README.md).
 
-::: Caution
-
+:::danger
 The following configuration is for testing purposes only. Do not use it in production.
 :::
 
@@ -40,16 +39,14 @@ cat << 'EOF' > ${CONFIGURATION_PROPERTIES_FILE}
 
 web.http.default.port=8080
 web.http.default.path=/api
-web.http.data.port=8181
-web.http.data.path=/data
-web.http.validation.port=8182
-web.http.validation.path=/validation
+web.http.management.port=8181
+web.http.management.path=/data
 web.http.control.port=9999
 web.http.control.path=/api/controlplane/control
-web.http.ids.port=8282
-web.http.ids.path=/api/v1/ids
+web.http.protocol.port=8282
+web.http.protocol.path=/api/v1/ids
 
-edc.receiver.http.endpoint=http://backend-service
+edc.receiver.http.dynamic.endpoint=http://backend-service
 
 edc.ids.title=Eclipse Dataspace Connector
 edc.ids.description=Eclipse Dataspace Connector
@@ -67,7 +64,7 @@ edc.api.auth.key=password
 
 # OAuth / DAPS related configuration
 edc.oauth.token.url=https://daps.catena-x.net
-edc.oauth.public.key.alias=key-to-daps-certificate-in-keyvault
+edc.oauth.certificate.alias=key-to-daps-certificate-in-keyvault
 edc.oauth.private.key.alias=key-to-private-key-in-keyvault
 edc.oauth.client.id=daps-oauth-client-id
 

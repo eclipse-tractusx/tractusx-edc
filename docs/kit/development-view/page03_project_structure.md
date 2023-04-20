@@ -2,8 +2,7 @@
 
 ## Issue Tracking
 
-Issues are maintained in [TraxtusX JIRA](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/SECURITY.md).
-To request access, please contact the [TractusX mailing list](https://accounts.eclipse.org/mailing-list/tractusx-dev).
+Issues are maintained in [GitHub Issues](https://github.com/eclipse-tractusx/tractusx-edc/issues).
 
 ## Reporting Vulnerabilities
 
@@ -12,7 +11,7 @@ Vulnerabilities in the TractusX code base are best reported directly to the
 
 ## Git Flow
 
-The TractusX EDC repository uses a Git Flow, with `main` as the release branch and `develop` as the development branch.
+The TractusX EDC repository uses a Git Flow, with `main` as the development branch and `releases` as the release branch.
 Other branches should follow the naming conventions of `feature/x` or `hotfix/x`, though this is not strictly enforced.
 
 ## Tooling

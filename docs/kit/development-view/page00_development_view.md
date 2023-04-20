@@ -11,7 +11,7 @@ or the homepage of the [Eclipse Foundation](https://projects.eclipse.org/project
 
 The Eclipse Dataspace Connector is one of the core components facilitating TractusX.
 
-::: TractusX EDC or Core EDC?
+:::note TractusX EDC or Core EDC?
 
 This documentation is for TractusX EDC.
 It includes the Core EDC with all of its functionality.

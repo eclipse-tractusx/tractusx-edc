@@ -10,8 +10,8 @@ For a more complete setup, Helm charts are provided.
 To set up an example environment, you can use the following Helm commands:
 
 ```shell
-helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
-helm install tractusx-connector catenax-ng-product-edc/tractusx-connector --version 0.2.0
+helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.3.3
 ```
 
 ## Configuration
