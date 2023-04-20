@@ -42,7 +42,6 @@ The architecture of the EDC combines various services that are necessary for the
 - The actual data transfer via the data plane extension
 - The connection of software systems on the customer and provider side
 
-
 [edc-url]: https://github.com/eclipse-edc/Connector
 [gaiax-url]: https://www.data-infrastructure.eu/GAIAX/Navigation/EN/Home/home.html
 [idsa-url]: https://internationaldataspaces.org/
