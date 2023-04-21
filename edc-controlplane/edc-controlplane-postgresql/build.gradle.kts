@@ -11,6 +11,11 @@ dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
     runtimeOnly(edc.azure.vault)
+    constraints {
+        implementation("net.minidev:json-smart:2.4.10") {
+            because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
+        }
+    }
     runtimeOnly(edc.bundles.sqlstores)
     runtimeOnly(edc.transaction.local)
     runtimeOnly(edc.sql.pool)
