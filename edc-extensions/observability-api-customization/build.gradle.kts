@@ -5,19 +5,19 @@ plugins {
 }
 
 dependencies {
-    implementation(edc.spi.core)
-    implementation(edc.spi.web)
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.web)
 
     // provides the web server
-    runtimeOnly(edc.ext.http)
+    runtimeOnly(libs.edc.ext.http)
 
-    testImplementation(edc.junit)
+    testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
 
     // needed for auto-registering the Auth Service:
-    testImplementation(edc.api.management)
+    testImplementation(libs.edc.api.management)
 
     // provides token-based authentication at test runtime
-    testRuntimeOnly(edc.auth.tokenbased)
+    testRuntimeOnly(libs.edc.auth.tokenbased)
 }
 

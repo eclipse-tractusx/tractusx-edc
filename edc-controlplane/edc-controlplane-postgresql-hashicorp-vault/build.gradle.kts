@@ -1,4 +1,3 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -11,11 +10,11 @@ dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
     runtimeOnly(project(":edc-extensions:hashicorp-vault"))
-    runtimeOnly(edc.bundles.sqlstores)
-    runtimeOnly(edc.transaction.local)
-    runtimeOnly(edc.sql.pool)
-    runtimeOnly(edc.core.controlplane)
-    runtimeOnly(edc.dpf.transfer)
+    runtimeOnly(libs.bundles.edc.sqlstores)
+    runtimeOnly(libs.edc.transaction.local)
+    runtimeOnly(libs.edc.sql.pool)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.dpf.transfer)
 
 }
 

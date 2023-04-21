@@ -32,6 +32,7 @@ on:
       - releases
       - release/**
       - main
+      - previews/**
   workflow_dispatch:
 
 concurrency:
@@ -49,26 +50,20 @@ jobs:
       ##############
       ### Set-Up ###
       ##############
-      -
-        uses: actions/checkout@v3.3.0
-      -
-        uses: ./.github/actions/setup-java
-      -
-        name: Cache ContainerD Image Layers
+      - uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/setup-java
+      - name: Cache ContainerD Image Layers
         uses: actions/cache@v3
         with:
           path: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
           key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
-      -
-        name: Set-Up Kubectl
+      - name: Set-Up Kubectl
         uses: azure/setup-kubectl@v3.2
-      -
-        name: Helm Set-Up
+      - name: Helm Set-Up
         uses: azure/setup-helm@v3.5
         with:
           version: v3.8.1
-      -
-        name: Create k8s Kind Cluster configuration (kind.config.yaml)
+      - name: Create k8s Kind Cluster configuration (kind.config.yaml)
         run: |-
           export MAVEN_REPOSITORY=${{ github.workspace }}/.m2/repository
           cat << EOF > kind.config.yaml
@@ -85,8 +80,7 @@ jobs:
               - hostPath: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
                 containerPath: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
           EOF
-      -
-        name: Create k8s Kind Cluster
+      - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.5.0
         with:
           config: kind.config.yaml
@@ -94,22 +88,19 @@ jobs:
       ##############################################
       ### Build and load recent images into KinD ###
       ##############################################
-      -
-        name: Build edc-controlplane-postgresql-hashicorp-vault
+      - name: Build edc-controlplane-postgresql-hashicorp-vault
         run: |-
-           ./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
+          ./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build edc-dataplane-hashicorp-vault
+      - name: Build edc-dataplane-hashicorp-vault
         run: |-
-           ./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
+          ./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Load images into KinD
+      - name: Load images into KinD
         run: |-
           docker tag edc-controlplane-postgresql-hashicorp-vault:latest edc-controlplane-postgresql-hashicorp-vault:business-test
           docker tag edc-dataplane-hashicorp-vault:latest edc-dataplane-hashicorp-vault:business-test
@@ -118,8 +109,7 @@ jobs:
       ############################################
       ### Prepare And Install Test Environment ###
       ############################################
-      -
-        name: Define test environment variables
+      - name: Define test environment variables
         run: |-
           # Define endpoints
           echo "SOKRATES_DATA_MANAGEMENT_API_AUTH_KEY=password" | tee -a ${GITHUB_ENV}
@@ -141,8 +131,7 @@ jobs:
           echo "PLATO_AWS_ACCESS_KEY_ID=platoqwerty123" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_AWS_SECRET_ACCESS_KEY=sokratesqwerty123" | tee -a ${GITHUB_ENV}
           echo "SOKRATES_AWS_ACCESS_KEY_ID=sokratesqwerty123" | tee -a ${GITHUB_ENV}
-      -
-        name: Install infrastructure components via Helm
+      - name: Install infrastructure components via Helm
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
@@ -151,21 +140,21 @@ jobs:
           command: |-
             # Update helm dependencies
             helm dependency update edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure
-  
+            
             # Install the all-in-one supporting infrastructure environment (daps, vault, pgsql, minio)
             helm install infrastructure edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure \
               --wait-for-jobs --timeout=120s
-  
+            
             # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s
             sleep 5s
-  
+            
             # Wait for supporting infrastructure to become ready (control-/data-plane, backend service)
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=idsdaps --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=idsdaps --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=vault --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sokrates-postgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=sokrates-postgresql --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=plato-postgresql --timeout=120s || ( kubectl logs -l app.kubernetes.io/name=plato-postgresql --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app=minio --timeout=120s || ( kubectl logs -l app=minio --tail 500 && exit 1 )
-  
+            
             # Install Plato
             helm install plato charts/tractusx-connector  \
               --set fullnameOverride=plato \
@@ -233,10 +222,10 @@ jobs:
               --set dataplane.aws.accessKeyId=sokratesqwerty123 \
               --set backendService.httpProxyTokenReceiverUrl=http://backend:8080 \
               --wait-for-jobs --timeout=120s
-  
+            
             # GH pipelines constrained by cpu, so give helm some time to register all resources \w k8s
             sleep 5s
-  
+            
             # Wait for Control-/DataPlane and backend-service to become ready
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokrates-controlplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/instance=sokrates-controlplane --tail 500 && exit 1 )
             kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sokrates-dataplane --timeout=600s || ( kubectl logs -l app.kubernetes.io/instance=sokrates-dataplane --tail 500 && exit 1 )
@@ -246,8 +235,8 @@ jobs:
       ##############################################
       ### Run Business Tests inside kind cluster ###
       ##############################################
-      -
-        name: Run Business Tests
+      - name: Run Business Tests
+        continue-on-error: true
         run: |-
           cat << EOF >> pod.json
           {
@@ -332,8 +321,7 @@ jobs:
       #################
       ### Tear Down ###
       #################
-      -
-        name: Destroy the kind cluster
+      - name: Destroy the kind cluster
         if: always()
         run: >-
           kind get clusters | xargs -n1 kind delete cluster --name

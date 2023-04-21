@@ -1,11 +1,10 @@
-
 plugins {
     `maven-publish`
     `java-library`
 }
 
 dependencies {
-    api(edc.spi.core)
-    implementation(edc.spi.dataplane.transfer)
-    implementation(libs.bouncyCastle.bcpkix)
+    api(libs.edc.spi.core)
+    implementation(libs.edc.spi.dataplane.transfer)
+    implementation(libs.bouncyCastle.bcpkixJdk18on)
 }

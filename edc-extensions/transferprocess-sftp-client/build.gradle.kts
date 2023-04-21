@@ -1,4 +1,3 @@
-
 plugins {
     `maven-publish`
     `java-library`
@@ -6,20 +5,20 @@ plugins {
 
 dependencies {
     implementation(project(":edc-extensions:transferprocess-sftp-common"))
-    implementation(edc.spi.core)
-    implementation(edc.spi.transfer)
-    implementation(edc.spi.policy)
-    implementation(edc.spi.dataplane.dataplane)
-    implementation(edc.dpf.util)
-    implementation(edc.dpf.core)
-    implementation(edc.policy.engine)
-    implementation(libs.bouncyCastle.bcpkix)
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.transfer)
+    implementation(libs.edc.spi.policy)
+    implementation(libs.edc.spi.dataplane.dataplane)
+    implementation(libs.edc.dpf.util)
+    implementation(libs.edc.dpf.core)
+    implementation(libs.edc.policy.engine)
+    implementation(libs.bouncyCastle.bcpkixJdk18on)
 
     implementation(libs.apache.sshd.core)
     implementation(libs.apache.sshd.sftp)
 
     testImplementation(libs.awaitility)
-    testImplementation(edc.junit)
+    testImplementation(libs.edc.junit)
 
     testImplementation(libs.mockito.inline)
     testImplementation(libs.testcontainers.junit)

@@ -1,4 +1,3 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -10,17 +9,17 @@ plugins {
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
-    runtimeOnly(edc.azure.vault)
+    runtimeOnly(libs.edc.azure.vault)
     constraints {
         implementation("net.minidev:json-smart:2.4.10") {
             because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
         }
     }
-    runtimeOnly(edc.bundles.sqlstores)
-    runtimeOnly(edc.transaction.local)
-    runtimeOnly(edc.sql.pool)
-    runtimeOnly(edc.core.controlplane)
-    runtimeOnly(edc.dpf.transfer)
+    runtimeOnly(libs.bundles.edc.sqlstores)
+    runtimeOnly(libs.edc.transaction.local)
+    runtimeOnly(libs.edc.sql.pool)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.dpf.transfer)
 }
 
 

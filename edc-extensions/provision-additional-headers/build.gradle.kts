@@ -1,16 +1,18 @@
-
 plugins {
     `maven-publish`
     `java-library`
 }
 
 dependencies {
-    implementation(edc.spi.core)
-    implementation(edc.spi.transfer)
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.transfer)
 
     testImplementation(libs.awaitility)
-    testImplementation(edc.junit)
+    testImplementation(libs.edc.junit)
 
-    testImplementation(edc.core.controlplane)
+    testImplementation(libs.edc.core.controlplane)
+    testImplementation(libs.edc.dpf.selector.core)
+    testImplementation(libs.edc.ids)
+    testImplementation(libs.edc.iam.mock)
     testImplementation(libs.mockito.inline)
 }

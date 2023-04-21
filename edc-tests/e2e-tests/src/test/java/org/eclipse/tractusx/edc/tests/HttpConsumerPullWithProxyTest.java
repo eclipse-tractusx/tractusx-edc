@@ -78,7 +78,7 @@ public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
                     var negotiation = sokrates.getNegotiation(negotiationId);
-                    assertThat(negotiation.getState()).isEqualTo(ContractNegotiationStates.CONFIRMED.toString());
+                    assertThat(negotiation.getState()).isEqualTo(ContractNegotiationStates.FINALIZED.toString());
                     contractAgreementId.set(negotiation.getContractAgreementId());
                     assertThat(contractAgreementId).isNotNull();
                     transferProcessId.set(sokrates.requestTransfer(contractAgreementId.get(), assetId, plato, DataAddress.Builder.newInstance()
