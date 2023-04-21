@@ -57,7 +57,7 @@ jobs:
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       - name: Tar gzip files for veracode upload
         run: |-
-          tar -czvf ${{ matrix.variant.dir }}/${{ matrix.variant.name }} /build/libs/${{ matrix.variant.name }}.tar.gz ${{ matrix.variant.dir }}/${{ matrix.variant.name }}/build/libs/${{ matrix.variant.name }}.jar
+          tar -czvf ${{ matrix.variant.dir }}/${{ matrix.variant.name }}/build/libs/${{ matrix.variant.name }}.tar.gz ${{ matrix.variant.dir }}/${{ matrix.variant.name }}/build/libs/${{ matrix.variant.name }}.jar
       - name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
         if: |
