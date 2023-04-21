@@ -38,51 +38,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  create-docker-image-controlplane:
+  create-docker-image:
     name: "Create Docker Images for the ControlPlane"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        name:
-          - edc-runtime-memory
-          - edc-controlplane-memory-hashicorp-vault
-          - edc-controlplane-postgresql
-          - edc-controlplane-postgresql-hashicorp-vault
+        variant: [ { dir: edc-controlplane, img: edc-runtime-memory },
+                   { dir: edc-controlplane, img: edc-controlplane-memory-hashicorp-vault },
+                   { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
+                   { dir: edc-controlplane, img: edc-controlplane-postgresql },
+                   { dir: edc-dataplane,    img: edc-dataplane-azure-vault },
+                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault } ]
     permissions:
       contents: write
       packages: write
     steps:
       - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/publish-docker-image
+        name: Publish ${{ matrix.variant.img }}
         with:
-          docker_tag: ${{ inputs.docker_tag }}
-          rootDir: edc-controlplane/${{ matrix.name }}
-          imagename: ${{ matrix.name }}
-          namespace: ${{ inputs.namespace }}
-          docker_user: ${{ secrets.DOCKER_HUB_USER }}
-          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-
-  create-docker-image-dataplane:
-    name: "Create Docker Images for the DataPlane"
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        name:
-          - edc-dataplane-azure-vault
-          - edc-dataplane-hashicorp-vault
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: ./.github/actions/publish-docker-image
-        with:
-          docker_tag: ${{ inputs.docker_tag }}
-          rootDir: edc-dataplane/${{ matrix.name }}
-          imagename: ${{ matrix.name }}
+          docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+          rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
+          imagename: ${{ matrix.variant.img }}
           namespace: ${{ inputs.namespace }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
