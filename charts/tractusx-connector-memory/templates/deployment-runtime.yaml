@@ -63,7 +63,7 @@ spec:
           {{- if .Values.runtime.image.repository }}
           image: "{{ .Values.runtime.image.repository }}:{{ .Values.runtime.image.tag | default .Chart.AppVersion }}"
           {{- else }}
-          image: "ghcr.io/catenax-ng/tx-tractusx-edc/edc-runtime-memory:{{ .Values.runtime.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-runtime-memory:{{ .Values.runtime.image.tag | default .Chart.AppVersion }}"
           {{- end }}
 
           imagePullPolicy: {{ .Values.runtime.image.pullPolicy }}

@@ -81,8 +81,8 @@ jobs:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
-  build-controlplane:
-    name: "Create Docker Images for the ControlPlane"
+  build-docker-images:
+    name: "Create Docker Images"
     runs-on: ubuntu-latest
     needs: [ secret-presence ]
     if: |
@@ -90,42 +90,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name:
-          - edc-runtime-memory
-          - edc-controlplane-memory-hashicorp-vault
-          - edc-controlplane-postgresql
-          - edc-controlplane-postgresql-hashicorp-vault
+        variant: [ { dir: edc-controlplane, img: edc-runtime-memory },
+                   { dir: edc-controlplane, img: edc-controlplane-memory-hashicorp-vault },
+                   { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
+                   { dir: edc-controlplane, img: edc-controlplane-postgresql },
+                   { dir: edc-dataplane,    img: edc-dataplane-azure-vault },
+                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault } ]
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/publish-docker-image
+        name: Publish ${{ matrix.variant.img }}
         with:
-          rootDir: edc-controlplane/${{ matrix.name }}
-          imagename: ${{ matrix.name }}
-          docker_user: ${{ secrets.DOCKER_HUB_USER }}
-          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-  build-dataplane:
-    name: "Create Docker Images for the DataPlane"
-    runs-on: ubuntu-latest
-    needs: [ secret-presence ]
-    if: |
-      needs.secret-presence.outputs.DOCKER_HUB_TOKEN
-    strategy:
-      fail-fast: false
-      matrix:
-        name:
-          - edc-dataplane-azure-vault
-          - edc-dataplane-hashicorp-vault
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: ./.github/actions/publish-docker-image
-        with:
-          rootDir: edc-dataplane/${{ matrix.name }}
-          imagename: ${{ matrix.name }}
+          docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+          rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
+          imagename: ${{ matrix.variant.img }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
@@ -159,4 +139,3 @@ jobs:
           REPO: ${{ github.repository }}
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-

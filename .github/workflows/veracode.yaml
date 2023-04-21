@@ -30,7 +30,7 @@ jobs:
       - name: Verify proper formatting
         run: ./gradlew spotlessCheck
 
-  build-controlplane:
+  build:
     runs-on: ubuntu-latest
     needs: [ secret-presence, verify-formatting ]
     permissions:
@@ -38,73 +38,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name:
-          - edc-runtime-memory
-          - edc-controlplane-memory-hashicorp-vault
-          - edc-controlplane-postgresql
-          - edc-controlplane-postgresql-hashicorp-vault
+        variant: [ { dir: edc-controlplane, name: edc-runtime-memory },
+                   { dir: edc-controlplane, name: edc-controlplane-memory-hashicorp-vault },
+                   { dir: edc-controlplane, name: edc-controlplane-postgresql-hashicorp-vault },
+                   { dir: edc-controlplane, name: edc-controlplane-postgresql },
+                   { dir: edc-dataplane,    name: edc-dataplane-azure-vault },
+                   { dir: edc-dataplane,    name: edc-dataplane-hashicorp-vault } ]
     steps:
       # Set-Up
       - uses: actions/checkout@v3.3.0
       - uses: ./.github/actions/setup-java
       # Build
-      - name: Build Controlplane
+      - name: Build ${{ matrix.variant.name }}
         run: |-
-          ./gradlew -p edc-controlplane/${{ matrix.name }} shadowJar
+          ./gradlew -p ${{ matrix.variant.dir }}/${{ matrix.variant.name }} shadowJar
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       - name: Tar gzip files for veracode upload
         run: |-
-          tar -czvf edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
+          tar -czvf ${{ matrix.variant.dir }}/${{ matrix.variant.name }} /build/libs/${{ matrix.variant.name }}.tar.gz ${{ matrix.variant.dir }}/${{ matrix.variant.name }}/build/libs/${{ matrix.variant.name }}.jar
       - name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@v1.0
         if: |
           needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY
         continue-on-error: true
         with:
-          appname: product-edc/${{ matrix.name }}
+          appname: product-edc/${{ matrix.variant.name }}
           createprofile: true
-          version: ${{ matrix.name }}-${{ github.sha }}
-          filepath: edc-controlplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz
+          version: ${{ matrix.variant.name }}-${{ github.sha }}
+          filepath: ${{ matrix.variant.dir }}/${{ matrix.variant.name }}/build/libs/${{ matrix.variant.name }}.tar.gz
           vid: ${{ secrets.ORG_VERACODE_API_ID }}
           vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
-
-  build-dataplane:
-    runs-on: ubuntu-latest
-    needs: [ secret-presence, verify-formatting ]
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        name:
-          - edc-dataplane-azure-vault
-          - edc-dataplane-hashicorp-vault
-    steps:
-      # Set-Up
-      - uses: actions/checkout@v3.3.0
-      - uses: ./.github/actions/setup-java
-      # Build
-      - name: Build Dataplane
-        run: |-
-          ./gradlew -p edc-dataplane/${{ matrix.name }} shadowJar
-        env:
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      - name: Tar gzip files for veracode upload
-        run: |-
-          tar -czvf edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.jar
-      - name: Veracode Upload And Scan
-        uses: veracode/veracode-uploadandscan-action@v1.0
-        if: |
-          needs.secret-presence.outputs.ORG_VERACODE_API_ID && needs.secret-presence.outputs.ORG_VERACODE_API_KEY
-        continue-on-error: true
-        with:
-          appname: product-edc/${{ matrix.name }}
-          createprofile: true
-          version: ${{ matrix.name }}-${{ github.sha }}
-          filepath: edc-dataplane/${{ matrix.name }}/build/libs/${{ matrix.name }}.tar.gz
-          vid: ${{ secrets.ORG_VERACODE_API_ID }}
-          vkey: ${{ secrets.ORG_VERACODE_API_KEY }}
-
