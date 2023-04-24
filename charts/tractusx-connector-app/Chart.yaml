@@ -22,12 +22,12 @@
 
 ---
 apiVersion: v2
-name: tractusx-connector
+name: tractusx-connector-app
 description: |
-  A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
-  Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
+  A Helm chart for Tractus-X Eclipse Data Space Connector Application. This includes the runtime, which consists of a control plane
+  and a data plane, and all third-party services such as PostgreSQL and HashiCorp Vault.
 
-  This chart is intended for use with an _existing_ PostgreSQL database and an _existing_ HashiCorp Vault.
+  This chart is intended to be used as self-contained deployment, which only requires an external DAPS instance.
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -40,12 +40,31 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.3.3
+version: 0.3.2
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "0.3.3"
-home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+appVersion: "0.3.2"
+home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-app
 sources:
-  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-app
+
+dependencies:
+  # EDC Connector Runtime (ControlPlane + DataPlane)
+  - name: tractusx-connector
+    version: "0.3.3"
+    alias: runtime
+    repository: "file://../tractusx-connector"
+
+  # HashiCorp Vault
+  - name: vault
+    alias: vault
+    version: 0.20.0
+    repository: https://helm.releases.hashicorp.com
+
+  # PostgreSQL
+  - name: postgresql
+    alias: postgresql
+    version: 12.1.6
+    repository: https://charts.bitnami.com/bitnami
