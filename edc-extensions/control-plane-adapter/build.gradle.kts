@@ -8,14 +8,7 @@ plugins {
 dependencies {
     implementation(edc.spi.core)
     implementation(edc.spi.policy)
-
     implementation(edc.api.management)
-    constraints {
-        implementation("org.yaml:snakeyaml:2.0") {
-            because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
-        }
-    }
-
     implementation(edc.spi.catalog)
     implementation(edc.spi.transactionspi)
     implementation(edc.spi.transaction.datasource)
