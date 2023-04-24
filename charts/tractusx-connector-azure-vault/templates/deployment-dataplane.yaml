@@ -1,0 +1,223 @@
+#
+#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "txdc.fullname" . }}-dataplane
+  labels:
+    {{- include "txdc.dataplane.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.dataplane.autoscaling.enabled }}
+  replicas: {{ .Values.dataplane.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "txdc.dataplane.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.dataplane.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "txdc.dataplane.selectorLabels" . | nindent 8 }}
+        {{- with .Values.dataplane.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "txdc.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.dataplane.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- toYaml .Values.dataplane.initContainers | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.dataplane.securityContext | nindent 12 }}
+          {{- if .Values.dataplane.image.repository }}
+          image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          image: "tractusx/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.dataplane.image.pullPolicy }}
+          ports:
+          {{- range $key,$value := .Values.dataplane.endpoints }}
+            - name: {{ $key }}
+              containerPort: {{ $value.port }}
+              protocol: TCP
+          {{- end }}
+          {{- if .Values.dataplane.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.dataplane.endpoints.observability.path }}/check/liveness
+              port: {{ .Values.dataplane.endpoints.observability.port }}
+            initialDelaySeconds: {{ .Values.dataplane.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.dataplane.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.dataplane.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.dataplane.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.dataplane.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.dataplane.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.dataplane.endpoints.observability.path }}/check/readiness
+              port: {{ .Values.dataplane.endpoints.observability.port }}
+            initialDelaySeconds: {{ .Values.dataplane.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.dataplane.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.dataplane.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.dataplane.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.dataplane.readinessProbe.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.dataplane.resources | nindent 12 }}
+          env:
+          {{- if .Values.dataplane.debug.enabled }}
+            - name: "JAVA_TOOL_OPTIONS"
+            {{- if and .Values.dataplane.debug.enabled .Values.dataplane.debug.suspendOnStart }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.dataplane.debug.port }}
+            {{- else }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.dataplane.debug.port }}
+            {{- end }}
+          {{- end }}
+
+            #######
+            # API #
+            #######
+            - name: "WEB_HTTP_DEFAULT_PORT"
+              value: {{ .Values.dataplane.endpoints.default.port | quote }}
+            - name: "WEB_HTTP_DEFAULT_PATH"
+              value: {{ .Values.dataplane.endpoints.default.path | quote }}
+            - name: "WEB_HTTP_CONTROL_PORT"
+              value: {{ .Values.dataplane.endpoints.control.port | quote }}
+            - name: "WEB_HTTP_CONTROL_PATH"
+              value: {{ .Values.dataplane.endpoints.control.path | quote }}
+            - name: "WEB_HTTP_PUBLIC_PORT"
+              value: {{ .Values.dataplane.endpoints.public.port | quote }}
+            - name: "WEB_HTTP_PUBLIC_PATH"
+              value: {{ .Values.dataplane.endpoints.public.path | quote }}
+            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
+              value: {{ include "txdc.controlplane.url.validation" .}}
+            - name: "WEB_HTTP_OBSERVABILITY_PORT"
+              value: {{ .Values.dataplane.endpoints.observability.port | quote }}
+            - name: "WEB_HTTP_OBSERVABILITY_PATH"
+              value: {{ .Values.dataplane.endpoints.observability.path | quote }}
+            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
+              value: {{ .Values.dataplane.endpoints.observability.insecure | quote }}
+
+            #######
+            # AWS #
+            #######
+            {{- if .Values.dataplane.aws.endpointOverride }}
+            - name: "EDC_AWS_ENDPOINT_OVERRIDE"
+              value: {{ .Values.dataplane.aws.endpointOverride | quote }}
+            {{- end   }}
+            {{- if .Values.dataplane.aws.secretAccessKey }}
+            - name: "AWS_SECRET_ACCESS_KEY"
+              value: {{ .Values.dataplane.aws.secretAccessKey | quote }}
+            {{- end }}
+            {{- if .Values.dataplane.aws.accessKeyId }}
+            - name: "AWS_ACCESS_KEY_ID"
+              value: {{ .Values.dataplane.aws.accessKeyId | quote }}
+            {{- end }}
+
+            ###########
+            ## VAULT ##
+            ###########
+
+            - name: "EDC_VAULT_CLIENTID"
+              value: {{ .Values.vault.azure.client | quote  }}
+            - name: "EDC_VAULT_TENANTID"
+              value: {{ .Values.vault.azure.tenant | quote }}
+            - name: "EDC_VAULT_NAME"
+              value: {{ .Values.vault.azure.name | quote }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.secret }}
+            - name: "EDC_VAULT_CLIENTSECRET"
+              value: {{ .Values.vault.azure.secret | quote }}
+            {{- end }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.certificate }}
+            - name: "EDC_VAULT_CERTIFICATE"
+              value: {{ .Values.vault.azure.certificate | quote }}
+            {{- end }}
+
+            ######################################
+            ## Additional environment variables ##
+            ######################################
+            - name: "EDC_CONNECTOR_NAME"
+              value: {{ include "txdc.fullname" .}}-dataplane
+          {{- range $key, $value := .Values.dataplane.envValueFrom }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                {{- tpl (toYaml $value) $ | nindent 16 }}
+          {{- end }}
+          {{- range $key, $value := .Values.dataplane.env }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- if and (or .Values.dataplane.envSecretNames .Values.dataplane.envConfigMapNames) (or (gt (len .Values.dataplane.envSecretNames) 0) (gt (len .Values.dataplane.envConfigMapNames) 0)) }}
+          envFrom:
+          {{- range $value := .Values.dataplane.envSecretNames }}
+            - secretRef:
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- range $value := .Values.dataplane.envConfigMapNames }}
+            - configMapRef:
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: "configuration"
+              mountPath: "/app/opentelemetry.properties"
+              subPath: "opentelemetry.properties"
+            - name: "configuration"
+              mountPath: "/app/logging.properties"
+              subPath: "logging.properties"
+      volumes:
+        - name: "configuration"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-dataplane
+            items:
+              - key: "opentelemetry.properties"
+                path: "opentelemetry.properties"
+              - key: "logging.properties"
+                path: "logging.properties"
+      {{- with .Values.dataplane.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dataplane.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dataplane.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

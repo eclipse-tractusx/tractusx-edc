@@ -30,7 +30,7 @@ The Data-Plane does the heavy lifting of transferring and receiving data streams
 
 Depending on your environment there are different derivatives of the control-plane prepared:
 
-- [edc-controlplane-postgresql](edc-controlplane/edc-controlplane-postgresql) with dependency onto
+- [edc-controlplane-postgresql-azure-vault](edc-controlplane/edc-controlplane-postgresql-azure-vault) with dependency onto
   - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview)
   - [PostgreSQL 8.2 or newer](https://www.postgresql.org/)
 - [edc-controlplane-postgresql-hashicorp-vault](edc-controlplane/edc-controlplane-postgresql-hashicorp-vault) with
