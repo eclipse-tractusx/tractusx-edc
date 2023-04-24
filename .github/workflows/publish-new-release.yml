@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
       -
         uses: ./.github/actions/setup-java
 
@@ -92,7 +92,7 @@ jobs:
                 {dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault}]
 
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
@@ -119,7 +119,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 0
       -
@@ -166,7 +166,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
         with:
           # 0 to fetch the full history due to upcoming merge of releases into main branch
           fetch-depth: 0

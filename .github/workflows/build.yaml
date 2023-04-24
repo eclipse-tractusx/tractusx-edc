@@ -71,7 +71,7 @@ jobs:
     needs: [ secret-presence ]
     steps:
       # Set-Up
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/setup-java
       # Build
       - name: Build Extensions
@@ -99,7 +99,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
@@ -121,7 +121,7 @@ jobs:
       needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
     steps:
       # Set-Up
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.2
 
       - uses: ./.github/actions/setup-java
       - name: Import GPG Key
