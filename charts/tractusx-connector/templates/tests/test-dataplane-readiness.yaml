@@ -10,6 +10,6 @@ spec:
   containers:
     - name: wget
       image: curlimages/curl
-      command: ['curl']
-      args: ['{{ include "tdxc.dataplane.url.readiness" . }}']
+      command: [ 'curl' ]
+      args: [ '{{- printf "http://%s-dataplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.observability.port $.Values.dataplane.endpoints.observability.path -}}' ]
   restartPolicy: Never

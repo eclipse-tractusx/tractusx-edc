@@ -286,7 +286,6 @@ controlplane:
   url:
     # -- Explicitly declared url for reaching the ids api (e.g. if ingresses not used)
     ids: ""
-    readiness: ""
 
 dataplane:
   image:
@@ -487,7 +486,6 @@ dataplane:
   url:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
-    readiness: ""
 
 postgresql:
   enabled: false

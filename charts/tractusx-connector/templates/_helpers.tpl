@@ -129,24 +129,10 @@ Control IDS URL
 {{- end }}
 
 {{/*
-Observability URL
-*/}}
-{{- define "tdxc.controlplane.url.readiness" -}}
-{{- printf "http://%s-controlplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.observability.port $.Values.controlplane.endpoints.observability.path -}}
-{{- end }}
-
-{{/*
 Validation URL
 */}}
 {{- define "txdc.controlplane.url.validation" -}}
 {{- printf "http://%s-controlplane:%v%s/token" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.control.port $.Values.controlplane.endpoints.control.path -}}
-{{- end }}
-
-{{/*
-Observability URL
-*/}}
-{{- define "tdxc.dataplane.url.readiness" -}}
-{{- printf "http://%s-dataplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.observability.port $.Values.dataplane.endpoints.observability.path -}}
 {{- end }}
 
 {{/*
