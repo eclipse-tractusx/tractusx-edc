@@ -14,7 +14,7 @@ dependencies {
         }
     }
     implementation(edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.6.0")
+    implementation("com.azure:azure-security-keyvault-secrets:4.6.1")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
