@@ -56,6 +56,15 @@ allprojects {
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
         testImplementation(platform("org.junit:junit-bom:5.9.2"))
+
+        constraints {
+            implementation("org.yaml:snakeyaml:2.0") {
+                because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
+            }
+            implementation("net.minidev:json-smart:2.4.10") {
+                because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
+            }
+        }
     }
 
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
@@ -156,17 +165,6 @@ subprojects {
     sonarqube {
         properties {
             property("sonar.moduleKey", "${project.group}-${project.name}")
-        }
-    }
-}
-
-dependencies {
-    constraints {
-        implementation("org.yaml:snakeyaml:2.0") {
-            because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
-        }
-        implementation("net.minidev:json-smart:2.4.10") {
-            because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
         }
     }
 }
