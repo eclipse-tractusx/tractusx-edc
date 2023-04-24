@@ -25,7 +25,7 @@ apiVersion: v2
 name: tractusx-connector
 description: |
   A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
-  Control Plane and a Data Plane. Note that no external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
+  Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
 
   This chart is intended for use with an _existing_ PostgreSQL database and an _existing_ HashiCorp Vault.
 # A chart can be either an 'application' or a 'library' chart.

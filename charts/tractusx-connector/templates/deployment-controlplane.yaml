@@ -61,11 +61,11 @@ spec:
             {{- toYaml .Values.controlplane.securityContext | nindent 12 }}
 
           # either use the specified image, or use the default one
-           {{- if .Values.controlplane.image.repository }}
+          {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
-           {{- else }}
+          {{- else }}
           image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
-           {{- end }}
+          {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
           ports:
           {{- range $key,$value := .Values.controlplane.endpoints }}
