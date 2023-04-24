@@ -497,7 +497,6 @@ postgresql:
 
 vault:
   hashicorp:
-    enabled: true
     url: ""
     token: ""
     timeout: 30

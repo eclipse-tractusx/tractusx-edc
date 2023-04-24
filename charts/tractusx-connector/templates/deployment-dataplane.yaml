@@ -61,7 +61,7 @@ spec:
             {{- toYaml .Values.dataplane.securityContext | nindent 12 }}
           {{- if .Values.dataplane.image.repository }}
           image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
-          {{- else if and .Values.vault.hashicorp }}
+          {{- else }}
           image: "tractusx/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.dataplane.image.pullPolicy }}
