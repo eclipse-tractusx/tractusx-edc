@@ -31,24 +31,3 @@ dependencies:
     repository: "file://../omejdn"
     alias: idsdaps
     condition: install.daps
-
-  # HashiCorp Vault
-  - name: vault
-    alias: vault
-    version: 0.20.0
-    repository: https://helm.releases.hashicorp.com
-    condition: install.vault
-
-  # PostgreSQL
-  - name: postgresql
-    alias: postgresql
-    version: 12.1.6
-    repository: https://charts.bitnami.com/bitnami
-    condition: install.postgresql
-
-  # MinIo
-  - name: minio
-    alias: minio
-    repository: https://charts.min.io
-    version: 4.1.0
-    condition: install.minio
