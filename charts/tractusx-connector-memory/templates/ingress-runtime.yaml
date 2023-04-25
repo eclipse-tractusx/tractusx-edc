@@ -20,7 +20,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 
-  {{- $fullName := include "txdc.fullname" . }}
+{{- $fullName := include "txdc.fullname" . }}
 {{- $controlLabels := include "txdc.runtime.labels" . | nindent 4 }}
 {{- $controlEdcEndpoints := .Values.runtime.endpoints }}
 {{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
