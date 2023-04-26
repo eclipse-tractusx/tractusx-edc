@@ -26,6 +26,7 @@ import org.eclipse.edc.connector.contract.spi.validation.ContractValidationServi
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessProtocolService;
 import org.eclipse.edc.connector.transfer.spi.flow.DataFlowController;
 import org.eclipse.edc.connector.transfer.spi.flow.DataFlowManager;
+import org.eclipse.edc.connector.transfer.spi.types.DataFlowResponse;
 import org.eclipse.edc.connector.transfer.spi.types.protocol.TransferRequestMessage;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
@@ -67,7 +68,7 @@ class ProvisionAdditionalHeadersExtensionTest {
     void setUp(EdcExtension extension) {
         extension.setConfiguration(Map.of("edc.ids.id", "urn:connector:test"));
         when(dataFlowController.canHandle(any(), any())).thenReturn(true);
-        when(dataFlowController.initiateFlow(any(), any(), any())).thenReturn(StatusResult.success());
+        when(dataFlowController.initiateFlow(any(), any(), any())).thenReturn(StatusResult.success(DataFlowResponse.Builder.newInstance().build()));
         extension.registerServiceMock(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
         extension.registerServiceMock(ContractNegotiationStore.class, contractNegotiationStore);
         extension.registerServiceMock(ContractValidationService.class, contractValidationService);
