@@ -109,17 +109,10 @@ class ProvisionAdditionalHeadersExtensionTest {
 
         assertThat(result).matches(ServiceResult::succeeded);
 
-        await()
-                .untilAsserted(
-                        () -> {
-                            verify(dataFlowController)
-                                    .initiateFlow(
-                                            any(),
-                                            argThat(
-                                                    it ->
-                                                            "aContractId"
-                                                                    .equals(it.getProperty("header:Edc-Contract-Agreement-Id"))),
-                                            any());
-                        });
+        await().untilAsserted(
+                () -> {
+                    verify(dataFlowController)
+                            .initiateFlow(any(), argThat(it -> "aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any());
+                });
     }
 }
