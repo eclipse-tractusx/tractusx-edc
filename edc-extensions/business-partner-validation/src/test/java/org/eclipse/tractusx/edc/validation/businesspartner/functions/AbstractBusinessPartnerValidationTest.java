@@ -159,8 +159,8 @@ class AbstractBusinessPartnerValidationTest {
 
         var agreement = ContractAgreement.Builder.newInstance()
                 .id("agreementId")
-                .providerAgentId("provider")
-                .consumerAgentId("consumer")
+                .providerId("provider")
+                .consumerId("consumer")
                 .assetId("assetId")
                 .policy(Policy.Builder.newInstance().build())
                 .build();

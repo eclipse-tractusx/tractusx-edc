@@ -47,7 +47,7 @@ public class DataWiper {
     public void clearPolicies() {
         var ps = context.getService(PolicyDefinitionStore.class);
         // must .collect() here, otherwise we'll get a ConcurrentModificationException
-        ps.findAll(QuerySpec.max()).collect(Collectors.toList()).forEach(p -> ps.deleteById(p.getId()));
+        ps.findAll(QuerySpec.max()).collect(Collectors.toList()).forEach(p -> ps.delete(p.getId()));
     }
 
     public void clearAssetIndex() {

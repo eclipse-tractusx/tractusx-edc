@@ -34,7 +34,7 @@ dependencies {
         exclude("org.eclipse.edc", "api-observability")
     }
 
-    implementation(edc.core.controlplane)
+    implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)
 }
