@@ -70,6 +70,7 @@ public class MultiRuntimeTest {
                     put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + SOKRATES_PUBLIC_API_PORT + "/api/public\"}");
                     put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + SOKRATES_CONNECTOR_PORT + "/api/consumer/datareference");
                     put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
+                    put("edc.agent.identity.key", "BusinessPartnerNumber");
                 }
             });
 
@@ -100,6 +101,7 @@ public class MultiRuntimeTest {
                     put("edc.dataplane.selector.httpplane.destinationtypes", "HttpProxy");
                     put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + PLATO_PUBLIC_API_PORT + "/api/public\"}");
                     put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
+                    put("edc.agent.identity.key", "BusinessPartnerNumber");
                 }
             });
 }

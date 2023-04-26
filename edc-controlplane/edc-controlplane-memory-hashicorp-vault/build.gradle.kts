@@ -1,5 +1,3 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-
 plugins {
     `java-library`
     id("application")
@@ -9,8 +7,8 @@ plugins {
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-extensions:hashicorp-vault"))
-    runtimeOnly(edc.core.controlplane)
-    runtimeOnly(edc.dpf.transfer)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.dpf.transfer)
 
 }
 

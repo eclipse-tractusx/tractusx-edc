@@ -1,4 +1,3 @@
-
 plugins {
     `java-library`
 }
@@ -12,17 +11,17 @@ dependencies {
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:observability-api-customization"))
 
-    runtimeOnly(edc.core.controlplane)
-    runtimeOnly(edc.config.filesystem)
-    runtimeOnly(edc.auth.tokenbased)
-    runtimeOnly(edc.auth.oauth2.core)
-    runtimeOnly(edc.auth.oauth2.daps)
-    runtimeOnly(edc.api.management)
-    runtimeOnly(edc.ids)
-    runtimeOnly(edc.spi.jwt)
-    runtimeOnly(edc.bundles.dpf)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.auth.tokenbased)
+    runtimeOnly(libs.edc.auth.oauth2.core)
+    runtimeOnly(libs.edc.auth.oauth2.daps)
+    runtimeOnly(libs.edc.api.management)
+    runtimeOnly(libs.edc.ids)
+    runtimeOnly(libs.edc.spi.jwt)
+    runtimeOnly(libs.bundles.edc.dpf)
 
-    runtimeOnly(edc.ext.http)
-    runtimeOnly(edc.bundles.monitoring)
-    runtimeOnly(edc.transfer.dynamicreceiver)
+    runtimeOnly(libs.edc.ext.http)
+    runtimeOnly(libs.bundles.edc.monitoring)
+    runtimeOnly(libs.edc.transfer.dynamicreceiver)
 }

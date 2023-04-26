@@ -1,4 +1,3 @@
-
 plugins {
     `java-library`
 }
@@ -6,16 +5,16 @@ plugins {
 dependencies {
     runtimeOnly(project(":edc-extensions:observability-api-customization"))
 
-    runtimeOnly(edc.config.filesystem)
-    runtimeOnly(edc.dpf.awss3)
-    runtimeOnly(edc.dpf.oauth2)
-    runtimeOnly(edc.dpf.http)
+    runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.dpf.awss3)
+    runtimeOnly(libs.edc.dpf.oauth2)
+    runtimeOnly(libs.edc.dpf.http)
 
-    runtimeOnly(edc.dpf.framework)
-    runtimeOnly(edc.dpf.api)
-    runtimeOnly(edc.core.connector)
-    runtimeOnly(edc.boot)
+    runtimeOnly(libs.edc.dpf.framework)
+    runtimeOnly(libs.edc.dpf.api)
+    runtimeOnly(libs.edc.core.connector)
+    runtimeOnly(libs.edc.boot)
 
-    runtimeOnly(edc.bundles.monitoring)
-    runtimeOnly(edc.ext.http)
+    runtimeOnly(libs.bundles.edc.monitoring)
+    runtimeOnly(libs.edc.ext.http)
 }

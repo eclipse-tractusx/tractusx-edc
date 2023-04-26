@@ -21,12 +21,12 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-suite:1.9.2")
     testImplementation("io.cucumber:cucumber-java:7.11.2")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.11.2")
-    testImplementation("org.slf4j:slf4j-api:2.0.7")
+    testImplementation(libs.slf4j.api)
     testImplementation(libs.restAssured)
     testImplementation(libs.postgres)
     testImplementation(libs.awaitility)
     testImplementation(libs.aws.s3)
-    testImplementation(edc.spi.core)
+    testImplementation(libs.edc.spi.core)
 }
 
 tasks.withType(Test::class) {

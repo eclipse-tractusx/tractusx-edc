@@ -227,6 +227,8 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                 .body(NegotiationInitiateRequestDto.Builder.newInstance()
                         .connectorAddress(other.idsEndpoint + "/data")
                         .connectorId(getBpn())
+                        .consumerId(getBpn())
+                        .providerId(other.getBpn())
                         .offer(catalog.getContractOffers().stream().filter(o -> o.getAsset().getId().equals(assetId))
                                 .findFirst().map(co -> ContractOfferDescription.Builder.newInstance()
                                         .assetId(assetId)
