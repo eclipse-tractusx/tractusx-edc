@@ -23,28 +23,28 @@ idsdaps:
       # Must be the same certificate that is stores in section 'sokrates-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
-        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        MIIEAzCCAuugAwIBAgIULy0aTdGiGkyvVp7l5Ccoq7DQREgwDQYJKoZIhvcNAQEL
         BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
         cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
         bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
-        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        TjEyMzQwHhcNMjMwNDI2MTI1OTE5WhcNMzMwNDIzMTI1OTE5WjCBkDELMAkGA1UE
         BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
         DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
         DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
-        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
-        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
-        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
-        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
-        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
-        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
-        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
-        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
-        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
-        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
-        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
-        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
-        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
-        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBALCr0h3vT5kNnwWhAmGRvEEo38nKyiXB
+        Gx0GlepYToKklMgtGIX25OkOrXJqq4BzybxN27DoWvU9DEixylkCbhwmwmpI3IhF
+        8w6cV/odaYdQ3tEeZ6zWYXqKx+MVWTHQ8A4Njy64PWNDWBZmaGvxeE48i7EJnnrM
+        M5CGDAKbA/Jd1nlFxaq9hGiaCHa2kCNKdfrJ6ZUda5rPlLJk5at3VPxvRIpT50Gp
+        3P4PtdwpwIHwa7y1xTBc43bEfcD1lmR9VkkxCX8lg4V1OBLx1GVwoUZBkN8P4POT
+        t+gQq7FbDbBEeOSmKELC3Tc8D8JCGv94sEg6o+4yzgpvyIvMyV8uGcECAwEAAaNT
+        MFEwHQYDVR0OBBYEFIxEsuJTl+5V8vTCUhMGhWsmdQShMB8GA1UdIwQYMBaAFIxE
+        suJTl+5V8vTCUhMGhWsmdQShMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAJHOKmFNZDk5xebzBARgcIrYrmRb5pIU4gNCWh/q1TF0+CFnnK8RTFTZ
+        12pTbid6v5knn/f9bsilnudhxBzBQ4bukiI8Be0nzYfZU2dTU+w1cl/JnJfkGirt
+        8Nwqv3fiUXfFBl8nE0RduAk9XF/UBIZXPapE6u1zR29jvuV+ppmhQrFFeJufeBGd
+        Wwn6XGK4fzENGDyjdk4QB/dg3/heM5h330vIGO4hVvlQBfJhNbC7Iikkr5ulytfd
+        deuZIfa7hG6WgIgGhg3YL1p/TTpJamBDS860PWyI7RH3o53VPphu/y2Rpud5AECV
+        xcrqaSGUTZPVyTUB8BxE32LqFDbpZb4=
         -----END CERTIFICATE-----
     - id: 99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23
       name: plato
@@ -53,28 +53,28 @@ idsdaps:
       # Must be the same certificate that is stores in section 'plato-vault'
       certificate: |-
         -----BEGIN CERTIFICATE-----
-        MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
+        MIID7TCCAtWgAwIBAgIUJv9K1yHIGf/crrkLHtKlYUd06OwwDQYJKoZIhvcNAQEL
         BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
         cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
-        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIy
-        MDQyNTEwMjgwMloXDTIzMDQyNTEwMjgwMlowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
+        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIz
+        MDQyNjEyNTQxNFoXDTMzMDQyMzEyNTQxNFowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
         VQQIDAZCZXJsaW4xDzANBgNVBAcMBkJlcmxpbjEMMAoGA1UECgwDQk1XMSAwHgYD
         VQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRj
         LmRlbW8uY2F0ZW5hLXgubmV0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-        AQEAm1/UvHXuRU1peEGHULZBP8j8gorXAQvUz8Znb1iVNtldI29GCSXkTHxph66x
-        TcegdF8aeaoU1mPf3LzMQUU1koZHUq6sRC+50uFcZJ2AjF5IXKQlDPNWR5tPXP56
-        RZyqXxjPFHeuTA+YsYyrzEVhzEieOiNaxJDM3uV5pv+FTRHz+xMOgNBonR1QyMh6
-        tcwB+EQagoeFl0DjEXAel9WG4hOG/rDiXArTMaVjnTG/ycmF0HeSnbRC+3/+fh/C
-        hzQJyEbviX67ymyYRJTyynt/Mtrqg5/ssdISexjw3ZmiFNemZIOhIdepoSwnJHFM
-        4Jj8B5lq0a1jY5Rc9lDj710RXQIDAQABo1MwUTAdBgNVHQ4EFgQUmYOnF4b/mJPO
-        oN2h8Tb69g91CiMwHwYDVR0jBBgwFoAUmYOnF4b/mJPOoN2h8Tb69g91CiMwDwYD
-        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAKxv/MTIEKNkzReOqrzpt
-        LM00X6JsDdfxa3rZ0Uq17PjO0R63IPsqzexhfZUML0e/Dwpe97xpvftCOEuICMBA
-        wOHhQc77MgwyF4dqgRgfJysxw37ACZxU6GI/K2JpKXQLgEhP14oHUIWOzCAbgDhR
-        jwOx3ZP176Vjxx90pW3hOphRVnq/BRqqEDtFwRzKtGnGvP8ecmC2iY4dXEA3QEp1
-        gzg03eglvZSoedEPY5o5y/4n6TplaDmaeoo0QrvAiWik1gY85Lg21aBWVsP45wVS
-        tFn3m1FCCV8XYIj/EEUAh8VEhphLVEViE6m9Mm4deFDavXcGBb63BCiOQtnjd3eY
-        zQ==
+        AQEAwajlhy7Uf6V5P7UNmb5fSL0uJLt1EIeqEuLMTc8J6VhAgv7WGtRJiZySIFfQ
+        VBcwizO0C+pzyHXY957HJKFWhuiiACmO1NBOQuF5TCe/X9MHUOfK1l52mDu6zXhV
+        pPRn8ZY7CBul/94Wb/SS0+SJ6ogkdB8nwI++3ET166Wuv1aSdGKAc2daseQ1Ynau
+        fPL2ziVQDfPh51+9VUG8tuwGrwagFrawDk5FkZB7Z+nPZ0WpmLN2Q+oVRFaSgDRu
+        cTx6ejMs2tMSKzJIJjIVzgHRIULyPSMS3AlwHub3FwZp2TrXolczDJWL+XIbfHfw
+        6KKNWGR80/RM457AhNzApd0GYQIDAQABo1MwUTAdBgNVHQ4EFgQU4TU1BUk881qd
+        H+g1I2jAuL+jAyAwHwYDVR0jBBgwFoAU4TU1BUk881qdH+g1I2jAuL+jAyAwDwYD
+        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAEOkReVM7644reZoPIWEP
+        4XVyXKwoIk/zxVPedtcCoXWdG2zVXULvjIc0vf65Ih1e9b65rz+v6yn0isZ5zfSm
+        mFOsVMg0vL9I4QQtOSx9tL5MXq+zPeRLVpeRvvUD67+wKkf9n+e1DByqCVfaF68U
+        DDq0L0VQgp3fRNEzLjcXlOOIQ4W/qc1lnxoxVCzQuLJwkZejokV9cj5JDBojmAuK
+        g+IDL1aArzzKMD5iAAqm0rDbDnMhn0Km+AshDEWgAqtnsVEBRlt+GDAc+d0nplLY
+        BR8UsaLdtAVHaivXCaZGpjiOsvdOpTwWOaU9HOkuf/1uX5DTaxtClt2BXAnxF3Ug
+        iQ==
         -----END CERTIFICATE-----
 
 ##############
@@ -172,59 +172,59 @@ vault:
 
         cat << EOF | /bin/vault kv put secret/plato/daps/my-plato-daps-key content=-
         -----BEGIN PRIVATE KEY-----
-        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX9S8de5FTWl4
-        QYdQtkE/yPyCitcBC9TPxmdvWJU22V0jb0YJJeRMfGmHrrFNx6B0Xxp5qhTWY9/c
-        vMxBRTWShkdSrqxEL7nS4VxknYCMXkhcpCUM81ZHm09c/npFnKpfGM8Ud65MD5ix
-        jKvMRWHMSJ46I1rEkMze5Xmm/4VNEfP7Ew6A0GidHVDIyHq1zAH4RBqCh4WXQOMR
-        cB6X1YbiE4b+sOJcCtMxpWOdMb/JyYXQd5KdtEL7f/5+H8KHNAnIRu+JfrvKbJhE
-        lPLKe38y2uqDn+yx0hJ7GPDdmaIU16Zkg6Eh16mhLCckcUzgmPwHmWrRrWNjlFz2
-        UOPvXRFdAgMBAAECggEAN2yd5IRk9I/CucUWUfJRoEE/4glI3PSte1iY+R0uTRyI
-        nuVIpGbB447VzjLAyLAXSqvKM/A58qg56PHoIrhffd8sfhAVH1WvAcymOrX8bxYK
-        1hEvrkj3VB/Q1alpUH+sPrQI2pI+uJ8vptY5SmrNkiOtXavS6x+EFVbiaHHpyS26
-        ASaCoRpdBoNTm0SAiDBTK6MqTs4vRpqKseGdC76F+jKimYrTJY19ZctSIAMjrnqd
-        qzRL+jfob5vMqKC22AjInkZ8BZWll1ZoTnv37bq2NAb9lvdY73REm42Wpm5S7PET
-        Eixe69gvi/IwaSe27S36+kcrQoYHnxbb31+Xt+0pQQKBgQDJfA2ZnYmcA3yvVQhi
-        e76I3rq6AEfcG4EDhf+JRO2QHKMMXLwfFAdSR8QflxNUWy1y6q/783EpgLJ1Kv8h
-        uNkTH6JyV7kFhwfvxWreAWx2jRQRACqnuaLnJ/28vd8Il0kc3/BQsWzbg6YTERrq
-        0Au2RW/c9blrKS0MyurtOtZsiQKBgQDFaezSCWUspeNci5lrdvMiHBLOUgR2guQm
-        Gtf9RdBmzvtBqpdkP8AEMhRW7oSGcKpDldd0Klyml7s/CDYTL7sflHtKRiTQmWuJ
-        +p3uvyylAxr/Swfw56hj5Y4/Oj2CLIuUlglewo40JnvvM5icT7RGvbyaIIhYzIsR
-        HTv3t8eRNQKBgA4l8eaJk3IrJIRDWlVgDx8ZVM9e2azxGXwf2rPO7UejWyexE1yz
-        UVhLxc/aEfdod6aMKFNu4tFhQibMICJEEqovHH8e/dUPiFUj7b8tJmqkuXYAJv6k
-        IHZO7phkVNcLmIy4hO2Fp/k6I11PZC588XWZJqPDdYO63nj5fsmtygTRAoGBAJ72
-        YH/wmMuO+Ll4n51tNvJscKg6WuWjGFumme2T3fArEx8ZYraSruex+7bUcVpgNnod
-        mlQsGFb9LwXecsyYTrFrOqvgN5zRLUr5x1qMDkMBcSfJHyfZIjruidBX8Vd0zyBi
-        gEERoLhVlM5UWbrkY2HjPo9NSv1WF1U8mSErl0NRAoGAYC3RxEfGxD9+Qi08nQgg
-        s/48hLdD2k2q4t3FrDsIGPAIEs52CGp9JWil9RyIQxBXWejETwDz+PgmD6U86Mhh
-        Qf5css6pcP/w1XF8vsyXfPnecgPSyOE4CgLtnQLxNriMiy5pfALELLyxoBQ+nquz
-        fMNLPC4K85ps/Uu9uzSatl0=
+        MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDBqOWHLtR/pXk/
+        tQ2Zvl9IvS4ku3UQh6oS4sxNzwnpWECC/tYa1EmJnJIgV9BUFzCLM7QL6nPIddj3
+        nsckoVaG6KIAKY7U0E5C4XlMJ79f0wdQ58rWXnaYO7rNeFWk9GfxljsIG6X/3hZv
+        9JLT5InqiCR0HyfAj77cRPXrpa6/VpJ0YoBzZ1qx5DVidq588vbOJVAN8+HnX71V
+        Qby27AavBqAWtrAOTkWRkHtn6c9nRamYs3ZD6hVEVpKANG5xPHp6Myza0xIrMkgm
+        MhXOAdEhQvI9IxLcCXAe5vcXBmnZOteiVzMMlYv5cht8d/Dooo1YZHzT9EzjnsCE
+        3MCl3QZhAgMBAAECggEBAKR/RphRWwciE5/dtrPFVUKAD1X8NS/ZTMnGBCyDlLO0
+        1vduZ4dakyxk5mq6rKcBG6biQClu+PJpx+Zt5FJlCQ6HRDRHGKAEYLXGuDXL/W7z
+        3d8HRPBaRPqCoeYuNPFs+W3oYjQ86AAzMXPfl2iNU+j3w58vZ6DVeRW5LfsAPTMg
+        Z8Sooa1jD2a/7uDN4lC0FGkTWif//Dio5tbijqeG8xqBnS8iKi4hgxcQA9azd0KB
+        6uwvbX/izq4sVR2ZjxtT9WPX1cpOcXjUZBM9px9eAwLPmsM/AUAOHkKkd1DPYLjX
+        yyB0qvz+LmUQdJv11yGagsW7lrrvsBsro4ZMp0Ot1wECgYEA5j2XFCKNUcX/8OFm
+        8E9q6DXyrd9T3rMxPYWR9nRwV0upN9Zd9mnvOKnl5MYQSgP0XJgwwyHawmG3wIcx
+        0puf3uWi2lSpt6aafMCW6JEJbK/49XSPAjrptwkZUcCT3XJv1tMZuXzhv/p4t24o
+        hw9/EtzVxK7thGGZD6sDsQtbOlkCgYEA11OUofuD1VWN5YwFciPv0RhyfDyYYK7e
+        nPMXEoiBMQJnGkp3eaUzUgej/V93VtJcg9h0Tqn6NpI4rWUfUdi5ihZ6+hcvUIO4
+        Roh+Oxpmu0yBfuBo7Uwf5XMpoQu74Z+cr24Pv32YtEUshUZidMuvOMaBXNJGlKiG
+        DjbCUV0CG0kCgYAVHvlJA5JrOfqsokDLMr3f53MHuED9YPrXZfVp4myb1XkEgknE
+        XRtw20UXo4PDBnHYPK3ceLKUuloc80oCw/v6ep5h4PpguovZfeFaHFP9AHeaLMMh
+        tT3TaKZF9aCa4/CWiG8HsQkUj2mbiiN1oFpL5K5HiLSJPFrKMSn5h80qoQKBgQC2
+        obt1UEDXFwONaJ/N2dE0RkoEOdj8WBWUhVJSc9kv2lvcnsCLOqU2tChRZUFxMGcr
+        pNGxTtZcptTPrO9NmkZ0avDPYg7NeYs4t9hpBNGRlyhWlrwoWOLM2Eq8v5kRmzFo
+        Ui+lOT/l1q4WNEaZzZDG1Qcv1WHsAKwDLkrOe9ankQKBgQDM1fdqraKN2lCkDSPU
+        /Uw5nmFA7gNJQ9ta6CVITlDMWFb+e2OcDK7pKT1iEhJAfGndtQ0lwK6I5VDDxhXY
+        DGcU2UIWMAiJOZILDVjkny9brrIQ/fTwZps2qWNJ0bmYsmwPCe9QskNWz8sYAY6p
+        eBB+WUqNNqBb25p2CmcwqoT7Tg==
         -----END PRIVATE KEY-----
         EOF
         
         cat << EOF | /bin/vault kv put secret/plato/daps/my-plato-daps-crt content=-
         -----BEGIN CERTIFICATE-----
-        MIID7TCCAtWgAwIBAgIUJ0bwxUc7n3YK89mOyGXrLx2KO0YwDQYJKoZIhvcNAQEL
+        MIID7TCCAtWgAwIBAgIUJv9K1yHIGf/crrkLHtKlYUd06OwwDQYJKoZIhvcNAQEL
         BQAwgYUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
         cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
-        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIy
-        MDQyNTEwMjgwMloXDTIzMDQyNTEwMjgwMlowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
+        bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRjLmRlbW8uY2F0ZW5hLXgubmV0MB4XDTIz
+        MDQyNjEyNTQxNFoXDTMzMDQyMzEyNTQxNFowgYUxCzAJBgNVBAYTAkRFMQ8wDQYD
         VQQIDAZCZXJsaW4xDzANBgNVBAcMBkJlcmxpbjEMMAoGA1UECgwDQk1XMSAwHgYD
         VQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0bmVyMjEkMCIGA1UEAwwbcGxhdG8tZWRj
         LmRlbW8uY2F0ZW5hLXgubmV0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-        AQEAm1/UvHXuRU1peEGHULZBP8j8gorXAQvUz8Znb1iVNtldI29GCSXkTHxph66x
-        TcegdF8aeaoU1mPf3LzMQUU1koZHUq6sRC+50uFcZJ2AjF5IXKQlDPNWR5tPXP56
-        RZyqXxjPFHeuTA+YsYyrzEVhzEieOiNaxJDM3uV5pv+FTRHz+xMOgNBonR1QyMh6
-        tcwB+EQagoeFl0DjEXAel9WG4hOG/rDiXArTMaVjnTG/ycmF0HeSnbRC+3/+fh/C
-        hzQJyEbviX67ymyYRJTyynt/Mtrqg5/ssdISexjw3ZmiFNemZIOhIdepoSwnJHFM
-        4Jj8B5lq0a1jY5Rc9lDj710RXQIDAQABo1MwUTAdBgNVHQ4EFgQUmYOnF4b/mJPO
-        oN2h8Tb69g91CiMwHwYDVR0jBBgwFoAUmYOnF4b/mJPOoN2h8Tb69g91CiMwDwYD
-        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAKxv/MTIEKNkzReOqrzpt
-        LM00X6JsDdfxa3rZ0Uq17PjO0R63IPsqzexhfZUML0e/Dwpe97xpvftCOEuICMBA
-        wOHhQc77MgwyF4dqgRgfJysxw37ACZxU6GI/K2JpKXQLgEhP14oHUIWOzCAbgDhR
-        jwOx3ZP176Vjxx90pW3hOphRVnq/BRqqEDtFwRzKtGnGvP8ecmC2iY4dXEA3QEp1
-        gzg03eglvZSoedEPY5o5y/4n6TplaDmaeoo0QrvAiWik1gY85Lg21aBWVsP45wVS
-        tFn3m1FCCV8XYIj/EEUAh8VEhphLVEViE6m9Mm4deFDavXcGBb63BCiOQtnjd3eY
-        zQ==
+        AQEAwajlhy7Uf6V5P7UNmb5fSL0uJLt1EIeqEuLMTc8J6VhAgv7WGtRJiZySIFfQ
+        VBcwizO0C+pzyHXY957HJKFWhuiiACmO1NBOQuF5TCe/X9MHUOfK1l52mDu6zXhV
+        pPRn8ZY7CBul/94Wb/SS0+SJ6ogkdB8nwI++3ET166Wuv1aSdGKAc2daseQ1Ynau
+        fPL2ziVQDfPh51+9VUG8tuwGrwagFrawDk5FkZB7Z+nPZ0WpmLN2Q+oVRFaSgDRu
+        cTx6ejMs2tMSKzJIJjIVzgHRIULyPSMS3AlwHub3FwZp2TrXolczDJWL+XIbfHfw
+        6KKNWGR80/RM457AhNzApd0GYQIDAQABo1MwUTAdBgNVHQ4EFgQU4TU1BUk881qd
+        H+g1I2jAuL+jAyAwHwYDVR0jBBgwFoAU4TU1BUk881qdH+g1I2jAuL+jAyAwDwYD
+        VR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAEOkReVM7644reZoPIWEP
+        4XVyXKwoIk/zxVPedtcCoXWdG2zVXULvjIc0vf65Ih1e9b65rz+v6yn0isZ5zfSm
+        mFOsVMg0vL9I4QQtOSx9tL5MXq+zPeRLVpeRvvUD67+wKkf9n+e1DByqCVfaF68U
+        DDq0L0VQgp3fRNEzLjcXlOOIQ4W/qc1lnxoxVCzQuLJwkZejokV9cj5JDBojmAuK
+        g+IDL1aArzzKMD5iAAqm0rDbDnMhn0Km+AshDEWgAqtnsVEBRlt+GDAc+d0nplLY
+        BR8UsaLdtAVHaivXCaZGpjiOsvdOpTwWOaU9HOkuf/1uX5DTaxtClt2BXAnxF3Ug
+        iQ==
         -----END CERTIFICATE-----
         EOF
         
@@ -232,59 +232,59 @@ vault:
         
         cat << EOF | /bin/vault kv put secret/sokrates/daps/my-sokrates-daps-key content=-
         -----BEGIN PRIVATE KEY-----
-        MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCv+NUvK7ppJPiM
-        wZPaQQxE745T5pV38O/Mkay5m82nnd5BoMoCdhhRTy3Efy79FhvBfGruFBLLGzsQ
-        FOEUY53Albeumo2gmpZSKjJR/M2ifK4MTaRniVOWL5mEcZSKPhsItKpxdLaiYfB6
-        8uzqkqNICtmAQRSclYKzLBM9xHLEtxDWCbnzYFCHoOELGi+PTNIFsUnsT3QuKaJ/
-        ejb47vdA/EZbwCQdtTyJ6i54jGhZUp0WMwq1Go2uhzJsygPmT2da/ZZZc7BNNEQE
-        sUSMZSpMH807TG/TunstotrzO4ShhpV4zbJ2FV/VlxH7yuCawmnR84F/KnXs9fUc
-        RSrQfuYBAgMBAAECggEAO+KjsjTgcG3bhBNQnMLsSP15Y0Yicbn18ZlVvaivGS7Z
-        d14fwSytY+ZdPfTGaey/L16HCVSdfK9cr0Fbw9OO2P5ajzobnp9dLsMbctlkpbpm
-        hNtbarzKTF8QkIkSsuUl0BWjt46vpJ1N+Jl5VO7oUFkY4dPEDvG2lAEY3zlekWDm
-        cQeOC/YgpoW4xfRwPPS6QE0w3Q+H5NfNjfz+mSHeItTlVfTKDRliWQLPWeRZFuXh
-        FlRFUQnTmEE/9wpIe3Hn7WXJ3fQqcYDzxU7/zwwY9I7bB15SgVHlR0ENDPAD5X8F
-        MVZ3EcLlqGBy+WvTWALp6pc8YfhW3fiTWyuamXtNrQKBgQDonsIzBKEOOKdKGW0e
-        uyw79ErmnmzkY5nuMrMxrmTA4WKCfJ/YRRA+4sxiltWsIJ3UkHe3OBCSSCdj79hb
-        ugb/+UzE70hOdgrct2NUQqbrj3gvsVvU8ZRQgTRMqKpmC0zY7KOMx6NU85z3IvS1
-        z5fjszcUv4kLQlldYGSAuqPy+wKBgQDBqIkc8p/wcw7ygo1q/GerNeszfoxiIFp8
-        h4RWLVhkwrcXFz30wBlUWuv5/kxU8tmJcmXxe72EmUstd6wvNOAnYwCiile6zQiJ
-        vsr1axavZnGOtNGUp6DUAsd2iviBl7IZ7kAcqCrQo4ivGhfHmahH3hmg8wuAMjYB
-        8f+FSPgaMwKBgQC7W4tMrjDOFIFhJEOIWfcRvvxI7VcFSNelS76aiDzsQVwnfxr7
-        hPzFucQmsBgfUBHvMADMWGK4f1cCnh5kGtwidXgIsjVJxLeQ+EAPkLOCzQZfW3l8
-        dKshgD9QcxTzpaxal5ZPAEikVqaZQtVYToCmzCTUGETYBbOWitnH+Qut2wKBgQC6
-        Y6DcSLUhc0xOotLDxv1sbu/aVxF8nFEbDD+Vxf0Otc4MnmUWPRHj+8KlkVkcZcR0
-        IrP1kThd+EDAGS+TG9wmbIY+6tH3S8HM+eJUBWcHGJ1xUZ1p61DC3Y3nDWiTKlLT
-        3Fi+fCkBOHSku4Npq/2odh7Kp0JJd4o9oxJg0VNhuwKBgQDSFn7dqFE0Xmwc40Vr
-        0wJH8cPWXKGt7KJENpj894buk2DniLD4w2x874dzTjrOFi6fKxEzbBNA9Rq9UPo8
-        u9gKvl/IyWmV0c4zFCNMjRwVdnkMEte/lXcJZ67T4FXZByqAZlhrr/v0FD442Z9B
-        AjWFbUiBCFOo+gpAFcQGrkOQHA==
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCwq9Id70+ZDZ8F
+        oQJhkbxBKN/JysolwRsdBpXqWE6CpJTILRiF9uTpDq1yaquAc8m8Tduw6Fr1PQxI
+        scpZAm4cJsJqSNyIRfMOnFf6HWmHUN7RHmes1mF6isfjFVkx0PAODY8uuD1jQ1gW
+        Zmhr8XhOPIuxCZ56zDOQhgwCmwPyXdZ5RcWqvYRomgh2tpAjSnX6yemVHWuaz5Sy
+        ZOWrd1T8b0SKU+dBqdz+D7XcKcCB8Gu8tcUwXON2xH3A9ZZkfVZJMQl/JYOFdTgS
+        8dRlcKFGQZDfD+Dzk7foEKuxWw2wRHjkpihCwt03PA/CQhr/eLBIOqPuMs4Kb8iL
+        zMlfLhnBAgMBAAECggEAVYco1mMXRsIoXQJAc9moqGbQSBGLYVGl/ZxFkUik4Wwp
+        turV92y6DvWTFFP9qNblL+sFUxR5jEW8n6iqjAK4KZq9/dQ+Jx6t90HK+YOppd+J
+        rvUoPa0fTcLH1/Bq2MoMnNEFoxmAZoCgsV9sZ+1jT4TSH6fHeC1JPUsXn19KPtdO
+        0b0XvRCVU4sPpzXeaRypnwTsDMgHUoGvxoHQ7Pif5iTnEdgvc7V3ACWOanp/bEuM
+        9hoHquggrO/F8SDC4wjn4BlwsxedQZyVF4a76iGS3D/CFrYd8cUKJyCtGySEl7jS
+        kIwDoG4oQV5mLFSLaq1BDOo8W5ku9JXAW2DZiEgkPQKBgQDav9QTSOp+gqfCDMhT
+        c45wxYfLfR5QCS5BLufdMmlocL/DzTHTsVddGnOGLoDr8Dbm9nL/vcPmgRtZ0crD
+        aGqn7sgmbpN6jMsnXhGuOhPZt7Folfbkhv6EFfyjeTZdY4vacrINp97rdVbRvNLs
+        pDJiHE7PjDTCJh8q2gcWqgc+vwKBgQDOwaJ8NvnnUwrBGzkUHdM4bGunxlK3VV0s
+        r1BFkmLXbF0qr8sTaUtBj3rbfvMe9R/5hGcuAyDWo+MyVoHc0nzkU1jQwqObLUZB
+        kg9ZJj4qmnGKnd39TfhDoEluBnl+iYhbXav/2F5eB2UpR0c+DHPrsreGdI3s7O9O
+        aLL+x5FHfwKBgQCNDwhdyzZTkENHkeCYV7rxo58WrD8g01q9c9bWv8xTKemvBKHt
+        5bz1b7oxO8ms24E73I55tdAe0wBlIjDDY5Dra8IrbkCx1Rqn7zQtiowEaD0BuTq1
+        UQvM9zSr4d0ZybiEjFOfFLJeWZM7uqy1JojK1YBIvBvFWrnccy4BAnGblwKBgQC5
+        GHLNfy4koJw9GpDz6GuC1NVgAtVkWaCrc1uKnS2tq86Qe4ZzH02HKNsVC8a9jTcN
+        2zG/6H8KiPfJxdZGiY3TnqYhZk6vik2eQBNLfUgkPdWuAfyNW7MJX8K9JEC6Pof7
+        O5XS2rJIvZgb5zrpWp6ggIN6dHfmhosKiALOwnzWIwKBgBsvToOVMzL/7IL4VtSj
+        u9P+g2shtg9w1dpnscHxUVi2fbKeRRmv2AT140lVpSznIPUmw6FVFUhqE1OTnu1c
+        qS53otAdwiHAfmYz8u0dZeO0Hc5g4K9geB/BsSthXo3u10HuIVLxefKq2M+3zfJj
+        ZvNovy5dPYu82VTfm3gUX+Ca
         -----END PRIVATE KEY-----
         EOF
         
         cat << EOF | /bin/vault kv put secret/sokrates/daps/my-sokrates-daps-crt content=-
         -----BEGIN CERTIFICATE-----
-        MIIEAzCCAuugAwIBAgIUXFgjbN7jxGRUDkoUvEwcN3zcew8wDQYJKoZIhvcNAQEL
+        MIIEAzCCAuugAwIBAgIULy0aTdGiGkyvVp7l5Ccoq7DQREgwDQYJKoZIhvcNAQEL
         BQAwgZAxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJl
         cmxpbjEMMAoGA1UECgwDQk1XMSAwHgYDVQQLDBdlZGMtcGxheWdyb3VuZC1wYXJ0
         bmVyMTEvMC0GA1UEAwwmc29rcmF0ZXMtZWRjLmRlbW8uY2F0ZW5hLXgubmV0L0JQ
-        TjEyMzQwHhcNMjIwNTEwMDc1NzMzWhcNMjMwNTEwMDc1NzMzWjCBkDELMAkGA1UE
+        TjEyMzQwHhcNMjMwNDI2MTI1OTE5WhcNMzMwNDIzMTI1OTE5WjCBkDELMAkGA1UE
         BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMQwwCgYDVQQK
         DANCTVcxIDAeBgNVBAsMF2VkYy1wbGF5Z3JvdW5kLXBhcnRuZXIxMS8wLQYDVQQD
         DCZzb2tyYXRlcy1lZGMuZGVtby5jYXRlbmEteC5uZXQvQlBOMTIzNDCCASIwDQYJ
-        KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/41S8rumkk+IzBk9pBDETvjlPmlXfw
-        78yRrLmbzaed3kGgygJ2GFFPLcR/Lv0WG8F8au4UEssbOxAU4RRjncCVt66ajaCa
-        llIqMlH8zaJ8rgxNpGeJU5YvmYRxlIo+Gwi0qnF0tqJh8Hry7OqSo0gK2YBBFJyV
-        grMsEz3EcsS3ENYJufNgUIeg4QsaL49M0gWxSexPdC4pon96Nvju90D8RlvAJB21
-        PInqLniMaFlSnRYzCrUaja6HMmzKA+ZPZ1r9lllzsE00RASxRIxlKkwfzTtMb9O6
-        ey2i2vM7hKGGlXjNsnYVX9WXEfvK4JrCadHzgX8qdez19RxFKtB+5gECAwEAAaNT
-        MFEwHQYDVR0OBBYEFOcHLXRWZjHwexDqtgMGTCN/7aZlMB8GA1UdIwQYMBaAFOcH
-        LXRWZjHwexDqtgMGTCN/7aZlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
-        BQADggEBAD2a5kuIdICNXfYLpSe7AIONwZVucaArYtpXBxHEy5lMJsTEJgjZzypd
-        iIMU7onEQGVbii6yVNpWfIpJYM4e8ytVdJuk5evclVKZs/lZ2IshLyWFVj+ITh2E
-        28X4C/Hnmt4MPBCNowQf71nMp4LEziBgXp54qFV9C+qSTEVdrherRE0PU/zKyX10
-        S/P5o42weTHnAO/pBN/8AmL3AymynKVgcPaW46IjjRAuc6kfZWCrYQ0M4+/7Ws5r
-        uM55Zae/L+C82OTNNaaK324ogsCkORPeQ23OCrRD8rZJmQ9bpoOGglPminfwEOhB
-        UHtyKgmvqCyOV3G/4G93W/xsLV0kxLA=
+        KoZIhvcNAQEBBQADggEPADCCAQoCggEBALCr0h3vT5kNnwWhAmGRvEEo38nKyiXB
+        Gx0GlepYToKklMgtGIX25OkOrXJqq4BzybxN27DoWvU9DEixylkCbhwmwmpI3IhF
+        8w6cV/odaYdQ3tEeZ6zWYXqKx+MVWTHQ8A4Njy64PWNDWBZmaGvxeE48i7EJnnrM
+        M5CGDAKbA/Jd1nlFxaq9hGiaCHa2kCNKdfrJ6ZUda5rPlLJk5at3VPxvRIpT50Gp
+        3P4PtdwpwIHwa7y1xTBc43bEfcD1lmR9VkkxCX8lg4V1OBLx1GVwoUZBkN8P4POT
+        t+gQq7FbDbBEeOSmKELC3Tc8D8JCGv94sEg6o+4yzgpvyIvMyV8uGcECAwEAAaNT
+        MFEwHQYDVR0OBBYEFIxEsuJTl+5V8vTCUhMGhWsmdQShMB8GA1UdIwQYMBaAFIxE
+        suJTl+5V8vTCUhMGhWsmdQShMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
+        BQADggEBAJHOKmFNZDk5xebzBARgcIrYrmRb5pIU4gNCWh/q1TF0+CFnnK8RTFTZ
+        12pTbid6v5knn/f9bsilnudhxBzBQ4bukiI8Be0nzYfZU2dTU+w1cl/JnJfkGirt
+        8Nwqv3fiUXfFBl8nE0RduAk9XF/UBIZXPapE6u1zR29jvuV+ppmhQrFFeJufeBGd
+        Wwn6XGK4fzENGDyjdk4QB/dg3/heM5h330vIGO4hVvlQBfJhNbC7Iikkr5ulytfd
+        deuZIfa7hG6WgIgGhg3YL1p/TTpJamBDS860PWyI7RH3o53VPphu/y2Rpud5AECV
+        xcrqaSGUTZPVyTUB8BxE32LqFDbpZb4=
         -----END CERTIFICATE-----
         EOF
         }
