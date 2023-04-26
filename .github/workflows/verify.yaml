@@ -151,8 +151,8 @@ jobs:
         run: |-
           ./gradlew sonar \
             -Pcoverage,failsafe \
-            -Dsonar.projectKey=${GITHUB_REPOSITORY_OWNER}_product-edc \
-            -Dsonar.organization=${GITHUB_REPOSITORY_OWNER} \
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.jacoco.xmlReportPaths=${GITHUB_WORKSPACE}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml \
             -Dsonar.verbose=true
