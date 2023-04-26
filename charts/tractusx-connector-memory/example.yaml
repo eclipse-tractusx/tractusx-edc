@@ -59,7 +59,7 @@ vault:
 
 daps:
   url: "http://ids-daps:4567"
-  clientId: "E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"
+  clientId: "99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23"
 
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"
