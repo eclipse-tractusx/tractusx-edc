@@ -1,0 +1,6 @@
+{
+  "action": "encrypt",
+  "target": "[the asset that is required to be encrypted]",
+  "assigner": "[the connector ID of the party requiring encryption]",
+  "assignee": "[the connector ID of the provider]"
+}

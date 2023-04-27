@@ -1,0 +1,14 @@
+{
+  "$schema": "JWKS_schema.json",
+  "keys": [
+    {
+      "kty": "RSA",
+      "use": "enc",
+      "key_ops": [
+        "encrypt"
+      ],
+      "alg": "[the algorithm used to generate the keypair]",
+      "kid": "[the key's fingerprint, used as a unique ID in key storage]"
+    }
+  ]
+}
