@@ -1,5 +1,7 @@
 rootProject.name = "tractusx-edc"
 
+// spi modules
+include(":spi:control-plane-adapter-spi")
 
 include(":edc-extensions:business-partner-validation")
 include(":edc-extensions:control-plane-adapter")
@@ -13,7 +15,8 @@ include(":edc-extensions:observability-api-customization")
 include(":edc-extensions:transferprocess-sftp-client")
 include(":edc-extensions:transferprocess-sftp-common")
 include(":edc-extensions:transferprocess-sftp-provisioner")
-
+include(":edc-extensions:control-plane-adapter-api")
+include(":edc-extensions:control-plane-adapter-callback")
 
 
 include(":edc-tests:e2e-tests")

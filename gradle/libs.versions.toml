@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.0.1-20230426-SNAPSHOT"
+edc = "0.0.1-SNAPSHOT"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.25"
@@ -28,7 +28,7 @@ edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.r
 edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-spi-aggregateservices = { module = "org.eclipse.edc:aggregate-service-spi", version.ref = "edc" }
-edc-spi-controlplane = { module = "org.eclipse.edc:controlplane-spi", version.ref = "edc" }
+edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }

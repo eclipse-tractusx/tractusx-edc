@@ -35,7 +35,10 @@ on:
     paths-ignore:
       - 'charts/**'
     branches:
-      - '*'
+      - releases
+      - release/**
+      - main
+      - previews/**
   workflow_dispatch:
 
 concurrency:

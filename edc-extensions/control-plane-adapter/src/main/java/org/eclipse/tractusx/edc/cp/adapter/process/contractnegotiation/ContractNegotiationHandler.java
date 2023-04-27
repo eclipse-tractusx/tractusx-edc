@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestData;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestMessage;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
@@ -114,18 +116,18 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
     private String initializeContractNegotiation(
             ContractOffer contractOffer, String providerUrl, String traceId) {
         monitor.info(String.format("[%s] RequestHandler: initiateNegotiation - start", traceId));
-        ContractRequestMessage contractOfferRequest =
-                ContractRequestMessage.Builder.newInstance()
-                        .callbackAddress(providerUrl)
-                        .contractOffer(contractOffer)
-                        .type(ContractRequestMessage.Type.INITIAL)
-                        .connectorId("provider")
-                        .protocol("ids-multipart")
-                        .processId(traceId)
-                        .build();
+
+        var requestData = ContractRequestData.Builder.newInstance()
+                .contractOffer(contractOffer)
+                .callbackAddress(providerUrl)
+                .connectorId("provider")
+                .protocol("ids-multipart")
+                .build();
+
+        var request = ContractRequest.Builder.newInstance().requestData(requestData).build();
 
         ContractNegotiation contractNegotiation =
-                contractNegotiationService.initiateNegotiation(contractOfferRequest);
+                contractNegotiationService.initiateNegotiation(request);
         monitor.info(String.format("[%s] RequestHandler: initiateNegotiation - end", traceId));
         return Optional.ofNullable(contractNegotiation.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Could not find Contract NegotiationId"));
