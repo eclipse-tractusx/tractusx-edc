@@ -52,7 +52,6 @@ jobs:
   secret-presence:
     runs-on: ubuntu-latest
     outputs:
-      SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
       GPG_PRIVATE_KEY: ${{ steps.secret-presence.outputs.GPG_PRIVATE_KEY }}
       GPG_PASSPHRASE: ${{ steps.secret-presence.outputs.GPG_PASSPHRASE }}
       DOCKER_HUB_TOKEN: ${{ steps.secret-presence.outputs.DOCKER_HUB_TOKEN }}
@@ -60,7 +59,6 @@ jobs:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
-          [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "SONAR_TOKEN=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.GPG_PRIVATE_KEY }}" ] && echo "GPG_PRIVATE_KEY=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.GPG_PASSPHRASE }}" ] && echo "GPG_PASSPHRASE=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
