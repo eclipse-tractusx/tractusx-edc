@@ -9,7 +9,6 @@ plugins {
     id("com.diffplug.spotless") version "6.18.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
-    id("org.sonarqube") version "4.0.0.2929"
 }
 
 val javaVersion: String by project
@@ -37,15 +36,9 @@ project.subprojects.forEach {
     }
 }
 
-// make sure the test report aggregation is done before reporting to sonar
-tasks.sonar {
-    dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
-}
-
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
     apply(plugin = "io.freefair.lombok")
-    apply(plugin = "org.sonarqube")
 
     repositories {
         mavenCentral()
@@ -159,12 +152,6 @@ subprojects {
 
             // make sure "shadowJar" always runs before "dockerize"
             dockerTask.dependsOn(tasks.findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
-        }
-    }
-
-    sonarqube {
-        properties {
-            property("sonar.moduleKey", "${project.group}-${project.name}")
         }
     }
 }
