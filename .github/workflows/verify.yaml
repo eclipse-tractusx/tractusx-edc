@@ -44,16 +44,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  secret-presence:
-    runs-on: ubuntu-latest
-    outputs:
-      SONAR_TOKEN: ${{ steps.secret-presence.outputs.SONAR_TOKEN }}
-    steps:
-      - name: Check whether secrets exist
-        id: secret-presence
-        run: |
-          [ ! -z "${{ secrets.SONAR_TOKEN }}" ] && echo "SONAR_TOKEN=true" >> $GITHUB_OUTPUT
-          exit 0
 
   verify-formatting:
     runs-on: ubuntu-latest
@@ -124,37 +114,3 @@ jobs:
 
       - name: Run E2E tests
         run: ./gradlew :edc-tests:runtime:build test -DincludeTags="EndToEndTest"
-
-  sonar:
-    needs: [ secret-presence, verify-formatting ]
-    if: |
-      needs.secret-presence.outputs.SONAR_TOKEN
-    runs-on: ubuntu-latest
-    steps:
-      # Set-Up
-      - uses: actions/checkout@v3.5.2
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-java
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      # Analyse
-      - name: Build with Maven and analyze with Sonar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          JACOCO: true
-        run: |-
-          ./gradlew sonar \
-            -Pcoverage,failsafe \
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
-            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.coverage.jacoco.xmlReportPaths=${GITHUB_WORKSPACE}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml \
-            -Dsonar.verbose=true
-
-
