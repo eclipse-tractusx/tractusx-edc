@@ -31,3 +31,15 @@ dependencies:
     repository: "file://../omejdn"
     alias: idsdaps
     condition: install.daps
+
+  # HashiCorp Vault
+  - name: vault
+    alias: vault
+    version: 0.20.0
+    repository: https://helm.releases.hashicorp.com
+
+  # PostgreSQL
+  - name: postgresql
+    alias: postgresql
+    version: 12.1.6
+    repository: https://charts.bitnami.com/bitnami

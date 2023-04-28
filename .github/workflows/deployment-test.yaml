@@ -88,14 +88,14 @@ jobs:
           imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
           rootDir: "."
           helm_command: |-
-            helm install tx-prod charts/tractusx-connector-app \
-            -f charts/tractusx-connector-app/example.yaml \
+            helm install tx-prod charts/tractusx-connector \
+            -f edc-tests/deployment/src/main/resources/helm/example.yaml \
             --dependency-update \
             --wait-for-jobs --timeout=120s
 
             # wait for the pod to become ready
-            kubectl rollout status deployment tx-prod-runtime-controlplane
-            kubectl rollout status deployment tx-prod-runtime-dataplane
+            kubectl rollout status deployment tx-prod-controlplane
+            kubectl rollout status deployment tx-prod-dataplane
 
             # execute the helm test
             helm test tx-prod --logs
