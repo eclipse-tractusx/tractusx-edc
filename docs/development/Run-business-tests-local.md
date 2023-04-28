@@ -14,7 +14,7 @@ Prerequisites:
 ## 2. Install the all-in-one supporting infrastructure environment (Daps, Vault, PostgreSql, Minio, Backend-Service)
 
 ```shel
-helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure -n business-tests --dependency-update --create-namespace
+helm install infrastructure edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure -n business-tests --dependency-update --create-namespace
 ```
 
 To access the PostgreSql databases you could use following kubectl port forwardings:
@@ -32,7 +32,7 @@ Please use the same ports later for your environment variables.
 helm install plato charts/tractusx-connector -n business-tests --create-namespace \
   --set fullnameOverride=plato \
   --set controlplane.service.type=NodePort \
-  --set controlplane.endpoints.data.authKey=password \
+  --set controlplane.endpoints.management.authKey=password \
   --set controlplane.image.pullPolicy=Never \
   --set controlplane.image.tag=latest \
   --set controlplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
@@ -45,7 +45,6 @@ helm install plato charts/tractusx-connector -n business-tests --create-namespac
   --set postgresql.username=user \
   --set postgresql.password=password \
   --set postgresql.jdbcUrl=jdbc:postgresql://plato-postgresql:5432/edc \
-  --set vault.hashicorp.enabled=true \
   --set vault.hashicorp.url=http://vault:8200 \
   --set vault.hashicorp.token=root \
   --set vault.secretNames.transferProxyTokenSignerPublicKey=plato/daps/my-plato-daps-crt \
@@ -68,7 +67,7 @@ helm install plato charts/tractusx-connector -n business-tests --create-namespac
 helm install sokrates charts/tractusx-connector -n business-tests --create-namespace \
   --set fullnameOverride=sokrates \
   --set controlplane.service.type=NodePort \
-  --set controlplane.endpoints.data.authKey=password \
+  --set controlplane.endpoints.management.authKey=password \
   --set controlplane.image.pullPolicy=Never \
   --set controlplane.image.tag=latest \
   --set controlplane.image.repository=edc-controlplane-postgresql-hashicorp-vault \
@@ -81,7 +80,6 @@ helm install sokrates charts/tractusx-connector -n business-tests --create-names
   --set postgresql.username=user \
   --set postgresql.password=password \
   --set postgresql.jdbcUrl=jdbc:postgresql://sokrates-postgresql:5432/edc \
-  --set vault.hashicorp.enabled=true \
   --set vault.hashicorp.url=http://vault:8200 \
   --set vault.hashicorp.token=root \
   --set vault.secretNames.transferProxyTokenSignerPublicKey=sokrates/daps/my-sokrates-daps-crt \
@@ -107,7 +105,7 @@ You can create a run configuration in IntelliJ like bellow screenshot and copy/p
 ```shell
 PLATO_BACKEND_SERVICE_BACKEND_API_URL=http://localhost:<PORT>;
 PLATO_DATA_MANAGEMENT_API_AUTH_KEY=password;
-PLATO_DATA_MANAGEMENT_URL=http://localhost:<PORT>/data;
+PLATO_DATA_MANAGEMENT_URL=http://localhost:<PORT>/management;
 PLATO_DATA_PLANE_URL=foo;
 PLATO_DATABASE_PASSWORD=password;
 PLATO_DATABASE_URL=jdbc:postgresql://localhost:5555/edc;
@@ -118,7 +116,7 @@ PLATO_AWS_ACCESS_KEY_ID=platoqwerty123;
 SOKRATES_BACKEND_SERVICE_BACKEND_API_URL=http://localhost:<PORT>;
 SOKRATES_BACKEND_URL=http://localhost:<PORT>;
 SOKRATES_DATA_MANAGEMENT_API_AUTH_KEY=password;
-SOKRATES_DATA_MANAGEMENT_URL=http://localhost:<PORT>/data;
+SOKRATES_DATA_MANAGEMENT_URL=http://localhost:<PORT>/management;
 SOKRATES_DATA_PLANE_URL=foo;
 SOKRATES_DATABASE_PASSWORD=password;
 SOKRATES_DATABASE_URL=jdbc:postgresql://localhost:6666/edc;
