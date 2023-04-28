@@ -18,14 +18,6 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 
-## This file can be used to verify that the chart is working properly. It provides an exemplary configuration
-## that is intended to be used with the supporting infrastructure.
-## 1. install DAPS:
-##  helm install infrastructure edc-tests/deployment/src/main/resources/helm/test-infrastructure --wait-for-jobs
-##
-## 2. install the connector plus its third-party dependencies (HashiCorp Vault and Postgres):
-##  helm install tx-prod charts/tractusx-connector-app -f charts/tractusx-connector-app/example.yaml --dependency-update
-
 fullnameOverride: tx-prod
 
 ################################

@@ -89,7 +89,7 @@ jobs:
           rootDir: "."
           helm_command: |-
             helm install tx-prod charts/tractusx-connector \
-            -f edc-tests/deployment/src/main/resources/helm/example.yaml \
+            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
             --dependency-update \
             --wait-for-jobs --timeout=120s
 
