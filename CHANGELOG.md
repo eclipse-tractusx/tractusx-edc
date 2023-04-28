@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2023-04-28
+
+### Fixed
+
+- Added license headers to several files in the code base
+- Refactoring of Helm charts - multiple charts instead of one dynamically assembled chart
+
 ## [0.3.3] - 2023-04-19
 
 ### Fixed
