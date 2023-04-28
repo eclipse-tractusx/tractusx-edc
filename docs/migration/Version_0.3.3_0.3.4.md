@@ -1,4 +1,4 @@
-# Migration from 0.3.4 to 0.3.4
+# Migration from 0.3.3 to 0.3.4
 
 ## Refactoring of Helm Charts
 
