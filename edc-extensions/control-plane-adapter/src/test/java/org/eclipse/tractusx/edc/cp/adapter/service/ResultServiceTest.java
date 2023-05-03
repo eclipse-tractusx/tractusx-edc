@@ -119,7 +119,7 @@ public class ResultServiceTest {
     try {
       Thread.sleep(milisec);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
