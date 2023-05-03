@@ -70,7 +70,7 @@ public class ObjectStoreServiceSql implements ObjectStoreService {
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+
       throw new IllegalArgumentException(String.format("Can not parse object of type %s", type));
     }
   }
@@ -79,7 +79,7 @@ public class ObjectStoreServiceSql implements ObjectStoreService {
     try {
       return mapper.readValue(entity.getObject(), type);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+
       throw new IllegalArgumentException(String.format("Can not parse object of type %s", type));
     }
   }
