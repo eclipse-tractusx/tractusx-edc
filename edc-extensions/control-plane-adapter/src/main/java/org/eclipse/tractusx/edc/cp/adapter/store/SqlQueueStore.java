@@ -69,7 +69,7 @@ public class SqlQueueStore extends AbstractSqlStore {
                 toJson(queueMessage.getMessage()),
                 queueMessage.getInvokeAfter());
           } catch (SQLException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });
@@ -82,7 +82,7 @@ public class SqlQueueStore extends AbstractSqlStore {
             var sql = statements.getFindByIdTemplate();
             return executeQuerySingle(connection, false, this::mapQueueMessage, sql, id);
           } catch (SQLException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });
@@ -99,7 +99,7 @@ public class SqlQueueStore extends AbstractSqlStore {
               var stmt = statements.getDeleteTemplate();
               executeQuery(connection, stmt, id);
             } catch (SQLException | IllegalStateException e) {
-              e.printStackTrace();
+
               throw new EdcPersistenceException(e);
             }
           }
@@ -123,7 +123,7 @@ public class SqlQueueStore extends AbstractSqlStore {
                   queueMessage.getInvokeAfter(),
                   queueMessage.getId());
             } catch (SQLException | IllegalStateException e) {
-              e.printStackTrace();
+
               throw new EdcPersistenceException(e);
             }
           }
@@ -146,7 +146,7 @@ public class SqlQueueStore extends AbstractSqlStore {
             stream.close();
             return result;
           } catch (SQLException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });

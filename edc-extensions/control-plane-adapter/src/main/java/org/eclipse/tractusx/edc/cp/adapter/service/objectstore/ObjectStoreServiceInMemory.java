@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.eclipse.edc.spi.EdcException;
 
 @AllArgsConstructor
 public class ObjectStoreServiceInMemory implements ObjectStoreService {
@@ -33,7 +34,7 @@ public class ObjectStoreServiceInMemory implements ObjectStoreService {
     try {
       map.put(getKey(key, objectType), mapper.writeValueAsString(object));
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+
       throw new IllegalArgumentException();
     }
   }
@@ -67,7 +68,7 @@ public class ObjectStoreServiceInMemory implements ObjectStoreService {
     try {
       object = mapper.readValue(json, type);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      throw new EdcException(e);
     }
     return object;
   }
