@@ -57,7 +57,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
 
     private Result<Void> initiateTransfer(ContractNegotiationFinalized negotiationFinalized) {
 
-        DataRequest dataRequest =
+        var dataRequest =
                 DataRequest.Builder.newInstance()
                         .id(UUID.randomUUID().toString())
                         .assetId(negotiationFinalized.getContractAgreement().getAssetId())
@@ -70,12 +70,12 @@ public class ContractNegotiationCallback implements InProcessCallback {
                         .transferType(TRANSFER_TYPE)
                         .build();
 
-        TransferRequest transferRequest = TransferRequest.Builder.newInstance()
+        var transferRequest = TransferRequest.Builder.newInstance()
                 .dataRequest(dataRequest)
                 .callbackAddresses(negotiationFinalized.getCallbackAddresses())
                 .build();
 
-        ServiceResult<String> result = transferProcessService.initiateTransfer(transferRequest);
+        var result = transferProcessService.initiateTransfer(transferRequest);
 
         if (result.failed()) {
             var msg = format("Failed to initiate a transfer for contract %s and asset %s, error: %s", negotiationFinalized.getContractAgreement().getId(), negotiationFinalized.getContractAgreement().getAssetId(), result.getFailureDetail());

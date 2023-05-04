@@ -43,14 +43,12 @@ public class AdapterTransferProcessServiceImpl implements AdapterTransferProcess
     }
 
     @Override
-    public ServiceResult<String> openTransfer(TransferOpenRequest request) {
-        var contractNegotiation = initializeContractNegotiation(request);
-        return ServiceResult.success(contractNegotiation.getId());
+    public ServiceResult<Void> openTransfer(TransferOpenRequest request) {
+        contractNegotiationService.initiateNegotiation(createContractRequest(request));
+        return ServiceResult.success();
     }
 
-    private ContractNegotiation initializeContractNegotiation(
-            TransferOpenRequest request) {
-
+    private ContractRequest createContractRequest(TransferOpenRequest request) {
         var callbacks = Stream.concat(request.getCallbackAddresses().stream(), Stream.of(LOCAL_CALLBACK)).collect(Collectors.toList());
 
 
@@ -61,11 +59,8 @@ public class AdapterTransferProcessServiceImpl implements AdapterTransferProcess
                 .connectorId(request.getConnectorId())
                 .build();
 
-        var contractRequest = ContractRequest.Builder.newInstance()
+        return ContractRequest.Builder.newInstance()
                 .requestData(requestData)
                 .callbackAddresses(callbacks).build();
-
-        return contractNegotiationService.initiateNegotiation(contractRequest);
-
     }
 }

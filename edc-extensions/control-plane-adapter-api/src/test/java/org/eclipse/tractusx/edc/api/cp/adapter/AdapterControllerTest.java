@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 public class AdapterControllerTest extends RestControllerTestBase {
 
-    public static final String ADAPTER_OPEN_TRANSFER_PATH = "/adapter/open_transfer";
+    public static final String ADAPTER_OPEN_TRANSFER_PATH = "/adapter/transfer/open";
     AdapterTransferProcessService adapterTransferProcessService = mock(AdapterTransferProcessService.class);
 
     TypeTransformerRegistry transformerRegistry = mock(TypeTransformerRegistry.class);
@@ -45,7 +45,7 @@ public class AdapterControllerTest extends RestControllerTestBase {
 
         var openRequest = openRequest();
         when(transformerRegistry.transform(any(), eq(TransferOpenRequest.class))).thenReturn(Result.success(openRequest));
-        when(adapterTransferProcessService.openTransfer(openRequest)).thenReturn(ServiceResult.success("test"));
+        when(adapterTransferProcessService.openTransfer(openRequest)).thenReturn(ServiceResult.success());
 
         TransferOpenRequestDto request = requestDto();
 

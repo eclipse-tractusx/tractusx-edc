@@ -41,14 +41,14 @@ public class AdapterTransferProcessServiceImplTest {
     ContractNegotiationService contractNegotiationService = mock(ContractNegotiationService.class);
 
     @Test
-    void openTransfer_shouldFireAContractNegotiationWithCallbacks() {
+    void openTransfer_shouldFireAContractNegotiation_WhenUsingCallbacks() {
         var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService);
 
         var captor = ArgumentCaptor.forClass(ContractRequest.class);
 
         when(contractNegotiationService.initiateNegotiation(any())).thenReturn(getContractNegotiation());
 
-        TransferOpenRequest transferOpenRequest = getTransferOpenRequest();
+        var transferOpenRequest = getTransferOpenRequest();
 
         var result = transferService.openTransfer(transferOpenRequest);
 

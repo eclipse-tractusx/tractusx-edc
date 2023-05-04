@@ -29,5 +29,5 @@ public interface AdapterTransferProcessService {
      * @param request The open request
      * @return The result
      */
-    ServiceResult<String> openTransfer(TransferOpenRequest request);
+    ServiceResult<Void> openTransfer(TransferOpenRequest request);
 }

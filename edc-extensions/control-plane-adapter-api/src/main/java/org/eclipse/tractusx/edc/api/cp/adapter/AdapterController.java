@@ -29,7 +29,7 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
-@Path("/adapter/open_transfer")
+@Path("/adapter/transfer")
 public class AdapterController implements AdapterApi {
 
     private final AdapterTransferProcessService adapterTransferProcessService;
@@ -42,12 +42,12 @@ public class AdapterController implements AdapterApi {
     }
 
     @POST
+    @Path("/open")
     @Override
     public void openTransfer(TransferOpenRequestDto dto) {
-        var transformResult = transformerRegistry.transform(dto, TransferOpenRequest.class);
-        if (transformResult.failed()) {
-            throw new InvalidRequestException(transformResult.getFailureMessages());
-        }
-        adapterTransferProcessService.openTransfer(transformResult.getContent()).orElseThrow(exceptionMapper(TransferOpenRequest.class));
+        var transformResult = transformerRegistry.transform(dto, TransferOpenRequest.class)
+                .orElseThrow(InvalidRequestException::new);
+
+        adapterTransferProcessService.openTransfer(transformResult).orElseThrow(exceptionMapper(TransferOpenRequest.class));
     }
 }

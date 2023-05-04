@@ -34,11 +34,9 @@ public class InProcessCallbackRegistryImpl implements InProcessCallbackRegistry 
 
     @Override
     public <T extends Event> Result<Void> handleMessage(CallbackEventRemoteMessage<T> message) {
-        var results = new ArrayList<Result<Void>>();
-        for (var handler : handlers) {
-            results.add(handler.invoke(message));
-        }
-        return results.stream().filter(Result::failed)
+        return handlers.stream()
+                .map(handler -> handler.invoke(message))
+                .filter(Result::failed)
                 .findFirst()
                 .orElseGet(Result::success);
     }
