@@ -9,7 +9,10 @@
 --
 --  Contributors:
 --       ZF Friedrichshafen AG - Add column for the dynamically HTTP Receiver callback endpoints
+--       Mercedes-Benz Tech Innovation GmbH - Add default properties
 --
 
 -- add column
 ALTER TABLE edc_transfer_process ADD COLUMN transferprocess_properties TEXT;
+-- set default value
+ALTER TABLE edc_transfer_process ADD CONSTRAINT transferprocess_properties DEFAULT "{}";
