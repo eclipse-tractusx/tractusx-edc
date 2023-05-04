@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
+![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.4](https://img.shields.io/badge/AppVersion-0.3.4-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory
 
@@ -10,7 +10,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.3.3
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.3.4
 ```
 
 ## Source Code
