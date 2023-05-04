@@ -30,8 +30,8 @@ jobs:
       -
         name: Initialize mandatory git config
         run: |
-          git config user.name "GitHub actions"
-          git config user.email noreply@github.com
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
       -
         uses: ./.github/actions/setup-java
       -
