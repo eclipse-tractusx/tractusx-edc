@@ -51,7 +51,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            from("org.eclipse.edc:edc-versions:0.0.1-20230220-SNAPSHOT")
+            from("org.eclipse.edc:edc-versions:0.0.1-20230503-SNAPSHOT")
             library("testcontainers-junit", "org.testcontainers", "junit-jupiter").version("1.17.6")
             library("apache-sshd-core", "org.apache.sshd", "sshd-core").version("2.9.2")
             library("apache-sshd-sftp", "org.apache.sshd", "sshd-sftp").version("2.9.2")
