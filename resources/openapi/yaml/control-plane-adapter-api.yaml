@@ -1,6 +1,6 @@
 openapi: 3.0.1
 paths:
-  /adapter/open_transfer:
+  /adapter/transfer/open:
     post:
       description: Initiates a contract negotiation and a transfer process for a given
         offer and with the given counter part. Please note that successfully invoking
@@ -12,7 +12,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TransferOpenRequestDto'
       responses:
-        "200":
+        "204":
           description: The negotiation was successfully initiated.
         "400":
           content:
