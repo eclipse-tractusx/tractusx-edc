@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import io.restassured.specification.RequestSpecification;
+import org.eclipse.edc.api.model.CallbackAddressDto;
 import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.api.query.QuerySpecDto;
 import org.eclipse.edc.catalog.spi.Catalog;
@@ -36,6 +37,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
 import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -246,6 +248,35 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
 
         return typeManager.readValue(body, IdResponseDto.class).getId();
+    }
+
+    public void openTransfer(Participant other, String assetId, List<CallbackAddressDto> callbackAddresses) {
+        var catalog = requestCatalog(other);
+        assertThat(catalog.getContractOffers()).withFailMessage("Catalog received from " + other.idsId + " was empty!").isNotEmpty();
+        var response = baseRequest()
+                .when()
+                .body(TransferOpenRequestDto.Builder.newInstance()
+                        .connectorAddress(other.idsEndpoint + "/data")
+                        .connectorId(getBpn())
+                        .consumerId(getBpn())
+                        .providerId(other.getBpn())
+                        .offer(catalog.getContractOffers().stream().filter(o -> o.getAsset().getId().equals(assetId))
+                                .findFirst().map(co -> ContractOfferDescription.Builder.newInstance()
+                                        .assetId(assetId)
+                                        .offerId(co.getId())
+                                        .policy(co.getPolicy())
+                                        .validity(ChronoUnit.SECONDS.between(co.getContractStart(), co.getContractEnd().plus(Duration.ofMillis(500)))) // the plus 1 is required due to https://github.com/eclipse-edc/Connector/issues/2650
+                                        .build())
+                                .orElseThrow((() -> new RuntimeException("A contract for assetId " + assetId + " could not be negotiated"))))
+                        .callbackAddresses(callbackAddresses)
+                        .build()
+                )
+                .post("/adapter/transfer/open")
+                .then();
+
+        var body = response.extract().body().asString();
+        assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
+
     }
 
     public ContractNegotiationDto getNegotiation(String negotiationId) {

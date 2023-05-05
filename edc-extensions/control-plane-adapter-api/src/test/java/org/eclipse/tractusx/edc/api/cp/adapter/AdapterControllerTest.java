@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.api.cp.adapter;
 
 import io.restassured.specification.RequestSpecification;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
@@ -33,6 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ApiTest
 public class AdapterControllerTest extends RestControllerTestBase {
 
     public static final String ADAPTER_OPEN_TRANSFER_PATH = "/adapter/transfer/open";

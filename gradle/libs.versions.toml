@@ -75,6 +75,11 @@ edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref
 edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
 
+# Control Plane implementations
+edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
+edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback-http-dispatcher", version.ref = "edc" }
+
+
 # DPF modules
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-transfer = { module = "org.eclipse.edc:transfer-data-plane-spi", version.ref = "edc" }

@@ -32,7 +32,7 @@ dependencies {
     testImplementation(libs.edc.api.contractnegotiation)
     testImplementation(libs.edc.api.transferprocess)
     testImplementation(libs.edc.spi.dataplane.selector)
-
+    testImplementation(project(":edc-extensions:control-plane-adapter-api"))
 }
 
 // do not publish

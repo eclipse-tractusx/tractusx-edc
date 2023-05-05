@@ -20,7 +20,6 @@ import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferType;
-import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -52,7 +51,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
         if (message.getEventEnvelope().getPayload() instanceof ContractNegotiationFinalized) {
             return initiateTransfer((ContractNegotiationFinalized) message.getEventEnvelope().getPayload());
         }
-        return Result.failure(format("Message of type %s not supported", message.getEventEnvelope().getPayload().getClass().getSimpleName()));
+        return Result.success();
     }
 
     private Result<Void> initiateTransfer(ContractNegotiationFinalized negotiationFinalized) {
