@@ -49,29 +49,35 @@ jobs:
       packages: write
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
-      -
-        name: Export RELEASE_VERSION env
+      - name: Export RELEASE_VERSION env
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
-      -
-        uses: actions/checkout@v3.5.2
-      -
-        uses: ./.github/actions/setup-java
-
-      - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v5
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Publish release version
+      - name: List Keys
         run: |
-          echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
-          ./gradlew publishAllPublicationsToGithubPackagesRepository
+          gpg -K --keyid-format=long
+
+      - name: Import GPG Private Key
+        run: |
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo -e "${{ secrets.ORG_GPG_PRIVATE_KEY }}" | gpg --import --batch
+          for fpr in $(gpg --list-keys --with-colons | awk -F: '/fpr:/ {print $10}' | sort -u);
+          do
+            echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
+          done
+
+      # Set-Up
+      - uses: actions/checkout@v3.5.2
+      - uses: ./.github/actions/setup-java
+
+      # publish releases
+      - name: Publish version
         env:
-          REPO: ${{ github.repository }}
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
+        run: |-
+          echo "Publishing Version $RELEASE_VERSION to Sonatype/MavenCentral"
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$RELEASE_VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
 
   docker-release:
     name: Publish Docker images
