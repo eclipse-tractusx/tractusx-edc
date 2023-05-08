@@ -17,9 +17,8 @@ package org.eclipse.tractusx.edc.api.cp.adapter;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 
 import java.util.UUID;
 
@@ -68,7 +67,7 @@ public class TestFunctions {
                 .protocol("test-protocol")
                 .offer(ContractOffer.Builder.newInstance()
                         .id("offerId")
-                        .asset(Asset.Builder.newInstance().id("assetId").build())
+                        .assetId("assetId")
                         .policy(Policy.Builder.newInstance().build()).build())
                 .build();
     }

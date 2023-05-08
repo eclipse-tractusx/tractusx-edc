@@ -22,8 +22,8 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
 
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 
@@ -35,7 +35,7 @@ public class AdapterController implements AdapterApi {
     private final AdapterTransferProcessService adapterTransferProcessService;
 
     private final TypeTransformerRegistry transformerRegistry;
-    
+
     public AdapterController(AdapterTransferProcessService adapterTransferProcessService, TypeTransformerRegistry transformerRegistry) {
         this.adapterTransferProcessService = adapterTransferProcessService;
         this.transformerRegistry = transformerRegistry;

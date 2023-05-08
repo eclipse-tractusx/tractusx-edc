@@ -32,12 +32,11 @@ public class TransferOpenRequestDtoValidationTest {
             validator = factory.getValidator();
         }
     }
-    
+
     @Test
     void validate_invalidDto() {
         var dto = TransferOpenRequestDto.Builder.newInstance().build();
         assertThat(validator.validate(dto)).hasSize(3);
     }
-
 
 }

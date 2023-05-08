@@ -44,13 +44,12 @@ public class AdapterApiExtensionTest {
 
     @BeforeEach
     void setUp(ObjectFactory factory, ServiceExtensionContext context) {
-
         context.registerService(WebService.class, webService);
         context.registerService(TypeTransformerRegistry.class, transformerRegistry);
         context.registerService(ManagementApiConfiguration.class, configuration);
         extension = factory.constructInstance(AdapterApiExtension.class);
     }
-    
+
     @Test
     void initialize_ShouldConfigureTheController(ServiceExtensionContext context) {
         var alias = "context";
@@ -58,9 +57,7 @@ public class AdapterApiExtensionTest {
         when(configuration.getContextAlias()).thenReturn(alias);
         extension.initialize(context);
 
-
         verify(webService).registerResource(eq(alias), isA(AdapterController.class));
         verify(transformerRegistry).register(isA(TransferOpenRequestDtoToTransferOpenRequestTransformer.class));
-
     }
 }

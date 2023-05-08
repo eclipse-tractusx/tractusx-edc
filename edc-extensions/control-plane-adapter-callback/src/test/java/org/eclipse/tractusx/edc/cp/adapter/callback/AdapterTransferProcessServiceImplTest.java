@@ -19,9 +19,8 @@ import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -70,15 +69,14 @@ public class AdapterTransferProcessServiceImplTest {
 
     private TransferOpenRequest getTransferOpenRequest() {
         return TransferOpenRequest.Builder.newInstance()
-                .providerId("provider")
-                .consumerId("consumer")
                 .protocol("protocol")
                 .connectorAddress("http://test")
                 .callbackAddresses(List.of(CallbackAddress.Builder.newInstance().uri("test").events(Set.of("test")).build()))
                 .offer(ContractOffer.Builder.newInstance()
                         .id("id")
-                        .asset(Asset.Builder.newInstance().build())
+                        .assetId("assetId")
                         .policy(Policy.Builder.newInstance().build())
+                        .providerId("provider")
                         .contractStart(ZonedDateTime.now())
                         .contractEnd(ZonedDateTime.now())
                         .build())

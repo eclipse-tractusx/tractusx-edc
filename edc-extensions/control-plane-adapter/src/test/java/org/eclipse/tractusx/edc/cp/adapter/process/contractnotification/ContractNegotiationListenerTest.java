@@ -139,8 +139,8 @@ public class ContractNegotiationListenerTest {
                 .contractAgreement(
                         ContractAgreement.Builder.newInstance()
                                 .id("contractAgreementId")
-                                .providerAgentId("providerAgentId")
-                                .consumerAgentId("consumerAgentId")
+                                .providerId("providerAgentId")
+                                .consumerId("consumerAgentId")
                                 .assetId("assetId")
                                 .policy(Policy.Builder.newInstance().build())
                                 .build())

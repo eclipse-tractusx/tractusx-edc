@@ -15,7 +15,7 @@
 package org.eclipse.tractusx.edc.spi.cp.adapter.service;
 
 import org.eclipse.edc.service.spi.result.ServiceResult;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 
 /**
  * Service for opening a transfer process.

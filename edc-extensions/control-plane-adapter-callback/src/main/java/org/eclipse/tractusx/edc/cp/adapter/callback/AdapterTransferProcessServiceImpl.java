@@ -14,14 +14,13 @@
 
 package org.eclipse.tractusx.edc.cp.adapter.callback;
 
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestData;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,7 +49,6 @@ public class AdapterTransferProcessServiceImpl implements AdapterTransferProcess
 
     private ContractRequest createContractRequest(TransferOpenRequest request) {
         var callbacks = Stream.concat(request.getCallbackAddresses().stream(), Stream.of(LOCAL_CALLBACK)).collect(Collectors.toList());
-
 
         var requestData = ContractRequestData.Builder.newInstance()
                 .contractOffer(request.getOffer())

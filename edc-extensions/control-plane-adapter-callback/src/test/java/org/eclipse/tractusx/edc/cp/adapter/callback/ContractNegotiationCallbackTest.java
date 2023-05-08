@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.Contract
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationTerminated;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -43,7 +44,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.ContractNegotiationCallback.DATA_DESTINATION;
-import static org.eclipse.tractusx.edc.cp.adapter.callback.ContractNegotiationCallback.TRANSFER_TYPE;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.getNegotiationFinalizedEvent;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.remoteMessage;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +71,7 @@ public class ContractNegotiationCallbackTest {
 
         var captor = ArgumentCaptor.forClass(TransferRequest.class);
 
-        when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success("test"));
+        when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(TransferProcess.Builder.newInstance().id("test").build()));
 
         var event = getNegotiationFinalizedEvent();
         var message = remoteMessage(event);
@@ -94,16 +94,13 @@ public class ContractNegotiationCallbackTest {
             assertThat(dataRequest.getConnectorId()).isEqualTo(event.getCounterPartyId());
             assertThat(dataRequest.getProtocol()).isEqualTo(event.getProtocol());
             assertThat(dataRequest.getDataDestination()).usingRecursiveComparison().isEqualTo(DATA_DESTINATION);
-            assertThat(dataRequest.getTransferType()).usingRecursiveComparison().isEqualTo(TRANSFER_TYPE);
         });
 
     }
 
     @Test
     void invoke_shouldThrowException_whenATransferRequestFails() {
-
-        var captor = ArgumentCaptor.forClass(TransferRequest.class);
-
+        
         when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.badRequest("test"));
 
         var event = getNegotiationFinalizedEvent();

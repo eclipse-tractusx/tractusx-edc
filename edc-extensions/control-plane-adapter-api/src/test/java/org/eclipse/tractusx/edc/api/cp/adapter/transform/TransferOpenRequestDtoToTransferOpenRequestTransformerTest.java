@@ -53,7 +53,6 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
                 .connectorId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
-                .consumerId("test-consumer")
                 .providerId("test-provider")
                 .offer(createOffer("offerId", "assetId"))
                 .callbackAddresses(List.of(callback))
@@ -78,7 +77,6 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
                 .connectorId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
-                .consumerId("urn:connector:test-consumer")
                 // do not set provider ID
                 .offer(createOffer("offerId", "assetId"))
                 .build();
@@ -86,8 +84,7 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
         var request = transformer.transform(dto, context);
 
         assertThat(request).isNotNull();
-        assertThat(request.getOffer().getProvider()).asString().isEqualTo(dto.getConnectorAddress());
-        assertThat(request.getOffer().getConsumer()).asString().isEqualTo("urn:connector:test-consumer");
+        assertThat(request.getOffer().getProviderId()).asString().isEqualTo(dto.getConnectorAddress());
     }
 
     @Test
@@ -103,7 +100,6 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
 
         var request = transformer.transform(dto, context);
         assertThat(request).isNotNull();
-        assertThat(request.getOffer().getProvider()).asString().isEqualTo("urn:connector:test-provider");
-        assertThat(request.getOffer().getConsumer()).asString().isEqualTo(DEFAULT_CONSUMER_ID);
+        assertThat(request.getOffer().getProviderId()).asString().isEqualTo("urn:connector:test-provider");
     }
 }

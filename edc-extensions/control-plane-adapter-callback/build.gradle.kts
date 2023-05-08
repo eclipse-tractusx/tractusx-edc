@@ -17,8 +17,6 @@ plugins {
     `maven-publish`
 }
 
-
-
 dependencies {
     implementation(project(":spi:control-plane-adapter-spi"))
     implementation(libs.edc.spi.core)

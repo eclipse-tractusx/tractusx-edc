@@ -32,8 +32,7 @@ public interface AdapterApi {
     @Operation(description = "Initiates a contract negotiation and a transfer process for a given offer and with the given counter part. Please note that successfully invoking this endpoint " +
             "only means that the negotiation was initiated.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "The negotiation was successfully initiated."
-                    ),
+                    @ApiResponse(responseCode = "204", description = "The negotiation was successfully initiated."),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })

@@ -30,6 +30,7 @@ import static org.eclipse.tractusx.edc.cp.adapter.callback.InProcessCallbackMess
 @Provides(AdapterTransferProcessService.class)
 public class LocalCallbackExtension implements ServiceExtension {
 
+    public static final String LOCAL = "local";
     @Inject
     private RemoteMessageDispatcherRegistry registry;
 
@@ -58,7 +59,7 @@ public class LocalCallbackExtension implements ServiceExtension {
 
     private String resolveProtocol(String scheme) {
 
-        if (scheme.equalsIgnoreCase("local")) {
+        if (scheme.equalsIgnoreCase(LOCAL)) {
             return CALLBACK_EVENT_LOCAL;
         }
         return null;

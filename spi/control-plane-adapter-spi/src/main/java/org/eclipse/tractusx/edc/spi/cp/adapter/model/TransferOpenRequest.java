@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.spi.cp.adapter.types;
+package org.eclipse.tractusx.edc.spi.cp.adapter.model;
 
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
@@ -27,8 +27,6 @@ public class TransferOpenRequest {
     private String protocol = "ids-multipart";
     private String connectorId;
     private ContractOffer offer;
-    private String providerId;
-    private String consumerId;
 
     private List<CallbackAddress> callbackAddresses = new ArrayList<>();
 
@@ -48,14 +46,6 @@ public class TransferOpenRequest {
         return connectorId;
     }
 
-
-    public String getConsumerId() {
-        return consumerId;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
 
     public List<CallbackAddress> getCallbackAddresses() {
         return callbackAddresses;
@@ -94,17 +84,6 @@ public class TransferOpenRequest {
 
         public Builder offer(ContractOffer offer) {
             entity.offer = offer;
-            return this;
-        }
-
-
-        public Builder consumerId(String consumerId) {
-            entity.consumerId = consumerId;
-            return this;
-        }
-
-        public Builder providerId(String providerId) {
-            entity.providerId = providerId;
             return this;
         }
 

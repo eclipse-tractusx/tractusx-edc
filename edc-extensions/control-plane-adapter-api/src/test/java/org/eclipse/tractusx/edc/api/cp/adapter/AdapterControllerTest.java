@@ -22,8 +22,8 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -49,8 +49,7 @@ public class AdapterControllerTest extends RestControllerTestBase {
         when(transformerRegistry.transform(any(), eq(TransferOpenRequest.class))).thenReturn(Result.success(openRequest));
         when(adapterTransferProcessService.openTransfer(openRequest)).thenReturn(ServiceResult.success());
 
-        TransferOpenRequestDto request = requestDto();
-
+        var request = requestDto();
 
         baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +78,6 @@ public class AdapterControllerTest extends RestControllerTestBase {
     protected Object controller() {
         return new AdapterController(adapterTransferProcessService, transformerRegistry);
     }
-
 
     private RequestSpecification baseRequest() {
         return given()

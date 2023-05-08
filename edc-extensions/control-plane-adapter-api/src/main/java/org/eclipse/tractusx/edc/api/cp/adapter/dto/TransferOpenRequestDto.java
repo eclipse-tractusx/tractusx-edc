@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransferOpenRequestDto {
-    
+
     @NotBlank(message = "connectorAddress is mandatory")
     private String connectorAddress;
     @NotBlank(message = "protocol is mandatory")
@@ -32,7 +32,6 @@ public class TransferOpenRequestDto {
     private String connectorId;
 
     private String providerId;
-    private String consumerId;
 
     @NotNull(message = "offer cannot be null")
     private ContractOfferDescription offer;
@@ -54,11 +53,6 @@ public class TransferOpenRequestDto {
         return connectorId;
     }
 
-
-    public String getConsumerId() {
-        return consumerId;
-    }
-
     public String getProviderId() {
         return providerId;
     }
@@ -70,11 +64,7 @@ public class TransferOpenRequestDto {
     public ContractOfferDescription getOffer() {
         return offer;
     }
-
-    public ContractOfferDescription getOfferId() {
-        return offer;
-    }
-
+    
     public static final class Builder {
         private final TransferOpenRequestDto dto;
 
@@ -103,11 +93,6 @@ public class TransferOpenRequestDto {
 
         public Builder offer(ContractOfferDescription offer) {
             dto.offer = offer;
-            return this;
-        }
-
-        public Builder consumerId(String consumerId) {
-            dto.consumerId = consumerId;
             return this;
         }
 

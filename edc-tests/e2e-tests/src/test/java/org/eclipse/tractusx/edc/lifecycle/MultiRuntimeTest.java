@@ -39,16 +39,19 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRAT
 
 
 public class MultiRuntimeTest {
-
+    public static final String BPN_SUFFIX = "-BPN";
+    public static final String SOKRATES_NAME = "SOKRATES";
+    public static final String SOKRATES_BPN = SOKRATES_NAME + BPN_SUFFIX;
 
     @RegisterExtension
     protected static Participant sokrates = new Participant(
             ":edc-tests:runtime",
-            "SOKRATES",
+            SOKRATES_NAME,
+            SOKRATES_BPN,
             new HashMap<>() {
                 {
                     put("edc.connector.name", "sokrates");
-                    put("edc.ids.id", "urn:connector:sokrates");
+                    put("edc.participant.id", SOKRATES_BPN);
                     put("web.http.port", String.valueOf(SOKRATES_CONNECTOR_PORT));
                     put("web.http.path", SOKRATES_CONNECTOR_PATH);
                     put("web.http.management.port", String.valueOf(SOKRATES_MANAGEMENT_PORT));
@@ -73,15 +76,18 @@ public class MultiRuntimeTest {
                     put("edc.agent.identity.key", "BusinessPartnerNumber");
                 }
             });
+    public static final String PLATO_NAME = "PLATO";
+    public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
 
     @RegisterExtension
     protected static Participant plato = new Participant(
             ":edc-tests:runtime",
-            "PLATO",
+            PLATO_NAME,
+            PLATO_BPN,
             new HashMap<>() {
                 {
                     put("edc.connector.name", "plato");
-                    put("edc.ids.id", "urn:connector:plato");
+                    put("edc.participant.id", PLATO_BPN);
                     put("web.http.default.port", String.valueOf(PLATO_CONNECTOR_PORT));
                     put("web.http.default.path", PLATO_CONNECTOR_PATH);
                     put("web.http.management.port", String.valueOf(PLATO_MANAGEMENT_PORT));

@@ -21,7 +21,6 @@ import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestData;
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestMessage;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -108,7 +107,7 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
             String assetId, String providerUrl, int catalogExpiryTime) {
         Catalog catalog = catalogRetriever.getEntireCatalog(providerUrl, assetId, catalogExpiryTime);
         return Optional.ofNullable(catalog.getContractOffers()).orElse(Collections.emptyList()).stream()
-                .filter(it -> it.getAsset().getId().equals(assetId))
+                .filter(it -> it.getAssetId().equals(assetId))
                 .findFirst()
                 .orElse(null);
     }

@@ -17,7 +17,8 @@ plugins {
 }
 
 dependencies {
-    testImplementation("com.squareup.okhttp3:mockwebserver:5.0.0-alpha.11")
+    testImplementation(project(":edc-extensions:control-plane-adapter-api"))
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.postgres)
     testImplementation(libs.awaitility)
@@ -32,7 +33,6 @@ dependencies {
     testImplementation(libs.edc.api.contractnegotiation)
     testImplementation(libs.edc.api.transferprocess)
     testImplementation(libs.edc.spi.dataplane.selector)
-    testImplementation(project(":edc-extensions:control-plane-adapter-api"))
 }
 
 // do not publish

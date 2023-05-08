@@ -16,15 +16,13 @@ package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
 import org.eclipse.edc.api.transformer.DtoTransformer;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
-import org.eclipse.tractusx.edc.spi.cp.adapter.types.TransferOpenRequest;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URI;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
@@ -56,9 +54,8 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformer implements D
 
         var contractOffer = ContractOffer.Builder.newInstance()
                 .id(object.getOffer().getOfferId())
-                .asset(Asset.Builder.newInstance().id(object.getOffer().getAssetId()).build())
-                .consumer(createUri(object.getConsumerId(), defaultConsumerId))
-                .provider(createUri(object.getProviderId(), object.getConnectorAddress()))
+                .assetId(object.getOffer().getAssetId())
+                .providerId(getId(object.getProviderId(), object.getConnectorAddress()))
                 .policy(object.getOffer().getPolicy())
                 .contractStart(now)
                 .contractEnd(now.plusSeconds(object.getOffer().getValidity()))
@@ -67,15 +64,14 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformer implements D
         return TransferOpenRequest.Builder.newInstance()
                 .connectorId(object.getConnectorId())
                 .connectorAddress(object.getConnectorAddress())
-                .consumerId(object.getConsumerId())
-                .providerId(object.getProviderId())
                 .protocol(object.getProtocol())
                 .offer(contractOffer)
                 .callbackAddresses(callbacks)
                 .build();
     }
 
-    private URI createUri(String value, String defaultValue) {
-        return URI.create(value != null ? value : defaultValue);
+    private String getId(String value, String defaultValue) {
+        return value != null ? value : defaultValue;
     }
+
 }

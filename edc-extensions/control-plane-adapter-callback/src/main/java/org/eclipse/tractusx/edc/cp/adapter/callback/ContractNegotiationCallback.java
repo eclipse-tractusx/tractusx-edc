@@ -19,7 +19,6 @@ import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
-import org.eclipse.edc.connector.transfer.spi.types.TransferType;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -33,10 +32,6 @@ import static java.lang.String.format;
 public class ContractNegotiationCallback implements InProcessCallback {
 
     public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy").build();
-    public static final TransferType TRANSFER_TYPE = TransferType.Builder.transferType()
-            .contentType("application/octet-stream")
-            .isFinite(true)
-            .build();
     private final TransferProcessService transferProcessService;
 
     private final Monitor monitor;
@@ -66,7 +61,6 @@ public class ContractNegotiationCallback implements InProcessCallback {
                         .protocol(negotiationFinalized.getProtocol())
                         .dataDestination(DATA_DESTINATION)
                         .managedResources(false)
-                        .transferType(TRANSFER_TYPE)
                         .build();
 
         var transferRequest = TransferRequest.Builder.newInstance()
