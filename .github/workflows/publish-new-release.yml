@@ -58,20 +58,26 @@ jobs:
       -
         uses: ./.github/actions/setup-java
 
+      - uses: ./.github/actions/setup-java
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v5
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg_private_key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
 
       - name: Publish release version
-        run: |
-          echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
-          ./gradlew publishAllPublicationsToGithubPackagesRepository
         env:
-          REPO: ${{ github.repository }}
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
+        run: |-
+          VERSION=$(gradle properties -q | grep "version:" | awk '{print $2}')
+          cmd=""
+          if [[ $VERSION != *-SNAPSHOT ]]
+          then
+            cmd="closeAndReleaseSonatypeStagingRepository";
+          fi
+          echo "Publishing Version $VERSION to Github Packages"
+          ./gradlew publishToSonatype ${cmd} --no-parallel -Pversion=$VERSION
 
   docker-release:
     name: Publish Docker images

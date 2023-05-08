@@ -52,16 +52,18 @@ jobs:
   secret-presence:
     runs-on: ubuntu-latest
     outputs:
-      GPG_PRIVATE_KEY: ${{ steps.secret-presence.outputs.GPG_PRIVATE_KEY }}
-      GPG_PASSPHRASE: ${{ steps.secret-presence.outputs.GPG_PASSPHRASE }}
       DOCKER_HUB_TOKEN: ${{ steps.secret-presence.outputs.DOCKER_HUB_TOKEN }}
+      HAS_OSSRH: ${{ steps.secret-presence.outputs.HAS_OSSRH }}
     steps:
       - name: Check whether secrets exist
         id: secret-presence
         run: |
-          [ ! -z "${{ secrets.GPG_PRIVATE_KEY }}" ] && echo "GPG_PRIVATE_KEY=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.GPG_PASSPHRASE }}" ] && echo "GPG_PASSPHRASE=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] && 
+          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] && 
+          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] && 
+          [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && 
+          echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
           exit 0
 
   build-extensions:
@@ -107,7 +109,7 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-  publish-to-github-packages:
+  publish-to-maven-central:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -116,7 +118,7 @@ jobs:
 
     # do not run on PR branches, do not run on releases
     if: |
-      needs.secret-presence.outputs.GPG_PASSPHRASE && needs.secret-presence.outputs.GPG_PRIVATE_KEY && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
+      needs.secret-presence.outputs.HAS_OSSRH && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
     steps:
       # Set-Up
       - uses: actions/checkout@v3.5.2
@@ -125,15 +127,22 @@ jobs:
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v5
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg_private_key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
 
-      # publish snapshots
+      # publish snapshots or releases
       - name: Publish snapshot versions
-        run: |-
-          echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
-          ./gradlew publishAllPublicationsToGitHubPackagesRepository
         env:
-          REPO: ${{ github.repository }}
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
+        run: |-
+          VERSION=$(gradle properties -q | grep "version:" | awk '{print $2}')
+          cmd=""
+          if [[ $VERSION != *-SNAPSHOT ]]
+          then
+            cmd="closeAndReleaseSonatypeStagingRepository";
+          fi
+          echo "Publishing Version $VERSION to Github Packages"
+          ./gradlew publishToSonatype ${cmd} --no-parallel -Pversion=$VERSION
+          
+
