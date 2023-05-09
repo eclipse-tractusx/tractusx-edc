@@ -52,23 +52,16 @@ jobs:
       - name: Export RELEASE_VERSION env
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
-      - name: List Keys
-        run: |
-          gpg -K --keyid-format=long
-
-      - name: Import GPG Private Key
-        run: |
-          echo "use-agent" >> ~/.gnupg/gpg.conf
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-          echo -e "${{ secrets.ORG_GPG_PRIVATE_KEY }}" | gpg --import --batch
-          for fpr in $(gpg --list-keys --with-colons | awk -F: '/fpr:/ {print $10}' | sort -u);
-          do
-            echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
-          done
 
       # Set-Up
       - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/setup-java
+
+      # Import GPG Key
+      - uses: ./.github/actions/import-gpg-key
+        name: "Import GPG Key"
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
 
       # publish releases
       - name: Publish version
