@@ -34,8 +34,6 @@ on:
   pull_request:
     paths-ignore:
       - 'charts/**'
-    branches:
-      - '*'
   workflow_dispatch:
 
 concurrency:

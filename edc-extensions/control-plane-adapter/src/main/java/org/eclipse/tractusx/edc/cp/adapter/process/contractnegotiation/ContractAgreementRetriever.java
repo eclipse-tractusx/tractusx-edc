@@ -69,7 +69,7 @@ public class ContractAgreementRetriever {
     }
     int numberOfProviders =
         agreements.stream()
-            .collect(Collectors.groupingBy(ContractAgreement::getProviderAgentId))
+            .collect(Collectors.groupingBy(ContractAgreement::getProviderId))
             .size();
     if (numberOfProviders > 1) {
       monitor.warning("Contract agreement: given assetId found for more than one provider!");

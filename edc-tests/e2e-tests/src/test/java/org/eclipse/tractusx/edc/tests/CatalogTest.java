@@ -18,6 +18,7 @@ package org.eclipse.tractusx.edc.tests;
 import org.eclipse.edc.api.query.QuerySpecDto;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -48,9 +49,8 @@ public class CatalogTest extends MultiRuntimeTest {
         assertThat(catalog.getContractOffers()).isNotEmpty()
                 .hasSize(1)
                 .allSatisfy(co -> {
-                    assertThat(co.getAsset().getId()).isEqualTo("test-asset");
-                    assertThat(co.getProvider().toString()).isEqualTo(sokrates.idsId());
-                    assertThat(co.getConsumer().toString()).isEqualTo(plato.idsId());
+                    assertThat(co.getAssetId()).isEqualTo("test-asset");
+                    assertThat(co.getProviderId()).isEqualTo(sokrates.getBpn());
                 });
 
     }
@@ -91,13 +91,13 @@ public class CatalogTest extends MultiRuntimeTest {
 
         var catalog = plato.requestCatalog(sokrates);
         assertThat(catalog.getContractOffers()).hasSize(2)
-                .allSatisfy(cd -> assertThat(cd.getAsset().getId()).isEqualTo("asset-1"))
-                // .hasToString is advisable as it handles NPEs better:
-                .allSatisfy(cd -> assertThat(cd.getConsumer()).hasToString(plato.idsId()))
-                .allSatisfy(cd -> assertThat(cd.getProvider()).hasToString(sokrates.idsId()));
+                .allSatisfy(cd -> assertThat(cd.getAssetId()).isEqualTo("asset-1"))
+                .allSatisfy(cd -> assertThat(cd.getProviderId()).hasToString(sokrates.getBpn()));
     }
 
     @Test
+    // TODO enable once the new protocol is used
+    @Disabled
     @DisplayName("Catalog with 1000 offers")
     void requestCatalog_of1000Assets_shouldContainAll() {
         var policy = businessPartnerNumberPolicy("policy-1", plato.getBpn());

@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import io.restassured.specification.RequestSpecification;
+import org.eclipse.edc.api.model.CallbackAddressDto;
 import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.api.query.QuerySpecDto;
 import org.eclipse.edc.catalog.spi.Catalog;
@@ -36,6 +37,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
 import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -63,18 +65,18 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     private final String apiKey;
     private final String idsEndpoint;
     private final TypeManager typeManager = new TypeManager();
-    private final String idsId;
+    private final String runtimeName;
     private final String bpn;
     private final String backend;
     private DataWiper wiper;
 
-    public Participant(String moduleName, String runtimeName, Map<String, String> properties) {
+    public Participant(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
         this.managementUrl = URI.create(format("http://localhost:%s%s", properties.get("web.http.management.port"), properties.get("web.http.management.path"))).toString();
         this.idsEndpoint = URI.create(format("http://localhost:%s%s", properties.get("web.http.ids.port"), properties.get("web.http.ids.path"))).toString();
         this.apiKey = properties.get("edc.api.auth.key");
-        this.idsId = properties.get("edc.ids.id");
-        this.bpn = runtimeName + "-BPN";
+        this.bpn = bpn;
+        this.runtimeName = runtimeName;
         this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
         this.registerServiceMock(IdentityService.class, new MockDapsService(getBpn()));
 
@@ -221,7 +223,7 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
 
     public String negotiateContract(Participant other, String assetId) {
         var catalog = requestCatalog(other);
-        assertThat(catalog.getContractOffers()).withFailMessage("Catalog received from " + other.idsId + " was empty!").isNotEmpty();
+        assertThat(catalog.getContractOffers()).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
         var response = baseRequest()
                 .when()
                 .body(NegotiationInitiateRequestDto.Builder.newInstance()
@@ -229,7 +231,7 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                         .connectorId(getBpn())
                         .consumerId(getBpn())
                         .providerId(other.getBpn())
-                        .offer(catalog.getContractOffers().stream().filter(o -> o.getAsset().getId().equals(assetId))
+                        .offer(catalog.getContractOffers().stream().filter(o -> o.getAssetId().equals(assetId))
                                 .findFirst().map(co -> ContractOfferDescription.Builder.newInstance()
                                         .assetId(assetId)
                                         .offerId(co.getId())
@@ -248,6 +250,36 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return typeManager.readValue(body, IdResponseDto.class).getId();
     }
 
+    public void openTransfer(Participant other, String assetId, List<CallbackAddressDto> callbackAddresses) {
+        var catalog = requestCatalog(other);
+        assertThat(catalog.getContractOffers()).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
+        var offer = catalog.getContractOffers().stream().filter(o -> o.getAssetId().equals(assetId))
+                .findFirst().map(co -> ContractOfferDescription.Builder.newInstance()
+                        .assetId(assetId)
+                        .offerId(co.getId())
+                        .policy(co.getPolicy())
+                        .validity(ChronoUnit.SECONDS.between(co.getContractStart(), co.getContractEnd().plus(Duration.ofMillis(500)))) // the plus 1 is required due to https://github.com/eclipse-edc/Connector/issues/2650
+                        .build())
+                .orElseThrow((() -> new RuntimeException("A contract for assetId " + assetId + " could not be negotiated")));
+
+        var response = baseRequest()
+                .when()
+                .body(TransferOpenRequestDto.Builder.newInstance()
+                        .connectorAddress(other.idsEndpoint + "/data")
+                        .connectorId(getBpn())
+                        .providerId(other.getBpn())
+                        .offer(offer)
+                        .callbackAddresses(callbackAddresses)
+                        .build()
+                )
+                .post("/adapter/transfer/open")
+                .then();
+
+        var body = response.extract().body().asString();
+        assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
+
+    }
+
     public ContractNegotiationDto getNegotiation(String negotiationId) {
         var response = baseRequest()
                 .when()
@@ -257,13 +289,6 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         var body = response.extract().body().asString();
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
         return typeManager.readValue(body, ContractNegotiationDto.class);
-    }
-
-    /**
-     * Returns this participant's IDS ID
-     */
-    public String idsId() {
-        return idsId;
     }
 
     /**

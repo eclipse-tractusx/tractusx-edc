@@ -82,8 +82,8 @@ class ProvisionAdditionalHeadersExtensionTest {
 
         var agreement = ContractAgreement.Builder.newInstance()
                 .id("aContractId")
-                .providerAgentId("provider")
-                .consumerAgentId("consumer")
+                .providerId("provider")
+                .consumerId("consumer")
                 .policy(Policy.Builder.newInstance().build())
                 .assetId("assetId")
                 .build();
@@ -95,7 +95,7 @@ class ProvisionAdditionalHeadersExtensionTest {
         dataFlowManager.register(dataFlowController);
         var asset = Asset.Builder.newInstance().id("assetId").build();
         var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
-        assetIndex.accept(asset, dataAddress);
+        assetIndex.create(asset, dataAddress);
 
         var transferMessage = TransferRequestMessage.Builder.newInstance()
                 .id("id")

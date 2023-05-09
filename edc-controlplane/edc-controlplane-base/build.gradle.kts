@@ -10,6 +10,8 @@ dependencies {
     runtimeOnly(project(":edc-extensions:control-plane-adapter"))
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:observability-api-customization"))
+    runtimeOnly(project(":edc-extensions:control-plane-adapter-api"))
+    runtimeOnly(project(":edc-extensions:control-plane-adapter-callback"))
 
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.config.filesystem)
@@ -24,4 +26,7 @@ dependencies {
     runtimeOnly(libs.edc.ext.http)
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.transfer.dynamicreceiver)
+    runtimeOnly(libs.edc.controlplane.callback.dispatcher.event)
+    runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
+
 }

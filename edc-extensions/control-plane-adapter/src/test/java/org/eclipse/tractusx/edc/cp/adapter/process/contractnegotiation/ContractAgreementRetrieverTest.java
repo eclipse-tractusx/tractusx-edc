@@ -14,11 +14,6 @@
 
 package org.eclipse.tractusx.edc.cp.adapter.process.contractnegotiation;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.time.Instant;
-import java.util.stream.Stream;
 import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.policy.model.Policy;
@@ -30,57 +25,65 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.Instant;
+import java.util.stream.Stream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 public class ContractAgreementRetrieverTest {
-  @Mock Monitor monitor;
-  @Mock ContractAgreementService agreementService;
+    @Mock
+    Monitor monitor;
+    @Mock
+    ContractAgreementService agreementService;
 
-  @BeforeEach
-  void init() {
-    MockitoAnnotations.openMocks(this);
-  }
+    @BeforeEach
+    void init() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-  @Test
-  public void getExistingContractByAssetId_shouldReturnValidContract() {
-    // given
-    long now = Instant.now().getEpochSecond();
-    when(agreementService.query(any())).thenReturn(getResult(now + 1000));
-    ContractAgreementRetriever retriever =
-        new ContractAgreementRetriever(monitor, agreementService);
+    @Test
+    public void getExistingContractByAssetId_shouldReturnValidContract() {
+        // given
+        long now = Instant.now().getEpochSecond();
+        when(agreementService.query(any())).thenReturn(getResult(now + 1000));
+        ContractAgreementRetriever retriever =
+                new ContractAgreementRetriever(monitor, agreementService);
 
-    // when
-    ContractAgreement contractAgreement = retriever.getExistingContractByAssetId("id");
+        // when
+        ContractAgreement contractAgreement = retriever.getExistingContractByAssetId("id");
 
-    // then
-    Assertions.assertNotNull(contractAgreement);
-  }
+        // then
+        Assertions.assertNotNull(contractAgreement);
+    }
 
-  @Test
-  public void getExistingContractByAssetId_shouldNotReturnExpiredContract() {
-    // given
-    long now = Instant.now().getEpochSecond();
-    when(agreementService.query(any())).thenReturn(getResult(now - 1000));
-    ContractAgreementRetriever retriever =
-        new ContractAgreementRetriever(monitor, agreementService);
+    @Test
+    public void getExistingContractByAssetId_shouldNotReturnExpiredContract() {
+        // given
+        long now = Instant.now().getEpochSecond();
+        when(agreementService.query(any())).thenReturn(getResult(now - 1000));
+        ContractAgreementRetriever retriever =
+                new ContractAgreementRetriever(monitor, agreementService);
 
-    // when
-    ContractAgreement contractAgreement = retriever.getExistingContractByAssetId("id");
+        // when
+        ContractAgreement contractAgreement = retriever.getExistingContractByAssetId("id");
 
-    // then
-    Assertions.assertNull(contractAgreement);
-  }
+        // then
+        Assertions.assertNull(contractAgreement);
+    }
 
-  private ServiceResult<Stream<ContractAgreement>> getResult(long endDate) {
-    long now = Instant.now().getEpochSecond();
-    return ServiceResult.success(
-        Stream.of(
-            ContractAgreement.Builder.newInstance()
-                .id("id")
-                .assetId("assetId")
-                .contractStartDate(now - 2000)
-                .contractEndDate(endDate)
-                .providerAgentId("providerId")
-                .consumerAgentId("consumerId")
-                .policy(Policy.Builder.newInstance().build())
-                .build()));
-  }
+    private ServiceResult<Stream<ContractAgreement>> getResult(long endDate) {
+        long now = Instant.now().getEpochSecond();
+        return ServiceResult.success(
+                Stream.of(
+                        ContractAgreement.Builder.newInstance()
+                                .id("id")
+                                .assetId("assetId")
+                                .contractStartDate(now - 2000)
+                                .contractEndDate(endDate)
+                                .providerId("providerId")
+                                .consumerId("consumerId")
+                                .policy(Policy.Builder.newInstance().build())
+                                .build()));
+    }
 }

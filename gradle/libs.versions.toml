@@ -2,13 +2,14 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.0.1-20230426-SNAPSHOT"
+edc = "0.0.1-20230509-preview-SNAPSHOT"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.25"
 azure-identity = "+"
 slf4j = "2.0.7"
 okhttp = "4.10.0"
+mockwebserver = "5.0.0-alpha.11"
 bouncyCastle-jdk18on = "1.73"
 mockito = "5.2.0"
 restAssured = "4.5.0"
@@ -28,7 +29,7 @@ edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.r
 edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-spi-aggregateservices = { module = "org.eclipse.edc:aggregate-service-spi", version.ref = "edc" }
-edc-spi-controlplane = { module = "org.eclipse.edc:controlplane-spi", version.ref = "edc" }
+edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
@@ -75,6 +76,11 @@ edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref
 edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
 
+# Control Plane implementations
+edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
+edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback-http-dispatcher", version.ref = "edc" }
+
+
 # DPF modules
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-transfer = { module = "org.eclipse.edc:transfer-data-plane-spi", version.ref = "edc" }
@@ -107,6 +113,7 @@ awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" 
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
