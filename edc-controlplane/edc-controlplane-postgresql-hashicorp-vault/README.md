@@ -3,7 +3,7 @@
 ## Building
 
 ```shell
-./gardlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
+./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
 ```
 
 ## Configuration
