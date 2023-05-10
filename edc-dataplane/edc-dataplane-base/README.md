@@ -3,5 +3,5 @@
 ## Building
 
 ```shell
-./gardlew :edc-dataplane:edc-dataplane-base:build
+./gradlew :edc-dataplane:edc-dataplane-base:build
 ```

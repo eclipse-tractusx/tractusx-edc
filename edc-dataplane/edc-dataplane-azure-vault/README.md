@@ -3,7 +3,7 @@
 ## Building
 
 ```shell
-./gardlew :edc-dataplane:edc-dataplane-azure-vault:dockerize
+./gradlew :edc-dataplane:edc-dataplane-azure-vault:dockerize
 ```
 
 ## Configuration
