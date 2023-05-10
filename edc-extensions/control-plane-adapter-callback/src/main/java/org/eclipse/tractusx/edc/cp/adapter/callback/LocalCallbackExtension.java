@@ -17,18 +17,24 @@ package org.eclipse.tractusx.edc.cp.adapter.callback;
 import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallbackRegistry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
 
 import static org.eclipse.tractusx.edc.cp.adapter.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
 
 @Provides(AdapterTransferProcessService.class)
+@Extension(LocalCallbackExtension.NAME)
 public class LocalCallbackExtension implements ServiceExtension {
+    public static final String NAME = "Local callbacks extension";
 
     public static final String LOCAL = "local";
     @Inject
@@ -44,13 +50,28 @@ public class LocalCallbackExtension implements ServiceExtension {
     private ContractNegotiationService contractNegotiationService;
 
     @Inject
+    private TransferProcessStore transferProcessStore;
+
+    @Inject
+    private EndpointDataReferenceCache edrCache;
+
+    @Inject
+    private InProcessCallbackRegistry callbackRegistry;
+
+    @Inject
     private Monitor monitor;
 
     @Override
+    public String name() {
+        return NAME;
+    }
+
+    @Override
     public void initialize(ServiceExtensionContext context) {
-        var callbackRegistry = new InProcessCallbackRegistryImpl();
 
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor));
+        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, monitor));
+
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));
 

@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":edc-extensions:business-partner-validation"))
     runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
     runtimeOnly(project(":edc-extensions:data-encryption"))

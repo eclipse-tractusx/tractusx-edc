@@ -12,5 +12,4 @@
 #
 #
 
-org.eclipse.tractusx.edc.cp.adapter.callback.InProcessCallbackRegistryExtension
-org.eclipse.tractusx.edc.cp.adapter.callback.LocalCallbackExtension
+org.eclipse.tractusx.edc.edr.core.EdrCacheCoreExtension

@@ -20,6 +20,8 @@ import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
+import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallback;
+import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallbackRegistry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +30,7 @@ import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class LocalCallbackExtensionTest {
@@ -40,11 +41,14 @@ public class LocalCallbackExtensionTest {
 
     CallbackProtocolResolverRegistry resolverRegistry = mock(CallbackProtocolResolverRegistry.class);
 
+    InProcessCallbackRegistry inProcessCallbackRegistry = mock(InProcessCallbackRegistry.class);
+
     @BeforeEach
     void setUp(ObjectFactory factory, ServiceExtensionContext context) {
 
         context.registerService(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
         context.registerService(CallbackProtocolResolverRegistry.class, resolverRegistry);
+        context.registerService(InProcessCallbackRegistry.class, inProcessCallbackRegistry);
         extension = factory.constructInstance(LocalCallbackExtension.class);
     }
 
@@ -63,5 +67,11 @@ public class LocalCallbackExtensionTest {
         var service = context.getService(AdapterTransferProcessService.class);
         assertThat(service).isInstanceOf(AdapterTransferProcessServiceImpl.class);
 
+        var callbackArgumentCaptor = ArgumentCaptor.forClass(InProcessCallback.class);
+        verify(inProcessCallbackRegistry, times(2)).registerHandler(callbackArgumentCaptor.capture());
+
+        assertThat(callbackArgumentCaptor.getAllValues())
+                .flatExtracting(Object::getClass)
+                .containsExactly(ContractNegotiationCallback.class, TransferProcessLocalCallback.class);
     }
 }
