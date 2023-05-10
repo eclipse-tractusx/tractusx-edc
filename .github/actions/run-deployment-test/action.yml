@@ -69,6 +69,11 @@ runs:
     ###################################################
     # Install the test infrastructure
     ###################################################
+    - name: "Generate test credentials"
+      shell: bash
+      run: |-
+        sh -c "edc-tests/deployment/src/main/resources/prepare-test.sh \
+               edc-tests/deployment/src/main/resources/helm/test-infrastructure/values.yaml"
     - name: Install Infrastructure
       shell: bash
       run: |-

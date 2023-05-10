@@ -65,9 +65,10 @@ jobs:
           imagename: edc-runtime-memory
           rootDir: edc-controlplane/edc-runtime-memory
           helm_command: |-
+            git status
             helm install tx-inmem charts/tractusx-connector-memory \
             -f charts/tractusx-connector-memory/example.yaml \
-            --set vault.secrets="$(cat ./.github/workflows/deploy-test-secrets)" \
+            --set vault.secrets="daps-crt:$(cat daps.cert);daps-key:$(cat daps.key)" \
             --wait-for-jobs --timeout=120s
             
             # wait for the pod to become ready
