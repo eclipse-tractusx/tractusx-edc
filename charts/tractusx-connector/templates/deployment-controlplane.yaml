@@ -100,7 +100,7 @@ spec:
           env:
           {{- if .Values.controlplane.debug.enabled }}
             - name: "JAVA_TOOL_OPTIONS"
-            {{- if and .Values.controlplane.debug.enabled .Values.controlplane.debug.suspendOnStart }}
+            {{- if .Values.controlplane.debug.suspendOnStart }}
               value: >-
                 {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.controlplane.debug.port }}
             {{- else }}

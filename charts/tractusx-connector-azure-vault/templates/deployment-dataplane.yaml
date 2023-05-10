@@ -98,7 +98,7 @@ spec:
           env:
           {{- if .Values.dataplane.debug.enabled }}
             - name: "JAVA_TOOL_OPTIONS"
-            {{- if and .Values.dataplane.debug.enabled .Values.dataplane.debug.suspendOnStart }}
+            {{- if .Values.dataplane.debug.suspendOnStart }}
               value: >-
                 {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.dataplane.debug.port }}
             {{- else }}
