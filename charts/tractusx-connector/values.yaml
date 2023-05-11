@@ -521,6 +521,18 @@ daps:
 backendService:
   httpProxyTokenReceiverUrl: ""
 
+networkPolicy:
+  # -- If `true` network policy will be created to restrict access to control- and dataplane
+  enabled: true # TODO: change to false
+  # -- Configuration of the controlplane component
+  controlplane:
+    # -- Specify a custom from rule network policy (cp)
+    customFrom: []
+  # -- Configuration of the dataplane component
+  dataplane:
+    # -- Specify a custom from rule network policy (dp)
+    customFrom: []
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
