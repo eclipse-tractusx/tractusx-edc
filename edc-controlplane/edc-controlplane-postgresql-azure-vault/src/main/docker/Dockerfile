@@ -27,7 +27,7 @@ HEALTHCHECK NONE
 RUN apk update && apk add curl=8.0.1-r2 --no-cache
 RUN curl -L --proto "=https" -sSf ${OTEL_AGENT_LOCATION} --output /tmp/opentelemetry-javaagent.jar
 
-FROM eclipse-temurin:17.0.6_10-jre-alpine
+FROM eclipse-temurin:19.0.2_7-jre-alpine
 ARG JAR
 
 ARG APP_USER=docker
