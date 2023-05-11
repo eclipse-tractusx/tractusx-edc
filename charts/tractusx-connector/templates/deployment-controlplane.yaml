@@ -129,7 +129,7 @@ spec:
             # API #
             #######
             - name: "EDC_API_AUTH_KEY"
-              value: {{ .Values.controlplane.endpoints.management.authKey | required ".Values.controlplane.endpoints.mangement.authKey is required" | quote }}
+              value: {{ .Values.controlplane.endpoints.management.authKey | required ".Values.controlplane.endpoints.management.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.controlplane.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
