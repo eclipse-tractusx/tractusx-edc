@@ -523,7 +523,7 @@ backendService:
 
 networkPolicy:
   # -- If `true` network policy will be created to restrict access to control- and dataplane
-  enabled: true # TODO: change to false
+  enabled: false
   # -- Configuration of the controlplane component
   controlplane:
     # -- Specify from rule network policy (cp)
