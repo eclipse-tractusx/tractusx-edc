@@ -34,7 +34,7 @@ spec:
     {{- toYaml .Values.networkPolicy.dataplane.customFrom | nindent 4 }}
   {{- else }}
   - from:
-    - podSelector: {}
+    - {} # allow any namespace and any pod
   {{- end }}
     ports:
     {{- range $key,$value := .Values.dataplane.endpoints }}
