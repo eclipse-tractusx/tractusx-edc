@@ -1,11 +1,11 @@
-# tractusx-connector
+# tractusx-connector-azure-vault
 
 ![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
-Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
+Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
 
-This chart is intended for use with an _existing_ PostgreSQL database and an _existing_ HashiCorp Vault.
+This chart is intended for use with an _existing_ PostgreSQL database and an _existing_ Azure KeyVault.
 
 **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
@@ -219,13 +219,11 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.3.3
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | serviceAccount.name | string | `""` |  |
-| vault.hashicorp.healthCheck.enabled | bool | `true` |  |
-| vault.hashicorp.healthCheck.standbyOk | bool | `true` |  |
-| vault.hashicorp.paths.health | string | `"/v1/sys/health"` |  |
-| vault.hashicorp.paths.secret | string | `"/v1/secret"` |  |
-| vault.hashicorp.timeout | int | `30` |  |
-| vault.hashicorp.token | string | `""` |  |
-| vault.hashicorp.url | string | `""` |  |
+| vault.azure.certificate | string | `nil` |  |
+| vault.azure.client | string | `""` |  |
+| vault.azure.name | string | `""` |  |
+| vault.azure.secret | string | `nil` |  |
+| vault.azure.tenant | string | `""` |  |
 | vault.secretNames.dapsPrivateKey | string | `"daps-private-key"` |  |
 | vault.secretNames.dapsPublicKey | string | `"daps-public-key"` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
