@@ -45,6 +45,21 @@ concurrency:
 
 jobs:
 
+  secret-presence:
+    runs-on: ubuntu-latest
+    outputs:
+      AZURE_KV_CREDS: ${{ steps.secret-presence.outputs.AZURE_KV_CREDS }}
+    steps:
+      - name: Check whether secrets exist
+        id: secret-presence
+        run: |
+          [ ! -z "${{ secrets.AZURE_TENANT_ID }}" ] && 
+          [ ! -z "${{ secrets.AZURE_CLIENT_ID }}" ] && 
+          [ ! -z "${{ secrets.AZURE_CLIENT_SECRET }}" ] && 
+          [ ! -z "${{ secrets.AZURE_VAULT_NAME }}" ]  && 
+          echo "AZURE_KV_CREDS=true" >> $GITHUB_OUTPUT
+          exit 0
+
   test-prepare:
     runs-on: ubuntu-latest
     steps:
@@ -92,6 +107,36 @@ jobs:
             -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
             --dependency-update \
             --wait-for-jobs --timeout=120s
+
+            # wait for the pod to become ready
+            kubectl rollout status deployment tx-prod-controlplane
+            kubectl rollout status deployment tx-prod-dataplane
+
+            # execute the helm test
+            helm test tx-prod --logs
+
+  test-azure-vault-postgres:
+    runs-on: ubuntu-latest
+    needs: [ test-prepare, secret-presence ]
+    if: |
+      needs.secret-presence.outputs.AZURE_KV_CREDS
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - uses: ./.github/actions/run-deployment-test
+        name: "Run deployment test using KinD and Helm"
+        with:
+          imagename: "edc-controlplane-postgresql-azure-vault edc-dataplane-azure-vault"
+          rootDir: "."
+          helm_command: |-
+            helm install tx-prod charts/tractusx-connector-azure-vault \
+             -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-azure-vault-test.yaml \
+             --dependency-update \
+             --set vault.azure.name=${{ secrets.AZURE_VAULT_NAME }} \
+             --set vault.azure.client=${{ secrets.AZURE_CLIENT_ID }} \
+             --set vault.azure.secret=${{ secrets.AZURE_CLIENT_SECRET }} \
+             --set vault.azure.tenant=${{ secrets.AZURE_TENANT_ID }} \
+             --wait-for-jobs --timeout=120s
 
             # wait for the pod to become ready
             kubectl rollout status deployment tx-prod-controlplane
