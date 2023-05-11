@@ -17,28 +17,27 @@
 # SPDX-License-Identifier: Apache-2.0
 # #############################################################################
 ---
-{{- if eq (.Values.networkPolicy.enabled | toString) "true"  }}
+{{- if eq (.Values.networkPolicy.enabled | toString) "true" }}
+{{- range tuple "controlplane" "dataplane" }}
+{{- $name := . }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "txdc.fullname" . }}-controlplane
+  name: {{ include "txdc.fullname" $ }}-{{ $name }}
   labels:
-    {{- include "txdc.controlplane.labels" . | nindent 4 }}
+    {{- include (printf "txdc.%s.labels" $name) $ | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "txdc.controlplane.selectorLabels" . | nindent 6 }}
+      {{- include (printf "txdc.%s.selectorLabels" $name) $ | nindent 6 }}
   ingress:
-  {{- if .Values.networkPolicy.controlplane.customFrom }}
   - from:
-    {{- toYaml .Values.networkPolicy.controlplane.customFrom | nindent 4 }}
-  {{- else }}
-  - from:
-    - {} # allow any namespace and any pod
-  {{- end }}
+    {{- toYaml (index $.Values.networkPolicy $name "from") | nindent 4 }}
     ports:
-    {{- range $key,$value := .Values.controlplane.endpoints }}
+    {{- range $key,$value := (index $.Values $name "endpoints") }}
       - port: {{ $value.port }}
         protocol: TCP
     {{- end }}
+---
+{{- end }}
 {{- end }}
