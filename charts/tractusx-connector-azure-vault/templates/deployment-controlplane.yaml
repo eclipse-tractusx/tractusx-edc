@@ -64,7 +64,7 @@ spec:
           {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
-          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-postgresql-azure-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
           ports:
@@ -266,21 +266,22 @@ spec:
             ## VAULT ##
             ###########
 
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/hashicorp-vault
-            - name: "EDC_VAULT_HASHICORP_URL"
-              value: {{ .Values.vault.hashicorp.url | required ".Values.vault.hashicorp.url is required" | quote }}
-            - name: "EDC_VAULT_HASHICORP_TOKEN"
-              value: {{ .Values.vault.hashicorp.token | required ".Values.vault.hashicorp.token is required" | quote }}
-            - name: "EDC_VAULT_HASHICORP_TIMEOUT_SECONDS"
-              value: {{ .Values.vault.hashicorp.timeout | quote }}
-            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED"
-              value: {{ .Values.vault.hashicorp.healthCheck.enabled | quote }}
-            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK"
-              value: {{ .Values.vault.hashicorp.healthCheck.standbyOk | quote }}
-            - name: "EDC_VAULT_HASHICORP_API_SECRET_PATH"
-              value: {{ .Values.vault.hashicorp.paths.secret | quote }}
-            - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
-              value: {{ .Values.vault.hashicorp.paths.health | quote }}
+            - name: "EDC_VAULT_CLIENTID"
+              value: {{ .Values.vault.azure.client | required ".Values.vault.azure.client is required" | quote  }}
+            - name: "EDC_VAULT_TENANTID"
+              value: {{ .Values.vault.azure.tenant | required ".Values.vault.azure.tenant is required" | quote }}
+            - name: "EDC_VAULT_NAME"
+              value: {{ .Values.vault.azure.name | required ".Values.vault.azure.name is required" | quote }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.secret }}
+            - name: "EDC_VAULT_CLIENTSECRET"
+              value: {{ .Values.vault.azure.secret | quote }}
+             {{- end }}
+            # only set the env var if config value not null
+            {{- if .Values.vault.azure.certificate }}
+            - name: "EDC_VAULT_CERTIFICATE"
+              value: {{ .Values.vault.azure.certificate | quote }}
+            {{- end }}
 
             #####################
             ## DATA ENCRYPTION ##

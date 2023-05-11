@@ -36,7 +36,7 @@ updates:
   -
     package-ecosystem: "docker"
     target-branch: main
-    directory: ./edc-controlplane/edc-controlplane-postgresql/src/main/docker/
+    directory: ./edc-controlplane/edc-controlplane-postgresql-azure-vault/src/main/docker/
     labels:
       - "dependabot"
       - "docker"

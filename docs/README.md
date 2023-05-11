@@ -22,7 +22,7 @@ The three supported setups are.
   - [Data Plane](../edc-dataplane/edc-dataplane-azure-vault/README.md)
     - [Azure Key Vault Extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/azure-vault)
 - Setup 2: PostgreSQL & Azure Vault
-  - [Control Plane](../edc-controlplane/edc-controlplane-postgresql/README.md)
+  - [Control Plane](../edc-controlplane/edc-controlplane-postgresql-azure-vault/README.md)
     - [IDS DAPS Extensions](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/iam/oauth2/daps)
     - [PostgreSQL Persistence Extensions](https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/store/sql)
     - [Azure Key Vault Extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/azure-vault)
