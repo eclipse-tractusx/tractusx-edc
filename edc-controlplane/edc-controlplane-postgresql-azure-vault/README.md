@@ -3,12 +3,12 @@
 ## Building
 
 ```shell
-./gardlew :edc-controlplane:edc-controlplane-postgresql:dockerize
+./gradlew :edc-controlplane:edc-controlplane-postgresql-azure-vault:dockerize
 ```
 
 ## Configuration
 
-Listed below are configuration keys needed to get the `edc-controlplane-postgresql` up and running.
+Listed below are configuration keys needed to get the `edc-controlplane-postgresql-azure-vault` up and running.
 Details regarding each configuration property can be found at the [documentary section of the EDC](https://github.com/eclipse-edc/Connector/tree/main/docs).
 
 | Key                                              | Required | Example                                                                      | Description                |
@@ -177,5 +177,5 @@ docker run \
   -v ${CONFIGURATION_PROPERTIES_FILE:-/dev/null}:/app/configuration.properties \
   -v ${LOGGING_PROPERTIES_FILE:-/dev/null}:/app/logging.properties \
   -v ${OPENTELEMETRY_PROPERTIES_FILE:-/dev/null}:/app/opentelemetry.properties \
-  -i edc-controlplane-postgresql:latest
+  -i edc-controlplane-postgresql-azure-vault:latest
 ```
