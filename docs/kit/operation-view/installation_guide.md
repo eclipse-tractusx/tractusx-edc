@@ -100,3 +100,17 @@ Setup
     
 8. How to continue?  
 You could register your connector in the Catena-X portal, for more information see [here](https://portal.int.demo.catena-x.net/documentation/?path=docs%2F02.+Technical+Integration).
+
+FAQ
+------------
+### How should the DAPS service URL be specified?  
+The URL of the DAPS depends on the dataspace you want to connect to. The best thing here is to contact a contact person and ask for the DAPS URL of the dataspace you want to join. The example URL will connect you to the Catena-X Int-Stage DAPS.
+
+### How should the client ID of the connector be obtained?
+The client ID results from the SKI and AKI of the connector certificate. Fur further information on certificates of Catena-X, please take a look at the [Catena-X Connector Registration FAQ](https://portal.int.demo.catena-x.net/documentation/?path=docs%2F02.+Technical+Integration%2F01.+Connector+Registration%2F07.+FAQ.md). 
+
+### It seems like the connector specific properties are all optional?
+Not changing these values does not prevent the connector from starting, but describe the operator of the connector. It therefore makes sense to adapt these values individually to the intended use.
+
+### What exactly are the following values and where can they be obtained?
+- `controlplane.endpoints.authKey`: An authkey plays an important role in security and access control, helping to prevent unauthorized access and ensure that only trusted actors can access certain services. Please set this value individually to a confidential key. This value will be used later to be allowed to call some ControlPlane endpoints.
