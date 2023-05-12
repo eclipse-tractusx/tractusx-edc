@@ -14,17 +14,9 @@
 
 plugins {
     `java-library`
-    `maven-publish`
 }
 
 dependencies {
-    implementation(project(":spi:control-plane-adapter-spi"))
-    implementation(project(":spi:edr-cache-spi"))
     implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.transfer)
-    implementation(libs.edc.spi.contract)
-    implementation(libs.edc.spi.controlplane)
-    implementation(libs.edc.spi.aggregateservices)
-
-    testImplementation(libs.edc.junit)
 }
+
