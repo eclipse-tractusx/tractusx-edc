@@ -34,13 +34,13 @@ spec:
     matchLabels:
       {{- include (printf "txdc.%s.selectorLabels" $name) $ | nindent 6 }}
   ingress:
-  - from:
-    {{- toYaml (index $.Values.networkPolicy $name "from") | nindent 4 }}
-    ports:
-    {{- range $key,$value := (index $.Values $name "endpoints") }}
-      - port: {{ $value.port }}
-        protocol: TCP
-    {{- end }}
+    - from:
+      {{- toYaml (index $.Values.networkPolicy $name "from") | nindent 6 }}
+      ports:
+      {{- range $key,$value := (index $.Values $name "endpoints") }}
+        - port: {{ $value.port }}
+          protocol: TCP
+      {{- end }}
 ---
 {{- end }}
 {{- end }}
