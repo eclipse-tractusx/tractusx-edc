@@ -41,6 +41,8 @@ spec:
         - port: {{ $value.port }}
           protocol: TCP
       {{- end }}
+  policyTypes:
+    - Ingress
 ---
 {{- end }}
 {{- end }}
