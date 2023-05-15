@@ -34,6 +34,7 @@ openssl req -newkey rsa:2048 -new -nodes -x509 -days 1 -keyout $KEY_FILE -out $C
 DAPSCRT=$(cat $CERT_FILE)
 DAPSKEY=$(cat $KEY_FILE)
 AES_KEY=$( echo aes_enckey_test | base64)
+echo $AES_KEY > aes.key
 
 # replace the cert for DAPS
 yq -i ".idsdaps.connectors[0].certificate=\"$DAPSCRT\"" "$VALUES_FILE"

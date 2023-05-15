@@ -132,6 +132,10 @@ jobs:
           imagename: "edc-controlplane-postgresql-azure-vault edc-dataplane-azure-vault"
           rootDir: "."
           helm_command: |-
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name daps-crt --value $(cat daps.cert)
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name daps-key --value $(cat daps.key)
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name aes-keys --value $(cat aes.key)
+            
             helm install tx-prod charts/tractusx-connector-azure-vault \
              -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-azure-vault-test.yaml \
              --dependency-update \
