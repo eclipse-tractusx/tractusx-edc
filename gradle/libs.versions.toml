@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.0.1-20230509-preview-SNAPSHOT"
+edc = "0.0.1-20230516-SNAPSHOT"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.25"
@@ -35,7 +35,6 @@ edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-jwt-core = { module = "org.eclipse.edc:jwt-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
-edc-spi-ids = { module = "org.eclipse.edc:ids-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", version.ref = "edc" }
@@ -53,7 +52,7 @@ edc-api-observability = { module = "org.eclipse.edc:api-observability", version.
 edc-api-contractnegotiation = { module = "org.eclipse.edc:contract-negotiation-api", version.ref = "edc" }
 edc-api-dataplane = { module = "org.eclipse.edc:dataplane-api", version.ref = "edc" }
 edc-api-transferprocess = { module = "org.eclipse.edc:transfer-process-api", version.ref = "edc" }
-edc-ids = { module = "org.eclipse.edc:ids", version.ref = "edc" }
+edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-policy-engine = { module = "org.eclipse.edc:policy-engine", version.ref = "edc" }
 edc-auth-tokenbased = { module = "org.eclipse.edc:auth-tokenbased", version.ref = "edc" }
@@ -63,6 +62,7 @@ edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
 edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
+edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }

@@ -22,7 +22,17 @@ import org.eclipse.edc.connector.api.management.contractnegotiation.model.Contra
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferOpenRequestDto {
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+
+public class NegotiateEdrRequestDto {
+    
+    public static final String TYPE = EDC_NAMESPACE + "NegotiateEdrRequestDto";
+    public static final String CONNECTOR_ADDRESS = EDC_NAMESPACE + "connectorAddress";
+    public static final String PROTOCOL = EDC_NAMESPACE + "protocol";
+    public static final String CONNECTOR_ID = EDC_NAMESPACE + "connectorId";
+    public static final String PROVIDER_ID = EDC_NAMESPACE + "providerId";
+    public static final String OFFER = EDC_NAMESPACE + "offer";
+    public static final String CALLBACK_ADDRESSES = EDC_NAMESPACE + "callbackAddresses";
 
     @NotBlank(message = "connectorAddress is mandatory")
     private String connectorAddress;
@@ -37,7 +47,7 @@ public class TransferOpenRequestDto {
     private ContractOfferDescription offer;
     private List<CallbackAddressDto> callbackAddresses = new ArrayList<>();
 
-    private TransferOpenRequestDto() {
+    private NegotiateEdrRequestDto() {
 
     }
 
@@ -64,12 +74,12 @@ public class TransferOpenRequestDto {
     public ContractOfferDescription getOffer() {
         return offer;
     }
-    
+
     public static final class Builder {
-        private final TransferOpenRequestDto dto;
+        private final NegotiateEdrRequestDto dto;
 
         private Builder() {
-            dto = new TransferOpenRequestDto();
+            dto = new NegotiateEdrRequestDto();
         }
 
         public static Builder newInstance() {
@@ -106,7 +116,7 @@ public class TransferOpenRequestDto {
             return this;
         }
 
-        public TransferOpenRequestDto build() {
+        public NegotiateEdrRequestDto build() {
             return dto;
         }
     }

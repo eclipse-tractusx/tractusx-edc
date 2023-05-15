@@ -96,11 +96,10 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
                 .orElse(null);
     }
 
+    // TODO the validity has been moved to policies
     private boolean isContractValid(ContractAgreement contractAgreement) {
         long now = Instant.now().getEpochSecond();
-        return Objects.nonNull(contractAgreement)
-                && contractAgreement.getContractStartDate() < now
-                && contractAgreement.getContractEndDate() > now;
+        return Objects.nonNull(contractAgreement);
     }
 
     private ContractOffer findContractOffer(
@@ -118,7 +117,7 @@ public class ContractNegotiationHandler implements Listener<DataReferenceRetriev
 
         var requestData = ContractRequestData.Builder.newInstance()
                 .contractOffer(contractOffer)
-                .callbackAddress(providerUrl)
+                .counterPartyAddress(providerUrl)
                 .connectorId("provider")
                 .protocol("ids-multipart")
                 .build();

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TransferOpenRequestDtoValidationTest {
+public class NegotiateEdrRequestDtoValidationTest {
 
     private Validator validator;
 
@@ -35,7 +35,7 @@ public class TransferOpenRequestDtoValidationTest {
 
     @Test
     void validate_invalidDto() {
-        var dto = TransferOpenRequestDto.Builder.newInstance().build();
+        var dto = NegotiateEdrRequestDto.Builder.newInstance().build();
         assertThat(validator.validate(dto)).hasSize(3);
     }
 

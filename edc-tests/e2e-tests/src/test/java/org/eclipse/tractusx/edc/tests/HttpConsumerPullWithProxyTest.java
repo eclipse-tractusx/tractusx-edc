@@ -14,14 +14,12 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import jakarta.json.Json;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.eclipse.edc.connector.api.management.transferprocess.model.TransferProcessDto;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
 import org.junit.jupiter.api.AfterEach;
@@ -37,14 +35,14 @@ import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
-import static org.eclipse.edc.connector.transfer.dataplane.spi.TransferDataPlaneConstants.HTTP_PROXY;
-import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createProxyRequest;
 
 @EndToEndTest
 public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
     private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
     private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
-    private final long ONE_WEEK = 60 * 60 * 24 * 7;
     MockWebServer server = new MockWebServer();
 
     @Test
@@ -55,15 +53,19 @@ public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
-        plato.createAsset(assetId, Map.of(), HttpDataAddress.Builder.newInstance()
-                .contentType("application/json")
-                .baseUrl(url.toString())
-                .authKey(authCodeHeaderName)
-                .authCode(authCode)
-                .build());
+        var dataAddress = Json.createObjectBuilder()
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "contentType", "application/json")
+                .add(EDC_NAMESPACE + "baseUrl", url.toString())
+                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
+                .add(EDC_NAMESPACE + "authCode", authCode)
+                .build();
+        
+        plato.createAsset(assetId, Json.createObjectBuilder().build(), dataAddress);
+
         plato.createPolicy(businessPartnerNumberPolicy("policy-1", sokrates.getBpn()));
         plato.createPolicy(businessPartnerNumberPolicy("policy-2", sokrates.getBpn()));
-        plato.createContractDefinition(assetId, "def-1", "policy-1", "policy-2", ONE_WEEK);
+        plato.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
         var negotiationId = sokrates.negotiateContract(plato, assetId);
 
         // forward declarations of our actual values
@@ -72,18 +74,19 @@ public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
         var contractAgreementId = new AtomicReference<String>();
         var edr = new AtomicReference<EndpointDataReference>();
 
-
         // wait for the successful contract negotiation
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var negotiation = sokrates.getNegotiation(negotiationId);
-                    assertThat(negotiation.getState()).isEqualTo(ContractNegotiationStates.FINALIZED.toString());
-                    contractAgreementId.set(negotiation.getContractAgreementId());
-                    assertThat(contractAgreementId).isNotNull();
-                    transferProcessId.set(sokrates.requestTransfer(contractAgreementId.get(), assetId, plato, DataAddress.Builder.newInstance()
-                            .type(HTTP_PROXY)
-                            .build(), dataRequestId));
+                    var negotiationState = sokrates.getNegotiationState(negotiationId);
+                    assertThat(negotiationState).isEqualTo(ContractNegotiationStates.FINALIZED.toString());
+
+                    var agreementId = sokrates.getContractAgreementId(negotiationId);
+                    assertThat(agreementId).isNotNull();
+                    contractAgreementId.set(agreementId);
+
+                    var tpId = sokrates.requestTransfer(dataRequestId, contractAgreementId.get(), assetId, plato, createProxyRequest());
+                    transferProcessId.set(tpId);
                     assertThat(transferProcessId).isNotNull();
                 });
 
@@ -91,9 +94,8 @@ public class HttpConsumerPullWithProxyTest extends MultiRuntimeTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tp = sokrates.getTransferProcess(transferProcessId.get());
-                    assertThat(tp).isNotNull()
-                            .extracting(TransferProcessDto::getState).isEqualTo(TransferProcessStates.COMPLETED.toString());
+                    var tpState = sokrates.getTransferProcessState(transferProcessId.get());
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.COMPLETED.toString());
                 });
 
         // wait until EDC is available on the consumer side

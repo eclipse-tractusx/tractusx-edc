@@ -14,15 +14,20 @@
 
 package org.eclipse.tractusx.edc.cp.adapter.callback;
 
-import org.eclipse.edc.connector.transfer.spi.event.*;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessDeprovisioned;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessEvent;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataAddressConstants;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +45,13 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.*;
-import static org.mockito.Mockito.*;
+import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.getEdr;
+import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.getTransferProcessStartedEvent;
+import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.remoteMessage;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 
 public class TransferProcessLocalCallbackTest {
@@ -49,13 +59,14 @@ public class TransferProcessLocalCallbackTest {
     TransferProcessStore transferProcessStore = mock(TransferProcessStore.class);
     EndpointDataReferenceCache edrCache = mock(EndpointDataReferenceCache.class);
 
-    Monitor monitor = mock(Monitor.class);
+    TransactionContext transactionContext = new NoopTransactionContext();
 
     TransferProcessLocalCallback callback;
 
+
     @BeforeEach
     void setup() {
-        callback = new TransferProcessLocalCallback(edrCache, transferProcessStore, monitor);
+        callback = new TransferProcessLocalCallback(edrCache, transferProcessStore, transactionContext);
     }
 
     @Test

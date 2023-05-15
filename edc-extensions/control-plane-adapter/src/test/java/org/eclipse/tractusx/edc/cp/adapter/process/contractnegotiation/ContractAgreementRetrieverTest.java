@@ -21,6 +21,7 @@ import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -58,6 +59,8 @@ public class ContractAgreementRetrieverTest {
     }
 
     @Test
+    // TODO remove The validity has been moved to policy
+    @Disabled
     public void getExistingContractByAssetId_shouldNotReturnExpiredContract() {
         // given
         long now = Instant.now().getEpochSecond();
@@ -73,14 +76,11 @@ public class ContractAgreementRetrieverTest {
     }
 
     private ServiceResult<Stream<ContractAgreement>> getResult(long endDate) {
-        long now = Instant.now().getEpochSecond();
         return ServiceResult.success(
                 Stream.of(
                         ContractAgreement.Builder.newInstance()
                                 .id("id")
                                 .assetId("assetId")
-                                .contractStartDate(now - 2000)
-                                .contractEndDate(endDate)
                                 .providerId("providerId")
                                 .consumerId("consumerId")
                                 .policy(Policy.Builder.newInstance().build())

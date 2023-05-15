@@ -18,50 +18,37 @@ import org.eclipse.edc.api.transformer.DtoTransformer;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
-import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
 
-public class TransferOpenRequestDtoToTransferOpenRequestTransformer implements DtoTransformer<TransferOpenRequestDto, TransferOpenRequest> {
-
-    private final Clock clock;
-    private final String defaultConsumerId;
-
-    public TransferOpenRequestDtoToTransferOpenRequestTransformer(Clock clock, String defaultConsumerId) {
-        this.clock = clock;
-        this.defaultConsumerId = defaultConsumerId;
+public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements DtoTransformer<NegotiateEdrRequestDto, NegotiateEdrRequest> {
+    
+    @Override
+    public Class<NegotiateEdrRequestDto> getInputType() {
+        return NegotiateEdrRequestDto.class;
     }
 
     @Override
-    public Class<TransferOpenRequestDto> getInputType() {
-        return TransferOpenRequestDto.class;
+    public Class<NegotiateEdrRequest> getOutputType() {
+        return NegotiateEdrRequest.class;
     }
 
     @Override
-    public Class<TransferOpenRequest> getOutputType() {
-        return TransferOpenRequest.class;
-    }
-
-    @Override
-    public @Nullable TransferOpenRequest transform(@NotNull TransferOpenRequestDto object, @NotNull TransformerContext context) {
+    public @Nullable NegotiateEdrRequest transform(@NotNull NegotiateEdrRequestDto object, @NotNull TransformerContext context) {
         var callbacks = object.getCallbackAddresses().stream().map(c -> context.transform(c, CallbackAddress.class)).collect(Collectors.toList());
-        var now = ZonedDateTime.ofInstant(clock.instant(), clock.getZone());
 
         var contractOffer = ContractOffer.Builder.newInstance()
                 .id(object.getOffer().getOfferId())
                 .assetId(object.getOffer().getAssetId())
                 .providerId(getId(object.getProviderId(), object.getConnectorAddress()))
                 .policy(object.getOffer().getPolicy())
-                .contractStart(now)
-                .contractEnd(now.plusSeconds(object.getOffer().getValidity()))
                 .build();
 
-        return TransferOpenRequest.Builder.newInstance()
+        return NegotiateEdrRequest.Builder.newInstance()
                 .connectorId(object.getConnectorId())
                 .connectorAddress(object.getConnectorAddress())
                 .protocol(object.getProtocol())

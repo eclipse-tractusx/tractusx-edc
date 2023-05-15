@@ -21,20 +21,22 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import jakarta.json.JsonObject;
+import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 
 @OpenAPIDefinition
-@Tag(name = "Control Plane Adapter Api")
-public interface AdapterApi {
+@Tag(name = "Control Plane Adapter EDR Api")
+public interface AdapterEdrApi {
 
-    @Operation(description = "Initiates a contract negotiation and a transfer process for a given offer and with the given counter part. Please note that successfully invoking this endpoint " +
+    @Operation(description = "Initiates an EDR negotiation by handling a contract negotiation first and then a transfer process for a given offer and with the given counter part. Please note that successfully invoking this endpoint " +
             "only means that the negotiation was initiated.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "The negotiation was successfully initiated."),
+                    @ApiResponse(responseCode = "200", description = "The negotiation was successfully initiated.",
+                            content = @Content(schema = @Schema(implementation = IdResponseDto.class))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })
-    void openTransfer(@Valid TransferOpenRequestDto dto);
+    JsonObject initiateEdrNegotiation(@Schema(implementation = NegotiateEdrRequestDto.class) JsonObject dto);
 }

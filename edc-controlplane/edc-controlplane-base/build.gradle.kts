@@ -20,7 +20,7 @@ dependencies {
     runtimeOnly(libs.edc.auth.oauth2.core)
     runtimeOnly(libs.edc.auth.oauth2.daps)
     runtimeOnly(libs.edc.api.management)
-    runtimeOnly(libs.edc.ids)
+    runtimeOnly(libs.edc.dsp)
     runtimeOnly(libs.edc.spi.jwt)
     runtimeOnly(libs.bundles.edc.dpf)
 

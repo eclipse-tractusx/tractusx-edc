@@ -14,8 +14,9 @@
 
 package org.eclipse.tractusx.edc.spi.cp.adapter.service;
 
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.service.spi.result.ServiceResult;
-import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 
 /**
  * Service for opening a transfer process.
@@ -27,7 +28,7 @@ public interface AdapterTransferProcessService {
      * and automatically fire a transfer process once the agreement has been reached.
      *
      * @param request The open request
-     * @return The result
+     * @return The result containing the contract negotiation id
      */
-    ServiceResult<Void> openTransfer(TransferOpenRequest request);
+    ServiceResult<ContractNegotiation> initiateEdrNegotiation(NegotiateEdrRequest request);
 }

@@ -17,8 +17,8 @@ package org.eclipse.tractusx.edc.api.cp.adapter;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
-import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 
 import java.util.UUID;
 
@@ -48,8 +48,8 @@ public class TestFunctions {
         return createOffer(UUID.randomUUID().toString(), UUID.randomUUID().toString());
     }
 
-    public static TransferOpenRequestDto requestDto() {
-        return TransferOpenRequestDto.Builder.newInstance()
+    public static NegotiateEdrRequestDto requestDto() {
+        return NegotiateEdrRequestDto.Builder.newInstance()
                 .connectorAddress("test")
                 .connectorId("id")
                 .protocol("test-protocol")
@@ -60,8 +60,8 @@ public class TestFunctions {
                 .build();
     }
 
-    public static TransferOpenRequest openRequest() {
-        return TransferOpenRequest.Builder.newInstance()
+    public static NegotiateEdrRequest openRequest() {
+        return NegotiateEdrRequest.Builder.newInstance()
                 .connectorAddress("test")
                 .connectorId("id")
                 .protocol("test-protocol")

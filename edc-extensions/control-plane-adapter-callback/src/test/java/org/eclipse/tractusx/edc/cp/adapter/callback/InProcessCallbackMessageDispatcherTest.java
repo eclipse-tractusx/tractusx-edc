@@ -64,7 +64,7 @@ public class InProcessCallbackMessageDispatcherTest {
         verifyNoInteractions(callback);
     }
 
-    private class TestMessage implements RemoteMessage {
+    private static class TestMessage implements RemoteMessage {
 
         @Override
         public String getProtocol() {
@@ -72,7 +72,7 @@ public class InProcessCallbackMessageDispatcherTest {
         }
 
         @Override
-        public String getCallbackAddress() {
+        public String getCounterPartyAddress() {
             return "test";
         }
     }

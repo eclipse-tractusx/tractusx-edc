@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -85,8 +84,6 @@ public class CatalogRetrieverTest {
                 .id("id")
                 .assetId("assetId")
                 .policy(Policy.Builder.newInstance().build())
-                .contractStart(ZonedDateTime.now())
-                .contractEnd(ZonedDateTime.now().plusDays(1))
                 .build();
     }
 }

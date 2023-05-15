@@ -16,25 +16,18 @@ package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
 import org.eclipse.edc.api.model.CallbackAddressDto;
 import org.eclipse.edc.transform.spi.TransformerContext;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.TransferOpenRequestDto;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 
-import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.api.cp.adapter.TestFunctions.createOffer;
 import static org.mockito.Mockito.mock;
 
-public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
+public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
 
-    private static final String DEFAULT_CONSUMER_ID = "urn:connector:test-consumer";
-    private final Instant now = Instant.now();
-    private final Clock clock = Clock.fixed(now, UTC);
-
-    private final TransferOpenRequestDtoToTransferOpenRequestTransformer transformer = new TransferOpenRequestDtoToTransferOpenRequestTransformer(clock, DEFAULT_CONSUMER_ID);
+    private final NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer transformer = new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer();
 
     private final TransformerContext context = mock(TransformerContext.class);
 
@@ -49,7 +42,7 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
         var callback = CallbackAddressDto.Builder.newInstance()
                 .uri("local://test")
                 .build();
-        var dto = TransferOpenRequestDto.Builder.newInstance()
+        var dto = NegotiateEdrRequestDto.Builder.newInstance()
                 .connectorId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
@@ -65,15 +58,13 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
         assertThat(request.getConnectorAddress()).isEqualTo("address");
         assertThat(request.getProtocol()).isEqualTo("protocol");
         assertThat(request.getOffer().getId()).isEqualTo("offerId");
-        assertThat(request.getOffer().getContractStart().toInstant()).isEqualTo(clock.instant());
-        assertThat(request.getOffer().getContractEnd().toInstant()).isEqualTo(clock.instant().plusSeconds(dto.getOffer().getValidity()));
         assertThat(request.getOffer().getPolicy()).isNotNull();
         assertThat(request.getCallbackAddresses()).hasSize(1);
     }
 
     @Test
     void verify_transfor_withNoProviderId() {
-        var dto = TransferOpenRequestDto.Builder.newInstance()
+        var dto = NegotiateEdrRequestDto.Builder.newInstance()
                 .connectorId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
@@ -89,7 +80,7 @@ public class TransferOpenRequestDtoToTransferOpenRequestTransformerTest {
 
     @Test
     void verify_transform_withNoConsumerId() {
-        var dto = TransferOpenRequestDto.Builder.newInstance()
+        var dto = NegotiateEdrRequestDto.Builder.newInstance()
                 .connectorId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")

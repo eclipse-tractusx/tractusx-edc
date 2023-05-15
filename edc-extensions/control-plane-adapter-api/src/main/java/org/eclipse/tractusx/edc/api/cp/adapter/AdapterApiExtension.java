@@ -15,15 +15,15 @@
 package org.eclipse.tractusx.edc.api.cp.adapter;
 
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
-import org.eclipse.tractusx.edc.api.cp.adapter.transform.TransferOpenRequestDtoToTransferOpenRequestTransformer;
+import org.eclipse.tractusx.edc.api.cp.adapter.transform.JsonObjectToNegotiateEdrRequestDtoTransformer;
+import org.eclipse.tractusx.edc.api.cp.adapter.transform.NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
-
-import java.time.Clock;
 
 public class AdapterApiExtension implements ServiceExtension {
 
@@ -36,16 +36,15 @@ public class AdapterApiExtension implements ServiceExtension {
     private AdapterTransferProcessService adapterTransferProcessService;
 
     @Inject
-    private Clock clock;
+    private TypeTransformerRegistry transformerRegistry;
 
     @Inject
-    private TypeTransformerRegistry transformerRegistry;
+    private JsonLd jsonLdService;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var idsId = context.getSetting("edc.ids.id", null);
-
-        transformerRegistry.register(new TransferOpenRequestDtoToTransferOpenRequestTransformer(clock, idsId));
-        webService.registerResource(apiConfig.getContextAlias(), new AdapterController(adapterTransferProcessService, transformerRegistry));
+        transformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
+        transformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
+        webService.registerResource(apiConfig.getContextAlias(), new AdapterEdrController(adapterTransferProcessService, jsonLdService, transformerRegistry));
     }
 }

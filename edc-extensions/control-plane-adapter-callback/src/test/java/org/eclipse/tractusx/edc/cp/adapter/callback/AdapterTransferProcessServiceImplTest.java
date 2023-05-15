@@ -20,11 +20,10 @@ import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.tractusx.edc.spi.cp.adapter.model.TransferOpenRequest;
+import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -40,35 +39,34 @@ public class AdapterTransferProcessServiceImplTest {
     ContractNegotiationService contractNegotiationService = mock(ContractNegotiationService.class);
 
     @Test
-    void openTransfer_shouldFireAContractNegotiation_WhenUsingCallbacks() {
+    void initEdrNegotiation_shouldFireAContractNegotiation_WhenUsingCallbacks() {
         var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService);
 
         var captor = ArgumentCaptor.forClass(ContractRequest.class);
 
         when(contractNegotiationService.initiateNegotiation(any())).thenReturn(getContractNegotiation());
 
-        var transferOpenRequest = getTransferOpenRequest();
+        var negotiateEdrRequest = getNegotiateEdrRequest();
 
-        var result = transferService.openTransfer(transferOpenRequest);
+        var result = transferService.initiateEdrNegotiation(negotiateEdrRequest);
 
         assertThat(result.succeeded()).isTrue();
+        assertThat(result.getContent()).isNotNull();
 
         verify(contractNegotiationService).initiateNegotiation(captor.capture());
 
-
         var msg = captor.getValue();
 
-
-        assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().containsAll(transferOpenRequest.getCallbackAddresses());
+        assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().containsAll(negotiateEdrRequest.getCallbackAddresses());
         assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().contains(LOCAL_CALLBACK);
-        assertThat(msg.getRequestData().getContractOffer()).usingRecursiveComparison().isEqualTo(transferOpenRequest.getOffer());
-        assertThat(msg.getRequestData().getProtocol()).isEqualTo(transferOpenRequest.getProtocol());
-        assertThat(msg.getRequestData().getCallbackAddress()).isEqualTo(transferOpenRequest.getConnectorAddress());
+        assertThat(msg.getRequestData().getContractOffer()).usingRecursiveComparison().isEqualTo(negotiateEdrRequest.getOffer());
+        assertThat(msg.getRequestData().getProtocol()).isEqualTo(negotiateEdrRequest.getProtocol());
+        assertThat(msg.getRequestData().getCounterPartyAddress()).isEqualTo(negotiateEdrRequest.getConnectorAddress());
 
     }
 
-    private TransferOpenRequest getTransferOpenRequest() {
-        return TransferOpenRequest.Builder.newInstance()
+    private NegotiateEdrRequest getNegotiateEdrRequest() {
+        return NegotiateEdrRequest.Builder.newInstance()
                 .protocol("protocol")
                 .connectorAddress("http://test")
                 .callbackAddresses(List.of(CallbackAddress.Builder.newInstance().uri("test").events(Set.of("test")).build()))
@@ -77,8 +75,6 @@ public class AdapterTransferProcessServiceImplTest {
                         .assetId("assetId")
                         .policy(Policy.Builder.newInstance().build())
                         .providerId("provider")
-                        .contractStart(ZonedDateTime.now())
-                        .contractEnd(ZonedDateTime.now())
                         .build())
                 .build();
     }

@@ -12,7 +12,7 @@ dependencies {
 
     testImplementation(libs.edc.core.controlplane)
     testImplementation(libs.edc.dpf.selector.core)
-    testImplementation(libs.edc.ids)
+    testImplementation(libs.edc.dsp)
     testImplementation(libs.edc.iam.mock)
     testImplementation(libs.mockito.inline)
 }

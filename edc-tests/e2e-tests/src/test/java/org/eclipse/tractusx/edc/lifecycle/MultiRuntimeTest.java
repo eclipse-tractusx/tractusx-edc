@@ -19,20 +19,20 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashMap;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.IDS_PATH;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.DSP_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_CONNECTOR_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_CONNECTOR_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_DATAPLANE_CONTROL_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_IDS_API;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_IDS_API_PORT;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_DSP_API_PORT;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_DSP_CALLBACK;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_MANAGEMENT_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_MANAGEMENT_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_PUBLIC_API_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_CONNECTOR_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_CONNECTOR_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DATAPLANE_CONTROL_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_IDS_API;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_IDS_API_PORT;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DSP_API_PORT;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DSP_CALLBACK;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_MANAGEMENT_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_MANAGEMENT_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_PUBLIC_API_PORT;
@@ -56,10 +56,10 @@ public class MultiRuntimeTest {
                     put("web.http.path", SOKRATES_CONNECTOR_PATH);
                     put("web.http.management.port", String.valueOf(SOKRATES_MANAGEMENT_PORT));
                     put("web.http.management.path", SOKRATES_MANAGEMENT_PATH);
-                    put("web.http.ids.port", String.valueOf(SOKRATES_IDS_API_PORT));
-                    put("web.http.ids.path", IDS_PATH);
+                    put("web.http.protocol.port", String.valueOf(SOKRATES_DSP_API_PORT));
+                    put("web.http.protocol.path", DSP_PATH);
+                    put("edc.dsp.callback.address", SOKRATES_DSP_CALLBACK);
                     put("edc.api.auth.key", "testkey");
-                    put("ids.webhook.address", SOKRATES_IDS_API);
                     put("web.http.public.path", "/api/public");
                     put("web.http.public.port", SOKRATES_PUBLIC_API_PORT);
 
@@ -92,10 +92,10 @@ public class MultiRuntimeTest {
                     put("web.http.default.path", PLATO_CONNECTOR_PATH);
                     put("web.http.management.port", String.valueOf(PLATO_MANAGEMENT_PORT));
                     put("web.http.management.path", PLATO_MANAGEMENT_PATH);
-                    put("web.http.ids.port", String.valueOf(PLATO_IDS_API_PORT));
-                    put("web.http.ids.path", IDS_PATH);
+                    put("web.http.protocol.port", String.valueOf(PLATO_DSP_API_PORT));
+                    put("web.http.protocol.path", DSP_PATH);
+                    put("edc.dsp.callback.address", PLATO_DSP_CALLBACK);
                     put("edc.api.auth.key", "testkey");
-                    put("ids.webhook.address", PLATO_IDS_API);
                     put("web.http.public.port", PLATO_PUBLIC_API_PORT);
                     put("web.http.public.path", "/api/public");
                     // embedded dataplane config

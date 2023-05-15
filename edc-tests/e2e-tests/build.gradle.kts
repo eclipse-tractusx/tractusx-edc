@@ -33,6 +33,8 @@ dependencies {
     testImplementation(libs.edc.api.contractnegotiation)
     testImplementation(libs.edc.api.transferprocess)
     testImplementation(libs.edc.spi.dataplane.selector)
+    testImplementation(libs.edc.ext.jsonld)
+    testImplementation(libs.edc.dsp)
 }
 
 // do not publish

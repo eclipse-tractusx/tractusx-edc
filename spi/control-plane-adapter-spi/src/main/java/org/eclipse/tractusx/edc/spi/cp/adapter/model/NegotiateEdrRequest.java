@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TransferOpenRequest {
+public class NegotiateEdrRequest {
 
     private String connectorAddress;
     private String protocol = "ids-multipart";
@@ -30,7 +30,7 @@ public class TransferOpenRequest {
 
     private List<CallbackAddress> callbackAddresses = new ArrayList<>();
 
-    private TransferOpenRequest() {
+    private NegotiateEdrRequest() {
 
     }
 
@@ -57,10 +57,10 @@ public class TransferOpenRequest {
 
 
     public static final class Builder {
-        private final TransferOpenRequest entity;
+        private final NegotiateEdrRequest entity;
 
         private Builder() {
-            entity = new TransferOpenRequest();
+            entity = new NegotiateEdrRequest();
         }
 
         public static Builder newInstance() {
@@ -92,7 +92,7 @@ public class TransferOpenRequest {
             return this;
         }
 
-        public TransferOpenRequest build() {
+        public NegotiateEdrRequest build() {
             Objects.requireNonNull(entity.protocol, "protocol should not be null");
             Objects.requireNonNull(entity.connectorAddress, "connector address should not be null");
             Objects.requireNonNull(entity.offer, "offer should not be null");

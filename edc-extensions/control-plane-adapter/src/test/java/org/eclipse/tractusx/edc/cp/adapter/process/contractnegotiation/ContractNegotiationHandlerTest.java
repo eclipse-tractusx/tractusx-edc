@@ -26,12 +26,11 @@ import org.eclipse.tractusx.edc.cp.adapter.dto.ProcessData;
 import org.eclipse.tractusx.edc.cp.adapter.messaging.Message;
 import org.eclipse.tractusx.edc.cp.adapter.messaging.MessageBus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -77,6 +76,8 @@ public class ContractNegotiationHandlerTest {
     }
 
     @Test
+    // TODO remove this, the validity check has been moved to policies
+    @Disabled
     public void process_shouldInitializeContractNegotiationWhenExistingContractExpired() {
         // given
         ContractNegotiationHandler contractNegotiationHandler =
@@ -148,19 +149,14 @@ public class ContractNegotiationHandlerTest {
         return ContractOffer.Builder.newInstance()
                 .id("id")
                 .assetId("assetId")
-                .contractStart(ZonedDateTime.now())
-                .contractEnd(ZonedDateTime.now().plusDays(1))
                 .policy(Policy.Builder.newInstance().build())
                 .build();
     }
 
     private ContractAgreement getValidContractAgreement() {
-        long now = Instant.now().getEpochSecond();
         return ContractAgreement.Builder.newInstance()
                 .id("id")
                 .assetId("assetId")
-                .contractStartDate(now - 5000)
-                .contractEndDate(now + 5000)
                 .consumerId("consumer")
                 .providerId("provider")
                 .policy(Policy.Builder.newInstance().build())
@@ -168,12 +164,9 @@ public class ContractNegotiationHandlerTest {
     }
 
     private ContractAgreement getExpiredContractAgreement() {
-        long now = Instant.now().getEpochSecond();
         return ContractAgreement.Builder.newInstance()
                 .id("id")
                 .assetId("assetId")
-                .contractStartDate(now - 5000)
-                .contractEndDate(now - 1000)
                 .consumerId("consumer")
                 .providerId("provider")
                 .policy(Policy.Builder.newInstance().build())

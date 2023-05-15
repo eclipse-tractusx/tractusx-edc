@@ -1,18 +1,41 @@
 openapi: 3.0.1
 paths:
-  /adapter/transfer/open:
+  /adapter/edrs:
     post:
-      description: Initiates a contract negotiation and a transfer process for a given
-        offer and with the given counter part. Please note that successfully invoking
-        this endpoint only means that the negotiation was initiated.
-      operationId: openTransfer
+      description: Initiates an EDR negotiation by handling a contract negotiation
+        first and then a transfer process for a given offer and with the given counter
+        part. Please note that successfully invoking this endpoint only means that
+        the negotiation was initiated.
+      operationId: initiateEdrNegotiation
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransferOpenRequestDto'
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/NegotiateEdrRequestDto'
+              example: null
+              properties:
+                empty:
+                  type: boolean
+                  example: null
+                valueType:
+                  type: string
+                  enum:
+                  - ARRAY
+                  - OBJECT
+                  - STRING
+                  - NUMBER
+                  - "TRUE"
+                  - "FALSE"
+                  - "NULL"
+                  example: null
       responses:
-        "204":
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
           description: The negotiation was successfully initiated.
         "400":
           content:
@@ -24,7 +47,7 @@ paths:
                   $ref: '#/components/schemas/ApiErrorDetail'
           description: Request body was malformed
       tags:
-      - Control Plane Adapter Api
+      - Control Plane Adapter EDR Api
 components:
   schemas:
     Action:
@@ -59,6 +82,12 @@ components:
       type: object
       example: null
       properties:
+        authCodeId:
+          type: string
+          example: null
+        authKey:
+          type: string
+          example: null
         events:
           type: array
           example: null
@@ -130,9 +159,80 @@ components:
         target:
           type: string
           example: null
-        uid:
+    IdResponseDto:
+      type: object
+      example: null
+      properties:
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+        id:
           type: string
           example: null
+    JsonObject:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/NegotiateEdrRequestDto'
+      example: null
+      properties:
+        empty:
+          type: boolean
+          example: null
+        valueType:
+          type: string
+          enum:
+          - ARRAY
+          - OBJECT
+          - STRING
+          - NUMBER
+          - "TRUE"
+          - "FALSE"
+          - "NULL"
+          example: null
+    JsonValue:
+      type: object
+      example: null
+      properties:
+        valueType:
+          type: string
+          enum:
+          - ARRAY
+          - OBJECT
+          - STRING
+          - NUMBER
+          - "TRUE"
+          - "FALSE"
+          - "NULL"
+          example: null
+    NegotiateEdrRequestDto:
+      type: object
+      example: null
+      properties:
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddressDto'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          example: null
+        offer:
+          $ref: '#/components/schemas/ContractOfferDescription'
+        protocol:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+      required:
+      - connectorAddress
+      - connectorId
+      - offer
+      - protocol
     Permission:
       type: object
       example: null
@@ -156,9 +256,6 @@ components:
           items:
             $ref: '#/components/schemas/Duty'
         target:
-          type: string
-          example: null
-        uid:
           type: string
           example: null
     Policy:
@@ -225,39 +322,3 @@ components:
         target:
           type: string
           example: null
-        uid:
-          type: string
-          example: null
-    TransferOpenRequestDto:
-      type: object
-      example: null
-      properties:
-        callbackAddresses:
-          type: array
-          example: null
-          items:
-            $ref: '#/components/schemas/CallbackAddressDto'
-        connectorAddress:
-          type: string
-          example: null
-        connectorId:
-          type: string
-          example: null
-        consumerId:
-          type: string
-          example: null
-        offer:
-          $ref: '#/components/schemas/ContractOfferDescription'
-        offerId:
-          $ref: '#/components/schemas/ContractOfferDescription'
-        protocol:
-          type: string
-          example: null
-        providerId:
-          type: string
-          example: null
-      required:
-      - connectorAddress
-      - connectorId
-      - offer
-      - protocol

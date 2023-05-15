@@ -16,13 +16,14 @@ package org.eclipse.tractusx.edc.tests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.Json;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.eclipse.edc.api.model.CallbackAddressDto;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationAgreed;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
@@ -30,39 +31,39 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.event.Event;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.policy.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
 
 @EndToEndTest
-public class TransferOpenTest extends MultiRuntimeTest {
+public class NegotiateEdrTest extends MultiRuntimeTest {
 
-    private final long ONE_WEEK = 60 * 60 * 24 * 7;
     MockWebServer server = new MockWebServer();
 
     ObjectMapper mapper = new ObjectMapper();
 
 
     @Test
-    @DisplayName("Verify that the callbacks are invoked when opening a transfer")
-    void openTransfer_shouldInvokeCallbacks() throws IOException {
+    @DisplayName("Verify that the callbacks are invoked when negotiating an EDR")
+    void negotiateEdr_shouldInvokeCallbacks() throws IOException {
 
         var expectedEvents = List.of(
                 createEvent(ContractNegotiationInitiated.class),
                 createEvent(ContractNegotiationRequested.class),
                 createEvent(ContractNegotiationAgreed.class),
                 createEvent(ContractNegotiationFinalized.class),
+                createEvent(ContractNegotiationVerified.class),
                 createEvent(TransferProcessInitiated.class),
                 createEvent(TransferProcessProvisioned.class),
                 createEvent(TransferProcessRequested.class),
@@ -75,29 +76,28 @@ public class TransferOpenTest extends MultiRuntimeTest {
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
-        plato.createAsset(assetId, Map.of(), HttpDataAddress.Builder.newInstance()
-                .contentType("application/json")
-                .baseUrl(url.toString())
-                .authKey(authCodeHeaderName)
-                .authCode(authCode)
+        plato.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "contentType", "application/json")
+                .add(EDC_NAMESPACE + "baseUrl", url.toString())
+                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
+                .add(EDC_NAMESPACE + "authCode", authCode)
                 .build());
+
         plato.createPolicy(businessPartnerNumberPolicy("policy-1", sokrates.getBpn()));
         plato.createPolicy(businessPartnerNumberPolicy("policy-2", sokrates.getBpn()));
-        plato.createContractDefinition(assetId, "def-1", "policy-1", "policy-2", ONE_WEEK);
-
-        var callbacks = List.of(CallbackAddressDto.Builder.newInstance()
-                .uri(url.toString())
-                .events(Set.of("contract.negotiation", "transfer.process"))
-                .transactional(true)
-                .build());
+        plato.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
 
         expectedEvents.forEach(_event -> {
             server.enqueue(new MockResponse());
         });
 
+        var callbacks = Json.createArrayBuilder()
+                .add(createCallback(url.toString(), true, Set.of("contract.negotiation", "transfer.process")))
+                .build();
 
-        sokrates.openTransfer(plato, assetId, callbacks);
+        sokrates.negotiateEdr(plato, assetId, callbacks);
 
         var events = expectedEvents.stream()
                 .map(this::waitForEvent)
