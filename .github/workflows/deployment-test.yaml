@@ -126,6 +126,7 @@ jobs:
       - uses: Azure/login@v1
         with:
           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+          allow-no-subscriptions: true
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
