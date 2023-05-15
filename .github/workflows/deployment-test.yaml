@@ -80,7 +80,6 @@ jobs:
           imagename: edc-runtime-memory
           rootDir: edc-controlplane/edc-runtime-memory
           helm_command: |-
-            git status
             helm install tx-inmem charts/tractusx-connector-memory \
             -f charts/tractusx-connector-memory/example.yaml \
             --set vault.secrets="daps-crt:$(cat daps.cert);daps-key:$(cat daps.key)" \
@@ -124,6 +123,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
+      - uses: Azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
