@@ -21,7 +21,7 @@
 ---
 apiVersion: v2
 name: tractusx-connector-memory
-description: A Helm chart for Tractus-X Eclipse Data Space Connector based on memory
+description: A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
