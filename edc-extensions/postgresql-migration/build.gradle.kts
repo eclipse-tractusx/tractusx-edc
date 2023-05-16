@@ -11,5 +11,5 @@ dependencies {
     implementation(edc.sql.assetindex)
     implementation(edc.sql.core)
 
-    implementation("org.flywaydb:flyway-core:9.17.0")
+    implementation("org.flywaydb:flyway-core:9.18.0")
 }
