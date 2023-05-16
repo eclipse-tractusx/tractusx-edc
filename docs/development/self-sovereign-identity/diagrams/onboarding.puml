@@ -1,0 +1,38 @@
+ @startuml
+
+' TODO Add Copyright Header
+
+autonumber
+
+Actor User
+
+participant Portal
+
+participant "Authority Wallet\n<<MIW Data Space Operator Tenant>>" as Operator
+
+participant "Gaia-X Digital Clearing House" as GXDCH
+
+User -> Portal ++: register
+
+Portal -> Operator ++: request CX-Credential(s)
+return verifiable credential(s)
+
+Portal -> GXDCH ++: request Legal Entity Credential
+return verifiable credential
+
+create participant "Participant Wallet\n<<MIW Participant Tenant>>" as Participant
+Portal -> Participant : create
+Portal -> Participant ++ : put verifiable credentials
+return ok
+
+... do some more registration stuff ...
+
+return registration complete
+
+
+
+
+
+
+
+ @enduml

@@ -1,0 +1,68 @@
+@startuml
+
+' TODO Add Copyright Header
+
+autonumber
+
+actor User as USER
+
+box Connector A
+    participant "IDS\n<<Extension(s)>>" as IDS_EXT_A
+    participant "SSI Identity Service\n<<Extension>>" as SSI_IAM_EXT_A
+    participant "Managed Identity Wallets\n<<Extension>>" as MIW_EXT_A
+end box
+
+participant "IAM\n<<Keycloak>>" as IAM
+
+box "Managed Identity Wallets"
+    participant "API" as MIW_API
+    participant "Participant Wallet\n<<MIW Participant Tenant>>" as MIW_Participant
+end box
+
+box Connector B
+    participant "Managed Identity Wallets\n<<Extension>>" as MIW_EXT_B
+    participant "SSI Identity Service\n<<Extension>>" as SSI_IAM_EXT_B
+    participant "IDS\n<<Extension(s)>>" as IDS_EXT_B
+end box
+
+-> IDS_EXT_A ++ : initiate catalog request
+    IDS_EXT_A -> SSI_IAM_EXT_A ++ : request authentication token
+    SSI_IAM_EXT_A -> MIW_EXT_A ++ : request credential, used for authentication
+        MIW_EXT_A -> IAM ++: request token with client_secret
+        return access token
+
+        MIW_EXT_A -> MIW_API ++: get credential
+            MIW_API -> MIW_API : resolve wallet of token owner
+            MIW_API -> MIW_Participant ++ : get
+            return credential
+        return credential
+    return credential
+
+    SSI_IAM_EXT_A -> MIW_EXT_A ++ : request verifiable presentation with auth. credential
+        MIW_EXT_A -> IAM ++: request token with client_secret
+        return access token
+        MIW_EXT_A -> MIW_API ++ : request verifiable presentation
+            MIW_API -> MIW_API : resolve wallet of token owner
+            MIW_API -> MIW_API : resolve owner signature key
+        return signed JWT with verifiable presentation
+    return JWT
+return authentication token
+
+IDS_EXT_A -> IDS_EXT_B ++ : send catalog request message
+    IDS_EXT_B -> SSI_IAM_EXT_B ++ : verify JWT token
+    SSI_IAM_EXT_B -> MIW_EXT_B ++ : verify JWT token with verifiable presentation
+        MIW_EXT_B -> IAM ++: request token with client_secret
+        return access token
+        MIW_EXT_B -> MIW_API ++ : verify JWT token with verifiable presentation
+            MIW_API -> MIW_API : JSON LD checks
+            MIW_API -> MIW_API : Revocation checks
+            MIW_API -> MIW_API : Signature checks
+            return ok
+        return ok
+        SSI_IAM_EXT_B -> SSI_IAM_EXT_B : credential check
+        SSI_IAM_EXT_B -> SSI_IAM_EXT_B : issuer checks
+        return ok
+return catalog
+
+
+@enduml

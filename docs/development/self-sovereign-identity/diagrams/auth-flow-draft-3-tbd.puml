@@ -1,0 +1,25 @@
+@startuml
+
+autonumber
+
+participant "Participant A\n<<Consumer>>" as Consumer
+participant "Token Provider" as TokenProvider
+participant "Participant B\n<<Provider>>" as Provider
+
+Consumer -> TokenProvider ++: request token (similar to OAUTH2, e.g. OIDC4VP?)
+note right
+    The token may contain a custom claim,
+    e.g. a VP, URI, pointer to VP, etc.
+end note
+return token
+
+Consumer -> Provider ++ : presents token
+    alt if provider cannot decide itself
+        Provider -> ++ : validate token
+        return ok
+   else if provider can decide itself
+        Provider -> Provider: validate token
+   end
+return response
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+
+autonumber
+
+participant "Participant A\n<<Consumer>>" as Consumer
+participant "Participant B\n<<Provider>>" as Provider
+participant "Token Provider" as TokenProvider
+participant "VC Issuer" as Issuer
+
+
+Consumer -> TokenProvider ++: request token
+return token
+
+Consumer -> Provider ++ : presents token
+    Provider -> TokenProvider ++ : validate token
+'    TokenProvider -> Issuer ++ : Request signature
+'    return signature
+    return ok
+return response
+
+@enduml
