@@ -69,7 +69,7 @@ jobs:
 
       - name: Run markdownlint
         run: |
-          markdownlint-cli2-config .markdownlint.yaml "**/*.md" "#.github"
+          markdownlint-cli2-config .markdownlint.yaml "**/*.md" "#.github" "#charts"
 
   unit-tests:
     runs-on: ubuntu-latest
