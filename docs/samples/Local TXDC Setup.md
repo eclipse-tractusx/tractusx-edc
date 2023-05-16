@@ -15,7 +15,7 @@ is not suitable for productive deployment scenarios.
 The Local TXDC Setup consists of three separate deployments. The Supporting Infrastructure, that is required to
 run connectors, and two different TXDC Connector instances, that can communicate with each other.
 
-- [TXDC Supporting Infrastructure](../../edc-tests/src/main/resources/deployment/helm/supporting-infrastructure/README.md)
+- [TXDC Supporting Infrastructure](../../edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure/README.md)
 - [TXDC Connector](../../charts/tractusx-connector/README.md) Plato
 - [TXDC Connector](../../charts/tractusx-connector/README.md) Sokrates
 
@@ -33,7 +33,7 @@ Before the connectors can be setup, the Supporting Infrastructure must be in pla
 to run two connectors independently.
 
 For this local test scenario,
-the [Supporting Infrastructure](../../edc-tests/src/main/resources/deployment/helm/supporting-infrastructure/README.md)
+the [Supporting Infrastructure](../../edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure/README.md)
 of the TXDC Business Tests can be used.
 
 Install the TXDC Supporting Infrastructure by running the following command from the project root directory. The Minio
@@ -41,11 +41,11 @@ set can be skipped, as it's only used by AWS S3 Transfer Business Tests. Also, t
 mandatory to try out the EDC. So it can be disabled as well.
 
 ```sh
-helm dependency update edc-tests/src/main/resources/deployment/helm/supporting-infrastructure
+helm dependency update edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure
 ```
 
 ```sh
-helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure \
+helm install infrastructure edc-tests/cucumber/src/main/resources/deployment/helm/supporting-infrastructure \
     --namespace cx \
     --create-namespace \
     --set install.minio=false \
@@ -64,9 +64,9 @@ helm install plato charts/tractusx-connector \
     --namespace cx \
     --create-namespace \
     --set fullnameOverride=plato \
-    --set controlplane.image.tag=0.2.0 \
+    --set controlplane.image.tag=latest \
     --set controlplane.service.type=NodePort \
-    --set controlplane.endpoints.data.authKey=password \
+    --set controlplane.endpoints.management.authKey=password \
     --set vault.hashicorp.enabled=true \
     --set vault.hashicorp.url=http://vault:8200 \
     --set vault.hashicorp.token=root \
@@ -97,9 +97,9 @@ helm install sokrates charts/tractusx-connector  \
     --namespace cx \
     --create-namespace \
     --set fullnameOverride=sokrates \
-    --set controlplane.image.tag=0.2.0 \
+    --set controlplane.image.tag=latest \
     --set controlplane.service.type=NodePort \
-    --set controlplane.endpoints.data.authKey=password \
+    --set controlplane.endpoints.management.authKey=password \
     --set vault.hashicorp.enabled=true \
     --set vault.hashicorp.url=http://vault:8200 \
     --set vault.hashicorp.token=root \
