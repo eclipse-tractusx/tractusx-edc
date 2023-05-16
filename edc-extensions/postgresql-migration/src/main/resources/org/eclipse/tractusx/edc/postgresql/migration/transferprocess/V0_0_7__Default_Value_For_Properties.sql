@@ -12,4 +12,4 @@
 --
 
 -- set default value
-ALTER TABLE edc_transfer_process ADD CONSTRAINT transferprocess_properties DEFAULT "{}";
+ALTER TABLE edc_transfer_process ALTER COLUMN transferprocess_properties SET DEFAULT '{}';
