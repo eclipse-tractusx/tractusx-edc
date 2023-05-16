@@ -9,12 +9,44 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 
 **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
-## TL;DR
+This chart uses Azure KeyVault, which is expected to contain the following secrets on application start:
+
+- `daps-cert`: contains the x509 certificate of the connector.
+- `daps-key`: the private key of the x509 certificate
+- `aes-keys`: a 128bit, 256bit or 512bit string used to encrypt data. Must be stored in base64 format.
+
+These must be obtained from a DAPS instance, the process of which is out of the scope of this document. Alternatively,
+self-signed certificates can be used for testing:
+
+```shell
+openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout daps.key -out daps.cert -subj "/CN=test"
+export DAPS_KEY="$(cat daps.key)"
+export DAPS_CERT="$(cat daps.cert)"
+```
+
+## Launching the application
+
+The following requirements must be met before launching the application:
+
+- Write access to an Azure KeyVault instance is required to run this chart
+- Secrets are seeded in advance
+- The vault's client id, client secret, tenant id and vault name (not the url!) are known
+
+Please also consider using [this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-azure-vault-test.yaml)
+to launch the application.
+Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector --version 0.3.3
+helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.3.3 \
+     -f <path-to>/tractusx-connector-azure-vault-test.yaml \
+     --set vault.azure.name=$AZURE_VAULT_NAME \
+     --set vault.azure.client=$AZURE_CLIENT_ID \
+     --set vault.azure.secret=$AZURE_CLIENT_SECRET \
+     --set vault.azure.tenant=$AZURE_TENANT_ID
 ```
+
+Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the private key.
 
 ## Source Code
 

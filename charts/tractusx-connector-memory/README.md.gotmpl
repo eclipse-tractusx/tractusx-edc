@@ -8,12 +8,38 @@
 
 {{ template "chart.homepageLine" . }}
 
-## TL;DR
+This chart uses an in-memory secrets vault, which is required to contain the following secrets on application start:
+
+- `daps-cert`: contains the x509 certificate of the connector.
+- `daps-key`: the private key of the x509 certificate
+
+These must be obtained from a DAPS instance, the process of which is out of the scope of this document. Alternatively,
+self-signed certificates can be used for testing:
+
+```shell
+openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout daps.key -out daps.cert -subj "/CN=test"
+export DAPS_KEY="$(cat daps.key)"
+export DAPS_CERT="$(cat daps.cert)"
+```
+
+## Launching the application
+
+The in-memory vault can be seeded directly with secrets that are passed in `<key>:<value>;<key2>:<value2>;...` format.
+This config value can be passed to the runtime using the `vault.secrets` parameter. In addition, the runtime requires a
+couple of configuration parameters, all of which can be found in the section below. Please also consider using
+[this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/charts/tractusx-connector-memory/example.yaml)
+to launch the application.
+
+Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version {{ .Version }}
+helm install my-release tractusx-edc/tractusx-connector-memory --version {{ .Version }} \
+     -f <path-to>/example.yaml \
+     --set vault.secrets="daps-cert:$DAPS_CERT;daps-key:$DAPS_KEY" \
 ```
+
+Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the private key.
 
 {{ template "chart.maintainersSection" . }}
 
