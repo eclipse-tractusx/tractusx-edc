@@ -2,12 +2,12 @@
 
 ## Introduction
 
-The following documentation will guide you through the TractusX EDC deployment.
+The following documentation will guide you through the Tractus-X EDC deployment.
 You will be setting up multiple controllers and enabling communication between them.
 
-:::note TractusX EDC or Core EDC?
+:::note Tractus-X EDC or Core EDC?
 
-The following guide assumes the use of the TractusX EDC.
+The following guide assumes the use of the Tractus-X EDC.
 It includes the Core EDC with all of its functionality.
 However, this core is supplemented by extensions that allow for the use of additional backends and connection types.
 Furthermore, the provided Helm charts, build configuration and tests allow for a smoother deployment.

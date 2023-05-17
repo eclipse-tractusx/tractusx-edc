@@ -15,7 +15,7 @@ The following is a short overview of the necessary steps to start up the default
 
 ## Building
 
-TractusX EDC is build with Gradle. The following command creates the default data plane as a docker container:
+Tractus-X EDC is build with Gradle. The following command creates the default data plane as a docker container:
 
 ```shell
 ./gardlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize

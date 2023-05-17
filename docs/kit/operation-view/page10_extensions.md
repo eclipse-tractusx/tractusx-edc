@@ -1,7 +1,7 @@
 # EDC Extensions
 
 The following extensions provide additional functionality to the core EDC.
-They are currently only available in TractusX EDC.
+They are currently only available in Tractus-X EDC.
 
 ## Business Partner Validation
 
@@ -31,7 +31,7 @@ During a transfer the control plane will look for an instance with matching capa
 ## Hashicorp Vault
 
 This extension allows for usage of Hashicorp Vault for secret storage.
-It is the default used in TractusX EDC.
+It is the default used in Tractus-X EDC.
 
 ## PostrgreSQL Migration
 

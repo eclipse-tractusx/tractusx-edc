@@ -1,14 +1,14 @@
-# Renaming Git branches to comply with TractusX standards
+# Renaming Git branches to comply with Eclipse Tractus-X standards
 
 ## Decision
 
-TractusX-EDC will rename its Git branching structure to comply with TractusX release guidelines, and to be able to
+Tractus-X EDC will rename its Git branching structure to comply with TractusX release guidelines, and to be able to
 leverage
 GitHub convenience features, while continuing to use the Gitflow branching model.
 
 ## Rationale
 
-The TractusX organization has established
+The Eclipse Tractus-X organization has established
 a [release guideline](https://eclipse-tractusx.github.io/docs/release/trg-2/trg-2-1/) which mandates that all projects'
 default branch be called `main`.
 
@@ -31,7 +31,7 @@ guideline.
 
 ## Approach
 
-In order to comply with the TractusX release guideline, to make use of the GitHub features _and_ also use GitFlow, we
+In order to comply with the Tractus-X release guideline, to make use of the GitHub features _and_ also use GitFlow, we
 propose renaming a couple of branches. While GitFlow _suggests_ branch names, it does not _require_ it, and most
 tools allow for customizing them anyway. Thus, from an abstract perspective, the following changes are necessary:
 

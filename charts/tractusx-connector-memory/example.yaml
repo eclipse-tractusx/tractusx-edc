@@ -30,6 +30,7 @@
 ##  export YOUR_VAULT_SECRETS="daps-key:$DAPSKEY;daps-crt:$DAPSCRT"
 ##  helm install trudy charts/tractusx-connector-memory -f charts/tractusx-connector-memory/example.yaml --set vault.secrets=$YOUR_VAULT_SECRETS
 
+---
 fullnameOverride: tx-inmem
 runtime:
   service:

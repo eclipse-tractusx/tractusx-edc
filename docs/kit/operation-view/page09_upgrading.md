@@ -1,6 +1,6 @@
-# Upgrading TractusX EDC
+# Upgrading Tractus-X EDC
 
-Among the goals of TractusX EDC is making EDC upgrades as painless as possible.
+Among the goals of Tractus-X EDC is making EDC upgrades as painless as possible.
 The changes in each release are documented [here](https://github.com/eclipse-tractusx/tractusx-edc/tree/main/docs/migration).
 Usually there are only three steps to each upgrade.
 

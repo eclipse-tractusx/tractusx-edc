@@ -1,4 +1,4 @@
-# Eclipse Tractus-X EDC Code Style Guide
+# Tractus-X EDC Code Style Guide
 
 In order to maintain a coherent code style throughout the project we ask every contributor to adhere to a few simple
 style guidelines. We assume most developers will use at least something like `vim` and therefore have support for
