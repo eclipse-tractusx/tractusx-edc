@@ -88,8 +88,8 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
               },
               "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
                 "@type": "DataAddress",
-                "type" :"test-type",
-                "keyName" :"test-key-name"
+                "type": "test-type",
+                "keyName": "test-key-name"
               }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
@@ -127,6 +127,34 @@ Those pairs are then stored inside the `properties` field.
 }
 ```
 
+```bash
+curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data '{
+              "@context": {
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/"
+              },
+              "https://w3id.org/edc/v0.0.1/ns/asset": {
+                "@type": "Asset",
+                "@id": "some-asset-id",
+                "properties": {
+                  "name": "some-asset-name",
+                  "description": "some description",
+                  "edc:version": "0.2.1",
+                  "contenttype": "application/json"
+                }
+              },
+              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
+                "@type": "DataAddress",
+                "type": "test-type",
+                "keyName": "test-key-name"
+              }
+            }' \
+    -s -o /dev/null -w 'Response Code: %{http_code}\n'
+```
+
 ## 6. Private Property Asset
 
 A new addition are the private properties.
@@ -161,6 +189,36 @@ Private properties are stores inside the `privateProperties` field.
 }
 ```
 
+```bash
+curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data '{
+              "@context": {
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/"
+              },
+              "https://w3id.org/edc/v0.0.1/ns/asset": {
+                "@type": "Asset",
+                "@id": "some-asset-id",
+                "properties": {
+                  "name": "some-asset-name",
+                  "description": "some description",
+                  "edc:version": "0.2.1",
+                  "contenttype": "application/json"
+                },
+                "https://w3id.org/edc/v0.0.1/ns/privateProperties": {
+                  "test-prop": "test-val"
+                }
+              },
+              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
+                "@type": "DataAddress",
+                "type": "test-type",
+                "keyName": "test-key-name"
+              }
+            }' \
+    -s -o /dev/null -w 'Response Code: %{http_code}\n'
+```
 ## 7. Complex Property Asset
 
 Besides primitive datatypes, complex JSON objects can also be stored inside the properties.
@@ -194,4 +252,37 @@ Here the `payload` contains the name and age of a person.
     "keyName": "test-key-name"
   }
 }
+```
+
+```bash
+curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
+    --header 'X-Api-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data '{
+              "@context": {
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/"
+              },
+              "https://w3id.org/edc/v0.0.1/ns/asset": {
+                "@type": "Asset",
+                "@id": "some-asset-id",
+                "properties": {
+                  "name": "some-asset-name",
+                  "description": "some description",
+                  "edc:version": "0.2.1",
+                  "contenttype": "application/json",
+                  "payload": {
+                    "@type": "customPayload",
+                    "name": "max",
+                    "age": 34
+                  }
+                }
+              },
+              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
+                "@type": "DataAddress",
+                "type": "test-type",
+                "keyName": "test-key-name"
+              }
+            }' \
+    -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
