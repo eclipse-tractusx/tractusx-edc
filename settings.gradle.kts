@@ -41,6 +41,11 @@ include(":edc-dataplane")
 include(":edc-dataplane:edc-dataplane-azure-vault")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
+include(":edc-dataplane:edc-dataplane-proxy-consumer-api")
+include(":edc-dataplane:edc-dataplane-proxy-provider-spi")
+include(":edc-dataplane:edc-dataplane-proxy-provider-core")
+include(":edc-dataplane:edc-dataplane-proxy-provider-api")
+include(":edc-tests:edc-dataplane-proxy-e2e")
 
 // Version Catalog
 include(":version-catalog")
