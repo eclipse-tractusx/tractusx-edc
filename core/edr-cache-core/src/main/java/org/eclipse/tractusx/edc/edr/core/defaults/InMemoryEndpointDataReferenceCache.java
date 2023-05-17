@@ -22,7 +22,11 @@ import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.Collections.emptyList;
@@ -37,12 +41,16 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     private final LockManager lockManager;
 
     private final Map<String, List<EndpointDataReferenceEntry>> entriesByAssetId;
+
+    private final Map<String, List<EndpointDataReferenceEntry>> entriesByAgreementId;
+
     private final Map<String, EndpointDataReferenceEntry> entriesByEdrId;
     private final Map<String, EndpointDataReference> edrsByTransferProcessId;
 
     public InMemoryEndpointDataReferenceCache() {
         lockManager = new LockManager(new ReentrantReadWriteLock());
         entriesByAssetId = new HashMap<>();
+        entriesByAgreementId = new HashMap<>();
         entriesByEdrId = new HashMap<>();
         edrsByTransferProcessId = new HashMap<>();
     }
@@ -69,11 +77,19 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
     @Override
+    public @NotNull List<EndpointDataReferenceEntry> entriesForAgreement(String agreementId) {
+        return lockManager.readLock(() -> entriesByAgreementId.getOrDefault(agreementId, emptyList()));
+    }
+
+    @Override
     public void save(EndpointDataReferenceEntry entry, EndpointDataReference edr) {
         lockManager.writeLock(() -> {
             entriesByEdrId.put(edr.getId(), entry);
             var list = entriesByAssetId.computeIfAbsent(entry.getAssetId(), k -> new ArrayList<>());
             list.add(entry);
+
+            var agreementList = entriesByAgreementId.computeIfAbsent(entry.getAgreementId(), k -> new ArrayList<>());
+            agreementList.add(entry);
 
             edrsByTransferProcessId.put(entry.getTransferProcessId(), edr);
             return null;

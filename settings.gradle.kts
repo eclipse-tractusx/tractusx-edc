@@ -22,6 +22,7 @@ rootProject.name = "tractusx-edc"
 // spi modules
 include(":spi:control-plane-adapter-spi")
 include(":spi:edr-cache-spi")
+include(":spi:core-spi")
 
 // core modules
 include(":core:edr-cache-core")

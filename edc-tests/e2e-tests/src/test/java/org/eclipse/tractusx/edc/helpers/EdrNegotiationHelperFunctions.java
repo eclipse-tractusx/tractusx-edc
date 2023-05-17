@@ -21,6 +21,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public class EdrNegotiationHelperFunctions {
 
     public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
-                .add(TYPE, EDC_NAMESPACE + "NegotiateEdrRequestDto")
+                .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
                 .add(EDC_NAMESPACE + "connectorId", providerId)
                 .add(EDC_NAMESPACE + "providerId", providerId)
                 .add(EDC_NAMESPACE + "connectorAddress", connectorAddress)

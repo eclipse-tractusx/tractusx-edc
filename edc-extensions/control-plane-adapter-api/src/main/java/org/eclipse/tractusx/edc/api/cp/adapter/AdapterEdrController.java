@@ -16,18 +16,30 @@ package org.eclipse.tractusx.edc.api.cp.adapter;
 
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataAddressConstants;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 
@@ -39,6 +51,8 @@ public class AdapterEdrController implements AdapterEdrApi {
     private final AdapterTransferProcessService adapterTransferProcessService;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonLd jsonLdService;
+
+    private Monitor monitor;
 
     public AdapterEdrController(AdapterTransferProcessService adapterTransferProcessService, JsonLd jsonLdService, TypeTransformerRegistry transformerRegistry) {
         this.adapterTransferProcessService = adapterTransferProcessService;
@@ -64,5 +78,38 @@ public class AdapterEdrController implements AdapterEdrApi {
         return transformerRegistry.transform(responseDto, JsonObject.class)
                 .compose(jsonLdService::compact)
                 .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
+    }
+
+    @GET
+    @Path("/{id}")
+    @Override
+    public JsonObject getEdr(@PathParam("id") String transferProcessId) {
+        var edr = adapterTransferProcessService.findByTransferProcessId(transferProcessId).orElseThrow(exceptionMapper(EndpointDataReference.class, transferProcessId));
+
+        return transformerRegistry.transform(EndpointDataAddressConstants.from(edr), JsonObject.class)
+                .compose(jsonLdService::compact)
+                .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
+    }
+
+    @GET
+    @Override
+    public List<JsonObject> queryEdrs(@QueryParam("assetId") String assetId, @QueryParam("agreementId") String agreementId) {
+        if (assetId == null && agreementId == null) {
+            throw new InvalidRequestException("At least one of this query parameter is required [assetId,agreementId]");
+        }
+        return adapterTransferProcessService.findCacheEntries(assetId, agreementId)
+                .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class))
+                .stream()
+                .map(edrCached -> transformerRegistry.transform(edrCached, EndpointDataReferenceEntryDto.class)
+                        .compose(dto -> transformerRegistry.transform(dto, JsonObject.class))
+                        .compose(jsonLdService::compact))
+                .peek(this::logIfError)
+                .filter(Result::succeeded)
+                .map(Result::getContent)
+                .collect(Collectors.toList());
+    }
+
+    private void logIfError(Result<?> result) {
+        result.onFailure(f -> monitor.warning(f.getFailureDetail()));
     }
 }

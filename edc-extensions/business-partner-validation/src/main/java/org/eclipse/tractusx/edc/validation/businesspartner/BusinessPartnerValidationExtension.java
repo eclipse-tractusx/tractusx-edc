@@ -35,7 +35,6 @@ import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPar
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerProhibitionFunction;
 
 import static org.eclipse.edc.policy.engine.spi.PolicyEngine.ALL_SCOPES;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
@@ -56,7 +55,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
      * </pre>
      */
     // TODO replace with TX namespace
-    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = EDC_NAMESPACE + "BusinessPartnerNumber";
+    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
 
     public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";
 

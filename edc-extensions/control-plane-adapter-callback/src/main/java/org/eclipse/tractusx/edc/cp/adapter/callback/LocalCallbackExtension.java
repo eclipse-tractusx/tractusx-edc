@@ -64,6 +64,9 @@ public class LocalCallbackExtension implements ServiceExtension {
 
     @Inject
     private TransactionContext transactionContext;
+    
+    @Inject
+    private EndpointDataReferenceCache endpointDataReferenceCache;
 
     @Override
     public String name() {
@@ -79,7 +82,7 @@ public class LocalCallbackExtension implements ServiceExtension {
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));
 
-        context.registerService(AdapterTransferProcessService.class, new AdapterTransferProcessServiceImpl(contractNegotiationService));
+        context.registerService(AdapterTransferProcessService.class, new AdapterTransferProcessServiceImpl(contractNegotiationService, endpointDataReferenceCache));
     }
 
     private String resolveProtocol(String scheme) {

@@ -16,7 +16,11 @@ package org.eclipse.tractusx.edc.spi.cp.adapter.service;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.service.spi.result.ServiceResult;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
+
+import java.util.List;
 
 /**
  * Service for opening a transfer process.
@@ -31,4 +35,15 @@ public interface AdapterTransferProcessService {
      * @return The result containing the contract negotiation id
      */
     ServiceResult<ContractNegotiation> initiateEdrNegotiation(NegotiateEdrRequest request);
+
+    /**
+     * Return a {@link EndpointDataReference} associated with the transferProcessId in input
+     *
+     * @param transferProcessId The transferProcessId
+     * @return The result containing the {@link EndpointDataReference}
+     */
+    ServiceResult<EndpointDataReference> findByTransferProcessId(String transferProcessId);
+
+    ServiceResult<List<EndpointDataReferenceEntry>> findCacheEntries(String assetId, String agreementId);
+
 }

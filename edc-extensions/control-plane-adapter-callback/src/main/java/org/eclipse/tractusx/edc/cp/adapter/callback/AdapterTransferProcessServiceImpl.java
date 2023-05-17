@@ -20,12 +20,24 @@ import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestD
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.lang.String.format;
+import static org.eclipse.edc.service.spi.result.ServiceResult.notFound;
+import static org.eclipse.edc.service.spi.result.ServiceResult.success;
 
 public class AdapterTransferProcessServiceImpl implements AdapterTransferProcessService {
 
@@ -38,14 +50,17 @@ public class AdapterTransferProcessServiceImpl implements AdapterTransferProcess
             .build();
     private final ContractNegotiationService contractNegotiationService;
 
-    public AdapterTransferProcessServiceImpl(ContractNegotiationService contractNegotiationService) {
+    private final EndpointDataReferenceCache endpointDataReferenceCache;
+
+    public AdapterTransferProcessServiceImpl(ContractNegotiationService contractNegotiationService, EndpointDataReferenceCache endpointDataReferenceCache) {
         this.contractNegotiationService = contractNegotiationService;
+        this.endpointDataReferenceCache = endpointDataReferenceCache;
     }
 
     @Override
     public ServiceResult<ContractNegotiation> initiateEdrNegotiation(NegotiateEdrRequest request) {
         var contractNegotiation = contractNegotiationService.initiateNegotiation(createContractRequest(request));
-        return ServiceResult.success(contractNegotiation);
+        return success(contractNegotiation);
     }
 
     private ContractRequest createContractRequest(NegotiateEdrRequest request) {
@@ -62,4 +77,37 @@ public class AdapterTransferProcessServiceImpl implements AdapterTransferProcess
                 .requestData(requestData)
                 .callbackAddresses(callbacks).build();
     }
+
+    @Override
+    public ServiceResult<EndpointDataReference> findByTransferProcessId(String transferProcessId) {
+        var edr = endpointDataReferenceCache.resolveReference(transferProcessId);
+        return Optional.ofNullable(edr)
+                .map(ServiceResult::success)
+                .orElse(notFound(format("No Edr found associated to the transfer process with id: %s", transferProcessId)));
+    }
+
+    @Override
+    public ServiceResult<List<EndpointDataReferenceEntry>> findCacheEntries(String assetId, String agreementId) {
+        var results = queryEdrs(assetId, agreementId)
+                .stream()
+                .filter(fieldFilter(assetId, EndpointDataReferenceEntry::getAssetId))
+                .filter(fieldFilter(agreementId, EndpointDataReferenceEntry::getAgreementId))
+                .collect(Collectors.toList());
+        return success(results);
+    }
+
+    private Predicate<EndpointDataReferenceEntry> fieldFilter(String value, Function<EndpointDataReferenceEntry, String> function) {
+        return entry -> Optional.ofNullable(value)
+                .map(val -> val.equals(function.apply(entry)))
+                .orElse(true);
+    }
+
+    private List<EndpointDataReferenceEntry> queryEdrs(String assetId, String agreementId) {
+        // Try first for agreementId and then assetId
+        return Optional.ofNullable(agreementId)
+                .map(endpointDataReferenceCache::entriesForAgreement)
+                .or(() -> Optional.ofNullable(assetId).map(endpointDataReferenceCache::entriesForAsset))
+                .orElseGet(Collections::emptyList);
+    }
+
 }
