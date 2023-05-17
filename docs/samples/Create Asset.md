@@ -46,23 +46,23 @@ Since some keys which are required in requests for the new management API aren't
 The first use-case is to generate a very simple asset, that only contains the minimum in terms of information.
 For this we need both an asset and a data address, which together form an asset entry.
 
-````json
+```json
 {
   "@context": {
-    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
-    "@id":"some-asset-id"
+    "@type": "Asset",
+    "@id": "some-asset-id"
   },
   "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
+    "@type": "DataAddress",
+    "type": "test-type",
+    "keyName": "test-key-name"
   }
 }
-````
+```
 
 The asset entry is then sent to the management API of the connector through a POST request.
 
@@ -79,104 +79,119 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
     --header 'Content-Type: application/json' \
     --data '{
               "@context": {
-                "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-                "edc":"https://w3id.org/edc/v0.0.1/ns/"
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/"
               },
               "https://w3id.org/edc/v0.0.1/ns/asset": {
-                "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
-                "@id":"some-asset-id"
+                "@type": "Asset",
+                "@id": "some-asset-id"
               },
               "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-                "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
-                "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
-                "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
+                "@type": "DataAddress",
+                "type" :"test-type",
+                "keyName" :"test-key-name"
               }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
+In the following chapters, only the contents of the request body will change in accordance to the asset payload.
+
 ## 5. Custom Property Asset
 
-````json
+In the real world, an asset usually doesn't consist of the bare minimum but also contains custom properties, which store additional information.
+The basic use-case is that each property only consists of primitive datatypes and therefore simple key/value pairs.
+Those pairs are then stored inside the `properties` field.
+
+```json
 {
   "@context": {
-    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
-    "@id":"some-asset-id",
+    "@type": "asset",
+    "@id": "some-asset-id",
     "properties": {
-      "name":"some-asset-name",
-      "description":"some description",
-      "edc:version":"0.2.1",
-      "contenttype":"application/json"
+      "name": "some-asset-name",
+      "description": "some description",
+      "edc:version": "0.2.1",
+      "contenttype": "application/json"
     }
   },
   "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
+    "@type": "dataAddress",
+    "type": "test-type",
+    "keyName": "test-key-name"
   }
 }
-````
+```
 
 ## 6. Private Property Asset
 
-````json
+A new addition are the private properties.
+Private properties will not be sent through the dataplane and are only accessible via the management API.
+This enables the storage of additional information pertaining the asset, that is not relevant for the consumer, but is nonetheless useful for the provider.
+Private properties are stores inside the `privateProperties` field.
+
+```json
 {
   "@context": {
-    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
-    "@id":"some-asset-id",
+    "@type": "Asset",
+    "@id": "some-asset-id",
     "properties": {
-      "name":"some-asset-name",
-      "description":"some description",
-      "edc:version":"0.2.1",
-      "contenttype":"application/json"
+      "name": "some-asset-name",
+      "description": "some description",
+      "edc:version": "0.2.1",
+      "contenttype": "application/json"
     },
     "https://w3id.org/edc/v0.0.1/ns/privateProperties": {
-      "test-prop":"test-val"
+      "test-prop": "test-val"
     }
   },
   "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
+    "@type": "DataAddress",
+    "type": "test-type",
+    "keyName": "test-key-name"
   }
 }
-````
+```
 
 ## 7. Complex Property Asset
 
-````json
+Besides primitive datatypes, complex JSON objects can also be stored inside the properties.
+An example is the `payload` field and its contents.
+Here the `payload` contains the name and age of a person.
+
+```json
 {
   "@context": {
-    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
-    "@id":"some-asset-id",
+    "@type": "Asset",
+    "@id": "some-asset-id",
     "properties": {
-      "name":"some-asset-name",
-      "description":"some description",
-      "edc:version":"0.2.1",
-      "contenttype":"application/json",
+      "name": "some-asset-name",
+      "description": "some description",
+      "edc:version": "0.2.1",
+      "contenttype": "application/json",
       "payload": {
-        "@type":"customPayload",
-        "name":"max",
-        "age":34
+        "@type": "customPayload",
+        "name": "max",
+        "age": 34
       }
     }
   },
   "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
-    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
+    "@type": "https://w3id.org/edc/v0.0.1/ns/DataAddress",
+    "type": "test-type",
+    "keyName": "test-key-name"
   }
 }
-````
+```
