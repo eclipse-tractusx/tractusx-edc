@@ -47,7 +47,7 @@ spec:
       targetPort: validation
       protocol: TCP
       name: validation
-    - port: {{ .Values.runtime.endpoints.ids.port }}
+    - port: {{ .Values.runtime.endpoints.protocol.port }}
       targetPort: ids
       protocol: TCP
       name: ids

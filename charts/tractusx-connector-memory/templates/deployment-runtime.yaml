@@ -158,9 +158,9 @@ spec:
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.runtime.endpoints.control.path | quote }}
             - name: "WEB_HTTP_IDS_PORT"
-              value: {{ .Values.runtime.endpoints.ids.port | quote }}
+              value: {{ .Values.runtime.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_IDS_PATH"
-              value: {{ .Values.runtime.endpoints.ids.path | quote }}
+              value: {{ .Values.runtime.endpoints.protocol.path | quote }}
             - name: "WEB_HTTP_OBSERVABILITY_PORT"
               value: {{ .Values.runtime.endpoints.observability.port | quote}}
             - name: "WEB_HTTP_OBSERVABILITY_PATH"
@@ -178,9 +178,9 @@ spec:
             ## IDS ##
             #########
             - name: "IDS_WEBHOOK_ADDRESS"
-              value: {{ include "txdc.runtime.url.ids" . | quote }}
+              value: {{ include "txdc.runtime.url.protocol" . | quote }}
             - name: "EDC_IDS_ENDPOINT"
-              value: {{ printf "%s%s" (include "txdc.runtime.url.ids" .) .Values.runtime.endpoints.ids.path | quote }}
+              value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" .) .Values.runtime.endpoints.protocol.path | quote }}
             - name: "EDC_IDS_ID"
               value: {{ printf "urn:connector:%s" (lower .Values.runtime.internationalDataSpaces.id) | quote }}
             - name: "EDC_IDS_DESCRIPTION"
@@ -196,10 +196,10 @@ spec:
             - name: "EDC_OAUTH_PROVIDER_AUDIENCE"
               value: "idsc:IDS_CONNECTORS_ALL"
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s%s" (include "txdc.runtime.url.ids" . ) .Values.runtime.endpoints.ids.path "/data" | quote }}
+              value: {{ printf "%s%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path "/data" | quote }}
             # this is the old setting name for 'EDC_OAUTH_ENDPOINT_AUDIENCE' and is mandatory for Produce EDC v0.1.2 and older
             - name: "EDC_IDS_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s%s" (include "txdc.runtime.url.ids" . ) .Values.runtime.endpoints.ids.path "/data" | quote }}
+              value: {{ printf "%s%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path "/data" | quote }}
 
             ################
             ## DATA PLANE ##

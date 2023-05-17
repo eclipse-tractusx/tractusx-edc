@@ -85,9 +85,9 @@ Create the name of the service account to use
 {{/*
 Control IDS URL
 */}}
-{{- define "txdc.runtime.url.ids" -}}
-{{- if .Values.runtime.url.ids }}{{/* if ids api url has been specified explicitly */}}
-{{- .Values.runtime.url.ids }}
+{{- define "txdc.runtime.url.protocol" -}}
+{{- if .Values.runtime.url.protocol }}{{/* if ids api url has been specified explicitly */}}
+{{- .Values.runtime.url.protocol }}
 {{- else }}{{/* else when ids api url has not been specified explicitly */}}
 {{- with (index .Values.runtime.ingresses 0) }}
 {{- if .enabled }}{{/* if ingress enabled */}}
@@ -97,10 +97,10 @@ Control IDS URL
 {{- printf "http://%s" .hostname -}}
 {{- end }}{{/* end if tls */}}
 {{- else }}{{/* else when ingress not enabled */}}
-{{- printf "http://%s-runtime:%v" ( include "txdc.fullname" $ ) $.Values.runtime.endpoints.ids.port -}}
+{{- printf "http://%s-runtime:%v" ( include "txdc.fullname" $ ) $.Values.runtime.endpoints.protocol.port -}}
 {{- end }}{{/* end if ingress */}}
 {{- end }}{{/* end with ingress */}}
-{{- end }}{{/* end if .Values.runtime.url.ids */}}
+{{- end }}{{/* end if .Values.runtime.url.protocol */}}
 {{- end }}
 
 {{/*
