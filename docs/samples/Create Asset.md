@@ -24,22 +24,28 @@ TODO link to a 0.4.x example setup.
 With the migration to a new protocol and with it new specifications, DCAT Catalogs in the context of assets, there is a need to clarify the terminology that is used.
 In the table below, relevant terms from the connector and their new counterparts are listed and explained with a short description.
 
-| Connector           | New Protocol (DCAT Catalogs) | Description                                                   |
-|---------------------|------------------------------|---------------------------------------------------------------|
-| Asset Entry         | Asset                        | Contains the Asset ID and its Data Address.                   |
-| Contract Definition | Asset Entry / Dataset        | Contains an Asset () that is offered and covered by a Policy. |
+| Connector           | New Protocol (DCAT Catalogs) | Description                                                |
+|---------------------|------------------------------|------------------------------------------------------------|
+| Asset Entry         | Asset                        | Contains the Asset ID and its Data Address.                |
+| Contract Definition | Asset Entry / Dataset        | Contains an Asset that is offered and covered by a Policy. |
 
 Generally, this documentation uses the connector terminology unless otherwise specified.
 
 ## 3. Values
 
 Since some keys which are required in requests for the new management API aren't self-explanatory when you first see them, a short explanation is given below.
+These keys are generally part of the JSON-LD spec and serve as identification on a larger scope.
 
-| Key      | Description |
-|----------|-------------|
-| @context |             |
-| @vocab   |             |
-| edc      |             |
+| Key      | Description                                                                                                                          |
+|----------|--------------------------------------------------------------------------------------------------------------------------------------|
+| @context | JSON-LD context aims to enable the local usage of compact and meaningful names which are later still identifiable in a larger scope. |
+| @vocab   | The value of `@vocab` is added as prefix to any key consisting of a plain string without any other prefix.                           |
+| edc      | `edc` defines a specific prefix for the connector.                                                                                   |
+| @id      | `@id` contains a distinct identifier enabling global references to this field, also called a Node.                                   |
+| @type    | Specifies the path to the schema which describes this Node.                                                                          |
+
+> Please note: The namespaces in `@vocab` and `edc` currently are only placeholders and do not lead to any JSON-LD context definition.
+> This will change at a later date.
 
 ## 4. Simple Asset
 
@@ -52,12 +58,12 @@ For this we need both an asset and a data address, which together form an asset 
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type": "Asset",
+  "edc:asset": {
+    "@type": "edc:asset",
     "@id": "some-asset-id"
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type": "DataAddress",
+  "edc:dataAddress": {
+    "@type": "edc:dataAddress",
     "type": "test-type",
     "keyName": "test-key-name"
   }
@@ -82,12 +88,12 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                 "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
                 "edc": "https://w3id.org/edc/v0.0.1/ns/"
               },
-              "https://w3id.org/edc/v0.0.1/ns/asset": {
-                "@type": "Asset",
+              "edc:asset": {
+                "@type": "edc:asset",
                 "@id": "some-asset-id"
               },
-              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-                "@type": "DataAddress",
+              "edc:dataAddress": {
+                "@type": "edc:dataAddress",
                 "type": "test-type",
                 "keyName": "test-key-name"
               }
@@ -109,8 +115,8 @@ Those pairs are then stored inside the `properties` field.
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type": "Asset",
+  "edc:asset": {
+    "@type": "edc:asset",
     "@id": "some-asset-id",
     "properties": {
       "name": "some-asset-name",
@@ -119,8 +125,8 @@ Those pairs are then stored inside the `properties` field.
       "contenttype": "application/json"
     }
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type": "DataAddress",
+  "edc:dataAddress": {
+    "@type": "edc:dataAddress",
     "type": "test-type",
     "keyName": "test-key-name"
   }
@@ -136,8 +142,8 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                 "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
                 "edc": "https://w3id.org/edc/v0.0.1/ns/"
               },
-              "https://w3id.org/edc/v0.0.1/ns/asset": {
-                "@type": "Asset",
+              "edc:asset": {
+                "@type": "edc:asset",
                 "@id": "some-asset-id",
                 "properties": {
                   "name": "some-asset-name",
@@ -146,8 +152,8 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                   "contenttype": "application/json"
                 }
               },
-              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-                "@type": "DataAddress",
+              "edc:dataAddress": {
+                "@type": "edc:dataAddress",
                 "type": "test-type",
                 "keyName": "test-key-name"
               }
@@ -168,8 +174,8 @@ Private properties are stores inside the `privateProperties` field.
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type": "Asset",
+  "edc:asset": {
+    "@type": "edc:asset",
     "@id": "some-asset-id",
     "properties": {
       "name": "some-asset-name",
@@ -177,12 +183,12 @@ Private properties are stores inside the `privateProperties` field.
       "edc:version": "0.2.1",
       "contenttype": "application/json"
     },
-    "https://w3id.org/edc/v0.0.1/ns/privateProperties": {
+    "edc:privateProperties": {
       "test-prop": "test-val"
     }
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type": "DataAddress",
+  "edc:dataAddress": {
+    "@type": "edc:dataAddress",
     "type": "test-type",
     "keyName": "test-key-name"
   }
@@ -198,8 +204,8 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                 "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
                 "edc": "https://w3id.org/edc/v0.0.1/ns/"
               },
-              "https://w3id.org/edc/v0.0.1/ns/asset": {
-                "@type": "Asset",
+              "edc:asset": {
+                "@type": "edc:asset",
                 "@id": "some-asset-id",
                 "properties": {
                   "name": "some-asset-name",
@@ -207,18 +213,19 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                   "edc:version": "0.2.1",
                   "contenttype": "application/json"
                 },
-                "https://w3id.org/edc/v0.0.1/ns/privateProperties": {
+                "edc:privateProperties": {
                   "test-prop": "test-val"
                 }
               },
-              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-                "@type": "DataAddress",
+              "edc:dataAddress": {
+                "@type": "edc:dataAddress",
                 "type": "test-type",
                 "keyName": "test-key-name"
               }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
+
 ## 7. Complex Property Asset
 
 Besides primitive datatypes, complex JSON objects can also be stored inside the properties.
@@ -231,8 +238,8 @@ Here the `payload` contains the name and age of a person.
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type": "Asset",
+  "edc:asset": {
+    "@type": "edc:asset",
     "@id": "some-asset-id",
     "properties": {
       "name": "some-asset-name",
@@ -246,8 +253,8 @@ Here the `payload` contains the name and age of a person.
       }
     }
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type": "DataAddress",
+  "edc:dataAddress": {
+    "@type": "edc:dataAddress",
     "type": "test-type",
     "keyName": "test-key-name"
   }
@@ -263,8 +270,8 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                 "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
                 "edc": "https://w3id.org/edc/v0.0.1/ns/"
               },
-              "https://w3id.org/edc/v0.0.1/ns/asset": {
-                "@type": "Asset",
+              "edc:asset": {
+                "@type": "edc:asset",
                 "@id": "some-asset-id",
                 "properties": {
                   "name": "some-asset-name",
@@ -278,8 +285,8 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                   }
                 }
               },
-              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-                "@type": "DataAddress",
+              "edc:dataAddress": {
+                "@type": "edc:dataAddress",
                 "type": "test-type",
                 "keyName": "test-key-name"
               }
