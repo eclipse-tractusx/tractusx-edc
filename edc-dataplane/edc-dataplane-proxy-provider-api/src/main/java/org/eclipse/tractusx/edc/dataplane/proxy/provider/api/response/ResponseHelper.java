@@ -29,7 +29,7 @@ import static java.lang.String.format;
 public class ResponseHelper {
 
     /**
-     * Creates a response with a message encoded for the given media type. Currently, <code>APPLICATION_JSON</code> and <code>TEXT_PLAIN</code> are supported.
+     * Creates a response with a message encoded for the given media type. Currently, {@code APPLICATION_JSON} and {@code TEXT_PLAIN} are supported.
      */
     public static Response createMessageResponse(Response.Status status, String message, @Nullable MediaType mediaType) {
         if (mediaType != null && APPLICATION_JSON.equals(mediaType.toString())) {

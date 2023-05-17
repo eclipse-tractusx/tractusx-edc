@@ -25,7 +25,7 @@ import jakarta.ws.rs.container.Suspended;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
 
 /**
- *
+ * Defines the API for receiving asset requests on a consumer.
  */
 @OpenAPIDefinition
 @Tag(name = "Data Plane Proxy API")

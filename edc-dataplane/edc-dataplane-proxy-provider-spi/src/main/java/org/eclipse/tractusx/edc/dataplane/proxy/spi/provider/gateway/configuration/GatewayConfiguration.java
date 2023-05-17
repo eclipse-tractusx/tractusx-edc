@@ -17,8 +17,8 @@ package org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configurat
 import static java.util.Objects.requireNonNull;
 
 /**
- * A configuration that exposes a proxied endpoint via an alias. Each configuration is associated with an extensible <code>authorizationType</code> such as
- * {@link #TOKEN_AUTHORIZATION} (the default) and {@link #NO_AUTHORIZATION}. The <code>proxiedPath</code> will be prepended to a request sub-path to create an absolute endpoint
+ * A configuration that exposes a proxied endpoint via an alias. Each configuration is associated with an extensible {@code authorizationType} such as
+ * {@link #TOKEN_AUTHORIZATION} (the default) and {@link #NO_AUTHORIZATION}. The {@code proxiedPath} will be prepended to a request sub-path to create an absolute endpoint
  * URL where data is fetched from.
  */
 public class GatewayConfiguration {
