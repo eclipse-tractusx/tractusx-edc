@@ -19,11 +19,22 @@
 
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
 public class TransferProcess {
-  @NonNull String id;
-  @NonNull TransferProcessState state;
+    private final String id;
+    private final TransferProcessState state;
+
+    public TransferProcess(String id, TransferProcessState state) {
+        this.id = Objects.requireNonNull(id);
+        this.state = Objects.requireNonNull(state);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public TransferProcessState getState() {
+        return state;
+    }
 }

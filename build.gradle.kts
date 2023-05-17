@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
 
@@ -5,11 +24,10 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("io.freefair.lombok") version "6.6.2"
-    id("com.diffplug.spotless") version "6.15.0"
-    id("com.github.johnrengelman.shadow") version "8.0.0"
-    id("com.bmuschko.docker-remote-api") version "9.2.1"
-    id("org.sonarqube") version "4.0.0.2929"
+    id("io.freefair.lombok") version "8.0.1"
+    id("com.diffplug.spotless") version "6.18.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.bmuschko.docker-remote-api") version "9.3.1"
 }
 
 val javaVersion: String by project
@@ -37,25 +55,28 @@ project.subprojects.forEach {
     }
 }
 
-// make sure the test report aggregation is done before reporting to sonar
-tasks.sonar {
-    dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
-}
-
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
     apply(plugin = "io.freefair.lombok")
-    apply(plugin = "org.sonarqube")
 
     repositories {
         mavenCentral()
     }
     dependencies {
         implementation("org.projectlombok:lombok:1.18.26")
-        implementation("org.slf4j:slf4j-api:2.0.5")
+        implementation("org.slf4j:slf4j-api:2.0.7")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.9.2"))
+        testImplementation(platform("org.junit:junit-bom:5.9.3"))
+
+        constraints {
+            implementation("org.yaml:snakeyaml:2.0") {
+                because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
+            }
+            implementation("net.minidev:json-smart:2.4.10") {
+                because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
+            }
+        }
     }
 
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
@@ -100,7 +121,6 @@ allprojects {
     }
 
 
-    // this is a temporary workaround until we're fully moved to TractusX:
     // publishing to OSSRH is handled by the build plugin, but publishing to GH packages
     // must be configured separately
     publishing {
@@ -141,20 +161,15 @@ subprojects {
                 dockerFile.set(file("${project.projectDir}/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
-                // uncomment the following line if building on Apple Silicon
-                // platform.set("linux/x86_64")
+                // specify platform with the -Dplatform flag:
+                if (System.getProperty("platform") != null)
+                    platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 inputDir.set(file(project.projectDir))
             }
 
             // make sure "shadowJar" always runs before "dockerize"
             dockerTask.dependsOn(tasks.findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
-        }
-    }
-
-    sonarqube {
-        properties {
-            property("sonar.moduleKey", "${project.group}-${project.name}")
         }
     }
 }

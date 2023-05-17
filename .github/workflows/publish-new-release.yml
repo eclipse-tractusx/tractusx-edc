@@ -1,10 +1,29 @@
+#
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
 ---
 name: "Publish new release"
 
 on:
   pull_request:
     branches:
-      - main
+      - releases
       - support/*
     types:
       - closed
@@ -37,7 +56,7 @@ jobs:
         name: Output release version
         id: release-version
         run: |
-          echo "::set-output name=RELEASE_VERSION::${{ env.RELEASE_VERSION }}"
+          echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_OUTPUT
 
   # Release: Maven Artifacts
   maven-release:
@@ -49,36 +68,57 @@ jobs:
       packages: write
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
-      -
-        name: Export RELEASE_VERSION env
+      - name: Export RELEASE_VERSION env
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
-      -
-        name: Checkout
-        uses: actions/checkout@v3.3.0
-      -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.10.0
+
+      # Set-Up
+      - uses: actions/checkout@v3.5.2
+      - uses: ./.github/actions/setup-java
+
+      # Import GPG Key
+      - uses: ./.github/actions/import-gpg-key
+        name: "Import GPG Key"
         with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
 
-      - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v1
+      # publish releases
+      - name: Publish version
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
+        run: |-
+          echo "Publishing Version $RELEASE_VERSION to Sonatype/MavenCentral"
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$RELEASE_VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
 
-      - name: Publish release version
-        run: |
-          echo "Publishing Version $(grep -e "version" gradle.properties | cut -f2 -d"=") to Github Packages"
-          ./gradlew publishAllPublicationsToGithubPackagesRepository
-        env:
-          #REPO: ${{ github.repository }}
-          REPO: "catenax-ng/product-edc"
-          GITHUB_PACKAGE_USERNAME: ${{ secrets.TEMP_GHPKG_USER }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.TEMP_GHPKG_PASSWORD }}
+  docker-release:
+    name: Publish Docker images
+    runs-on: ubuntu-latest
+    needs: [ release-version ]
+    permissions:
+      contents: write
+    if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
+
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [{dir: edc-controlplane, img: edc-runtime-memory},
+                {dir: edc-controlplane, img: edc-controlplane-memory-hashicorp-vault},
+                {dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault},
+                {dir: edc-controlplane, img: edc-controlplane-postgresql-azure-vault},
+                {dir: edc-dataplane,    img: edc-dataplane-azure-vault},
+                {dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault}]
+
+    steps:
+      - uses: actions/checkout@v3.5.2
+      - uses: ./.github/actions/publish-docker-image
+        name: Publish ${{ matrix.variant.img }}
+        with:
+          docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+          rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
+          imagename: ${{ matrix.variant.img }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
   # Release: Helm Charts
   helm-release:
@@ -97,8 +137,7 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 0
       -
@@ -110,8 +149,8 @@ jobs:
         name: Package helm, update index.yaml and push to gh-pages
         run: |
           # Prepare git env
-          git config user.name "GitHub actions"
-          git config user.email noreply@github.com
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
 
           # Package all charts
           find charts -name Chart.yaml -not -path "./edc-tests/*" | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
@@ -128,7 +167,7 @@ jobs:
 
           git push origin gh-pages
 
-  # Release: GitHub tag & release; Merges back main into develop; Starts a new development cycle;
+  # Release: GitHub tag & release; Merges back releases into main; Starts a new development cycle;
   github-release:
     name: Publish new github release
     needs: [ release-version ]
@@ -145,18 +184,17 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       -
-        name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
         with:
-          # 0 to fetch the full history due to upcoming merge of main into develop branch
+          # 0 to fetch the full history due to upcoming merge of releases into main branch
           fetch-depth: 0
       -
         name: Create Release Tag
         id: create_release_tag
         run: |
           # Prepare git env
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
 
           # informative
           git branch -a
@@ -178,22 +216,17 @@ jobs:
           draft: false
           prerelease: false
       -
-        name: Set up JDK 11
-        uses: actions/setup-java@v3.10.0
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
+        uses: ./.github/actions/setup-java
       -
-        name: Merge main back into develop and set new snapshot version
-        if: github.event.pull_request.base.ref == 'main'
+        name: Merge releases back into main and set new snapshot version
+        if: github.event.pull_request.base.ref == 'releases'
         run: |
           # Prepare git env
-          git config user.name "GitHub actions"
-          git config user.email noreply@github.com
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
 
-          # Merge main into develop
-          git checkout develop && git merge -X theirs main --no-commit --no-ff
+          # Merge releases into main
+          git checkout main && git merge -X theirs releases --no-commit --no-ff
 
           # Extract release version
           IFS=. read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH<<<"${{ env.RELEASE_VERSION }}"
@@ -204,8 +237,8 @@ jobs:
           # Persist the "version" in the gradle.properties
           sed -i "s/version=.*/version=$SNAPSHOT_VERSION/g" gradle.properties
 
-          # Commit and push to origin develop
+          # Commit and push to origin main
           git add gradle.properties
           git commit --message "Introduce new snapshot version $SNAPSHOT_VERSION"
 
-          git push origin develop
+          git push origin main

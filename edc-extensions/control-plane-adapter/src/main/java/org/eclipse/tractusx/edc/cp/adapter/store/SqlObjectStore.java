@@ -58,7 +58,7 @@ public class SqlObjectStore extends AbstractSqlStore {
                 objectEntity.getType(),
                 objectEntity.getObject());
           } catch (SQLException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });
@@ -71,7 +71,7 @@ public class SqlObjectStore extends AbstractSqlStore {
             var sql = statements.getFindByIdAndTypeTemplate();
             return executeQuerySingle(connection, false, this::mapObjectEntity, sql, id, type);
           } catch (SQLException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });
@@ -88,7 +88,7 @@ public class SqlObjectStore extends AbstractSqlStore {
             stream.close();
             return result;
           } catch (SQLException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });
@@ -101,7 +101,7 @@ public class SqlObjectStore extends AbstractSqlStore {
             var stmt = statements.getDeleteTemplate();
             executeQuery(connection, stmt, id, type);
           } catch (SQLException | IllegalStateException e) {
-            e.printStackTrace();
+
             throw new EdcPersistenceException(e);
           }
         });

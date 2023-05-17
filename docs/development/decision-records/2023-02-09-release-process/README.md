@@ -8,7 +8,7 @@ To improve stability, reproducibility and maintainability of releases, tractusx-
 - use release versions of EDC in releases. Release branches must not change upstream dependency versions, unless there
   is a clear and concise reason to do so.
 - slightly update branching model
-- if possible, bugs/defects should be fixed on `develop` and be backported to the respective `hotfix/` branch
+- if possible, bugs/defects should be fixed on `main` and be backported to the respective `hotfix/` branch
 - only hotfixes for critical security bugs will be provided as defined by the committers for the
   currently released version. Nothing else.
 - feature development happens _in developers' forks only_ to keep the Git reflog of the `origin` clean.
@@ -31,15 +31,15 @@ Every release version published by tractusx-edc must be reproducible at any time
 
 During feature development we only use `-SNAPSHOT` versions of EDC packages. It is assumed that when the build breaks
 due to changes in upstream, the fix can be done quickly and easily, much more so than working off technical
-debt that would otherwise accumulate over several months. Builds on `develop` are therefore _not repeatable_, but that
+debt that would otherwise accumulate over several months. Builds on `main` are therefore _not repeatable_, but that
 downside is easily offset by the tighter alignment with and smaller technical debt and integration pain with the
 upstream EDC.
 
 ### Use release versions of EDC in releases
 
-First, a new branch `releases/X.Y.Z` based off of `develop` is created. This can either be done
+First, a new branch `release/X.Y.Z` based off of `main` is created. This can either be done
 on `HEAD`, or - if desired - on a particular ref. The latter case is relevant if there are already features
-in `develop` that are not scoped for a particular release.
+in `main` that are not scoped for a particular release.
 
 Second, the dependency onto EDC is updated to the most recent build. For example, if a release is
 created on March 27th 2023, the most recent nightly would be `0.0.1-20230326`.
@@ -79,13 +79,13 @@ Once a release is published, for example `0.3.1` it will receive no further deve
 hotfix branches are created based off of the release branch, here `releases/0.3.1`, thus, `hotfix/0.3.1`. From this,
 three scenarios emerge:
 
-1. The actual fix is done on `develop` and can be cherry-picked into the `hotfix/0.3.1` branch. No new commits are
+1. The actual fix is done on `main` and can be cherry-picked into the `hotfix/0.3.1` branch. No new commits are
    made directly in that branch.
-2. The actual fix is done on `develop` and must be manually ported into the `hotfix/0.3.1` branch. One or several new
+2. The actual fix is done on `main` and must be manually ported into the `hotfix/0.3.1` branch. One or several new
    commits are made on `hotfix/0.3.1`. This is needed when cherry-picking is not available due to incompatibilities
-   between `develop` and the hotfix branch due to intermittent changes.
-3. The fix is only relevant for the `0.3.1` hotfix, it is not needed in `develop`. This can happen, when the problem is
-   not present on `develop`, because it was already implicitly fixed, or otherwise doesn't exist.
+   between `main` and the hotfix branch due to intermittent changes.
+3. The fix is only relevant for the `0.3.1` hotfix, it is not needed in `main`. This can happen, when the problem is
+   not present on `main`, because it was already implicitly fixed, or otherwise doesn't exist.
 
 This might produce many branches, and the first `hotfix` makes the release obsolete, but it will greatly help
 readability and make a release's history readily apparent.

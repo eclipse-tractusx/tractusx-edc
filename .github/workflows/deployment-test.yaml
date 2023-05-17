@@ -1,0 +1,153 @@
+#
+#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+name: "Deployment Tests"
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  release:
+    types:
+      - published
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+    branches:
+      - '*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  secret-presence:
+    runs-on: ubuntu-latest
+    outputs:
+      AZURE_KV_CREDS: ${{ steps.secret-presence.outputs.AZURE_KV_CREDS }}
+    steps:
+      - name: Check whether secrets exist
+        id: secret-presence
+        run: |
+          [ ! -z "${{ secrets.AZURE_TENANT_ID }}" ] && 
+          [ ! -z "${{ secrets.AZURE_CLIENT_ID }}" ] && 
+          [ ! -z "${{ secrets.AZURE_CLIENT_SECRET }}" ] && 
+          [ ! -z "${{ secrets.AZURE_VAULT_NAME }}" ]  && 
+          echo "AZURE_KV_CREDS=true" >> $GITHUB_OUTPUT
+          exit 0
+
+  test-prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache ContainerD Image Layers
+        uses: actions/cache@v3
+        with:
+          path: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+          key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
+
+  test-in-memory:
+    runs-on: ubuntu-latest
+    needs: test-prepare
+    steps:
+      - uses: actions/checkout@v3.5.2
+      - uses: ./.github/actions/run-deployment-test
+        name: "Run deployment test using KinD and Helm"
+        with:
+          imagename: edc-runtime-memory
+          rootDir: edc-controlplane/edc-runtime-memory
+          helm_command: |-
+            helm install tx-inmem charts/tractusx-connector-memory \
+            -f charts/tractusx-connector-memory/example.yaml \
+            --set vault.secrets="daps-crt:$(cat daps.cert);daps-key:$(cat daps.key)" \
+            --wait-for-jobs --timeout=120s
+            
+            # wait for the pod to become ready
+            kubectl rollout status deployment tx-inmem
+            
+            # execute the helm test
+            helm test tx-inmem --logs
+
+  test-hashicorp-postgres:
+    runs-on: ubuntu-latest
+    needs: test-prepare
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      - uses: ./.github/actions/run-deployment-test
+        name: "Run deployment test using KinD and Helm"
+        with:
+          imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
+          rootDir: "."
+          helm_command: |-
+            helm install tx-prod charts/tractusx-connector \
+            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
+            --dependency-update \
+            --wait-for-jobs --timeout=120s
+
+            # wait for the pod to become ready
+            kubectl rollout status deployment tx-prod-controlplane
+            kubectl rollout status deployment tx-prod-dataplane
+
+            # execute the helm test
+            helm test tx-prod --logs
+
+  test-azure-vault-postgres:
+    runs-on: ubuntu-latest
+    needs: [ test-prepare, secret-presence ]
+    if: |
+      needs.secret-presence.outputs.AZURE_KV_CREDS
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - name: "Login to AZ CLI"
+        run: |
+          az login --service-principal -u="${{ secrets.AZURE_CLIENT_ID }}" --password="${{ secrets.AZURE_CLIENT_SECRET }}" --tenant="${{ secrets.AZURE_TENANT_ID }}"
+      - uses: ./.github/actions/run-deployment-test
+        name: "Run deployment test using KinD and Helm"
+        with:
+          imagename: "edc-controlplane-postgresql-azure-vault edc-dataplane-azure-vault"
+          rootDir: "."
+          helm_command: |-
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name daps-crt --value "$(cat daps.cert)" > /dev/null
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name daps-key --value "$(cat daps.key)" > /dev/null
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name aes-keys --value "$(cat aes.key)" > /dev/null
+            
+            helm install tx-prod charts/tractusx-connector-azure-vault \
+             -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-azure-vault-test.yaml \
+             --dependency-update \
+             --set vault.azure.name=${{ secrets.AZURE_VAULT_NAME }} \
+             --set vault.azure.client=${{ secrets.AZURE_CLIENT_ID }} \
+             --set vault.azure.secret=${{ secrets.AZURE_CLIENT_SECRET }} \
+             --set vault.azure.tenant=${{ secrets.AZURE_TENANT_ID }} \
+             --wait-for-jobs --timeout=120s
+
+            # wait for the pod to become ready
+            kubectl rollout status deployment tx-prod-controlplane
+            kubectl rollout status deployment tx-prod-dataplane
+
+            # execute the helm test
+            helm test tx-prod --logs

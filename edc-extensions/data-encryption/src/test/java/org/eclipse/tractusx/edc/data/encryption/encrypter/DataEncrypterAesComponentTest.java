@@ -19,7 +19,6 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.encrypter;
 
-import lombok.SneakyThrows;
 import org.eclipse.edc.connector.transfer.dataplane.spi.security.DataEncrypter;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
@@ -42,64 +41,68 @@ import org.mockito.Mockito;
 @SuppressWarnings("FieldCanBeLocal")
 class DataEncrypterAesComponentTest {
 
-  private static final String KEY_128_BIT_BASE_64 = "7h6sh6t6tchCmNnHjK2kFA==";
-  private static final String KEY_256_BIT_BASE_64 = "OSD+3NcZAmS/6UXbq6NL8UL+aQIAJDLL7BE2rBX5MtA=";
+    private static final String KEY_128_BIT_BASE_64 = "7h6sh6t6tchCmNnHjK2kFA==";
+    private static final String KEY_256_BIT_BASE_64 = "OSD+3NcZAmS/6UXbq6NL8UL+aQIAJDLL7BE2rBX5MtA=";
 
-  private DataEncrypter dataEncrypter;
-  private CryptoAlgorithm<AesKey> algorithm;
-  private KeyProvider<AesKey> keyProvider;
-  private CryptoKeyFactory cryptoKeyFactory;
-  private CryptoDataFactory cryptoDataFactory;
+    private DataEncrypter dataEncrypter;
+    private CryptoAlgorithm<AesKey> algorithm;
+    private KeyProvider<AesKey> keyProvider;
+    private CryptoKeyFactory cryptoKeyFactory;
+    private CryptoDataFactory cryptoDataFactory;
 
-  // mocks
-  private Monitor monitor;
-  private Vault vault;
+    // mocks
+    private Monitor monitor;
+    private Vault vault;
 
-  @BeforeEach
-  void setup() {
-    monitor = Mockito.mock(Monitor.class);
-    vault = Mockito.mock(Vault.class);
+    @BeforeEach
+    void setup() {
+        monitor = Mockito.mock(Monitor.class);
+        vault = Mockito.mock(Vault.class);
 
-    cryptoKeyFactory = new CryptoKeyFactoryImpl();
-    cryptoDataFactory = new CryptoDataFactoryImpl();
-    algorithm = new AesAlgorithm(cryptoDataFactory);
-    keyProvider = new AesKeyProvider(vault, "foo", cryptoKeyFactory);
+        cryptoKeyFactory = new CryptoKeyFactoryImpl();
+        cryptoDataFactory = new CryptoDataFactoryImpl();
+        algorithm = new AesAlgorithm(cryptoDataFactory);
+        keyProvider = new AesKeyProvider(vault, "foo", cryptoKeyFactory);
 
-    dataEncrypter =
-        new AesDataEncrypterImpl(algorithm, monitor, keyProvider, algorithm, cryptoDataFactory);
-  }
+        dataEncrypter =
+                new AesDataEncrypterImpl(algorithm, monitor, keyProvider, algorithm, cryptoDataFactory);
+    }
 
-  @Test
-  @SneakyThrows
-  void testKeyRotation() {
-    Mockito.when(vault.resolveSecret(Mockito.anyString()))
-        .thenReturn(
-            String.format(
-                "%s, %s, %s, %s",
-                KEY_128_BIT_BASE_64,
-                KEY_128_BIT_BASE_64,
-                KEY_128_BIT_BASE_64,
-                KEY_256_BIT_BASE_64));
+    @Test
+    void testKeyRotation() {
+        Mockito.when(vault.resolveSecret(Mockito.anyString()))
+                .thenReturn(
+                        String.format(
+                                "%s, %s, %s, %s",
+                                KEY_128_BIT_BASE_64,
+                                KEY_128_BIT_BASE_64,
+                                KEY_128_BIT_BASE_64,
+                                KEY_256_BIT_BASE_64));
 
-    final AesKey key256Bit = cryptoKeyFactory.fromBase64(KEY_256_BIT_BASE_64);
-    final String expectedResult = "hello";
-    final DecryptedData decryptedResult = cryptoDataFactory.decryptedFromText(expectedResult);
-    final EncryptedData encryptedResult = algorithm.encrypt(decryptedResult, key256Bit);
+        final AesKey key256Bit = cryptoKeyFactory.fromBase64(KEY_256_BIT_BASE_64);
+        final String expectedResult = "hello";
+        final DecryptedData decryptedResult = cryptoDataFactory.decryptedFromText(expectedResult);
 
-    var result = dataEncrypter.decrypt(encryptedResult.getBase64());
+        try {
+            final EncryptedData encryptedResult = algorithm.encrypt(decryptedResult, key256Bit);
 
-    Assertions.assertEquals(expectedResult, result);
-  }
+            var result = dataEncrypter.decrypt(encryptedResult.getBase64());
 
-  @Test
-  void testEncryption() {
-    Mockito.when(vault.resolveSecret(Mockito.anyString())).thenReturn(KEY_128_BIT_BASE_64);
+            Assertions.assertEquals(expectedResult, result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    final String expectedResult = "hello world!";
+    @Test
+    void testEncryption() {
+        Mockito.when(vault.resolveSecret(Mockito.anyString())).thenReturn(KEY_128_BIT_BASE_64);
 
-    var encryptedResult = dataEncrypter.encrypt(expectedResult);
-    var result = dataEncrypter.decrypt(encryptedResult);
+        final String expectedResult = "hello world!";
 
-    Assertions.assertEquals(expectedResult, result);
-  }
+        var encryptedResult = dataEncrypter.encrypt(expectedResult);
+        var result = dataEncrypter.decrypt(encryptedResult);
+
+        Assertions.assertEquals(expectedResult, result);
+    }
 }

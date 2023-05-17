@@ -1,0 +1,308 @@
+#
+#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "txdc.fullname" . }}
+  labels:
+    {{- include "txdc.runtime.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.runtime.autoscaling.enabled }}
+  replicas: {{ .Values.runtime.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "txdc.runtime.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.runtime.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "txdc.runtime.selectorLabels" . | nindent 8 }}
+        {{- with .Values.runtime.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "txdc.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.runtime.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- toYaml .Values.runtime.initContainers | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.runtime.securityContext | nindent 12 }}
+          # either use the specified image, or use the default one
+          {{- if .Values.runtime.image.repository }}
+          image: "{{ .Values.runtime.image.repository }}:{{ .Values.runtime.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          image: "tractusx/edc-runtime-memory:{{ .Values.runtime.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+
+          imagePullPolicy: {{ .Values.runtime.image.pullPolicy }}
+          ports:
+          {{- range $key,$value := .Values.runtime.endpoints }}
+            - name: {{ $key }}
+              containerPort: {{ $value.port }}
+              protocol: TCP
+          {{- end }}
+          {{- if .Values.runtime.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.runtime.endpoints.observability.path }}/check/liveness
+              port: {{ .Values.runtime.endpoints.observability.port }}
+            initialDelaySeconds: {{ .Values.runtime.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.runtime.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.runtime.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.runtime.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.runtime.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.runtime.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.runtime.endpoints.observability.path }}/check/readiness
+              port: {{ .Values.runtime.endpoints.observability.port }}
+            initialDelaySeconds: {{ .Values.runtime.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.runtime.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.runtime.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.runtime.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.runtime.readinessProbe.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.runtime.resources | nindent 12 }}
+          env:
+          {{- if .Values.runtime.debug.enabled }}
+            - name: "JAVA_TOOL_OPTIONS"
+            {{- if .Values.runtime.debug.suspendOnStart }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.runtime.debug.port }}
+            {{- else }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.runtime.debug.port }}
+            {{- end }}
+          {{- end }}
+
+            ########################
+            ## DAPS CONFIGURATION ##
+            ########################
+
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/iam/oauth2/oauth2-core
+            - name: EDC_OAUTH_CLIENT_ID
+              value: {{ .Values.daps.clientId | required ".Values.daps.clientId is required" | quote }}
+            - name: EDC_OAUTH_PROVIDER_JWKS_URL
+              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.jwks }}
+            - name: EDC_OAUTH_TOKEN_URL
+              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.token }}
+            - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
+              value: {{ .Values.vault.secretNames.dapsPrivateKey | required ".Values.vault.secretNames.dapsPrivateKey is required" | quote }}
+            - name: EDC_OAUTH_PUBLIC_KEY_ALIAS
+              value: {{ .Values.vault.secretNames.dapsPublicKey | required ".Values.vault.secretNames.dapsPublicKey is required" | quote }}
+
+            #######
+            # API #
+            #######
+            - name: "EDC_API_AUTH_KEY"
+              value: {{ .Values.runtime.endpoints.data.authKey | required ".Values.runtime.endpoints.data.authKey is required" | quote }}
+            - name: "WEB_HTTP_DEFAULT_PORT"
+              value: {{ .Values.runtime.endpoints.default.port | quote }}
+            - name: "WEB_HTTP_DEFAULT_PATH"
+              value: {{ .Values.runtime.endpoints.default.path | quote }}
+            {{- if or (eq (substr 0 3 .Values.runtime.image.tag) "0.1") (eq (substr 0 3 .Values.runtime.image.tag) "0.2") }}
+            # WEB_HTTP_DATA_PORT is renamed to WEB_HTTP_MANAGEMENT_PORT from version 0.2.1 and newer
+            # we will keep both settings for downward capabilities
+            - name: "WEB_HTTP_DATA_PORT"
+              value: {{ .Values.runtime.endpoints.data.port | quote }}
+            # WEB_HTTP_DATA_PATH is renamed to WEB_HTTP_MANAGEMENT_PATH from version 0.2.1 and newer
+            # we will keep both settings for downward capabilities
+            - name: "WEB_HTTP_DATA_PATH"
+              value: {{ .Values.runtime.endpoints.data.path | quote }}
+            {{- else }}
+            - name: "WEB_HTTP_MANAGEMENT_PORT"
+              value: {{ .Values.runtime.endpoints.data.port | quote }}
+            - name: "WEB_HTTP_MANAGEMENT_PATH"
+              value: {{ .Values.runtime.endpoints.data.path | quote }}
+            {{- end }}
+            - name: "WEB_HTTP_VALIDATION_PORT"
+              value: {{ .Values.runtime.endpoints.validation.port | quote }}
+            - name: "WEB_HTTP_VALIDATION_PATH"
+              value: {{ .Values.runtime.endpoints.validation.path | quote }}
+            - name: "WEB_HTTP_CONTROL_PORT"
+              value: {{ .Values.runtime.endpoints.control.port | quote }}
+            - name: "WEB_HTTP_CONTROL_PATH"
+              value: {{ .Values.runtime.endpoints.control.path | quote }}
+            - name: "WEB_HTTP_IDS_PORT"
+              value: {{ .Values.runtime.endpoints.protocol.port | quote }}
+            - name: "WEB_HTTP_IDS_PATH"
+              value: {{ .Values.runtime.endpoints.protocol.path | quote }}
+            - name: "WEB_HTTP_OBSERVABILITY_PORT"
+              value: {{ .Values.runtime.endpoints.observability.port | quote}}
+            - name: "WEB_HTTP_OBSERVABILITY_PATH"
+              value: {{ .Values.runtime.endpoints.observability.path | quote}}
+            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
+              value: {{ .Values.runtime.endpoints.observability.insecure | quote }}
+            - name: "WEB_HTTP_PUBLIC_PORT"
+              value: {{ .Values.runtime.endpoints.public.port | quote }}
+            - name: "WEB_HTTP_PUBLIC_PATH"
+              value: {{ .Values.runtime.endpoints.public.path | quote }}
+            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
+              value: {{ include "txdc.runtime.url.validation" .}}
+
+            #########
+            ## IDS ##
+            #########
+            - name: "IDS_WEBHOOK_ADDRESS"
+              value: {{ include "txdc.runtime.url.protocol" . | quote }}
+            - name: "EDC_IDS_ENDPOINT"
+              value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" .) .Values.runtime.endpoints.protocol.path | quote }}
+            - name: "EDC_IDS_ID"
+              value: {{ printf "urn:connector:%s" (lower .Values.runtime.internationalDataSpaces.id) | quote }}
+            - name: "EDC_IDS_DESCRIPTION"
+              value: {{ .Values.runtime.internationalDataSpaces.description | quote }}
+            - name: "EDC_IDS_TITLE"
+              value: {{ .Values.runtime.internationalDataSpaces.title | quote }}
+            - name: "EDC_IDS_MAINTAINER"
+              value: {{ .Values.runtime.internationalDataSpaces.maintainer | quote }}
+            - name: "EDC_IDS_CURATOR"
+              value: {{ .Values.runtime.internationalDataSpaces.curator | quote }}
+            - name: "EDC_IDS_CATALOG_ID"
+              value: {{ printf "urn:catalog:%s" (lower .Values.runtime.internationalDataSpaces.catalogId) | quote }}
+            - name: "EDC_OAUTH_PROVIDER_AUDIENCE"
+              value: "idsc:IDS_CONNECTORS_ALL"
+            - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
+              value: {{ printf "%s%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path "/data" | quote }}
+            # this is the old setting name for 'EDC_OAUTH_ENDPOINT_AUDIENCE' and is mandatory for Produce EDC v0.1.2 and older
+            - name: "EDC_IDS_ENDPOINT_AUDIENCE"
+              value: {{ printf "%s%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path "/data" | quote }}
+
+            ################
+            ## DATA PLANE ##
+            ################
+
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
+            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
+              value: {{ include "txdc.dataplane.url.control" . }}/transfer
+            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
+              value: "HttpData,AmazonS3"
+            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
+              value: "HttpProxy,AmazonS3"
+            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_PROPERTIES"
+              value: |-
+                {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
+
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/data-plane-transfer
+            - name: "EDC_TRANSFER_PROXY_ENDPOINT"
+              value: {{ include "txdc.dataplane.url.public" . }}
+            - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"
+              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey | quote }}
+            - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
+              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
+
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/http-receiver
+            - name: "EDC_RECEIVER_HTTP_ENDPOINT"
+              value: {{ .Values.backendService.httpProxyTokenReceiverUrl | required ".Values.backendService.httpProxyTokenReceiverUrl is required" | quote }}
+
+            ###########
+            ## VAULT ##
+            ###########
+
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
+            - name: "SECRETS"
+              value: {{ .Values.vault.secrets | quote}}
+
+            #####################
+            ## DATA ENCRYPTION ##
+            #####################
+
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/data-encryption
+            - name: "EDC_DATA_ENCRYPTION_KEYS_ALIAS"
+              value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
+            - name: "EDC_DATA_ENCRYPTION_ALGORITHM"
+              value: "AES"
+
+            ###########################
+            ## AAS WRAPPER EXTENSION ##
+            ###########################
+            - name: "EDC_CP_ADAPTER_CACHE_CATALOG_EXPIRE_AFTER"
+              value: "0"
+            - name: "EDC_CP_ADAPTER_REUSE_CONTRACT_AGREEMENT"
+              value: "0"
+          
+            ###########################
+            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
+            ###########################
+            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
+              value: {{ .Values.runtime.businessPartnerValidation.log.agreementValidation | quote }}
+
+            ######################################
+            ## Additional environment variables ##
+            ######################################
+          {{- range $key, $value := .Values.runtime.envValueFrom }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                {{- tpl (toYaml $value) $ | nindent 16 }}
+          {{- end }}
+          {{- range $key, $value := .Values.runtime.env }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- if and (or .Values.runtime.envSecretNames .Values.runtime.envConfigMapNames) (or (gt (len .Values.runtime.envSecretNames) 0) (gt (len .Values.runtime.envConfigMapNames) 0)) }}
+          envFrom:
+          {{- range $value := .Values.runtime.envSecretNames }}
+            - secretRef:
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- range $value := .Values.runtime.envConfigMapNames }}
+            - configMapRef:
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: "configuration"
+              mountPath: "/app/logging.properties"
+              subPath: "logging.properties"
+      volumes:
+        - name: "configuration"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-runtime
+            items:
+              - key: "logging.properties"
+                path: "logging.properties"
+      {{- with .Values.runtime.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.runtime.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.runtime.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -15,18 +15,28 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 
 dependencies {
 
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
+    // use basic (all in-mem) control plane
+    implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude("org.eclipse.edc", "oauth2-core")
         exclude("org.eclipse.edc", "oauth2-daps")
         exclude(module = "data-encryption")
         exclude(module = "control-plane-adapter")
     }
+
+    // use basic (all in-mem) data plane
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+        exclude("org.eclipse.edc", "api-observability")
+    }
+
+    implementation(edc.core.controlplane)
+    // for the controller
+    implementation(libs.jakarta.rsApi)
 }
 
 application {

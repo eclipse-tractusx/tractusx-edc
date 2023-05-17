@@ -22,64 +22,66 @@ package org.eclipse.tractusx.edc.tests;
 
 import com.google.gson.Gson;
 import io.cucumber.datatable.DataTable;
-import java.io.IOException;
-import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.edc.spi.system.health.HealthStatus;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
+import java.io.IOException;
+import java.util.Map;
+
 public class ControlPlaneAdapterSteps {
 
-  private EndpointDataReference endpointDataReference;
+    private static final Logger log = LoggerFactory.getLogger(ControlPlaneAdapterSteps.class);
+    private EndpointDataReference endpointDataReference;
 
-  /*
-   * TODO: see of EndToEndTransfer.feature
-   * the current Bussinnes test is not running,  because of a possible rare condition in the CI pipeline
-   * regarding the contract validity: see https://github.com/eclipse-edc/Connector/issues/2514
-   */
+    /*
+     * TODO: see of EndToEndTransfer.feature
+     * the current Bussinnes test is not running,  because of a possible rare condition in the CI pipeline
+     * regarding the contract validity: see https://github.com/eclipse-edc/Connector/issues/2514
+     */
 
-  // @When("'{connector}' gets a request endpoint from '{connector}'")
-  public void getEndPointFromGetRequest(Connector consumer, Connector receiver, DataTable table)
-      throws IOException {
+    // @When("'{connector}' gets a request endpoint from '{connector}'")
+    public void getEndPointFromGetRequest(Connector consumer, Connector receiver, DataTable table)
+            throws IOException {
 
-    final DataManagementAPI dataManagementAPI = consumer.getDataManagementAPI();
-    final String receiverIdsUrl = receiver.getEnvironment().getIdsUrl() + "/data";
+        DataManagementAPI dataManagementAPI = consumer.getDataManagementAPI();
+        String receiverIdsUrl = receiver.getEnvironment().getIdsUrl() + "/data";
 
-    for (Map<String, String> map : table.asMaps()) {
-      final String assetId = map.get("asset id");
+        for (Map<String, String> map : table.asMaps()) {
+            String assetId = map.get("asset id");
 
-      endpointDataReference = dataManagementAPI.getEdcEndpoint(assetId, receiverIdsUrl);
+            endpointDataReference = dataManagementAPI.getEdcEndpoint(assetId, receiverIdsUrl);
 
-      log.debug("endpointDataReference in controlplane" + endpointDataReference.toString());
+            log.debug("endpointDataReference in controlplane" + endpointDataReference.toString());
+        }
     }
-  }
 
-  /*
-   * TODO: see EndToEndTransfer.feature
-   * the current Bussinnes test is not running,  because of a possible rare condition in the CI pipeline
-   * regarding the contract validity: see https://github.com/eclipse-edc/Connector/issues/2514
-   */
+    /*
+     * TODO: see EndToEndTransfer.feature
+     * the current Bussinnes test is not running,  because of a possible rare condition in the CI pipeline
+     * regarding the contract validity: see https://github.com/eclipse-edc/Connector/issues/2514
+     */
 
-  // @Then("'{connector}' asks for the asset from the endpoint")
-  public void receiveEndpoint(Connector consumer) throws IOException {
+    // @Then("'{connector}' asks for the asset from the endpoint")
+    public void receiveEndpoint(Connector consumer) throws IOException {
 
-    var requestUrl = endpointDataReference.getEndpoint();
-    var key = endpointDataReference.getAuthKey();
-    var value = endpointDataReference.getAuthCode();
-    var httpClient = HttpClientBuilder.create().build();
-    var get = new HttpGet(requestUrl);
-    get.addHeader(key, value);
-    final CloseableHttpResponse response = httpClient.execute(get);
-    var bytes = response.getEntity().getContent().readAllBytes();
-    var result = new String(bytes);
-    var resultTransformed = new Gson().fromJson(result, HealthStatus.class);
+        var requestUrl = endpointDataReference.getEndpoint();
+        var key = endpointDataReference.getAuthKey();
+        var value = endpointDataReference.getAuthCode();
+        var httpClient = HttpClientBuilder.create().build();
+        var get = new HttpGet(requestUrl);
+        get.addHeader(key, value);
+        CloseableHttpResponse response = httpClient.execute(get);
+        var bytes = response.getEntity().getContent().readAllBytes();
+        var result = new String(bytes);
+        var resultTransformed = new Gson().fromJson(result, HealthStatus.class);
 
-    Assertions.assertTrue(resultTransformed.isHealthy());
-    Assertions.assertFalse(resultTransformed.getComponentResults().isEmpty());
-  }
+        Assertions.assertTrue(resultTransformed.isHealthy());
+        Assertions.assertFalse(resultTransformed.getComponentResults().isEmpty());
+    }
 }

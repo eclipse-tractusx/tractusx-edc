@@ -20,12 +20,29 @@
 
 package org.eclipse.tractusx.edc.tests.data;
 
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Value
 public class ContractNegotiation {
-  @NonNull String id;
-  String agreementId;
-  @NonNull ContractNegotiationState state;
+    private final String id;
+    private final ContractNegotiationState state;
+    private final String agreementId;
+
+
+    public ContractNegotiation(String id, ContractNegotiationState state, String agreementId) {
+        this.id = Objects.requireNonNull(id);
+        this.state = Objects.requireNonNull(state);
+        this.agreementId = agreementId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public ContractNegotiationState getState() {
+        return state;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
+    }
 }

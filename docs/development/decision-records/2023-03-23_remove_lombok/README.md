@@ -11,9 +11,9 @@ Lombok uses byte-code modification to achieve its goal. That is dangerous for a 
 First and foremost, to achieve its goal, it relies on internal APIs of the JVM, which are not intended for public
 consumption, thus they can and will get removed, refactored or made otherwise unavailable. This has been discussed at
 length in the [project's GitHub page](https://github.com/projectlombok/lombok/issues/2681).
-This is especially problematic for an OSS project such as TractusX.
+This is especially problematic for an OSS project such as Eclipse Tractus-X.
 
-Second, many of the features that are currently used by TractusX-EDC are experimental (e.g. `@UtilityClass`) and are
+Second, many of the features that are currently used by Tractus-X EDC are experimental (e.g. `@UtilityClass`) and are
 known to break some Java standard features, such as static imports.
 
 Third, the value that Lombok offers is questionable at best (e.g. various constructor

@@ -26,17 +26,19 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
 
-/** AtomicConstraintFunction to validate business partner numbers for edc permissions. */
+/**
+ * AtomicConstraintFunction to validate business partner numbers for edc permissions.
+ */
 public class BusinessPartnerPermissionFunction extends AbstractBusinessPartnerValidation
-    implements AtomicConstraintFunction<Permission> {
+        implements AtomicConstraintFunction<Permission> {
 
-  public BusinessPartnerPermissionFunction(Monitor monitor) {
-    super(monitor);
-  }
+    public BusinessPartnerPermissionFunction(Monitor monitor, boolean shouldLogOnAgreementEvaluation) {
+        super(monitor, shouldLogOnAgreementEvaluation);
+    }
 
-  @Override
-  public boolean evaluate(
-      Operator operator, Object rightValue, Permission rule, PolicyContext context) {
-    return evaluate(operator, rightValue, context);
-  }
+    @Override
+    public boolean evaluate(
+            Operator operator, Object rightValue, Permission rule, PolicyContext context) {
+        return evaluate(operator, rightValue, context);
+    }
 }

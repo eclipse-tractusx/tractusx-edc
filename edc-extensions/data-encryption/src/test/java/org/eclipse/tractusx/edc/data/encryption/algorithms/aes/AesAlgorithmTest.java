@@ -19,7 +19,6 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.algorithms.aes;
 
-import lombok.SneakyThrows;
 import org.bouncycastle.util.encoders.Base64;
 import org.eclipse.tractusx.edc.data.encryption.data.CryptoDataFactory;
 import org.eclipse.tractusx.edc.data.encryption.data.CryptoDataFactoryImpl;
@@ -31,62 +30,69 @@ import org.junit.jupiter.api.Test;
 
 class AesAlgorithmTest {
 
-  private static final byte[] KEY_128_BIT = Base64.decode("dVUjmYJzbwVcntkFZU+lNQ==");
-  private static final byte[] KEY_196_BIT = Base64.decode("NcgHzzRTUC+z396tWG9hqIbeihujz0m8");
-  private static final byte[] KEY_256_BIT =
-      Base64.decode("OSD+3NcZAmS/6UXbq6NL8UL+aQIAJDLL7BE2rBX5MtA=");
+    private static final byte[] KEY_128_BIT = Base64.decode("dVUjmYJzbwVcntkFZU+lNQ==");
+    private static final byte[] KEY_196_BIT = Base64.decode("NcgHzzRTUC+z396tWG9hqIbeihujz0m8");
+    private static final byte[] KEY_256_BIT =
+            Base64.decode("OSD+3NcZAmS/6UXbq6NL8UL+aQIAJDLL7BE2rBX5MtA=");
 
-  private final AesAlgorithm strategy = new AesAlgorithm(new CryptoDataFactoryImpl());
-  private final CryptoDataFactory cryptoDataFactory = new CryptoDataFactoryImpl();
+    private final AesAlgorithm strategy = new AesAlgorithm(new CryptoDataFactoryImpl());
+    private final CryptoDataFactory cryptoDataFactory = new CryptoDataFactoryImpl();
 
-  @Test
-  void test128BitKey() {
-    testKey(KEY_128_BIT);
-  }
+    @Test
+    void test128BitKey() {
+        testKey(KEY_128_BIT);
+    }
 
-  @Test
-  void test196BitKey() {
-    testKey(KEY_196_BIT);
-  }
+    @Test
+    void test196BitKey() {
+        testKey(KEY_196_BIT);
+    }
 
-  @Test
-  void test256BitKey() {
-    testKey(KEY_256_BIT);
-  }
+    @Test
+    void test256BitKey() {
+        testKey(KEY_256_BIT);
+    }
 
-  @Test
-  @SneakyThrows
-  void testSameDataEncryptedDifferently() {
-    final AesKey aesKey = createKey(KEY_128_BIT);
-    final DecryptedData expected = cryptoDataFactory.decryptedFromText("same data");
-    final EncryptedData result1 = strategy.encrypt(expected, aesKey);
-    final EncryptedData result2 = strategy.encrypt(expected, aesKey);
+    @Test
+    void testSameDataEncryptedDifferently() {
+        final AesKey aesKey = createKey(KEY_128_BIT);
+        final DecryptedData expected = cryptoDataFactory.decryptedFromText("same data");
 
-    Assertions.assertNotEquals(result1.getBase64(), result2.getBase64());
-  }
+        try {
+            final EncryptedData result1 = strategy.encrypt(expected, aesKey);
+            final EncryptedData result2 = strategy.encrypt(expected, aesKey);
 
-  @SneakyThrows
-  void testKey(byte[] key) {
-    final AesKey aesKey = createKey(key);
-    final DecryptedData expected = cryptoDataFactory.decryptedFromText("I will be encrypted");
-    final EncryptedData encryptedResult = strategy.encrypt(expected, aesKey);
-    final DecryptedData result = strategy.decrypt(encryptedResult, aesKey);
+            Assertions.assertNotEquals(result1.getBase64(), result2.getBase64());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    Assertions.assertEquals(expected.getBase64(), result.getBase64());
-  }
 
-  AesKey createKey(byte[] key) {
-    return new AesKey() {
+    void testKey(byte[] key) {
+        final AesKey aesKey = createKey(key);
+        final DecryptedData expected = cryptoDataFactory.decryptedFromText("I will be encrypted");
+        try {
+            final EncryptedData encryptedResult = strategy.encrypt(expected, aesKey);
+            final DecryptedData result = strategy.decrypt(encryptedResult, aesKey);
+            Assertions.assertEquals(expected.getBase64(), result.getBase64());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-      @Override
-      public byte[] getBytes() {
-        return key;
-      }
+    AesKey createKey(byte[] key) {
+        return new AesKey() {
 
-      @Override
-      public String getBase64() {
-        return Base64.toBase64String(key);
-      }
-    };
-  }
+            @Override
+            public byte[] getBytes() {
+                return key;
+            }
+
+            @Override
+            public String getBase64() {
+                return Base64.toBase64String(key);
+            }
+        };
+    }
 }
