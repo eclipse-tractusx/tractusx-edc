@@ -26,7 +26,7 @@ For more information, please see the Eclipse Committer Handbook:
 
 ## License
 
-Code in TractusX EDC is published under the [Apache License](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE).
+Code in Tractus-X EDC is published under the [Apache License](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE).
 
 ## Contact
 

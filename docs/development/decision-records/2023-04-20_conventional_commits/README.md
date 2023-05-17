@@ -2,7 +2,7 @@
 
 ## Decision
 
-From now on, TractusX-EDC will use only conventional commit messages. The specification can be
+From now on, Tractus-X EDC will use only conventional commit messages. The specification can be
 found [here](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 ## Rationale
@@ -15,7 +15,7 @@ creation, interpretation and enforcement of conventional commits.
 
 ## Approach
 
-As a first step, we enforce conventional commits as part of our CI pipeline. TractusX-EDC is using
+As a first step, we enforce conventional commits as part of our CI pipeline. Tractus-X EDC is using
 Squash-Rebase-merging, and the PR title is used as commit message. We will not dictate how people structure their
 commits during the _development_ phase of their PR, but we _will_ enforce, that PR titles (and thus: merge commit
 messages) are in the conventional commit format.

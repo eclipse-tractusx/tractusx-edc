@@ -1,3 +1,18 @@
+#
+  #     Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+  #
+  #  This program and the accompanying materials are made available under the
+  #  terms of the Apache License, Version 2.0 which is available at
+  #  https://www.apache.org/licenses/LICENSE-2.0
+  #
+  #  SPDX-License-Identifier: Apache-2.0
+  #
+  #  Contributors:
+  #   Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+  #
+  #
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -59,7 +74,7 @@ spec:
               cp /opt/config/scope_mapping.yml /etc/daps/scope_mapping.yml
               apk add --update openssl
               openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/keys/omejdn/omejdn.key \
-                -subj "/C=DE/ST=Berlin/L=Berlin/O=TractusX-EDC-Test, Inc./OU=DE"
+                -subj "/C=DE/ST=Berlin/L=Berlin/O=Tractus-X-EDC-Test, Inc./OU=DE"
           volumeMounts:
             - mountPath: /etc/daps
               name: config-dir
@@ -106,44 +121,44 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-          - name: OMEJDN_JWT_AUD_OVERRIDE
-            value: "idsc:IDS_CONNECTORS_ALL"
-          - name: OMEJDN_PLUGINS
-            value: "config/plugins.yml"
+            - name: OMEJDN_JWT_AUD_OVERRIDE
+              value: "idsc:IDS_CONNECTORS_ALL"
+            - name: OMEJDN_PLUGINS
+              value: "config/plugins.yml"
       volumes:
-      - name: config-dir
-        emptyDir: {}
-      - name: omejdn-key-dir
-        emptyDir: {}
-      - name: omejdn-config
-        configMap:
-          name: {{ include "omejdn.fullname" . }}
-          items:
-          - key: omejdn.yml
-            path: omejdn.yml
-      - name: scope-mapping
-        configMap:
-          name: {{ include "omejdn.fullname" . }}
-          items:
-          - key: scope_mapping.yml
-            path: scope_mapping.yml
-      - name: clients-config
-        configMap:
-          name: {{ include "omejdn.fullname" . }}
-          items:
-          - key: clients.yml
-            path: clients.yml
-      - name: plugins-config
-        configMap:
-          name: {{ include "omejdn.fullname" . }}
-          items:
-          - key: plugins.yml
-            path: plugins.yml
-      - name: client-certificates
-        configMap:
-          name: {{ include "omejdn.fullname" . }}
-          items:
+        - name: config-dir
+          emptyDir: { }
+        - name: omejdn-key-dir
+          emptyDir: { }
+        - name: omejdn-config
+          configMap:
+            name: {{ include "omejdn.fullname" . }}
+            items:
+              - key: omejdn.yml
+                path: omejdn.yml
+        - name: scope-mapping
+          configMap:
+            name: {{ include "omejdn.fullname" . }}
+            items:
+              - key: scope_mapping.yml
+                path: scope_mapping.yml
+        - name: clients-config
+          configMap:
+            name: {{ include "omejdn.fullname" . }}
+            items:
+              - key: clients.yml
+                path: clients.yml
+        - name: plugins-config
+          configMap:
+            name: {{ include "omejdn.fullname" . }}
+            items:
+              - key: plugins.yml
+                path: plugins.yml
+        - name: client-certificates
+          configMap:
+            name: {{ include "omejdn.fullname" . }}
+            items:
             {{- range $i, $val :=  .Values.connectors }}
-            - key: {{ $val.name }}
-              path: {{ $val.id }}.cert
+              - key: {{ $val.name }}
+                path: {{ $val.id }}.cert
             {{- end }}

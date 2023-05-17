@@ -6,7 +6,7 @@ DockerHub: https://hub.docker.com/r/tractusx/edc-runtime-memory
 
 Eclipse Tractus-X product(s) installed within the image:
 
-## TractusX-EDC Control Plane
+## Tractus-X EDC Control Plane
 
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx

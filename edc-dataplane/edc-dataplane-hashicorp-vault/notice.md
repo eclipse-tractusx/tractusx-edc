@@ -6,7 +6,7 @@ DockerHub: https://hub.docker.com/r/tractusx/edc-dataplane-hashicorp-vault
 
 Eclipse Tractus-X product(s) installed within the image:
 
-## TractusX-EDC Data Plane
+## Tractus-X-EDC Data Plane
 
 - GitHub: https://github.com/eclipse-tractusx/tractusx-edc
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx

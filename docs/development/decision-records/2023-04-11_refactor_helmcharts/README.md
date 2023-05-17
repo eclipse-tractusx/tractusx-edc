@@ -1,4 +1,4 @@
-# Refactor TractusX-EDC Helm charts
+# Refactor Tractus-X EDC Helm charts
 
 ## Decision
 
@@ -22,10 +22,10 @@ The current "dynamically composed" helm chart has proven to be a source for issu
 errors due to the great number of variations. Further, only one particular variant (i.e. postgres+hashicorp) is put to
 any semblance of testing (i.e. business tests).
 
-The official recommendation of TractusX-EDC is to use PostgreSQL and HashiCorp Vault, and alongside it, we will provide
+The official recommendation of Tractus-X EDC is to use PostgreSQL and HashiCorp Vault, and alongside it, we will provide
 charts for easy testing and setting up demos as well as an Azure KeyVault variant for legacy use cases.
 
-> Note: using Azure KeyVault is not officially supported or recommended by TractusX-EDC!
+> Note: using Azure KeyVault is not officially supported or recommended by Tractus-X EDC!
 
 This will also reduce the number of Docker images that need to be published.
 
@@ -46,7 +46,7 @@ else. It will have the following properties:
 
 ### Variant 2: `tractusx-connector`
 
-This is the production-ready chart that is published by TractusX-EDC, and it will actually consist of two charts. One is
+This is the production-ready chart that is published by Tractus-X EDC, and it will actually consist of two charts. One is
 the `tractusx-runtime` sub-chart, that contains all configuration for data plane and control plane, and the other one is
 the top-level `tractusx-connector` chart, that pulls in other charts as dependencies that are needed for one TractusX
 connector application. This is sometimes referred to

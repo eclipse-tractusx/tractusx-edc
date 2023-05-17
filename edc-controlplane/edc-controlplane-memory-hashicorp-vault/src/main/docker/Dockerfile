@@ -18,13 +18,14 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 #
+
 FROM alpine:3.18.0 AS otel
 
 ENV OTEL_AGENT_LOCATION "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.1/opentelemetry-javaagent.jar"
 
 HEALTHCHECK NONE
 
-RUN apk update && apk add curl=8.0.1-r2 --no-cache
+RUN apk update && apk add curl=8.1.0-r0 --no-cache
 RUN curl -L --proto "=https" -sSf ${OTEL_AGENT_LOCATION} --output /tmp/opentelemetry-javaagent.jar
 
 FROM eclipse-temurin:17.0.6_10-jre-alpine

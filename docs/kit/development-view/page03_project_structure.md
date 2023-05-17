@@ -6,12 +6,12 @@ Issues are maintained in [GitHub Issues](https://github.com/eclipse-tractusx/tra
 
 ## Reporting Vulnerabilities
 
-Vulnerabilities in the TractusX code base are best reported directly to the
+Vulnerabilities in the Eclipse Tractus-X code base are best reported directly to the
 [Eclipse Foundation](https://www.eclipse.org/security/).
 
 ## Git Flow
 
-The TractusX EDC repository uses a Git Flow, with `main` as the development branch and `releases` as the release branch.
+The Tractus-X EDC repository uses a Git Flow, with `main` as the development branch and `releases` as the release branch.
 Other branches should follow the naming conventions of `feature/x` or `hotfix/x`, though this is not strictly enforced.
 
 ## Tooling

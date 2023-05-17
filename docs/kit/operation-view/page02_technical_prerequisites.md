@@ -2,20 +2,20 @@
 
 ## Obtaining Releases
 
-The most recent release of TractusX EDC can be obtained under `https://github.com/eclipse-tractusx/tractusx-edc/releases`.
+The most recent release of Tractus-X EDC can be obtained under `https://github.com/eclipse-tractusx/tractusx-edc/releases`.
 To create your own build, you can clone the repository at `https://github.com/eclipse-tractusx/tractusx-edc` and consult the provided README.md.
 This can be useful if you want to use non-standard extensions or configuration.
 
 ## Container Environment
 
-TractusX releases come in the form of Docker containers and corresponding Helm charts.
+Tractus-X releases come in the form of Docker containers and corresponding Helm charts.
 As such, recent versions of the following are required.
 
 - Docker
 - Kubernetes
 - Helm
 
-Seeing as these are standard tools, TractusX EDC will run on any cloud environment that can accept Helm charts.
+Seeing as these are standard tools, Tractus-X EDC will run on any cloud environment that can accept Helm charts.
 
 ## Backend Dependencies
 
