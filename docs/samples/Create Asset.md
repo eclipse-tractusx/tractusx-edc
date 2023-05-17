@@ -17,14 +17,23 @@ This document will showcase how to create an asset with the new management API.
 
 ## 1. Optional - Local Setup
 
+TODO link to a 0.4.x example setup.
+
 ## 2. Terminology
+
+With the migration to a new protocol and with it new specifications, DCAT Catalogs in the context of assets, there is a need to clarify the terminology that is used.
+In the table below, relevant terms from the connector and their new counterparts are listed and explained with a short description.
 
 | Connector           | New Protocol (DCAT Catalogs) | Description                                                   |
 |---------------------|------------------------------|---------------------------------------------------------------|
 | Asset Entry         | Asset                        | Contains the Asset ID and its Data Address.                   |
 | Contract Definition | Asset Entry / Dataset        | Contains an Asset () that is offered and covered by a Policy. |
 
+Generally, this documentation uses the connector terminology unless otherwise specified.
+
 ## 3. Values
+
+Since some keys which are required in requests for the new management API aren't self-explanatory when you first see them, a short explanation is given below.
 
 | Key      | Description |
 |----------|-------------|
@@ -33,6 +42,9 @@ This document will showcase how to create an asset with the new management API.
 | edc      |             |
 
 ## 4. Simple Asset
+
+The first use-case is to generate a very simple asset, that only contains the minimum in terms of information.
+For this we need both an asset and a data address, which together form an asset entry.
 
 ````json
 {
@@ -52,6 +64,15 @@ This document will showcase how to create an asset with the new management API.
 }
 ````
 
+The asset entry is then sent to the management API of the connector through a POST request.
+
+**CON_DATAMGMT_URL** specifies the URL of the management API.
+The path `/management/v2` allows access to the functionality of the new management API.
+Adding `/assets` then leads to the functionality pertaining assets.
+
+> Please note: `/v2` is only a temporary part of the path and will be discarded once the migration to the new protocol is finished and the old API is taken out of service.
+> Once that is done, the new management API can be reached through `/management`.
+
 ```bash
 curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
     --header 'X-Api-Key: password' \
@@ -61,11 +82,11 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
                 "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
                 "edc":"https://w3id.org/edc/v0.0.1/ns/"
               },
-              "https://w3id.org/edc/v0.0.1/ns/asset":{
+              "https://w3id.org/edc/v0.0.1/ns/asset": {
                 "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
                 "@id":"some-asset-id"
               },
-              "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
+              "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
                 "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
                 "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
                 "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
