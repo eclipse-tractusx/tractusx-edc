@@ -18,12 +18,14 @@ This document will showcase how to create an asset with the new management API.
 ## 1. Optional - Local Setup
 
 ## 2. Terminology
+
 | Connector           | New Protocol (DCAT Catalogs) | Description                                                   |
 |---------------------|------------------------------|---------------------------------------------------------------|
 | Asset Entry         | Asset                        | Contains the Asset ID and its Data Address.                   |
 | Contract Definition | Asset Entry / Dataset        | Contains an Asset () that is offered and covered by a Policy. |
 
 ## 3. Values
+
 | Key      | Description |
 |----------|-------------|
 | @context |             |
@@ -34,19 +36,15 @@ This document will showcase how to create an asset with the new management API.
 
 ````json
 {
-  "https://w3id.org/edc/v0.0.1/ns/asset":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "@context": {
+    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
+    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "https://w3id.org/edc/v0.0.1/ns/asset": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
     "@id":"some-asset-id"
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
@@ -59,49 +57,42 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
     --header 'X-Api-Key: password' \
     --header 'Content-Type: application/json' \
     --data '{
-                "https://w3id.org/edc/v0.0.1/ns/asset":{
-                    "@context":{
-                        "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-                        "edc":"https://w3id.org/edc/v0.0.1/ns/"
-                    },
-                    "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
-                    "@id":"some-asset-id"
-                },
-                "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
-                    "@context":{
-                        "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-                        "edc":"https://w3id.org/edc/v0.0.1/ns/"
-                    },
-                    "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
-                    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
-                    "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
-                }
+              "@context": {
+                "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
+                "edc":"https://w3id.org/edc/v0.0.1/ns/"
+              },
+              "https://w3id.org/edc/v0.0.1/ns/asset":{
+                "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
+                "@id":"some-asset-id"
+              },
+              "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
+                "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
+                "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
+                "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
+              }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
 
 ## 5. Custom Property Asset
+
 ````json
 {
-  "https://w3id.org/edc/v0.0.1/ns/asset":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "@context": {
+    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
+    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "https://w3id.org/edc/v0.0.1/ns/asset": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
     "@id":"some-asset-id",
-    "properties":{
+    "properties": {
       "name":"some-asset-name",
       "description":"some description",
       "edc:version":"0.2.1",
       "contenttype":"application/json"
     }
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
@@ -113,28 +104,24 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
 
 ````json
 {
-  "https://w3id.org/edc/v0.0.1/ns/asset":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "@context": {
+    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
+    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "https://w3id.org/edc/v0.0.1/ns/asset": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
     "@id":"some-asset-id",
-    "properties":{
+    "properties": {
       "name":"some-asset-name",
       "description":"some description",
       "edc:version":"0.2.1",
       "contenttype":"application/json"
     },
-    "https://w3id.org/edc/v0.0.1/ns/privateProperties":{
+    "https://w3id.org/edc/v0.0.1/ns/privateProperties": {
       "test-prop":"test-val"
     }
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
@@ -146,30 +133,26 @@ curl -X POST "${CON_DATAMGMT_URL}/management/v2/assets" \
 
 ````json
 {
-  "https://w3id.org/edc/v0.0.1/ns/asset":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "@context": {
+    "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
+    "edc":"https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "https://w3id.org/edc/v0.0.1/ns/asset": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/Asset",
     "@id":"some-asset-id",
-    "properties":{
+    "properties": {
       "name":"some-asset-name",
       "description":"some description",
       "edc:version":"0.2.1",
       "contenttype":"application/json",
-      "payload":{
+      "payload": {
         "@type":"customPayload",
         "name":"max",
         "age":34
       }
     }
   },
-  "https://w3id.org/edc/v0.0.1/ns/dataAddress":{
-    "@context":{
-      "@vocab":"https://w3id.org/edc/v0.0.1/ns/",
-      "edc":"https://w3id.org/edc/v0.0.1/ns/"
-    },
+  "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
     "@type":"https://w3id.org/edc/v0.0.1/ns/DataAddress",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/type":"test-type",
     "https://w3id.org/edc/v0.0.1/ns/https://w3id.org/edc/v0.0.1/ns/keyName":"test-key-name"
