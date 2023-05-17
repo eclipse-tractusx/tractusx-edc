@@ -110,7 +110,7 @@ Those pairs are then stored inside the `properties` field.
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "https://w3id.org/edc/v0.0.1/ns/asset": {
-    "@type": "asset",
+    "@type": "Asset",
     "@id": "some-asset-id",
     "properties": {
       "name": "some-asset-name",
@@ -120,7 +120,7 @@ Those pairs are then stored inside the `properties` field.
     }
   },
   "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type": "dataAddress",
+    "@type": "DataAddress",
     "type": "test-type",
     "keyName": "test-key-name"
   }
@@ -189,7 +189,7 @@ Here the `payload` contains the name and age of a person.
     }
   },
   "https://w3id.org/edc/v0.0.1/ns/dataAddress": {
-    "@type": "https://w3id.org/edc/v0.0.1/ns/DataAddress",
+    "@type": "DataAddress",
     "type": "test-type",
     "keyName": "test-key-name"
   }
