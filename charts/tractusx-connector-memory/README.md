@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
+![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.4](https://img.shields.io/badge/AppVersion-0.3.4-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -32,7 +32,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.3.3 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.3.4 \
      -f <path-to>/example.yaml \
      --set vault.secrets="daps-cert:$DAPS_CERT;daps-key:$DAPS_KEY" \
 ```
@@ -66,7 +66,7 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | runtime.debug.enabled | bool | `false` |  |
 | runtime.debug.port | int | `1044` |  |
 | runtime.debug.suspendOnStart | bool | `false` |  |
-| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"data":{"authKey":"","path":"/data","port":8081},"default":{"path":"/api","port":8080},"ids":{"path":"/api/v1/ids","port":8084},"observability":{"insecure":true,"path":"/observability","port":8085},"public":{"path":"/api/public","port":8086},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
+| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"data":{"authKey":"","path":"/data","port":8081},"default":{"path":"/api","port":8080},"observability":{"insecure":true,"path":"/observability","port":8085},"protocol":{"path":"/api/v1/ids","port":8084},"public":{"path":"/api/public","port":8086},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | runtime.endpoints.control.port | int | `8083` | port for incoming api calls |
@@ -77,13 +77,13 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | runtime.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | runtime.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | runtime.endpoints.default.port | int | `8080` | port for incoming api calls |
-| runtime.endpoints.ids | object | `{"path":"/api/v1/ids","port":8084}` | ids api, used for inter connector communication and must be internet facing |
-| runtime.endpoints.ids.path | string | `"/api/v1/ids"` | path for incoming api calls |
-| runtime.endpoints.ids.port | int | `8084` | port for incoming api calls |
 | runtime.endpoints.observability | object | `{"insecure":true,"path":"/observability","port":8085}` | observability api with unsecured access, must not be internet facing |
 | runtime.endpoints.observability.insecure | bool | `true` | allow or disallow insecure access, i.e. access without authentication |
 | runtime.endpoints.observability.path | string | `"/observability"` | observability api, provides /health /readiness and /liveness endpoints |
 | runtime.endpoints.observability.port | int | `8085` | port for incoming API calls |
+| runtime.endpoints.protocol | object | `{"path":"/api/v1/ids","port":8084}` | ids api, used for inter connector communication and must be internet facing |
+| runtime.endpoints.protocol.path | string | `"/api/v1/ids"` | path for incoming api calls |
+| runtime.endpoints.protocol.port | int | `8084` | port for incoming api calls |
 | runtime.endpoints.validation | object | `{"path":"/validation","port":8082}` | validation api, only used by the data plane and should not be added to any ingress |
 | runtime.endpoints.validation.path | string | `"/validation"` | path for incoming api calls |
 | runtime.endpoints.validation.port | int | `8082` | port for incoming api calls |
@@ -99,7 +99,7 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | runtime.ingresses[0].certManager.issuer | string | `""` | If preset enables certificate generation via cert-manager namespace scoped issuer |
 | runtime.ingresses[0].className | string | `""` | Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use |
 | runtime.ingresses[0].enabled | bool | `false` |  |
-| runtime.ingresses[0].endpoints | list | `["ids"]` | EDC endpoints exposed by this ingress resource |
+| runtime.ingresses[0].endpoints | list | `["protocol"]` | EDC endpoints exposed by this ingress resource |
 | runtime.ingresses[0].hostname | string | `"edc-control.local"` | The hostname to be used to precisely map incoming traffic onto the underlying network service |
 | runtime.ingresses[0].tls | object | `{"enabled":false,"secretName":""}` | TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource |
 | runtime.ingresses[0].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
