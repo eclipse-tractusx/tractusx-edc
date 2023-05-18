@@ -65,8 +65,6 @@ include(":edc-dataplane:edc-dataplane-proxy-provider-core")
 include(":edc-dataplane:edc-dataplane-proxy-provider-api")
 include(":edc-tests:edc-dataplane-proxy-e2e")
 
-// Version Catalog
-include(":version-catalog")
 
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
