@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.sql.assetindex)
     implementation(libs.edc.sql.core)
+    runtimeOnly(libs.postgres)
 
     implementation("org.flywaydb:flyway-core:9.18.0")
 }

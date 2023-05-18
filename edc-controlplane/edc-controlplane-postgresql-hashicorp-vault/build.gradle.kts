@@ -35,7 +35,7 @@ dependencies {
     runtimeOnly(libs.edc.sql.pool)
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.dpf.transfer)
-
+    runtimeOnly(libs.postgres)
 }
 
 
