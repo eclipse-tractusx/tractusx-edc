@@ -13,6 +13,4 @@
 
 -- add column
 ALTER TABLE edc_transfer_process
-    RENAME COLUMN transferprocess_properties TO properties;
-ALTER TABLE edc_transfer_process
     DROP COLUMN IF EXISTS transfer_type;

@@ -12,9 +12,10 @@
  *
  */
 
-package org.eclipse.tractusx.edc.lifecycle;
+package org.eclipse.tractusx.edc.tests.transfer;
 
-
+import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
@@ -24,23 +25,22 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRAT
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 
-
-public class MultiRuntimeTest {
-
+@EndToEndTest
+public class HttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
 
     @RegisterExtension
-    protected static ParticipantWrapper sokrates = new ParticipantWrapper(
+    protected static ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
             SOKRATES_NAME,
             SOKRATES_BPN,
             sokratesConfiguration()
     );
 
-
     @RegisterExtension
-    protected static ParticipantWrapper plato = new ParticipantWrapper(
+    protected static ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
             PLATO_NAME,
             PLATO_BPN,
-            platoConfiguration());
+            platoConfiguration()
+    );
 }

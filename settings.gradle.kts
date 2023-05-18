@@ -43,7 +43,9 @@ include(":edc-extensions:control-plane-adapter-callback")
 
 
 include(":edc-tests:e2e-tests")
-include(":edc-tests:runtime")
+include(":edc-tests:runtime:extensions")
+include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:cucumber")
 
 // modules for controlplane artifacts

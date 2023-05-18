@@ -35,6 +35,7 @@ dependencies {
     testImplementation(libs.edc.spi.dataplane.selector)
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
+    testImplementation(testFixtures(libs.edc.sql.core))
 }
 
 // do not publish
