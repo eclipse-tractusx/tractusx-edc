@@ -58,7 +58,7 @@ jobs:
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
-          docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+          docker_tag: ${{ inputs.docker_tag }}
           rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
           imagename: ${{ matrix.variant.img }}
           namespace: ${{ inputs.namespace }}
