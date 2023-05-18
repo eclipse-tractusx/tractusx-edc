@@ -122,6 +122,7 @@ jobs:
           imagename: ${{ matrix.variant.img }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          do_push: 'true'
 
   # Release: Helm Charts
   helm-release:
