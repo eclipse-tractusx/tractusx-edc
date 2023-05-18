@@ -31,7 +31,9 @@ edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.r
 edc-spi-aggregateservices = { module = "org.eclipse.edc:aggregate-service-spi", version.ref = "edc" }
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
+edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
+edc-jwt-core = { module = "org.eclipse.edc:jwt-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-spi-ids = { module = "org.eclipse.edc:ids-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
