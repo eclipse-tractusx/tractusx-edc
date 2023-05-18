@@ -25,9 +25,14 @@ plugins {
 
 dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
-    implementation(edc.azure.vault)
-    implementation(edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.6.1")
+    implementation(libs.edc.azure.vault)
+    constraints {
+        implementation("net.minidev:json-smart:2.4.10") {
+            because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
+        }
+    }
+    implementation(libs.edc.azure.identity)
+    implementation("com.azure:azure-security-keyvault-secrets:4.6.0")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

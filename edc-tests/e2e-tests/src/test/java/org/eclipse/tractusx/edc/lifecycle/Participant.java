@@ -14,28 +14,27 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.specification.RequestSpecification;
-import org.eclipse.edc.api.model.IdResponseDto;
-import org.eclipse.edc.api.query.QuerySpecDto;
-import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.connector.api.management.catalog.model.CatalogRequestDto;
-import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractNegotiationDto;
-import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
-import org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto;
-import org.eclipse.edc.connector.api.management.transferprocess.model.TransferProcessDto;
-import org.eclipse.edc.connector.api.management.transferprocess.model.TransferRequestDto;
-import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
+import org.eclipse.edc.jsonld.TitaniumJsonLd;
+import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.asset.AssetSelectorExpression;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.helpers.AssetHelperFunctions;
+import org.eclipse.tractusx.edc.helpers.ContractDefinitionHelperFunctions;
 import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -43,8 +42,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.net.URI;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -53,31 +50,45 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThan;
+import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATASET_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.helpers.AssetHelperFunctions.createDataAddressBuilder;
+import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.createCatalogRequest;
+import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetAssetId;
+import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetContractId;
+import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
+import static org.eclipse.tractusx.edc.helpers.ContractNegotiationHelperFunctions.createNegotiationRequest;
+import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
+import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createTransferRequest;
+import static org.mockito.Mockito.mock;
 
 public class Participant extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final String managementUrl;
     private final String apiKey;
-    private final String idsEndpoint;
+    private final String dspEndpoint;
     private final TypeManager typeManager = new TypeManager();
-    private final String idsId;
+    private final String runtimeName;
     private final String bpn;
     private final String backend;
+    private final JsonLd jsonLd;
+    private final Duration timeout = Duration.ofSeconds(30);
+
+    private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
+
     private DataWiper wiper;
 
-    public Participant(String moduleName, String runtimeName, Map<String, String> properties) {
+    public Participant(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
         this.managementUrl = URI.create(format("http://localhost:%s%s", properties.get("web.http.management.port"), properties.get("web.http.management.path"))).toString();
-        this.idsEndpoint = URI.create(format("http://localhost:%s%s", properties.get("web.http.ids.port"), properties.get("web.http.ids.path"))).toString();
+        this.dspEndpoint = URI.create(format("http://localhost:%s%s", properties.get("web.http.protocol.port"), properties.get("web.http.protocol.path"))).toString();
         this.apiKey = properties.get("edc.api.auth.key");
-        this.idsId = properties.get("edc.ids.id");
-        this.bpn = runtimeName + "-BPN";
+        this.bpn = bpn;
+        this.runtimeName = runtimeName;
         this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
         this.registerServiceMock(IdentityService.class, new MockDapsService(getBpn()));
-
+        jsonLd = new TitaniumJsonLd(mock(Monitor.class));
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
     }
@@ -106,52 +117,27 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     /**
      * Creates an asset with the given ID and props using the participant's Data Management API
      */
-    public void createAsset(String id, Map<String, String> properties) {
-        properties = new HashMap<>(properties);
-        properties.put("asset:prop:id", id);
-        properties.put("asset:prop:description", "test description");
-
-        var asset = Map.of(
-                "asset", Map.of(
-                        "id", id,
-                        "properties", properties
-                ),
-                "dataAddress", Map.of(
-                        "properties", Map.of("type", "test-type")
-
-                )
-        );
-
-        baseRequest()
-                .body(asset)
-                .when()
-                .post("/assets")
-                .then()
-                .statusCode(200)
-                .contentType(JSON);
-
+    public void createAsset(String id, JsonObject properties) {
+        createAsset(id, properties, createDataAddressBuilder("test-type").build());
     }
 
     /**
      * Creates an asset with the given ID and props using the participant's Data Management API
      */
-    public void createAsset(String id, Map<String, String> asserProperties, HttpDataAddress address) {
-        asserProperties = new HashMap<>(asserProperties);
-        asserProperties.put("asset:prop:id", id);
-        asserProperties.put("asset:prop:description", "test description");
+    public void createAsset(String id) {
+        createAsset(id, Json.createObjectBuilder().build(), createDataAddressBuilder("test-type").build());
+    }
 
-        var asset = Map.of(
-                "asset", Map.of(
-                        "id", id,
-                        "properties", asserProperties
-                ),
-                "dataAddress", address
-        );
+    /**
+     * Creates an asset with the given ID and props using the participant's Data Management API
+     */
+    public void createAsset(String id, JsonObject assetProperties, JsonObject dataAddress) {
+        var asset = AssetHelperFunctions.createAsset(id, assetProperties, dataAddress);
 
         baseRequest()
                 .body(asset)
                 .when()
-                .post("/assets")
+                .post("/v2/assets")
                 .then()
                 .statusCode(200)
                 .contentType(JSON);
@@ -160,109 +146,93 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     /**
      * Creates a {@link org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition} using the participant's Data Management API
      */
-    public void createContractDefinition(String assetId, String definitionId, String accessPolicyId, String contractPolicyId, long contractValidityDurationSeconds) {
-        var contractDefinition = Map.of(
-                "id", definitionId,
-                "accessPolicyId", accessPolicyId,
-                "validity", String.valueOf(contractValidityDurationSeconds),
-                "contractPolicyId", contractPolicyId,
-                "criteria", AssetSelectorExpression.Builder.newInstance().constraint("asset:prop:id", "=", assetId).build().getCriteria()
-        );
+    public void createContractDefinition(String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
+        var requestBody = ContractDefinitionHelperFunctions.createContractDefinition(assetId, definitionId, accessPolicyId, contractPolicyId);
 
         baseRequest()
-                .body(contractDefinition)
+                .contentType(JSON)
+                .body(requestBody)
                 .when()
-                .post("/contractdefinitions")
+                .post("/v2/contractdefinitions")
                 .then()
                 .statusCode(200)
-                .contentType(JSON).contentType(JSON);
+                .contentType(JSON);
     }
 
-    /**
-     * Creates a {@link PolicyDefinition} using the participant's Data Management API
-     */
-    public void createPolicy(PolicyDefinition policyDefinition) {
+    public void createPolicy(JsonObject policyDefinition) {
         baseRequest()
+                .contentType(JSON)
                 .body(policyDefinition)
                 .when()
-                .post("/policydefinitions")
+                .post("/v2/policydefinitions")
                 .then()
                 .statusCode(200)
-                .contentType(JSON).contentType(JSON);
-    }
-
-    /**
-     * Requests the {@link Catalog} from another participant using this participant's Data Management API
-     */
-    public Catalog requestCatalog(Participant other) {
-        return requestCatalog(other, QuerySpecDto.Builder.newInstance().build());
-    }
-
-    /**
-     * Requests the {@link Catalog} from another participant using this participant's Data Management API
-     */
-    public Catalog requestCatalog(Participant other, QuerySpecDto query) {
-        var response = baseRequest()
-                .when()
-                .body(CatalogRequestDto.Builder.newInstance()
-                        .providerUrl(other.idsEndpoint + "/data")
-                        .querySpec(query)
-                        .build())
-                .post("/catalog/request")
-                .then();
-
-        var code = response.extract().statusCode();
-        var body = response.extract().body().asString();
-
-        // doing an assertJ style assertion will allow us to use the body as fail message if the return code != 200
-        assertThat(code).withFailMessage(body).isEqualTo(200);
-        return typeManager.readValue(body, Catalog.class);
+                .contentType(JSON);
     }
 
     public String negotiateContract(Participant other, String assetId) {
-        var catalog = requestCatalog(other);
-        assertThat(catalog.getContractOffers()).withFailMessage("Catalog received from " + other.idsId + " was empty!").isNotEmpty();
+        var dataset = getDatasetForAsset(other, assetId);
+        assertThat(dataset).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
+
+        var policy = getDatasetFirstPolicy(dataset);
+        var contractId = getDatasetContractId(dataset);
+        var requestBody = createNegotiationRequest(other.dspEndpoint, other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy);
         var response = baseRequest()
                 .when()
-                .body(NegotiationInitiateRequestDto.Builder.newInstance()
-                        .connectorAddress(other.idsEndpoint + "/data")
-                        .connectorId(getBpn())
-                        .offer(catalog.getContractOffers().stream().filter(o -> o.getAsset().getId().equals(assetId))
-                                .findFirst().map(co -> ContractOfferDescription.Builder.newInstance()
-                                        .assetId(assetId)
-                                        .offerId(co.getId())
-                                        .policy(co.getPolicy())
-                                        .validity(ChronoUnit.SECONDS.between(co.getContractStart(), co.getContractEnd().plus(Duration.ofMillis(500)))) // the plus 1 is required due to https://github.com/eclipse-edc/Connector/issues/2650
-                                        .build())
-                                .orElseThrow((() -> new RuntimeException("A contract for assetId " + assetId + " could not be negotiated"))))
-                        .build()
-                )
-                .post("/contractnegotiations")
+                .body(requestBody)
+                .post("/v2/contractnegotiations")
                 .then();
 
         var body = response.extract().body().asString();
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
 
-        return typeManager.readValue(body, IdResponseDto.class).getId();
+        return response.extract().jsonPath().getString(ID);
     }
 
-    public ContractNegotiationDto getNegotiation(String negotiationId) {
+    public void negotiateEdr(Participant other, String assetId, JsonArray callbacks) {
+        var dataset = getDatasetForAsset(other, assetId);
+        assertThat(dataset).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
+
+        var policy = getDatasetFirstPolicy(dataset);
+        var contractId = getDatasetContractId(dataset);
+
+        var requestBody = createEdrNegotiationRequest(other.dspEndpoint, other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy, callbacks);
+
+
         var response = baseRequest()
                 .when()
-                .get("/contractnegotiations/" + negotiationId)
+                .body(requestBody)
+                .post("/adapter/edrs")
                 .then();
 
         var body = response.extract().body().asString();
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
-        return typeManager.readValue(body, ContractNegotiationDto.class);
+
     }
 
-    /**
-     * Returns this participant's IDS ID
-     */
-    public String idsId() {
-        return idsId;
+    public String getNegotiationState(String negotiationId) {
+        return baseRequest()
+                .when()
+                .get("/v2/contractnegotiations/{id}/state", negotiationId)
+                .then()
+                .statusCode(200)
+                .extract().body().jsonPath().getString("'edc:state'");
     }
+
+    public String getContractAgreementId(String negotiationId) {
+        return getContractNegotiationField(negotiationId, "contractAgreementId");
+    }
+
+    private String getContractNegotiationField(String negotiationId, String fieldName) {
+        return baseRequest()
+                .when()
+                .get("/v2/contractnegotiations/{id}", negotiationId)
+                .then()
+                .statusCode(200)
+                .extract().body().jsonPath()
+                .getString(format("'edc:%s'", fieldName));
+    }
+
 
     /**
      * Returns this participant's BusinessPartnerNumber (=BPN). This is constructed of the runtime name plus "-BPN"
@@ -271,38 +241,29 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return bpn;
     }
 
-    public String requestTransfer(String contractId, String assetId, Participant other, DataAddress destination, String dataRequestId) {
+    public String requestTransfer(String dataRequestId, String contractId, String assetId, Participant other, JsonObject destination) {
+
+        var request = createTransferRequest(dataRequestId, other.dspEndpoint, contractId, assetId, false, destination);
         var response = baseRequest()
                 .when()
-                .body(TransferRequestDto.Builder.newInstance()
-                        .assetId(assetId)
-                        .id(dataRequestId)
-                        .connectorAddress(other.idsEndpoint + "/data")
-                        .managedResources(false)
-                        .contractId(contractId)
-                        .connectorId(bpn)
-                        .protocol("ids-multipart")
-                        .dataDestination(destination)
-                        .build())
-                .post("/transferprocess")
+                .body(request)
+                .post("/v2/transferprocesses")
                 .then();
 
         var body = response.extract().body().asString();
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
 
-        return typeManager.readValue(body, IdResponseDto.class).getId();
+        return response.extract().jsonPath().getString(ID);
+
     }
 
-    public TransferProcessDto getTransferProcess(String transferProcessId) {
-        var json = baseRequest()
+    public String getTransferProcessState(String id) {
+        return baseRequest()
                 .when()
-                .get("/transferprocess/" + transferProcessId)
+                .get("/v2/transferprocesses/{id}/state", id)
                 .then()
-                .statusCode(allOf(greaterThanOrEqualTo(200), lessThan(300)))
-                .extract().body().asString();
-
-        return typeManager.readValue(json, TransferProcessDto.class);
-
+                .statusCode(200)
+                .extract().body().jsonPath().getString("'edc:state'");
     }
 
     public EndpointDataReference getDataReference(String dataRequestId) {
@@ -331,6 +292,48 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         assertThat(response.statusCode()).isBetween(200, 300);
         return response.body().asString();
     }
+
+    public JsonArray getCatalogDatasets(Participant provider) {
+        return getCatalogDatasets(provider, null);
+    }
+
+    public JsonArray getCatalogDatasets(Participant provider, JsonObject querySpec) {
+        var datasetReference = new AtomicReference<JsonArray>();
+
+        var requestBody = createCatalogRequest(querySpec, provider.dspEndpoint);
+
+        await().atMost(timeout).untilAsserted(() -> {
+            var response = baseRequest()
+                    .contentType(JSON)
+                    .when()
+                    .body(requestBody)
+                    .post("/v2/catalog/request")
+                    .then()
+                    .statusCode(200)
+                    .extract().body().asString();
+
+            var responseBody = objectMapper.readValue(response, JsonObject.class);
+
+            var catalog = jsonLd.expand(responseBody).orElseThrow(f -> new EdcException(f.getFailureDetail()));
+
+            var datasets = catalog.getJsonArray(DCAT_DATASET_ATTRIBUTE);
+            assertThat(datasets).hasSizeGreaterThan(0);
+
+            datasetReference.set(datasets);
+        });
+
+        return datasetReference.get();
+    }
+
+    public JsonObject getDatasetForAsset(Participant provider, String assetId) {
+        var datasets = getCatalogDatasets(provider);
+        return datasets.stream()
+                .map(JsonValue::asJsonObject)
+                .filter(it -> assetId.equals(getDatasetAssetId(it)))
+                .findFirst()
+                .orElseThrow(() -> new EdcException(format("No dataset for asset %s in the catalog", assetId)));
+    }
+
 
     @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {

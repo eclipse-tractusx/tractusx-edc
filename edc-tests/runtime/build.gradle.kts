@@ -26,7 +26,6 @@ dependencies {
         exclude("org.eclipse.edc", "oauth2-core")
         exclude("org.eclipse.edc", "oauth2-daps")
         exclude(module = "data-encryption")
-        exclude(module = "control-plane-adapter")
     }
 
     // use basic (all in-mem) data plane
@@ -34,7 +33,7 @@ dependencies {
         exclude("org.eclipse.edc", "api-observability")
     }
 
-    implementation(edc.core.controlplane)
+    implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)
 }

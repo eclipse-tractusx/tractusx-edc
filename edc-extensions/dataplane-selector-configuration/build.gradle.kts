@@ -23,9 +23,9 @@ plugins {
 }
 
 dependencies {
-    api(edc.spi.core)
-    api(edc.junit)
-    implementation(edc.spi.dataplane.selector)
-    implementation(edc.spi.dataplane.transfer)
-    implementation(libs.bouncyCastle.bcpkix)
+    api(libs.edc.spi.core)
+    api(libs.edc.junit)
+    implementation(libs.edc.spi.dataplane.selector)
+    implementation(libs.edc.spi.dataplane.transfer)
+    implementation(libs.bouncyCastle.bcpkixJdk18on)
 }

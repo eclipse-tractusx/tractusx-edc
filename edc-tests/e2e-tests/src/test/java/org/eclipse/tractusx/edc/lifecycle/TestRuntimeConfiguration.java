@@ -19,25 +19,27 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 class TestRuntimeConfiguration {
 
 
-    static final String IDS_PATH = "/api/v1/ids";
+    static final String DSP_PATH = "/api/v1/dsp";
     static final int PLATO_CONNECTOR_PORT = getFreePort();
     static final int PLATO_MANAGEMENT_PORT = getFreePort();
     static final String PLATO_CONNECTOR_PATH = "/api";
     static final String PLATO_MANAGEMENT_PATH = "/api/v1/management";
-    static final int PLATO_IDS_API_PORT = getFreePort();
-    static final String PLATO_IDS_API = "http://localhost:" + PLATO_IDS_API_PORT;
+
+    static final int PLATO_DSP_API_PORT = getFreePort();
+
+    static final String PLATO_DSP_CALLBACK = "http://localhost:" + PLATO_DSP_API_PORT + DSP_PATH;
 
     static final int SOKRATES_CONNECTOR_PORT = getFreePort();
     static final int SOKRATES_MANAGEMENT_PORT = getFreePort();
     static final String SOKRATES_CONNECTOR_PATH = "/api";
     static final String SOKRATES_MANAGEMENT_PATH = "/api/v1/management";
-    static final int SOKRATES_IDS_API_PORT = getFreePort();
-    static final String SOKRATES_IDS_API = "http://localhost:" + SOKRATES_IDS_API_PORT;
-
+    static final int SOKRATES_DSP_API_PORT = getFreePort();
+    static final String SOKRATES_DSP_CALLBACK = "http://localhost:" + SOKRATES_DSP_API_PORT + DSP_PATH;
     static final String SOKRATES_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_PUBLIC_API_PORT = String.valueOf(getFreePort());
 
     static final String PLATO_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
+
 
 }

@@ -20,10 +20,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
@@ -33,31 +29,36 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 class SftpDataSourceTest {
-  @Test
-  @SneakyThrows
-  void openPartStream() {
-    final SftpUser userMock = Mockito.mock(SftpUser.class);
-    final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    final SftpClientConfig sftpClientConfig =
-        SftpClientConfig.builder().sftpUser(userMock).sftpLocation(locationMock).build();
-    final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
-    final SftpClientWrapperImpl sftpClientWrapper =
-        Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
-    SftpDataSource sftpDataSource = Mockito.spy(new SftpDataSource(sftpClientWrapper));
-    byte[] expected = new byte[] {0, 1, 2, 3};
-    ByteArrayInputStream outputStream = new ByteArrayInputStream(expected);
+    @Test
+    @SneakyThrows
+    void openPartStream() {
+        final SftpUser userMock = Mockito.mock(SftpUser.class);
+        final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
+        final SftpClientConfig sftpClientConfig =
+                SftpClientConfig.builder().sftpUser(userMock).sftpLocation(locationMock).build();
+        final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
+        final SftpClientWrapperImpl sftpClientWrapper =
+                Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
+        SftpDataSource sftpDataSource = Mockito.spy(new SftpDataSource(sftpClientWrapper));
+        byte[] expected = new byte[]{ 0, 1, 2, 3 };
+        ByteArrayInputStream outputStream = new ByteArrayInputStream(expected);
 
-    Mockito.when(locationMock.getPath()).thenReturn("path");
-    Mockito.when(
-            sftpClientMock.read(Mockito.anyString(), Mockito.anyInt(), Mockito.anyCollection()))
-        .thenReturn(outputStream);
+        Mockito.when(locationMock.getPath()).thenReturn("path");
+        Mockito.when(
+                        sftpClientMock.read(Mockito.anyString(), Mockito.anyInt(), Mockito.anyCollection()))
+                .thenReturn(outputStream);
 
-    Stream<DataSource.Part> partStream = sftpDataSource.openPartStream();
-    DataSource.Part part = partStream.collect(Collectors.toList()).get(0);
+        Stream<DataSource.Part> partStream = sftpDataSource.openPartStream().getContent();
+        DataSource.Part part = partStream.collect(Collectors.toList()).get(0);
 
-    Assertions.assertArrayEquals(expected, part.openStream().readAllBytes());
-    Mockito.verify(sftpClientMock, Mockito.times(1))
-        .read("path", 4096, List.of(SftpClient.OpenMode.Read));
-  }
+        Assertions.assertArrayEquals(expected, part.openStream().readAllBytes());
+        Mockito.verify(sftpClientMock, Mockito.times(1))
+                .read("path", 4096, List.of(SftpClient.OpenMode.Read));
+    }
 }

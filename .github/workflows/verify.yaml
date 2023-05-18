@@ -34,8 +34,6 @@ on:
   pull_request:
     paths-ignore:
       - 'charts/**'
-    branches:
-      - '*'
   workflow_dispatch:
 
 concurrency:
@@ -44,7 +42,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
+  
+  verify-license-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+      - name: "Check for files without a license header"
+        run: |-
+          # checks all java, yaml, kts and sql files for an Apache 2.0 license header
+          cmd="grep -riL \"SPDX-License-Identifier: Apache-2.0\" --include=\*.{java,yaml,yml,kts,sql} --exclude-dir={.gradle,\*\openapi} ."
+          violations=$(eval $cmd | wc -l)
+          if [[ $violations -ne 0 ]] ; then
+            echo "$violations files without license headers were found:";
+            eval $cmd;
+            exit 1;
+          fi
+  
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
@@ -73,7 +86,7 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
@@ -84,7 +97,7 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
@@ -95,7 +108,7 @@ jobs:
 
   api-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
@@ -106,7 +119,7 @@ jobs:
 
   end-to-end-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 

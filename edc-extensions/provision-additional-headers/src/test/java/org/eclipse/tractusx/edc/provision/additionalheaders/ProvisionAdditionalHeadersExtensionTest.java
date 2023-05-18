@@ -20,21 +20,33 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.transfer.spi.TransferProcessManager;
+import org.eclipse.edc.connector.contract.spi.negotiation.store.ContractNegotiationStore;
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.contract.spi.validation.ContractValidationService;
+import org.eclipse.edc.connector.spi.transferprocess.TransferProcessProtocolService;
 import org.eclipse.edc.connector.transfer.spi.flow.DataFlowController;
 import org.eclipse.edc.connector.transfer.spi.flow.DataFlowManager;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
+import org.eclipse.edc.connector.transfer.spi.types.DataFlowResponse;
+import org.eclipse.edc.connector.transfer.spi.types.protocol.TransferRequestMessage;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.asset.AssetIndex;
+import org.eclipse.edc.spi.iam.ClaimToken;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.argThat;
@@ -46,46 +58,62 @@ import static org.mockito.Mockito.when;
 @ExtendWith(EdcExtension.class)
 class ProvisionAdditionalHeadersExtensionTest {
 
-  private final DataFlowController dataFlowController = mock(DataFlowController.class);
+    private final DataFlowController dataFlowController = mock(DataFlowController.class);
+    private final RemoteMessageDispatcherRegistry dispatcherRegistry = mock(RemoteMessageDispatcherRegistry.class);
 
-  @BeforeEach
-  void setUp() {
-    when(dataFlowController.canHandle(any(), any())).thenReturn(true);
-    when(dataFlowController.initiateFlow(any(), any(), any())).thenReturn(StatusResult.success());
-  }
+    private ContractNegotiationStore contractNegotiationStore = mock(ContractNegotiationStore.class);
+    private ContractValidationService contractValidationService = mock(ContractValidationService.class);
 
-  @Test
-  void shouldPutContractIdAsHeaderInDataAddress(
-      TransferProcessManager transferProcessManager,
-      AssetIndex assetIndex,
-      DataFlowManager dataFlowManager) {
-    dataFlowManager.register(dataFlowController);
-    var asset = Asset.Builder.newInstance().id("assetId").build();
-    var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
-    assetIndex.accept(asset, dataAddress);
+    @BeforeEach
+    void setUp(EdcExtension extension) {
+        extension.setConfiguration(Map.of("edc.ids.id", "urn:connector:test"));
+        when(dataFlowController.canHandle(any(), any())).thenReturn(true);
+        when(dataFlowController.initiateFlow(any(), any(), any())).thenReturn(StatusResult.success(DataFlowResponse.Builder.newInstance().build()));
+        extension.registerServiceMock(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
+        extension.registerServiceMock(ContractNegotiationStore.class, contractNegotiationStore);
+        extension.registerServiceMock(ContractValidationService.class, contractValidationService);
+    }
 
-    var dataRequest =
-        DataRequest.Builder.newInstance()
-            .contractId("aContractId")
-            .assetId("assetId")
-            .destinationType("HttpProxy")
-            .build();
+    @Test
+    void shouldPutContractIdAsHeaderInDataAddress(
+            TransferProcessProtocolService transferProcessProtocolService,
+            AssetIndex assetIndex,
+            DataFlowManager dataFlowManager) {
 
-    var result = transferProcessManager.initiateProviderRequest(dataRequest);
+        var agreement = ContractAgreement.Builder.newInstance()
+                .id("aContractId")
+                .providerId("provider")
+                .consumerId("consumer")
+                .policy(Policy.Builder.newInstance().build())
+                .assetId("assetId")
+                .build();
 
-    assertThat(result).matches(StatusResult::succeeded);
+        when(dispatcherRegistry.send(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+        when(contractNegotiationStore.findContractAgreement(any())).thenReturn(agreement);
+        when(contractValidationService.validateAgreement(any(), any())).thenReturn(Result.success(agreement));
 
-    await()
-        .untilAsserted(
-            () -> {
-              verify(dataFlowController)
-                  .initiateFlow(
-                      any(),
-                      argThat(
-                          it ->
-                              "aContractId"
-                                  .equals(it.getProperty("header:Edc-Contract-Agreement-Id"))),
-                      any());
-            });
-  }
+        dataFlowManager.register(dataFlowController);
+        var asset = Asset.Builder.newInstance().id("assetId").build();
+        var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
+        assetIndex.create(asset, dataAddress);
+
+        var transferMessage = TransferRequestMessage.Builder.newInstance()
+                .id("id")
+                .protocol("protocol")
+                .assetId("assetId")
+                .contractId("aContractId")
+                .dataDestination(DataAddress.Builder.newInstance().type("HttpProxy").build())
+                .callbackAddress("callbackAddress")
+                .build();
+
+        var result = transferProcessProtocolService.notifyRequested(transferMessage, ClaimToken.Builder.newInstance().build());
+
+        assertThat(result).matches(ServiceResult::succeeded);
+
+        await().untilAsserted(
+                () -> {
+                    verify(dataFlowController)
+                            .initiateFlow(any(), argThat(it -> "aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any());
+                });
+    }
 }

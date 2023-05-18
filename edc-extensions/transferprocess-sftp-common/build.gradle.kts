@@ -23,8 +23,8 @@ plugins {
 }
 
 dependencies {
-    implementation(edc.spi.core)
-    testImplementation(edc.junit)
+    implementation(libs.edc.spi.core)
+    testImplementation(libs.edc.junit)
 
     testImplementation(libs.mockito.inline)
     testImplementation(libs.testcontainers.junit)
