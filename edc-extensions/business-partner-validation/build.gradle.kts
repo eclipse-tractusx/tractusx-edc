@@ -23,8 +23,8 @@ plugins {
 }
 
 dependencies {
-    api(edc.spi.core)
-    implementation(edc.spi.policy)
-    implementation(edc.spi.contract)
-    implementation(edc.spi.policyengine)
+    api(libs.edc.spi.core)
+    implementation(libs.edc.spi.policy)
+    implementation(libs.edc.spi.contract)
+    implementation(libs.edc.spi.policyengine)
 }

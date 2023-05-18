@@ -14,28 +14,29 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.io.IOException;
-import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
-import org.eclipse.edc.spi.response.ResponseStatus;
-import org.eclipse.edc.spi.response.StatusResult;
+
+import java.io.IOException;
+import java.util.List;
 
 @Builder
 public class SftpDataSink extends ParallelSink {
-  @NonNull private final SftpClientWrapper sftpClientWrapper;
+    @NonNull
+    private final SftpClientWrapper sftpClientWrapper;
 
-  @Override
-  protected StatusResult<Void> transferParts(List<DataSource.Part> parts) {
-    for (DataSource.Part part : parts) {
-      try {
-        sftpClientWrapper.uploadFile(part.openStream());
-      } catch (IOException e) {
-        return StatusResult.failure(ResponseStatus.FATAL_ERROR, e.getMessage());
-      }
+    @Override
+    protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
+        for (DataSource.Part part : parts) {
+            try {
+                sftpClientWrapper.uploadFile(part.openStream());
+            } catch (IOException e) {
+                return StreamResult.error(e.getMessage());
+            }
+        }
+        return StreamResult.success();
     }
-    return StatusResult.success();
-  }
 }

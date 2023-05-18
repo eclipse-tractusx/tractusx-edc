@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2023-05-18
+
+## Added
+
+- Support for the new Dataspace Protocol
+- GitHub Workflow to check for missing license headers
+
+## Changed
+
+- Switched to Eclipse Dataspace Components `0.0.1-milestone-9`
+
+## Removed
+
+- Business tests. All tests are covered by other means.
+- Control-Plane-Adapter. Replaced by a DSP-compatible implementation
+
 ## [0.3.4] - 2023-05-17
 
 ### Fixed
