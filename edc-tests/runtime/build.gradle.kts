@@ -1,53 +1,32 @@
 /*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 plugins {
     `java-library`
-    id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
-
 
 dependencies {
-
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude("org.eclipse.edc", "oauth2-core")
-        exclude("org.eclipse.edc", "oauth2-daps")
-        exclude(module = "data-encryption")
-    }
-
-    // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "api-observability")
-    }
-
-    implementation(libs.edc.core.controlplane)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
+    implementation(project(":edc-tests:runtime:extensions"))
+    implementation(project(":edc-tests:runtime:runtime-memory"))
+    implementation(project(":edc-tests:runtime:runtime-postgresql"))
 }
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    mergeServiceFiles()
-    archiveFileName.set("app.jar")
-}
-
-// do not publish
 edcBuild {
     publish.set(false)
 }

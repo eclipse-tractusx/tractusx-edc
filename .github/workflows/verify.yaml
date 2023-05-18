@@ -127,3 +127,22 @@ jobs:
 
       - name: Run E2E tests
         run: ./gradlew :edc-tests:runtime:build test -DincludeTags="EndToEndTest"
+
+  postgres-end-to-end-tests:
+    runs-on: ubuntu-latest
+    needs: [ verify-formatting ]
+
+    services:
+      postgres:
+        image: postgres:14.2
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: password
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-java
+
+      - name: Run Postgresql E2E tests
+        run: ./gradlew :edc-tests:runtime:build  test -DincludeTags="PostgresqlIntegrationTest"
