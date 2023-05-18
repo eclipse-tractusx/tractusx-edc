@@ -111,10 +111,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3.5.2
+      - name: Export RELEASE_VERSION env
+        run: |
+          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
-          docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+          docker_tag: ${{ env.RELEASE_VERSION }}
           rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
           imagename: ${{ matrix.variant.img }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
