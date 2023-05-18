@@ -28,7 +28,6 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
     runtimeOnly(project(":edc-extensions:data-encryption"))
     runtimeOnly(project(":edc-extensions:cx-oauth2"))
-    runtimeOnly(project(":edc-extensions:control-plane-adapter"))
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:observability-api-customization"))
     runtimeOnly(project(":edc-extensions:control-plane-adapter-api"))

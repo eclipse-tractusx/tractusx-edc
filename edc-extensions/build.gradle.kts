@@ -23,7 +23,6 @@ plugins {
 
 dependencies {
     implementation(project(":edc-extensions:business-partner-validation"))
-    implementation(project(":edc-extensions:control-plane-adapter"))
     implementation(project(":edc-extensions:cx-oauth2"))
     implementation(project(":edc-extensions:data-encryption"))
     implementation(project(":edc-extensions:dataplane-selector-configuration"))
