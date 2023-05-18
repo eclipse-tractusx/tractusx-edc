@@ -41,6 +41,10 @@ inputs:
   docker_tag:
     required: false
     description: 'additional docker tags'
+  do_push:
+    required: false
+    default: 'false'
+    description: 'whether or not to actually push the image'
 runs:
   using: "composite"
   steps:
@@ -93,7 +97,7 @@ runs:
         file: ${{ inputs.rootDir }}/src/main/docker/Dockerfile
         build-args: |
           JAR=${{ inputs.rootDir }}/build/libs/${{ inputs.imagename }}.jar
-        push: ${{ github.event_name != 'pull_request' }}
+        push: ${{ inputs.do_push == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
