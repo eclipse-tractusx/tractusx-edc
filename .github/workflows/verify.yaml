@@ -50,11 +50,11 @@ jobs:
       - name: "Check for files without a license header"
         run: |-
           # checks all java, yaml, kts and sql files for an Apache 2.0 license header
-          result=$(grep -riL "SPDX-License-Identifier: Apache-2.0" --include=\*.{java,yaml,yml,kts,sql} --exclude-dir={.gradle,\*\openapi} .)
-          violations=$(echo $result | wc -l)
+          cmd="grep -riL \"SPDX-License-Identifier: Apache-2.0\" --include=\*.{java,yaml,yml,kts,sql} --exclude-dir={.gradle,\*\openapi} ."
+          violations=$(eval $cmd | wc -l)
           if [[ $violations -ne 0 ]] ; then
             echo "$violations files without license headers were found:";
-            echo $result;
+            eval $cmd;
             exit 1;
           fi
   
