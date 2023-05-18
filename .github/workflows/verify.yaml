@@ -42,7 +42,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
+  
+  verify-license-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+      - name: "Check for files without a license header"
+        run: |-
+          # checks all java, yaml, kts and sql files for an Apache 2.0 license header
+          if grep -riL "SPDX-License-Identifier: Apache-2.0" --include=\*.{java,yaml,yml,kts,sql} --exclude-dir={.gradle,\*\openapi} . ; then
+            echo "Files without headers were found"; exit 1
+          fi
+  
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
