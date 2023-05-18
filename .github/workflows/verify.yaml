@@ -86,7 +86,7 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
@@ -97,7 +97,7 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
@@ -108,7 +108,7 @@ jobs:
 
   api-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
@@ -119,7 +119,7 @@ jobs:
 
   end-to-end-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
     steps:
       - uses: actions/checkout@v3.5.2
 
