@@ -1,8 +1,4 @@
-#
-#  Copyright (c) 2023 ZF Friedrichshafen AG
-#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
-#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2023 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -22,17 +18,17 @@
 
 ---
 apiVersion: v1
-kind: Pod
+kind: Service
 metadata:
-  name: "{{ include "txdc.fullname" . }}-test-readiness"
+  name: {{ include "omejdn.fullname" . }}
   labels:
-    {{- include "txdc.runtime.labels" . | nindent 4 }}
-  annotations:
-    "helm.sh/hook": test
+    {{- include "omejdn.labels" . | nindent 4 }}
 spec:
-  containers:
-    - name: wget
-      image: curlimages/curl
-      command: [ 'curl' ]
-      args: [ '{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.observability.port $.Values.runtime.endpoints.observability.path -}}' ]
-  restartPolicy: Never
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "omejdn.selectorLabels" . | nindent 4 }}

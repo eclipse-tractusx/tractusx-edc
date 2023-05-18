@@ -52,6 +52,13 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 
 * <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://./subcharts/omejdn | daps(daps) | 0.0.1 |
+| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.1.6 |
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -100,7 +107,7 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | controlplane.ingresses[0].certManager.issuer | string | `""` | If preset enables certificate generation via cert-manager namespace scoped issuer |
 | controlplane.ingresses[0].className | string | `""` | Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use |
 | controlplane.ingresses[0].enabled | bool | `false` |  |
-| controlplane.ingresses[0].endpoints | list | `["ids"]` | EDC endpoints exposed by this ingress resource |
+| controlplane.ingresses[0].endpoints | list | `["protocol"]` | EDC endpoints exposed by this ingress resource |
 | controlplane.ingresses[0].hostname | string | `"edc-control.local"` | The hostname to be used to precisely map incoming traffic onto the underlying network service |
 | controlplane.ingresses[0].tls | object | `{"enabled":false,"secretName":""}` | TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource |
 | controlplane.ingresses[0].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
@@ -160,6 +167,11 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | controlplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | customLabels | object | `{}` |  |
 | daps.clientId | string | `""` |  |
+| daps.connectors[0].attributes.referringConnector | string | `"http://sokrates-controlplane/BPNSOKRATES"` |  |
+| daps.connectors[0].certificate | string | `""` |  |
+| daps.connectors[0].id | string | `"E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"` |  |
+| daps.connectors[0].name | string | `"sokrates"` |  |
+| daps.fullnameOverride | string | `"daps"` |  |
 | daps.paths.jwks | string | `"/jwks.json"` |  |
 | daps.paths.token | string | `"/token"` |  |
 | daps.url | string | `""` |  |
@@ -241,12 +253,19 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | dataplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | dataplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | fullnameOverride | string | `""` |  |
+| idsdaps.connectors[0].certificate | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
+| install.daps | bool | `true` |  |
+| install.postgresql | bool | `true` |  |
 | nameOverride | string | `""` |  |
+| postgresql.auth.database | string | `"edc"` |  |
+| postgresql.auth.password | string | `"password"` |  |
+| postgresql.auth.username | string | `"user"` |  |
 | postgresql.enabled | bool | `false` |  |
+| postgresql.fullnameOverride | string | `"postgresql"` |  |
 | postgresql.jdbcUrl | string | `""` |  |
-| postgresql.password | string | `""` |  |
-| postgresql.username | string | `""` |  |
+| postgresql.primary.persistence | string | `nil` |  |
+| postgresql.readReplicas.persistence.enabled | bool | `false` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |

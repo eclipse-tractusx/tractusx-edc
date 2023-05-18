@@ -49,3 +49,18 @@ appVersion: "0.4.0"
 home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
 sources:
   - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+
+dependencies:
+  # IDS Dynamic Attribute Provisioning Service (IAM)
+  - name: daps
+    version: 0.0.1
+    repository: "file://./subcharts/omejdn"
+    alias: daps
+    condition: install.daps
+
+  # PostgreSQL
+  - name: postgresql
+    alias: postgresql
+    version: 12.1.6
+    repository: https://charts.bitnami.com/bitnami
+    condition: install.postgresql

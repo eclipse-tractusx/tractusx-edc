@@ -104,13 +104,6 @@ Control IDS URL
 {{- end }}
 
 {{/*
-Observability URL
-*/}}
-{{- define "tdxc.runtime.url.readiness" -}}
-{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.observability.port $.Values.runtime.endpoints.observability.path -}}
-{{- end }}
-
-{{/*
 Validation URL
 */}}
 {{- define "txdc.runtime.url.validation" -}}
