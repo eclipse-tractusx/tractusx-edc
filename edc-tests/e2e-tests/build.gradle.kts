@@ -36,6 +36,10 @@ dependencies {
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
     testImplementation(testFixtures(libs.edc.sql.core))
+
+    testCompileOnly(project(":edc-tests:runtime:extensions"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 }
 
 // do not publish

@@ -15,7 +15,6 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 
@@ -28,13 +27,13 @@ dependencies {
         exclude(module = "data-encryption")
     }
 
-
+    implementation(project(":edc-tests:runtime:extensions"))
+    
     // use basic (all in-mem) data plane
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "api-observability")
     }
 
-    runtimeOnly(project(":edc-tests:runtime:extensions"))
 
     implementation(libs.edc.core.controlplane)
     // for the controller
@@ -43,11 +42,6 @@ dependencies {
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    mergeServiceFiles()
-    archiveFileName.set("app.jar")
 }
 
 // do not publish
