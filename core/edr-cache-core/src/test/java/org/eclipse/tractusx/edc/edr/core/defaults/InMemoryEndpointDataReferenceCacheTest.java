@@ -18,12 +18,13 @@ import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.junit.jupiter.api.Test;
 
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryEndpointDataReferenceCacheTest {
     private static final String TRANSFER_PROCESS_ID = "tp1";
     private static final String ASSET_ID = "asset1";
+    private static final String AGREEMENT_ID = "agreement1";
+
     private static final String EDR_ID = "edr1";
 
     private InMemoryEndpointDataReferenceCache cache = new InMemoryEndpointDataReferenceCache();
@@ -39,7 +40,7 @@ class InMemoryEndpointDataReferenceCacheTest {
 
         var entry = EndpointDataReferenceEntry.Builder.newInstance()
                 .assetId(ASSET_ID)
-                .agreementId(randomUUID().toString())
+                .agreementId(AGREEMENT_ID)
                 .transferProcessId(TRANSFER_PROCESS_ID)
                 .build();
 
@@ -54,6 +55,10 @@ class InMemoryEndpointDataReferenceCacheTest {
         var entries = cache.entriesForAsset(ASSET_ID);
         assertThat(entries.size()).isEqualTo(1);
         assertThat(entries.get((0)).getAssetId()).isEqualTo(ASSET_ID);
+
+        entries = cache.entriesForAgreement(AGREEMENT_ID);
+        assertThat(entries.size()).isEqualTo(1);
+        assertThat(entries.get((0)).getAgreementId()).isEqualTo(AGREEMENT_ID);
 
         assertThat(cache.deleteByTransferProcessId(TRANSFER_PROCESS_ID).succeeded()).isTrue();
 
