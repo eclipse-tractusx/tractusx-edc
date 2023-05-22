@@ -73,7 +73,7 @@ allprojects {
             implementation("org.yaml:snakeyaml:2.0") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
-            implementation("net.minidev:json-smart:2.4.10") {
+            implementation("net.minidev:json-smart:2.4.11") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
         }
