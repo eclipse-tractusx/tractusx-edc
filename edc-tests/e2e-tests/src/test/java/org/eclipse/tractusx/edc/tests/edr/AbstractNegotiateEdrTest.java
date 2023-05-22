@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.edr;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,9 +29,8 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
-import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.event.Event;
-import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
+import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,9 +44,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 
-@EndToEndTest
-public class NegotiateEdrTest extends MultiRuntimeTest {
+public abstract class AbstractNegotiateEdrTest {
+    
+    protected static final Participant sokrates = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
+    protected static final Participant plato = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
     MockWebServer server = new MockWebServer();
 
@@ -139,14 +146,14 @@ public class NegotiateEdrTest extends MultiRuntimeTest {
         }
 
         public static class Builder {
-            private final ReceivedEvent event;
+            private final AbstractNegotiateEdrTest.ReceivedEvent event;
 
-            private Builder(ReceivedEvent event) {
+            private Builder(AbstractNegotiateEdrTest.ReceivedEvent event) {
                 this.event = event;
             }
 
             public static Builder newInstance() {
-                return new Builder(new ReceivedEvent());
+                return new Builder(new AbstractNegotiateEdrTest.ReceivedEvent());
             }
 
             public Builder type(String type) {
@@ -154,7 +161,7 @@ public class NegotiateEdrTest extends MultiRuntimeTest {
                 return this;
             }
 
-            public ReceivedEvent build() {
+            public AbstractNegotiateEdrTest.ReceivedEvent build() {
                 return event;
             }
         }

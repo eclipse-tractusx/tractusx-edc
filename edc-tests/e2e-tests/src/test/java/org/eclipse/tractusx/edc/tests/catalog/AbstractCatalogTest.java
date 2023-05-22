@@ -12,11 +12,10 @@
  *
  */
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.catalog;
 
 
-import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.tractusx.edc.lifecycle.MultiRuntimeTest;
+import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -27,9 +26,17 @@ import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDataset
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.noConstraintPolicyDefinition;
 import static org.eclipse.tractusx.edc.helpers.QueryHelperFunctions.createQuery;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 
-@EndToEndTest
-public class CatalogTest extends MultiRuntimeTest {
+public abstract class AbstractCatalogTest {
+
+    protected static final Participant sokrates = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
+    protected static final Participant plato = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
     @Test
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
