@@ -14,9 +14,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
-
-import lombok.RequiredArgsConstructor;
 import org.eclipse.edc.connector.transfer.spi.provision.ProviderResourceDefinitionGenerator;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
@@ -26,29 +23,26 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.Nullable;
 
-@RequiredArgsConstructor
-public class SftpProviderResourceDefinitionGenerator
-    implements ProviderResourceDefinitionGenerator {
 
-  @Override
-  public @Nullable ResourceDefinition generate(
-      DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
-    SftpDataAddress sftpDataAddress;
-    try {
-      sftpDataAddress = SftpDataAddress.fromDataAddress(assetAddress);
-    } catch (EdcSftpException e) {
-      return null;
-    }
-    return new SftpProviderResourceDefinition(PROVIDER_TYPE, sftpDataAddress);
-  }
+public class SftpProviderResourceDefinitionGenerator implements ProviderResourceDefinitionGenerator {
 
-  @Override
-  public boolean canGenerate(DataRequest dataRequest, DataAddress dataAddress, Policy policy) {
-    try {
-      SftpDataAddress.fromDataAddress(dataAddress);
-    } catch (EdcSftpException e) {
-      return false;
+    @Override
+    public @Nullable ResourceDefinition generate(DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
+        try {
+            var sftpDataAddress = SftpDataAddress.fromDataAddress(assetAddress);
+            return new SftpProviderResourceDefinition(NoOpSftpProvisioner.PROVIDER_TYPE, sftpDataAddress);
+        } catch (EdcSftpException e) {
+            return null;
+        }
     }
-    return true;
-  }
+
+    @Override
+    public boolean canGenerate(DataRequest dataRequest, DataAddress dataAddress, Policy policy) {
+        try {
+            SftpDataAddress.fromDataAddress(dataAddress);
+        } catch (EdcSftpException e) {
+            return false;
+        }
+        return true;
+    }
 }

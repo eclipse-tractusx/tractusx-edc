@@ -14,17 +14,7 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import lombok.Cleanup;
-import lombok.SneakyThrows;
 import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
-import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,122 +22,98 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @Disabled("Does not work")
 @Testcontainers
 @ExtendWith(EdcExtension.class)
 class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
 
-  @ParameterizedTest
-  @SneakyThrows
-  @ArgumentsSource(FilesProvider.class)
-  void uploadFileWithPassword(File file) {
-    final SftpUser sftpUser = getPasswordUser();
-    final SftpLocation sftpLocation =
-        getSftpLocation(
-            String.format(
-                "%s/%s/%s",
-                sftpPathPrefix,
-                remotePasswordUploadDirectory.getFileName().toString(),
-                file.getName()));
+    @ParameterizedTest
+    @ArgumentsSource(FilesProvider.class)
+    void uploadFileWithPassword(File file) throws IOException {
+        var sftpUser = getPasswordUser();
+        var sftpLocation = getSftpLocation(format("%s/%s/%s", sftpPathPrefix, remotePasswordUploadDirectory.getFileName().toString(), file.getName()));
 
-    @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
+        var fileStream = Files.newInputStream(file.toPath());
 
-    getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
+        getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
 
-    final Path uploadedFilePath = remotePasswordUploadDirectory.resolve(file.getName());
-    Assertions.assertTrue(Files.exists(uploadedFilePath));
+        var uploadedFilePath = remotePasswordUploadDirectory.resolve(file.getName());
+        assertTrue(Files.exists(uploadedFilePath));
 
-    @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-    @Cleanup final InputStream target = Files.newInputStream(uploadedFilePath);
+        var source = Files.newInputStream(file.toPath());
+        var target = Files.newInputStream(uploadedFilePath);
 
-    Assertions.assertTrue(
-        IOUtils.contentEquals(source, target),
-        String.format(
-            "File %s should have same content as file %s", file.toPath(), uploadedFilePath));
-  }
+        assertTrue(IOUtils.contentEquals(source, target),
+                format("File %s should have same content as file %s", file.toPath(), uploadedFilePath));
+    }
 
-  @ParameterizedTest
-  @SneakyThrows
-  @ArgumentsSource(FilesProvider.class)
-  void uploadFileWithKeyPair(File file) {
-    final SftpUser sftpUser = getKeyPairUser();
-    final SftpLocation sftpLocation =
-        getSftpLocation(
-            String.format(
-                "%s/%s/%s",
-                sftpPathPrefix,
-                remoteKeypairUploadDirectory.getFileName().toString(),
-                file.getName()));
+    @ParameterizedTest
+    @ArgumentsSource(FilesProvider.class)
+    void uploadFileWithKeyPair(File file) throws IOException {
+        var sftpUser = getKeyPairUser();
+        var sftpLocation =
+                getSftpLocation(
+                        format(
+                                "%s/%s/%s",
+                                sftpPathPrefix,
+                                remoteKeypairUploadDirectory.getFileName().toString(),
+                                file.getName()));
 
-    @Cleanup final InputStream fileStream = Files.newInputStream(file.toPath());
+        var fileStream = Files.newInputStream(file.toPath());
 
-    getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
+        getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
 
-    final Path uploadedFilePath = remoteKeypairUploadDirectory.resolve(file.getName());
-    Assertions.assertTrue(Files.exists(uploadedFilePath));
+        var uploadedFilePath = remoteKeypairUploadDirectory.resolve(file.getName());
+        assertTrue(Files.exists(uploadedFilePath));
 
-    @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-    @Cleanup final InputStream target = Files.newInputStream(uploadedFilePath);
+        var source = Files.newInputStream(file.toPath());
+        var target = Files.newInputStream(uploadedFilePath);
 
-    Assertions.assertTrue(
-        IOUtils.contentEquals(source, target),
-        String.format(
-            "File %s should have same content as file %s", file.toPath(), uploadedFilePath));
-  }
+        assertTrue(IOUtils.contentEquals(source, target),
+                format("File %s should have same content as file %s", file.toPath(), uploadedFilePath));
+    }
 
-  @ParameterizedTest
-  @SneakyThrows
-  @ArgumentsSource(FilesProvider.class)
-  void downloadFileWithPassword(File file) {
-    final SftpUser sftpUser = getPasswordUser();
-    final SftpLocation sftpLocation =
-        getSftpLocation(
-            String.format(
-                "%s/%s/%s",
-                sftpPathPrefix,
-                remotePasswordDownloadDirectory.getFileName().toString(),
-                file.getName()));
+    @ParameterizedTest
+    @ArgumentsSource(FilesProvider.class)
+    void downloadFileWithPassword(File file) throws IOException {
+        var sftpUser = getPasswordUser();
+        var sftpLocation = getSftpLocation(
+                format("%s/%s/%s", sftpPathPrefix,
+                        remotePasswordDownloadDirectory.getFileName().toString(), file.getName()));
 
-    @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
-    Files.copy(
-        fileToUpload,
-        remotePasswordDownloadDirectory.resolve(file.getName()),
-        StandardCopyOption.REPLACE_EXISTING);
+        var fileToUpload = Files.newInputStream(file.toPath());
+        Files.copy(fileToUpload,
+                remotePasswordDownloadDirectory.resolve(file.getName()),
+                StandardCopyOption.REPLACE_EXISTING);
 
-    @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-    @Cleanup final InputStream target = getSftpClient(sftpLocation, sftpUser).downloadFile();
+        var source = Files.newInputStream(file.toPath());
+        var target = getSftpClient(sftpLocation, sftpUser).downloadFile();
 
-    Assertions.assertTrue(
-        IOUtils.contentEquals(source, target),
-        String.format(
-            "File %s should have same content as file %s", file.toPath(), sftpLocation.getPath()));
-  }
+        assertTrue(IOUtils.contentEquals(source, target),
+                format("File %s should have same content as file %s", file.toPath(), sftpLocation.getPath()));
+    }
 
-  @ParameterizedTest
-  @SneakyThrows
-  @ArgumentsSource(FilesProvider.class)
-  void downloadFileWithKeyPair(File file) {
-    final SftpUser sftpUser = getKeyPairUser();
-    final SftpLocation sftpLocation =
-        getSftpLocation(
-            String.format(
-                "%s/%s/%s",
-                sftpPathPrefix,
-                remoteKeypairDownloadDirectory.getFileName().toString(),
-                file.getName()));
+    @ParameterizedTest
+    @ArgumentsSource(FilesProvider.class)
+    void downloadFileWithKeyPair(File file) throws IOException {
+        var sftpUser = getKeyPairUser();
+        var sftpLocation = getSftpLocation(format("%s/%s/%s", sftpPathPrefix, remoteKeypairDownloadDirectory.getFileName().toString(), file.getName()));
 
-    @Cleanup final InputStream fileToUpload = Files.newInputStream(file.toPath());
-    Files.copy(
-        fileToUpload,
-        remoteKeypairDownloadDirectory.resolve(file.getName()),
-        StandardCopyOption.REPLACE_EXISTING);
+        var fileToUpload = Files.newInputStream(file.toPath());
+        Files.copy(fileToUpload, remoteKeypairDownloadDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
 
-    @Cleanup final InputStream source = Files.newInputStream(file.toPath());
-    @Cleanup final InputStream target = getSftpClient(sftpLocation, sftpUser).downloadFile();
+        var source = Files.newInputStream(file.toPath());
+        var target = getSftpClient(sftpLocation, sftpUser).downloadFile();
 
-    Assertions.assertTrue(
-        IOUtils.contentEquals(source, target),
-        String.format(
-            "File %s should have same content as file %s", file.toPath(), sftpLocation.getPath()));
-  }
+        assertTrue(IOUtils.contentEquals(source, target),
+                format("File %s should have same content as file %s", file.toPath(), sftpLocation.getPath()));
+    }
 }

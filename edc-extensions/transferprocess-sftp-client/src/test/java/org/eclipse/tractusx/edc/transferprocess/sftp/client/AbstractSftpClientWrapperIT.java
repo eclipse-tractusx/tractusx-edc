@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.util.OpenSSHPublicKeyUtil;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
@@ -41,19 +39,15 @@ import org.testcontainers.utility.DockerImageName;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -127,15 +121,14 @@ abstract class AbstractSftpClientWrapperIT {
             throw new RuntimeException();
         }
 
-        sftpContainer =
-                new GenericContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
-                        .withEnv(DOCKER_ENV)
-                        .withExposedPorts(22)
-                        .waitingFor(Wait.forListeningPort())
-                        .withFileSystemBind(
-                                dockerVolumeDirectory.toAbsolutePath().toString(),
-                                String.format("/home/user/%s", sftpPathPrefix))
-                        .withFileSystemBind(keyDirectory.toAbsolutePath().toString(), "/home/user/keys");
+        sftpContainer = new GenericContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
+                .withEnv(DOCKER_ENV)
+                .withExposedPorts(22)
+                .waitingFor(Wait.forListeningPort())
+                .withFileSystemBind(
+                        dockerVolumeDirectory.toAbsolutePath().toString(),
+                        String.format("/home/user/%s", sftpPathPrefix))
+                .withFileSystemBind(keyDirectory.toAbsolutePath().toString(), "/home/user/keys");
         sftpContainer.start();
 
         await().atMost(10, SECONDS).until(sftpContainer::isRunning);
@@ -154,8 +147,7 @@ abstract class AbstractSftpClientWrapperIT {
     }
 
     @AfterAll
-    @SneakyThrows
-    static void tearDown() {
+    static void tearDown() throws IOException {
         if (Files.exists(dockerVolumeDirectory)) {
             Files.walk(dockerVolumeDirectory)
                     .sorted(Comparator.reverseOrder())
@@ -176,23 +168,26 @@ abstract class AbstractSftpClientWrapperIT {
         }
     }
 
-    @SneakyThrows
     private static KeyPair generateKeyPair() {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048);
-        return keyPairGenerator.generateKeyPair();
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048);
+            return keyPairGenerator.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected SftpUser getPasswordUser() {
-        return SftpUser.builder().name("user").password("password").build();
+        return SftpUser.Builder.newInstance().name("user").password("password").build();
     }
 
     protected SftpUser getKeyPairUser() {
-        return SftpUser.builder().name("user").keyPair(keyPair).build();
+        return SftpUser.Builder.newInstance().name("user").keyPair(keyPair).build();
     }
 
     protected SftpLocation getSftpLocation(String path) {
-        return SftpLocation.builder()
+        return SftpLocation.Builder.newInstance()
                 .host("127.0.0.1")
                 .port(sftpContainer.getFirstMappedPort())
                 .path(path)
@@ -201,7 +196,7 @@ abstract class AbstractSftpClientWrapperIT {
 
     protected SftpClientWrapper getSftpClient(SftpLocation location, SftpUser sftpUser) {
         SftpClientConfig config =
-                SftpClientConfig.builder()
+                SftpClientConfig.Builder.newInstance()
                         .sftpLocation(location)
                         .sftpUser(sftpUser)
                         .hostVerification(false)
@@ -209,7 +204,6 @@ abstract class AbstractSftpClientWrapperIT {
         return new SftpClientWrapperImpl(config);
     }
 
-    @NoArgsConstructor
     protected static class FilesProvider implements ArgumentsProvider {
         private static final int BUFFER_SIZE = 4 * 1024 * 1024;
 
@@ -231,12 +225,15 @@ abstract class AbstractSftpClientWrapperIT {
             return generateFile(2 * 1024 * 1024);
         }
 
-        @SneakyThrows
         private File generateFile(final int byteSize) {
             Path path = localUploadAndGeneratorDirectory.resolve(String.format("%s.bin", byteSize));
             if (!Files.exists(path)) {
-                Files.createFile(path);
-                try (final OutputStream outputStream = Files.newOutputStream(path)) {
+                try {
+                    Files.createFile(path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                try (var outputStream = Files.newOutputStream(path)) {
                     int bufferSize;
                     int remaining = byteSize;
                     do {
@@ -245,6 +242,8 @@ abstract class AbstractSftpClientWrapperIT {
                         IOUtils.write(chunk, outputStream);
                         remaining = remaining - bufferSize;
                     } while (remaining > 0);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
             return path.toFile();

@@ -14,8 +14,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
@@ -25,45 +23,46 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
+import java.util.List;
+
 public class SftpDataSinkFactory implements DataSinkFactory {
-  @Override
-  public boolean canHandle(DataFlowRequest request) {
-    try {
-      SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
-      return true;
-    } catch (EdcSftpException e) {
-      return false;
-    }
-  }
-
-  @Override
-  public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-    if (!canHandle(request)) {
-      return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+    @Override
+    public boolean canHandle(DataFlowRequest request) {
+        try {
+            SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
+            return true;
+        } catch (EdcSftpException e) {
+            return false;
+        }
     }
 
-    return VALID;
-  }
+    @Override
+    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
+        if (!canHandle(request)) {
+            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+        }
 
-  @Override
-  public DataSink createSink(DataFlowRequest request) {
-    if (!canHandle(request)) {
-      return null;
+        return VALID;
     }
 
-    SftpDataAddress destination =
-        SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
+    @Override
+    public DataSink createSink(DataFlowRequest request) {
+        if (!canHandle(request)) {
+            return null;
+        }
 
-    SftpClientConfig sftpClientConfig =
-        SftpClientConfig.builder()
-            .writeOpenModes(List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append))
-            .sftpUser(destination.getSftpUser())
-            .sftpLocation(destination.getSftpLocation())
-            .build();
+        SftpDataAddress destination =
+                SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
 
-    SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
+        SftpClientConfig sftpClientConfig =
+                SftpClientConfig.Builder.newInstance()
+                        .writeOpenModes(List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append))
+                        .sftpUser(destination.getSftpUser())
+                        .sftpLocation(destination.getSftpLocation())
+                        .build();
 
-    return new SftpDataSink(sftpClientWrapper);
-  }
+        SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
+
+        return new SftpDataSink(sftpClientWrapper);
+    }
 }
