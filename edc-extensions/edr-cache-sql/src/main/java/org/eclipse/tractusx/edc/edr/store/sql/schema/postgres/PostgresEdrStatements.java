@@ -12,18 +12,11 @@
  *
  */
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.edr.store.sql.schema.postgres;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.config.filesystem)
-    implementation(libs.edc.util)
+import org.eclipse.tractusx.edc.edr.store.sql.schema.BaseSqlEdrStatements;
 
-    implementation(project(":spi:edr-cache-spi"))
+public class PostgresEdrStatements extends BaseSqlEdrStatements {
 
-    testImplementation(testFixtures(project(":spi:edr-cache-spi")))
 
 }
-

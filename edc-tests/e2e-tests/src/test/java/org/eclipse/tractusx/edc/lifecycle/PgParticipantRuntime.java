@@ -14,7 +14,9 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
+import org.eclipse.edc.junit.testfixtures.MockVault;
 import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
@@ -32,6 +34,7 @@ public class PgParticipantRuntime extends ParticipantRuntime {
         super(moduleName, runtimeName, bpn, properties);
         this.dbName = runtimeName.toLowerCase();
         this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
+        this.registerServiceMock(Vault.class, new MockVault());
     }
 
     @Override

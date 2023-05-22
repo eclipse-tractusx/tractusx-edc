@@ -41,6 +41,8 @@ include(":edc-extensions:transferprocess-sftp-common")
 include(":edc-extensions:transferprocess-sftp-provisioner")
 include(":edc-extensions:control-plane-adapter-api")
 include(":edc-extensions:control-plane-adapter-callback")
+include(":edc-extensions:edr-cache-sql")
+
 
 
 include(":edc-tests:e2e-tests")

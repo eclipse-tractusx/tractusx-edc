@@ -14,16 +14,19 @@
 
 plugins {
     `java-library`
+    `maven-publish`
 }
 
 dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.config.filesystem)
-    implementation(libs.edc.util)
-
     implementation(project(":spi:edr-cache-spi"))
 
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.core.sql)
+    implementation(libs.edc.spi.transactionspi)
+    implementation(libs.edc.spi.transaction.datasource)
+
     testImplementation(testFixtures(project(":spi:edr-cache-spi")))
-
+    testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.junit))
+    
 }
-

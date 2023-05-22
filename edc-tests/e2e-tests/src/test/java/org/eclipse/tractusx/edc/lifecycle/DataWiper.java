@@ -19,6 +19,7 @@ import org.eclipse.edc.connector.policy.spi.store.PolicyDefinitionStore;
 import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ public class DataWiper {
         clearAssetIndex();
         clearPolicies();
         clearContractDefinitions();
+        clearEdrCache();
     }
 
     public void clearContractDefinitions() {
@@ -53,5 +55,10 @@ public class DataWiper {
     public void clearAssetIndex() {
         var index = context.getService(AssetIndex.class);
         index.queryAssets(QuerySpec.max()).forEach(asset -> index.deleteById(asset.getId()));
+    }
+
+    public void clearEdrCache() {
+        var edrCache = context.getService(EndpointDataReferenceCache.class);
+        edrCache.queryForEntries(QuerySpec.max()).forEach(entry -> edrCache.deleteByTransferProcessId(entry.getTransferProcessId()));
     }
 }
