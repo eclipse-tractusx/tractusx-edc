@@ -14,7 +14,7 @@ bouncyCastle-jdk18on = "1.73"
 mockito = "5.2.0"
 restAssured = "4.5.0"
 apache-sshd = "2.10.0"
-testcontainers = "1.17.6"
+testcontainers = "1.18.1"
 aws = "2.20.69"
 rsApi = "3.1.0"
 
