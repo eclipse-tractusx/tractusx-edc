@@ -44,6 +44,13 @@ public interface EndpointDataReferenceCache {
     @NotNull
     List<EndpointDataReferenceEntry> entriesForAsset(String assetId);
 
+
+    /**
+     * Returns the {@link EndpointDataReferenceEntry}s for the agreement.
+     */
+    @NotNull
+    List<EndpointDataReferenceEntry> entriesForAgreement(String agreementId);
+
     /**
      * Saves an {@link EndpointDataReference} to the cache using upsert semantics.
      */

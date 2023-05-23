@@ -22,9 +22,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.api.model.DataAddressDto;
 import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
+
+import java.util.List;
 
 @OpenAPIDefinition
 @Tag(name = "Control Plane Adapter EDR Api")
@@ -39,4 +43,25 @@ public interface AdapterEdrApi {
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })
     JsonObject initiateEdrNegotiation(@Schema(implementation = NegotiateEdrRequestDto.class) JsonObject dto);
+
+    @Operation(description = "Returns all EndpointDataReference entry according to a query",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = EndpointDataReferenceEntry.class)))),
+                    @ApiResponse(responseCode = "400", description = "Request was malformed",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))}
+    )
+    List<JsonObject> queryEdrs(String assetId, String agreementId);
+
+    @Operation(description = "Gets an EDR  with the given transfer process ID)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "The EDR cached",
+                            content = @Content(schema = @Schema(implementation = DataAddressDto.class))),
+                    @ApiResponse(responseCode = "400", description = "Request was malformed, e.g. id was null",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
+                    @ApiResponse(responseCode = "404", description = "An EDR with the given ID does not exist",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
+            }
+    )
+    JsonObject getEdr(String transferProcessId);
 }

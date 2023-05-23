@@ -180,6 +180,7 @@ public class Participant {
                 .extract().body().jsonPath().getString("'edc:state'");
     }
 
+
     public String getContractAgreementId(String negotiationId) {
         return getContractNegotiationField(negotiationId, "contractAgreementId");
     }
@@ -192,6 +193,28 @@ public class Participant {
                 .statusCode(200)
                 .extract().body().jsonPath()
                 .getString(format("'edc:%s'", fieldName));
+    }
+
+    public JsonObject getEdr(String transferProcessId) {
+        return baseRequest()
+                .when()
+                .get("/adapter/edrs/{id}", transferProcessId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonObject.class);
+    }
+
+    public JsonArray getEdrEntries(String assetId) {
+        return baseRequest()
+                .when()
+                .get("/adapter/edrs?assetId={assetId}", assetId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
     }
 
 

@@ -12,18 +12,13 @@
  *
  */
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.edr.spi;
 
+public final class CoreConstants {
 
-dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(project(":spi:edr-cache-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.contract)
-    implementation(libs.edc.spi.aggregateservices)
-    implementation(libs.edc.spi.controlplane)
-    implementation(libs.edc.spi.controlplane)
+    public static final String TX_PREFIX = "tx";
+    public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
+
+    private CoreConstants() {
+    }
 }

@@ -23,16 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public class NegotiateEdrRequestDto {
-    
-    public static final String TYPE = EDC_NAMESPACE + "NegotiateEdrRequestDto";
-    public static final String CONNECTOR_ADDRESS = EDC_NAMESPACE + "connectorAddress";
-    public static final String PROTOCOL = EDC_NAMESPACE + "protocol";
-    public static final String CONNECTOR_ID = EDC_NAMESPACE + "connectorId";
-    public static final String PROVIDER_ID = EDC_NAMESPACE + "providerId";
-    public static final String OFFER = EDC_NAMESPACE + "offer";
-    public static final String CALLBACK_ADDRESSES = EDC_NAMESPACE + "callbackAddresses";
+
+    public static final String EDR_REQUEST_DTO_TYPE = TX_NAMESPACE + "NegotiateEdrRequestDto";
+    public static final String EDR_REQUEST_DTO_CONNECTOR_ADDRESS = EDC_NAMESPACE + "connectorAddress";
+    public static final String EDR_REQUEST_DTO_PROTOCOL = EDC_NAMESPACE + "protocol";
+    public static final String EDR_REQUEST_DTO_CONNECTOR_ID = EDC_NAMESPACE + "connectorId";
+    public static final String EDR_REQUEST_DTO_PROVIDER_ID = EDC_NAMESPACE + "providerId";
+    public static final String EDR_REQUEST_DTO_OFFER = EDC_NAMESPACE + "offer";
+    public static final String EDR_REQUEST_DTO_CALLBACK_ADDRESSES = EDC_NAMESPACE + "callbackAddresses";
 
     @NotBlank(message = "connectorAddress is mandatory")
     private String connectorAddress;

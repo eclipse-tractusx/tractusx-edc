@@ -19,7 +19,11 @@ import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.service.spi.result.ServiceFailure;
+import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,9 +42,11 @@ public class AdapterTransferProcessServiceImplTest {
 
     ContractNegotiationService contractNegotiationService = mock(ContractNegotiationService.class);
 
+    EndpointDataReferenceCache endpointDataReferenceCache = mock(EndpointDataReferenceCache.class);
+
     @Test
     void initEdrNegotiation_shouldFireAContractNegotiation_WhenUsingCallbacks() {
-        var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService);
+        var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService, endpointDataReferenceCache);
 
         var captor = ArgumentCaptor.forClass(ContractRequest.class);
 
@@ -63,6 +69,39 @@ public class AdapterTransferProcessServiceImplTest {
         assertThat(msg.getRequestData().getProtocol()).isEqualTo(negotiateEdrRequest.getProtocol());
         assertThat(msg.getRequestData().getCounterPartyAddress()).isEqualTo(negotiateEdrRequest.getConnectorAddress());
 
+    }
+
+    @Test
+    void findByTransferProcessId_shouldReturnTheEdr_whenFoundInCache() {
+
+        var transferProcessId = "tpId";
+
+        var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService, endpointDataReferenceCache);
+        when(endpointDataReferenceCache.resolveReference(transferProcessId)).thenReturn(EndpointDataReference.Builder.newInstance().endpoint("test").build());
+
+        var result = transferService.findByTransferProcessId(transferProcessId);
+
+        assertThat(result)
+                .isNotNull()
+                .extracting(ServiceResult::getContent)
+                .isNotNull();
+    }
+
+
+    @Test
+    void findByTransferProcessId_shouldNotFound_whenNotPresentInCache() {
+        var transferProcessId = "tpId";
+
+        var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService, endpointDataReferenceCache);
+        when(endpointDataReferenceCache.resolveReference(transferProcessId)).thenReturn(null);
+
+        var result = transferService.findByTransferProcessId(transferProcessId);
+
+        assertThat(result)
+                .isNotNull()
+                .extracting(ServiceResult::getFailure)
+                .extracting(ServiceFailure::getReason)
+                .isEqualTo(ServiceFailure.Reason.NOT_FOUND);
     }
 
     private NegotiateEdrRequest getNegotiateEdrRequest() {

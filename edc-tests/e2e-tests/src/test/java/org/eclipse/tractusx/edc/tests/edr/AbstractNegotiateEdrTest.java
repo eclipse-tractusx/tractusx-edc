@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
@@ -52,7 +53,7 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoC
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 
 public abstract class AbstractNegotiateEdrTest {
-    
+
     protected static final Participant sokrates = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant plato = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
@@ -111,6 +112,22 @@ public abstract class AbstractNegotiateEdrTest {
                 .collect(Collectors.toList());
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
+
+
+        var edrCaches = sokrates.getEdrEntries(assetId);
+
+        assertThat(edrCaches).hasSize(1);
+
+        var transferProcessId = edrCaches.get(0).asJsonObject().getString("edc:transferProcessId");
+
+        var edr = sokrates.getEdr(transferProcessId);
+
+        assertThat(edr.getJsonString("edc:type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
+        assertThat(edr.getJsonString("edc:authCode").getString()).isNotNull();
+        assertThat(edr.getJsonString("edc:authKey").getString()).isNotNull();
+        assertThat(edr.getJsonString("edc:endpoint").getString()).isNotNull();
+        assertThat(edr.getJsonString("edc:id").getString()).isEqualTo(transferProcessId);
+
     }
 
     <E extends Event> ReceivedEvent createEvent(Class<E> klass) {

@@ -20,6 +20,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
+import org.eclipse.tractusx.edc.api.cp.adapter.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
 import org.eclipse.tractusx.edc.api.cp.adapter.transform.JsonObjectToNegotiateEdrRequestDtoTransformer;
 import org.eclipse.tractusx.edc.api.cp.adapter.transform.NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,5 +62,7 @@ public class AdapterEdrApiExtensionTest {
         verify(webService).registerResource(eq(alias), isA(AdapterEdrController.class));
         verify(transformerRegistry).register(isA(NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer.class));
         verify(transformerRegistry).register(isA(JsonObjectToNegotiateEdrRequestDtoTransformer.class));
+        verify(transformerRegistry).register(isA(JsonObjectFromEndpointDataReferenceEntryTransformer.class));
+
     }
 }

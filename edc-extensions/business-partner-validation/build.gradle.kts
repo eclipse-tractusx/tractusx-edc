@@ -23,6 +23,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":spi:core-spi"))
     api(libs.edc.spi.core)
     implementation(libs.edc.spi.policy)
     implementation(libs.edc.spi.contract)

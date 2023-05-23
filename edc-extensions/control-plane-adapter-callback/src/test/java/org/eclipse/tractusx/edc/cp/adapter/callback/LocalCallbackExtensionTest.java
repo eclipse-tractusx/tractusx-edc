@@ -22,7 +22,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallback;
 import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallbackRegistry;
-import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +29,9 @@ import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class LocalCallbackExtensionTest {
@@ -64,7 +65,7 @@ public class LocalCallbackExtensionTest {
         assertThat(resolver.resolve("test")).isNull();
 
 
-        var service = context.getService(AdapterTransferProcessService.class);
+        var service = extension.adapterTransferProcessService();
         assertThat(service).isInstanceOf(AdapterTransferProcessServiceImpl.class);
 
         var callbackArgumentCaptor = ArgumentCaptor.forClass(InProcessCallback.class);

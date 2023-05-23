@@ -20,7 +20,7 @@ import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -32,7 +32,6 @@ import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessSer
 
 import static org.eclipse.tractusx.edc.cp.adapter.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
 
-@Provides(AdapterTransferProcessService.class)
 @Extension(LocalCallbackExtension.NAME)
 public class LocalCallbackExtension implements ServiceExtension {
     public static final String NAME = "Local callbacks extension";
@@ -65,6 +64,9 @@ public class LocalCallbackExtension implements ServiceExtension {
     @Inject
     private TransactionContext transactionContext;
 
+    @Inject
+    private EndpointDataReferenceCache endpointDataReferenceCache;
+
     @Override
     public String name() {
         return NAME;
@@ -79,7 +81,11 @@ public class LocalCallbackExtension implements ServiceExtension {
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));
 
-        context.registerService(AdapterTransferProcessService.class, new AdapterTransferProcessServiceImpl(contractNegotiationService));
+    }
+
+    @Provider
+    public AdapterTransferProcessService adapterTransferProcessService() {
+        return new AdapterTransferProcessServiceImpl(contractNegotiationService, endpointDataReferenceCache);
     }
 
     private String resolveProtocol(String scheme) {
