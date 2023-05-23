@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
+import java.util.Objects;
+
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
@@ -63,6 +65,11 @@ public class EndpointDataReferenceEntry {
         var that = (EndpointDataReferenceEntry) o;
 
         return transferProcessId.equals(that.transferProcessId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(assetId, agreementId, transferProcessId);
     }
 
     @JsonPOJOBuilder(withPrefix = "")

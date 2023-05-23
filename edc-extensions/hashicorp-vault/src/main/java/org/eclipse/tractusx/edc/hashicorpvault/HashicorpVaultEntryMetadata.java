@@ -22,11 +22,12 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 @Builder
 @NoArgsConstructor
@@ -35,12 +36,12 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 class HashicorpVaultEntryMetadata {
 
-  @JsonProperty("custom_metadata")
-  private Map<String, String> customMetadata;
+    @JsonProperty("custom_metadata")
+    private Map<String, String> customMetadata;
 
-  @JsonProperty("destroyed")
-  private Boolean destroyed;
+    @JsonProperty("destroyed")
+    private Boolean destroyed;
 
-  @JsonProperty("version")
-  private Integer version;
+    @JsonProperty("version")
+    private Integer version;
 }

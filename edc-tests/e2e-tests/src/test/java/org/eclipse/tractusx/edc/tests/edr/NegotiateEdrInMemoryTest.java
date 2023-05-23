@@ -30,7 +30,7 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokrat
 public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
-    protected static ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
             SOKRATES_NAME,
             SOKRATES_BPN,
@@ -38,7 +38,7 @@ public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
     );
 
     @RegisterExtension
-    protected static ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
+    protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
             PLATO_NAME,
             PLATO_BPN,

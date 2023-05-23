@@ -27,13 +27,13 @@ class InMemoryEndpointDataReferenceCacheTest {
 
     private static final String EDR_ID = "edr1";
 
-    private InMemoryEndpointDataReferenceCache cache = new InMemoryEndpointDataReferenceCache();
+    private final InMemoryEndpointDataReferenceCache cache = new InMemoryEndpointDataReferenceCache();
 
     @Test
     @SuppressWarnings("DataFlowIssue")
     void verify_operations() {
-        var edr = EndpointDataReference.Builder.newInstance().
-                endpoint("http://test.com")
+        var edr = EndpointDataReference.Builder.newInstance()
+                .endpoint("http://test.com")
                 .id(EDR_ID)
                 .authCode("11111")
                 .authKey("authentication").build();

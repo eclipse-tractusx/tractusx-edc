@@ -25,20 +25,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class CryptoKeyFactoryImplTest {
 
-  @ParameterizedTest
-  @ValueSource(ints = {32, 64, 512, 1024, 2048, 4096})
-  void throwsIllegalArgumentExceptionWhenInvalidAesKeyLength(int bitLength) {
-    CryptoKeyFactory cryptoKeyFactory = new CryptoKeyFactoryImpl();
-    Assertions.assertThrows(
-        IllegalArgumentException.class,
-        () -> cryptoKeyFactory.fromBytes(new byte[bitLength / Byte.SIZE]));
-  }
+    @ParameterizedTest
+    @ValueSource(ints = {32, 64, 512, 1024, 2048, 4096})
+    void throwsIllegalArgumentExceptionWhenInvalidAesKeyLength(int bitLength) {
+        CryptoKeyFactory cryptoKeyFactory = new CryptoKeyFactoryImpl();
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> cryptoKeyFactory.fromBytes(new byte[bitLength / Byte.SIZE]));
+    }
 
-  @ParameterizedTest
-  @ValueSource(ints = {128, 192, 256})
-  void throwsNotOnValidAesKeyLength(int bitLength) {
-    CryptoKeyFactory cryptoKeyFactory = new CryptoKeyFactoryImpl();
-    Assertions.assertDoesNotThrow(
-        () -> cryptoKeyFactory.fromBytes(new byte[bitLength / Byte.SIZE]));
-  }
+    @ParameterizedTest
+    @ValueSource(ints = {128, 192, 256})
+    void throwsNotOnValidAesKeyLength(int bitLength) {
+        CryptoKeyFactory cryptoKeyFactory = new CryptoKeyFactoryImpl();
+        Assertions.assertDoesNotThrow(
+                () -> cryptoKeyFactory.fromBytes(new byte[bitLength / Byte.SIZE]));
+    }
 }

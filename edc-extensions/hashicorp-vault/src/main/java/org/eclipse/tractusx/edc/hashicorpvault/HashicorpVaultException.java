@@ -24,11 +24,11 @@ import org.eclipse.edc.spi.EdcException;
 
 public class HashicorpVaultException extends EdcException {
 
-  public HashicorpVaultException(String message) {
-    super(message);
-  }
+    public HashicorpVaultException(String message) {
+        super(message);
+    }
 
-  public HashicorpVaultException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public HashicorpVaultException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

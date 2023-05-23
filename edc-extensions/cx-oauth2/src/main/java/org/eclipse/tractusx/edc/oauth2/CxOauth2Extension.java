@@ -19,21 +19,21 @@
  */
 package org.eclipse.tractusx.edc.oauth2;
 
-import java.util.Map;
 import org.eclipse.edc.iam.oauth2.spi.CredentialsRequestAdditionalParametersProvider;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
 
-public class CXOAuth2Extension implements ServiceExtension {
+import java.util.Map;
 
-  @Override
-  public String name() {
-    return "CX OAuth2";
-  }
+public class CxOauth2Extension implements ServiceExtension {
 
-  @Provider
-  public CredentialsRequestAdditionalParametersProvider
-      credentialsRequestAdditionalParametersProvider() {
-    return tokenParameters -> Map.of("resource", tokenParameters.getAudience());
-  }
+    @Override
+    public String name() {
+        return "CX OAuth2";
+    }
+
+    @Provider
+    public CredentialsRequestAdditionalParametersProvider credentialsRequestAdditionalParametersProvider() {
+        return tokenParameters -> Map.of("resource", tokenParameters.getAudience());
+    }
 }

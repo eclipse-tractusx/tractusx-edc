@@ -56,45 +56,44 @@ import static org.hamcrest.Matchers.is;
  */
 @EndToEndTest
 public class DpfProxyEndToEndTest {
+    public static final String KEYSTORE_PASS = "test123";
     private static final String LAUNCHER_MODULE = ":edc-tests:edc-dataplane-proxy-e2e";
-
     private static final int CONSUMER_HTTP_PORT = getFreePort();
     private static final int CONSUMER_PROXY_PORT = getFreePort();
     private static final int PRODUCER_HTTP_PORT = getFreePort();
     private static final int MOCK_ENDPOINT_PORT = getFreePort();
-
     private static final String PROXY_SUBPATH = "proxy/aas/request";
-
     private static final String SINGLE_TRANSFER_ID = "5355d524-2616-43df-9096-558afffff659";
     private static final String SINGLE_ASSET_ID = "79f13b89-59a6-4278-8c8e-8540849dbab8";
     private static final String MULTI_ASSET_ID = "9260f395-3d94-4b8b-bdaa-941ead596ce5";
-
     private static final String REQUEST_TEMPLATE_TP = "{\"transferProcessId\": \"%s\", \"endpointUrl\" : \"http://localhost:%s/api/gateway/aas/test\"}";
     private static final String REQUEST_TEMPLATE_ASSET = "{\"assetId\": \"%s\", \"endpointUrl\" : \"http://localhost:%s/api/gateway/aas/test\"}";
-
     private static final String MOCK_ENDPOINT_200_BODY = "{\"message\":\"test\"}";
-
-    public static final String KEYSTORE_PASS = "test123";
-
-    private MockWebServer mockEndpoint;
-
     @RegisterExtension
-    static EdcRuntimeExtension CONSUMER = new EdcRuntimeExtension(
+    static EdcRuntimeExtension consumer = new EdcRuntimeExtension(
             LAUNCHER_MODULE,
             "consumer",
             baseConfig(Map.of(
                     "web.http.port", valueOf(CONSUMER_HTTP_PORT),
                     "tx.dpf.consumer.proxy.port", valueOf(CONSUMER_PROXY_PORT)
             )));
-
     @RegisterExtension
-    static EdcRuntimeExtension PROVIDER = new EdcRuntimeExtension(
+    static EdcRuntimeExtension provider = new EdcRuntimeExtension(
             LAUNCHER_MODULE,
             "provider",
             baseConfig(Map.of(
                     "web.http.port", valueOf(PRODUCER_HTTP_PORT),
                     "tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + MOCK_ENDPOINT_PORT
             )));
+    private MockWebServer mockEndpoint;
+
+    private static Map<String, String> baseConfig(Map<String, String> values) {
+        var map = new HashMap<>(values);
+        map.put("edc.vault", createVaultStore());
+        map.put("edc.keystore", createKeyStore(KEYSTORE_PASS));
+        map.put("edc.keystore.password", KEYSTORE_PASS);
+        return map;
+    }
 
     @BeforeEach
     void setUp() {
@@ -171,23 +170,13 @@ public class DpfProxyEndToEndTest {
                 .body(body);
     }
 
-    private static Map<String, String> baseConfig(Map<String, String> values) {
-        var map = new HashMap<>(values);
-        map.put("edc.vault", createVaultStore());
-        map.put("edc.keystore", createKeyStore(KEYSTORE_PASS));
-        map.put("edc.keystore.password", KEYSTORE_PASS);
-        return map;
-    }
-
     /**
      * Loads the EDR cache.
      */
     private void seedEdrCache() {
-        var edrCache = CONSUMER.getContext().getService(EndpointDataReferenceCache.class);
-        createEntries().forEach(e->edrCache.save(e.getEdrEntry(), e.getEdr()));
+        var edrCache = consumer.getContext().getService(EndpointDataReferenceCache.class);
+        createEntries().forEach(e -> edrCache.save(e.getEdrEntry(), e.getEdr()));
     }
-
-
 
 
 }

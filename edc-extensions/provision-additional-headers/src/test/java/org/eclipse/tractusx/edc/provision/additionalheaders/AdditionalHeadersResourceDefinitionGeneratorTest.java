@@ -20,68 +20,69 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
-
-import java.util.UUID;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+
 class AdditionalHeadersResourceDefinitionGeneratorTest {
 
-  private final AdditionalHeadersResourceDefinitionGenerator generator =
-      new AdditionalHeadersResourceDefinitionGenerator();
+    private final AdditionalHeadersResourceDefinitionGenerator generator =
+            new AdditionalHeadersResourceDefinitionGenerator();
 
-  @Test
-  void canGenerate_shouldReturnFalseForNotHttpDataAddresses() {
-    var dataAddress = DataAddress.Builder.newInstance().type("any").build();
-    var dataRequest =
-        DataRequest.Builder.newInstance()
-            .id(UUID.randomUUID().toString())
-            .dataDestination(dataAddress)
-            .build();
-    var build = Policy.Builder.newInstance().build();
+    @Test
+    void canGenerate_shouldReturnFalseForNotHttpDataAddresses() {
+        var dataAddress = DataAddress.Builder.newInstance().type("any").build();
+        var dataRequest =
+                DataRequest.Builder.newInstance()
+                        .id(UUID.randomUUID().toString())
+                        .dataDestination(dataAddress)
+                        .build();
+        var build = Policy.Builder.newInstance().build();
 
-    var result = generator.canGenerate(dataRequest, dataAddress, build);
+        var result = generator.canGenerate(dataRequest, dataAddress, build);
 
-    assertThat(result).isFalse();
-  }
+        assertThat(result).isFalse();
+    }
 
-  @Test
-  void canGenerate_shouldReturnTrueForHttpDataAddresses() {
-    var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
-    var dataRequest =
-        DataRequest.Builder.newInstance()
-            .id(UUID.randomUUID().toString())
-            .dataDestination(dataAddress)
-            .build();
-    var build = Policy.Builder.newInstance().build();
+    @Test
+    void canGenerate_shouldReturnTrueForHttpDataAddresses() {
+        var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
+        var dataRequest =
+                DataRequest.Builder.newInstance()
+                        .id(UUID.randomUUID().toString())
+                        .dataDestination(dataAddress)
+                        .build();
+        var build = Policy.Builder.newInstance().build();
 
-    var result = generator.canGenerate(dataRequest, dataAddress, build);
+        var result = generator.canGenerate(dataRequest, dataAddress, build);
 
-    assertThat(result).isTrue();
-  }
+        assertThat(result).isTrue();
+    }
 
-  @Test
-  void shouldCreateResourceDefinitionWithDataAddress() {
-    var dataAddress = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
-    var dataRequest =
-        DataRequest.Builder.newInstance()
-            .id(UUID.randomUUID().toString())
-            .dataDestination(dataAddress)
-            .build();
-    var build = Policy.Builder.newInstance().build();
+    @Test
+    void shouldCreateResourceDefinitionWithDataAddress() {
+        var dataAddress = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
+        var dataRequest =
+                DataRequest.Builder.newInstance()
+                        .id(UUID.randomUUID().toString())
+                        .dataDestination(dataAddress)
+                        .build();
+        var build = Policy.Builder.newInstance().build();
 
-    var result = generator.generate(dataRequest, dataAddress, build);
+        var result = generator.generate(dataRequest, dataAddress, build);
 
-    assertThat(result)
-        .asInstanceOf(type(AdditionalHeadersResourceDefinition.class))
-        .extracting(AdditionalHeadersResourceDefinition::getDataAddress)
-        .extracting(address -> HttpDataAddress.Builder.newInstance().copyFrom(address).build())
-        .extracting(HttpDataAddress::getBaseUrl)
-        .isEqualTo("http://any");
-  }
+        assertThat(result)
+                .asInstanceOf(type(AdditionalHeadersResourceDefinition.class))
+                .extracting(AdditionalHeadersResourceDefinition::getDataAddress)
+                .extracting(address -> HttpDataAddress.Builder.newInstance().copyFrom(address).build())
+                .extracting(HttpDataAddress::getBaseUrl)
+                .isEqualTo("http://any");
+    }
 }

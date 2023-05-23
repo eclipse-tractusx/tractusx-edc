@@ -16,8 +16,8 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 public class SftpClientWrapperFactoryImpl implements SftpClientWrapperFactory {
 
-  @Override
-  public SftpClientWrapper getSftpClientWrapper(SftpClientConfig config) {
-    return new SftpClientWrapperImpl(config);
-  }
+    @Override
+    public SftpClientWrapper getSftpClientWrapper(SftpClientConfig config) {
+        return new SftpClientWrapperImpl(config);
+    }
 }

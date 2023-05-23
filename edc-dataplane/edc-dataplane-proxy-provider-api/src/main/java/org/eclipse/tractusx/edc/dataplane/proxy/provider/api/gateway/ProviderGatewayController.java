@@ -51,7 +51,7 @@ import static org.eclipse.tractusx.edc.dataplane.proxy.provider.api.response.Res
  * Implements the HTTP data proxy API.
  */
 @Path("/" + ProviderGatewayController.GATEWAY_PATH)
-public class ProviderGatewayController implements ProviderGatewayApi{
+public class ProviderGatewayController implements ProviderGatewayApi {
     protected static final String GATEWAY_PATH = "gateway";
 
     private static final String HTTP_DATA = "HttpData";
@@ -185,6 +185,8 @@ public class ProviderGatewayController implements ProviderGatewayApi{
                 case GENERAL_ERROR:
                     response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
                     break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + result.reason());
             }
         } else if (throwable != null) {
             reportError(response, throwable);

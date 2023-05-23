@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.time.Duration;
 
 public class SftpClientWrapperImpl implements SftpClientWrapper {
@@ -95,7 +94,7 @@ public class SftpClientWrapperImpl implements SftpClientWrapper {
 
     @Override
     public void uploadFile(final InputStream inputStream) throws IOException {
-        try (final OutputStream outputStream = sftpClient.write(config.getSftpLocation().getPath(), config.getBufferSize(), config.getWriteOpenModes())) {
+        try (var outputStream = sftpClient.write(config.getSftpLocation().getPath(), config.getBufferSize(), config.getWriteOpenModes())) {
             inputStream.transferTo(outputStream);
         }
     }

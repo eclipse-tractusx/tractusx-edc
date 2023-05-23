@@ -20,29 +20,30 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.UUID;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 class AdditionalHeadersResourceDefinitionTest {
 
-  @Test
-  void serdes() {
-    var typeManager = new TypeManager();
-    var definition =
-        AdditionalHeadersResourceDefinition.Builder.newInstance()
-            .id(UUID.randomUUID().toString())
-            .transferProcessId(UUID.randomUUID().toString())
-            .dataAddress(DataAddress.Builder.newInstance().type("type").build())
-            .contractId(UUID.randomUUID().toString())
-            .build();
+    @Test
+    void serdes() {
+        var typeManager = new TypeManager();
+        var definition =
+                AdditionalHeadersResourceDefinition.Builder.newInstance()
+                        .id(UUID.randomUUID().toString())
+                        .transferProcessId(UUID.randomUUID().toString())
+                        .dataAddress(DataAddress.Builder.newInstance().type("type").build())
+                        .contractId(UUID.randomUUID().toString())
+                        .build();
 
-    var json = typeManager.writeValueAsString(definition);
-    var deserialized = typeManager.readValue(json, AdditionalHeadersResourceDefinition.class);
+        var json = typeManager.writeValueAsString(definition);
+        var deserialized = typeManager.readValue(json, AdditionalHeadersResourceDefinition.class);
 
-    assertThat(deserialized).usingRecursiveComparison().isEqualTo(definition);
-  }
+        assertThat(deserialized).usingRecursiveComparison().isEqualTo(definition);
+    }
 }

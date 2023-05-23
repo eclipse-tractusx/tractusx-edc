@@ -85,7 +85,7 @@ class NoOpSftpProvisionerTest {
         var sftpLocation = SftpLocation.Builder.newInstance().host("host").port(22).path("path").build();
         var scopedPolicy = mock(Policy.class);
         var dataAddress = SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        var provisionedResourceID = "resource";
+        var provisionedResourceId = "resource";
         var provisionedContentResource =
                 SftpProvisionedContentResource.Builder.newInstance()
                         .providerType(provisionType)
@@ -95,7 +95,7 @@ class NoOpSftpProvisionerTest {
                         .resourceName("test-resource")
                         .provisionedResourceId("test-resdef-id")
                         .sftpDataAddress(dataAddress)
-                        .provisionedResourceId(provisionedResourceID)
+                        .provisionedResourceId(provisionedResourceId)
                         .build();
 
         assertThat(provisioner.canDeprovision(provisionedContentResource)).isTrue();
@@ -108,7 +108,7 @@ class NoOpSftpProvisionerTest {
         SftpLocation sftpLocation = SftpLocation.Builder.newInstance().host("host").port(22).path("path").build();
         var scopedPolicy = mock(Policy.class);
         var dataAddress = SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        var provisionedResourceID = "resource";
+        var provisionedResourceId = "resource";
         var provisionedContentResource =
                 SftpProvisionedContentResource.Builder.newInstance()
                         .providerType(provisionType)
@@ -117,7 +117,7 @@ class NoOpSftpProvisionerTest {
                         .resourceDefinitionId(UUID.randomUUID().toString())
                         .resourceName("test-resource")
                         .provisionedResourceId("test-resdef-id")
-                        .sftpDataAddress(dataAddress).provisionedResourceId(provisionedResourceID)
+                        .sftpDataAddress(dataAddress).provisionedResourceId(provisionedResourceId)
                         .build();
 
         Assertions.assertFalse(provisioner.canDeprovision(provisionedContentResource));
@@ -172,12 +172,12 @@ class NoOpSftpProvisionerTest {
         var sftpLocation = SftpLocation.Builder.newInstance().host("host").port(22).path("path").build();
         var dataAddress = SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
         var policy = mock(Policy.class);
-        var provisionedResourceID = "resource";
+        var provisionedResourceId = "resource";
         var provisionedContentResource = SftpProvisionedContentResource.Builder.newInstance()
                 .providerType(provisionType)
                 .scopedPolicy(policy)
                 .sftpDataAddress(dataAddress)
-                .provisionedResourceId(provisionedResourceID)
+                .provisionedResourceId(provisionedResourceId)
                 .transferProcessId(UUID.randomUUID().toString())
                 .resourceDefinitionId(UUID.randomUUID().toString())
                 .resourceName("test-resource")
@@ -197,12 +197,12 @@ class NoOpSftpProvisionerTest {
         var sftpLocation = SftpLocation.Builder.newInstance().host("host").port(22).path("path").build();
         var dataAddress = SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
         var policy = mock(Policy.class);
-        var provisionedResourceID = "resource";
+        var provisionedResourceId = "resource";
         var provisionedContentResource =
                 SftpProvisionedContentResource.Builder.newInstance()
                         .providerType(provisionType)
                         .scopedPolicy(policy)
-                        .sftpDataAddress(dataAddress).provisionedResourceId(provisionedResourceID)
+                        .sftpDataAddress(dataAddress).provisionedResourceId(provisionedResourceId)
                         .transferProcessId(UUID.randomUUID().toString())
                         .resourceDefinitionId(UUID.randomUUID().toString())
                         .resourceName("test-resource")

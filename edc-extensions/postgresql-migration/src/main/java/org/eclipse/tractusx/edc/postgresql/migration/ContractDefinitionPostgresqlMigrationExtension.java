@@ -20,17 +20,16 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
-public class ContractDefinitionPostgresqlMigrationExtension
-    extends AbstractPostgresqlMigrationExtension {
-  private static final String NAME_SUBSYSTEM = "contractdefinition";
+public class ContractDefinitionPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
+    private static final String NAME_SUBSYSTEM = "contractdefinition";
 
-  private static final String DATASOURCE_SETTING_NAME = "edc.datasource.contractdefinition.name";
+    private static final String DATASOURCE_SETTING_NAME = "edc.datasource.contractdefinition.name";
 
-  protected String getDataSourceNameConfigurationKey() {
-    return DATASOURCE_SETTING_NAME;
-  }
+    protected String getDataSourceNameConfigurationKey() {
+        return DATASOURCE_SETTING_NAME;
+    }
 
-  protected String getSubsystemName() {
-    return NAME_SUBSYSTEM;
-  }
+    protected String getSubsystemName() {
+        return NAME_SUBSYSTEM;
+    }
 }

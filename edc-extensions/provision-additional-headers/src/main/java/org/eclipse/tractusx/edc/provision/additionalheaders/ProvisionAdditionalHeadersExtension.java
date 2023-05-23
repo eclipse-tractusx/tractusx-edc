@@ -29,17 +29,19 @@ import org.eclipse.edc.spi.types.TypeManager;
 
 public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
 
-  @Inject private ResourceManifestGenerator resourceManifestGenerator;
+    @Inject
+    private ResourceManifestGenerator resourceManifestGenerator;
 
-  @Inject private ProvisionManager provisionManager;
+    @Inject
+    private ProvisionManager provisionManager;
 
-  @Inject private TypeManager typeManager;
+    @Inject
+    private TypeManager typeManager;
 
-  @Override
-  public void initialize(ServiceExtensionContext context) {
-    typeManager.registerTypes(
-        AdditionalHeadersResourceDefinition.class, AdditionalHeadersProvisionedResource.class);
-    resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator());
-    provisionManager.register(new AdditionalHeadersProvisioner());
-  }
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        typeManager.registerTypes(AdditionalHeadersResourceDefinition.class, AdditionalHeadersProvisionedResource.class);
+        resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator());
+        provisionManager.register(new AdditionalHeadersProvisioner());
+    }
 }

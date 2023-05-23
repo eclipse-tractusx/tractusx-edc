@@ -33,19 +33,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Disabled("Does not work")
 @Testcontainers
 @ExtendWith(EdcExtension.class)
-class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
+class SftpClientWrapperIntegrationTest extends AbstractSftpClientWrapperIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(FilesProvider.class)
     void uploadFileWithPassword(File file) throws IOException {
         var sftpUser = getPasswordUser();
-        var sftpLocation = getSftpLocation(format("%s/%s/%s", sftpPathPrefix, remotePasswordUploadDirectory.getFileName().toString(), file.getName()));
+        var sftpLocation = getSftpLocation(format("%s/%s/%s", SFTP_PATH_PREFIX, REMOTE_PASSWORD_UPLOAD_DIRECTORY.getFileName().toString(), file.getName()));
 
         var fileStream = Files.newInputStream(file.toPath());
 
         getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
 
-        var uploadedFilePath = remotePasswordUploadDirectory.resolve(file.getName());
+        var uploadedFilePath = REMOTE_PASSWORD_UPLOAD_DIRECTORY.resolve(file.getName());
         assertTrue(Files.exists(uploadedFilePath));
 
         var source = Files.newInputStream(file.toPath());
@@ -63,15 +63,15 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
                 getSftpLocation(
                         format(
                                 "%s/%s/%s",
-                                sftpPathPrefix,
-                                remoteKeypairUploadDirectory.getFileName().toString(),
+                                SFTP_PATH_PREFIX,
+                                REMOTE_KEYPAIR_UPLOAD_DIRECTORY.getFileName().toString(),
                                 file.getName()));
 
         var fileStream = Files.newInputStream(file.toPath());
 
         getSftpClient(sftpLocation, sftpUser).uploadFile(fileStream);
 
-        var uploadedFilePath = remoteKeypairUploadDirectory.resolve(file.getName());
+        var uploadedFilePath = REMOTE_KEYPAIR_UPLOAD_DIRECTORY.resolve(file.getName());
         assertTrue(Files.exists(uploadedFilePath));
 
         var source = Files.newInputStream(file.toPath());
@@ -86,12 +86,12 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
     void downloadFileWithPassword(File file) throws IOException {
         var sftpUser = getPasswordUser();
         var sftpLocation = getSftpLocation(
-                format("%s/%s/%s", sftpPathPrefix,
-                        remotePasswordDownloadDirectory.getFileName().toString(), file.getName()));
+                format("%s/%s/%s", SFTP_PATH_PREFIX,
+                        REMOTE_PASSWORD_DOWNLOAD_DIRECTORY.getFileName().toString(), file.getName()));
 
         var fileToUpload = Files.newInputStream(file.toPath());
         Files.copy(fileToUpload,
-                remotePasswordDownloadDirectory.resolve(file.getName()),
+                REMOTE_PASSWORD_DOWNLOAD_DIRECTORY,
                 StandardCopyOption.REPLACE_EXISTING);
 
         var source = Files.newInputStream(file.toPath());
@@ -105,10 +105,10 @@ class SftpClientWrapperIT extends AbstractSftpClientWrapperIT {
     @ArgumentsSource(FilesProvider.class)
     void downloadFileWithKeyPair(File file) throws IOException {
         var sftpUser = getKeyPairUser();
-        var sftpLocation = getSftpLocation(format("%s/%s/%s", sftpPathPrefix, remoteKeypairDownloadDirectory.getFileName().toString(), file.getName()));
+        var sftpLocation = getSftpLocation(format("%s/%s/%s", SFTP_PATH_PREFIX, REMOTE_KEYPAIR_DOWNLOAD_DIRECTORY.getFileName().toString(), file.getName()));
 
         var fileToUpload = Files.newInputStream(file.toPath());
-        Files.copy(fileToUpload, remoteKeypairDownloadDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(fileToUpload, REMOTE_KEYPAIR_DOWNLOAD_DIRECTORY.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
 
         var source = Files.newInputStream(file.toPath());
         var target = getSftpClient(sftpLocation, sftpUser).downloadFile();

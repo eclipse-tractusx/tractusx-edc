@@ -29,14 +29,14 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokrat
 public class NegotiateEdrPostgresqlTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
-    protected static PgParticipantRuntime SOKRATES_RUNTIME = new PgParticipantRuntime(
+    protected static final PgParticipantRuntime SOKRATES_RUNTIME = new PgParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql",
             SOKRATES_NAME,
             SOKRATES_BPN,
             sokratesPostgresqlConfiguration()
     );
     @RegisterExtension
-    protected static PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
+    protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql",
             PLATO_NAME,
             PLATO_BPN,
