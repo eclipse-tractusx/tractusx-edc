@@ -33,7 +33,6 @@ val javaVersion: String by project
 val txScmConnection: String by project
 val txWebsiteUrl: String by project
 val txScmUrl: String by project
-val groupId: String by project
 val annotationProcessorVersion: String by project
 val metaModelVersion: String by project
 
@@ -88,10 +87,9 @@ allprojects {
             metaModel.set(metaModelVersion)
 
         }
-        val gid = groupId
         pom {
             // this is actually important, so we can publish under the correct GID
-            groupId = gid
+            groupId = project.group.toString()
             projectName.set(project.name)
             description.set("edc :: ${project.name}")
             projectUrl.set(txWebsiteUrl)

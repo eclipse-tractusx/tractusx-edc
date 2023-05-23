@@ -61,8 +61,8 @@ jobs:
           then 
             VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
             echo "Publishing using version from gradle.properties: $VERSION"
-            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}" --info
+            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
           else 
             echo "Publishing using version from parameter: ${{ inputs.version }}"
-            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=${{ inputs.version }} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}" --info
+            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=${{ inputs.version }} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
           fi
