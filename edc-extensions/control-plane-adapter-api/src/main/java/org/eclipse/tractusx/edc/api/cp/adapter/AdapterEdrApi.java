@@ -25,8 +25,8 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.DataAddressDto;
 import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public interface AdapterEdrApi {
     @Operation(description = "Returns all EndpointDataReference entry according to a query",
             responses = {
                     @ApiResponse(responseCode = "200",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = EndpointDataReferenceEntryDto.class)))),
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = EndpointDataReferenceEntry.class)))),
                     @ApiResponse(responseCode = "400", description = "Request was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))}
     )

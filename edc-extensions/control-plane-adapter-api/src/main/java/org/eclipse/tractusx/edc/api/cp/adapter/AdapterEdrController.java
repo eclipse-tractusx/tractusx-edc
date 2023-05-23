@@ -32,7 +32,6 @@ import org.eclipse.edc.spi.types.domain.edr.EndpointDataAddressConstants;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
@@ -100,8 +99,7 @@ public class AdapterEdrController implements AdapterEdrApi {
         return adapterTransferProcessService.findByAssetAndAgreement(assetId, agreementId)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class))
                 .stream()
-                .map(edrCached -> transformerRegistry.transform(edrCached, EndpointDataReferenceEntryDto.class)
-                        .compose(dto -> transformerRegistry.transform(dto, JsonObject.class))
+                .map(edrCached -> transformerRegistry.transform(edrCached, JsonObject.class)
                         .compose(jsonLdService::compact))
                 .peek(this::logIfError)
                 .filter(Result::succeeded)

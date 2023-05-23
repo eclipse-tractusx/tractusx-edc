@@ -54,7 +54,6 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
      * }
      * </pre>
      */
-    // TODO replace with TX namespace
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
 
     public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";

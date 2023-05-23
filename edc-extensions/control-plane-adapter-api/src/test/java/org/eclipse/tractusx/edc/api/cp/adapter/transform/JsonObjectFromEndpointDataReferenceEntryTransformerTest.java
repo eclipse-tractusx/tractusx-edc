@@ -15,30 +15,30 @@
 package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
 import org.eclipse.edc.transform.spi.TransformerContext;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.Builder;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.EDR_ENTRY_DTO_AGREEMENT_ID;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.EDR_ENTRY_DTO_ASSET_ID;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.EDR_ENTRY_TRANSFER_PROCESS_ID;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
 import static org.mockito.Mockito.mock;
 
-class JsonObjectFromEndpointDataReferenceEntryDtoTransformerTest {
+class JsonObjectFromEndpointDataReferenceEntryTransformerTest {
 
     private final TransformerContext context = mock(TransformerContext.class);
-    private JsonObjectFromEndpointDataReferenceEntryDtoTransformer transformer;
+    private JsonObjectFromEndpointDataReferenceEntryTransformer transformer;
 
     @BeforeEach
     void setUp() {
-        transformer = new JsonObjectFromEndpointDataReferenceEntryDtoTransformer();
+        transformer = new JsonObjectFromEndpointDataReferenceEntryTransformer();
     }
 
     @Test
     void transform() {
 
-        var dto = Builder.newInstance()
+        var dto = EndpointDataReferenceEntry.Builder.newInstance()
                 .assetId("id")
                 .transferProcessId("tpId")
                 .agreementId("aId")
@@ -47,8 +47,8 @@ class JsonObjectFromEndpointDataReferenceEntryDtoTransformerTest {
         var jsonObject = transformer.transform(dto, context);
 
         assertThat(jsonObject).isNotNull();
-        assertThat(jsonObject.getJsonString(EDR_ENTRY_DTO_AGREEMENT_ID).getString()).isNotNull().isEqualTo(dto.getAgreementId());
-        assertThat(jsonObject.getJsonString(EDR_ENTRY_DTO_ASSET_ID).getString()).isNotNull().isEqualTo(dto.getAssetId());
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_AGREEMENT_ID).getString()).isNotNull().isEqualTo(dto.getAgreementId());
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_ASSET_ID).getString()).isNotNull().isEqualTo(dto.getAssetId());
         assertThat(jsonObject.getJsonString(EDR_ENTRY_TRANSFER_PROCESS_ID).getString()).isNotNull().isEqualTo(dto.getTransferProcessId());
     }
 }

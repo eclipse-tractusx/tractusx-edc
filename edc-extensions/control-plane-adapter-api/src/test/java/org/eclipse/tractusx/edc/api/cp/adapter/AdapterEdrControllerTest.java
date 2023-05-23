@@ -29,7 +29,6 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
-import org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
@@ -47,11 +46,11 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.api.cp.adapter.TestFunctions.openRequest;
 import static org.eclipse.tractusx.edc.api.cp.adapter.TestFunctions.requestDto;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.Builder;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.EDR_ENTRY_DTO_AGREEMENT_ID;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.EDR_ENTRY_DTO_ASSET_ID;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.EndpointDataReferenceEntryDto.EDR_ENTRY_TRANSFER_PROCESS_ID;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_TYPE;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -159,19 +158,15 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .assetId(assetId)
                 .build();
 
-        var entryDto = Builder.newInstance().build();
-
         var response = Json.createObjectBuilder()
-                .add(TYPE, EndpointDataReferenceEntryDto.EDR_ENTRY_DTO_TYPE)
-                .add(EDR_ENTRY_DTO_ASSET_ID, entry.getAssetId())
+                .add(TYPE, EDR_ENTRY_TYPE)
+                .add(EDR_ENTRY_ASSET_ID, entry.getAssetId())
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
-                .add(EDR_ENTRY_DTO_AGREEMENT_ID, entry.getAgreementId())
+                .add(EDR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
                 .build();
-
-
+        
         when(adapterTransferProcessService.findByAssetAndAgreement(assetId, null)).thenReturn(ServiceResult.success(List.of(entry)));
-        when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(EndpointDataReferenceEntryDto.class))).thenReturn(Result.success(entryDto));
-        when(transformerRegistry.transform(any(EndpointDataReferenceEntryDto.class), eq(JsonObject.class))).thenReturn(Result.success(response));
+        when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(JsonObject.class))).thenReturn(Result.success(response));
 
         baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -196,19 +191,17 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .assetId(assetId)
                 .build();
 
-        var entryDto = Builder.newInstance().build();
 
         var response = Json.createObjectBuilder()
-                .add(TYPE, EndpointDataReferenceEntryDto.EDR_ENTRY_DTO_TYPE)
-                .add(EDR_ENTRY_DTO_ASSET_ID, entry.getAssetId())
+                .add(TYPE, EDR_ENTRY_TYPE)
+                .add(EDR_ENTRY_ASSET_ID, entry.getAssetId())
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
-                .add(EDR_ENTRY_DTO_AGREEMENT_ID, entry.getAgreementId())
+                .add(EDR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
                 .build();
 
 
         when(adapterTransferProcessService.findByAssetAndAgreement(null, agreementId)).thenReturn(ServiceResult.success(List.of(entry)));
-        when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(EndpointDataReferenceEntryDto.class))).thenReturn(Result.success(entryDto));
-        when(transformerRegistry.transform(any(EndpointDataReferenceEntryDto.class), eq(JsonObject.class))).thenReturn(Result.success(response));
+        when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(JsonObject.class))).thenReturn(Result.success(response));
 
         baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)
