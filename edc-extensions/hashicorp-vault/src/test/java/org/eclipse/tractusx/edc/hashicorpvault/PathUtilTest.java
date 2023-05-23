@@ -14,27 +14,28 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.stream.Stream;
+
 class PathUtilTest {
 
-  @ParameterizedTest
-  @MethodSource("provideStringsForTrimsPathsCorrect")
-  void trimsPathsCorrect(String path, String expected) {
-    final String result = PathUtil.trimLeadingOrEndingSlash(path);
+    private static Stream<Arguments> provideStringsForTrimsPathsCorrect() {
+        return Stream.of(
+                Arguments.of("v1/secret/data", "v1/secret/data"),
+                Arguments.of("/v1/secret/data", "v1/secret/data"),
+                Arguments.of("/v1/secret/data/", "v1/secret/data"),
+                Arguments.of("v1/secret/data/", "v1/secret/data"));
+    }
 
-    Assertions.assertEquals(expected, result);
-  }
+    @ParameterizedTest
+    @MethodSource("provideStringsForTrimsPathsCorrect")
+    void trimsPathsCorrect(String path, String expected) {
+        final String result = PathUtil.trimLeadingOrEndingSlash(path);
 
-  private static Stream<Arguments> provideStringsForTrimsPathsCorrect() {
-    return Stream.of(
-        Arguments.of("v1/secret/data", "v1/secret/data"),
-        Arguments.of("/v1/secret/data", "v1/secret/data"),
-        Arguments.of("/v1/secret/data/", "v1/secret/data"),
-        Arguments.of("v1/secret/data/", "v1/secret/data"));
-  }
+        Assertions.assertEquals(expected, result);
+    }
 }

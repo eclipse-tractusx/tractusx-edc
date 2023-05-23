@@ -50,7 +50,7 @@ class AbstractBusinessPartnerValidationTest {
     private ParticipantAgent participantAgent;
 
     @BeforeEach
-    void BeforeEach() {
+    void beforeEach() {
         this.monitor = Mockito.mock(Monitor.class);
         this.policyContext = Mockito.mock(PolicyContext.class);
         this.participantAgent = Mockito.mock(ParticipantAgent.class);

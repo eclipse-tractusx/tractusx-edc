@@ -16,14 +16,15 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 final class PathUtil {
 
-  private PathUtil() {}
+    private PathUtil() {
+    }
 
-  static String trimLeadingOrEndingSlash(String path) {
-    var fixedPath = path;
+    static String trimLeadingOrEndingSlash(String path) {
+        var fixedPath = path;
 
-    if (fixedPath.startsWith("/")) fixedPath = fixedPath.substring(1);
-    if (fixedPath.endsWith("/")) fixedPath = fixedPath.substring(0, fixedPath.length() - 1);
+        if (fixedPath.startsWith("/")) fixedPath = fixedPath.substring(1);
+        if (fixedPath.endsWith("/")) fixedPath = fixedPath.substring(0, fixedPath.length() - 1);
 
-    return fixedPath;
-  }
+        return fixedPath;
+    }
 }

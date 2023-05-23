@@ -23,37 +23,37 @@ import org.bouncycastle.util.encoders.Base64;
 
 public class CryptoKeyFactoryImpl implements CryptoKeyFactory {
 
-  public AesKey fromBase64(String base64) {
-    return fromBytes(Base64.decode(base64));
-  }
-
-  public AesKey fromBytes(byte[] key) {
-    int bitLength = key.length * Byte.SIZE;
-    if (!(bitLength == 128 || bitLength == 192 || bitLength == 256)) {
-      throw new IllegalArgumentException("Invalid AES key length: " + bitLength);
+    public AesKey fromBase64(String base64) {
+        return fromBytes(Base64.decode(base64));
     }
 
-    return new AesKeyImpl(key, Base64.toBase64String(key));
-  }
+    public AesKey fromBytes(byte[] key) {
+        int bitLength = key.length * Byte.SIZE;
+        if (!(bitLength == 128 || bitLength == 192 || bitLength == 256)) {
+            throw new IllegalArgumentException("Invalid AES key length: " + bitLength);
+        }
 
-
-  private static class AesKeyImpl implements AesKey {
-    private final byte[] bytes;
-    private final String base64;
-
-    private AesKeyImpl(byte[] bytes, String base64) {
-      this.bytes = bytes;
-      this.base64 = base64;
+        return new AesKeyImpl(key, Base64.toBase64String(key));
     }
 
-    @Override
-    public byte[] getBytes() {
-      return bytes;
-    }
 
-    @Override
-    public String getBase64() {
-      return base64;
+    private static class AesKeyImpl implements AesKey {
+        private final byte[] bytes;
+        private final String base64;
+
+        private AesKeyImpl(byte[] bytes, String base64) {
+            this.bytes = bytes;
+            this.base64 = base64;
+        }
+
+        @Override
+        public byte[] getBytes() {
+            return bytes;
+        }
+
+        @Override
+        public String getBase64() {
+            return base64;
+        }
     }
-  }
 }

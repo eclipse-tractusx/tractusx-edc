@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.data.encryption.data;
 
 public interface CryptoData {
-  byte[] getBytes();
+    byte[] getBytes();
 
-  String getBase64();
+    String getBase64();
 }

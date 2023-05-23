@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 
 public class EdrNegotiationHelperFunctions {
 
-    private final static JsonLd jsonLd = new TitaniumJsonLd(mock(Monitor.class));
+    private static final JsonLd JSON_LD = new TitaniumJsonLd(mock(Monitor.class));
 
     public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
@@ -44,7 +44,7 @@ public class EdrNegotiationHelperFunctions {
                 .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
                         .add(EDC_NAMESPACE + "offerId", offerId)
                         .add(EDC_NAMESPACE + "assetId", assetId)
-                        .add(EDC_NAMESPACE + "policy", jsonLd.compact(policy).getContent())
+                        .add(EDC_NAMESPACE + "policy", JSON_LD.compact(policy).getContent())
                 )
                 .add(EDC_NAMESPACE + "callbackAddresses", callbacks)
                 .build();

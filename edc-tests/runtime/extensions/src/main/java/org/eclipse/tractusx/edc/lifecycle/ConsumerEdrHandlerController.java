@@ -32,7 +32,7 @@ import java.util.Optional;
 public class ConsumerEdrHandlerController {
 
     private final Monitor monitor;
-    private Map<String, EndpointDataReference> dataReference;
+    private final Map<String, EndpointDataReference> dataReference;
 
     public ConsumerEdrHandlerController(Monitor monitor) {
         this.monitor = monitor;
@@ -51,8 +51,7 @@ public class ConsumerEdrHandlerController {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public EndpointDataReference getDataReference(@PathParam("id") String id) {
-        return Optional.ofNullable(dataReference.get(id)).orElseGet(() ->
-        {
+        return Optional.ofNullable(dataReference.get(id)).orElseGet(() -> {
             monitor.warning("No EndpointDataReference found with id " + id);
             return null;
         });

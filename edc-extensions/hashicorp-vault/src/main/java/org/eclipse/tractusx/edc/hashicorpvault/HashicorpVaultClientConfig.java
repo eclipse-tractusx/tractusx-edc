@@ -20,21 +20,27 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import java.time.Duration;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Duration;
+
 @Builder
 @Getter
 @RequiredArgsConstructor
 class HashicorpVaultClientConfig {
-  @NonNull private final String vaultUrl;
-  @NonNull private final String vaultToken;
-  @NonNull private final String vaultApiSecretPath;
-  @NonNull private final String vaultApiHealthPath;
-  @NonNull private final Duration timeout;
+    @NonNull
+    private final String vaultUrl;
+    @NonNull
+    private final String vaultToken;
+    @NonNull
+    private final String vaultApiSecretPath;
+    @NonNull
+    private final String vaultApiHealthPath;
+    @NonNull
+    private final Duration timeout;
 
-  private final boolean isVaultApiHealthStandbyOk;
+    private final boolean isVaultApiHealthStandbyOk;
 }

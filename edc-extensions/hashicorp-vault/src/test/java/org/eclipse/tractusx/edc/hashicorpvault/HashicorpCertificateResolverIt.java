@@ -21,53 +21,41 @@
 package org.eclipse.tractusx.edc.hashicorpvault;
 
 import lombok.SneakyThrows;
-import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.CertificateResolver;
+import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.security.cert.X509Certificate;
+import java.util.UUID;
 
-class HashicorpCertificateResolverTest {
-    private static final String KEY = "key";
-
-    // mocks
-    private HashicorpCertificateResolver certificateResolver;
-    private HashicorpVault vault;
-
-    @BeforeEach
-    void setup() {
-        vault = Mockito.mock(HashicorpVault.class);
-        final Monitor monitor = Mockito.mock(Monitor.class);
-        certificateResolver = new HashicorpCertificateResolver(vault, monitor);
-    }
+class HashicorpCertificateResolverIt extends AbstractHashicorpIt {
 
     @Test
     @SneakyThrows
-    void resolveCertificate() {
-        // prepare
+    void resolveCertificate_success() {
+        String key = UUID.randomUUID().toString();
         X509Certificate certificateExpected = X509CertificateTestUtil.generateCertificate(5, "Test");
         String pem = X509CertificateTestUtil.convertToPem(certificateExpected);
-        Mockito.when(vault.resolveSecret(KEY)).thenReturn(pem);
 
-        // invoke
-        certificateResolver.resolveCertificate(KEY);
+        Vault vault = getVault();
+        vault.storeSecret(key, pem);
+        CertificateResolver resolver = getCertificateResolver();
+        X509Certificate certificateResult = resolver.resolveCertificate(key);
 
-        // verify
-        Mockito.verify(vault, Mockito.times(1)).resolveSecret(KEY);
+        Assertions.assertEquals(certificateExpected, certificateResult);
     }
 
     @Test
     @SneakyThrows
-    void nullIfVaultEmpty() {
-        // prepare
-        Mockito.when(vault.resolveSecret(KEY)).thenReturn(null);
+    void resolveCertificate_malformed() {
+        String key = UUID.randomUUID().toString();
+        String value = UUID.randomUUID().toString();
+        Vault vault = getVault();
+        vault.storeSecret(key, value);
 
-        // invoke
-        final X509Certificate certificate = certificateResolver.resolveCertificate(KEY);
-
-        // verify
-        Assertions.assertNull(certificate);
+        CertificateResolver resolver = getCertificateResolver();
+        X509Certificate certificateResult = resolver.resolveCertificate(key);
+        Assertions.assertNull(certificateResult);
     }
 }

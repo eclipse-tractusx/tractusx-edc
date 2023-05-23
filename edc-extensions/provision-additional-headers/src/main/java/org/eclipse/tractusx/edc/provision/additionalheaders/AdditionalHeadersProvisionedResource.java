@@ -28,17 +28,17 @@ import org.eclipse.edc.connector.transfer.spi.types.ProvisionedContentResource;
 @JsonDeserialize(builder = AdditionalHeadersProvisionedResource.Builder.class)
 class AdditionalHeadersProvisionedResource extends ProvisionedContentResource {
 
-  @JsonPOJOBuilder(withPrefix = "")
-  public static class Builder
-      extends ProvisionedContentResource.Builder<AdditionalHeadersProvisionedResource, Builder> {
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Builder
+            extends ProvisionedContentResource.Builder<AdditionalHeadersProvisionedResource, Builder> {
 
-    private Builder() {
-      super(new AdditionalHeadersProvisionedResource());
-    }
+        private Builder() {
+            super(new AdditionalHeadersProvisionedResource());
+        }
 
-    @JsonCreator
-    public static Builder newInstance() {
-      return new Builder();
+        @JsonCreator
+        public static Builder newInstance() {
+            return new Builder();
+        }
     }
-  }
 }

@@ -31,43 +31,43 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 @JsonTypeName("dataspaceconnector:additionalheadersresourcedefinition")
 class AdditionalHeadersResourceDefinition extends ResourceDefinition {
 
-  private String contractId;
-  private DataAddress dataAddress;
+    private String contractId;
+    private DataAddress dataAddress;
 
-  @Override
-  public Builder toBuilder() {
-    return initializeBuilder(new Builder());
-  }
-
-  public DataAddress getDataAddress() {
-    return dataAddress;
-  }
-
-  public String getContractId() {
-    return contractId;
-  }
-
-  @JsonPOJOBuilder(withPrefix = "")
-  public static class Builder
-      extends ResourceDefinition.Builder<AdditionalHeadersResourceDefinition, Builder> {
-
-    protected Builder() {
-      super(new AdditionalHeadersResourceDefinition());
+    @Override
+    public Builder toBuilder() {
+        return initializeBuilder(new Builder());
     }
 
-    @JsonCreator
-    public static Builder newInstance() {
-      return new Builder();
+    public DataAddress getDataAddress() {
+        return dataAddress;
     }
 
-    public Builder contractId(String contractId) {
-      this.resourceDefinition.contractId = contractId;
-      return this;
+    public String getContractId() {
+        return contractId;
     }
 
-    public Builder dataAddress(DataAddress dataAddress) {
-      this.resourceDefinition.dataAddress = dataAddress;
-      return this;
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Builder
+            extends ResourceDefinition.Builder<AdditionalHeadersResourceDefinition, Builder> {
+
+        protected Builder() {
+            super(new AdditionalHeadersResourceDefinition());
+        }
+
+        @JsonCreator
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder contractId(String contractId) {
+            this.resourceDefinition.contractId = contractId;
+            return this;
+        }
+
+        public Builder dataAddress(DataAddress dataAddress) {
+            this.resourceDefinition.dataAddress = dataAddress;
+            return this;
+        }
     }
-  }
 }

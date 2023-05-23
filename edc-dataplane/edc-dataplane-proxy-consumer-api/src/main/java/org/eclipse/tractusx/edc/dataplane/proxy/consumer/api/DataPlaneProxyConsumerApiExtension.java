@@ -25,8 +25,8 @@ import org.eclipse.edc.web.spi.WebServer;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.WebServiceConfigurer;
 import org.eclipse.edc.web.spi.configuration.WebServiceSettings;
-import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ClientErrorExceptionMapper;
+import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 
 import java.util.concurrent.ExecutorService;
@@ -38,21 +38,16 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
  */
 @Extension(value = DataPlaneProxyConsumerApiExtension.NAME)
 public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
+    public static final int DEFAULT_THREAD_POOL = 10;
     static final String NAME = "Data Plane Proxy Consumer API";
-
     private static final int DEFAULT_PROXY_PORT = 8186;
     private static final String CONSUMER_API_ALIAS = "consumer.api";
     private static final String CONSUMER_CONTEXT_PATH = "/proxy";
     private static final String CONSUMER_CONFIG_KEY = "web.http.proxy";
-
     @Setting(value = "Data plane proxy API consumer port", type = "int")
     private static final String CONSUMER_PORT = "tx.dpf.consumer.proxy.port";
-
     @Setting(value = "Thread pool size for the consumer data plane proxy gateway", type = "int")
     private static final String THREAD_POOL_SIZE = "tx.dpf.consumer.proxy.thread.pool";
-
-    public static final int DEFAULT_THREAD_POOL = 10;
-
     @Inject
     private WebService webService;
 

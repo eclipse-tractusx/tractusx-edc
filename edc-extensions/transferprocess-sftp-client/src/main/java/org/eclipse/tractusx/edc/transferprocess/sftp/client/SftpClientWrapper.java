@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface SftpClientWrapper {
-  void uploadFile(InputStream inputStream) throws IOException;
+    void uploadFile(InputStream inputStream) throws IOException;
 
-  InputStream downloadFile() throws IOException;
+    InputStream downloadFile() throws IOException;
 }

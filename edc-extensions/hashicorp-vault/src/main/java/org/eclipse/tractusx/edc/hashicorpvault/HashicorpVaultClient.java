@@ -23,11 +23,6 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Headers;
@@ -40,164 +35,173 @@ import okhttp3.Response;
 import org.eclipse.edc.spi.result.Result;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Objects;
+
 @RequiredArgsConstructor
 class HashicorpVaultClient {
-  static final String VAULT_DATA_ENTRY_NAME = "content";
-  private static final String VAULT_TOKEN_HEADER = "X-Vault-Token";
-  private static final String VAULT_REQUEST_HEADER = "X-Vault-Request";
-  private static final String VAULT_SECRET_DATA_PATH = "data";
-  private static final String VAULT_SECRET_METADATA_PATH = "metadata";
-  private static final MediaType MEDIA_TYPE_APPLICATION_JSON = MediaType.get("application/json");
-  private static final String CALL_UNSUCCESSFUL_ERROR_TEMPLATE = "Call unsuccessful: %s";
+    static final String VAULT_DATA_ENTRY_NAME = "content";
+    private static final String VAULT_TOKEN_HEADER = "X-Vault-Token";
+    private static final String VAULT_REQUEST_HEADER = "X-Vault-Request";
+    private static final String VAULT_SECRET_DATA_PATH = "data";
+    private static final String VAULT_SECRET_METADATA_PATH = "metadata";
+    private static final MediaType MEDIA_TYPE_APPLICATION_JSON = MediaType.get("application/json");
+    private static final String CALL_UNSUCCESSFUL_ERROR_TEMPLATE = "Call unsuccessful: %s";
 
-  @NonNull private final HashicorpVaultClientConfig config;
-  @NonNull private final OkHttpClient okHttpClient;
-  @NonNull private final ObjectMapper objectMapper;
+    @NonNull
+    private final HashicorpVaultClientConfig config;
+    @NonNull
+    private final OkHttpClient okHttpClient;
+    @NonNull
+    private final ObjectMapper objectMapper;
 
-  Result<String> getSecretValue(@NonNull String key) {
-    HttpUrl requestURI = getSecretUrl(key, VAULT_SECRET_DATA_PATH);
-    Headers headers = getHeaders();
-    Request request = new Request.Builder().url(requestURI).headers(headers).get().build();
+    Result<String> getSecretValue(@NonNull String key) {
+        HttpUrl requestUri = getSecretUrl(key, VAULT_SECRET_DATA_PATH);
+        Headers headers = getHeaders();
+        Request request = new Request.Builder().url(requestUri).headers(headers).get().build();
 
-    try (Response response = okHttpClient.newCall(request).execute()) {
+        try (Response response = okHttpClient.newCall(request).execute()) {
 
-      if (response.code() == 404) {
-        return Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, "Secret not found"));
-      }
+            if (response.code() == 404) {
+                return Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, "Secret not found"));
+            }
 
-      if (response.isSuccessful()) {
-        String responseBody = Objects.requireNonNull(response.body()).string();
-        HashicorpVaultGetEntryResponsePayload payload =
-            objectMapper.readValue(responseBody, HashicorpVaultGetEntryResponsePayload.class);
-        String value =
-            Objects.requireNonNull(payload.getData().getData().get(VAULT_DATA_ENTRY_NAME));
+            if (response.isSuccessful()) {
+                String responseBody = Objects.requireNonNull(response.body()).string();
+                HashicorpVaultGetEntryResponsePayload payload =
+                        objectMapper.readValue(responseBody, HashicorpVaultGetEntryResponsePayload.class);
+                String value =
+                        Objects.requireNonNull(payload.getData().getData().get(VAULT_DATA_ENTRY_NAME));
 
-        return Result.success(value);
-      } else {
-        return Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, response.code()));
-      }
+                return Result.success(value);
+            } else {
+                return Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, response.code()));
+            }
 
-    } catch (IOException e) {
-      return Result.failure(e.getMessage());
-    }
-  }
-
-  public HashicorpVaultHealthResponse getHealth() throws IOException {
-
-    HashicorpVaultHealthResponse.HashicorpVaultHealthResponseBuilder healthResponseBuilder =
-        HashicorpVaultHealthResponse.builder();
-
-    HttpUrl requestURI = getHealthUrl();
-    Headers headers = getHeaders();
-    Request request = new Request.Builder().url(requestURI).headers(headers).get().build();
-    try (Response response = okHttpClient.newCall(request).execute()) {
-      final int code = response.code();
-      healthResponseBuilder.code(code);
-
-      try {
-        String responseBody = Objects.requireNonNull(response.body()).string();
-        HashicorpVaultHealthResponsePayload responsePayload =
-            objectMapper.readValue(responseBody, HashicorpVaultHealthResponsePayload.class);
-        healthResponseBuilder.payload(responsePayload);
-      } catch (JsonMappingException e) {
-        // ignore. status code not checked, so it may be possible that no payload was
-        // provided
-      }
+        } catch (IOException e) {
+            return Result.failure(e.getMessage());
+        }
     }
 
-    return healthResponseBuilder.build();
-  }
+    public HashicorpVaultHealthResponse getHealth() throws IOException {
 
-  Result<HashicorpVaultCreateEntryResponsePayload> setSecret(
-      @NonNull String key, @NonNull String value) {
-    HttpUrl requestURI = getSecretUrl(key, VAULT_SECRET_DATA_PATH);
-    Headers headers = getHeaders();
-    HashicorpVaultCreateEntryRequestPayload requestPayload =
-        HashicorpVaultCreateEntryRequestPayload.builder()
-            .data(Collections.singletonMap(VAULT_DATA_ENTRY_NAME, value))
-            .build();
-    Request request =
-        new Request.Builder()
-            .url(requestURI)
-            .headers(headers)
-            .post(createRequestBody(requestPayload))
-            .build();
+        HashicorpVaultHealthResponse.HashicorpVaultHealthResponseBuilder healthResponseBuilder =
+                HashicorpVaultHealthResponse.builder();
 
-    try (Response response = okHttpClient.newCall(request).execute()) {
-      if (response.isSuccessful()) {
-        String responseBody = Objects.requireNonNull(response.body()).string();
-        HashicorpVaultCreateEntryResponsePayload responsePayload =
-            objectMapper.readValue(responseBody, HashicorpVaultCreateEntryResponsePayload.class);
-        return Result.success(responsePayload);
-      } else {
-        return Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, response.code()));
-      }
-    } catch (IOException e) {
-      return Result.failure(e.getMessage());
+        HttpUrl requestUri = getHealthUrl();
+        Headers headers = getHeaders();
+        Request request = new Request.Builder().url(requestUri).headers(headers).get().build();
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            final int code = response.code();
+            healthResponseBuilder.code(code);
+
+            try {
+                String responseBody = Objects.requireNonNull(response.body()).string();
+                HashicorpVaultHealthResponsePayload responsePayload =
+                        objectMapper.readValue(responseBody, HashicorpVaultHealthResponsePayload.class);
+                healthResponseBuilder.payload(responsePayload);
+            } catch (JsonMappingException e) {
+                // ignore. status code not checked, so it may be possible that no payload was
+                // provided
+            }
+        }
+
+        return healthResponseBuilder.build();
     }
-  }
 
-  Result<Void> destroySecret(@NonNull String key) {
-    HttpUrl requestURI = getSecretUrl(key, VAULT_SECRET_METADATA_PATH);
-    Headers headers = getHeaders();
-    Request request = new Request.Builder().url(requestURI).headers(headers).delete().build();
+    Result<HashicorpVaultCreateEntryResponsePayload> setSecret(
+            @NonNull String key, @NonNull String value) {
+        HttpUrl requestUri = getSecretUrl(key, VAULT_SECRET_DATA_PATH);
+        Headers headers = getHeaders();
+        HashicorpVaultCreateEntryRequestPayload requestPayload =
+                HashicorpVaultCreateEntryRequestPayload.builder()
+                        .data(Collections.singletonMap(VAULT_DATA_ENTRY_NAME, value))
+                        .build();
+        Request request =
+                new Request.Builder()
+                        .url(requestUri)
+                        .headers(headers)
+                        .post(createRequestBody(requestPayload))
+                        .build();
 
-    try (Response response = okHttpClient.newCall(request).execute()) {
-      return response.isSuccessful() || response.code() == 404
-          ? Result.success()
-          : Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, response.code()));
-    } catch (IOException e) {
-      return Result.failure(e.getMessage());
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String responseBody = Objects.requireNonNull(response.body()).string();
+                HashicorpVaultCreateEntryResponsePayload responsePayload =
+                        objectMapper.readValue(responseBody, HashicorpVaultCreateEntryResponsePayload.class);
+                return Result.success(responsePayload);
+            } else {
+                return Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, response.code()));
+            }
+        } catch (IOException e) {
+            return Result.failure(e.getMessage());
+        }
     }
-  }
 
-  @NotNull
-  private Headers getHeaders() {
-    return new Headers.Builder()
-        .add(VAULT_REQUEST_HEADER, Boolean.toString(true))
-        .add(VAULT_TOKEN_HEADER, config.getVaultToken())
-        .build();
-  }
+    Result<Void> destroySecret(@NonNull String key) {
+        HttpUrl requestUri = getSecretUrl(key, VAULT_SECRET_METADATA_PATH);
+        Headers headers = getHeaders();
+        Request request = new Request.Builder().url(requestUri).headers(headers).delete().build();
 
-  private HttpUrl getSecretUrl(String key, String entryType) {
-    key = URLEncoder.encode(key, StandardCharsets.UTF_8);
-
-    // restore '/' characters to allow sub-directories
-    key = key.replace("%2F", "/");
-
-    final String vaultApiPath = config.getVaultApiSecretPath();
-
-    return Objects.requireNonNull(HttpUrl.parse(config.getVaultUrl()))
-        .newBuilder()
-        .addPathSegments(PathUtil.trimLeadingOrEndingSlash(vaultApiPath))
-        .addPathSegment(entryType)
-        .addPathSegments(key)
-        .build();
-  }
-
-  private HttpUrl getHealthUrl() {
-    final String vaultHealthPath = config.getVaultApiHealthPath();
-    final boolean isVaultHealthStandbyOk = config.isVaultApiHealthStandbyOk();
-
-    // by setting 'standbyok' and/or 'perfstandbyok' the vault will return an active
-    // status
-    // code instead of the standby status codes
-
-    return Objects.requireNonNull(HttpUrl.parse(config.getVaultUrl()))
-        .newBuilder()
-        .addPathSegments(PathUtil.trimLeadingOrEndingSlash(vaultHealthPath))
-        .addQueryParameter("standbyok", isVaultHealthStandbyOk ? "true" : "false")
-        .addQueryParameter("perfstandbyok", isVaultHealthStandbyOk ? "true" : "false")
-        .build();
-  }
-
-  private RequestBody createRequestBody(Object requestPayload) {
-    String jsonRepresentation;
-    try {
-      jsonRepresentation = objectMapper.writeValueAsString(requestPayload);
-    } catch (JsonProcessingException e) {
-      throw new HashicorpVaultException(e.getMessage(), e);
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            return response.isSuccessful() || response.code() == 404
+                    ? Result.success()
+                    : Result.failure(String.format(CALL_UNSUCCESSFUL_ERROR_TEMPLATE, response.code()));
+        } catch (IOException e) {
+            return Result.failure(e.getMessage());
+        }
     }
-    return RequestBody.create(jsonRepresentation, MEDIA_TYPE_APPLICATION_JSON);
-  }
+
+    @NotNull
+    private Headers getHeaders() {
+        return new Headers.Builder()
+                .add(VAULT_REQUEST_HEADER, Boolean.toString(true))
+                .add(VAULT_TOKEN_HEADER, config.getVaultToken())
+                .build();
+    }
+
+    private HttpUrl getSecretUrl(String key, String entryType) {
+        key = URLEncoder.encode(key, StandardCharsets.UTF_8);
+
+        // restore '/' characters to allow sub-directories
+        key = key.replace("%2F", "/");
+
+        final String vaultApiPath = config.getVaultApiSecretPath();
+
+        return Objects.requireNonNull(HttpUrl.parse(config.getVaultUrl()))
+                .newBuilder()
+                .addPathSegments(PathUtil.trimLeadingOrEndingSlash(vaultApiPath))
+                .addPathSegment(entryType)
+                .addPathSegments(key)
+                .build();
+    }
+
+    private HttpUrl getHealthUrl() {
+        final String vaultHealthPath = config.getVaultApiHealthPath();
+        final boolean isVaultHealthStandbyOk = config.isVaultApiHealthStandbyOk();
+
+        // by setting 'standbyok' and/or 'perfstandbyok' the vault will return an active
+        // status
+        // code instead of the standby status codes
+
+        return Objects.requireNonNull(HttpUrl.parse(config.getVaultUrl()))
+                .newBuilder()
+                .addPathSegments(PathUtil.trimLeadingOrEndingSlash(vaultHealthPath))
+                .addQueryParameter("standbyok", isVaultHealthStandbyOk ? "true" : "false")
+                .addQueryParameter("perfstandbyok", isVaultHealthStandbyOk ? "true" : "false")
+                .build();
+    }
+
+    private RequestBody createRequestBody(Object requestPayload) {
+        String jsonRepresentation;
+        try {
+            jsonRepresentation = objectMapper.writeValueAsString(requestPayload);
+        } catch (JsonProcessingException e) {
+            throw new HashicorpVaultException(e.getMessage(), e);
+        }
+        return RequestBody.create(jsonRepresentation, MEDIA_TYPE_APPLICATION_JSON);
+    }
 }

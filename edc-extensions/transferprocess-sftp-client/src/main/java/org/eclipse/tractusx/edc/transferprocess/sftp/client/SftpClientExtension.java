@@ -23,16 +23,17 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 @Provides(SftpClientWrapper.class)
 public class SftpClientExtension implements ServiceExtension {
 
-  @Inject PipelineService pipelineService;
+    @Inject
+    PipelineService pipelineService;
 
-  @Override
-  public void initialize(ServiceExtensionContext context) {
-    SftpDataSinkFactory sftpDataSinkFactory = new SftpDataSinkFactory();
-    SftpDataSourceFactory sftpDataSourceFactory = new SftpDataSourceFactory();
-    SftpClientWrapperFactory sftpClientWrapperFactory = new SftpClientWrapperFactoryImpl();
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        SftpDataSinkFactory sftpDataSinkFactory = new SftpDataSinkFactory();
+        SftpDataSourceFactory sftpDataSourceFactory = new SftpDataSourceFactory();
+        SftpClientWrapperFactory sftpClientWrapperFactory = new SftpClientWrapperFactoryImpl();
 
-    pipelineService.registerFactory(sftpDataSinkFactory);
-    pipelineService.registerFactory(sftpDataSourceFactory);
-    context.registerService(SftpClientWrapperFactory.class, sftpClientWrapperFactory);
-  }
+        pipelineService.registerFactory(sftpDataSinkFactory);
+        pipelineService.registerFactory(sftpDataSourceFactory);
+        context.registerService(SftpClientWrapperFactory.class, sftpClientWrapperFactory);
+    }
 }

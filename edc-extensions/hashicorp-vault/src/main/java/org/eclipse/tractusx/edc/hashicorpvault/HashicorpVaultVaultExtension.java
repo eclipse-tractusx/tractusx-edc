@@ -31,31 +31,31 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 @Provides({Vault.class, CertificateResolver.class, PrivateKeyResolver.class})
 public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtension
-    implements ServiceExtension {
+        implements ServiceExtension {
 
-  @Override
-  public String name() {
-    return "Hashicorp Vault";
-  }
+    @Override
+    public String name() {
+        return "Hashicorp Vault";
+    }
 
-  @Override
-  public void initialize(ServiceExtensionContext context) {
-    final HashicorpVaultClientConfig config = loadHashicorpVaultClientConfig(context);
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        final HashicorpVaultClientConfig config = loadHashicorpVaultClientConfig(context);
 
-    final OkHttpClient okHttpClient = createOkHttpClient(config);
+        final OkHttpClient okHttpClient = createOkHttpClient(config);
 
-    final HashicorpVaultClient client =
-        new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
+        final HashicorpVaultClient client =
+                new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
 
-    final HashicorpVault vault = new HashicorpVault(client, context.getMonitor());
-    final CertificateResolver certificateResolver =
-        new HashicorpCertificateResolver(vault, context.getMonitor());
-    final VaultPrivateKeyResolver privateKeyResolver = new VaultPrivateKeyResolver(vault);
+        final HashicorpVault vault = new HashicorpVault(client, context.getMonitor());
+        final CertificateResolver certificateResolver =
+                new HashicorpCertificateResolver(vault, context.getMonitor());
+        final VaultPrivateKeyResolver privateKeyResolver = new VaultPrivateKeyResolver(vault);
 
-    context.registerService(Vault.class, vault);
-    context.registerService(CertificateResolver.class, certificateResolver);
-    context.registerService(PrivateKeyResolver.class, privateKeyResolver);
+        context.registerService(Vault.class, vault);
+        context.registerService(CertificateResolver.class, certificateResolver);
+        context.registerService(PrivateKeyResolver.class, privateKeyResolver);
 
-    context.getMonitor().info("HashicorpVaultExtension: authentication/initialization complete.");
-  }
+        context.getMonitor().info("HashicorpVaultExtension: authentication/initialization complete.");
+    }
 }

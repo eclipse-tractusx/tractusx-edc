@@ -70,7 +70,6 @@ jobs:
       - name: Run Checkstyle
         run: |
           ./gradlew checkstyleMain checkstyleTest
-          echo "Running Checkstyle is currently a placeholder"
 
   markdown-lint:
     runs-on: ubuntu-latest

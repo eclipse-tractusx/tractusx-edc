@@ -16,7 +16,7 @@ package org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.auth;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Verifies RSA public key parsing.

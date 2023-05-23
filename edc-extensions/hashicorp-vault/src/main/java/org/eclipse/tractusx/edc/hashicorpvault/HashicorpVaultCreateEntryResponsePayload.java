@@ -34,6 +34,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 class HashicorpVaultCreateEntryResponsePayload {
 
-  @JsonProperty("data")
-  private HashicorpVaultEntryMetadata data;
+    @JsonProperty("data")
+    private HashicorpVaultEntryMetadata data;
 }

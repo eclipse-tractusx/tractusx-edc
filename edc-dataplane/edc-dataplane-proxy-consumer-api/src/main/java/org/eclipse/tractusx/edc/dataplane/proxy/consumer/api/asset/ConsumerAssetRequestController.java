@@ -137,6 +137,8 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                 case GENERAL_ERROR:
                     response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
                     break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + result.reason());
             }
         } else if (throwable != null) {
             reportError(response, throwable);

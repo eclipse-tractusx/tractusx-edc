@@ -54,8 +54,8 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokrat
 
 public abstract class AbstractNegotiateEdrTest {
 
-    protected static final Participant sokrates = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant plato = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
+    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
     MockWebServer server = new MockWebServer();
 
@@ -84,7 +84,7 @@ public abstract class AbstractNegotiateEdrTest {
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
-        plato.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
+        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
                 .add(EDC_NAMESPACE + "type", "HttpData")
                 .add(EDC_NAMESPACE + "contentType", "application/json")
                 .add(EDC_NAMESPACE + "baseUrl", url.toString())
@@ -92,20 +92,18 @@ public abstract class AbstractNegotiateEdrTest {
                 .add(EDC_NAMESPACE + "authCode", authCode)
                 .build());
 
-        plato.createPolicy(businessPartnerNumberPolicy("policy-1", sokrates.getBpn()));
-        plato.createPolicy(businessPartnerNumberPolicy("policy-2", sokrates.getBpn()));
-        plato.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
 
-        expectedEvents.forEach(_event -> {
-            server.enqueue(new MockResponse());
-        });
+        expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
 
         var callbacks = Json.createArrayBuilder()
                 .add(createCallback(url.toString(), true, Set.of("contract.negotiation", "transfer.process")))
                 .build();
 
-        sokrates.negotiateEdr(plato, assetId, callbacks);
+        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
 
         var events = expectedEvents.stream()
                 .map(this::waitForEvent)
@@ -114,13 +112,13 @@ public abstract class AbstractNegotiateEdrTest {
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 
 
-        var edrCaches = sokrates.getEdrEntries(assetId);
+        var edrCaches = SOKRATES.getEdrEntries(assetId);
 
         assertThat(edrCaches).hasSize(1);
 
         var transferProcessId = edrCaches.get(0).asJsonObject().getString("edc:transferProcessId");
 
-        var edr = sokrates.getEdr(transferProcessId);
+        var edr = SOKRATES.getEdr(transferProcessId);
 
         assertThat(edr.getJsonString("edc:type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
         assertThat(edr.getJsonString("edc:authCode").getString()).isNotNull();

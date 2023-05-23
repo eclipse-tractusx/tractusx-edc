@@ -67,7 +67,7 @@ public class ContractNegotiationCallbackTest {
     }
 
     @Test
-    void invoke_shouldStartATransferProcess() {
+    void invoke_shouldStartTransferProcess() {
 
         var captor = ArgumentCaptor.forClass(TransferRequest.class);
 
@@ -99,8 +99,8 @@ public class ContractNegotiationCallbackTest {
     }
 
     @Test
-    void invoke_shouldThrowException_whenATransferRequestFails() {
-        
+    void invoke_shouldThrowException_whenTransferRequestFails() {
+
         when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.badRequest("test"));
 
         var event = getNegotiationFinalizedEvent();

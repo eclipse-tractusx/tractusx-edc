@@ -79,7 +79,6 @@ public class SftpProvisionedContentResource extends ProvisionedContentResource {
         }
 
         public SftpProvisionedContentResource build() {
-//            super.build();
             provisionedResource.dataAddress = dataAddressBuilder.build();
             Objects.requireNonNull(provisionedResource.providerType, "providerType");
             Objects.requireNonNull(provisionedResource.scopedPolicy, "scopedPolicy");

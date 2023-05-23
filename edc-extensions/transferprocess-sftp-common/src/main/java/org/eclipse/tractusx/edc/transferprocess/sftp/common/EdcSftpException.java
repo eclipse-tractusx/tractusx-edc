@@ -17,20 +17,20 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 import org.eclipse.edc.spi.EdcException;
 
 public class EdcSftpException extends EdcException {
-  public EdcSftpException(String message) {
-    super(message);
-  }
+    public EdcSftpException(String message) {
+        super(message);
+    }
 
-  public EdcSftpException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public EdcSftpException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public EdcSftpException(Throwable cause) {
-    super(cause);
-  }
+    public EdcSftpException(Throwable cause) {
+        super(cause);
+    }
 
-  public EdcSftpException(
-      String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-    super(message, cause, enableSuppression, writableStackTrace);
-  }
+    public EdcSftpException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

@@ -21,15 +21,15 @@ package org.eclipse.tractusx.edc.data.encryption.data;
 
 public interface CryptoDataFactory {
 
-  DecryptedData decryptedFromText(String text);
+    DecryptedData decryptedFromText(String text);
 
-  DecryptedData decryptedFromBase64(String base64);
+    DecryptedData decryptedFromBase64(String base64);
 
-  DecryptedData decryptedFromBytes(byte[] bytes);
+    DecryptedData decryptedFromBytes(byte[] bytes);
 
-  EncryptedData encryptedFromText(String text);
+    EncryptedData encryptedFromText(String text);
 
-  EncryptedData encryptedFromBase64(String base64);
+    EncryptedData encryptedFromBase64(String base64);
 
-  EncryptedData encryptedFromBytes(byte[] bytes);
+    EncryptedData encryptedFromBytes(byte[] bytes);
 }

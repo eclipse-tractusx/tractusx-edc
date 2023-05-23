@@ -35,7 +35,9 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.DATA_ADDRESS_TYPE;
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 class SftpProviderResourceDefinitionGeneratorTest {
@@ -80,8 +82,7 @@ class SftpProviderResourceDefinitionGeneratorTest {
         assertEquals(path, sftpDataAddress.getSftpLocation().getPath());
         assertEquals(name, sftpDataAddress.getSftpUser().getName());
         assertEquals(password, sftpDataAddress.getSftpUser().getPassword());
-        
-//        assertEquals(keyPair, sftpDataAddress.getSftpUser().getKeyPair());
+
     }
 
     @Test

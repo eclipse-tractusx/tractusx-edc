@@ -45,7 +45,7 @@ public class AdapterTransferProcessServiceImplTest {
     EndpointDataReferenceCache endpointDataReferenceCache = mock(EndpointDataReferenceCache.class);
 
     @Test
-    void initEdrNegotiation_shouldFireAContractNegotiation_WhenUsingCallbacks() {
+    void initEdrNegotiation_shouldFireContractNegotiation_WhenUsingCallbacks() {
         var transferService = new AdapterTransferProcessServiceImpl(contractNegotiationService, endpointDataReferenceCache);
 
         var captor = ArgumentCaptor.forClass(ContractRequest.class);

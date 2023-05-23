@@ -21,8 +21,6 @@
 package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
-import java.util.UUID;
 import lombok.SneakyThrows;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -34,223 +32,223 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.Duration;
+import java.util.UUID;
+
 class HashicorpVaultClientTest {
-  private static final String key = "key";
-  private static final String customSecretPath = "v1/test/secret";
-  private static final String healthPath = "sys/health";
-  private static final Duration timeout = Duration.ofSeconds(30);
-  private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String KEY = "key";
+    private static final String CUSTOM_SECRET_PATH = "v1/test/secret";
+    private static final String HEALTH_PATH = "sys/health";
+    private static final Duration TIMEOUT = Duration.ofSeconds(30);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  @Test
-  @SneakyThrows
-  void getSecretValue() {
-    // prepare
-    String vaultUrl = "https://mock.url";
-    String vaultToken = UUID.randomUUID().toString();
-    HashicorpVaultClientConfig hashicorpVaultClientConfig =
-        HashicorpVaultClientConfig.builder()
-            .vaultUrl(vaultUrl)
-            .vaultApiSecretPath(customSecretPath)
-            .vaultApiHealthPath(healthPath)
-            .isVaultApiHealthStandbyOk(false)
-            .vaultToken(vaultToken)
-            .timeout(timeout)
-            .build();
+    @Test
+    @SneakyThrows
+    void getSecretValue() {
+        // prepare
+        String vaultUrl = "https://mock.url";
+        String vaultToken = UUID.randomUUID().toString();
+        HashicorpVaultClientConfig hashicorpVaultClientConfig =
+                HashicorpVaultClientConfig.builder()
+                        .vaultUrl(vaultUrl)
+                        .vaultApiSecretPath(CUSTOM_SECRET_PATH)
+                        .vaultApiHealthPath(HEALTH_PATH)
+                        .isVaultApiHealthStandbyOk(false)
+                        .vaultToken(vaultToken)
+                        .timeout(TIMEOUT)
+                        .build();
 
-    OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
-    HashicorpVaultClient vaultClient =
-        new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, objectMapper);
-    Call call = Mockito.mock(Call.class);
-    Response response = Mockito.mock(Response.class);
-    ResponseBody body = Mockito.mock(ResponseBody.class);
-    HashicorpVaultGetEntryResponsePayload payload = new HashicorpVaultGetEntryResponsePayload();
+        OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
+        HashicorpVaultClient vaultClient =
+                new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, OBJECT_MAPPER);
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody body = Mockito.mock(ResponseBody.class);
+        HashicorpVaultGetEntryResponsePayload payload = new HashicorpVaultGetEntryResponsePayload();
 
-    Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
-    Mockito.when(call.execute()).thenReturn(response);
-    Mockito.when(response.code()).thenReturn(200);
-    Mockito.when(response.body()).thenReturn(body);
-    Mockito.when(body.string()).thenReturn(payload.toString());
+        Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(response.code()).thenReturn(200);
+        Mockito.when(response.body()).thenReturn(body);
+        Mockito.when(body.string()).thenReturn(payload.toString());
 
-    // invoke
-    Result<String> result = vaultClient.getSecretValue(key);
+        // invoke
+        Result<String> result = vaultClient.getSecretValue(KEY);
 
-    // verify
-    Assertions.assertNotNull(result);
-    Mockito.verify(okHttpClient, Mockito.times(1))
-        .newCall(
-            Mockito.argThat(
-                request ->
-                    request.method().equalsIgnoreCase("GET")
-                        && request.url().encodedPath().contains(customSecretPath + "/data")
-                        && request.url().encodedPathSegments().contains(key)));
-  }
+        // verify
+        Assertions.assertNotNull(result);
+        Mockito.verify(okHttpClient, Mockito.times(1))
+                .newCall(Mockito.argThat(request -> request.method().equalsIgnoreCase("GET") &&
+                        request.url().encodedPath().contains(CUSTOM_SECRET_PATH + "/data") &&
+                        request.url().encodedPathSegments().contains(KEY)));
+    }
 
-  @Test
-  @SneakyThrows
-  void setSecretValue() {
-    // prepare
-    String vaultUrl = "https://mock.url";
-    String vaultToken = UUID.randomUUID().toString();
-    String secretValue = UUID.randomUUID().toString();
-    HashicorpVaultClientConfig hashicorpVaultClientConfig =
-        HashicorpVaultClientConfig.builder()
-            .vaultUrl(vaultUrl)
-            .vaultApiSecretPath(customSecretPath)
-            .vaultApiHealthPath(healthPath)
-            .isVaultApiHealthStandbyOk(false)
-            .vaultToken(vaultToken)
-            .timeout(timeout)
-            .build();
+    @Test
+    @SneakyThrows
+    void setSecretValue() {
+        // prepare
+        String vaultUrl = "https://mock.url";
+        String vaultToken = UUID.randomUUID().toString();
+        String secretValue = UUID.randomUUID().toString();
+        HashicorpVaultClientConfig hashicorpVaultClientConfig =
+                HashicorpVaultClientConfig.builder()
+                        .vaultUrl(vaultUrl)
+                        .vaultApiSecretPath(CUSTOM_SECRET_PATH)
+                        .vaultApiHealthPath(HEALTH_PATH)
+                        .isVaultApiHealthStandbyOk(false)
+                        .vaultToken(vaultToken)
+                        .timeout(TIMEOUT)
+                        .build();
 
-    OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
-    HashicorpVaultClient vaultClient =
-        new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, objectMapper);
-    HashicorpVaultCreateEntryResponsePayload payload =
-        new HashicorpVaultCreateEntryResponsePayload();
+        OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
+        HashicorpVaultClient vaultClient =
+                new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, OBJECT_MAPPER);
+        HashicorpVaultCreateEntryResponsePayload payload =
+                new HashicorpVaultCreateEntryResponsePayload();
 
-    Call call = Mockito.mock(Call.class);
-    Response response = Mockito.mock(Response.class);
-    ResponseBody body = Mockito.mock(ResponseBody.class);
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody body = Mockito.mock(ResponseBody.class);
 
-    Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
-    Mockito.when(call.execute()).thenReturn(response);
-    Mockito.when(response.code()).thenReturn(200);
-    Mockito.when(response.body()).thenReturn(body);
-    Mockito.when(body.string()).thenReturn(payload.toString());
+        Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(response.code()).thenReturn(200);
+        Mockito.when(response.body()).thenReturn(body);
+        Mockito.when(body.string()).thenReturn(payload.toString());
 
-    // invoke
-    Result<HashicorpVaultCreateEntryResponsePayload> result =
-        vaultClient.setSecret(key, secretValue);
+        // invoke
+        Result<HashicorpVaultCreateEntryResponsePayload> result =
+                vaultClient.setSecret(KEY, secretValue);
 
-    // verify
-    Assertions.assertNotNull(result);
-    Mockito.verify(okHttpClient, Mockito.times(1))
-        .newCall(
-            Mockito.argThat(
-                request ->
-                    request.method().equalsIgnoreCase("POST")
-                        && request.url().encodedPath().contains(customSecretPath + "/data")
-                        && request.url().encodedPathSegments().contains(key)));
-  }
+        // verify
+        Assertions.assertNotNull(result);
+        Mockito.verify(okHttpClient, Mockito.times(1))
+                .newCall(
+                        Mockito.argThat(
+                                request ->
+                                        request.method().equalsIgnoreCase("POST") &&
+                                                request.url().encodedPath().contains(CUSTOM_SECRET_PATH + "/data") &&
+                                                request.url().encodedPathSegments().contains(KEY)));
+    }
 
-  @Test
-  @SneakyThrows
-  void getHealth() {
-    // prepare
-    String vaultUrl = "https://mock.url";
-    String vaultToken = UUID.randomUUID().toString();
-    String secretValue = UUID.randomUUID().toString();
-    HashicorpVaultClientConfig hashicorpVaultClientConfig =
-        HashicorpVaultClientConfig.builder()
-            .vaultUrl(vaultUrl)
-            .vaultApiSecretPath(customSecretPath)
-            .vaultApiHealthPath(healthPath)
-            .isVaultApiHealthStandbyOk(false)
-            .vaultToken(vaultToken)
-            .timeout(timeout)
-            .build();
+    @Test
+    @SneakyThrows
+    void getHealth() {
+        // prepare
+        String vaultUrl = "https://mock.url";
+        String vaultToken = UUID.randomUUID().toString();
+        String secretValue = UUID.randomUUID().toString();
+        HashicorpVaultClientConfig hashicorpVaultClientConfig =
+                HashicorpVaultClientConfig.builder()
+                        .vaultUrl(vaultUrl)
+                        .vaultApiSecretPath(CUSTOM_SECRET_PATH)
+                        .vaultApiHealthPath(HEALTH_PATH)
+                        .isVaultApiHealthStandbyOk(false)
+                        .vaultToken(vaultToken)
+                        .timeout(TIMEOUT)
+                        .build();
 
-    OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
-    HashicorpVaultClient vaultClient =
-        new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, objectMapper);
-    HashicorpVaultHealthResponsePayload payload = new HashicorpVaultHealthResponsePayload();
+        OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
+        HashicorpVaultClient vaultClient =
+                new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, OBJECT_MAPPER);
+        HashicorpVaultHealthResponsePayload payload = new HashicorpVaultHealthResponsePayload();
 
-    Call call = Mockito.mock(Call.class);
-    Response response = Mockito.mock(Response.class);
-    ResponseBody body = Mockito.mock(ResponseBody.class);
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody body = Mockito.mock(ResponseBody.class);
 
-    Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
-    Mockito.when(call.execute()).thenReturn(response);
-    Mockito.when(response.code()).thenReturn(200);
-    Mockito.when(response.body()).thenReturn(body);
-    Mockito.when(body.string())
-        .thenReturn(
-            "{ "
-                + "\"initialized\": true, "
-                + "\"sealed\": false,"
-                + "\"standby\": false,"
-                + "\"performance_standby\": false,"
-                + "\"replication_performance_mode\": \"mode\","
-                + "\"replication_dr_mode\": \"mode\","
-                + "\"server_time_utc\": 100,"
-                + "\"version\": \"1.0.0\","
-                + "\"cluster_name\": \"name\","
-                + "\"cluster_id\": \"id\" "
-                + " }");
+        Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(response.code()).thenReturn(200);
+        Mockito.when(response.body()).thenReturn(body);
+        Mockito.when(body.string())
+                .thenReturn(
+                        "{ " +
+                                "\"initialized\": true, " +
+                                "\"sealed\": false," +
+                                "\"standby\": false," +
+                                "\"performance_standby\": false," +
+                                "\"replication_performance_mode\": \"mode\"," +
+                                "\"replication_dr_mode\": \"mode\"," +
+                                "\"server_time_utc\": 100," +
+                                "\"version\": \"1.0.0\"," +
+                                "\"cluster_name\": \"name\"," +
+                                "\"cluster_id\": \"id\" " +
+                                " }");
 
-    // invoke
-    HashicorpVaultHealthResponse result = vaultClient.getHealth();
+        // invoke
+        HashicorpVaultHealthResponse result = vaultClient.getHealth();
 
-    // verify
-    Assertions.assertNotNull(result);
-    Mockito.verify(okHttpClient, Mockito.times(1))
-        .newCall(
-            Mockito.argThat(
-                request ->
-                    request.method().equalsIgnoreCase("GET")
-                        && request.url().encodedPath().contains(healthPath)
-                        && request.url().queryParameter("standbyok").equals("false")
-                        && request.url().queryParameter("perfstandbyok").equals("false")));
-    Assertions.assertEquals(200, result.getCode());
-    Assertions.assertEquals(
-        HashicorpVaultHealthResponse.HashiCorpVaultHealthResponseCode
-            .INITIALIZED_UNSEALED_AND_ACTIVE,
-        result.getCodeAsEnum());
+        // verify
+        Assertions.assertNotNull(result);
+        Mockito.verify(okHttpClient, Mockito.times(1))
+                .newCall(
+                        Mockito.argThat(
+                                request ->
+                                        request.method().equalsIgnoreCase("GET") &&
+                                                request.url().encodedPath().contains(HEALTH_PATH) &&
+                                                request.url().queryParameter("standbyok").equals("false") &&
+                                                request.url().queryParameter("perfstandbyok").equals("false")));
+        Assertions.assertEquals(200, result.getCode());
+        Assertions.assertEquals(
+                HashicorpVaultHealthResponse.HashiCorpVaultHealthResponseCode
+                        .INITIALIZED_UNSEALED_AND_ACTIVE,
+                result.getCodeAsEnum());
 
-    HashicorpVaultHealthResponsePayload resultPayload = result.getPayload();
+        HashicorpVaultHealthResponsePayload resultPayload = result.getPayload();
 
-    Assertions.assertNotNull(resultPayload);
-    Assertions.assertTrue(resultPayload.isInitialized());
-    Assertions.assertFalse(resultPayload.isSealed());
-    Assertions.assertFalse(resultPayload.isStandby());
-    Assertions.assertFalse(resultPayload.isPerformanceStandby());
-    Assertions.assertEquals("mode", resultPayload.getReplicationPerformanceMode());
-    Assertions.assertEquals("mode", resultPayload.getReplicationDrMode());
-    Assertions.assertEquals(100, resultPayload.getServerTimeUtc());
-    Assertions.assertEquals("1.0.0", resultPayload.getVersion());
-    Assertions.assertEquals("id", resultPayload.getClusterId());
-    Assertions.assertEquals("name", resultPayload.getClusterName());
-  }
+        Assertions.assertNotNull(resultPayload);
+        Assertions.assertTrue(resultPayload.isInitialized());
+        Assertions.assertFalse(resultPayload.isSealed());
+        Assertions.assertFalse(resultPayload.isStandby());
+        Assertions.assertFalse(resultPayload.isPerformanceStandby());
+        Assertions.assertEquals("mode", resultPayload.getReplicationPerformanceMode());
+        Assertions.assertEquals("mode", resultPayload.getReplicationDrMode());
+        Assertions.assertEquals(100, resultPayload.getServerTimeUtc());
+        Assertions.assertEquals("1.0.0", resultPayload.getVersion());
+        Assertions.assertEquals("id", resultPayload.getClusterId());
+        Assertions.assertEquals("name", resultPayload.getClusterName());
+    }
 
-  @Test
-  @SneakyThrows
-  void destroySecretValue() {
-    // prepare
-    String vaultUrl = "https://mock.url";
-    String vaultToken = UUID.randomUUID().toString();
-    HashicorpVaultClientConfig hashicorpVaultClientConfig =
-        HashicorpVaultClientConfig.builder()
-            .vaultUrl(vaultUrl)
-            .vaultApiSecretPath(customSecretPath)
-            .vaultApiHealthPath(healthPath)
-            .isVaultApiHealthStandbyOk(false)
-            .vaultToken(vaultToken)
-            .timeout(timeout)
-            .build();
+    @Test
+    @SneakyThrows
+    void destroySecretValue() {
+        // prepare
+        String vaultUrl = "https://mock.url";
+        String vaultToken = UUID.randomUUID().toString();
+        HashicorpVaultClientConfig hashicorpVaultClientConfig =
+                HashicorpVaultClientConfig.builder()
+                        .vaultUrl(vaultUrl)
+                        .vaultApiSecretPath(CUSTOM_SECRET_PATH)
+                        .vaultApiHealthPath(HEALTH_PATH)
+                        .isVaultApiHealthStandbyOk(false)
+                        .vaultToken(vaultToken)
+                        .timeout(TIMEOUT)
+                        .build();
 
-    OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
-    HashicorpVaultClient vaultClient =
-        new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, objectMapper);
+        OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
+        HashicorpVaultClient vaultClient =
+                new HashicorpVaultClient(hashicorpVaultClientConfig, okHttpClient, OBJECT_MAPPER);
 
-    Call call = Mockito.mock(Call.class);
-    Response response = Mockito.mock(Response.class);
-    ResponseBody body = Mockito.mock(ResponseBody.class);
-    Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
-    Mockito.when(call.execute()).thenReturn(response);
-    Mockito.when(response.code()).thenReturn(200);
-    Mockito.when(response.body()).thenReturn(body);
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody body = Mockito.mock(ResponseBody.class);
+        Mockito.when(okHttpClient.newCall(Mockito.any(Request.class))).thenReturn(call);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(response.code()).thenReturn(200);
+        Mockito.when(response.body()).thenReturn(body);
 
-    // invoke
-    Result<Void> result = vaultClient.destroySecret(key);
+        // invoke
+        Result<Void> result = vaultClient.destroySecret(KEY);
 
-    // verify
-    Assertions.assertNotNull(result);
-    Mockito.verify(okHttpClient, Mockito.times(1))
-        .newCall(
-            Mockito.argThat(
-                request ->
-                    request.method().equalsIgnoreCase("DELETE")
-                        && request.url().encodedPath().contains(customSecretPath + "/metadata")
-                        && request.url().encodedPathSegments().contains(key)));
-  }
+        // verify
+        Assertions.assertNotNull(result);
+        Mockito.verify(okHttpClient, Mockito.times(1))
+                .newCall(
+                        Mockito.argThat(
+                                request ->
+                                        request.method().equalsIgnoreCase("DELETE") &&
+                                                request.url().encodedPath().contains(CUSTOM_SECRET_PATH + "/metadata") &&
+                                                request.url().encodedPathSegments().contains(KEY)));
+    }
 }

@@ -20,11 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.cert.X509Certificate;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.edc.spi.EdcException;
@@ -32,28 +27,38 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.CertificateResolver;
 import org.eclipse.edc.spi.security.Vault;
 
-/** Resolves an X.509 certificate in Hashicorp vault. */
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
+
+/**
+ * Resolves an X.509 certificate in Hashicorp vault.
+ */
 @RequiredArgsConstructor
 public class HashicorpCertificateResolver implements CertificateResolver {
-  @NonNull private final Vault vault;
-  @NonNull private final Monitor monitor;
+    @NonNull
+    private final Vault vault;
+    @NonNull
+    private final Monitor monitor;
 
-  @Override
-  public X509Certificate resolveCertificate(@NonNull String id) {
-    String certificateRepresentation = vault.resolveSecret(id);
-    if (certificateRepresentation == null) {
-      return null;
+    @Override
+    public X509Certificate resolveCertificate(@NonNull String id) {
+        String certificateRepresentation = vault.resolveSecret(id);
+        if (certificateRepresentation == null) {
+            return null;
+        }
+        try (InputStream inputStream =
+                     new ByteArrayInputStream(certificateRepresentation.getBytes(StandardCharsets.UTF_8))) {
+            X509Certificate x509Certificate = PemUtil.readX509Certificate(inputStream);
+            if (x509Certificate == null) {
+                monitor.warning(
+                        String.format("Expected PEM certificate on key %s, but value not PEM.", id));
+            }
+            return x509Certificate;
+        } catch (IOException e) {
+            throw new EdcException(e.getMessage(), e);
+        }
     }
-    try (InputStream inputStream =
-        new ByteArrayInputStream(certificateRepresentation.getBytes(StandardCharsets.UTF_8))) {
-      X509Certificate x509Certificate = PemUtil.readX509Certificate(inputStream);
-      if (x509Certificate == null) {
-        monitor.warning(
-            String.format("Expected PEM certificate on key %s, but value not PEM.", id));
-      }
-      return x509Certificate;
-    } catch (IOException e) {
-      throw new EdcException(e.getMessage(), e);
-    }
-  }
 }

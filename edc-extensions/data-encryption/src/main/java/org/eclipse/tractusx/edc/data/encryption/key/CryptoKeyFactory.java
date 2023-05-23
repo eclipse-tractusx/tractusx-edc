@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.data.encryption.key;
 
 public interface CryptoKeyFactory {
-  AesKey fromBase64(String base64);
+    AesKey fromBase64(String base64);
 
-  AesKey fromBytes(byte[] key);
+    AesKey fromBytes(byte[] key);
 }

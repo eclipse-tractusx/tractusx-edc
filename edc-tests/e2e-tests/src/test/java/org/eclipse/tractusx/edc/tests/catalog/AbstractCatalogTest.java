@@ -35,21 +35,21 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokrat
 
 public abstract class AbstractCatalogTest {
 
-    protected static final Participant sokrates = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant plato = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
+    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
     @Test
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
         // arrange
-        sokrates.createAsset("test-asset");
+        SOKRATES.createAsset("test-asset");
         var accessPolicy = noConstraintPolicyDefinition("test-ap1");
         var contractPolicy = noConstraintPolicyDefinition("test-cp1");
-        sokrates.createPolicy(accessPolicy);
-        sokrates.createPolicy(contractPolicy);
-        sokrates.createContractDefinition("test-asset", "test-def", "test-ap1", "test-cp1");
+        SOKRATES.createPolicy(accessPolicy);
+        SOKRATES.createPolicy(contractPolicy);
+        SOKRATES.createContractDefinition("test-asset", "test-def", "test-ap1", "test-cp1");
 
         // act
-        var catalog = plato.getCatalogDatasets(sokrates);
+        var catalog = PLATO.getCatalogDatasets(SOKRATES);
 
         // assert
         assertThat(catalog).isNotEmpty()
@@ -66,39 +66,39 @@ public abstract class AbstractCatalogTest {
         var onlyPlatoId = "ap";
         var onlyDiogenesId = "db";
 
-        var onlyPlatoPolicy = businessPartnerNumberPolicy(onlyPlatoId, "BPN1", "BPN2", plato.getBpn());
+        var onlyPlatoPolicy = businessPartnerNumberPolicy(onlyPlatoId, "BPN1", "BPN2", PLATO.getBpn());
         var onlyDiogenesPolicy = businessPartnerNumberPolicy(onlyDiogenesId, "ARISTOTELES-BPN");
         var noConstraintPolicyId = "no-constraint";
 
-        sokrates.createPolicy(onlyPlatoPolicy);
-        sokrates.createPolicy(onlyDiogenesPolicy);
-        sokrates.createPolicy(noConstraintPolicyDefinition(noConstraintPolicyId));
+        SOKRATES.createPolicy(onlyPlatoPolicy);
+        SOKRATES.createPolicy(onlyDiogenesPolicy);
+        SOKRATES.createPolicy(noConstraintPolicyDefinition(noConstraintPolicyId));
 
-        sokrates.createAsset("test-asset1");
-        sokrates.createAsset("test-asset2");
-        sokrates.createAsset("test-asset3");
+        SOKRATES.createAsset("test-asset1");
+        SOKRATES.createAsset("test-asset2");
+        SOKRATES.createAsset("test-asset3");
 
-        sokrates.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
-        sokrates.createContractDefinition("test-asset2", "def2", onlyPlatoId, noConstraintPolicyId);
-        sokrates.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset2", "def2", onlyPlatoId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
 
         // act
-        var catalog = plato.getCatalogDatasets(sokrates);
+        var catalog = PLATO.getCatalogDatasets(SOKRATES);
         assertThat(catalog).hasSize(2);
     }
 
     @Test
     @DisplayName("Multiple ContractDefinitions exist for one Asset")
     void requestCatalog_multipleOffersForAsset() {
-        sokrates.createAsset("asset-1");
-        sokrates.createPolicy(noConstraintPolicyDefinition("policy-1"));
-        sokrates.createPolicy(businessPartnerNumberPolicy("policy-2", plato.getBpn()));
+        SOKRATES.createAsset("asset-1");
+        SOKRATES.createPolicy(noConstraintPolicyDefinition("policy-1"));
+        SOKRATES.createPolicy(businessPartnerNumberPolicy("policy-2", PLATO.getBpn()));
 
-        sokrates.createContractDefinition("asset-1", "def1", "policy-1", "policy-1");
-        sokrates.createContractDefinition("asset-1", "def2", "policy-2", "policy-1");
+        SOKRATES.createContractDefinition("asset-1", "def1", "policy-1", "policy-1");
+        SOKRATES.createContractDefinition("asset-1", "def2", "policy-2", "policy-1");
 
-        var catalog = plato.getCatalogDatasets(sokrates);
+        var catalog = PLATO.getCatalogDatasets(SOKRATES);
         assertThat(catalog).hasSize(1)
                 .allSatisfy(cd -> {
                     assertThat(getDatasetAssetId(cd)).isEqualTo("asset-1");
@@ -110,24 +110,24 @@ public abstract class AbstractCatalogTest {
     @DisplayName("Catalog with 1000 offers")
     void requestCatalog_of1000Assets_shouldContainAll() {
         var policyId = "policy-1";
-        var policy = businessPartnerNumberPolicy(policyId, plato.getBpn());
-        sokrates.createPolicy(policy);
-        sokrates.createPolicy(noConstraintPolicyDefinition("noconstraint"));
+        var policy = businessPartnerNumberPolicy(policyId, PLATO.getBpn());
+        SOKRATES.createPolicy(policy);
+        SOKRATES.createPolicy(noConstraintPolicyDefinition("noconstraint"));
 
         range(0, 1000)
                 .forEach(i -> {
                     var assetId = "asset-" + i;
-                    sokrates.createAsset(assetId);
-                    sokrates.createContractDefinition(assetId, "def-" + i, policyId, "noconstraint");
+                    SOKRATES.createAsset(assetId);
+                    SOKRATES.createContractDefinition(assetId, "def-" + i, policyId, "noconstraint");
                 });
 
         // request all at once
-        var dataset = plato.getCatalogDatasets(sokrates, createQuery(1000, 0));
+        var dataset = PLATO.getCatalogDatasets(SOKRATES, createQuery(1000, 0));
         assertThat(dataset).hasSize(1000);
 
         // request in chunks
-        var o2 = plato.getCatalogDatasets(sokrates, createQuery(500, 0));
-        var o3 = plato.getCatalogDatasets(sokrates, createQuery(500, 500));
+        var o2 = PLATO.getCatalogDatasets(SOKRATES, createQuery(500, 0));
+        var o3 = PLATO.getCatalogDatasets(SOKRATES, createQuery(500, 500));
         assertThat(o2).doesNotContainAnyElementsOf(o3);
 
     }

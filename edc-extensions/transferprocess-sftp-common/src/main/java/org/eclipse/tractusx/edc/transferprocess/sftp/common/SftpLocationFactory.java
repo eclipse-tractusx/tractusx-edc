@@ -15,5 +15,5 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 
 public interface SftpLocationFactory {
-  SftpLocation createSftpLocation(String sftpHost, Integer sftpPort, String sftpPath);
+    SftpLocation createSftpLocation(String sftpHost, Integer sftpPort, String sftpPath);
 }

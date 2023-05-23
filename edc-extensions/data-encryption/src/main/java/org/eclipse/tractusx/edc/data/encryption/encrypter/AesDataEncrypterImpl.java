@@ -64,12 +64,8 @@ public class AesDataEncrypterImpl implements DataEncrypter {
         try {
             EncryptedData encryptedData = algorithm.encrypt(decryptedData, key);
             return encryptedData.getBase64();
-        } catch (IllegalBlockSizeException
-                 | BadPaddingException
-                 | InvalidKeyException
-                 | InvalidAlgorithmParameterException
-                 | NoSuchPaddingException
-                 | NoSuchAlgorithmException e) {
+        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException |
+                 InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException e) {
             throw new EdcException(e);
         }
     }
@@ -86,11 +82,9 @@ public class AesDataEncrypterImpl implements DataEncrypter {
                 .map(DecryptedData::getBytes)
                 .map(String::new)
                 .findFirst()
-                .orElseThrow(
-                        () ->
-                                new EdcException(
-                                        DataEncryptionExtension.EXTENSION_NAME
-                                                + ": Failed to decrypt data. This can happen if the key set is empty, contains invalid keys, the decryption key rotated out of the key set or because the data was encrypted by a different algorithm."));
+                .orElseThrow(() ->
+                        new EdcException(DataEncryptionExtension.EXTENSION_NAME + ": Failed to decrypt data. This can happen if the key set is empty, contains invalid keys, " +
+                                "the decryption key rotated out of the key set or because the data was encrypted by a different algorithm."));
     }
 
     private Optional<DecryptedData> decrypt(EncryptedData data, AesKey key) {
@@ -98,17 +92,9 @@ public class AesDataEncrypterImpl implements DataEncrypter {
             return Optional.of(encryptionStrategy.decrypt(data, key));
         } catch (AEADBadTagException e) { // thrown when wrong key is used for decryption
             return Optional.empty();
-        } catch (IllegalBlockSizeException
-                 | BadPaddingException
-                 | InvalidKeyException
-                 | NoSuchPaddingException
-                 | NoSuchAlgorithmException
-                 | InvalidAlgorithmParameterException e) {
-            monitor.warning(
-                    String.format(
-                            DataEncryptionExtension.EXTENSION_NAME
-                                    + ": Exception decrypting data using key from rotating key set. %s",
-                            e.getMessage()));
+        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchPaddingException |
+                 NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            monitor.warning(String.format(DataEncryptionExtension.EXTENSION_NAME + ": Exception decrypting data using key from rotating key set. %s", e.getMessage()));
             throw new EdcException(e);
         }
     }

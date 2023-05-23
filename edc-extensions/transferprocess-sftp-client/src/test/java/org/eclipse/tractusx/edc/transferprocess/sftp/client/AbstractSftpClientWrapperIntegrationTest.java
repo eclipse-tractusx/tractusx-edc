@@ -47,32 +47,36 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
-import java.util.*;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
-abstract class AbstractSftpClientWrapperIT {
+abstract class AbstractSftpClientWrapperIntegrationTest {
     static final String DOCKER_IMAGE_NAME = "atmoz/sftp:alpine-3.6";
-    static final String sftpPathPrefix = "transfer";
+    static final String SFTP_PATH_PREFIX = "transfer";
     static final Map<String, String> DOCKER_ENV =
-            Map.of("SFTP_USERS", String.format("user:password:::%s", sftpPathPrefix));
-    static final Path dockerVolumeDirectory;
-    static final Path remotePasswordUploadDirectory;
-    static final Path remotePasswordDownloadDirectory;
-    static final Path remoteKeypairUploadDirectory;
-    static final Path remoteKeypairDownloadDirectory;
-    static final Path localUploadAndGeneratorDirectory;
-    static final Path keyDirectory;
-    static final Path publicKeyPath;
-    static final KeyPair keyPair;
+            Map.of("SFTP_USERS", String.format("user:password:::%s", SFTP_PATH_PREFIX));
+    static final Path DOCKER_VOLUME_DIRECTORY;
+    static final Path REMOTE_PASSWORD_UPLOAD_DIRECTORY;
+    static final Path REMOTE_PASSWORD_DOWNLOAD_DIRECTORY;
+    static final Path REMOTE_KEYPAIR_UPLOAD_DIRECTORY;
+    static final Path REMOTE_KEYPAIR_DOWNLOAD_DIRECTORY;
+    static final Path LOCAL_UPLOAD_AND_GENERATOR_DIRECTORY;
+    static final Path KEY_DIRECTORY;
+    static final Path PUBLIC_KEY_PATH;
+    static final KeyPair KEY_PAIR;
     @Container
     @ClassRule
-    private static final GenericContainer<?> sftpContainer;
+    private static final GenericContainer<?> SFTP_CONTAINER;
 
     static {
-        keyPair = generateKeyPair();
+        KEY_PAIR = generateKeyPair();
 
         try {
             Set<PosixFilePermission> fullPermission = new HashSet<PosixFilePermission>();
@@ -86,23 +90,23 @@ abstract class AbstractSftpClientWrapperIT {
             fullPermission.add(PosixFilePermission.OTHERS_READ);
             fullPermission.add(PosixFilePermission.OTHERS_WRITE);
 
-            dockerVolumeDirectory = Files.createTempDirectory(SftpClientWrapperIT.class.getName());
-            localUploadAndGeneratorDirectory =
-                    Files.createTempDirectory(SftpClientWrapperIT.class.getName());
-            remotePasswordUploadDirectory =
-                    Files.createDirectory(dockerVolumeDirectory.resolve("passwordUpload"));
-            remotePasswordDownloadDirectory =
-                    Files.createDirectory(dockerVolumeDirectory.resolve("passwordDownload"));
-            remoteKeypairUploadDirectory =
-                    Files.createDirectory(dockerVolumeDirectory.resolve("keypairUpload"));
-            remoteKeypairDownloadDirectory =
-                    Files.createDirectory(dockerVolumeDirectory.resolve("keypairDownload"));
-            keyDirectory = Files.createTempDirectory(SftpClientWrapperIT.class.getName());
-            publicKeyPath = keyDirectory.resolve("public");
+            DOCKER_VOLUME_DIRECTORY = Files.createTempDirectory(SftpClientWrapperIntegrationTest.class.getName());
+            LOCAL_UPLOAD_AND_GENERATOR_DIRECTORY =
+                    Files.createTempDirectory(SftpClientWrapperIntegrationTest.class.getName());
+            REMOTE_PASSWORD_UPLOAD_DIRECTORY =
+                    Files.createDirectory(DOCKER_VOLUME_DIRECTORY.resolve("passwordUpload"));
+            REMOTE_PASSWORD_DOWNLOAD_DIRECTORY =
+                    Files.createDirectory(DOCKER_VOLUME_DIRECTORY.resolve("passwordDownload"));
+            REMOTE_KEYPAIR_UPLOAD_DIRECTORY =
+                    Files.createDirectory(DOCKER_VOLUME_DIRECTORY.resolve("keypairUpload"));
+            REMOTE_KEYPAIR_DOWNLOAD_DIRECTORY =
+                    Files.createDirectory(DOCKER_VOLUME_DIRECTORY.resolve("keypairDownload"));
+            KEY_DIRECTORY = Files.createTempDirectory(SftpClientWrapperIntegrationTest.class.getName());
+            PUBLIC_KEY_PATH = KEY_DIRECTORY.resolve("public");
 
-            try (final OutputStreamWriter fileWriter =
-                         new OutputStreamWriter(new FileOutputStream(publicKeyPath.toString()))) {
-                final RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+            try (var fileWriter =
+                         new OutputStreamWriter(new FileOutputStream(PUBLIC_KEY_PATH.toString()))) {
+                final RSAPublicKey publicKey = (RSAPublicKey) KEY_PAIR.getPublic();
                 final RSAKeyParameters publicKeyParameters =
                         new RSAKeyParameters(false, publicKey.getModulus(), publicKey.getPublicExponent());
                 byte[] encodedKey = OpenSSHPublicKeyUtil.encodePublicKey(publicKeyParameters);
@@ -111,36 +115,37 @@ abstract class AbstractSftpClientWrapperIT {
                 fileWriter.write(authKeysEntry);
             }
 
-            Files.setPosixFilePermissions(dockerVolumeDirectory, fullPermission);
-            Files.setPosixFilePermissions(remotePasswordUploadDirectory, fullPermission);
-            Files.setPosixFilePermissions(remotePasswordDownloadDirectory, fullPermission);
-            Files.setPosixFilePermissions(remoteKeypairUploadDirectory, fullPermission);
-            Files.setPosixFilePermissions(remoteKeypairDownloadDirectory, fullPermission);
-            Files.setPosixFilePermissions(keyDirectory, fullPermission);
+            Files.setPosixFilePermissions(DOCKER_VOLUME_DIRECTORY, fullPermission);
+            Files.setPosixFilePermissions(REMOTE_PASSWORD_UPLOAD_DIRECTORY, fullPermission);
+            Files.setPosixFilePermissions(REMOTE_PASSWORD_DOWNLOAD_DIRECTORY, fullPermission);
+            Files.setPosixFilePermissions(REMOTE_KEYPAIR_UPLOAD_DIRECTORY, fullPermission);
+            Files.setPosixFilePermissions(REMOTE_KEYPAIR_DOWNLOAD_DIRECTORY, fullPermission);
+            Files.setPosixFilePermissions(KEY_DIRECTORY, fullPermission);
         } catch (IOException e) {
             throw new RuntimeException();
         }
 
-        sftpContainer = new GenericContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
-                .withEnv(DOCKER_ENV)
-                .withExposedPorts(22)
-                .waitingFor(Wait.forListeningPort())
-                .withFileSystemBind(
-                        dockerVolumeDirectory.toAbsolutePath().toString(),
-                        String.format("/home/user/%s", sftpPathPrefix))
-                .withFileSystemBind(keyDirectory.toAbsolutePath().toString(), "/home/user/keys");
-        sftpContainer.start();
+        SFTP_CONTAINER =
+                new GenericContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
+                        .withEnv(DOCKER_ENV)
+                        .withExposedPorts(22)
+                        .waitingFor(Wait.forListeningPort())
+                        .withFileSystemBind(
+                                DOCKER_VOLUME_DIRECTORY.toAbsolutePath().toString(),
+                                String.format("/home/user/%s", SFTP_PATH_PREFIX))
+                        .withFileSystemBind(KEY_DIRECTORY.toAbsolutePath().toString(), "/home/user/keys");
+        SFTP_CONTAINER.start();
 
-        await().atMost(10, SECONDS).until(sftpContainer::isRunning);
+        await().atMost(10, SECONDS).until(SFTP_CONTAINER::isRunning);
 
         try {
-            sftpContainer.execInContainer("mkdir", "-p", "/home/user/.ssh");
-            sftpContainer.execInContainer("chmod", "700", "/home/user/.ssh");
-            sftpContainer.execInContainer("chown", "user", "/home/user/.ssh/");
-            sftpContainer.execInContainer(
+            SFTP_CONTAINER.execInContainer("mkdir", "-p", "/home/user/.ssh");
+            SFTP_CONTAINER.execInContainer("chmod", "700", "/home/user/.ssh");
+            SFTP_CONTAINER.execInContainer("chown", "user", "/home/user/.ssh/");
+            SFTP_CONTAINER.execInContainer(
                     "cp", "-f", "/home/user/keys/public", "/home/user/.ssh/authorized_keys");
-            sftpContainer.execInContainer("chown", "user", "/home/user/.ssh/authorized_keys");
-            sftpContainer.execInContainer("chmod", "600", "/home/user/.ssh/authorized_keys");
+            SFTP_CONTAINER.execInContainer("chown", "user", "/home/user/.ssh/authorized_keys");
+            SFTP_CONTAINER.execInContainer("chmod", "600", "/home/user/.ssh/authorized_keys");
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException();
         }
@@ -148,20 +153,20 @@ abstract class AbstractSftpClientWrapperIT {
 
     @AfterAll
     static void tearDown() throws IOException {
-        if (Files.exists(dockerVolumeDirectory)) {
-            Files.walk(dockerVolumeDirectory)
+        if (Files.exists(DOCKER_VOLUME_DIRECTORY)) {
+            Files.walk(DOCKER_VOLUME_DIRECTORY)
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
         }
-        if (Files.exists(localUploadAndGeneratorDirectory)) {
-            Files.walk(localUploadAndGeneratorDirectory)
+        if (Files.exists(LOCAL_UPLOAD_AND_GENERATOR_DIRECTORY)) {
+            Files.walk(LOCAL_UPLOAD_AND_GENERATOR_DIRECTORY)
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
         }
-        if (Files.exists(keyDirectory)) {
-            Files.walk(keyDirectory)
+        if (Files.exists(KEY_DIRECTORY)) {
+            Files.walk(KEY_DIRECTORY)
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
@@ -183,13 +188,13 @@ abstract class AbstractSftpClientWrapperIT {
     }
 
     protected SftpUser getKeyPairUser() {
-        return SftpUser.Builder.newInstance().name("user").keyPair(keyPair).build();
+        return SftpUser.Builder.newInstance().name("user").keyPair(KEY_PAIR).build();
     }
 
     protected SftpLocation getSftpLocation(String path) {
         return SftpLocation.Builder.newInstance()
                 .host("127.0.0.1")
-                .port(sftpContainer.getFirstMappedPort())
+                .port(SFTP_CONTAINER.getFirstMappedPort())
                 .path(path)
                 .build();
     }
@@ -210,23 +215,23 @@ abstract class AbstractSftpClientWrapperIT {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(get1KBFile()), Arguments.of(get1MBFile()), Arguments.of(get2MBFile()));
+                    Arguments.of(get1KbFile()), Arguments.of(get1MbFile()), Arguments.of(get2MbFile()));
         }
 
-        public File get1KBFile() {
+        public File get1KbFile() {
             return generateFile(1024);
         }
 
-        public File get1MBFile() {
+        public File get1MbFile() {
             return generateFile(1024 * 1024);
         }
 
-        public File get2MBFile() {
+        public File get2MbFile() {
             return generateFile(2 * 1024 * 1024);
         }
 
         private File generateFile(final int byteSize) {
-            Path path = localUploadAndGeneratorDirectory.resolve(String.format("%s.bin", byteSize));
+            Path path = LOCAL_UPLOAD_AND_GENERATOR_DIRECTORY.resolve(String.format("%s.bin", byteSize));
             if (!Files.exists(path)) {
                 try {
                     Files.createFile(path);
