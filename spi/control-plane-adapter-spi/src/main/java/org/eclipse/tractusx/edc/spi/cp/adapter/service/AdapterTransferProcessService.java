@@ -44,6 +44,6 @@ public interface AdapterTransferProcessService {
      */
     ServiceResult<EndpointDataReference> findByTransferProcessId(String transferProcessId);
 
-    ServiceResult<List<EndpointDataReferenceEntry>> findCacheEntries(String assetId, String agreementId);
+    ServiceResult<List<EndpointDataReferenceEntry>> findByAssetAndAgreement(String assetId, String agreementId);
 
 }

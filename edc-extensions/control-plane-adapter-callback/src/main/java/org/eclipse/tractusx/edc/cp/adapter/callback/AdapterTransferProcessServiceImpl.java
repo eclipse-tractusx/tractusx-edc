@@ -87,7 +87,7 @@ public class AdapterTransferProcessServiceImpl implements AdapterTransferProcess
     }
 
     @Override
-    public ServiceResult<List<EndpointDataReferenceEntry>> findCacheEntries(String assetId, String agreementId) {
+    public ServiceResult<List<EndpointDataReferenceEntry>> findByAssetAndAgreement(String assetId, String agreementId) {
         var results = queryEdrs(assetId, agreementId)
                 .stream()
                 .filter(fieldFilter(assetId, EndpointDataReferenceEntry::getAssetId))

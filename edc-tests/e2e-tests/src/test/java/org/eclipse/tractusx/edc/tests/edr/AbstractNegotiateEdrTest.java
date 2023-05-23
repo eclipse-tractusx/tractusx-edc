@@ -53,7 +53,7 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoC
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 
 public abstract class AbstractNegotiateEdrTest {
-    
+
     protected static final Participant sokrates = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant plato = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
@@ -118,10 +118,10 @@ public abstract class AbstractNegotiateEdrTest {
 
         assertThat(edrCaches).hasSize(1);
 
-        var transferProcessId = edrCaches.get(0).asJsonObject().getString("tx:transferProcessId");
+        var transferProcessId = edrCaches.get(0).asJsonObject().getString("edc:transferProcessId");
 
         var edr = sokrates.getEdr(transferProcessId);
-        
+
         assertThat(edr.getJsonString("edc:type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
         assertThat(edr.getJsonString("edc:authCode").getString()).isNotNull();
         assertThat(edr.getJsonString("edc:authKey").getString()).isNotNull();

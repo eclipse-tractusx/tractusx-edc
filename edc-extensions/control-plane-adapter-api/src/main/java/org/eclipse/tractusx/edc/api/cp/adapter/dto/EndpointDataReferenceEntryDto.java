@@ -17,6 +17,7 @@ package org.eclipse.tractusx.edc.api.cp.adapter.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 
@@ -25,9 +26,9 @@ public class EndpointDataReferenceEntryDto {
     public static final String SIMPLE_TYPE = "EndpointDataReferenceEntryDto";
 
     public static final String EDR_ENTRY_DTO_TYPE = TX_NAMESPACE + SIMPLE_TYPE;
-    public static final String EDR_ENTRY_DTO_ASSET_ID = TX_NAMESPACE + "assetId";
-    public static final String EDR_ENTRY_DTO_AGREEMENT_ID = TX_NAMESPACE + "agreementId";
-    public static final String EDR_ENTRY_TRANSFER_PROCESS_ID = TX_NAMESPACE + "transferProcessId";
+    public static final String EDR_ENTRY_DTO_ASSET_ID = EDC_NAMESPACE + "assetId";
+    public static final String EDR_ENTRY_DTO_AGREEMENT_ID = EDC_NAMESPACE + "agreementId";
+    public static final String EDR_ENTRY_TRANSFER_PROCESS_ID = EDC_NAMESPACE + "transferProcessId";
 
     private String assetId;
     private String agreementId;

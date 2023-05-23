@@ -169,7 +169,7 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .build();
 
 
-        when(adapterTransferProcessService.findCacheEntries(assetId, null)).thenReturn(ServiceResult.success(List.of(entry)));
+        when(adapterTransferProcessService.findByAssetAndAgreement(assetId, null)).thenReturn(ServiceResult.success(List.of(entry)));
         when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(EndpointDataReferenceEntryDto.class))).thenReturn(Result.success(entryDto));
         when(transformerRegistry.transform(any(EndpointDataReferenceEntryDto.class), eq(JsonObject.class))).thenReturn(Result.success(response));
 
@@ -178,9 +178,9 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .get(ADAPTER_EDR_PATH + format("?=assetId=%s", assetId))
                 .then()
                 .statusCode(200)
-                .body("[0].'tx:transferProcessId'", is(entry.getTransferProcessId()))
-                .body("[0].'tx:agreementId'", is(entry.getAgreementId()))
-                .body("[0].'tx:assetId'", is(entry.getAssetId()));
+                .body("[0].'edc:transferProcessId'", is(entry.getTransferProcessId()))
+                .body("[0].'edc:agreementId'", is(entry.getAgreementId()))
+                .body("[0].'edc:assetId'", is(entry.getAssetId()));
 
     }
 
@@ -206,7 +206,7 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .build();
 
 
-        when(adapterTransferProcessService.findCacheEntries(null, agreementId)).thenReturn(ServiceResult.success(List.of(entry)));
+        when(adapterTransferProcessService.findByAssetAndAgreement(null, agreementId)).thenReturn(ServiceResult.success(List.of(entry)));
         when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(EndpointDataReferenceEntryDto.class))).thenReturn(Result.success(entryDto));
         when(transformerRegistry.transform(any(EndpointDataReferenceEntryDto.class), eq(JsonObject.class))).thenReturn(Result.success(response));
 
@@ -215,9 +215,9 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .get(ADAPTER_EDR_PATH + format("?=agreementId=%s", entry.getAgreementId()))
                 .then()
                 .statusCode(200)
-                .body("[0].'tx:transferProcessId'", is(entry.getTransferProcessId()))
-                .body("[0].'tx:agreementId'", is(entry.getAgreementId()))
-                .body("[0].'tx:assetId'", is(entry.getAssetId()));
+                .body("[0].'edc:transferProcessId'", is(entry.getTransferProcessId()))
+                .body("[0].'edc:agreementId'", is(entry.getAgreementId()))
+                .body("[0].'edc:assetId'", is(entry.getAssetId()));
     }
 
     @Test

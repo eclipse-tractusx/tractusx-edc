@@ -97,7 +97,7 @@ public class AdapterEdrController implements AdapterEdrApi {
         if (assetId == null && agreementId == null) {
             throw new InvalidRequestException("At least one of this query parameter is required [assetId,agreementId]");
         }
-        return adapterTransferProcessService.findCacheEntries(assetId, agreementId)
+        return adapterTransferProcessService.findByAssetAndAgreement(assetId, agreementId)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class))
                 .stream()
                 .map(edrCached -> transformerRegistry.transform(edrCached, EndpointDataReferenceEntryDto.class)
