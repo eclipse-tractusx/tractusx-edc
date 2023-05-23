@@ -22,27 +22,19 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 class HashicorpVaultGetEntryResponsePayload {
 
     @JsonProperty("data")
     private GetVaultEntryData data;
 
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
+    public GetVaultEntryData getData() {
+        return data;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class GetVaultEntryData {
 
@@ -51,5 +43,13 @@ class HashicorpVaultGetEntryResponsePayload {
 
         @JsonProperty("metadata")
         private HashicorpVaultEntryMetadata metadata;
+
+        public Map<String, String> getData() {
+            return data;
+        }
+
+        public HashicorpVaultEntryMetadata getMetadata() {
+            return metadata;
+        }
     }
 }

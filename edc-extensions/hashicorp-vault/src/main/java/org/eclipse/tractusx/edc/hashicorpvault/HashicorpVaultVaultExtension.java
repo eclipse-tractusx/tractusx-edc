@@ -44,10 +44,9 @@ public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtensio
 
         final OkHttpClient okHttpClient = createOkHttpClient(config);
 
-        final HashicorpVaultClient client =
-                new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
+        final HashicorpVaultClient client = new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
 
-        final HashicorpVault vault = new HashicorpVault(client, context.getMonitor());
+        final HashicorpVault vault = new HashicorpVault(client);
         final CertificateResolver certificateResolver =
                 new HashicorpCertificateResolver(vault, context.getMonitor());
         final VaultPrivateKeyResolver privateKeyResolver = new VaultPrivateKeyResolver(vault);

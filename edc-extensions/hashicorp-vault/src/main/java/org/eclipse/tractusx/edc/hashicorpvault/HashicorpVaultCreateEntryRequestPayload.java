@@ -22,17 +22,9 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 class HashicorpVaultCreateEntryRequestPayload {
 
@@ -42,13 +34,52 @@ class HashicorpVaultCreateEntryRequestPayload {
     @JsonProperty("data")
     private Map<String, String> data;
 
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
+    private HashicorpVaultCreateEntryRequestPayload() {
+    }
+
+    public Options getOptions() {
+        return options;
+    }
+
+    public Map<String, String> getData() {
+        return data;
+    }
+
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class Options {
         @JsonProperty("cas")
         private Integer cas;
+
+        public Integer getCas() {
+            return cas;
+        }
+    }
+
+    public static final class Builder {
+
+        private final HashicorpVaultCreateEntryRequestPayload payload;
+
+        private Builder() {
+            payload = new HashicorpVaultCreateEntryRequestPayload();
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder options(Options options) {
+            this.payload.options = options;
+            return this;
+        }
+
+        public Builder data(Map<String, String> data) {
+            this.payload.data = data;
+            return this;
+        }
+
+        public HashicorpVaultCreateEntryRequestPayload build() {
+            return payload;
+        }
     }
 }

@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.NonNull;
-import lombok.SneakyThrows;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -33,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.security.Provider;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 final class PemUtil {
@@ -45,17 +44,21 @@ final class PemUtil {
         throw new IllegalStateException("Private constructor invocation disallowed");
     }
 
-    @SneakyThrows
-    public static X509Certificate readX509Certificate(@NotNull @NonNull InputStream inputStream) {
-        X509CertificateHolder x509CertificateHolder = parsePem(inputStream);
-        if (x509CertificateHolder == null) {
-            return null;
+    public static X509Certificate readX509Certificate(@NotNull InputStream inputStream) {
+        try {
+            X509CertificateHolder x509CertificateHolder = parsePem(inputStream);
+            if (x509CertificateHolder == null) {
+                return null;
+            }
+            return X509_CONVERTER.getCertificate(x509CertificateHolder);
+        } catch (IOException | CertificateException e) {
+            throw new RuntimeException(e);
         }
-        return X509_CONVERTER.getCertificate(x509CertificateHolder);
+
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T parsePem(@NotNull @NonNull InputStream inputStream) throws IOException {
+    private static <T> T parsePem(@NotNull InputStream inputStream) throws IOException {
         try (Reader reader = new InputStreamReader(inputStream)) {
             PEMParser pemParser = new PEMParser(reader);
             return (T) pemParser.readObject();

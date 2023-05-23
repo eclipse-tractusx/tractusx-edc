@@ -86,7 +86,7 @@ public class AbstractHashicorpVaultExtension {
         final boolean isHealthStandbyOk =
                 context.getSetting(VAULT_HEALTH_CHECK_STANDBY_OK, VAULT_HEALTH_CHECK_STANDBY_OK_DEFAULT);
 
-        return HashicorpVaultClientConfig.builder()
+        return HashicorpVaultClientConfig.Builder.newInstance()
                 .vaultUrl(vaultUrl)
                 .vaultToken(vaultToken)
                 .vaultApiSecretPath(apiSecretPath)
