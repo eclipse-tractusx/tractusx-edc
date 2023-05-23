@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.Getter;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.security.CertificateResolver;
@@ -62,12 +61,11 @@ class AbstractHashicorpIt {
     static final String TOKEN = UUID.randomUUID().toString();
     @Container
     @ClassRule
-    private static final VaultContainer<?> VAULTCONTAINER =
-            new VaultContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
-                    .withVaultToken(TOKEN)
-                    .withSecretInVault(
-                            "secret/" + VAULT_ENTRY_KEY,
-                            String.format("%s=%s", VAULT_DATA_ENTRY_NAME, VAULT_ENTRY_VALUE));
+    private static final VaultContainer<?> VAULTCONTAINER = new VaultContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
+            .withVaultToken(TOKEN)
+            .withSecretInVault(
+                    "secret/" + VAULT_ENTRY_KEY,
+                    String.format("%s=%s", VAULT_DATA_ENTRY_NAME, VAULT_ENTRY_VALUE));
     private final TestExtension testExtension = new TestExtension();
 
     protected Vault getVault() {
@@ -97,7 +95,6 @@ class AbstractHashicorpIt {
         };
     }
 
-    @Getter
     private static class TestExtension implements ServiceExtension {
         private Vault vault;
         private CertificateResolver certificateResolver;
@@ -106,6 +103,14 @@ class AbstractHashicorpIt {
         public void initialize(ServiceExtensionContext context) {
             vault = context.getService(Vault.class);
             certificateResolver = context.getService(CertificateResolver.class);
+        }
+
+        public CertificateResolver getCertificateResolver() {
+            return certificateResolver;
+        }
+
+        public Vault getVault() {
+            return vault;
         }
     }
 

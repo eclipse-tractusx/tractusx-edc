@@ -20,20 +20,22 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.SneakyThrows;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.eclipse.edc.spi.security.CertificateResolver;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.UUID;
 
-class HashicorpCertificateResolverIt extends AbstractHashicorpIt {
+class HashicorpCertificateResolverIntegrationTest extends AbstractHashicorpIt {
 
     @Test
-    @SneakyThrows
-    void resolveCertificate_success() {
+    void resolveCertificate_success() throws CertificateException, IOException, NoSuchAlgorithmException, OperatorCreationException {
         String key = UUID.randomUUID().toString();
         X509Certificate certificateExpected = X509CertificateTestUtil.generateCertificate(5, "Test");
         String pem = X509CertificateTestUtil.convertToPem(certificateExpected);
@@ -47,7 +49,6 @@ class HashicorpCertificateResolverIt extends AbstractHashicorpIt {
     }
 
     @Test
-    @SneakyThrows
     void resolveCertificate_malformed() {
         String key = UUID.randomUUID().toString();
         String value = UUID.randomUUID().toString();

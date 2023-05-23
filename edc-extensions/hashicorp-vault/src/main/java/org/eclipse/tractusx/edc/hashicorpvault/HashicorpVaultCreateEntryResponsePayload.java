@@ -22,18 +22,14 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 class HashicorpVaultCreateEntryResponsePayload {
 
     @JsonProperty("data")
     private HashicorpVaultEntryMetadata data;
+
+    public HashicorpVaultEntryMetadata getData() {
+        return data;
+    }
 }

@@ -14,18 +14,17 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.Builder;
-import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
-
-@Builder
-@Getter
 public class HashicorpVaultHealthResponse {
 
-    @Nullable
     private HashicorpVaultHealthResponsePayload payload;
-
     private int code;
+
+    private HashicorpVaultHealthResponse() {
+    }
+
+    public int getCode() {
+        return code;
+    }
 
     public HashiCorpVaultHealthResponseCode getCodeAsEnum() {
         switch (code) {
@@ -48,6 +47,11 @@ public class HashicorpVaultHealthResponse {
         }
     }
 
+    public HashicorpVaultHealthResponsePayload getPayload() {
+        return payload;
+    }
+
+
     public enum HashiCorpVaultHealthResponseCode {
         UNSPECIFIED, // undefined status codes
         INITIALIZED_UNSEALED_AND_ACTIVE, // status code 200
@@ -56,5 +60,32 @@ public class HashicorpVaultHealthResponse {
         PERFORMANCE_STANDBY, // status code 473
         NOT_INITIALIZED, // status code 501
         SEALED // status code 503
+    }
+
+    public static final class Builder {
+
+        private final HashicorpVaultHealthResponse response;
+
+        private Builder() {
+            response = new HashicorpVaultHealthResponse();
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder payload(HashicorpVaultHealthResponsePayload payload) {
+            this.response.payload = payload;
+            return this;
+        }
+
+        public Builder code(int code) {
+            this.response.code = code;
+            return this;
+        }
+
+        public HashicorpVaultHealthResponse build() {
+            return response;
+        }
     }
 }

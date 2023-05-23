@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.CertificateResolver;
@@ -36,15 +34,17 @@ import java.security.cert.X509Certificate;
 /**
  * Resolves an X.509 certificate in Hashicorp vault.
  */
-@RequiredArgsConstructor
 public class HashicorpCertificateResolver implements CertificateResolver {
-    @NonNull
     private final Vault vault;
-    @NonNull
     private final Monitor monitor;
 
+    public HashicorpCertificateResolver(Vault vault, Monitor monitor) {
+        this.vault = vault;
+        this.monitor = monitor;
+    }
+
     @Override
-    public X509Certificate resolveCertificate(@NonNull String id) {
+    public X509Certificate resolveCertificate(String id) {
         String certificateRepresentation = vault.resolveSecret(id);
         if (certificateRepresentation == null) {
             return null;

@@ -16,17 +16,7 @@ package org.eclipse.tractusx.edc.hashicorpvault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HashicorpVaultHealthResponsePayload {
     @JsonProperty("initialized")
@@ -58,4 +48,44 @@ public class HashicorpVaultHealthResponsePayload {
 
     @JsonProperty("cluster_id")
     private String clusterId;
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public boolean isSealed() {
+        return isSealed;
+    }
+
+    public boolean isStandby() {
+        return isStandby;
+    }
+
+    public boolean isPerformanceStandby() {
+        return isPerformanceStandby;
+    }
+
+    public String getReplicationPerformanceMode() {
+        return replicationPerformanceMode;
+    }
+
+    public String getReplicationDrMode() {
+        return replicationDrMode;
+    }
+
+    public long getServerTimeUtc() {
+        return serverTimeUtc;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
 }

@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.SneakyThrows;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.junit.jupiter.api.Assertions;
@@ -41,11 +40,10 @@ class HashicorpVaultTest {
     void setup() {
         vaultClient = Mockito.mock(HashicorpVaultClient.class);
         final Monitor monitor = Mockito.mock(Monitor.class);
-        vault = new HashicorpVault(vaultClient, monitor);
+        vault = new HashicorpVault(vaultClient);
     }
 
     @Test
-    @SneakyThrows
     void getSecretSuccess() {
         // prepare
         String value = UUID.randomUUID().toString();
@@ -64,7 +62,6 @@ class HashicorpVaultTest {
     }
 
     @Test
-    @SneakyThrows
     void getSecretFailure() {
         // prepare
         Result<String> result = Mockito.mock(Result.class);
@@ -81,7 +78,6 @@ class HashicorpVaultTest {
     }
 
     @Test
-    @SneakyThrows
     void setSecretSuccess() {
         // prepare
         String value = UUID.randomUUID().toString();
@@ -99,7 +95,6 @@ class HashicorpVaultTest {
     }
 
     @Test
-    @SneakyThrows
     void setSecretFailure() {
         // prepare
         String value = UUID.randomUUID().toString();
@@ -117,7 +112,6 @@ class HashicorpVaultTest {
     }
 
     @Test
-    @SneakyThrows
     void destroySecretSuccess() {
         // prepare
         Result<Void> result = Mockito.mock(Result.class);
@@ -134,7 +128,6 @@ class HashicorpVaultTest {
     }
 
     @Test
-    @SneakyThrows
     void destroySecretFailure() {
         // prepare
         Result<Void> result = Mockito.mock(Result.class);

@@ -24,7 +24,6 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("io.freefair.lombok") version "8.0.1"
     id("com.diffplug.spotless") version "6.18.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
@@ -57,13 +56,11 @@ project.subprojects.forEach {
 
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
-    apply(plugin = "io.freefair.lombok")
 
     repositories {
         mavenCentral()
     }
     dependencies {
-        implementation("org.projectlombok:lombok:1.18.26")
         implementation("org.slf4j:slf4j-api:2.0.7")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
@@ -104,7 +101,8 @@ allprojects {
         swagger {
             title.set((project.findProperty("apiTitle") ?: "Tractus-X REST API") as String)
             description =
-                (project.findProperty("apiDescription") ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
+                    (project.findProperty("apiDescription")
+                            ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
             resourcePackages = setOf("org.eclipse.tractusx.edc")
@@ -149,7 +147,7 @@ allprojects {
 subprojects {
     afterEvaluate {
         if (project.plugins.hasPlugin("com.github.johnrengelman.shadow") &&
-            file("${project.projectDir}/src/main/docker/Dockerfile").exists()
+                file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
 
             //actually apply the plugin to the (sub-)project

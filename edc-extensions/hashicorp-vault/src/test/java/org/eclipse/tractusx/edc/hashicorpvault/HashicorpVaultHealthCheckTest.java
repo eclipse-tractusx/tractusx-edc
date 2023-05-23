@@ -20,16 +20,14 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
-
-import java.io.IOException;
 
 class HashicorpVaultHealthCheckTest {
 
@@ -49,13 +47,12 @@ class HashicorpVaultHealthCheckTest {
 
     @ParameterizedTest
     @ValueSource(ints = {200, 409, 472, 473, 501, 503, 999})
-    void testResponseFromCode(int code) throws IOException {
+    void testResponseFromCode(int code) {
 
         Mockito.when(client.getHealth())
-                .thenReturn(
-                        new HashicorpVaultHealthResponse(new HashicorpVaultHealthResponsePayload(), code));
+                .thenReturn(HashicorpVaultHealthResponse.Builder.newInstance().payload(new HashicorpVaultHealthResponsePayload()).code(code).build());
 
-        final HealthCheckResult result = healthCheck.get();
+        var result = healthCheck.get();
 
         if (code == 200) {
             Mockito.verify(monitor, Mockito.times(1)).debug(Mockito.anyString());
@@ -67,10 +64,10 @@ class HashicorpVaultHealthCheckTest {
     }
 
     @Test
-    void testResponseFromException() throws IOException {
-        Mockito.when(client.getHealth()).thenThrow(new IOException());
+    void testResponseFromException() {
+        Mockito.when(client.getHealth()).thenThrow(new EdcException("foo-bar"));
 
-        final HealthCheckResult result = healthCheck.get();
+        var result = healthCheck.get();
         Assertions.assertFalse(result.succeeded());
     }
 }

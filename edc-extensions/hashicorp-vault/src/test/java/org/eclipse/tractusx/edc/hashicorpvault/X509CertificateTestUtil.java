@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -60,14 +58,13 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 
-@UtilityClass
-final class X509CertificateTestUtil {
+public class X509CertificateTestUtil {
     private static final String SIGNATURE_ALGORITHM = "SHA256WithRSAEncryption";
     private static final Provider PROVIDER = new BouncyCastleProvider();
     private static final JcaX509CertificateConverter JCA_X509_CERTIFICATE_CONVERTER =
             new JcaX509CertificateConverter().setProvider(PROVIDER);
 
-    static X509Certificate generateCertificate(int validity, String cn)
+    public static X509Certificate generateCertificate(int validity, String cn)
             throws CertificateException, OperatorCreationException, IOException,
             NoSuchAlgorithmException {
 
@@ -125,15 +122,16 @@ final class X509CertificateTestUtil {
         return new X509ExtensionUtils(digCalc).createAuthorityKeyIdentifier(publicKeyInfo);
     }
 
-    @SneakyThrows
     static String convertToPem(X509Certificate certificate) {
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+        try (var stream = new ByteArrayOutputStream()) {
             try (OutputStreamWriter writer = new OutputStreamWriter(stream)) {
                 JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
                 pemWriter.writeObject(certificate);
                 pemWriter.flush();
             }
             return stream.toString(StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

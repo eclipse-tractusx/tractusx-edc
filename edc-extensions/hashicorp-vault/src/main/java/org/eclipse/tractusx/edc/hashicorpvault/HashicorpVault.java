@@ -20,9 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.jetbrains.annotations.NotNull;
@@ -31,16 +28,16 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Implements a vault backed by Hashicorp Vault.
  */
-@RequiredArgsConstructor
 class HashicorpVault implements Vault {
 
-    @NonNull
     private final HashicorpVaultClient hashicorpVaultClient;
-    @NonNull
-    private final Monitor monitor;
+
+    HashicorpVault(HashicorpVaultClient hashicorpVaultClient) {
+        this.hashicorpVaultClient = hashicorpVaultClient;
+    }
 
     @Override
-    public @Nullable String resolveSecret(@NonNull String key) {
+    public @Nullable String resolveSecret(String key) {
         Result<String> result = hashicorpVaultClient.getSecretValue(key);
 
         return result.succeeded() ? result.getContent() : null;
@@ -48,7 +45,7 @@ class HashicorpVault implements Vault {
 
     @Override
     @NotNull
-    public Result<Void> storeSecret(@NotNull @NonNull String key, @NotNull @NonNull String value) {
+    public Result<Void> storeSecret(@NotNull String key, @NotNull String value) {
         Result<HashicorpVaultCreateEntryResponsePayload> result =
                 hashicorpVaultClient.setSecret(key, value);
 
@@ -56,7 +53,7 @@ class HashicorpVault implements Vault {
     }
 
     @Override
-    public Result<Void> deleteSecret(@NotNull @NonNull String key) {
+    public Result<Void> deleteSecret(@NotNull String key) {
         return hashicorpVaultClient.destroySecret(key);
     }
 }

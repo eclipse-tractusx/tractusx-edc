@@ -20,13 +20,16 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.SneakyThrows;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 class HashicorpCertificateResolverTest {
@@ -44,8 +47,7 @@ class HashicorpCertificateResolverTest {
     }
 
     @Test
-    @SneakyThrows
-    void resolveCertificate() {
+    void resolveCertificate() throws CertificateException, IOException, NoSuchAlgorithmException, OperatorCreationException {
         // prepare
         X509Certificate certificateExpected = X509CertificateTestUtil.generateCertificate(5, "Test");
         String pem = X509CertificateTestUtil.convertToPem(certificateExpected);
@@ -59,7 +61,6 @@ class HashicorpCertificateResolverTest {
     }
 
     @Test
-    @SneakyThrows
     void nullIfVaultEmpty() {
         // prepare
         Mockito.when(vault.resolveSecret(KEY)).thenReturn(null);
