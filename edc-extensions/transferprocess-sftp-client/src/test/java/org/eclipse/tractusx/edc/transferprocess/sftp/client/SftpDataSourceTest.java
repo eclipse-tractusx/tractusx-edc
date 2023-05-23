@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import lombok.SneakyThrows;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
@@ -30,23 +29,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class SftpDataSourceTest {
     @Test
-    @SneakyThrows
-    void openPartStream() {
+    void openPartStream() throws IOException {
         final SftpUser userMock = Mockito.mock(SftpUser.class);
         final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
         final SftpClientConfig sftpClientConfig =
-                SftpClientConfig.builder().sftpUser(userMock).sftpLocation(locationMock).build();
+                SftpClientConfig.Builder.newInstance().sftpUser(userMock).sftpLocation(locationMock).build();
         final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
         final SftpClientWrapperImpl sftpClientWrapper =
                 Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
         SftpDataSource sftpDataSource = Mockito.spy(new SftpDataSource(sftpClientWrapper));
-        byte[] expected = new byte[]{ 0, 1, 2, 3 };
+        byte[] expected = new byte[]{0, 1, 2, 3};
         ByteArrayInputStream outputStream = new ByteArrayInputStream(expected);
 
         Mockito.when(locationMock.getPath()).thenReturn("path");

@@ -20,32 +20,32 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import lombok.SneakyThrows;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+
 class SftpUserFactoryImplTest {
-  private final SftpUserFactoryImpl sftpUserFactoryImpl = new SftpUserFactoryImpl();
+    private final SftpUserFactoryImpl sftpUserFactoryImpl = new SftpUserFactoryImpl();
 
-  @Test
-  @SneakyThrows
-  void generateSftpLocation() {
-    final String name = "name";
-    final String password = "password";
+    @Test
+    void generateSftpLocation() throws NoSuchAlgorithmException {
+        final String name = "name";
+        final String password = "password";
 
-    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-    keyPairGenerator.initialize(2048);
-    final KeyPair keyPair = keyPairGenerator.generateKeyPair();
-    final byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
+        final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        final KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        final byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
 
-    final SftpUser sftpUser = sftpUserFactoryImpl.createSftpUser(name, password, privateKeyBytes);
+        final SftpUser sftpUser = sftpUserFactoryImpl.createSftpUser(name, password, privateKeyBytes);
 
-    Assertions.assertEquals(name, sftpUser.getName());
-    Assertions.assertEquals(password, sftpUser.getPassword());
+        Assertions.assertEquals(name, sftpUser.getName());
+        Assertions.assertEquals(password, sftpUser.getPassword());
 
-    Assertions.assertArrayEquals(privateKeyBytes, sftpUser.getKeyPair().getPrivate().getEncoded());
-  }
+        Assertions.assertArrayEquals(privateKeyBytes, sftpUser.getKeyPair().getPrivate().getEncoded());
+    }
 }

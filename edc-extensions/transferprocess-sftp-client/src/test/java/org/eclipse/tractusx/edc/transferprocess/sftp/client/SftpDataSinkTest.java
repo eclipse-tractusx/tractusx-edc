@@ -20,13 +20,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
@@ -35,52 +28,61 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+
 class SftpDataSinkTest {
-  @Test
-  @SneakyThrows
-  void transferParts() {
-    final SftpUser userMock = Mockito.mock(SftpUser.class);
-    final SftpLocation locationMock = Mockito.mock(SftpLocation.class);
-    final SftpClientConfig sftpClientConfig =
-        SftpClientConfig.builder()
-            .sftpUser(userMock)
-            .sftpLocation(locationMock)
-            .writeOpenModes(List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append))
-            .build();
-    final SftpClient sftpClientMock = Mockito.mock(SftpClient.class);
-    final SftpClientWrapperImpl sftpClientWrapper =
-        Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
-    final SftpDataSink sftpDataSink = Mockito.spy(new SftpDataSink(sftpClientWrapper));
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    @Test
+    void transferParts() throws IOException {
+        var userMock = Mockito.mock(SftpUser.class);
+        var locationMock = Mockito.mock(SftpLocation.class);
+        var sftpClientConfig =
+                SftpClientConfig.Builder.newInstance()
+                        .sftpUser(userMock)
+                        .sftpLocation(locationMock)
+                        .writeOpenModes(List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append))
+                        .build();
+        var sftpClientMock = Mockito.mock(SftpClient.class);
+        var sftpClientWrapper =
+                Mockito.spy(new SftpClientWrapperImpl(sftpClientConfig, sftpClientMock));
+        var sftpDataSink = Mockito.spy(new SftpDataSink(sftpClientWrapper));
+        var outputStream = new ByteArrayOutputStream();
 
-    Mockito.when(sftpClientMock.write(Mockito.any(), Mockito.anyInt(), Mockito.anyCollection()))
-        .thenReturn(outputStream);
-    Mockito.when(locationMock.getPath()).thenReturn("path");
+        Mockito.when(sftpClientMock.write(Mockito.any(), Mockito.anyInt(), Mockito.anyCollection()))
+                .thenReturn(outputStream);
+        Mockito.when(locationMock.getPath()).thenReturn("path");
 
-    List<DataSource.Part> parts =
-        Arrays.asList(new SftpTestPart(new byte[] {0, 1}), new SftpTestPart(new byte[] {2, 3}));
-    byte[] expected = {0, 1, 2, 3};
+        List<DataSource.Part> parts =
+                Arrays.asList(new SftpTestPart(new byte[]{0, 1}), new SftpTestPart(new byte[]{2, 3}));
+        byte[] expected = {0, 1, 2, 3};
 
-    sftpDataSink.transferParts(parts);
+        sftpDataSink.transferParts(parts);
 
-    Assertions.assertArrayEquals(expected, outputStream.toByteArray());
-    Mockito.verify(sftpClientMock, Mockito.times(2))
-        .write("path", 4096, List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append));
-  }
-
-  @AllArgsConstructor
-  private static class SftpTestPart implements DataSource.Part {
-
-    final byte[] content;
-
-    @Override
-    public String name() {
-      return null;
+        Assertions.assertArrayEquals(expected, outputStream.toByteArray());
+        Mockito.verify(sftpClientMock, Mockito.times(2))
+                .write("path", 4096, List.of(SftpClient.OpenMode.Create, SftpClient.OpenMode.Append));
     }
 
-    @Override
-    public InputStream openStream() {
-      return new ByteArrayInputStream(content);
+    private static class SftpTestPart implements DataSource.Part {
+
+        final byte[] content;
+
+        private SftpTestPart(byte[] content) {
+            this.content = content;
+        }
+
+        @Override
+        public String name() {
+            return null;
+        }
+
+        @Override
+        public InputStream openStream() {
+            return new ByteArrayInputStream(content);
+        }
     }
-  }
 }

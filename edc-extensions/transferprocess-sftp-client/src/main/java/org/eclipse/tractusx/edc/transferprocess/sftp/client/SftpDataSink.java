@@ -14,8 +14,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import lombok.Builder;
-import lombok.NonNull;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
@@ -23,10 +21,13 @@ import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
 import java.io.IOException;
 import java.util.List;
 
-@Builder
 public class SftpDataSink extends ParallelSink {
-    @NonNull
     private final SftpClientWrapper sftpClientWrapper;
+
+    public SftpDataSink(SftpClientWrapper sftpClientWrapper) {
+        this.sftpClientWrapper = sftpClientWrapper;
+    }
+
 
     @Override
     protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {

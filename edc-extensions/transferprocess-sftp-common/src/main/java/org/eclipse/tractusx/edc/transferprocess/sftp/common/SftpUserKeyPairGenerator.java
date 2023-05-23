@@ -17,56 +17,45 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
+import java.util.Objects;
 
-@AllArgsConstructor
 public class SftpUserKeyPairGenerator {
-  public static KeyPair getKeyPairFromPrivateKey(
-      byte[] privateKeyBytes, @NonNull String sftpUserName) {
-    if (privateKeyBytes == null) {
-      return null;
+    public static KeyPair getKeyPairFromPrivateKey(byte[] privateKeyBytes, String sftpUserName) {
+        Objects.requireNonNull(sftpUserName, "sftpUsername");
+        if (privateKeyBytes == null) {
+            return null;
+        }
+
+        try {
+            var keyFactory = KeyFactory.getInstance("RSA");
+            var privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+
+            var privateKeySpec = (RSAPrivateCrtKey) privateKey;
+
+            var publicKey = keyFactory.generatePublic(new RSAPublicKeySpec(privateKeySpec.getModulus(), privateKeySpec.getPublicExponent()));
+            return new KeyPair(publicKey, privateKey);
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new EdcSftpException(String.format("Unable to parse provided keypair for Sftp user %s", sftpUserName), e);
+        }
     }
 
-    try {
-      final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-      final PrivateKey privateKey =
-          keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+    public static KeyPair getKeyPairFromPrivateKey(String privateKeyBase64, String sftpUserName) {
+        if (privateKeyBase64 == null) {
+            return null;
+        }
 
-      final RSAPrivateCrtKey privateKeySpec = (RSAPrivateCrtKey) privateKey;
+        try {
+            var publicBytes = Base64.getDecoder().decode(privateKeyBase64);
+            return getKeyPairFromPrivateKey(publicBytes, sftpUserName);
+        } catch (IllegalArgumentException e) {
+            throw new EdcSftpException(String.format("Cannot decode base64 private key for user %s", sftpUserName), e);
+        }
 
-      final PublicKey publicKey =
-          keyFactory.generatePublic(
-              new RSAPublicKeySpec(
-                  privateKeySpec.getModulus(), privateKeySpec.getPublicExponent()));
-      return new KeyPair(publicKey, privateKey);
-
-    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-      throw new EdcSftpException(
-          String.format("Unable to parse provided keypair for Sftp user %s", sftpUserName), e);
     }
-  }
-
-  public static KeyPair getKeyPairFromPrivateKey(String privateKey, @NonNull String sftpUserName) {
-    if (privateKey == null) {
-      return null;
-    }
-
-    byte[] publicBytes;
-    try {
-      publicBytes = Base64.getDecoder().decode(privateKey);
-    } catch (IllegalArgumentException e) {
-      throw new EdcSftpException(
-          String.format("Cannot decode base64 private key for user %s", sftpUserName), e);
-    }
-
-    return getKeyPairFromPrivateKey(publicBytes, sftpUserName);
-  }
 }

@@ -14,24 +14,30 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import java.io.InputStream;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.SneakyThrows;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
+import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 
-@Builder
+import java.io.IOException;
+import java.io.InputStream;
+
 public class SftpPart implements DataSource.Part {
-  @NonNull private final SftpClientWrapper sftpClientWrapper;
+    private final SftpClientWrapper sftpClientWrapper;
 
-  @Override
-  public String name() {
-    return ((SftpClientWrapperImpl) sftpClientWrapper).getConfig().getSftpLocation().getPath();
-  }
+    public SftpPart(SftpClientWrapper sftpClientWrapper) {
+        this.sftpClientWrapper = sftpClientWrapper;
+    }
 
-  @Override
-  @SneakyThrows
-  public InputStream openStream() {
-    return sftpClientWrapper.downloadFile();
-  }
+    @Override
+    public String name() {
+        return ((SftpClientWrapperImpl) sftpClientWrapper).getConfig().getSftpLocation().getPath();
+    }
+
+    @Override
+    public InputStream openStream() {
+        try {
+            return sftpClientWrapper.downloadFile();
+        } catch (IOException e) {
+            throw new EdcSftpException(e);
+        }
+    }
 }
