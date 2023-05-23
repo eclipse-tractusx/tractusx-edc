@@ -15,7 +15,7 @@ is not suitable for productive deployment scenarios.
 The Local TXDC Setup consists of three separate deployments. The Supporting Infrastructure, that is required to
 run connectors, and two different TXDC Connector instances, that can communicate with each other.
 
-- [TXDC Supporting Infrastructure](../../edc-tests/src/main/resources/deployment/helm/supporting-infrastructure/README.md)
+- [TXDC Supporting Infrastructure](../../edc-tests/deployment/src/main/resources/helm/test-infrastructure/README.md)
 - [TXDC Connector](../../charts/tractusx-connector/README.md) Plato
 - [TXDC Connector](../../charts/tractusx-connector/README.md) Sokrates
 
@@ -31,9 +31,9 @@ run connectors, and two different TXDC Connector instances, that can communicate
 
 Before the connectors can be setup, the Supporting Infrastructure must be in place. It comes with pre-configured everything
 to run two connectors independently.
-
+heom
 For this local test scenario,
-the [Supporting Infrastructure](../../edc-tests/src/main/resources/deployment/helm/supporting-infrastructure/README.md)
+the [Supporting Infrastructure](../../edc-tests/deployment/src/main/resources/helm/test-infrastructure/README.md)
 of the TXDC Business Tests can be used.
 
 Install the TXDC Supporting Infrastructure by running the following command from the project root directory. The Minio
@@ -41,11 +41,11 @@ set can be skipped, as it's only used by AWS S3 Transfer Business Tests. Also, t
 mandatory to try out the EDC. So it can be disabled as well.
 
 ```sh
-helm dependency update edc-tests/src/main/resources/deployment/helm/supporting-infrastructure
+helm dependency update edc-tests/deployment/src/main/resources/helm/test-infrastructure
 ```
 
 ```sh
-helm install infrastructure edc-tests/src/main/resources/deployment/helm/supporting-infrastructure \
+helm install infrastructure edc-tests/deployment/src/main/resources/helm/test-infrastructure \
     --namespace cx \
     --create-namespace \
     --set install.minio=false \
