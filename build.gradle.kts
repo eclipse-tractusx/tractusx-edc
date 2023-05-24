@@ -19,6 +19,7 @@
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+import java.time.Duration
 
 plugins {
     `java-library`
@@ -27,13 +28,13 @@ plugins {
     id("com.diffplug.spotless") version "6.18.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 val javaVersion: String by project
 val txScmConnection: String by project
 val txWebsiteUrl: String by project
 val txScmUrl: String by project
-val groupId: String by project
 val annotationProcessorVersion: String by project
 val metaModelVersion: String by project
 
@@ -88,10 +89,9 @@ allprojects {
             metaModel.set(metaModelVersion)
 
         }
-        val gid = groupId
         pom {
             // this is actually important, so we can publish under the correct GID
-            groupId = gid
+            groupId = project.group.toString()
             projectName.set(project.name)
             description.set("edc :: ${project.name}")
             projectUrl.set(txWebsiteUrl)
@@ -169,5 +169,12 @@ subprojects {
             // make sure "shadowJar" always runs before "dockerize"
             dockerTask.dependsOn(tasks.findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
         }
+    }
+}
+
+nexusPublishing {
+    transitionCheckOptions {
+        maxRetries.set(120)
+        delayBetween.set(Duration.ofSeconds(10))
     }
 }
