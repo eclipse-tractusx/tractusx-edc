@@ -41,7 +41,6 @@ public abstract class EndpointDataReferenceCacheBaseTest {
         var edrId = "edr1";
 
         var edr = edr(edrId);
-        onBeforeEdrSave(edr);
         var entry = edrEntry(assetId, randomUUID().toString(), tpId);
 
         getStore().save(entry, edr);
@@ -127,9 +126,5 @@ public abstract class EndpointDataReferenceCacheBaseTest {
                 .extracting(StoreResult::reason)
                 .isEqualTo(StoreFailure.Reason.NOT_FOUND);
     }
-
-    protected void onBeforeEdrSave(EndpointDataReference edr) {
-
-    }
-
+    
 }
