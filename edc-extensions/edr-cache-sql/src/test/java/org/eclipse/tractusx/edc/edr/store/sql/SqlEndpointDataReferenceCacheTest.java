@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.time.Clock;
 
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edr;
+import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCache.SEPARATOR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,7 +78,7 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
 
 
     private String edrJson(String id) {
-        return typeManager.writeValueAsString(edr(id.split(":")[1]));
+        return typeManager.writeValueAsString(edr(id.split(SEPARATOR)[1]));
     }
 
 }
