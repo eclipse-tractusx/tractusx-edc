@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.Clock;
 
+import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCache.VAULT_PREFIX;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,8 +66,8 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
     }
 
     @Override
-    protected void prepareEdr(EndpointDataReference edr) {
-        when(vault.resolveSecret(edr.getId())).thenReturn(typeManager.writeValueAsString(edr));
+    protected void onBeforeEdrSave(EndpointDataReference edr) {
+        when(vault.resolveSecret(VAULT_PREFIX + edr.getId())).thenReturn(typeManager.writeValueAsString(edr));
     }
 
     @AfterEach
@@ -78,4 +79,5 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
     protected EndpointDataReferenceCache getStore() {
         return cache;
     }
+
 }

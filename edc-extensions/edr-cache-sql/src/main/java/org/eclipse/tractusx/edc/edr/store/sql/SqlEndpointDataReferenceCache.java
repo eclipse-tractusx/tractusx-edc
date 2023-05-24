@@ -46,10 +46,9 @@ import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuerySingle;
 
 public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements EndpointDataReferenceCache {
 
+    public static final String VAULT_PREFIX = "edr:";
     private final EdrStatements statements;
-
     private final Clock clock;
-
     private final Vault vault;
 
 
@@ -108,7 +107,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                 var sql = statements.getInsertTemplate();
                 var createdAt = clock.millis();
                 executeQuery(connection, sql, entry.getTransferProcessId(), entry.getAssetId(), entry.getAgreementId(), edr.getId(), createdAt, createdAt);
-                vault.storeSecret(edr.getId(), toJson(edr)).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
+                vault.storeSecret(VAULT_PREFIX + edr.getId(), toJson(edr)).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
             } catch (Exception exception) {
                 throw new EdcPersistenceException(exception);
             }
@@ -119,11 +118,11 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     public StoreResult<EndpointDataReferenceEntry> deleteByTransferProcessId(String id) {
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                var entry = findById(connection, id, this::mapResultSet);
-                if (entry != null) {
+                var entryWrapper = findById(connection, id, this::mapToWrapper);
+                if (entryWrapper != null) {
                     executeQuery(connection, statements.getDeleteByIdTemplate(), id);
-                    vault.deleteSecret(id).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
-                    return StoreResult.success(entry);
+                    vault.deleteSecret(VAULT_PREFIX + entryWrapper.getEdrId()).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
+                    return StoreResult.success(entryWrapper.getEntry());
                 } else {
                     return StoreResult.notFound(format("EDR with id %s not found", id));
                 }
@@ -146,8 +145,12 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
         return resultSet.getString(statements.getEdrId());
     }
 
+    private EndpointDataReferenceEntryWrapper mapToWrapper(ResultSet resultSet) throws SQLException {
+        return new EndpointDataReferenceEntryWrapper(mapResultSet(resultSet), mapToEdrId(resultSet));
+    }
+
     private EndpointDataReference referenceFromEntry(String edrId) {
-        var edr = vault.resolveSecret(edrId);
+        var edr = vault.resolveSecret(VAULT_PREFIX + edrId);
         if (edr != null) {
             return fromJson(edr, EndpointDataReference.class);
         }
@@ -162,5 +165,23 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                 .build();
 
         return QuerySpec.Builder.newInstance().filter(filter).build();
+    }
+
+    private static class EndpointDataReferenceEntryWrapper {
+        private final EndpointDataReferenceEntry entry;
+        private final String edrId;
+
+        private EndpointDataReferenceEntryWrapper(EndpointDataReferenceEntry entry, String edrId) {
+            this.entry = Objects.requireNonNull(entry);
+            this.edrId = Objects.requireNonNull(edrId);
+        }
+
+        public EndpointDataReferenceEntry getEntry() {
+            return entry;
+        }
+
+        public String getEdrId() {
+            return edrId;
+        }
     }
 }

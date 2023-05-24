@@ -26,9 +26,11 @@ import java.util.stream.IntStream;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edr;
+import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edrEntry;
 
 public abstract class EndpointDataReferenceCacheBaseTest {
-    
+
     protected abstract EndpointDataReferenceCache getStore();
 
     @Test
@@ -39,9 +41,7 @@ public abstract class EndpointDataReferenceCacheBaseTest {
         var edrId = "edr1";
 
         var edr = edr(edrId);
-
-        prepareEdr(edr);
-
+        onBeforeEdrSave(edr);
         var entry = edrEntry(assetId, randomUUID().toString(), tpId);
 
         getStore().save(entry, edr);
@@ -76,7 +76,7 @@ public abstract class EndpointDataReferenceCacheBaseTest {
                 .forEach(entry -> getStore().save(entry, edr(entry.getTransferProcessId())));
 
         var entry = edrEntry("assetId", "agreementId", "tpId");
-        getStore().save(entry, edr("tpId"));
+        getStore().save(entry, edr("edrId"));
 
         var filter = Criterion.Builder.newInstance()
                 .operandLeft("assetId")
@@ -94,7 +94,7 @@ public abstract class EndpointDataReferenceCacheBaseTest {
                 .forEach(entry -> getStore().save(entry, edr(entry.getTransferProcessId())));
 
         var entry = edrEntry("assetId", "agreementId", "tpId");
-        getStore().save(entry, edr("tpId"));
+        getStore().save(entry, edr("edrId"));
 
         var filter = Criterion.Builder.newInstance()
                 .operandLeft("agreementId")
@@ -109,7 +109,7 @@ public abstract class EndpointDataReferenceCacheBaseTest {
     void deleteByTransferProcessId_shouldDelete_WhenFound() {
 
         var entry = edrEntry("assetId", "agreementId", "tpId");
-        getStore().save(entry, edr("tpId"));
+        getStore().save(entry, edr("edrId"));
 
         assertThat(getStore().deleteByTransferProcessId(entry.getTransferProcessId()))
                 .extracting(StoreResult::getContent)
@@ -128,25 +128,8 @@ public abstract class EndpointDataReferenceCacheBaseTest {
                 .isEqualTo(StoreFailure.Reason.NOT_FOUND);
     }
 
-    protected void prepareEdr(EndpointDataReference edr) {
+    protected void onBeforeEdrSave(EndpointDataReference edr) {
 
-    }
-
-
-    private EndpointDataReference edr(String id) {
-        return EndpointDataReference.Builder.newInstance()
-                .endpoint("http://test.com")
-                .id(id)
-                .authCode("11111")
-                .authKey("authentication").build();
-    }
-
-    private EndpointDataReferenceEntry edrEntry(String assetId, String agreementId, String transferProcessId) {
-        return EndpointDataReferenceEntry.Builder.newInstance()
-                .assetId(assetId)
-                .agreementId(agreementId)
-                .transferProcessId(transferProcessId)
-                .build();
     }
 
 }

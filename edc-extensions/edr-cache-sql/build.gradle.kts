@@ -25,8 +25,11 @@ dependencies {
     implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.spi.transaction.datasource)
 
+    testImplementation(libs.edc.transaction.local)
+
     testImplementation(testFixtures(project(":spi:edr-cache-spi")))
     testImplementation(testFixtures(libs.edc.core.sql))
+
     testImplementation(testFixtures(libs.edc.junit))
-    
+
 }
