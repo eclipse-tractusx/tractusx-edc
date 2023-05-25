@@ -43,6 +43,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -61,8 +62,8 @@ class ProvisionAdditionalHeadersExtensionTest {
     private final DataFlowController dataFlowController = mock(DataFlowController.class);
     private final RemoteMessageDispatcherRegistry dispatcherRegistry = mock(RemoteMessageDispatcherRegistry.class);
 
-    private ContractNegotiationStore contractNegotiationStore = mock(ContractNegotiationStore.class);
-    private ContractValidationService contractValidationService = mock(ContractValidationService.class);
+    private final ContractNegotiationStore contractNegotiationStore = mock(ContractNegotiationStore.class);
+    private final ContractValidationService contractValidationService = mock(ContractValidationService.class);
 
     @BeforeEach
     void setUp(EdcExtension extension) {
@@ -110,10 +111,7 @@ class ProvisionAdditionalHeadersExtensionTest {
 
         assertThat(result).matches(ServiceResult::succeeded);
 
-        await().untilAsserted(
-                () -> {
-                    verify(dataFlowController)
-                            .initiateFlow(any(), argThat(it -> "aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any());
-                });
+        await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> verify(dataFlowController).initiateFlow(any(), argThat(it -> "aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any()));
     }
 }
