@@ -42,4 +42,5 @@ public class NegotiateEdrPostgresqlTest extends AbstractNegotiateEdrTest {
             PLATO_BPN,
             platoPostgresqlConfiguration()
     );
+
 }

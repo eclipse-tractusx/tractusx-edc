@@ -17,6 +17,7 @@ plugins {
 }
 
 dependencies {
+    testImplementation(project(":spi:edr-cache-spi"))
     testImplementation(project(":edc-extensions:control-plane-adapter-api"))
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.restAssured)

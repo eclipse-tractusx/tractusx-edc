@@ -86,6 +86,10 @@ public class TestRuntimeConfiguration {
                 put("edc.datasource.transferprocess.url", jdbcUrl);
                 put("edc.datasource.transferprocess.user", PostgresqlLocalInstance.USER);
                 put("edc.datasource.transferprocess.password", PostgresqlLocalInstance.PASSWORD);
+                put("edc.datasource.edr.name", "edr");
+                put("edc.datasource.edr.url", jdbcUrl);
+                put("edc.datasource.edr.user", PostgresqlLocalInstance.USER);
+                put("edc.datasource.edr.password", PostgresqlLocalInstance.PASSWORD);
             }
         };
     }
