@@ -20,6 +20,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 
@@ -62,4 +63,7 @@ public class EdrNegotiationHelperFunctions {
                 .build();
     }
 
+    public static <E extends Event> ReceivedEvent createEvent(Class<E> klass) {
+        return ReceivedEvent.Builder.newInstance().type(klass.getSimpleName()).build();
+    }
 }

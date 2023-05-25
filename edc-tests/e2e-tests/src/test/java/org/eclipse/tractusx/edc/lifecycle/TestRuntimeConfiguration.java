@@ -30,6 +30,7 @@ public class TestRuntimeConfiguration {
     public static final String SOKRATES_BPN = SOKRATES_NAME + BPN_SUFFIX;
     public static final String PLATO_NAME = "PLATO";
     public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
+    public static final Integer PLATO_PROXIED_AAS_BACKEND_PORT = getFreePort();
     static final String DSP_PATH = "/api/v1/dsp";
     static final int PLATO_CONNECTOR_PORT = getFreePort();
     static final int PLATO_MANAGEMENT_PORT = getFreePort();
@@ -46,7 +47,11 @@ public class TestRuntimeConfiguration {
     static final String SOKRATES_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
+    static final String PLATO_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
+
+    static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
+
 
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
@@ -64,7 +69,7 @@ public class TestRuntimeConfiguration {
 
     public static Map<String, String> postgresqlConfiguration(String name) {
         var jdbcUrl = jdbcUrl(name);
-        return new HashMap<String, String>() {
+        return new HashMap<>() {
             {
                 put("edc.datasource.asset.name", "asset");
                 put("edc.datasource.asset.url", jdbcUrl);
@@ -113,6 +118,7 @@ public class TestRuntimeConfiguration {
                 // embedded dataplane config
                 put("web.http.control.path", "/api/dataplane/control");
                 put("web.http.control.port", SOKRATES_DATAPLANE_CONTROL_PORT);
+                put("tx.dpf.consumer.proxy.port", SOKRATES_DATAPLANE_PROXY_PORT);
                 put("edc.dataplane.token.validation.endpoint", "http://localhost:" + SOKRATES_DATAPLANE_CONTROL_PORT + "/api/dataplane/control/token");
                 put("edc.dataplane.selector.httpplane.url", "http://localhost:" + SOKRATES_DATAPLANE_CONTROL_PORT + "/api/dataplane/control");
                 put("edc.dataplane.selector.httpplane.sourcetypes", "HttpData");
@@ -124,7 +130,7 @@ public class TestRuntimeConfiguration {
             }
         };
     }
-
+    
     public static Map<String, String> platoConfiguration() {
         return new HashMap<>() {
             {
@@ -143,6 +149,7 @@ public class TestRuntimeConfiguration {
                 // embedded dataplane config
                 put("web.http.control.path", "/api/dataplane/control");
                 put("web.http.control.port", PLATO_DATAPLANE_CONTROL_PORT);
+                put("tx.dpf.consumer.proxy.port", PLATO_DATAPLANE_PROXY_PORT);
                 put("edc.dataplane.token.validation.endpoint", "http://localhost:" + PLATO_DATAPLANE_CONTROL_PORT + "/api/dataplane/control/token");
                 put("edc.dataplane.selector.httpplane.url", "http://localhost:" + PLATO_DATAPLANE_CONTROL_PORT + "/api/dataplane/control");
                 put("edc.dataplane.selector.httpplane.sourcetypes", "HttpData");
@@ -150,6 +157,8 @@ public class TestRuntimeConfiguration {
                 put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + PLATO_PUBLIC_API_PORT + "/api/public\"}");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
+                put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT);
+                put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
             }
         };
     }

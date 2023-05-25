@@ -26,6 +26,7 @@ plugins {
 dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
     implementation(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(project(":edc-extensions:edr-cache-sql"))
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

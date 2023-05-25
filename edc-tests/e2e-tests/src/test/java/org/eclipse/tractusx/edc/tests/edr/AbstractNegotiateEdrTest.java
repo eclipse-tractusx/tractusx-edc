@@ -14,7 +14,6 @@
 
 package org.eclipse.tractusx.edc.tests.edr;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import okhttp3.mockwebserver.MockResponse;
@@ -29,7 +28,7 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
-import org.eclipse.edc.spi.event.Event;
+import org.eclipse.tractusx.edc.helpers.ReceivedEvent;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
+import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEvent;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
@@ -111,8 +111,7 @@ public abstract class AbstractNegotiateEdrTest {
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 
-
-        var edrCaches = SOKRATES.getEdrEntries(assetId);
+        var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
 
         assertThat(edrCaches).hasSize(1);
 
@@ -128,9 +127,6 @@ public abstract class AbstractNegotiateEdrTest {
 
     }
 
-    <E extends Event> ReceivedEvent createEvent(Class<E> klass) {
-        return ReceivedEvent.Builder.newInstance().type(klass.getSimpleName()).build();
-    }
 
     ReceivedEvent waitForEvent(ReceivedEvent event) {
         try {
@@ -145,42 +141,5 @@ public abstract class AbstractNegotiateEdrTest {
         }
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private static class ReceivedEvent {
-        private String type;
 
-        public String getType() {
-            return type;
-        }
-
-        @Override
-        public String toString() {
-            return "ReceivedEvent{" +
-                    "type='" + type + '\'' +
-                    '}';
-        }
-
-        public static class Builder {
-            private final AbstractNegotiateEdrTest.ReceivedEvent event;
-
-            private Builder(AbstractNegotiateEdrTest.ReceivedEvent event) {
-                this.event = event;
-            }
-
-            public static Builder newInstance() {
-                return new Builder(new AbstractNegotiateEdrTest.ReceivedEvent());
-            }
-
-            public Builder type(String type) {
-                this.event.type = type;
-                return this;
-            }
-
-            public AbstractNegotiateEdrTest.ReceivedEvent build() {
-                return event;
-            }
-        }
-
-
-    }
 }
