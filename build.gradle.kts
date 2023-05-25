@@ -25,7 +25,7 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("com.diffplug.spotless") version "6.18.0"
+    id("com.diffplug.spotless") version "6.19.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
