@@ -15,7 +15,7 @@ mockito = "5.2.0"
 restAssured = "5.3.0"
 apache-sshd = "2.10.0"
 testcontainers = "1.18.1"
-aws = "2.20.71"
+aws = "2.20.72"
 rsApi = "3.1.0"
 
 [libraries]
