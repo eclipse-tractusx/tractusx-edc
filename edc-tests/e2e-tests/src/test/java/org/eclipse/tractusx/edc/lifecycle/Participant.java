@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -81,7 +82,7 @@ public class Participant {
         this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
         jsonLd = new TitaniumJsonLd(mock(Monitor.class));
     }
-    
+
     /**
      * Creates an asset with the given ID and props using the participant's Data Management API
      */
@@ -332,6 +333,11 @@ public class Participant {
         return getProxyData(body);
     }
 
+    public Response pullProxyDataResponseByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return proxyRequest(body);
+    }
+
     public String pullProxyDataByTransferProcessId(Participant provider, String transferProcessId) {
         var body = Map.of("transferProcessId", transferProcessId,
                 "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
@@ -340,14 +346,18 @@ public class Participant {
     }
 
     private String getProxyData(Map<String, String> body) {
+        return proxyRequest(body)
+                .then()
+                .assertThat().statusCode(200)
+                .extract().body().asString();
+    }
+
+    private Response proxyRequest(Map<String, String> body) {
         return given()
                 .baseUri(proxyUrl)
                 .contentType("application/json")
                 .body(body)
-                .post(PROXY_SUBPATH)
-                .then()
-                .assertThat().statusCode(200)
-                .extract().body().asString();
+                .post(PROXY_SUBPATH);
     }
 
     public JsonObject getDatasetForAsset(Participant provider, String assetId) {

@@ -22,6 +22,8 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -49,12 +51,10 @@ public abstract class AbstractDataPlaneProxyTest {
     MockWebServer server = new MockWebServer();
 
     ObjectMapper mapper = new ObjectMapper();
-    
+
     @Test
     @DisplayName("Verify E2E flow with Data Plane proxies and EDR")
-    void verify_end2EndFlows() throws IOException {
-
-        server.start(PLATO_PROXIED_AAS_BACKEND_PORT);
+    void httpPullDataTransfer_withEdrAndProxy() throws IOException {
 
         var eventsUrl = server.url("/events");
 
@@ -93,6 +93,94 @@ public abstract class AbstractDataPlaneProxyTest {
         server.enqueue(new MockResponse().setBody(body));
         data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
         assertThat(data).isEqualTo(body);
+    }
+
+    @Test
+    @DisplayName("Verify E2E flow with Data Plane proxies fails when EDR is not found")
+    void httpPullDataTransfer_withoutEdr() throws IOException {
+
+        var eventsUrl = server.url("/events");
+
+        var assetId = "api-asset-1";
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "contentType", "application/json")
+                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
+                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
+                .add(EDC_NAMESPACE + "authCode", authCode)
+                .build());
+
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+
+
+        SOKRATES.pullProxyDataResponseByAssetId(PLATO, assetId)
+                .then()
+                .assertThat().statusCode(400);
+
+    }
+
+    @Test
+    @DisplayName("Verify E2E flow with Data Plane proxies and Two EDR")
+    void httpPullDataTransfer_shouldFailForAsset_withTwoEdrAndProxy() throws IOException {
+
+        var eventsUrl = server.url("/events");
+
+        var assetId = "api-asset-1";
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "contentType", "application/json")
+                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
+                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
+                .add(EDC_NAMESPACE + "authCode", authCode)
+                .build());
+
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+
+        var callbacks = Json.createArrayBuilder()
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .build();
+
+        // response to callback
+        server.enqueue(new MockResponse());
+        server.enqueue(new MockResponse());
+
+        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+
+        var transferEvent1 = waitForTransferCompletion();
+        var transferEvent2 = waitForTransferCompletion();
+
+        var body = "{\"response\": \"ok\"}";
+
+        server.enqueue(new MockResponse().setBody(body));
+        SOKRATES.pullProxyDataResponseByAssetId(PLATO, assetId).then()
+                .assertThat().statusCode(428);
+
+        server.enqueue(new MockResponse().setBody(body));
+        var data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent1.getPayload().getTransferProcessId());
+        assertThat(data).isEqualTo(body);
+
+        server.enqueue(new MockResponse().setBody(body));
+        data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent2.getPayload().getTransferProcessId());
+        assertThat(data).isEqualTo(body);
+    }
+
+    @BeforeEach
+    void setup() throws IOException {
+        server.start(PLATO_PROXIED_AAS_BACKEND_PORT);
+    }
+
+    @AfterEach
+    void teardown() throws IOException {
+        server.shutdown();
     }
 
     EventEnvelope<TransferProcessCompleted> waitForTransferCompletion() {
