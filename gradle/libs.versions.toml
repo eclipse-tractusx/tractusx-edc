@@ -17,7 +17,7 @@ apache-sshd = "2.10.0"
 testcontainers = "1.18.1"
 aws = "2.20.73"
 rsApi = "3.1.0"
-jupiter = "5.9.2"
+jupiter = "5.9.3"
 assertj = "3.24.2"
 
 [libraries]
