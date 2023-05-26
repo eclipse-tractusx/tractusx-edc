@@ -17,13 +17,13 @@ package org.eclipse.tractusx.edc.helpers;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
-import static org.eclipse.edc.api.query.QuerySpecDto.EDC_QUERY_SPEC_LIMIT;
-import static org.eclipse.edc.api.query.QuerySpecDto.EDC_QUERY_SPEC_OFFSET;
-import static org.eclipse.edc.api.query.QuerySpecDto.EDC_QUERY_SPEC_TYPE;
+import static org.eclipse.edc.api.model.QuerySpecDto.EDC_QUERY_SPEC_LIMIT;
+import static org.eclipse.edc.api.model.QuerySpecDto.EDC_QUERY_SPEC_OFFSET;
+import static org.eclipse.edc.api.model.QuerySpecDto.EDC_QUERY_SPEC_TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 
 public class QueryHelperFunctions {
-    
+
     public static JsonObject createQuery(int limit, int offset) {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_QUERY_SPEC_TYPE)

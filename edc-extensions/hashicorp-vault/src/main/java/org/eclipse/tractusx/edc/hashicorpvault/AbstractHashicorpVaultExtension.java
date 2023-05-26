@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
@@ -49,6 +50,14 @@ public class AbstractHashicorpVaultExtension {
     public static final boolean VAULT_HEALTH_CHECK_STANDBY_OK_DEFAULT = false;
 
     private static final String VAULT_TIMEOUT_SECONDS = "edc.vault.hashicorp.timeout.seconds";
+
+    public HashicorpVaultClient createVaultClient(ServiceExtensionContext context, ObjectMapper mapper) {
+        var config = loadHashicorpVaultClientConfig(context);
+
+        final OkHttpClient okHttpClient = createOkHttpClient(config);
+
+        return new HashicorpVaultClient(config, okHttpClient, mapper);
+    }
 
     protected OkHttpClient createOkHttpClient(HashicorpVaultClientConfig config) {
         OkHttpClient.Builder builder =

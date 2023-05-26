@@ -110,6 +110,12 @@ spec:
           {{- end }}
 
             ########################
+            ## ID CONFIGURATION ##
+            ########################
+            - name: EDC_PARTICIPANT_ID
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
+
+            ########################
             ## DAPS CONFIGURATION ##
             ########################
 
@@ -154,31 +160,15 @@ spec:
               value: {{ .Values.controlplane.endpoints.observability.insecure | quote }}
 
             #########
-            ## IDS ##
+            ## DSP ##
             #########
-            - name: "IDS_WEBHOOK_ADDRESS"
-              value: {{ include "txdc.controlplane.url.protocol" . | quote }}
-            - name: "EDC_IDS_ENDPOINT"
+
+            - name: "EDC_DSP_CALLBACK_ADDRESS"
               value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" .) .Values.controlplane.endpoints.protocol.path | quote }}
-            - name: "EDC_IDS_ID"
-              value: {{ printf "urn:connector:%s" (lower .Values.controlplane.internationalDataSpaces.id) | quote }}
-            - name: "EDC_IDS_DESCRIPTION"
-              value: {{ .Values.controlplane.internationalDataSpaces.description | quote }}
-            - name: "EDC_IDS_TITLE"
-              value: {{ .Values.controlplane.internationalDataSpaces.title | quote }}
-            - name: "EDC_IDS_MAINTAINER"
-              value: {{ .Values.controlplane.internationalDataSpaces.maintainer | quote }}
-            - name: "EDC_IDS_CURATOR"
-              value: {{ .Values.controlplane.internationalDataSpaces.curator | quote }}
-            - name: "EDC_IDS_CATALOG_ID"
-              value: {{ printf "urn:catalog:%s" (lower .Values.controlplane.internationalDataSpaces.catalogId) | quote }}
             - name: "EDC_OAUTH_PROVIDER_AUDIENCE"
               value: "idsc:IDS_CONNECTORS_ALL"
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path "/data" | quote }}
-            # this is the old setting name for 'EDC_OAUTH_ENDPOINT_AUDIENCE' and is mandatory for Produce EDC v0.1.2 and older
-            - name: "EDC_IDS_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path "/data" | quote }}
+              value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path | quote }}
 
             ################
             ## POSTGRESQL ##
