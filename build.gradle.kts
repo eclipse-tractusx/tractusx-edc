@@ -31,7 +31,6 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
-val javaVersion: String by project
 val txScmConnection: String by project
 val txWebsiteUrl: String by project
 val txScmUrl: String by project
@@ -107,7 +106,6 @@ allprojects {
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
             resourcePackages = setOf("org.eclipse.tractusx.edc")
         }
-        javaLanguageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 
     configure<CheckstyleExtension> {
