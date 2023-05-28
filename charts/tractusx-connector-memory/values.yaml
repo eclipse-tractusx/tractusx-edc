@@ -31,6 +31,9 @@ imagePullSecrets: []
 
 customLabels: {}
 
+participant:
+  id: ""
+
 runtime:
   image:
     repository: ""
