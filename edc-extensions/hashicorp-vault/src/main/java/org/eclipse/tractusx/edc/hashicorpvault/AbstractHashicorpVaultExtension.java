@@ -54,7 +54,7 @@ public class AbstractHashicorpVaultExtension {
     public HashicorpVaultClient createVaultClient(ServiceExtensionContext context, ObjectMapper mapper) {
         var config = loadHashicorpVaultClientConfig(context);
 
-        final OkHttpClient okHttpClient = createOkHttpClient(config);
+        var okHttpClient = createOkHttpClient(config);
 
         return new HashicorpVaultClient(config, okHttpClient, mapper);
     }

@@ -26,7 +26,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"@context\": {},\n    \"asset\": {\n        \"@type\": \"Asset\",\n        \"@id\": \"{{ASSET_ID}}\", \n        \"properties\": {\n            \"description\": \"Product EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"@type\": \"DataAddress\",\n        \"type\": \"HttpData\",\n        \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\"\n    }\n}",
+					"raw": "{\n    \"@context\": {},\n    \"asset\": {\n        \"@type\": \"Asset\",\n        \"@id\": \"{{ASSET_ID}}\", \n        \"properties\": {\n            \"description\": \"Product EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"@type\": \"DataAddress\",\n        \"type\": \"HttpData\",\n        \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -539,13 +539,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/transferprocesses/764db319-0952-4d20-8feb-d8bee8e77a54",
+					"raw": "{{CONSUMER_DATAMGMT_URL}}/transferprocesses/8e428b80-46a5-4325-87e5-592518f7666b",
 					"host": [
 						"{{CONSUMER_DATAMGMT_URL}}"
 					],
 					"path": [
 						"transferprocesses",
-						"764db319-0952-4d20-8feb-d8bee8e77a54"
+						"8e428b80-46a5-4325-87e5-592518f7666b"
 					]
 				}
 			},
@@ -592,6 +592,187 @@
 					],
 					"path": [
 						"transferprocesses",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Initiate EDR Negotation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_IDS_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:9f9375e3-ed28-449a-8a98-a340f4c20c26\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_ADAPTER_URL}}/edrs",
+					"host": [
+						"{{CONSUMER_ADAPTER_URL}}"
+					],
+					"path": [
+						"edrs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Query EDRs Cached",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_ADAPTER_URL}}/edrs?assetId={{ASSET_ID}}",
+					"host": [
+						"{{CONSUMER_ADAPTER_URL}}"
+					],
+					"path": [
+						"edrs"
+					],
+					"query": [
+						{
+							"key": "assetId",
+							"value": "{{ASSET_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get EDR by tp ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_ADAPTER_URL}}/edrs/4b383155-9147-4912-819e-6172b4a3eb02",
+					"host": [
+						"{{CONSUMER_ADAPTER_URL}}"
+					],
+					"path": [
+						"edrs",
+						"4b383155-9147-4912-819e-6172b4a3eb02"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Asset Data with proxy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"endpointUrl\": \"http://plato-dataplane:8080/api/gateway/aas/1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8186/proxy/aas/request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8186",
+					"path": [
+						"proxy",
+						"aas",
 						"request"
 					]
 				}
@@ -714,6 +895,11 @@
 		{
 			"key": "EDC_NAMESPACE",
 			"value": "https://w3id.org/edc/v0.0.1/ns/",
+			"type": "string"
+		},
+		{
+			"key": "CONSUMER_ADAPTER_URL",
+			"value": "http://localhost:31364/management/adapter",
 			"type": "string"
 		}
 	]

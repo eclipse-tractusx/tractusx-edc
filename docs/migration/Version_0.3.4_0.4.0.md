@@ -35,6 +35,10 @@ The Business tests were brittle, consumed a lot of resources and were quite cumb
 Since the old Control-Plane-Adapter is incompatible with DSP, a new iteration was created.
 **Due to time constraints with this release documentation for this feature will to be published subsequently**
 
+## New Policies for expressing validity of the agreement
+
+The dates in `ContractOffer` and `ContractAgreement` has been removed in favour of a policy based contract validity check, see [here](https://github.com/eclipse-edc/Connector/issues/2758)
+
 ## Other changes
 
 - When using the EDR [HttpDynamicReceiverExtension](https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver) in the transfer process initiation

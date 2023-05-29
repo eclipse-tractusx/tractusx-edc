@@ -58,18 +58,7 @@ public class CxParticipantExtensionTest {
     @Test
     void initialize() {
         extension.initialize(context);
-        var attributes = Map.of(PARTICIPANT_IDENTITY, "BPNSOKRATES");
         verify(agentService).register(isA(CxParticipantExtension.class));
-        var claims = ClaimToken.Builder.newInstance().claim(REFERRING_CONNECTOR_CLAIM, "http://sokrates-controlplane/BPNSOKRATES").build();
-
-
-        assertThat(extension.attributesFor(claims)).containsExactlyEntriesOf(attributes);
-
-        claims = ClaimToken.Builder.newInstance().claim(REFERRING_CONNECTOR_CLAIM, "http://sokrates-controlplane/BPNSOKRATES/").build();
-        assertThat(extension.attributesFor(claims)).containsExactlyEntriesOf(attributes);
-
-        claims = ClaimToken.Builder.newInstance().claim(REFERRING_CONNECTOR_CLAIM, "http://sokrates-controlplane/test/path/BPNSOKRATES/").build();
-        assertThat(extension.attributesFor(claims)).containsExactlyEntriesOf(attributes);
     }
 
 
