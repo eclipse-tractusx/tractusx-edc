@@ -343,6 +343,9 @@ dataplane:
     control:
       port: 8083
       path: /api/dataplane/control
+    proxy:
+      port: 8186
+      path: /proxy
     observability:
       # -- port for incoming API calls
       port: 8085

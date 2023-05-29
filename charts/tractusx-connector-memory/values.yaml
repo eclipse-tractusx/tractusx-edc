@@ -124,6 +124,9 @@ runtime:
     public:
       port: 8086
       path: /api/public
+    proxy:
+      port: 8186
+      path: /proxy
   businessPartnerValidation:
     log:
       agreementValidation: true

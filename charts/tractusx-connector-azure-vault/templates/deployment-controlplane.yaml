@@ -224,6 +224,16 @@ spec:
             - name: "EDC_DATASOURCE_TRANSFERPROCESS_URL"
               value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
 
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/edr-cache-sql
+            - name: "EDC_DATASOURCE_EDR_NAME"
+              value: "edr"
+            - name: "EDC_DATASOURCE_EDR_USER"
+              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
+            - name: "EDC_DATASOURCE_EDR_PASSWORD"
+              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
+            - name: "EDC_DATASOURCE_EDR_URL"
+              value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
+
             ################
             ## DATA PLANE ##
             ################
