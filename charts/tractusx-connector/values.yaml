@@ -110,7 +110,7 @@ controlplane:
       # -- port for incoming api calls
       port: 8084
       # -- path for incoming api calls
-      path: /api/v1/ids
+      path: /api/v1/dsp
     # -- metrics api, used for application metrics, must not be internet facing
     metrics:
       # -- port for incoming api calls
