@@ -1,0 +1,954 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2023-05-30T02:52:35.032Z",
+  "__export_source": "insomnia.desktop.app:v2023.2.2",
+  "resources": [
+    {
+      "_id": "req_16395a4ff47148a78f4d02389611b650",
+      "parentId": "fld_d50ecbe5417e4473b27bc63362007797",
+      "modified": 1685414787285,
+      "created": 1685010917255,
+      "url": "{{ _['local-provider-dma'] }}/v2/assets/request",
+      "name": "Request All Assets",
+      "description": "",
+      "method": "POST",
+      "body": {},
+      "parameters": [
+        {
+          "id": "pair_7442feaf816f47ea9fc62e4b4844bc41",
+          "name": "limit",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_78b807321ecf4a23845d451b05a7df21",
+          "name": "offset",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_e70dc13c3a314e288a8f282d18ae543c",
+          "name": "filter",
+          "value": "contractAgreement.id=05e0031b-685b-47f6-b938-aa686b7a8ce4:fc3f9a27-5768-4efb-98a8-cd591226972d",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_380b43b266ed48749847e93c93a2d7ee",
+          "name": "filter",
+          "value": "asset:prop:id=s3_test",
+          "description": "",
+          "disabled": false
+        }
+      ],
+      "headers": [
+        {
+          "name": "X-Api-Key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_d7c0853cb45649d28d2408c26ec5edf7"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411746.75,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_d50ecbe5417e4473b27bc63362007797",
+      "parentId": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "modified": 1669295411749,
+      "created": 1669295411749,
+      "name": "Assets",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1669295411749,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "parentId": "wrk_a1621b3de4a7446d81acec1e33d4c4e8",
+      "modified": 1685414779498,
+      "created": 1669295411751,
+      "name": "EDC 0.4.0",
+      "description": "",
+      "environment": {
+        "local-provider-dma": "http://localhost:8081/api/management",
+        "local-consumer-dma": "http://localhost:9091/api/management",
+        "local-dma-apikey": "123456"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "local-provider-dma",
+          "local-consumer-dma",
+          "local-dma-apikey"
+        ]
+      },
+      "metaSortKey": -1669296341521,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_a1621b3de4a7446d81acec1e33d4c4e8",
+      "parentId": null,
+      "modified": 1669296341475,
+      "created": 1669295366804,
+      "name": "New Document",
+      "description": "",
+      "scope": "design",
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_de9f0910fa1040889de7053535204f8c",
+      "parentId": "fld_d50ecbe5417e4473b27bc63362007797",
+      "modified": 1685414795443,
+      "created": 1669295411746,
+      "url": "{{ _['local-provider-dma'] }}/v2/assets/asset-id",
+      "name": "GET Asset by ID",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_263234ecc44b46159bd141e4218ab604"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411746,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_12eff08c106b4a478888db7064e88cf0",
+      "parentId": "fld_d50ecbe5417e4473b27bc63362007797",
+      "modified": 1685414801945,
+      "created": 1669295411745,
+      "url": "{{ _['local-provider-dma'] }}/v2/assets",
+      "name": "POST Asset",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"@context\": {\n\t\t\"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n\t\"@type\": \"AssetEntryDto\",\n  \"asset\": {\n    \"@id\": \"asset-id\",\n\t\t\"properties\": {\n      \"name\": \"asset-name\",\n      \"contenttype\": \"application/json\",\n      \"version\": \"1.0\"\n    }\n\t},\n  \"dataAddress\": {\n    \"type\": \"AmazonS3\",\n    \"region\": \"eu-west-1\",\n    \"bucketName\": \"test-edc-s3-extension\",\n    \"keyName\": \"test_file.txt\",\n    \"accessKeyId\": \"AKIAUUHJCLHJFXM57CMC\",\n    \"secretAccessKey\": \"EnukEnp/Y1U0cVHyQAlhAj2H2+L56p1KiYCvlhI\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_ee31be6d4cef4247b3f5d58036d1d262"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_7c21d6fc8c75416fa90ccced8638fcad"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411745,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_c0c6371af3ba42069f746f16044127b9",
+      "parentId": "fld_d50ecbe5417e4473b27bc63362007797",
+      "modified": 1685414821145,
+      "created": 1669295411744,
+      "url": "{{ _['local-provider-dma'] }}/v2/assets/asset-id",
+      "name": "DELETE Asset by ID",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_058123f17e704cd89f2ef579e7a5e9c2"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411744,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_5c6eef0b992940e9b2f951505c50925c",
+      "parentId": "fld_9f983911bb6042459b5a1736575fc9d8",
+      "modified": 1685414836880,
+      "created": 1685013795968,
+      "url": "{{ _['local-provider-dma'] }}/v2/policydefinitions/request",
+      "name": "Request All Policies",
+      "description": "",
+      "method": "POST",
+      "body": {},
+      "parameters": [
+        {
+          "id": "pair_20fc06bdd9054db88f3cfa80bb7a43e1",
+          "name": "limit",
+          "value": "100000",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_5e0646d89a9d48af9b54cbe9ff3e5323",
+          "name": "offset",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_79bf102918ec4bdf90785ffd7759f073",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411739,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_9f983911bb6042459b5a1736575fc9d8",
+      "parentId": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "modified": 1669295411742,
+      "created": 1669295411742,
+      "name": "Policies",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1669295411742,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_6b6502c2ee654fad992418f37829f3b2",
+      "parentId": "fld_9f983911bb6042459b5a1736575fc9d8",
+      "modified": 1685414841733,
+      "created": 1669295411738,
+      "url": "{{ _['local-provider-dma'] }}/v2/policydefinitions/policy-definition-id",
+      "name": "GET Policy by ID",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "id": "pair_cf3cb5097e124533abb31a4abb491a2f",
+          "name": "limit",
+          "value": "10000",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_d32916aa2e8041968d6f3afc6b32ed43",
+          "name": "offset",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_4bc40ddcdb1a499697e7c33450a7023e",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411738,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_5c247196e323443e82a6dd186e3e150f",
+      "parentId": "fld_9f983911bb6042459b5a1736575fc9d8",
+      "modified": 1685414849969,
+      "created": 1669295411736,
+      "url": "{{ _['local-provider-dma'] }}/v2/policydefinitions",
+      "name": "Create policy",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n  },\n  \"@type\":\"PolicyDefinition\",\n  \"@id\": \"policy-definition-id\",\n  \"policy\": {\n    \"odrl:permission\": [\n\t\t\t{\n       \"odrl:action\": \"USE\",\n       \"odrl:constraint\": [\n\t\t\t\t {\n           \"odrl:leftOperand\": \"BusinessPartnerNumber\",\n           \"odrl:operator\": \"EQ\",\n           \"odrl:rightOperand\":  \"BPNL\"\n\t\t\t\t }]\n\t\t\t}\n\t\t],\n    \"odrl:prohibition\": [],\n    \"odrl:obligation\": []\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_85cf8aeddadb4cde9186cf1c9cc569bb"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_120452e1e06e403d96b1914c12db3515"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411736,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_8de5940371e443479651e9348b3e3106",
+      "parentId": "fld_9f983911bb6042459b5a1736575fc9d8",
+      "modified": 1685414870990,
+      "created": 1669295411739,
+      "url": "{{ _['local-provider-dma'] }}/v2/policydefinitions/policy-id",
+      "name": "Delete Policy by ID",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['provider-api-key'] }}",
+          "id": "pair_1aed08bd570242e1a3d1aa89c6131309"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411686,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_13f0323a24f7480fa1abd116091fbe58",
+      "parentId": "fld_a230a4b1e60d400591912da3b3b3352e",
+      "modified": 1685414906795,
+      "created": 1685013864740,
+      "url": "{{ _['local-provider-dma'] }}/v2/contractdefinitions/request",
+      "name": "Request All Contract Definitions",
+      "description": "",
+      "method": "POST",
+      "body": {},
+      "parameters": [
+        {
+          "id": "pair_be17f931386c490d98d9f0f17c96d8c3",
+          "name": "limit",
+          "value": "100000",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_b5e1563c173b4aa381f4dd04738d19d3",
+          "name": "offset",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "headers": [
+        {
+          "name": "X-Api-Key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_2c94039d9329443183193705b8a125b7"
+        },
+        {
+          "id": "pair_14f774e4188f4e8d9a051ae0adb19699",
+          "name": "",
+          "value": "",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411729.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_a230a4b1e60d400591912da3b3b3352e",
+      "parentId": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "modified": 1669295411733,
+      "created": 1669295411733,
+      "name": "Contract Definitions",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1669295411733,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_7a67a0cf519a42c9abc66ecdf87bc645",
+      "parentId": "fld_a230a4b1e60d400591912da3b3b3352e",
+      "modified": 1685414919350,
+      "created": 1669295411728,
+      "url": "{{ _['local-provider-dma'] }}/v2/contractdefinitions/contract-definition-id",
+      "name": "Get Contract Definition by ID",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['int-dma-apikey'] }}",
+          "id": "pair_dac9c4f9d89f43d98a38388f22610f1d"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411728,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_6fc551d8d4024a03bb289e7b43e40913",
+      "parentId": "fld_a230a4b1e60d400591912da3b3b3352e",
+      "modified": 1685414930912,
+      "created": 1669295411724,
+      "url": "{{ _['local-provider-dma'] }}/v2/contractdefinitions/",
+      "name": "POST Contract Definition",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "",
+        "text": "{\n\t\t\"@context\": {\n\t\t\"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n    },\n\t  \"@type\": \"ContractDefinition\",\n    \"@id\": \"contract-definition-id\",\n    \"accessPolicyId\": \"policy-definition-id\",\n    \"contractPolicyId\": \"policy-definition-id\",\n    \"assetsSelector\": [\n        {\n            \"operandLeft\": \"https://w3id.org/edc/v0.0.1/ns/id\",\n            \"operator\": \"=\",\n            \"operandRight\": \"asset-id\"\n        }\n    ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_7e29342f735a4dc88c202615b3b7ebc4"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_0ba1294fbe354705800043fb3384d47a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411724,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_bae2d7a4495d46fca47bf81111709e32",
+      "parentId": "fld_a230a4b1e60d400591912da3b3b3352e",
+      "modified": 1685414951975,
+      "created": 1669295411718,
+      "url": "{{ _['local-provider-dma'] }}/v2/contractdefinitions/contract-definition-id",
+      "name": "Delete Contract Definition by ID",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "x-api-key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_6461d778e86648d9a2ac9a6d8bfcdfb5"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411719,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_88b07f20e5a74610806c77decf182cfe",
+      "parentId": "fld_a6344dd23bc74a06b83ce01f72707098",
+      "modified": 1685414959939,
+      "created": 1685319383474,
+      "url": "{{ _['local-consumer-dma'] }}/v2/catalog/request",
+      "name": "Fetch Catalog",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"@context\": {\n\t\t\"vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"protocol\" : \"dataspace-protocol-http\",\n  \"providerUrl\": \"http://provider-control-plane:8282/api/v1/dsp\",\n\t\"querySpec\": null\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "id": "pair_738d3b3c0a154a7f91b25657c9993765",
+          "name": "X-Api-Key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "description": ""
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_9228abb381814df387b383e3c8fb3f56"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1685319383474,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_a6344dd23bc74a06b83ce01f72707098",
+      "parentId": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "modified": 1685326201818,
+      "created": 1685319278750,
+      "name": "Catalog",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1669295411658,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_c5065c2804564f17bc1c8d35787754f0",
+      "parentId": "fld_190313e2d98a4bb6ba07a32b8f3af6bb",
+      "modified": 1685414183702,
+      "created": 1680129898366,
+      "url": "{{ _['local-consumer-dma'] }}/api/management/v2/contractnegotiations",
+      "name": "Initiate Contract Negotiation",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"@context\": {\n\t\t\"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n  },\n  \"protocol\" : \"dataspace-protocol-http\",\n\t\"connectorAddress\": \"http://provider-control-plane:8282/api/v1/dsp\",\n\t\"connectorId\": \"connector-id\",\n\t\"callbackAddresses\": [\n\t\t{\n\t\t\t\"uri\": \"http://consumer-control-plane:8282/api/v1/dsp\",\n\t\t\t\"events\": [\n\t\t\t\t\"test\"\n\t\t\t]\n\t\t}\n\t],\n\t\"offer\": {\n\t\t\"offerId\": \"offer-id\",\n\t  \"assetId\": \"asset-id\",\n\t  \"policy\": {\n\t    \"odrl:permission\": [\n\t\t\t\t{\n\t\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t\t},\n\t\t\t\t\t\"odrl:target\": \"asset-id\"\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"odrl:target\": \"asset-id\"\n\t\t}\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "id": "pair_6005b3169f8347e4835ca78952003cd9",
+          "name": "X-Api-Key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "description": ""
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1680129898366,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_190313e2d98a4bb6ba07a32b8f3af6bb",
+      "parentId": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "modified": 1685326209295,
+      "created": 1680129835136,
+      "name": "Contract Negotiations",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1669295411651.75,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_1a459f1657594185bf2b3d81120ddccb",
+      "parentId": "fld_190313e2d98a4bb6ba07a32b8f3af6bb",
+      "modified": 1685333025557,
+      "created": 1685327097584,
+      "url": "{{ _['local-consumer-dma'] }}/api/management/v2/contractnegotiations/request",
+      "name": "Request All Contract Negotiations",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": ""
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "id": "pair_6005b3169f8347e4835ca78952003cd9",
+          "name": "X-Api-Key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "description": ""
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1679401391363,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_4ad7cb43133d43828b1431b09e60e22c",
+      "parentId": "fld_8ec7ee4e6f0746c689008ecc005351e5",
+      "modified": 1680130080459,
+      "created": 1678299119176,
+      "url": "{{ _['local-consumer-dma'] }}/api/v1/management/contractagreements",
+      "name": "Request All Contract Agreements",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "id": "pair_7442feaf816f47ea9fc62e4b4844bc41",
+          "name": "limit",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_78b807321ecf4a23845d451b05a7df21",
+          "name": "offset",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "id": "pair_e70dc13c3a314e288a8f282d18ae543c",
+          "name": "filter",
+          "value": "contractAgreement.id=05e0031b-685b-47f6-b938-aa686b7a8ce4:fc3f9a27-5768-4efb-98a8-cd591226972d",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "headers": [
+        {
+          "name": "X-Api-Key",
+          "value": "{{ _['local-dma-apikey'] }}",
+          "id": "pair_d7c0853cb45649d28d2408c26ec5edf7"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1669295411746.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_8ec7ee4e6f0746c689008ecc005351e5",
+      "parentId": "fld_a98cc38a6e734b4da57ac4b6ab1d0d92",
+      "modified": 1685413938516,
+      "created": 1678299098182,
+      "name": "Contract Agreement",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1669295411650.1875,
+      "_type": "request_group"
+    },
+    {
+      "_id": "env_e830e3a4b35016e95e27ea687a9740046f764cb8",
+      "parentId": "wrk_a1621b3de4a7446d81acec1e33d4c4e8",
+      "modified": 1671029278309,
+      "created": 1669295366830,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": {},
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1669295366830,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_e830e3a4b35016e95e27ea687a9740046f764cb8",
+      "parentId": "wrk_a1621b3de4a7446d81acec1e33d4c4e8",
+      "modified": 1678672932656,
+      "created": 1669295366835,
+      "name": "Default Jar",
+      "cookies": [
+        {
+          "key": "AWSALB",
+          "value": "Y+kq7jo4eWsaMAUDbLCEIsRNkj4cLDb5j+5WxZN0lB8AFR07475E/rKSB3M64O3LB/LOuPF9mMRhmij8mIZGGiRHzC7KUJSHa3MvC6BhEKHhfVdAIHCf0YQLzgudHlqIq4pj/N+CsiNI3eECdyNo5lWnJykn/HkGAfft1degDDtRaMMbMdOiK+vJsM3phw==",
+          "expires": "2023-03-07T11:05:05.000Z",
+          "domain": "connector.cx-rel.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-11-24T13:13:28.447Z",
+          "lastAccessed": "2023-02-28T11:05:05.676Z",
+          "id": "6849250799028006"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "Y+kq7jo4eWsaMAUDbLCEIsRNkj4cLDb5j+5WxZN0lB8AFR07475E/rKSB3M64O3LB/LOuPF9mMRhmij8mIZGGiRHzC7KUJSHa3MvC6BhEKHhfVdAIHCf0YQLzgudHlqIq4pj/N+CsiNI3eECdyNo5lWnJykn/HkGAfft1degDDtRaMMbMdOiK+vJsM3phw==",
+          "expires": "2023-03-07T11:05:05.000Z",
+          "domain": "connector.cx-rel.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-11-24T13:13:28.447Z",
+          "lastAccessed": "2023-02-28T11:05:05.676Z",
+          "id": "33164849956896636"
+        },
+        {
+          "key": "AWSALB",
+          "value": "zGPiq2s/Yh01qdh7xGahY4rcMqDx2lRDENRPXl7pOmjnMoTs/KpJMgDx3Pj3KrMFZ/2xrwpPr86fg5H83gPrv0RS27WSWCqdxR3qfvAbAhl7xOpCYueGW9WTih7t",
+          "expires": "2023-01-13T09:37:59.000Z",
+          "domain": "connector.cx-preprod.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-11-24T13:19:48.923Z",
+          "lastAccessed": "2023-01-06T09:37:59.335Z",
+          "id": "6038794969900858"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "zGPiq2s/Yh01qdh7xGahY4rcMqDx2lRDENRPXl7pOmjnMoTs/KpJMgDx3Pj3KrMFZ/2xrwpPr86fg5H83gPrv0RS27WSWCqdxR3qfvAbAhl7xOpCYueGW9WTih7t",
+          "expires": "2023-01-13T09:37:59.000Z",
+          "domain": "connector.cx-preprod.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-11-24T13:19:48.923Z",
+          "lastAccessed": "2023-01-06T09:37:59.335Z",
+          "id": "4740707535200257"
+        },
+        {
+          "key": "AWSALB",
+          "value": "UldDowJKiHJvwJ0iE84NWnQInnuN9SCnzNqi4U39kCejr37ia1tYev3VImVg6T7svOkyrBkfGfavLLBXPV8JyoZJXNLEN02tLkeYkHHnvgaQm1skk3u/xWDeZz03",
+          "expires": "2023-03-17T02:19:35.000Z",
+          "domain": "connector.cx-casestudy.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-11-24T13:20:02.316Z",
+          "lastAccessed": "2023-03-10T02:19:35.412Z",
+          "id": "8457632340885803"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "UldDowJKiHJvwJ0iE84NWnQInnuN9SCnzNqi4U39kCejr37ia1tYev3VImVg6T7svOkyrBkfGfavLLBXPV8JyoZJXNLEN02tLkeYkHHnvgaQm1skk3u/xWDeZz03",
+          "expires": "2023-03-17T02:19:35.000Z",
+          "domain": "connector.cx-casestudy.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-11-24T13:20:02.317Z",
+          "lastAccessed": "2023-03-10T02:19:35.412Z",
+          "id": "38452252917160656"
+        },
+        {
+          "key": "AWSALB",
+          "value": "E9qLI4D5ZOnp+0g1EAL+UNr5jgqiKC4sk/ory+yXDCsWBXUBpfVYnEX1T7cXTRGqUMbbq2rGfaEuVDkPC588ayCURcBo/h0jDCfljx9BOZ0qjG6GzUige0d4StZrnfKTpTD3bM4n0jSDWN6guKWpHfgIuqZk8fEpLf302MDfaSfsRvvam2kWuBEeHs/v6g==",
+          "expires": "2023-01-05T11:32:21.000Z",
+          "domain": "connector.cx-psim-casestudy.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-11-24T13:31:13.479Z",
+          "lastAccessed": "2022-12-29T11:32:24.918Z",
+          "id": "7842361266667583"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "E9qLI4D5ZOnp+0g1EAL+UNr5jgqiKC4sk/ory+yXDCsWBXUBpfVYnEX1T7cXTRGqUMbbq2rGfaEuVDkPC588ayCURcBo/h0jDCfljx9BOZ0qjG6GzUige0d4StZrnfKTpTD3bM4n0jSDWN6guKWpHfgIuqZk8fEpLf302MDfaSfsRvvam2kWuBEeHs/v6g==",
+          "expires": "2023-01-05T11:32:21.000Z",
+          "domain": "connector.cx-psim-casestudy.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-11-24T13:31:13.480Z",
+          "lastAccessed": "2022-12-29T11:32:24.918Z",
+          "id": "528706452770566"
+        },
+        {
+          "key": "AWSALB",
+          "value": "XjifvuzzUvJT6Vq9Rs3Xl/xuuuFg/eU4dWy+IDDh3eZC77k6l3NV6AU5tCGZe2/yiUxgeXE+wbmGyiQfwlpIq1Ezz2KtTLMPg0jtvV54l73BSB26e4a6WUoSoat2",
+          "expires": "2023-01-05T11:04:49.000Z",
+          "domain": "connector.cx-psim.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-11-29T14:25:58.530Z",
+          "lastAccessed": "2022-12-29T11:04:51.504Z",
+          "id": "44367316274709734"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "XjifvuzzUvJT6Vq9Rs3Xl/xuuuFg/eU4dWy+IDDh3eZC77k6l3NV6AU5tCGZe2/yiUxgeXE+wbmGyiQfwlpIq1Ezz2KtTLMPg0jtvV54l73BSB26e4a6WUoSoat2",
+          "expires": "2023-01-05T11:04:49.000Z",
+          "domain": "connector.cx-psim.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-11-29T14:25:58.530Z",
+          "lastAccessed": "2022-12-29T11:04:51.504Z",
+          "id": "3062679435428646"
+        },
+        {
+          "key": "AWSALB",
+          "value": "vTgGSS0zXfGt7m2NQ8X/OSy9YKr9LlkxsaDssKYocLNYkyaadtKyYJG4QQW5xTL94fKg5Ayf7jofrHUYbqZUAoNsWBgk+T8G/7rGpuHb+zfKmoX9QPGKHZ/fyyUxJPKg4/d81w5Bducepawh+dbaRKxDlwFARHNodN7Acvxyr7NLIsFG4vVaLujPxSfr/w==",
+          "expires": "2023-01-17T15:55:29.000Z",
+          "domain": "connector.dev.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-11-30T16:33:41.314Z",
+          "lastAccessed": "2023-01-10T15:55:29.336Z",
+          "id": "0672670820703638"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "vTgGSS0zXfGt7m2NQ8X/OSy9YKr9LlkxsaDssKYocLNYkyaadtKyYJG4QQW5xTL94fKg5Ayf7jofrHUYbqZUAoNsWBgk+T8G/7rGpuHb+zfKmoX9QPGKHZ/fyyUxJPKg4/d81w5Bducepawh+dbaRKxDlwFARHNodN7Acvxyr7NLIsFG4vVaLujPxSfr/w==",
+          "expires": "2023-01-17T15:55:29.000Z",
+          "domain": "connector.dev.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-11-30T16:33:41.314Z",
+          "lastAccessed": "2023-01-10T15:55:29.336Z",
+          "id": "12011304585107041"
+        },
+        {
+          "key": "AWSALB",
+          "value": "fzbRyOpM5pEojnM75uPVDPslnKBzku62undKgkGzTdzZn1SDq19WyRRylZmnj/J3SMNqYO8nHG0Erqlso3jQPqghumESNv2nW4phqxN1GeAu83sOoAHGO8cmlClZ",
+          "expires": "2023-01-02T10:36:59.000Z",
+          "domain": "connector.cx-psim-preprod.edc.aws.bmw.cloud",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2022-12-20T11:13:07.382Z",
+          "lastAccessed": "2022-12-26T10:37:11.100Z",
+          "id": "2180097365211069"
+        },
+        {
+          "key": "AWSALBCORS",
+          "value": "fzbRyOpM5pEojnM75uPVDPslnKBzku62undKgkGzTdzZn1SDq19WyRRylZmnj/J3SMNqYO8nHG0Erqlso3jQPqghumESNv2nW4phqxN1GeAu83sOoAHGO8cmlClZ",
+          "expires": "2023-01-02T10:36:59.000Z",
+          "domain": "connector.cx-psim-preprod.edc.aws.bmw.cloud",
+          "path": "/",
+          "secure": true,
+          "extensions": [
+            "SameSite=None"
+          ],
+          "hostOnly": true,
+          "creation": "2022-12-20T11:13:07.382Z",
+          "lastAccessed": "2022-12-26T10:37:11.100Z",
+          "id": "6381861614372135"
+        },
+        {
+          "key": "PHPSESSID",
+          "value": "rk0606jlannhiur9697ok8nc97",
+          "domain": "asdf.net",
+          "path": "/",
+          "hostOnly": true,
+          "creation": "2023-03-13T02:02:12.656Z",
+          "lastAccessed": "2023-03-13T02:02:12.656Z",
+          "id": "784889979407251"
+        }
+      ],
+      "_type": "cookie_jar"
+    },
+    {
+      "_id": "spc_c421b5fbdad14a50a2b885f71f80207d",
+      "parentId": "wrk_a1621b3de4a7446d81acec1e33d4c4e8",
+      "modified": 1669647300451,
+      "created": 1669295366816,
+      "fileName": "EDC",
+      "contents": "",
+      "contentType": "yaml",
+      "_type": "api_spec"
+    }
+  ]
+}
