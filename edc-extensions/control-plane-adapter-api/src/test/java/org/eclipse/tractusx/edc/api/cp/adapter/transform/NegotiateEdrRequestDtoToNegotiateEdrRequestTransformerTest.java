@@ -14,7 +14,7 @@
 
 package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
-import org.eclipse.edc.api.model.CallbackAddressDto;
+import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
 
     @Test
     void verify_transform() {
-        var callback = CallbackAddressDto.Builder.newInstance()
+        var callback = CallbackAddress.Builder.newInstance()
                 .uri("local://test")
                 .build();
         var dto = NegotiateEdrRequestDto.Builder.newInstance()

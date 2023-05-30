@@ -16,9 +16,9 @@ package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import org.eclipse.edc.api.model.CallbackAddressDto;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.jetbrains.annotations.NotNull;
@@ -64,8 +64,8 @@ public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonL
                 transformString(value, builder::providerId, context);
                 break;
             case EDR_REQUEST_DTO_CALLBACK_ADDRESSES:
-                var addresses = new ArrayList<CallbackAddressDto>();
-                transformArrayOrObject(value, CallbackAddressDto.class, addresses::add, context);
+                var addresses = new ArrayList<CallbackAddress>();
+                transformArrayOrObject(value, CallbackAddress.class, addresses::add, context);
                 builder.callbackAddresses(addresses);
                 break;
             case EDR_REQUEST_DTO_OFFER:
