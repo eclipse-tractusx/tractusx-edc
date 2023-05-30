@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -45,7 +46,7 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     private final LockManager lockManager;
 
     private final EdrCacheEntryPredicateConverter predicateConverter = new EdrCacheEntryPredicateConverter();
-    
+
     private final Map<String, List<EndpointDataReferenceEntry>> entriesByAssetId;
 
     private final Map<String, EndpointDataReferenceEntry> entriesByEdrId;
@@ -54,7 +55,7 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     public InMemoryEndpointDataReferenceCache() {
         lockManager = new LockManager(new ReentrantReadWriteLock());
         entriesByAssetId = new HashMap<>();
-        entriesByEdrId = new HashMap<>();
+        entriesByEdrId = new ConcurrentHashMap<>();
         edrsByTransferProcessId = new HashMap<>();
     }
 
