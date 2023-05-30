@@ -31,3 +31,17 @@ Instead of the `idsc:IDS_CONNECTORS_ALL` the connector requests a specific audie
 When a connector receives a message, it will checks the token audience is equal to the configured value in `edc.ids.endpoint.audience`.
 
 ![sequence diagram](./diagrams/sequence.png)
+
+## Catena-X Participant Extension
+
+Starting from `0.0.1-milestone-9` EDC requires a mandatory setting `edc.participant.id`, which in this case should be the BPN number which is transmitted over the wire to identifying the participants IDs.
+To verify that in the DAPS token an extension has been created, that extract from the `ClaimToken` the BPN number and then EDC compare that identity with the one provided over the wire, for security reason.
+
+By default the extension parse the `referringConnector` url and extract the BPN number as the last parameter in the URL eg (http://sokrates-controlplane/BPNSOKRATES).
+
+### Configuration
+
+| Key                                   | Description                                               | Mandatory | Default       |
+|:--------------------------------------|:----------------------------------------------------------|-----------|---------------|
+| tx.participant.id.regex               | Regex for extracting the BPN from the referringConnector  |           | [^/]+(?=/$|$) |
+| tx.participant.id.regexGroup          | Group number for the regex match                          |           | 0             |
