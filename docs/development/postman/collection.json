@@ -494,7 +494,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"@context\": {\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    },\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n    \"contractId\": \"1:1:e79ddbda-8317-4644-ba8d-70d07298284a\",\n    \"dataDestination\": {\n        \"properties\": {\n            \"type\": \"HttpProxy\"\n        }\n    },\n    \"managedResources\": false,\n    \"privateProperties\": {\n        \"receiverHttpEndpoint\": \"{{BACKEND_SERVICE}}\"\n    },\n    \"protocol\": \"dataspace-protocol-http\",\n    \"transferType\": {\n        \"contentType\": \"application/octet-stream\",\n        \"isFinite\": true\n    }\n}",
+					"raw": "{\n    \"@context\": {\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    },\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n    \"contractId\": \"<contractAgreementId>\",\n    \"dataDestination\": {\n        \"properties\": {\n            \"type\": \"HttpProxy\"\n        }\n    },\n    \"managedResources\": false,\n    \"privateProperties\": {\n        \"receiverHttpEndpoint\": \"{{BACKEND_SERVICE}}\"\n    },\n    \"protocol\": \"dataspace-protocol-http\",\n    \"transferType\": {\n        \"contentType\": \"application/octet-stream\",\n        \"isFinite\": true\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -822,7 +822,7 @@
 		},
 		{
 			"key": "PROVIDER_PROTOCOL_URL",
-			"value": "http://plato-controlplane:8084/api/v1/dsp\n"
+			"value": "http://plato-controlplane:8084/api/v1/dsp"
 		},
 		{
 			"key": "PROVIDER_MANAGEMENT_URL",
