@@ -39,7 +39,7 @@ fullnameOverride: tx-prod
 # EDC ControlPlane + DataPlane #
 ################################
 participant:
-  id: "test"
+  id: "test-participant"
 
 controlplane:
   service:

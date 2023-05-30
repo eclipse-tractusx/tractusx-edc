@@ -57,11 +57,11 @@ public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtensi
     }
 
     private void configureHealthCheck(HashicorpVaultClient client, ServiceExtensionContext context) {
-        final boolean healthCheckEnabled =
+        var healthCheckEnabled =
                 context.getSetting(VAULT_HEALTH_CHECK, VAULT_HEALTH_CHECK_DEFAULT);
         if (!healthCheckEnabled) return;
 
-        final HashicorpVaultHealthCheck healthCheck =
+        var healthCheck =
                 new HashicorpVaultHealthCheck(client, context.getMonitor());
 
         healthCheckService.addLivenessProvider(healthCheck);

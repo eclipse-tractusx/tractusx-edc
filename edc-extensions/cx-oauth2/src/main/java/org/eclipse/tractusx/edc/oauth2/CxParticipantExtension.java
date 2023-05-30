@@ -36,13 +36,14 @@ public class CxParticipantExtension implements ServiceExtension, ParticipantAgen
     private static final String DEFAULT_PARTICIPANT_ID_REGEX = "[^/]+(?=/$|$)";
     private static final int DEFAULT_PARTICIPANT_ID_REGEX_GROUP = 0;
 
-    @Setting(value = "Data plane proxy API consumer port", defaultValue = CxParticipantExtension.PARTICIPANT_ID_REGEX)
+    @Setting(value = "Participant Extractor from referringConnector regex", defaultValue = CxParticipantExtension.DEFAULT_PARTICIPANT_ID_REGEX)
     private static final String PARTICIPANT_ID_REGEX = "tx.participant.id.regex";
 
-    @Setting(value = "Data plane proxy API consumer port", defaultValue = CxParticipantExtension.PARTICIPANT_ID_REGEX)
-    private static final String PARTICIPANT_ID_REGEX_GROUP = "tx.participant.id.regex";
+    @Setting(value = "Participant Extractor from referringConnector regex group", defaultValue = "0")
+    private static final String PARTICIPANT_ID_REGEX_GROUP = "tx.participant.id.regexGroup";
     @Inject
-    ParticipantAgentService agentService;
+    private ParticipantAgentService agentService;
+    
     private Pattern participantRegex;
 
     private int participantRegexGroup;

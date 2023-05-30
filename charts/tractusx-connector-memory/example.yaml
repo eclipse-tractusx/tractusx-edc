@@ -34,7 +34,7 @@
 fullnameOverride: tx-inmem
 
 participant:
-  id: "test"
+  id: "test-participant"
 
 runtime:
   service:

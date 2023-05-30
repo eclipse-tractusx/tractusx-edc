@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.1.0-20230527-SNAPSHOT"
+edc = "0.1.0-20230529-SNAPSHOT"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"

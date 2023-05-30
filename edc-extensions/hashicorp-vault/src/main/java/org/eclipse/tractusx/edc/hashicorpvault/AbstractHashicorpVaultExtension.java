@@ -51,7 +51,7 @@ public class AbstractHashicorpVaultExtension {
 
     private static final String VAULT_TIMEOUT_SECONDS = "edc.vault.hashicorp.timeout.seconds";
 
-    public HashicorpVaultClient createVaultClient(ServiceExtensionContext context, ObjectMapper mapper) {
+    protected HashicorpVaultClient createVaultClient(ServiceExtensionContext context, ObjectMapper mapper) {
         var config = loadHashicorpVaultClientConfig(context);
 
         var okHttpClient = createOkHttpClient(config);

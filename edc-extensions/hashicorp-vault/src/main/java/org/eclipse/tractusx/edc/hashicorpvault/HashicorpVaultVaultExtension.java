@@ -30,7 +30,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
-@Provides({ Vault.class, CertificateResolver.class, PrivateKeyResolver.class })
+@Provides({Vault.class, CertificateResolver.class, PrivateKeyResolver.class})
 public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtension
         implements ServiceExtension {
 
@@ -46,10 +46,10 @@ public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtensio
     public void initialize(ServiceExtensionContext context) {
         var client = createVaultClient(context, typeManager.getMapper());
 
-        final HashicorpVault vault = new HashicorpVault(client);
-        final CertificateResolver certificateResolver =
+        var vault = new HashicorpVault(client);
+        var certificateResolver =
                 new HashicorpCertificateResolver(vault, context.getMonitor());
-        final VaultPrivateKeyResolver privateKeyResolver = new VaultPrivateKeyResolver(vault);
+        var privateKeyResolver = new VaultPrivateKeyResolver(vault);
 
         context.registerService(Vault.class, vault);
         context.registerService(CertificateResolver.class, certificateResolver);

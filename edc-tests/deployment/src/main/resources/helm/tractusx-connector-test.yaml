@@ -24,7 +24,7 @@ fullnameOverride: tx-prod
 ################################
 
 participant:
-  id: "test"
+  id: "test-participant"
   
 controlplane:
   service:
