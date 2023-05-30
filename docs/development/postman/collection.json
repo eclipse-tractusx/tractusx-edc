@@ -34,9 +34,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/assets",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"assets"
@@ -51,9 +51,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/assets/request",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/request",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"assets",
@@ -69,9 +69,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/assets/{{ASSET_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/{{ASSET_ID}}",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"assets",
@@ -87,9 +87,9 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/assets/{{ASSET_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/{{ASSET_ID}}",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"assets",
@@ -114,9 +114,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/policydefinitions",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"policydefinitions"
@@ -143,9 +143,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/policydefinitions/{{POLICY_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/{{POLICY_ID}}",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"policydefinitions",
@@ -170,9 +170,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/policydefinitions/request",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/request",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"policydefinitions",
@@ -197,9 +197,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/policydefinitions/{{POLICY_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/{{POLICY_ID}}",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"policydefinitions",
@@ -224,9 +224,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/contractdefinitions",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractdefinitions"
@@ -253,9 +253,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/contractdefinitions/{{CONTRACT_DEFINITION_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/{{CONTRACT_DEFINITION_ID}}",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractdefinitions",
@@ -280,9 +280,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/contractdefinitions/request",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/request",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractdefinitions",
@@ -307,9 +307,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_DATAMGMT_URL}}/contractdefinitions/{{CONTRACT_DEFINITION_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/{{CONTRACT_DEFINITION_ID}}",
 					"host": [
-						"{{PROVIDER_DATAMGMT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractdefinitions",
@@ -326,7 +326,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"@context\": {},\r\n    \"protocol\": \"dataspace-protocol-http\",\r\n    \"providerUrl\": \"{{PROVIDER_IDS_URL}}\",\r\n    \"querySpec\": {\r\n        \"offset\": 0,\r\n        \"limit\": 100,\r\n        \"filter\": \"\",\r\n        \"range\": {\r\n            \"from\": 0,\r\n            \"to\": 100\r\n        },\r\n        \"sortField\": \"\",\r\n        \"criterion\": \"\"\r\n    }\r\n}",
+					"raw": "{\r\n    \"@context\": {},\r\n    \"protocol\": \"dataspace-protocol-http\",\r\n    \"providerUrl\": \"{{PROVIDER_PROTOCOL_URL}}\",\r\n    \"querySpec\": {\r\n        \"offset\": 0,\r\n        \"limit\": 100,\r\n        \"filter\": \"\",\r\n        \"range\": {\r\n            \"from\": 0,\r\n            \"to\": 100\r\n        },\r\n        \"sortField\": \"\",\r\n        \"criterion\": \"\"\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -334,9 +334,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/catalog/request",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/catalog/request",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"catalog",
@@ -368,7 +368,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_IDS_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:9f9375e3-ed28-449a-8a98-a340f4c20c26\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
+					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:46483724-18f1-4dff-87da-f26725dcc59c\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -376,9 +376,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/contractnegotiations",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractnegotiations"
@@ -413,9 +413,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/contractnegotiations/request",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations/request",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractnegotiations",
@@ -451,9 +451,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/contractnegotiations/7cff6ecb-7e5e-40b8-b101-eba3f2045b1f/cancel",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations/7cff6ecb-7e5e-40b8-b101-eba3f2045b1f/cancel",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractnegotiations",
@@ -494,7 +494,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"@context\": {\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    },\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"connectorAddress\": \"{{PROVIDER_IDS_URL}}\",\n    \"contractId\": \"1:1:7b9cc812-45db-4772-b427-3d0f30eb6a96\",\n    \"dataDestination\": {\n        \"properties\": {\n            \"type\": \"HttpProxy\"\n        }\n    },\n    \"managedResources\": false,\n    \"privateProperties\": {\n        \"receiverHttpEndpoint\": \"{{BACKEND_SERVICE}}\"\n    },\n    \"protocol\": \"dataspace-protocol-http\",\n    \"transferType\": {\n        \"contentType\": \"application/octet-stream\",\n        \"isFinite\": true\n    }\n}",
+					"raw": "{\n    \"@context\": {\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    },\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n    \"contractId\": \"1:1:e79ddbda-8317-4644-ba8d-70d07298284a\",\n    \"dataDestination\": {\n        \"properties\": {\n            \"type\": \"HttpProxy\"\n        }\n    },\n    \"managedResources\": false,\n    \"privateProperties\": {\n        \"receiverHttpEndpoint\": \"{{BACKEND_SERVICE}}\"\n    },\n    \"protocol\": \"dataspace-protocol-http\",\n    \"transferType\": {\n        \"contentType\": \"application/octet-stream\",\n        \"isFinite\": true\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -502,9 +502,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/transferprocesses",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocesses",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"transferprocesses"
@@ -539,9 +539,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/transferprocesses/8e428b80-46a5-4325-87e5-592518f7666b",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocesses/8e428b80-46a5-4325-87e5-592518f7666b",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"transferprocesses",
@@ -586,9 +586,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{CONSUMER_DATAMGMT_URL}}/transferprocesses/request",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocesses/request",
 					"host": [
-						"{{CONSUMER_DATAMGMT_URL}}"
+						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"transferprocesses",
@@ -620,7 +620,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_IDS_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:9f9375e3-ed28-449a-8a98-a340f4c20c26\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
+					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:9f9375e3-ed28-449a-8a98-a340f4c20c26\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -817,15 +817,15 @@
 	],
 	"variable": [
 		{
-			"key": "CONSUMER_DATAMGMT_URL",
+			"key": "CONSUMER_MANAGEMENT_URL",
 			"value": "http://localhost:31364/management/v2"
 		},
 		{
-			"key": "PROVIDER_IDS_URL",
+			"key": "PROVIDER_PROTOCOL_URL",
 			"value": "http://plato-controlplane:8084/api/v1/dsp\n"
 		},
 		{
-			"key": "PROVIDER_DATAMGMT_URL",
+			"key": "PROVIDER_MANAGEMENT_URL",
 			"value": "http://localhost:30279/management/v2"
 		},
 		{
