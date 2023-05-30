@@ -1,9 +1,4 @@
-# Asset Management
-
-## Introduction
-This document will showcase how to manage assets with the new management API.
-
-## Creating an Asset 
+# Creating an Asset 
 
 ### Old plain JSON Schema
 

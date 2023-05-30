@@ -1,9 +1,4 @@
-# Policy Definition Management
-
-## Introduction
-This document will showcase how to manage policy definitions with the new management API.
-
-## Creating a Policy Definition
+# Creating a Policy Definition
 
 ### Old plain JSON Schema
 

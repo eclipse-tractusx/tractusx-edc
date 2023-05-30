@@ -1,17 +1,9 @@
-# Catalog Management
-
-## Introduction
-This document will showcase how to manage catalog fetching with the new management API.
-
-## Fetching a Catalog
+# Fetching provider's Catalog
 
 ### Old plain JSON Schema
 
 ```json
 {
-  "@context": {
-    "vocab": "https://w3id.org/edc/v0.0.1/ns/"
-  },
   "protocol" : "ids-protocol-http",
   "providerUrl": "http://provider-control-plane:8282/api/v1/ids",
   "querySpec": null

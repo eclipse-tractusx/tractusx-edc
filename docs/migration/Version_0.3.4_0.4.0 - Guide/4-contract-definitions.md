@@ -1,9 +1,4 @@
-# Contract Definition Management
-
-## Introduction
-This document will showcase how to manage contract definitions with the new management API.
-
-## Creating a Contract Definition
+# Creating a Contract Definition
 
 ### Old plain JSON Schema
 
@@ -34,7 +29,7 @@ This document will showcase how to manage contract definitions with the new mana
   },
   "@type": "ContractDefinition",
   "@id": "contract-definition-id",
-  "accessPolicyId": "policy-id,
+  "accessPolicyId": "policy-id",
   "contractPolicyId": "policy-id",
   "assetsSelector": [
     {

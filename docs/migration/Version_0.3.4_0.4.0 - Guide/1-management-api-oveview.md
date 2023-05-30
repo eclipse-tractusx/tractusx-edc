@@ -1,6 +1,6 @@
-# Management API
+# Management API V2 Overview
 
-## Introduction
+## Introduction 
 
 With the introduction of the new [Dataspace Protocol](https://docs.internationaldataspaces.org/dataspace-protocol/overview/readme), now using JSON-LD, all Management API endpoints had to be adapted as well to reflect that.
 JSON-LD (JSON for Linked Data) is an extension of JSON that introduces a set of principles and mechanisms to enable interoperability.
@@ -26,7 +26,7 @@ The `MANAGEMENT_URL` specifies the URL of the management API and the prefix `v2`
 
 > Please note: The old Management API is now deprecated and is not tested for compliance. The `/v2` prefix is only a temporary part of the path and will be discarded once the migration to the new protocol is finished and the old API is taken out of service. Once that is done, the new management API can be reached through `MANAGEMENT_URL`.
 
-## 2. Introduction of JSON-LD
+## 2. Brief JSON-LD Introduction
 JSON-LD includes several important keywords that play a crucial role in defining the structure, semantics, and relationships within a JSON-LD document. Since some keys which are required in requests for the new management API aren't self-explanatory when you first see them, here are some of the most commonly used and important keywords in JSON-LD.
 These keys are generally part of the JSON-LD spec and serve as identification on a larger scope.
 
@@ -54,8 +54,12 @@ A namespace is defined by associating a prefix with a URI or IRI in the @context
 > Please note: The namespaces `edc` currently is only a placeholder and do not lead to any JSON-LD context definition or vocabulary.
 > This will change at a later date.
 
-## 3. Resource management
-- [Asset](2-assets.md)
-- [Policy Definition](3-policy-definitions.md)
-- [Contract Definition](4-contract-definitions.md)
-- [Catalog](5-catalog.md)
+## 3. Walkthrough
+The steps can be followed using the updated [postman collection](../../development/postman/collection.json).
+
+1. [Create an Asset](2-assets.md)
+2. [Create a Policy Definition](3-policy-definitions.md)
+3. [Create Contract Definition](4-contract-definitions.md)
+4. [Fetch provider's Catalog](5-catalog.md)
+5. [Initiate Contract Negotiation](6-contract-negotiation.md)
+6. [Initiate Transfer Process](7-transfer-process.md)
