@@ -51,8 +51,7 @@ public class TestRuntimeConfiguration {
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
 
     static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
-
-
+    
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
         var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
@@ -130,7 +129,7 @@ public class TestRuntimeConfiguration {
             }
         };
     }
-    
+
     public static Map<String, String> platoConfiguration() {
         return new HashMap<>() {
             {

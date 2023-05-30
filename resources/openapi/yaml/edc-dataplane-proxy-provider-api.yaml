@@ -1,0 +1,12 @@
+openapi: 3.0.1
+paths:
+  /gateway/{paths}:
+    get:
+      operationId: requestAsset
+      responses:
+        default:
+          content:
+            application/json: {}
+          description: Gets asset data
+      tags:
+      - Data Plane Proxy API

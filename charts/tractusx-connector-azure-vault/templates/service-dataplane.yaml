@@ -48,5 +48,9 @@ spec:
       targetPort: metrics
       protocol: TCP
       name: metrics
+    - port: {{ .Values.dataplane.endpoints.proxy.port }}
+      targetPort: proxy
+      protocol: TCP
+      name: proxy
   selector:
     {{- include "txdc.dataplane.selectorLabels" . | nindent 4 }}

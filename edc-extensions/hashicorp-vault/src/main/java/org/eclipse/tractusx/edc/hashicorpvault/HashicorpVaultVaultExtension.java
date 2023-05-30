@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import okhttp3.OkHttpClient;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.security.CertificateResolver;
 import org.eclipse.edc.spi.security.PrivateKeyResolver;
@@ -28,10 +28,14 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 
 @Provides({Vault.class, CertificateResolver.class, PrivateKeyResolver.class})
 public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtension
         implements ServiceExtension {
+
+    @Inject
+    private TypeManager typeManager;
 
     @Override
     public String name() {
@@ -40,16 +44,12 @@ public class HashicorpVaultVaultExtension extends AbstractHashicorpVaultExtensio
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        final HashicorpVaultClientConfig config = loadHashicorpVaultClientConfig(context);
+        var client = createVaultClient(context, typeManager.getMapper());
 
-        final OkHttpClient okHttpClient = createOkHttpClient(config);
-
-        final HashicorpVaultClient client = new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
-
-        final HashicorpVault vault = new HashicorpVault(client);
-        final CertificateResolver certificateResolver =
+        var vault = new HashicorpVault(client);
+        var certificateResolver =
                 new HashicorpCertificateResolver(vault, context.getMonitor());
-        final VaultPrivateKeyResolver privateKeyResolver = new VaultPrivateKeyResolver(vault);
+        var privateKeyResolver = new VaultPrivateKeyResolver(vault);
 
         context.registerService(Vault.class, vault);
         context.registerService(CertificateResolver.class, certificateResolver);
