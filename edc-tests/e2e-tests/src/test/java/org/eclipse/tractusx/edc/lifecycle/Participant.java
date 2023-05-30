@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -53,9 +54,14 @@ import static org.mockito.Mockito.mock;
 
 public class Participant {
 
+    private static final String PROXY_SUBPATH = "proxy/aas/request";
+
     private final String managementUrl;
     private final String apiKey;
     private final String dspEndpoint;
+
+    private final String gatewayEndpoint;
+
     private final String runtimeName;
     private final String bpn;
     private final String backend;
@@ -63,17 +69,19 @@ public class Participant {
     private final Duration timeout = Duration.ofSeconds(30);
 
     private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
+    private final String proxyUrl;
 
     public Participant(String runtimeName, String bpn, Map<String, String> properties) {
         this.managementUrl = URI.create(format("http://localhost:%s%s", properties.get("web.http.management.port"), properties.get("web.http.management.path"))).toString();
         this.dspEndpoint = URI.create(format("http://localhost:%s%s", properties.get("web.http.protocol.port"), properties.get("web.http.protocol.path"))).toString();
         this.apiKey = properties.get("edc.api.auth.key");
+        this.gatewayEndpoint = URI.create(format("http://localhost:%s/api/gateway", properties.get("web.http.port"))).toString();
+        this.proxyUrl = URI.create(format("http://localhost:%s", properties.get("tx.dpf.consumer.proxy.port"))).toString();
         this.bpn = bpn;
         this.runtimeName = runtimeName;
         this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
         jsonLd = new TitaniumJsonLd(mock(Monitor.class));
     }
-
 
     /**
      * Creates an asset with the given ID and props using the participant's Data Management API
@@ -150,7 +158,7 @@ public class Participant {
         return response.extract().jsonPath().getString(ID);
     }
 
-    public void negotiateEdr(Participant other, String assetId, JsonArray callbacks) {
+    public String negotiateEdr(Participant other, String assetId, JsonArray callbacks) {
         var dataset = getDatasetForAsset(other, assetId);
         assertThat(dataset).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
 
@@ -169,6 +177,7 @@ public class Participant {
         var body = response.extract().body().asString();
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
 
+        return response.extract().jsonPath().getString(ID);
     }
 
     public String getNegotiationState(String negotiationId) {
@@ -179,7 +188,6 @@ public class Participant {
                 .statusCode(200)
                 .extract().body().jsonPath().getString("'edc:state'");
     }
-
 
     public String getContractAgreementId(String negotiationId) {
         return getContractNegotiationField(negotiationId, "contractAgreementId");
@@ -206,10 +214,21 @@ public class Participant {
                 .as(JsonObject.class);
     }
 
-    public JsonArray getEdrEntries(String assetId) {
+    public JsonArray getEdrEntriesByAssetId(String assetId) {
         return baseRequest()
                 .when()
                 .get("/adapter/edrs?assetId={assetId}", assetId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+    }
+
+    public JsonArray getEdrEntriesByAgreementId(String agreementId) {
+        return baseRequest()
+                .when()
+                .get("/adapter/edrs?agreementId={agreementId}", agreementId)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -309,6 +328,38 @@ public class Participant {
         return datasetReference.get();
     }
 
+    public String pullProxyDataByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return getProxyData(body);
+    }
+
+    public Response pullProxyDataResponseByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return proxyRequest(body);
+    }
+
+    public String pullProxyDataByTransferProcessId(Participant provider, String transferProcessId) {
+        var body = Map.of("transferProcessId", transferProcessId,
+                "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return getProxyData(body);
+
+    }
+
+    private String getProxyData(Map<String, String> body) {
+        return proxyRequest(body)
+                .then()
+                .assertThat().statusCode(200)
+                .extract().body().asString();
+    }
+
+    private Response proxyRequest(Map<String, String> body) {
+        return given()
+                .baseUri(proxyUrl)
+                .contentType("application/json")
+                .body(body)
+                .post(PROXY_SUBPATH);
+    }
+
     public JsonObject getDatasetForAsset(Participant provider, String assetId) {
         var datasets = getCatalogDatasets(provider);
         return datasets.stream()
@@ -317,7 +368,6 @@ public class Participant {
                 .findFirst()
                 .orElseThrow(() -> new EdcException(format("No dataset for asset %s in the catalog", assetId)));
     }
-
 
     private RequestSpecification baseRequest() {
         return given()

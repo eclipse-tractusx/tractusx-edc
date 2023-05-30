@@ -33,6 +33,10 @@ dependencies {
     }
     implementation(libs.edc.azure.identity)
     implementation("com.azure:azure-security-keyvault-secrets:4.6.2")
+    runtimeOnly(project(":edc-extensions:edr-cache-sql"))
+    runtimeOnly(libs.edc.transaction.local)
+    runtimeOnly(libs.edc.sql.pool)
+    runtimeOnly(libs.postgres)
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

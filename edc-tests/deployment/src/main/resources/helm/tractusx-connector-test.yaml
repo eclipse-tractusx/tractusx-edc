@@ -22,6 +22,10 @@ fullnameOverride: tx-prod
 ################################
 # EDC ControlPlane + DataPlane #
 ################################
+
+participant:
+  id: "test-participant"
+  
 controlplane:
   service:
     type: NodePort

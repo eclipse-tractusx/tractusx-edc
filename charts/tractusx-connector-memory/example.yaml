@@ -32,6 +32,10 @@
 
 ---
 fullnameOverride: tx-inmem
+
+participant:
+  id: "test-participant"
+
 runtime:
   service:
     type: NodePort

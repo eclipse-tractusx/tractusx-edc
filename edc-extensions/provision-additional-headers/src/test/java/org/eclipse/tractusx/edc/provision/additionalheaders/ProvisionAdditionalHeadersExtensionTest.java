@@ -102,7 +102,7 @@ class ProvisionAdditionalHeadersExtensionTest {
                 .id("id")
                 .protocol("protocol")
                 .assetId("assetId")
-                .contractId("aContractId")
+                .contractId("1:assetId:aContractId")
                 .dataDestination(DataAddress.Builder.newInstance().type("HttpProxy").build())
                 .callbackAddress("callbackAddress")
                 .build();
@@ -112,6 +112,6 @@ class ProvisionAdditionalHeadersExtensionTest {
         assertThat(result).matches(ServiceResult::succeeded);
 
         await().atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> verify(dataFlowController).initiateFlow(any(), argThat(it -> "aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any()));
+                .untilAsserted(() -> verify(dataFlowController).initiateFlow(any(), argThat(it -> "1:assetId:aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any()));
     }
 }

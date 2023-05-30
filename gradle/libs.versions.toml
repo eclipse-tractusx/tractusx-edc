@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.0.1-milestone-9"
+edc = "0.1.0-20230529-SNAPSHOT"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
@@ -15,7 +15,7 @@ mockito = "5.2.0"
 restAssured = "5.3.0"
 apache-sshd = "2.10.0"
 testcontainers = "1.18.1"
-aws = "2.20.73"
+aws = "2.20.74"
 rsApi = "3.1.0"
 jupiter = "5.9.3"
 assertj = "3.24.2"
