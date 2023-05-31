@@ -24,7 +24,7 @@ fullnameOverride: tx-sokrates
 # EDC ControlPlane + DataPlane #
 ################################
 participant:
-  id: "test-participant"
+  id: "BPNSOKRATES"
 controlplane:
   service:
     type: NodePort

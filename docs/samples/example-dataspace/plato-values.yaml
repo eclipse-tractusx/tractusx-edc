@@ -25,7 +25,7 @@ fullnameOverride: tx-plato
 # EDC ControlPlane + DataPlane #
 ################################
 participant:
-  id: "test-participant"
+  id: "BPNPLATO"
 controlplane:
   service:
     type: NodePort
