@@ -1,4 +1,6 @@
-## 1. Prepare environment:
+# How-To run two connectors and a DAPS
+
+## 1. Prepare environment
 
 This guide will bring up two connectors named "Sokrates" and "Plato", each alongside their dependencies (Hashicorp
 Vault, PostgreSQL) and a DAPS instance that both share.
@@ -102,12 +104,16 @@ There is several ways of making sure everything worked out well:
 
 - simply look at the logs of the Helm releases, e.g. with a tool
   like [stern](https://kubernetes.io/blog/2016/10/tail-kubernetes-with-stern/) and look out for a log line similar to:
-  ```shell 
-  stern tx-sokates
+
+  ```shell
+  stern tx-sokrates
   ```
+  
   then look out for something similar to:
+
   ```shell
   tx-sokrates-controlplane-b9456f97b-s5jts tractusx-connector INFO 2023-05-31T07:24:53.020975888 tx-sokrates-controlplane ready
   ```
+  
 - wait for the Kubernetes rollout to be successful, e.g. `kubectl rollout status deployment tx-plato-controlplane`
 - use `helm test` to execute tests: `helm test tx-plato`
