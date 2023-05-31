@@ -6,7 +6,7 @@ This guide will bring up two connectors named "Sokrates" and "Plato", each along
 Vault, PostgreSQL) and a DAPS instance that both share.
 
 We've tested this setup with [KinD](https://kind.sigs.k8s.io/), but other runtimes such
-as [Minikube](https://minikube.sigs.k8s.io/docs/start/) may work as well, but we haven't tested them.
+as [Minikube](https://minikube.sigs.k8s.io/docs/start/) may work as well, we just haven't tested them.
 
 Furthermore, this guide assumes:
 
