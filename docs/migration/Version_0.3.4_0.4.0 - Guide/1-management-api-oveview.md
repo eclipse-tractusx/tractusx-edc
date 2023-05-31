@@ -14,15 +14,15 @@ This document will showcase how this change impacted the management API usage.
 
 The `MANAGEMENT_URL` specifies the URL of the management API and the prefix `v2` allows access to the functionality of the new management API. 
 
-| Resource              | Endpoint                                       |
-|-----------------------|------------------------------------------------|
-| Asset                 | ```<MANAGEMENT_URL>/v2/assets```               |
-| Policy Definition     | ```<MANAGEMENT_URL>/v2/policydefinitions```    |
-| Contract Definition   | ```<MANAGEMENT_URL>/v2/contractdefinitions```  |
-| Catalog               | ```<MANAGEMENT_URL>/v2/catalog```              |
-| Contract Negotiation  | ```<MANAGEMENT_URL>/v2/contractnegotiations``` |
-| Contract Agreement    | ```<MANAGEMENT_URL>/v2/contractagreements```   |
-| Transfer Process      | ```<MANAGEMENT_URL>/v2/transferprocesses```    |
+| Resource              | Endpoint                                   |
+|-----------------------|--------------------------------------------|
+| Asset                 | `<MANAGEMENT_URL>/v2/assets`               |
+| Policy Definition     | `<MANAGEMENT_URL>/v2/policydefinitions`    |
+| Contract Definition   | `<MANAGEMENT_URL>/v2/contractdefinitions`  |
+| Catalog               | `<MANAGEMENT_URL>/v2/catalog`              |
+| Contract Negotiation  | `<MANAGEMENT_URL>/v2/contractnegotiations` |
+| Contract Agreement    | `<MANAGEMENT_URL>/v2/contractagreements`   |
+| Transfer Process      | `<MANAGEMENT_URL>/v2/transferprocesses`    |
 
 > Please note: The old Management API is now deprecated and is not tested for compliance. The `/v2` prefix is only a temporary part of the path and will be discarded once the migration to the new protocol is finished and the old API is taken out of service. Once that is done, the new management API can be reached through `MANAGEMENT_URL`.
 
