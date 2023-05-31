@@ -7,18 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2023-05-31
+
+### Added
+
+- SQL implementation for the EDR Cache
+- E2E test variant using PostgreSQL
+- Documentation
+
+### Changed
+
+- Moved to Java 17
+- Switched to Eclipse Dataspace Components `0.1.0`
+
+### Removed
+
+- Lombok
+
 ## [0.4.0] - 2023-05-18
 
-## Added
+### Added
 
 - Support for the new Dataspace Protocol
 - GitHub Workflow to check for missing license headers
 
-## Changed
+### Changed
 
 - Switched to Eclipse Dataspace Components `0.0.1-milestone-9`
 
-## Removed
+### Removed
 
 - Business tests. All tests are covered by other means.
 - Control-Plane-Adapter. Replaced by a DSP-compatible implementation
