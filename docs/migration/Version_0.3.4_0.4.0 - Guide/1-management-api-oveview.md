@@ -8,7 +8,7 @@ JSON-LD (JSON for Linked Data) is an extension of JSON that introduces a set of 
 This document will showcase how this change impacts the management API usage.
 
 > Please note: Before running the examples the corresponding environment variables must be set.
-> How such an environment can be setup locally is documented in [settings chances](../Version_0.3.4_0.4.0.md).
+> How such an environment can be setup locally is documented in [settings changes](../Version_0.3.4_0.4.0.md).
 
 ## 1. Modified Endpoints
 
