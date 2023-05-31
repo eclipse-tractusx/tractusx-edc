@@ -111,7 +111,7 @@ curl -X POST "${MANAGEMENT_URL}/v2/contractnegotiations" \
                         "odrl:or": {
                           "odrl:leftOperand": "BusinessPartnerNumber",
                           "odrl:operator": "EQ",
-                          "odrl:rightOperand": "BPN"
+                          "odrl:rightOperand": "ANY-BPN"
                         }
                       }
                     },
