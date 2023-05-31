@@ -41,6 +41,7 @@ These keys are generally part of the JSON-LD spec and serve as identification on
 | @type     | Indicates the type(s) of a node or resource. It is used to specify the class or classes that the resource belongs to, typically using terms from a vocabulary or ontology.                                |
 
 ### Namespaces
+
 A namespace is defined by associating a prefix with a URI or IRI in the @context of a JSON-LD document. The prefix is typically a short string, while the URI or IRI represents a namespace or vocabulary where the terms or properties are defined.
 
 | Key    | Description                                                                                                                                                                                                       |
