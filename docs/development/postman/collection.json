@@ -1,48 +1,13 @@
 {
 	"info": {
-		"_postman_id": "fcea09d2-13d9-49ce-8c44-d3cb3078eb82",
-		"name": "EDC",
+		"_postman_id": "64e409d9-3fd0-4b85-8de9-df1094a58400",
+		"name": "tractusx-edc_dsp",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "6134257"
+		"_exporter_id": "27652630"
 	},
 	"item": [
 		{
-			"name": "Asset",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/{{ASSET_ID}}",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"assets",
-						"{{ASSET_ID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Assets",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"assets"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Asset",
+			"name": "Create Asset",
 			"event": [
 				{
 					"listen": "test",
@@ -61,7 +26,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"asset\": {\n        \"properties\": {\n            \"asset:prop:id\": \"{{ASSET_ID}}\",\n            \"asset:prop:description\": \"Tractus-X EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"properties\": {\n            \"type\": \"HttpData\",\n            \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos/1\"\n        }\n    }\n}",
+					"raw": "{\n    \"@context\": {},\n    \"asset\": {\n        \"@type\": \"Asset\",\n        \"@id\": \"{{ASSET_ID}}\", \n        \"properties\": {\n            \"description\": \"Product EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"@type\": \"DataAddress\",\n        \"type\": \"HttpData\",\n        \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -81,7 +46,43 @@
 			"response": []
 		},
 		{
-			"name": "Asset",
+			"name": "Get all Assets",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/request",
+					"host": [
+						"{{PROVIDER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"assets",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Asset by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/{{ASSET_ID}}",
+					"host": [
+						"{{PROVIDER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"assets",
+						"{{ASSET_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Asset by ID",
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -99,7 +100,33 @@
 			"response": []
 		},
 		{
-			"name": "Policy",
+			"name": "Create Policy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"@context\": {\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    },\n    \"@type\": \"PolicyDefinitionRequestDto\",\n    \"@id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n\t\t\"@type\": \"Policy\",\n\t\t\"odrl:permission\" : [{\n\t\t\t\"odrl:action\" : \"USE\",\n\t\t\t\"odrl:constraint\" : {\n\t\t\t\t\"@type\": \"LogicalConstraint\",\n\t\t\t\t\"odrl:or\" : [{\n\t\t\t\t\t\"@type\" : \"Constraint\",\n\t\t\t\t\t\"odrl:leftOperand\" : \"BusinessPartnerNumber\",\n\t\t\t\t\t\"odrl:operator\" : \"EQ\",\n\t\t\t\t\t\"odrl:rightOperand\" : \"{{POLICY_BPN}}\"\n\t\t\t\t}]\n\t\t\t}\n\t\t}]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
+					"host": [
+						"{{PROVIDER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"policydefinitions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Policy by ID",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -129,36 +156,7 @@
 			"response": []
 		},
 		{
-			"name": "Policies",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"policydefinitions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Policy (Public)",
+			"name": "Get all Policies",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -172,71 +170,20 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions/request",
 					"host": [
 						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
-						"policydefinitions"
+						"policydefinitions",
+						"request"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Policy (Properties)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ],\n        \"extensibleProperties\": {\n            \"foo\": \"bar\"\n        }\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"policydefinitions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Policy (BPN)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": [\n                    {\n                        \"edctype\": \"AtomicConstraint\",\n                        \"leftExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"BusinessPartnerNumber\"\n                        },\n                        \"rightExpression\": {\n                            \"edctype\": \"dataspaceconnector:literalexpression\",\n                            \"value\": \"{{POLICY_BPN}}\"\n                        },\n                        \"operator\": \"EQ\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/policydefinitions",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"policydefinitions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Policy",
+			"name": "Delte Policy by ID",
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -263,72 +210,13 @@
 			"response": []
 		},
 		{
-			"name": "Contract Definition",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/{{POLICY_ID}}",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"contractdefinitions",
-						"{{POLICY_ID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Contract Definitiions",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions",
-					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"contractdefinitions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Contract Definitiion",
+			"name": "Create Contract Definitiion",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"{{CONTRACT_DEFINITION_ID}}\",\n    \"criteria\": [\n        {\n            \"operandLeft\": \"asset:prop:id\",\n            \"operator\": \"=\",\n            \"operandRight\": \"{{ASSET_ID}}\"\n        }\n    ],\n    \"accessPolicyId\": \"{{ACCESS_POLICY_ID}}\",\n    \"contractPolicyId\": \"{{CONTRACT_POLICY_ID}}\"\n}",
+					"raw": "{\n    \"@context\": {},\n    \"@id\": \"{{CONTRACT_DEFINITION_ID}}\",\n    \"@type\": \"ContractDefinition\",\n    \"accessPolicyId\": \"{{ACCESS_POLICY_ID}}\",\n    \"contractPolicyId\": \"{{CONTRACT_POLICY_ID}}\",\n    \"assetsSelector\" : {\n        \"@type\" : \"CriterionDto\",\n        \"operandLeft\": \"{{EDC_NAMESPACE}}id\",\n        \"operator\": \"=\",\n        \"operandRight\": \"{{ASSET_ID}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -348,7 +236,64 @@
 			"response": []
 		},
 		{
-			"name": "Contract Definition",
+			"name": "Get Contract Definition by ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{POLICY_ID}}\",\n    \"policy\": {\n        \"prohibitions\": [],\n        \"obligations\": [],\n        \"permissions\": [\n            {\n                \"edctype\": \"dataspaceconnector:permission\",\n                \"action\": {\n                    \"type\": \"USE\"\n                },\n                \"constraints\": []\n            }\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/{{CONTRACT_DEFINITION_ID}}",
+					"host": [
+						"{{PROVIDER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"contractdefinitions",
+						"{{CONTRACT_DEFINITION_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Contract Definitiions",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/request",
+					"host": [
+						"{{PROVIDER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"contractdefinitions",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delte Contract Definition",
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -362,40 +307,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/{{POLICY_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL}}/contractdefinitions/{{CONTRACT_DEFINITION_ID}}",
 					"host": [
 						"{{PROVIDER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractdefinitions",
-						"{{POLICY_ID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Catalog",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/catalog?providerUrl={{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data&size=50",
-					"host": [
-						"{{CONSUMER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"catalog"
-					],
-					"query": [
-						{
-							"key": "providerUrl",
-							"value": "{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data"
-						},
-						{
-							"key": "size",
-							"value": "50"
-						}
+						"{{CONTRACT_DEFINITION_ID}}"
 					]
 				}
 			},
@@ -408,7 +326,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"providerUrl\": \"{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data\",\r\n    \"querySpec\": {\r\n        \"offset\": 0,\r\n        \"limit\": 100,\r\n        \"sort\": \"ASC\",\r\n        \"sortField\": \"\"\r\n    }\r\n}",
+					"raw": "{\r\n    \"@context\": {},\r\n    \"protocol\": \"dataspace-protocol-http\",\r\n    \"providerUrl\": \"{{PROVIDER_PROTOCOL_URL}}\",\r\n    \"querySpec\": {\r\n        \"offset\": 0,\r\n        \"limit\": 100,\r\n        \"filter\": \"\",\r\n        \"range\": {\r\n            \"from\": 0,\r\n            \"to\": 100\r\n        },\r\n        \"sortField\": \"\",\r\n        \"criterion\": \"\"\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -429,7 +347,7 @@
 			"response": []
 		},
 		{
-			"name": "Negotation (Public)",
+			"name": "Initiate Negotation",
 			"event": [
 				{
 					"listen": "test",
@@ -450,7 +368,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{CONTRACT_DEFINITION_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": []\n                }\n            ]\n        }\n    }\n}",
+					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:46483724-18f1-4dff-87da-f26725dcc59c\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -470,89 +388,7 @@
 			"response": []
 		},
 		{
-			"name": "Negotation (Properties)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Body matches string\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
-							"",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": []\n                }\n            ],\n            \"extensibleProperties\": {\n                \"foo\": \"bar\"\n            }\n        }\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations",
-					"host": [
-						"{{CONSUMER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"contractnegotiations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Negotation (BPN)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Body matches string\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
-							"",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"connectorId\": \"foo\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data\",\n    \"offer\": {\n        \"offerId\": \"{{POLICY_ID}}:foo\",\n        \"assetId\": \"{{ASSET_ID}}\",\n        \"policy\": {\n            \"prohibitions\": [],\n            \"obligations\": [],\n            \"permissions\": [\n                {\n                    \"edctype\": \"dataspaceconnector:permission\",\n                    \"action\": {\n                        \"type\": \"USE\"\n                    },\n                    \"target\": \"{{ASSET_ID}}\",\n                    \"constraints\": [\n                        {\n                            \"edctype\": \"AtomicConstraint\",\n                            \"leftExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"BusinessPartnerNumber\"\n                            },\n                            \"rightExpression\": {\n                                \"edctype\": \"dataspaceconnector:literalexpression\",\n                                \"value\": \"{{POLICY_BPN}}\"\n                            },\n                            \"operator\": \"EQ\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations",
-					"host": [
-						"{{CONSUMER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"contractnegotiations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Negotation (init AGREEMENT_ID)",
+			"name": "Get all Negotations",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -567,33 +403,69 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Body matches string\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.collectionVariables.set(\"AGREEMENT_ID\", jsonData.contractAgreementId);\r",
-							"});"
+							""
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations/{{NEGOTIATION_ID}}",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations/request",
 					"host": [
 						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
 						"contractnegotiations",
-						"{{NEGOTIATION_ID}}"
+						"request"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Transfer",
+			"name": "Cancel Negotation by ID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/contractnegotiations/7cff6ecb-7e5e-40b8-b101-eba3f2045b1f/cancel",
+					"host": [
+						"{{CONSUMER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"contractnegotiations",
+						"7cff6ecb-7e5e-40b8-b101-eba3f2045b1f",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Initiate Transfer",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -622,7 +494,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"id\": \"{{TRANSFER_ID}}\",\n  \"connectorId\": \"foo\", \n  \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data\", \n  \"contractId\": \"{{AGREEMENT_ID}}\", \n  \"assetId\": \"{{ASSET_ID}}\",\n  \"managedResources\": \"false\", \n  \"dataDestination\": { \"type\": \"HttpProxy\" }\n}",
+					"raw": "{\n    \"@context\": {\n        \"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n    },\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n    \"contractId\": \"<contractAgreementId>\",\n    \"dataDestination\": {\n        \"properties\": {\n            \"type\": \"HttpProxy\"\n        }\n    },\n    \"managedResources\": false,\n    \"privateProperties\": {\n        \"receiverHttpEndpoint\": \"{{BACKEND_SERVICE}}\"\n    },\n    \"protocol\": \"dataspace-protocol-http\",\n    \"transferType\": {\n        \"contentType\": \"application/octet-stream\",\n        \"isFinite\": true\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -630,25 +502,25 @@
 					}
 				},
 				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocess",
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocesses",
 					"host": [
 						"{{CONSUMER_MANAGEMENT_URL}}"
 					],
 					"path": [
-						"transferprocess"
+						"transferprocesses"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Transfer dynamic http receiver",
+			"name": "Get Transfer by ID",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.collectionVariables.set(\"TRANSFER_ID\", Math.random());"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -657,9 +529,86 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocesses/8e428b80-46a5-4325-87e5-592518f7666b",
+					"host": [
+						"{{CONSUMER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"transferprocesses",
+						"8e428b80-46a5-4325-87e5-592518f7666b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Transfers",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocesses/request",
+					"host": [
+						"{{CONSUMER_MANAGEMENT_URL}}"
+					],
+					"path": [
+						"transferprocesses",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Initiate EDR Negotation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
 							"pm.test(\"Body matches string\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.collectionVariables.set(\"TRANSFER_PROCESS_ID\", jsonData.id);",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
 							"});"
 						],
 						"type": "text/javascript"
@@ -671,7 +620,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"id\": \"{{TRANSFER_ID}}\",\n  \"connectorId\": \"foo\", \n  \"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data\", \n  \"contractId\": \"{{AGREEMENT_ID}}\", \n  \"assetId\": \"{{ASSET_ID}}\",\n  \"managedResources\": \"false\", \n  \"dataDestination\": { \"type\": \"HttpProxy\" },\n  \"properties\": {\n        \"receiver.http.endpoint\": \"{{BACKEND_SERVICE}}\"\n  }\n}",
+					"raw": "{\n\t\"@context\": {\n\t\t\"odrl\": \"http://www.w3.org/ns/odrl/2/\"\n\t},\n\t\"@type\": \"NegotiationInitiateRequestDto\",\n\t\"connectorAddress\": \"{{PROVIDER_PROTOCOL_URL}}\",\n\t\"protocol\": \"dataspace-protocol-http\",\n\t\"connectorId\": \"{{PROVIDER_ID}}\",\n\t\"providerId\": \"{{PROVIDER_ID}}\",\n\t\"offer\": {\n\t\t\"offerId\": \"1:1:9f9375e3-ed28-449a-8a98-a340f4c20c26\",\n\t\t\"assetId\": \"{{ASSET_ID}}\",\n\t\t\"policy\": {\n\t\t\t\"@type\": \"odrl:Set\",\n\t\t\t\"odrl:permission\": {\n\t\t\t\t\"odrl:target\": \"{{ASSET_ID}}\",\n\t\t\t\t\"odrl:action\": {\n\t\t\t\t\t\"odrl:type\": \"USE\"\n\t\t\t\t},\n\t\t\t\t\"odrl:constraint\": {\n\t\t\t\t\t\"odrl:or\": {\n\t\t\t\t\t\t\"odrl:leftOperand\": \"BusinessPartnerNumber\",\n\t\t\t\t\t\t\"odrl:operator\": \"EQ\",\n\t\t\t\t\t\t\"odrl:rightOperand\": \"{{POLICY_BPN}}\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"odrl:prohibition\": [],\n\t\t\t\"odrl:obligation\": [],\n\t\t\t\"odrl:target\": \"{{ASSET_ID}}\"\n\t\t}\n\t}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -679,94 +628,152 @@
 					}
 				},
 				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocess",
+					"raw": "{{CONSUMER_ADAPTER_URL}}/edrs",
 					"host": [
-						"{{CONSUMER_MANAGEMENT_URL}}"
+						"{{CONSUMER_ADAPTER_URL}}"
 					],
 					"path": [
-						"transferprocess"
+						"edrs"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Transfer",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/transferprocess/{{TRANSFER_PROCESS_ID}}",
-					"host": [
-						"{{CONSUMER_MANAGEMENT_URL}}"
-					],
-					"path": [
-						"transferprocess",
-						"{{TRANSFER_PROCESS_ID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "CPA (getData)",
+			"name": "Query EDRs Cached",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Body matches string\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.collectionVariables.set(\"authCode\", jsonData.authCode);\r",
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
 							"});"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{CONSUMER_MANAGEMENT_URL}}/adapter/asset/sync/{{ASSET_ID}}?providerUrl={{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data&contractAgreementReuse=false",
+					"raw": "{{CONSUMER_ADAPTER_URL}}/edrs?assetId={{ASSET_ID}}",
 					"host": [
-						"{{CONSUMER_MANAGEMENT_URL}}"
+						"{{CONSUMER_ADAPTER_URL}}"
 					],
 					"path": [
-						"adapter",
-						"asset",
-						"sync",
-						"{{ASSET_ID}}"
+						"edrs"
 					],
 					"query": [
 						{
-							"key": "providerUrl",
-							"value": "{{PROVIDER_PROTOCOL_URL}}/api/v1/ids/data"
-						},
-						{
-							"key": "contractAgreementReuse",
-							"value": "false"
+							"key": "assetId",
+							"value": "{{ASSET_ID}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get EDR by tp ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CONSUMER_ADAPTER_URL}}/edrs/4b383155-9147-4912-819e-6172b4a3eb02",
+					"host": [
+						"{{CONSUMER_ADAPTER_URL}}"
+					],
+					"path": [
+						"edrs",
+						"4b383155-9147-4912-819e-6172b4a3eb02"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Asset Data with proxy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body matches string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"NEGOTIATION_ID\", jsonData.id);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"assetId\": \"{{ASSET_ID}}\",\n    \"endpointUrl\": \"http://plato-dataplane:8080/api/gateway/aas/1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8186/proxy/aas/request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8186",
+					"path": [
+						"proxy",
+						"aas",
+						"request"
 					]
 				}
 			},
@@ -778,7 +785,7 @@
 		"apikey": [
 			{
 				"key": "value",
-				"value": "",
+				"value": "password",
 				"type": "string"
 			},
 			{
@@ -811,15 +818,15 @@
 	"variable": [
 		{
 			"key": "CONSUMER_MANAGEMENT_URL",
-			"value": "https://sokrates-txdc.int.demo.catena-x.net/management"
+			"value": "http://localhost:31364/management/v2"
 		},
 		{
 			"key": "PROVIDER_PROTOCOL_URL",
-			"value": "https://plato-txdc.int.demo.catena-x.net"
+			"value": "http://plato-controlplane:8084/api/v1/dsp"
 		},
 		{
 			"key": "PROVIDER_MANAGEMENT_URL",
-			"value": "https://plato-txdc.int.demo.catena-x.net/management"
+			"value": "http://localhost:30279/management/v2"
 		},
 		{
 			"key": "ASSET_ID",
@@ -879,6 +886,21 @@
 		{
 			"key": "authCode",
 			"value": ""
+		},
+		{
+			"key": "PROVIDER_ID",
+			"value": "BPNPLATO",
+			"type": "string"
+		},
+		{
+			"key": "EDC_NAMESPACE",
+			"value": "https://w3id.org/edc/v0.0.1/ns/",
+			"type": "string"
+		},
+		{
+			"key": "CONSUMER_ADAPTER_URL",
+			"value": "http://localhost:31364/management/adapter",
+			"type": "string"
 		}
 	]
 }

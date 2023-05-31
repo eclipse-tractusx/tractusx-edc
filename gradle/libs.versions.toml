@@ -2,11 +2,11 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.0.1-milestone-9"
+edc = "0.1.0"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
-azure-identity = "+"
+azure-identity = "1.9.0"
 slf4j = "2.0.7"
 okhttp = "4.11.0"
 mockwebserver = "5.0.0-alpha.11"
@@ -14,9 +14,11 @@ bouncyCastle-jdk18on = "1.73"
 mockito = "5.2.0"
 restAssured = "5.3.0"
 apache-sshd = "2.10.0"
-testcontainers = "1.18.1"
-aws = "2.20.71"
+testcontainers = "1.18.2"
+aws = "2.20.75"
 rsApi = "3.1.0"
+jupiter = "5.9.3"
+assertj = "3.24.2"
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
@@ -44,6 +46,7 @@ edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = 
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-api = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
+edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
@@ -57,7 +60,7 @@ edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-policy-engine = { module = "org.eclipse.edc:policy-engine", version.ref = "edc" }
 edc-auth-tokenbased = { module = "org.eclipse.edc:auth-tokenbased", version.ref = "edc" }
 edc-auth-oauth2-core = { module = "org.eclipse.edc:oauth2-core", version.ref = "edc" }
-edc-auth-oauth2-daps = { module = "org.eclipse.edc:oauth2-core", version.ref = "edc" }
+edc-auth-oauth2-daps = { module = "org.eclipse.edc:oauth2-daps", version.ref = "edc" }
 edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
@@ -124,6 +127,8 @@ apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]

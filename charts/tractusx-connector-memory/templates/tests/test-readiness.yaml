@@ -33,6 +33,6 @@ spec:
   containers:
     - name: wget
       image: curlimages/curl
-      command: ['curl']
-      args: ['{{ include "tdxc.runtime.url.readiness" . }}']
+      command: [ 'curl' ]
+      args: [ '{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.observability.port $.Values.runtime.endpoints.observability.path -}}' ]
   restartPolicy: Never

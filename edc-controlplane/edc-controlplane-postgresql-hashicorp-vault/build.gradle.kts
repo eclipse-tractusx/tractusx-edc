@@ -30,6 +30,7 @@ dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
     runtimeOnly(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(project(":edc-extensions:edr-cache-sql"))
     runtimeOnly(libs.bundles.edc.sqlstores)
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)

@@ -20,11 +20,12 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import okhttp3.OkHttpClient;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
+import org.eclipse.edc.spi.types.TypeManager;
 
 @Requires(HealthCheckService.class)
 public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtension
@@ -34,19 +35,21 @@ public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtensi
 
     public static final boolean VAULT_HEALTH_CHECK_DEFAULT = true;
 
+    @Inject
+    private HealthCheckService healthCheckService;
+
+    @Inject
+    private TypeManager typeManager;
+
     @Override
     public String name() {
         return "Hashicorp Vault Health Check";
     }
 
+
     @Override
     public void initialize(ServiceExtensionContext context) {
-        final HashicorpVaultClientConfig config = loadHashicorpVaultClientConfig(context);
-
-        final OkHttpClient okHttpClient = createOkHttpClient(config);
-
-        final HashicorpVaultClient client =
-                new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
+        var client = createVaultClient(context, typeManager.getMapper());
 
         configureHealthCheck(client, context);
 
@@ -54,14 +57,13 @@ public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtensi
     }
 
     private void configureHealthCheck(HashicorpVaultClient client, ServiceExtensionContext context) {
-        final boolean healthCheckEnabled =
+        var healthCheckEnabled =
                 context.getSetting(VAULT_HEALTH_CHECK, VAULT_HEALTH_CHECK_DEFAULT);
         if (!healthCheckEnabled) return;
 
-        final HashicorpVaultHealthCheck healthCheck =
+        var healthCheck =
                 new HashicorpVaultHealthCheck(client, context.getMonitor());
 
-        final HealthCheckService healthCheckService = context.getService(HealthCheckService.class);
         healthCheckService.addLivenessProvider(healthCheck);
         healthCheckService.addReadinessProvider(healthCheck);
         healthCheckService.addStartupStatusProvider(healthCheck);

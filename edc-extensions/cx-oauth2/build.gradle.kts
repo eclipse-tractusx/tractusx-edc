@@ -30,4 +30,6 @@ dependencies {
     implementation(libs.slf4j.api)
     implementation(libs.nimbus.jwt)
     implementation(libs.okhttp)
+
+    testImplementation(libs.edc.junit)
 }

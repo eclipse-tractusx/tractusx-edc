@@ -19,3 +19,4 @@
 #
 
 org.eclipse.tractusx.edc.oauth2.CxOauth2Extension
+org.eclipse.tractusx.edc.oauth2.CxParticipantExtension
