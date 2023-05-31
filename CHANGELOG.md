@@ -9,22 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.1] - 2023-05-31
 
-## [0.4.1] - 2023-05-31
-
 ### Added
 
--   SQL implementation for the EDR Cache
--   E2E test variant using PostgreSQL
--   Documentation
+- SQL implementation for the EDR Cache
+- E2E test variant using PostgreSQL
+- Documentation
 
 ### Changed
 
--   Moved to Java 17
--   Switched to Eclipse Dataspace Components `0.1.0`
+- Moved to Java 17
+- Switched to Eclipse Dataspace Components `0.1.0`
 
 ### Removed
 
--   Lombok
+- Lombok
 
 ## [0.4.0] - 2023-05-18
 
