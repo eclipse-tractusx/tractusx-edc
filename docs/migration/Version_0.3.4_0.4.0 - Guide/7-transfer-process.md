@@ -24,7 +24,7 @@
 }
 ```
 
-### New JSON-LD Document
+## New JSON-LD Document
 
 > Please note: In our samples, properties **WILL NOT** be explicitly namespaced, and internal nodes **WILL NOT** be typed, relying on `@vocab` prefixing and root schema type inheritance respectively.
 
