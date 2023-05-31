@@ -40,7 +40,7 @@ runtime:
   service:
     type: NodePort
   endpoints:
-    data:
+    management:
       authKey: password
   image:
     pullPolicy: Never
@@ -54,7 +54,7 @@ vault:
   secretNames:
     transferProxyTokenSignerPublicKey: daps-crt
     transferProxyTokenSignerPrivateKey: daps-key
-    transferProxyTokenEncryptionAesKey: aes-keysc
+    transferProxyTokenEncryptionAesKey: aes-keys
     dapsPrivateKey: daps-key
     dapsPublicKey: daps-crt
 
@@ -63,7 +63,7 @@ vault:
   secrets:
 
 daps:
-  url: "http://ids-daps:4567"
+  url: "http://daps:4567"
   clientId: "99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23"
 
 backendService:

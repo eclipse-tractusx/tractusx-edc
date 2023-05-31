@@ -18,7 +18,7 @@
 
 ---
 apiVersion: v2
-name: ids-daps
+name: daps
 description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.

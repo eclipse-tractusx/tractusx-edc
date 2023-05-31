@@ -26,6 +26,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+install:
+  daps: true
+  postgresql: true
 fullnameOverride: ""
 nameOverride: ""
 
@@ -198,7 +201,7 @@ controlplane:
       annotations: {}
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
-        - ids
+        - protocol
       # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
       className: ""
       # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
@@ -242,8 +245,7 @@ controlplane:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes: []
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources:
-    {}
+  resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -446,8 +448,7 @@ dataplane:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes: []
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources:
-    {}
+  resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -494,11 +495,18 @@ dataplane:
     public: ""
 
 postgresql:
-  enabled: false
   jdbcUrl: ""
-  username: ""
-  password: ""
-
+  fullnameOverride: "postgresql"
+  primary:
+    persistence:
+  enabled: false
+  readReplicas:
+    persistence:
+      enabled: false
+  auth:
+    database: "edc"
+    username: "user"
+    password: "password"
 vault:
   azure:
     name: ""
@@ -515,15 +523,21 @@ vault:
     dapsPublicKey: daps-public-key
 
 daps:
+  fullnameOverride: "daps"
   url: ""
   clientId: ""
   paths:
     jwks: /jwks.json
     token: /token
-
+  connectors:
+    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
+      name: sokrates
+      attributes:
+        referringConnector: http://sokrates-controlplane/BPNSOKRATES
+      # Must be the same certificate that is stores in section 'sokrates-vault'
+      certificate: ""    # must be set externally!
 backendService:
   httpProxyTokenReceiverUrl: ""
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -534,3 +548,6 @@ serviceAccount:
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
   imagePullSecrets: []
+idsdaps:
+  connectors:
+    - certificate: |-

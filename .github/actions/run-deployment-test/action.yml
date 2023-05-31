@@ -39,6 +39,10 @@ inputs:
     required: true
     description: "The directory that contains the docker file, e.g. edc-controlplane/edc-runtime-memory"
 
+  values_file:
+    required: true
+    description: "A yaml file that contains the values for the test installation. will be modified!"
+
 runs:
   using: "composite"
   steps:
@@ -73,12 +77,7 @@ runs:
       shell: bash
       run: |-
         sh -c "edc-tests/deployment/src/main/resources/prepare-test.sh \
-               edc-tests/deployment/src/main/resources/helm/test-infrastructure/values.yaml"
-    - name: Install Infrastructure
-      shell: bash
-      run: |-
-        helm install infra edc-tests/deployment/src/main/resources/helm/test-infrastructure \
-        --wait-for-jobs --timeout=30s --dependency-update
+               ${{ inputs.values_file }}"
 
     - name: Install Runtime
       shell: bash
