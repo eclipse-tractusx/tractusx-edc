@@ -79,7 +79,8 @@
 }
 ```
 
-### Request
+## Request
+
 In this case we initiate a contract negotiations with the provider.
 
 ```bash
