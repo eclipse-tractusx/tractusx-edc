@@ -27,6 +27,7 @@ The `MANAGEMENT_URL` specifies the URL of the management API and the prefix `v2`
 > Please note: The old Management API is now deprecated and is not tested for compliance. The `/v2` prefix is only a temporary part of the path and will be discarded once the migration to the new protocol is finished and the old API is taken out of service. Once that is done, the new management API can be reached through `MANAGEMENT_URL`.
 
 ## 2. Brief JSON-LD Introduction
+
 JSON-LD includes several important keywords that play a crucial role in defining the structure, semantics, and relationships within a JSON-LD document. Since some keys which are required in requests for the new management API aren't self-explanatory when you first see them, here are some of the most commonly used and important keywords in JSON-LD.
 These keys are generally part of the JSON-LD spec and serve as identification on a larger scope.
 
