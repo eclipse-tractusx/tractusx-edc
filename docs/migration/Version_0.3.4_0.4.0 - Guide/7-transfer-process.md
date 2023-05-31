@@ -55,7 +55,8 @@
 }
 ```
 
-### Request
+## Request
+
 In this case we initiate a transfer process with the provider.
 
 ```bash
