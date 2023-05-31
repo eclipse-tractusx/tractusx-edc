@@ -15,5 +15,5 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 public interface SftpClientWrapperFactory {
-  SftpClientWrapper getSftpClientWrapper(SftpClientConfig config);
+    SftpClientWrapper getSftpClientWrapper(SftpClientConfig config);
 }

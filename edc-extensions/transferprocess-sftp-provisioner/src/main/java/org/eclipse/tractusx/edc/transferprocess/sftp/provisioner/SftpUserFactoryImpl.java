@@ -14,25 +14,20 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import java.security.KeyPair;
-import lombok.Builder;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserFactory;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUserKeyPairGenerator;
 
-@Builder
 public class SftpUserFactoryImpl implements SftpUserFactory {
 
-  @Override
-  public SftpUser createSftpUser(
-      String sftpUserName, String sftpUserPassword, byte[] sftpUserPrivateKey) {
-    KeyPair sftpUserKeyPair =
-        SftpUserKeyPairGenerator.getKeyPairFromPrivateKey(sftpUserPrivateKey, sftpUserName);
+    @Override
+    public SftpUser createSftpUser(String sftpUserName, String sftpUserPassword, byte[] sftpUserPrivateKey) {
+        var sftpUserKeyPair = SftpUserKeyPairGenerator.getKeyPairFromPrivateKey(sftpUserPrivateKey, sftpUserName);
 
-    return SftpUser.builder()
-        .name(sftpUserName)
-        .password(sftpUserPassword)
-        .keyPair(sftpUserKeyPair)
-        .build();
-  }
+        return SftpUser.Builder.newInstance()
+                .name(sftpUserName)
+                .password(sftpUserPassword)
+                .keyPair(sftpUserKeyPair)
+                .build();
+    }
 }

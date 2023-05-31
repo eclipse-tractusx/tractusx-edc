@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.data.encryption.key;
 
 public interface AesKey extends CryptoKey {
-  byte[] getBytes();
+    byte[] getBytes();
 
-  String getBase64();
+    String getBase64();
 }

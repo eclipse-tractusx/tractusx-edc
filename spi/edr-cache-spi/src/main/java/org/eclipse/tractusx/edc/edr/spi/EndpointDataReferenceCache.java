@@ -14,12 +14,14 @@
 
 package org.eclipse.tractusx.edc.edr.spi;
 
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Caches and resolves {@link EndpointDataReference}s
@@ -39,10 +41,10 @@ public interface EndpointDataReferenceCache {
     List<EndpointDataReference> referencesForAsset(String assetId);
 
     /**
-     * Returns the {@link EndpointDataReferenceEntry}s for the asset.
+     * Returns all the EDR entries in the store that are covered by a given {@link QuerySpec}.
      */
-    @NotNull
-    List<EndpointDataReferenceEntry> entriesForAsset(String assetId);
+
+    Stream<EndpointDataReferenceEntry> queryForEntries(QuerySpec spec);
 
     /**
      * Saves an {@link EndpointDataReference} to the cache using upsert semantics.

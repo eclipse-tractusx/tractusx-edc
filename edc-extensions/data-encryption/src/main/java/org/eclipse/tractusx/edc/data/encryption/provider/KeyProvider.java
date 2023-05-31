@@ -19,11 +19,12 @@
  */
 package org.eclipse.tractusx.edc.data.encryption.provider;
 
-import java.util.stream.Stream;
 import org.eclipse.tractusx.edc.data.encryption.key.CryptoKey;
 
-public interface KeyProvider<T extends CryptoKey> {
-  T getEncryptionKey();
+import java.util.stream.Stream;
 
-  Stream<T> getDecryptionKeySet();
+public interface KeyProvider<T extends CryptoKey> {
+    T getEncryptionKey();
+
+    Stream<T> getDecryptionKeySet();
 }

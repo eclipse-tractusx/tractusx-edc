@@ -20,31 +20,32 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.UUID;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 class AdditionalHeadersProvisionedResourceTest {
 
-  @Test
-  void serdes() {
-    var typeManager = new TypeManager();
-    var resource =
-        AdditionalHeadersProvisionedResource.Builder.newInstance()
-            .id(UUID.randomUUID().toString())
-            .resourceDefinitionId(UUID.randomUUID().toString())
-            .transferProcessId(UUID.randomUUID().toString())
-            .hasToken(false)
-            .resourceName("name")
-            .dataAddress(DataAddress.Builder.newInstance().type("type").build())
-            .build();
+    @Test
+    void serdes() {
+        var typeManager = new TypeManager();
+        var resource =
+                AdditionalHeadersProvisionedResource.Builder.newInstance()
+                        .id(UUID.randomUUID().toString())
+                        .resourceDefinitionId(UUID.randomUUID().toString())
+                        .transferProcessId(UUID.randomUUID().toString())
+                        .hasToken(false)
+                        .resourceName("name")
+                        .dataAddress(DataAddress.Builder.newInstance().type("type").build())
+                        .build();
 
-    var json = typeManager.writeValueAsString(resource);
-    var deserialized = typeManager.readValue(json, AdditionalHeadersProvisionedResource.class);
+        var json = typeManager.writeValueAsString(resource);
+        var deserialized = typeManager.readValue(json, AdditionalHeadersProvisionedResource.class);
 
-    assertThat(deserialized).usingRecursiveComparison().isEqualTo(resource);
-  }
+        assertThat(deserialized).usingRecursiveComparison().isEqualTo(resource);
+    }
 }

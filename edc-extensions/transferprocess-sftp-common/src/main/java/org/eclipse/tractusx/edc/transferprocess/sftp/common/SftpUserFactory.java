@@ -15,5 +15,5 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 
 public interface SftpUserFactory {
-  SftpUser createSftpUser(String sftpUserName, String sftpUserPassword, byte[] sftpUserKeypair);
+    SftpUser createSftpUser(String sftpUserName, String sftpUserPassword, byte[] sftpUserKeypair);
 }

@@ -19,13 +19,25 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
+import java.util.Objects;
+
 import static java.util.Objects.requireNonNull;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 /**
  * An entry in the cache for an {@link EndpointDataReference}.
  */
 @JsonDeserialize(builder = EndpointDataReferenceEntry.Builder.class)
 public class EndpointDataReferenceEntry {
+
+    public static final String SIMPLE_TYPE = "EndpointDataReferenceEntry";
+
+    public static final String EDR_ENTRY_TYPE = TX_NAMESPACE + SIMPLE_TYPE;
+    public static final String EDR_ENTRY_ASSET_ID = EDC_NAMESPACE + "assetId";
+    public static final String EDR_ENTRY_AGREEMENT_ID = EDC_NAMESPACE + "agreementId";
+    public static final String EDR_ENTRY_TRANSFER_PROCESS_ID = EDC_NAMESPACE + "transferProcessId";
+
     private String assetId;
     private String agreementId;
     private String transferProcessId;
@@ -53,6 +65,11 @@ public class EndpointDataReferenceEntry {
         var that = (EndpointDataReferenceEntry) o;
 
         return transferProcessId.equals(that.transferProcessId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(assetId, agreementId, transferProcessId);
     }
 
     @JsonPOJOBuilder(withPrefix = "")

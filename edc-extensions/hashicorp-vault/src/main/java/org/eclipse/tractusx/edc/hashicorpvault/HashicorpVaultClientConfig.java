@@ -20,21 +20,84 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
+
 import java.time.Duration;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-@Builder
-@Getter
-@RequiredArgsConstructor
 class HashicorpVaultClientConfig {
-  @NonNull private final String vaultUrl;
-  @NonNull private final String vaultToken;
-  @NonNull private final String vaultApiSecretPath;
-  @NonNull private final String vaultApiHealthPath;
-  @NonNull private final Duration timeout;
+    private String vaultUrl;
+    private String vaultToken;
+    private String vaultApiSecretPath;
+    private String vaultApiHealthPath;
+    private Duration timeout;
+    private boolean isVaultApiHealthStandbyOk;
 
-  private final boolean isVaultApiHealthStandbyOk;
+    public String getVaultUrl() {
+        return vaultUrl;
+    }
+
+    public String getVaultToken() {
+        return vaultToken;
+    }
+
+    public String getVaultApiSecretPath() {
+        return vaultApiSecretPath;
+    }
+
+    public String getVaultApiHealthPath() {
+        return vaultApiHealthPath;
+    }
+
+    public Duration getTimeout() {
+        return timeout;
+    }
+
+    public boolean isVaultApiHealthStandbyOk() {
+        return isVaultApiHealthStandbyOk;
+    }
+
+    public static final class Builder {
+        private final HashicorpVaultClientConfig config;
+
+        private Builder() {
+            config = new HashicorpVaultClientConfig();
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder vaultUrl(String vaultUrl) {
+            this.config.vaultUrl = vaultUrl;
+            return this;
+        }
+
+        public Builder vaultToken(String vaultToken) {
+            this.config.vaultToken = vaultToken;
+            return this;
+        }
+
+        public Builder vaultApiSecretPath(String vaultApiSecretPath) {
+            this.config.vaultApiSecretPath = vaultApiSecretPath;
+            return this;
+        }
+
+        public Builder vaultApiHealthPath(String vaultApiHealthPath) {
+            this.config.vaultApiHealthPath = vaultApiHealthPath;
+            return this;
+        }
+
+        public Builder timeout(Duration timeout) {
+            this.config.timeout = timeout;
+            return this;
+        }
+
+        public Builder isVaultApiHealthStandbyOk(boolean isVaultApiHealthStandbyOk) {
+            this.config.isVaultApiHealthStandbyOk = isVaultApiHealthStandbyOk;
+            return this;
+        }
+
+        public HashicorpVaultClientConfig build() {
+            return this.config;
+        }
+    }
 }

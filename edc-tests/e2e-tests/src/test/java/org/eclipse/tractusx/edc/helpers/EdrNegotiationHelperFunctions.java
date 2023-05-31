@@ -20,7 +20,9 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 
 import java.util.Set;
 
@@ -31,11 +33,11 @@ import static org.mockito.Mockito.mock;
 
 public class EdrNegotiationHelperFunctions {
 
-    private final static JsonLd jsonLd = new TitaniumJsonLd(mock(Monitor.class));
+    private static final JsonLd JSON_LD = new TitaniumJsonLd(mock(Monitor.class));
 
     public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
-                .add(TYPE, EDC_NAMESPACE + "NegotiateEdrRequestDto")
+                .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
                 .add(EDC_NAMESPACE + "connectorId", providerId)
                 .add(EDC_NAMESPACE + "providerId", providerId)
                 .add(EDC_NAMESPACE + "connectorAddress", connectorAddress)
@@ -43,7 +45,7 @@ public class EdrNegotiationHelperFunctions {
                 .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
                         .add(EDC_NAMESPACE + "offerId", offerId)
                         .add(EDC_NAMESPACE + "assetId", assetId)
-                        .add(EDC_NAMESPACE + "policy", jsonLd.compact(policy).getContent())
+                        .add(EDC_NAMESPACE + "policy", JSON_LD.compact(policy).getContent())
                 )
                 .add(EDC_NAMESPACE + "callbackAddresses", callbacks)
                 .build();
@@ -61,4 +63,7 @@ public class EdrNegotiationHelperFunctions {
                 .build();
     }
 
+    public static <E extends Event> ReceivedEvent createEvent(Class<E> klass) {
+        return ReceivedEvent.Builder.newInstance().type(klass.getSimpleName()).build();
+    }
 }

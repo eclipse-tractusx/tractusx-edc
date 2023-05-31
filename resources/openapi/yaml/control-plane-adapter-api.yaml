@@ -1,6 +1,40 @@
 openapi: 3.0.1
 paths:
   /adapter/edrs:
+    get:
+      description: Returns all EndpointDataReference entry according to a query
+      operationId: queryEdrs
+      parameters:
+      - in: query
+        name: assetId
+        schema:
+          type: string
+          example: null
+      - in: query
+        name: agreementId
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/EndpointDataReferenceEntry'
+        "400":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: Request was malformed
+      tags:
+      - Control Plane Adapter EDR Api
     post:
       description: Initiates an EDR negotiation by handling a contract negotiation
         first and then a transfer process for a given offer and with the given counter
@@ -48,6 +82,44 @@ paths:
           description: Request body was malformed
       tags:
       - Control Plane Adapter EDR Api
+  /adapter/edrs/{id}:
+    get:
+      description: Gets an EDR  with the given transfer process ID)
+      operationId: getEdr
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataAddressDto'
+          description: The EDR cached
+        "400":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: An EDR with the given ID does not exist
+      tags:
+      - Control Plane Adapter EDR Api
 components:
   schemas:
     Action:
@@ -78,7 +150,7 @@ components:
         type:
           type: string
           example: null
-    CallbackAddressDto:
+    CallbackAddress:
       type: object
       example: null
       properties:
@@ -101,9 +173,6 @@ components:
         uri:
           type: string
           example: null
-      required:
-      - events
-      - uri
     Constraint:
       type: object
       discriminator:
@@ -135,6 +204,24 @@ components:
       - assetId
       - offerId
       - policy
+    DataAddressDto:
+      type: object
+      example: null
+      properties:
+        '@context':
+          type: object
+          example: null
+        '@type':
+          type: string
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+      required:
+      - properties
     Duty:
       type: object
       example: null
@@ -159,21 +246,40 @@ components:
         target:
           type: string
           example: null
+    EndpointDataReferenceEntry:
+      type: object
+      example: null
+      properties:
+        agreementId:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null
     IdResponseDto:
       type: object
       example: null
       properties:
+        '@context':
+          type: object
+          example: null
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: null
         createdAt:
           type: integer
           format: int64
           example: null
-        id:
-          type: string
-          example: null
     JsonObject:
       type: object
       additionalProperties:
-        $ref: '#/components/schemas/NegotiateEdrRequestDto'
+        $ref: '#/components/schemas/JsonValue'
       example: null
       properties:
         empty:
@@ -213,7 +319,7 @@ components:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/CallbackAddressDto'
+            $ref: '#/components/schemas/CallbackAddress'
         connectorAddress:
           type: string
           example: null

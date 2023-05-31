@@ -26,13 +26,18 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+install:
+  daps: true
+  postgresql: true
+  vault: true
 fullnameOverride: ""
 nameOverride: ""
-
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
 imagePullSecrets: []
-
 customLabels: {}
+
+participant:
+  id: ""
 
 controlplane:
   image:
@@ -107,7 +112,7 @@ controlplane:
       # -- port for incoming api calls
       port: 8084
       # -- path for incoming api calls
-      path: /api/v1/ids
+      path: /api/v1/dsp
     # -- metrics api, used for application metrics, must not be internet facing
     metrics:
       # -- port for incoming api calls
@@ -239,18 +244,17 @@ controlplane:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes: []
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
@@ -275,18 +279,15 @@ controlplane:
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
     java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
-
   # [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
   nodeSelector: {}
   # [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
   tolerations: []
   # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
   affinity: {}
-
   url:
     # -- Explicitly declared url for reaching the ids api (e.g. if ingresses not used)
     ids: ""
-
 dataplane:
   image:
     # -- Which derivate of the data plane to use. when left empty the deployment will select the correct image automatically
@@ -340,6 +341,9 @@ dataplane:
     control:
       port: 8083
       path: /api/dataplane/control
+    proxy:
+      port: 8186
+      path: /proxy
     observability:
       # -- port for incoming API calls
       port: 8085
@@ -440,18 +444,17 @@ dataplane:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes: []
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
   replicaCount: 1
   autoscaling:
     # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
@@ -482,18 +485,32 @@ dataplane:
   tolerations: []
   # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
   affinity: {}
-
   url:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
-
 postgresql:
-  enabled: false
   jdbcUrl: ""
-  username: ""
-  password: ""
-
+  fullnameOverride: "postgresql"
+  primary:
+    persistence:
+      enabled: false
+  readReplicas:
+    persistence:
+      enabled: false
+  auth:
+    database: "edc"
+    username: "user"
+    password: "password"
 vault:
+  fullnameOverride: "vault"
+  injector:
+    enabled: false
+  server:
+    dev:
+      enabled: true
+      devRootToken: "root"
+    # Must be the same certificate that is configured in section 'daps'
+    postStart:    # must be set externally!
   hashicorp:
     url: ""
     token: ""
@@ -510,17 +527,22 @@ vault:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
     dapsPrivateKey: daps-private-key
     dapsPublicKey: daps-public-key
-
 daps:
+  fullnameOverride: "daps"
   url: ""
   clientId: ""
   paths:
     jwks: /jwks.json
     token: /token
-
+  connectors:
+    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
+      name: sokrates
+      attributes:
+        referringConnector: http://sokrates-controlplane/BPNSOKRATES
+      # Must be the same certificate that is stores in section 'sokrates-vault'
+      certificate: ""    # must be set externally!
 backendService:
   httpProxyTokenReceiverUrl: ""
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -531,3 +553,6 @@ serviceAccount:
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
   imagePullSecrets: []
+idsdaps:
+  connectors:
+    - certificate: |-

@@ -20,6 +20,9 @@ plugins {
 
 dependencies {
     implementation(project(":spi:control-plane-adapter-spi"))
+    implementation(project(":spi:edr-cache-spi"))
+    implementation(project(":spi:core-spi"))
+
     implementation(libs.edc.api.management)
     implementation(libs.edc.spi.aggregateservices)
     implementation(libs.jakarta.rsApi)

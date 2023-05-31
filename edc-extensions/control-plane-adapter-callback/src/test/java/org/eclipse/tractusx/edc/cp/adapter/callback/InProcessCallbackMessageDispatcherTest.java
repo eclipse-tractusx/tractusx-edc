@@ -55,7 +55,7 @@ public class InProcessCallbackMessageDispatcherTest {
     }
 
     @Test
-    void send_shouldNotInvokeRegisteredCallback_whenItsNotACallbackRemoteMessage() {
+    void send_shouldNotInvokeRegisteredCallback_whenItsNotCallbackRemoteMessage() {
 
         assertThatThrownBy(() -> dispatcher.send(Object.class, new TestMessage()).join())
                 .hasCauseInstanceOf(EdcException.class);

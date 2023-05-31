@@ -26,31 +26,29 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 @Provides(NoOpSftpProvisioner.class)
 public class SftpProvisionerExtension implements ServiceExtension {
 
-  @Inject ProvisionManager provisionManager;
-  @Inject Monitor monitor;
-  @Inject PolicyEngine policyEngine;
+    private static final String POLICY_SCOPE_CONFIG_PATH = "provisioner.sftp.policy.scope";
+    private static final String DEFAULT_POLICY_SCOPE = "sftp.provisioner";
+    @Inject
+    ProvisionManager provisionManager;
+    @Inject
+    Monitor monitor;
+    @Inject
+    PolicyEngine policyEngine;
 
-  private static final String POLICY_SCOPE_CONFIG_PATH = "provisioner.sftp.policy.scope";
-  private static final String DEFAULT_POLICY_SCOPE = "sftp.provisioner";
+    @Override
+    public String name() {
+        return "Sftp Provisioner";
+    }
 
-  @Override
-  public String name() {
-    return "Sftp Provisioner";
-  }
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        var policyScope = context.getConfig().getString(POLICY_SCOPE_CONFIG_PATH, DEFAULT_POLICY_SCOPE);
 
-  @Override
-  public void initialize(ServiceExtensionContext context) {
-    final String policyScope =
-        context.getConfig().getString(POLICY_SCOPE_CONFIG_PATH, DEFAULT_POLICY_SCOPE);
-
-    final NoOpSftpProvider sftpProvider = new NoOpSftpProvider();
-    final NoOpSftpProvisioner noOpSftpProvisioner =
-        new NoOpSftpProvisioner(policyScope, policyEngine, sftpProvider);
-    final SftpProviderResourceDefinitionGenerator generator =
-        new SftpProviderResourceDefinitionGenerator();
-    provisionManager.register(noOpSftpProvisioner);
-    context.registerService(ProviderResourceDefinitionGenerator.class, generator);
-
-    monitor.info("SftpProvisionerExtension: authentication/initialization complete.");
-  }
+        var sftpProvider = new NoOpSftpProvider();
+        var noOpSftpProvisioner = new NoOpSftpProvisioner(policyScope, policyEngine, sftpProvider);
+        var generator = new SftpProviderResourceDefinitionGenerator();
+        provisionManager.register(noOpSftpProvisioner);
+        context.registerService(ProviderResourceDefinitionGenerator.class, generator);
+        monitor.info("SftpProvisionerExtension: authentication/initialization complete.");
+    }
 }

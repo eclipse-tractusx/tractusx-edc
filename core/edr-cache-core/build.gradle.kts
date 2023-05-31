@@ -22,5 +22,8 @@ dependencies {
     implementation(libs.edc.util)
 
     implementation(project(":spi:edr-cache-spi"))
+
+    testImplementation(testFixtures(project(":spi:edr-cache-spi")))
+
 }
 

@@ -22,6 +22,7 @@ rootProject.name = "tractusx-edc"
 // spi modules
 include(":spi:control-plane-adapter-spi")
 include(":spi:edr-cache-spi")
+include(":spi:core-spi")
 
 // core modules
 include(":core:edr-cache-core")
@@ -40,10 +41,14 @@ include(":edc-extensions:transferprocess-sftp-common")
 include(":edc-extensions:transferprocess-sftp-provisioner")
 include(":edc-extensions:control-plane-adapter-api")
 include(":edc-extensions:control-plane-adapter-callback")
+include(":edc-extensions:edr-cache-sql")
+
 
 
 include(":edc-tests:e2e-tests")
-include(":edc-tests:runtime")
+include(":edc-tests:runtime:extensions")
+include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:cucumber")
 
 // modules for controlplane artifacts

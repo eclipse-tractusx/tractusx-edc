@@ -20,18 +20,17 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.system.health.HealthStatus;
-import org.jetbrains.annotations.NotNull;
 
 
-@Consumes({ MediaType.APPLICATION_JSON })
-@Produces({ MediaType.APPLICATION_JSON })
+@Consumes({MediaType.APPLICATION_JSON})
+@Produces({MediaType.APPLICATION_JSON})
 @Path("/check")
 public class TxObservabilityApiController implements TxObservabilityApi {
 
     private final HealthCheckService healthCheckService;
+
     public TxObservabilityApiController(HealthCheckService provider) {
         healthCheckService = provider;
     }

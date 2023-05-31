@@ -20,9 +20,11 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import java.time.Duration;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+
+import java.time.Duration;
 
 /**
  * Temporary solution as long as the Vault components needs to be loaded as dedicated vault
@@ -30,68 +32,76 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
  */
 public class AbstractHashicorpVaultExtension {
 
-  public static final String VAULT_URL = "edc.vault.hashicorp.url";
+    public static final String VAULT_URL = "edc.vault.hashicorp.url";
 
-  public static final String VAULT_TOKEN = "edc.vault.hashicorp.token";
+    public static final String VAULT_TOKEN = "edc.vault.hashicorp.token";
 
-  public static final String VAULT_API_SECRET_PATH = "edc.vault.hashicorp.api.secret.path";
+    public static final String VAULT_API_SECRET_PATH = "edc.vault.hashicorp.api.secret.path";
 
-  public static final String VAULT_API_SECRET_PATH_DEFAULT = "/v1/secret";
+    public static final String VAULT_API_SECRET_PATH_DEFAULT = "/v1/secret";
 
-  public static final String VAULT_API_HEALTH_PATH = "edc.vault.hashicorp.api.health.check.path";
+    public static final String VAULT_API_HEALTH_PATH = "edc.vault.hashicorp.api.health.check.path";
 
-  public static final String VAULT_API_HEALTH_PATH_DEFAULT = "/v1/sys/health";
+    public static final String VAULT_API_HEALTH_PATH_DEFAULT = "/v1/sys/health";
 
-  public static final String VAULT_HEALTH_CHECK_STANDBY_OK =
-      "edc.vault.hashicorp.health.check.standby.ok";
+    public static final String VAULT_HEALTH_CHECK_STANDBY_OK =
+            "edc.vault.hashicorp.health.check.standby.ok";
 
-  public static final boolean VAULT_HEALTH_CHECK_STANDBY_OK_DEFAULT = false;
+    public static final boolean VAULT_HEALTH_CHECK_STANDBY_OK_DEFAULT = false;
 
-  private static final String VAULT_TIMEOUT_SECONDS = "edc.vault.hashicorp.timeout.seconds";
+    private static final String VAULT_TIMEOUT_SECONDS = "edc.vault.hashicorp.timeout.seconds";
 
-  protected OkHttpClient createOkHttpClient(HashicorpVaultClientConfig config) {
-    OkHttpClient.Builder builder =
-        new OkHttpClient.Builder()
-            .callTimeout(config.getTimeout())
-            .readTimeout(config.getTimeout());
+    protected HashicorpVaultClient createVaultClient(ServiceExtensionContext context, ObjectMapper mapper) {
+        var config = loadHashicorpVaultClientConfig(context);
 
-    return builder.build();
-  }
+        var okHttpClient = createOkHttpClient(config);
 
-  protected HashicorpVaultClientConfig loadHashicorpVaultClientConfig(
-      ServiceExtensionContext context) {
-
-    final String vaultUrl = context.getSetting(VAULT_URL, null);
-    if (vaultUrl == null) {
-      throw new HashicorpVaultException(String.format("Vault URL (%s) must be defined", VAULT_URL));
+        return new HashicorpVaultClient(config, okHttpClient, mapper);
     }
 
-    final int vaultTimeoutSeconds = Math.max(0, context.getSetting(VAULT_TIMEOUT_SECONDS, 30));
-    final Duration vaultTimeoutDuration = Duration.ofSeconds(vaultTimeoutSeconds);
+    protected OkHttpClient createOkHttpClient(HashicorpVaultClientConfig config) {
+        OkHttpClient.Builder builder =
+                new OkHttpClient.Builder()
+                        .callTimeout(config.getTimeout())
+                        .readTimeout(config.getTimeout());
 
-    final String vaultToken = context.getSetting(VAULT_TOKEN, null);
-
-    if (vaultToken == null) {
-      throw new HashicorpVaultException(
-          String.format("For Vault authentication [%s] is required", VAULT_TOKEN));
+        return builder.build();
     }
 
-    final String apiSecretPath =
-        context.getSetting(VAULT_API_SECRET_PATH, VAULT_API_SECRET_PATH_DEFAULT);
+    protected HashicorpVaultClientConfig loadHashicorpVaultClientConfig(
+            ServiceExtensionContext context) {
 
-    final String apiHealthPath =
-        context.getSetting(VAULT_API_HEALTH_PATH, VAULT_API_HEALTH_PATH_DEFAULT);
+        final String vaultUrl = context.getSetting(VAULT_URL, null);
+        if (vaultUrl == null) {
+            throw new HashicorpVaultException(String.format("Vault URL (%s) must be defined", VAULT_URL));
+        }
 
-    final boolean isHealthStandbyOk =
-        context.getSetting(VAULT_HEALTH_CHECK_STANDBY_OK, VAULT_HEALTH_CHECK_STANDBY_OK_DEFAULT);
+        final int vaultTimeoutSeconds = Math.max(0, context.getSetting(VAULT_TIMEOUT_SECONDS, 30));
+        final Duration vaultTimeoutDuration = Duration.ofSeconds(vaultTimeoutSeconds);
 
-    return HashicorpVaultClientConfig.builder()
-        .vaultUrl(vaultUrl)
-        .vaultToken(vaultToken)
-        .vaultApiSecretPath(apiSecretPath)
-        .vaultApiHealthPath(apiHealthPath)
-        .isVaultApiHealthStandbyOk(isHealthStandbyOk)
-        .timeout(vaultTimeoutDuration)
-        .build();
-  }
+        final String vaultToken = context.getSetting(VAULT_TOKEN, null);
+
+        if (vaultToken == null) {
+            throw new HashicorpVaultException(
+                    String.format("For Vault authentication [%s] is required", VAULT_TOKEN));
+        }
+
+        final String apiSecretPath =
+                context.getSetting(VAULT_API_SECRET_PATH, VAULT_API_SECRET_PATH_DEFAULT);
+
+        final String apiHealthPath =
+                context.getSetting(VAULT_API_HEALTH_PATH, VAULT_API_HEALTH_PATH_DEFAULT);
+
+        final boolean isHealthStandbyOk =
+                context.getSetting(VAULT_HEALTH_CHECK_STANDBY_OK, VAULT_HEALTH_CHECK_STANDBY_OK_DEFAULT);
+
+        return HashicorpVaultClientConfig.Builder.newInstance()
+                .vaultUrl(vaultUrl)
+                .vaultToken(vaultToken)
+                .vaultApiSecretPath(apiSecretPath)
+                .vaultApiHealthPath(apiHealthPath)
+                .isVaultApiHealthStandbyOk(isHealthStandbyOk)
+                .timeout(vaultTimeoutDuration)
+                .build();
+    }
 }

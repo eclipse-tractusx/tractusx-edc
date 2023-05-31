@@ -20,39 +20,40 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** Implements a vault backed by Hashicorp Vault. */
-@RequiredArgsConstructor
+/**
+ * Implements a vault backed by Hashicorp Vault.
+ */
 class HashicorpVault implements Vault {
 
-  @NonNull private final HashicorpVaultClient hashicorpVaultClient;
-  @NonNull private final Monitor monitor;
+    private final HashicorpVaultClient hashicorpVaultClient;
 
-  @Override
-  public @Nullable String resolveSecret(@NonNull String key) {
-    Result<String> result = hashicorpVaultClient.getSecretValue(key);
+    HashicorpVault(HashicorpVaultClient hashicorpVaultClient) {
+        this.hashicorpVaultClient = hashicorpVaultClient;
+    }
 
-    return result.succeeded() ? result.getContent() : null;
-  }
+    @Override
+    public @Nullable String resolveSecret(String key) {
+        Result<String> result = hashicorpVaultClient.getSecretValue(key);
 
-  @Override
-  @NotNull
-  public Result<Void> storeSecret(@NotNull @NonNull String key, @NotNull @NonNull String value) {
-    Result<HashicorpVaultCreateEntryResponsePayload> result =
-        hashicorpVaultClient.setSecret(key, value);
+        return result.succeeded() ? result.getContent() : null;
+    }
 
-    return result.succeeded() ? Result.success() : Result.failure(result.getFailureMessages());
-  }
+    @Override
+    @NotNull
+    public Result<Void> storeSecret(@NotNull String key, @NotNull String value) {
+        Result<HashicorpVaultCreateEntryResponsePayload> result =
+                hashicorpVaultClient.setSecret(key, value);
 
-  @Override
-  public Result<Void> deleteSecret(@NotNull @NonNull String key) {
-    return hashicorpVaultClient.destroySecret(key);
-  }
+        return result.succeeded() ? Result.success() : Result.failure(result.getFailureMessages());
+    }
+
+    @Override
+    public Result<Void> deleteSecret(@NotNull String key) {
+        return hashicorpVaultClient.destroySecret(key);
+    }
 }

@@ -14,6 +14,8 @@
 
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.util.concurrency.LockManager;
@@ -22,8 +24,15 @@ import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -36,14 +45,17 @@ import static org.eclipse.edc.spi.result.StoreResult.success;
 public class InMemoryEndpointDataReferenceCache implements EndpointDataReferenceCache {
     private final LockManager lockManager;
 
+    private final EdrCacheEntryPredicateConverter predicateConverter = new EdrCacheEntryPredicateConverter();
+
     private final Map<String, List<EndpointDataReferenceEntry>> entriesByAssetId;
+
     private final Map<String, EndpointDataReferenceEntry> entriesByEdrId;
     private final Map<String, EndpointDataReference> edrsByTransferProcessId;
 
     public InMemoryEndpointDataReferenceCache() {
         lockManager = new LockManager(new ReentrantReadWriteLock());
         entriesByAssetId = new HashMap<>();
-        entriesByEdrId = new HashMap<>();
+        entriesByEdrId = new ConcurrentHashMap<>();
         edrsByTransferProcessId = new HashMap<>();
     }
 
@@ -63,9 +75,8 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
     @Override
-    @NotNull
-    public List<EndpointDataReferenceEntry> entriesForAsset(String assetId) {
-        return lockManager.readLock(() -> entriesByAssetId.getOrDefault(assetId, emptyList()));
+    public Stream<EndpointDataReferenceEntry> queryForEntries(QuerySpec spec) {
+        return filterBy(spec.getFilterExpression());
     }
 
     @Override
@@ -87,13 +98,23 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
             if (edr == null) {
                 return notFound("EDR entry not found for id: " + id);
             }
-            var entry = entriesByEdrId.get(edr.getId());
+            var entry = entriesByEdrId.remove(edr.getId());
             var entries = entriesByAssetId.get(entry.getAssetId());
             entries.remove(entry);
             if (entries.isEmpty()) {
                 entriesByAssetId.remove(entry.getAssetId());
             }
+
             return success(entry);
         });
+    }
+
+    private Stream<EndpointDataReferenceEntry> filterBy(List<Criterion> criteria) {
+        var predicate = criteria.stream()
+                .map(predicateConverter::convert)
+                .reduce(x -> true, Predicate::and);
+
+        return entriesByEdrId.values().stream()
+                .filter(predicate);
     }
 }

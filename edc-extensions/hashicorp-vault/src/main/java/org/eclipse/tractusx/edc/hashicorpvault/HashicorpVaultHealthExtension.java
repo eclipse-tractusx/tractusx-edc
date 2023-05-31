@@ -20,50 +20,52 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import okhttp3.OkHttpClient;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
+import org.eclipse.edc.spi.types.TypeManager;
 
 @Requires(HealthCheckService.class)
 public class HashicorpVaultHealthExtension extends AbstractHashicorpVaultExtension
-    implements ServiceExtension {
+        implements ServiceExtension {
 
-  public static final String VAULT_HEALTH_CHECK = "edc.vault.hashicorp.health.check.enabled";
+    public static final String VAULT_HEALTH_CHECK = "edc.vault.hashicorp.health.check.enabled";
 
-  public static final boolean VAULT_HEALTH_CHECK_DEFAULT = true;
+    public static final boolean VAULT_HEALTH_CHECK_DEFAULT = true;
 
-  @Override
-  public String name() {
-    return "Hashicorp Vault Health Check";
-  }
+    @Inject
+    private HealthCheckService healthCheckService;
 
-  @Override
-  public void initialize(ServiceExtensionContext context) {
-    final HashicorpVaultClientConfig config = loadHashicorpVaultClientConfig(context);
+    @Inject
+    private TypeManager typeManager;
 
-    final OkHttpClient okHttpClient = createOkHttpClient(config);
+    @Override
+    public String name() {
+        return "Hashicorp Vault Health Check";
+    }
 
-    final HashicorpVaultClient client =
-        new HashicorpVaultClient(config, okHttpClient, context.getTypeManager().getMapper());
 
-    configureHealthCheck(client, context);
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        var client = createVaultClient(context, typeManager.getMapper());
 
-    context.getMonitor().info("HashicorpVaultExtension: health check initialization complete.");
-  }
+        configureHealthCheck(client, context);
 
-  private void configureHealthCheck(HashicorpVaultClient client, ServiceExtensionContext context) {
-    final boolean healthCheckEnabled =
-        context.getSetting(VAULT_HEALTH_CHECK, VAULT_HEALTH_CHECK_DEFAULT);
-    if (!healthCheckEnabled) return;
+        context.getMonitor().info("HashicorpVaultExtension: health check initialization complete.");
+    }
 
-    final HashicorpVaultHealthCheck healthCheck =
-        new HashicorpVaultHealthCheck(client, context.getMonitor());
+    private void configureHealthCheck(HashicorpVaultClient client, ServiceExtensionContext context) {
+        var healthCheckEnabled =
+                context.getSetting(VAULT_HEALTH_CHECK, VAULT_HEALTH_CHECK_DEFAULT);
+        if (!healthCheckEnabled) return;
 
-    final HealthCheckService healthCheckService = context.getService(HealthCheckService.class);
-    healthCheckService.addLivenessProvider(healthCheck);
-    healthCheckService.addReadinessProvider(healthCheck);
-    healthCheckService.addStartupStatusProvider(healthCheck);
-  }
+        var healthCheck =
+                new HashicorpVaultHealthCheck(client, context.getMonitor());
+
+        healthCheckService.addLivenessProvider(healthCheck);
+        healthCheckService.addReadinessProvider(healthCheck);
+        healthCheckService.addStartupStatusProvider(healthCheck);
+    }
 }

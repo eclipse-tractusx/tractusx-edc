@@ -25,18 +25,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class SftpLocationFactoryImplTest {
-  private final SftpLocationFactoryImpl sftpLocationFactoryImpl = new SftpLocationFactoryImpl();
+    private final SftpLocationFactoryImpl sftpLocationFactoryImpl = new SftpLocationFactoryImpl();
 
-  @Test
-  void generateSftpLocation() {
-    final String host = "host";
-    final Integer port = 22;
-    final String path = "path";
+    @Test
+    void generateSftpLocation() {
+        final String host = "host";
+        final Integer port = 22;
+        final String path = "path";
 
-    final SftpLocation location = sftpLocationFactoryImpl.createSftpLocation(host, port, path);
+        final SftpLocation location = sftpLocationFactoryImpl.createSftpLocation(host, port, path);
 
-    Assertions.assertEquals(host, location.getHost());
-    Assertions.assertEquals(port, location.getPort());
-    Assertions.assertEquals(path, location.getPath());
-  }
+        Assertions.assertEquals(host, location.getHost());
+        Assertions.assertEquals(port, location.getPort());
+        Assertions.assertEquals(path, location.getPath());
+    }
 }

@@ -16,17 +16,14 @@ package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
 import org.eclipse.edc.api.transformer.DtoTransformer;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Collectors;
-
 public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements DtoTransformer<NegotiateEdrRequestDto, NegotiateEdrRequest> {
-    
+
     @Override
     public Class<NegotiateEdrRequestDto> getInputType() {
         return NegotiateEdrRequestDto.class;
@@ -39,8 +36,6 @@ public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements 
 
     @Override
     public @Nullable NegotiateEdrRequest transform(@NotNull NegotiateEdrRequestDto object, @NotNull TransformerContext context) {
-        var callbacks = object.getCallbackAddresses().stream().map(c -> context.transform(c, CallbackAddress.class)).collect(Collectors.toList());
-
         var contractOffer = ContractOffer.Builder.newInstance()
                 .id(object.getOffer().getOfferId())
                 .assetId(object.getOffer().getAssetId())
@@ -53,7 +48,7 @@ public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements 
                 .connectorAddress(object.getConnectorAddress())
                 .protocol(object.getProtocol())
                 .offer(contractOffer)
-                .callbackAddresses(callbacks)
+                .callbackAddresses(object.getCallbackAddresses())
                 .build();
     }
 

@@ -40,7 +40,7 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class PolicyHelperFunctions {
 
-    private static final String BUSINESS_PARTNER_EVALUATION_KEY = EDC_NAMESPACE + "BusinessPartnerNumber";
+    private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
     /**
      * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:

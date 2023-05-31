@@ -1,0 +1,34 @@
+openapi: 3.0.1
+paths:
+  /aas/request:
+    post:
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetRequest'
+          description: Requests asset data
+      tags:
+      - Data Plane Proxy API
+components:
+  schemas:
+    AssetRequest:
+      type: object
+      example: null
+      properties:
+        assetId:
+          type: string
+          example: null
+        endpointUrl:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null

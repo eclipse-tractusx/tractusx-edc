@@ -15,18 +15,52 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.common;
 
 import java.security.KeyPair;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
 
-@Builder
-@Getter
-@ToString(of = "name")
-@EqualsAndHashCode
 public class SftpUser {
-  @NonNull private final String name;
-  private final String password;
-  private final KeyPair keyPair;
+    private String name;
+    private String password;
+    private KeyPair keyPair;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
+
+    public static class Builder {
+        private final SftpUser user;
+
+        private Builder() {
+            user = new SftpUser();
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder name(String name) {
+            user.name = name;
+            return this;
+        }
+
+        public Builder password(String password) {
+            user.password = password;
+            return this;
+        }
+
+        public Builder keyPair(KeyPair keyPair) {
+            user.keyPair = keyPair;
+            return this;
+        }
+
+        public SftpUser build() {
+            return user;
+        }
+    }
 }

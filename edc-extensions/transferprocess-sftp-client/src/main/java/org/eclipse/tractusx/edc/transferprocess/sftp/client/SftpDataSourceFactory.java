@@ -14,7 +14,6 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
-import lombok.RequiredArgsConstructor;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.spi.result.Result;
@@ -23,42 +22,41 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
 public class SftpDataSourceFactory implements DataSourceFactory {
-  @Override
-  public boolean canHandle(DataFlowRequest request) {
-    try {
-      SftpDataAddress.fromDataAddress(request.getSourceDataAddress());
-      return true;
-    } catch (EdcSftpException e) {
-      return false;
-    }
-  }
-
-  @Override
-  public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-    if (!canHandle(request)) {
-      return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+    @Override
+    public boolean canHandle(DataFlowRequest request) {
+        try {
+            SftpDataAddress.fromDataAddress(request.getSourceDataAddress());
+            return true;
+        } catch (EdcSftpException e) {
+            return false;
+        }
     }
 
-    return VALID;
-  }
+    @Override
+    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
+        if (!canHandle(request)) {
+            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+        }
 
-  @Override
-  public DataSource createSource(DataFlowRequest request) {
-    if (!canHandle(request)) {
-      return null;
+        return VALID;
     }
 
-    SftpDataAddress source = SftpDataAddress.fromDataAddress(request.getSourceDataAddress());
+    @Override
+    public DataSource createSource(DataFlowRequest request) {
+        if (!canHandle(request)) {
+            return null;
+        }
 
-    SftpClientConfig sftpClientConfig =
-        SftpClientConfig.builder()
-            .sftpUser(source.getSftpUser())
-            .sftpLocation(source.getSftpLocation())
-            .build();
+        SftpDataAddress source = SftpDataAddress.fromDataAddress(request.getSourceDataAddress());
 
-    SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
-    return new SftpDataSource(sftpClientWrapper);
-  }
+        SftpClientConfig sftpClientConfig =
+                SftpClientConfig.Builder.newInstance()
+                        .sftpUser(source.getSftpUser())
+                        .sftpLocation(source.getSftpLocation())
+                        .build();
+
+        SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
+        return new SftpDataSource(sftpClientWrapper);
+    }
 }

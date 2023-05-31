@@ -29,8 +29,8 @@ class PersistentCacheEntryTest {
     void verify_serializeDeserialize() throws JsonProcessingException {
         var mapper = new ObjectMapper();
 
-        var edr = EndpointDataReference.Builder.newInstance().
-                endpoint("http://test.com")
+        var edr = EndpointDataReference.Builder.newInstance()
+                .endpoint("http://test.com")
                 .id(randomUUID().toString())
                 .authCode("11111")
                 .authKey("authentication").build();

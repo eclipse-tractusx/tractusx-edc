@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -23,26 +24,14 @@ import jakarta.json.JsonValue;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
-import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.InjectionContainer;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.helpers.AssetHelperFunctions;
 import org.eclipse.tractusx.edc.helpers.ContractDefinitionHelperFunctions;
-import org.eclipse.tractusx.edc.token.MockDapsService;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -63,12 +52,16 @@ import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.cre
 import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createTransferRequest;
 import static org.mockito.Mockito.mock;
 
-public class Participant extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
+public class Participant {
+
+    private static final String PROXY_SUBPATH = "proxy/aas/request";
 
     private final String managementUrl;
     private final String apiKey;
     private final String dspEndpoint;
-    private final TypeManager typeManager = new TypeManager();
+
+    private final String gatewayEndpoint;
+
     private final String runtimeName;
     private final String bpn;
     private final String backend;
@@ -76,42 +69,18 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
     private final Duration timeout = Duration.ofSeconds(30);
 
     private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
+    private final String proxyUrl;
 
-    private DataWiper wiper;
-
-    public Participant(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
-        super(moduleName, runtimeName, properties);
+    public Participant(String runtimeName, String bpn, Map<String, String> properties) {
         this.managementUrl = URI.create(format("http://localhost:%s%s", properties.get("web.http.management.port"), properties.get("web.http.management.path"))).toString();
         this.dspEndpoint = URI.create(format("http://localhost:%s%s", properties.get("web.http.protocol.port"), properties.get("web.http.protocol.path"))).toString();
         this.apiKey = properties.get("edc.api.auth.key");
+        this.gatewayEndpoint = URI.create(format("http://localhost:%s/api/gateway", properties.get("web.http.port"))).toString();
+        this.proxyUrl = URI.create(format("http://localhost:%s", properties.get("tx.dpf.consumer.proxy.port"))).toString();
         this.bpn = bpn;
         this.runtimeName = runtimeName;
         this.backend = properties.get("edc.receiver.http.dynamic.endpoint");
-        this.registerServiceMock(IdentityService.class, new MockDapsService(getBpn()));
         jsonLd = new TitaniumJsonLd(mock(Monitor.class));
-        typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
-
-    }
-
-    @Override
-    public void beforeTestExecution(ExtensionContext extensionContext) {
-        //do nothing - we only want to start the runtime once
-        wiper.clearPersistence();
-    }
-
-    @Override
-    public void afterTestExecution(ExtensionContext context) {
-    }
-
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-        //only run this once
-        super.beforeTestExecution(context);
-    }
-
-    @Override
-    public void afterAll(ExtensionContext context) throws Exception {
-        super.afterTestExecution(context);
     }
 
     /**
@@ -189,7 +158,7 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return response.extract().jsonPath().getString(ID);
     }
 
-    public void negotiateEdr(Participant other, String assetId, JsonArray callbacks) {
+    public String negotiateEdr(Participant other, String assetId, JsonArray callbacks) {
         var dataset = getDatasetForAsset(other, assetId);
         assertThat(dataset).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
 
@@ -208,6 +177,7 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         var body = response.extract().body().asString();
         assertThat(response.extract().statusCode()).withFailMessage(body).isBetween(200, 299);
 
+        return response.extract().jsonPath().getString(ID);
     }
 
     public String getNegotiationState(String negotiationId) {
@@ -231,6 +201,39 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                 .statusCode(200)
                 .extract().body().jsonPath()
                 .getString(format("'edc:%s'", fieldName));
+    }
+
+    public JsonObject getEdr(String transferProcessId) {
+        return baseRequest()
+                .when()
+                .get("/adapter/edrs/{id}", transferProcessId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonObject.class);
+    }
+
+    public JsonArray getEdrEntriesByAssetId(String assetId) {
+        return baseRequest()
+                .when()
+                .get("/adapter/edrs?assetId={assetId}", assetId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+    }
+
+    public JsonArray getEdrEntriesByAgreementId(String agreementId) {
+        return baseRequest()
+                .when()
+                .get("/adapter/edrs?agreementId={agreementId}", agreementId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
     }
 
 
@@ -325,6 +328,38 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
         return datasetReference.get();
     }
 
+    public String pullProxyDataByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return getProxyData(body);
+    }
+
+    public Response pullProxyDataResponseByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return proxyRequest(body);
+    }
+
+    public String pullProxyDataByTransferProcessId(Participant provider, String transferProcessId) {
+        var body = Map.of("transferProcessId", transferProcessId,
+                "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return getProxyData(body);
+
+    }
+
+    private String getProxyData(Map<String, String> body) {
+        return proxyRequest(body)
+                .then()
+                .assertThat().statusCode(200)
+                .extract().body().asString();
+    }
+
+    private Response proxyRequest(Map<String, String> body) {
+        return given()
+                .baseUri(proxyUrl)
+                .contentType("application/json")
+                .body(body)
+                .post(PROXY_SUBPATH);
+    }
+
     public JsonObject getDatasetForAsset(Participant provider, String assetId) {
         var datasets = getCatalogDatasets(provider);
         return datasets.stream()
@@ -332,13 +367,6 @@ public class Participant extends EdcRuntimeExtension implements BeforeAllCallbac
                 .filter(it -> assetId.equals(getDatasetAssetId(it)))
                 .findFirst()
                 .orElseThrow(() -> new EdcException(format("No dataset for asset %s in the catalog", assetId)));
-    }
-
-
-    @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        super.bootExtensions(context, serviceExtensions);
-        wiper = new DataWiper(context);
     }
 
     private RequestSpecification baseRequest() {

@@ -19,22 +19,21 @@
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+import java.time.Duration
 
 plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("io.freefair.lombok") version "8.0.1"
-    id("com.diffplug.spotless") version "6.18.0"
+    id("com.diffplug.spotless") version "6.19.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
-val javaVersion: String by project
 val txScmConnection: String by project
 val txWebsiteUrl: String by project
 val txScmUrl: String by project
-val groupId: String by project
 val annotationProcessorVersion: String by project
 val metaModelVersion: String by project
 
@@ -57,13 +56,11 @@ project.subprojects.forEach {
 
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
-    apply(plugin = "io.freefair.lombok")
 
     repositories {
         mavenCentral()
     }
     dependencies {
-        implementation("org.projectlombok:lombok:1.18.26")
         implementation("org.slf4j:slf4j-api:2.0.7")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
@@ -73,7 +70,7 @@ allprojects {
             implementation("org.yaml:snakeyaml:2.0") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
-            implementation("net.minidev:json-smart:2.4.10") {
+            implementation("net.minidev:json-smart:2.4.11") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
         }
@@ -91,10 +88,9 @@ allprojects {
             metaModel.set(metaModelVersion)
 
         }
-        val gid = groupId
         pom {
             // this is actually important, so we can publish under the correct GID
-            groupId = gid
+            groupId = project.group.toString()
             projectName.set(project.name)
             description.set("edc :: ${project.name}")
             projectUrl.set(txWebsiteUrl)
@@ -104,12 +100,12 @@ allprojects {
         swagger {
             title.set((project.findProperty("apiTitle") ?: "Tractus-X REST API") as String)
             description =
-                (project.findProperty("apiDescription") ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
+                    (project.findProperty("apiDescription")
+                            ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
             resourcePackages = setOf("org.eclipse.tractusx.edc")
         }
-        javaLanguageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 
     configure<CheckstyleExtension> {
@@ -149,7 +145,7 @@ allprojects {
 subprojects {
     afterEvaluate {
         if (project.plugins.hasPlugin("com.github.johnrengelman.shadow") &&
-            file("${project.projectDir}/src/main/docker/Dockerfile").exists()
+                file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
 
             //actually apply the plugin to the (sub-)project
@@ -171,5 +167,12 @@ subprojects {
             // make sure "shadowJar" always runs before "dockerize"
             dockerTask.dependsOn(tasks.findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
         }
+    }
+}
+
+nexusPublishing {
+    transitionCheckOptions {
+        maxRetries.set(120)
+        delayBetween.set(Duration.ofSeconds(10))
     }
 }

@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import java.util.UUID;
-import lombok.SneakyThrows;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.junit.jupiter.api.Assertions;
@@ -29,123 +27,119 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.UUID;
+
 class HashicorpVaultTest {
-  private static final String key = "key";
+    private static final String KEY = "key";
 
-  // mocks
-  private HashicorpVaultClient vaultClient;
-  private HashicorpVault vault;
+    // mocks
+    private HashicorpVaultClient vaultClient;
+    private HashicorpVault vault;
 
-  @BeforeEach
-  void setup() {
-    vaultClient = Mockito.mock(HashicorpVaultClient.class);
-    final Monitor monitor = Mockito.mock(Monitor.class);
-    vault = new HashicorpVault(vaultClient, monitor);
-  }
+    @BeforeEach
+    void setup() {
+        vaultClient = Mockito.mock(HashicorpVaultClient.class);
+        final Monitor monitor = Mockito.mock(Monitor.class);
+        vault = new HashicorpVault(vaultClient);
+    }
 
-  @Test
-  @SneakyThrows
-  void getSecretSuccess() {
-    // prepare
-    String value = UUID.randomUUID().toString();
-    Result<String> result = Mockito.mock(Result.class);
-    Mockito.when(vaultClient.getSecretValue(key)).thenReturn(result);
-    Mockito.when(result.getContent()).thenReturn(value);
-    Mockito.when(result.succeeded()).thenReturn(true);
-    Mockito.when(result.failed()).thenReturn(false);
+    @Test
+    void getSecretSuccess() {
+        // prepare
+        String value = UUID.randomUUID().toString();
+        Result<String> result = Mockito.mock(Result.class);
+        Mockito.when(vaultClient.getSecretValue(KEY)).thenReturn(result);
+        Mockito.when(result.getContent()).thenReturn(value);
+        Mockito.when(result.succeeded()).thenReturn(true);
+        Mockito.when(result.failed()).thenReturn(false);
 
-    // invoke
-    String returnValue = vault.resolveSecret(key);
+        // invoke
+        String returnValue = vault.resolveSecret(KEY);
 
-    // verify
-    Mockito.verify(vaultClient, Mockito.times(1)).getSecretValue(key);
-    Assertions.assertEquals(value, returnValue);
-  }
+        // verify
+        Mockito.verify(vaultClient, Mockito.times(1)).getSecretValue(KEY);
+        Assertions.assertEquals(value, returnValue);
+    }
 
-  @Test
-  @SneakyThrows
-  void getSecretFailure() {
-    // prepare
-    Result<String> result = Mockito.mock(Result.class);
-    Mockito.when(vaultClient.getSecretValue(key)).thenReturn(result);
-    Mockito.when(result.succeeded()).thenReturn(false);
-    Mockito.when(result.failed()).thenReturn(true);
+    @Test
+    void getSecretFailure() {
+        // prepare
+        Result<String> result = Mockito.mock(Result.class);
+        Mockito.when(vaultClient.getSecretValue(KEY)).thenReturn(result);
+        Mockito.when(result.succeeded()).thenReturn(false);
+        Mockito.when(result.failed()).thenReturn(true);
 
-    // invoke
-    String returnValue = vault.resolveSecret(key);
+        // invoke
+        String returnValue = vault.resolveSecret(KEY);
 
-    // verify
-    Mockito.verify(vaultClient, Mockito.times(1)).getSecretValue(key);
-    Assertions.assertNull(returnValue);
-  }
+        // verify
+        Mockito.verify(vaultClient, Mockito.times(1)).getSecretValue(KEY);
+        Assertions.assertNull(returnValue);
+    }
 
-  @Test
-  @SneakyThrows
-  void setSecretSuccess() {
-    // prepare
-    String value = UUID.randomUUID().toString();
-    Result<HashicorpVaultCreateEntryResponsePayload> result = Mockito.mock(Result.class);
-    Mockito.when(vaultClient.setSecret(key, value)).thenReturn(result);
-    Mockito.when(result.succeeded()).thenReturn(true);
-    Mockito.when(result.failed()).thenReturn(false);
+    @Test
+    void setSecretSuccess() {
+        // prepare
+        String value = UUID.randomUUID().toString();
+        Result<HashicorpVaultCreateEntryResponsePayload> result = Mockito.mock(Result.class);
+        Mockito.when(vaultClient.setSecret(KEY, value)).thenReturn(result);
+        Mockito.when(result.succeeded()).thenReturn(true);
+        Mockito.when(result.failed()).thenReturn(false);
 
-    // invoke
-    Result<Void> returnValue = vault.storeSecret(key, value);
+        // invoke
+        Result<Void> returnValue = vault.storeSecret(KEY, value);
 
-    // verify
-    Mockito.verify(vaultClient, Mockito.times(1)).setSecret(key, value);
-    Assertions.assertTrue(returnValue.succeeded());
-  }
+        // verify
+        Mockito.verify(vaultClient, Mockito.times(1)).setSecret(KEY, value);
+        Assertions.assertTrue(returnValue.succeeded());
+    }
 
-  @Test
-  @SneakyThrows
-  void setSecretFailure() {
-    // prepare
-    String value = UUID.randomUUID().toString();
-    Result<HashicorpVaultCreateEntryResponsePayload> result = Mockito.mock(Result.class);
-    Mockito.when(vaultClient.setSecret(key, value)).thenReturn(result);
-    Mockito.when(result.succeeded()).thenReturn(false);
-    Mockito.when(result.failed()).thenReturn(true);
+    @Test
+    void setSecretFailure() {
+        // prepare
+        String value = UUID.randomUUID().toString();
+        Result<HashicorpVaultCreateEntryResponsePayload> result = Mockito.mock(Result.class);
+        Mockito.when(vaultClient.setSecret(KEY, value)).thenReturn(result);
+        Mockito.when(result.succeeded()).thenReturn(false);
+        Mockito.when(result.failed()).thenReturn(true);
 
-    // invoke
-    Result<Void> returnValue = vault.storeSecret(key, value);
+        // invoke
+        Result<Void> returnValue = vault.storeSecret(KEY, value);
 
-    // verify
-    Mockito.verify(vaultClient, Mockito.times(1)).setSecret(key, value);
-    Assertions.assertTrue(returnValue.failed());
-  }
+        // verify
+        Mockito.verify(vaultClient, Mockito.times(1)).setSecret(KEY, value);
+        Assertions.assertTrue(returnValue.failed());
+    }
 
-  @Test
-  @SneakyThrows
-  void destroySecretSuccess() {
-    // prepare
-    Result<Void> result = Mockito.mock(Result.class);
-    Mockito.when(vaultClient.destroySecret(key)).thenReturn(result);
-    Mockito.when(result.succeeded()).thenReturn(true);
-    Mockito.when(result.failed()).thenReturn(false);
+    @Test
+    void destroySecretSuccess() {
+        // prepare
+        Result<Void> result = Mockito.mock(Result.class);
+        Mockito.when(vaultClient.destroySecret(KEY)).thenReturn(result);
+        Mockito.when(result.succeeded()).thenReturn(true);
+        Mockito.when(result.failed()).thenReturn(false);
 
-    // invoke
-    Result<Void> returnValue = vault.deleteSecret(key);
+        // invoke
+        Result<Void> returnValue = vault.deleteSecret(KEY);
 
-    // verify
-    Mockito.verify(vaultClient, Mockito.times(1)).destroySecret(key);
-    Assertions.assertTrue(returnValue.succeeded());
-  }
+        // verify
+        Mockito.verify(vaultClient, Mockito.times(1)).destroySecret(KEY);
+        Assertions.assertTrue(returnValue.succeeded());
+    }
 
-  @Test
-  @SneakyThrows
-  void destroySecretFailure() {
-    // prepare
-    Result<Void> result = Mockito.mock(Result.class);
-    Mockito.when(vaultClient.destroySecret(key)).thenReturn(result);
-    Mockito.when(result.succeeded()).thenReturn(false);
-    Mockito.when(result.failed()).thenReturn(true);
+    @Test
+    void destroySecretFailure() {
+        // prepare
+        Result<Void> result = Mockito.mock(Result.class);
+        Mockito.when(vaultClient.destroySecret(KEY)).thenReturn(result);
+        Mockito.when(result.succeeded()).thenReturn(false);
+        Mockito.when(result.failed()).thenReturn(true);
 
-    // invoke
-    Result<Void> returnValue = vault.deleteSecret(key);
+        // invoke
+        Result<Void> returnValue = vault.deleteSecret(KEY);
 
-    // verify
-    Mockito.verify(vaultClient, Mockito.times(1)).destroySecret(key);
-    Assertions.assertTrue(returnValue.failed());
-  }
+        // verify
+        Mockito.verify(vaultClient, Mockito.times(1)).destroySecret(KEY);
+        Assertions.assertTrue(returnValue.failed());
+    }
 }

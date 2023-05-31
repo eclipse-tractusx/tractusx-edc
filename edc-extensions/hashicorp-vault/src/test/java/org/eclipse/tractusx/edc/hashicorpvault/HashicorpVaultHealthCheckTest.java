@@ -20,9 +20,8 @@
 
 package org.eclipse.tractusx.edc.hashicorpvault;
 
-import java.io.IOException;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,44 +31,43 @@ import org.mockito.Mockito;
 
 class HashicorpVaultHealthCheckTest {
 
-  private HashicorpVaultHealthCheck healthCheck;
+    private HashicorpVaultHealthCheck healthCheck;
 
-  // mocks
-  private Monitor monitor;
-  private HashicorpVaultClient client;
+    // mocks
+    private Monitor monitor;
+    private HashicorpVaultClient client;
 
-  @BeforeEach
-  void setup() {
-    monitor = Mockito.mock(Monitor.class);
-    client = Mockito.mock(HashicorpVaultClient.class);
+    @BeforeEach
+    void setup() {
+        monitor = Mockito.mock(Monitor.class);
+        client = Mockito.mock(HashicorpVaultClient.class);
 
-    healthCheck = new HashicorpVaultHealthCheck(client, monitor);
-  }
-
-  @ParameterizedTest
-  @ValueSource(ints = {200, 409, 472, 473, 501, 503, 999})
-  void testResponseFromCode(int code) throws IOException {
-
-    Mockito.when(client.getHealth())
-        .thenReturn(
-            new HashicorpVaultHealthResponse(new HashicorpVaultHealthResponsePayload(), code));
-
-    final HealthCheckResult result = healthCheck.get();
-
-    if (code == 200) {
-      Mockito.verify(monitor, Mockito.times(1)).debug(Mockito.anyString());
-      Assertions.assertTrue(result.succeeded());
-    } else {
-      Assertions.assertTrue(result.failed());
-      Mockito.verify(monitor, Mockito.times(1)).warning(Mockito.anyString());
+        healthCheck = new HashicorpVaultHealthCheck(client, monitor);
     }
-  }
 
-  @Test
-  void testResponseFromException() throws IOException {
-    Mockito.when(client.getHealth()).thenThrow(new IOException());
+    @ParameterizedTest
+    @ValueSource(ints = {200, 409, 472, 473, 501, 503, 999})
+    void testResponseFromCode(int code) {
 
-    final HealthCheckResult result = healthCheck.get();
-    Assertions.assertFalse(result.succeeded());
-  }
+        Mockito.when(client.getHealth())
+                .thenReturn(HashicorpVaultHealthResponse.Builder.newInstance().payload(new HashicorpVaultHealthResponsePayload()).code(code).build());
+
+        var result = healthCheck.get();
+
+        if (code == 200) {
+            Mockito.verify(monitor, Mockito.times(1)).debug(Mockito.anyString());
+            Assertions.assertTrue(result.succeeded());
+        } else {
+            Assertions.assertTrue(result.failed());
+            Mockito.verify(monitor, Mockito.times(1)).warning(Mockito.anyString());
+        }
+    }
+
+    @Test
+    void testResponseFromException() {
+        Mockito.when(client.getHealth()).thenThrow(new EdcException("foo-bar"));
+
+        var result = healthCheck.get();
+        Assertions.assertFalse(result.succeeded());
+    }
 }

@@ -27,12 +27,16 @@ dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
     implementation(libs.edc.azure.vault)
     constraints {
-        implementation("net.minidev:json-smart:2.4.10") {
+        implementation("net.minidev:json-smart:2.4.11") {
             because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
         }
     }
     implementation(libs.edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.6.0")
+    implementation("com.azure:azure-security-keyvault-secrets:4.6.2")
+    runtimeOnly(project(":edc-extensions:edr-cache-sql"))
+    runtimeOnly(libs.edc.transaction.local)
+    runtimeOnly(libs.edc.sql.pool)
+    runtimeOnly(libs.postgres)
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

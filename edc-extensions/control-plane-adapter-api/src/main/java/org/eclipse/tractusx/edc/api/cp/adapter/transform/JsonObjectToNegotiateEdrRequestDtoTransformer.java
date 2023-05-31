@@ -16,9 +16,9 @@ package org.eclipse.tractusx.edc.api.cp.adapter.transform;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import org.eclipse.edc.api.model.CallbackAddressDto;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.jetbrains.annotations.NotNull;
@@ -26,12 +26,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.CALLBACK_ADDRESSES;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.CONNECTOR_ADDRESS;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.CONNECTOR_ID;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.OFFER;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.PROTOCOL;
-import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.PROVIDER_ID;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CALLBACK_ADDRESSES;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CONNECTOR_ADDRESS;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CONNECTOR_ID;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROVIDER_ID;
+import static org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE;
 
 
 public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonLdTransformer<JsonObject, NegotiateEdrRequestDto> {
@@ -50,38 +51,38 @@ public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonL
 
     private void setProperties(String key, JsonValue value, NegotiateEdrRequestDto.Builder builder, TransformerContext context) {
         switch (key) {
-            case CONNECTOR_ADDRESS:
+            case EDR_REQUEST_DTO_CONNECTOR_ADDRESS:
                 transformString(value, builder::connectorAddress, context);
                 break;
-            case PROTOCOL:
+            case EDR_REQUEST_DTO_PROTOCOL:
                 transformString(value, builder::protocol, context);
                 break;
-            case CONNECTOR_ID:
+            case EDR_REQUEST_DTO_CONNECTOR_ID:
                 transformString(value, builder::connectorId, context);
                 break;
-            case PROVIDER_ID:
+            case EDR_REQUEST_DTO_PROVIDER_ID:
                 transformString(value, builder::providerId, context);
                 break;
-            case CALLBACK_ADDRESSES:
-                var addresses = new ArrayList<CallbackAddressDto>();
-                transformArrayOrObject(value, CallbackAddressDto.class, addresses::add, context);
+            case EDR_REQUEST_DTO_CALLBACK_ADDRESSES:
+                var addresses = new ArrayList<CallbackAddress>();
+                transformArrayOrObject(value, CallbackAddress.class, addresses::add, context);
                 builder.callbackAddresses(addresses);
                 break;
-            case OFFER:
+            case EDR_REQUEST_DTO_OFFER:
                 transformArrayOrObject(value, ContractOfferDescription.class, builder::offer, context);
                 break;
             default:
                 context.problem()
                         .unexpectedType()
-                        .type(NegotiateEdrRequestDto.TYPE)
+                        .type(EDR_REQUEST_DTO_TYPE)
                         .property(key)
                         .actual(key)
-                        .expected(CONNECTOR_ADDRESS)
-                        .expected(PROTOCOL)
-                        .expected(CONNECTOR_ID)
-                        .expected(PROVIDER_ID)
-                        .expected(CALLBACK_ADDRESSES)
-                        .expected(OFFER)
+                        .expected(EDR_REQUEST_DTO_CONNECTOR_ADDRESS)
+                        .expected(EDR_REQUEST_DTO_PROTOCOL)
+                        .expected(EDR_REQUEST_DTO_CONNECTOR_ID)
+                        .expected(EDR_REQUEST_DTO_PROVIDER_ID)
+                        .expected(EDR_REQUEST_DTO_CALLBACK_ADDRESSES)
+                        .expected(EDR_REQUEST_DTO_OFFER)
                         .report();
                 break;
         }

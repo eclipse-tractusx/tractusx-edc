@@ -16,26 +16,22 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
 import java.net.URL;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
 
-/** Configuration to create a resource definition and provisioner pair for sftp data transfer. */
-@Getter
-@Builder
+/**
+ * Configuration to create a resource definition and provisioner pair for sftp data transfer.
+ */
 public class SftpProvisionerConfiguration {
 
-  @NonNull private final String name;
+    private String name;
 
-  @NonNull @Builder.Default
-  private final ProvisionerType provisionerType = ProvisionerType.PROVIDER;
+    private final ProvisionerType provisionerType = ProvisionerType.PROVIDER;
 
-  @NonNull private final String dataAddressType;
-  @NonNull private final String policyScope;
-  @NonNull private final URL endpoint;
+    private String dataAddressType;
+    private String policyScope;
+    private URL endpoint;
 
-  public enum ProvisionerType {
-    CONSUMER,
-    PROVIDER
-  }
+    public enum ProvisionerType {
+        CONSUMER,
+        PROVIDER
+    }
 }

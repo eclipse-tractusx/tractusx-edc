@@ -60,8 +60,8 @@ public class TransferProcessLocalCallback implements InProcessCallback {
             var transferProcessId = transferProcessStore.processIdForDataRequestId(edr.getId());
             var transferProcess = transferProcessStore.findById(transferProcessId);
             if (transferProcess != null) {
-                var cacheEntry = EndpointDataReferenceEntry.Builder.newInstance().
-                        transferProcessId(transferProcess.getId())
+                var cacheEntry = EndpointDataReferenceEntry.Builder.newInstance()
+                        .transferProcessId(transferProcess.getId())
                         .assetId(transferProcess.getDataRequest().getAssetId())
                         .agreementId(transferProcess.getDataRequest().getContractId())
                         .build();

@@ -55,7 +55,7 @@ public abstract class AbstractBusinessPartnerValidation {
     private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     private final Monitor monitor;
     private final boolean logAgreementEvaluation;
-    
+
     protected AbstractBusinessPartnerValidation(Monitor monitor, boolean logAgreementEvaluation) {
         this.monitor = Objects.requireNonNull(monitor);
         this.logAgreementEvaluation = logAgreementEvaluation;
@@ -131,13 +131,7 @@ public abstract class AbstractBusinessPartnerValidation {
         }
     }
 
-    /**
-     * @param referringConnectorClaim of the participant
-     * @param businessPartnerNumber   object
-     * @return true if object is string and successfully evaluated against the claim
-     */
-    private boolean isBusinessPartnerNumber(
-            String referringConnectorClaim, Object businessPartnerNumber, PolicyContext policyContext) {
+    private boolean isBusinessPartnerNumber(String referringConnectorClaim, Object businessPartnerNumber, PolicyContext policyContext) {
         if (businessPartnerNumber == null) {
             final String message = format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
             monitor.warning(message);
