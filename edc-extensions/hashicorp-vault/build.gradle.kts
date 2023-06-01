@@ -28,6 +28,6 @@ dependencies {
     implementation(libs.bouncyCastle.bcpkixJdk18on)
     implementation(libs.okhttp)
     implementation("org.testcontainers:vault:1.18.2")
-    implementation("org.testcontainers:junit-jupiter:1.18.2")
+    implementation("org.testcontainers:junit-jupiter:1.18.3")
     testImplementation(libs.mockito.inline)
 }
