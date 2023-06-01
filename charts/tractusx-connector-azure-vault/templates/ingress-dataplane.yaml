@@ -26,6 +26,7 @@
 {{- range .Values.dataplane.ingresses }}
 {{- if and .enabled .endpoints }}
 {{- $dataIngressName := printf "%s-dataplane-%s" $fullName .hostname }}
+{{- $annotations := .annotations | default dict }}
 ---
 {{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
@@ -42,19 +43,19 @@ metadata:
     {{- $dataLabels | nindent 2 }}
   annotations:
     {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
-    {{- if not (hasKey .annotations "kubernetes.io/ingress.class") }}
-    {{- $_ := set .annotations "kubernetes.io/ingress.class" .className}}
+    {{- if not (hasKey $annotations "kubernetes.io/ingress.class") }}
+    {{- $_ := set $annotations "kubernetes.io/ingress.class" .className}}
     {{- end }}
     {{- end }}
     {{- if .certManager }}
     {{- if .certManager.issuer }}
-    {{- $_ := set .annotations "cert-manager.io/issuer" .certManager.issuer}}
+    {{- $_ := set $annotations "cert-manager.io/issuer" .certManager.issuer}}
     {{- end }}
     {{- if .certManager.clusterIssuer }}
-    {{- $_ := set .annotations "cert-manager.io/cluster-issuer" .certManager.clusterIssuer}}
+    {{- $_ := set $annotations "cert-manager.io/cluster-issuer" .certManager.clusterIssuer}}
     {{- end }}
     {{- end }}
-    {{- with .annotations }}
+    {{- with $annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
