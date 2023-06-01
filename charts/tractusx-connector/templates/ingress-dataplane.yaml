@@ -21,7 +21,7 @@
 #
 
 {{- $fullName := include "txdc.fullname" . }}
-{{- $dataLabels := include "txdc.dataplane.labels" . | nindent 4 }}
+{{- $dataLabels := include "txdc.dataplane.labels" . }}
 {{- $dataEdcEndpoints := .Values.dataplane.endpoints }}
 {{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
 {{- $namespace := .Release.Namespace }}
@@ -42,7 +42,7 @@ metadata:
   name: {{ $dataIngressName }}
   namespace: {{ $namespace | default "default" | quote }}
   labels:
-    {{- $dataLabels | nindent 2 }}
+    {{- $dataLabels | nindent 4 }}
   annotations:
     {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
     {{- if not (hasKey .annotations "kubernetes.io/ingress.class") }}
