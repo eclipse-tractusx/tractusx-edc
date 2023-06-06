@@ -94,6 +94,7 @@ public class TestRuntimeConfiguration {
                 put("edc.datasource.edr.url", jdbcUrl);
                 put("edc.datasource.edr.user", PostgresqlLocalInstance.USER);
                 put("edc.datasource.edr.password", PostgresqlLocalInstance.PASSWORD);
+                put("org.eclipse.tractusx.edc.postgresql.migration.schema", "testschema");
             }
         };
     }
