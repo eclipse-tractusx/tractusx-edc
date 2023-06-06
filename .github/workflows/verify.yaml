@@ -148,7 +148,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install --yes postgresql-client
-          psql -h postgres -d postgres -U postgres -c 'CREATE SCHEMA testschema;'
+          psql -h localhost -d postgres -U postgres -c 'CREATE SCHEMA testschema;'
         env:
           PGPASSWORD: password
 
