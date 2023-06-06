@@ -146,8 +146,8 @@ jobs:
       # create non-default schema name to test usage of non-default schema
       - name: setup postgres schema
         run: |
-          apt update
-          apt install --yes postgresql-client
+          sudo apt update
+          sudo apt install --yes postgresql-client
           psql -h postgres -d postgres -U postgres -c 'CREATE SCHEMA testschema;'
         env:
           PGPASSWORD: password
