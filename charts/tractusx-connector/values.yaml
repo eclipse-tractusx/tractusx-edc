@@ -543,6 +543,21 @@ daps:
       certificate: ""    # must be set externally!
 backendService:
   httpProxyTokenReceiverUrl: ""
+
+networkPolicy:
+  # -- If `true` network policy will be created to restrict access to control- and dataplane
+  enabled: false
+  # -- Configuration of the controlplane component
+  controlplane:
+    # -- Specify from rule network policy for cp (defaults to all namespaces)
+    from:
+    - namespaceSelector: {}
+  # -- Configuration of the dataplane component
+  dataplane:
+    # -- Specify from rule network policy for dp (defaults to all namespaces)
+    from:
+    - namespaceSelector: {}
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
