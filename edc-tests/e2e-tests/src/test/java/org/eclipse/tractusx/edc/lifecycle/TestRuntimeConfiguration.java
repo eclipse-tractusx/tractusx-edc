@@ -31,6 +31,7 @@ public class TestRuntimeConfiguration {
     public static final String PLATO_NAME = "PLATO";
     public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
     public static final Integer PLATO_PROXIED_AAS_BACKEND_PORT = getFreePort();
+    public static final int MIW_PORT = getFreePort();
     static final String DSP_PATH = "/api/v1/dsp";
     static final int PLATO_CONNECTOR_PORT = getFreePort();
     static final int PLATO_MANAGEMENT_PORT = getFreePort();
@@ -49,9 +50,9 @@ public class TestRuntimeConfiguration {
     static final String PLATO_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
     static final String PLATO_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
-
     static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
-    
+    static final String MIW_URL = "http://localhost:" + MIW_PORT;
+
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
         var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
@@ -126,6 +127,7 @@ public class TestRuntimeConfiguration {
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + SOKRATES_CONNECTOR_PORT + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
+                put("tx.ssi.miw.url", MIW_URL);
             }
         };
     }
@@ -158,6 +160,8 @@ public class TestRuntimeConfiguration {
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT);
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
+                put("tx.ssi.miw.url", MIW_URL);
+
             }
         };
     }

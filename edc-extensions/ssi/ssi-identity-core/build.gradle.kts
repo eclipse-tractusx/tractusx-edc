@@ -14,19 +14,14 @@
 
 plugins {
     `java-library`
+    `maven-publish`
 }
-
 
 dependencies {
-
-    implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.util)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-}
-
-
-// do not publish
-edcBuild {
-    publish.set(false)
+    implementation(project(":spi:ssi-spi"))
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.jwt)
+    implementation(libs.edc.jwt.core)
+    implementation(libs.nimbus.jwt)
+    testImplementation(testFixtures(libs.edc.junit))
 }

@@ -25,8 +25,8 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -102,20 +102,8 @@ public abstract class AbstractBusinessPartnerValidation {
             monitor.debug(message);
             return false;
         }
-
-        final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
-        final Map<String, Object> claims = participantAgent.getClaims();
-
-        if (!claims.containsKey(REFERRING_CONNECTOR_CLAIM)) {
-            return false;
-        }
-
-        Object referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
-        String referringConnectorClaim = null;
-
-        if (referringConnectorClaimObject instanceof String) {
-            referringConnectorClaim = (String) referringConnectorClaimObject;
-        }
+        
+        var referringConnectorClaim = getReferringConnectorClaim(policyContext.getParticipantAgent());
 
         if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
             return false;
@@ -129,6 +117,24 @@ public abstract class AbstractBusinessPartnerValidation {
             policyContext.reportProblem(message);
             return false;
         }
+    }
+
+    @Nullable
+    private String getReferringConnectorClaim(ParticipantAgent participantAgent) {
+        Object referringConnectorClaimObject = null;
+        String referringConnectorClaim = null;
+        var claims = participantAgent.getClaims();
+
+        referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
+
+        if (referringConnectorClaimObject instanceof String) {
+            referringConnectorClaim = (String) referringConnectorClaimObject;
+        }
+        if (referringConnectorClaim == null) {
+            referringConnectorClaim = participantAgent.getIdentity();
+        }
+
+        return referringConnectorClaim;
     }
 
     private boolean isBusinessPartnerNumber(String referringConnectorClaim, Object businessPartnerNumber, PolicyContext policyContext) {

@@ -12,21 +12,11 @@
  *
  */
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.iam.ssi.spi;
 
+import org.eclipse.edc.jwt.spi.TokenValidationRulesRegistry;
+import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
-dependencies {
-
-    implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.util)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-}
-
-
-// do not publish
-edcBuild {
-    publish.set(false)
+@ExtensionPoint
+public interface SsiValidationRuleRegistry extends TokenValidationRulesRegistry {
 }
