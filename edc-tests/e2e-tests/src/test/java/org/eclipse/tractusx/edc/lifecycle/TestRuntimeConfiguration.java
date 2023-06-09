@@ -99,6 +99,17 @@ public class TestRuntimeConfiguration {
         };
     }
 
+    public static Map<String, String> sokratesSsiConfiguration() {
+        var ssiConfiguration = new HashMap<String, String>() {
+            {
+                put("tx.ssi.miw.url", MIW_URL);
+            }
+        };
+        var baseConfiguration = sokratesConfiguration();
+        ssiConfiguration.putAll(baseConfiguration);
+        return ssiConfiguration;
+    }
+
     public static Map<String, String> sokratesConfiguration() {
         return new HashMap<>() {
             {
@@ -127,7 +138,6 @@ public class TestRuntimeConfiguration {
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + SOKRATES_CONNECTOR_PORT + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
-                put("tx.ssi.miw.url", MIW_URL);
             }
         };
     }
@@ -160,10 +170,19 @@ public class TestRuntimeConfiguration {
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT);
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
-                put("tx.ssi.miw.url", MIW_URL);
-
             }
         };
+    }
+
+    public static Map<String, String> platoSsiConfiguration() {
+        var ssiConfiguration = new HashMap<String, String>() {
+            {
+                put("tx.ssi.miw.url", MIW_URL);
+            }
+        };
+        var baseConfiguration = platoConfiguration();
+        ssiConfiguration.putAll(baseConfiguration);
+        return ssiConfiguration;
     }
 
     @NotNull

@@ -52,8 +52,8 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoSsiConfiguration;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesSsiConfiguration;
 
 @EndToEndTest
 public class SsiCatalogInMemoryTest extends AbstractCatalogTest {
@@ -63,16 +63,14 @@ public class SsiCatalogInMemoryTest extends AbstractCatalogTest {
             ":edc-tests:runtime:runtime-memory-ssi",
             SOKRATES_NAME,
             SOKRATES_BPN,
-            sokratesConfiguration(),
-            false
+            sokratesSsiConfiguration()
     );
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
             PLATO_NAME,
             PLATO_BPN,
-            platoConfiguration(),
-            false
+            platoSsiConfiguration()
     );
     MockWebServer server = new MockWebServer();
 

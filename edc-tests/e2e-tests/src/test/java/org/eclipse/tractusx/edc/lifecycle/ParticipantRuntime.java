@@ -33,12 +33,8 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     private DataWiper wiper;
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
-        this(moduleName, runtimeName, bpn, properties, true);
-    }
-
-    public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties, boolean mockIdentity) {
         super(moduleName, runtimeName, properties);
-        if (mockIdentity) {
+        if (!properties.containsKey("tx.ssi.miw.url")) {
             this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
         }
     }
