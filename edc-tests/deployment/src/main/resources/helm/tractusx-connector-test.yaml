@@ -56,9 +56,10 @@ dataplane:
       accessKeyId: qwerty123
 
 postgresql:
-  username: user
-  password: password
   jdbcUrl: jdbc:postgresql://postgresql:5432/edc
+  auth:
+    username: user
+    password: password
 
 vault:
   hashicorp:
