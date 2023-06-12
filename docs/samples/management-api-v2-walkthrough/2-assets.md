@@ -54,7 +54,6 @@ A new addition are the `privateProperties`.
 Private properties will not be sent through the dataplane and are only accessible via the management API.
 This enables the storage of additional information pertaining the asset, that is not relevant for the consumer, but is nonetheless useful for the provider.
 Private properties are stores inside the `privateProperties` field.
-> Please note: `privateProperties` are entirely optional and the field is not required for creating or updating an asset.
 
 > Please note: `privateProperties` are entirely optional and the field is not required for creating or updating an asset.
 
