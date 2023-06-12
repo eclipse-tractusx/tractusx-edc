@@ -228,9 +228,9 @@ spec:
             - name: "EDC_DATASOURCE_EDR_NAME"
               value: "edr"
             - name: "EDC_DATASOURCE_EDR_USER"
-              value: {{ .Values.postgresql.username | required ".Values.postgresql.username is required" | quote }}
+              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
             - name: "EDC_DATASOURCE_EDR_PASSWORD"
-              value: {{ .Values.postgresql.password | required ".Values.postgresql.password is required" | quote }}
+              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
             - name: "EDC_DATASOURCE_EDR_URL"
               value: {{ .Values.postgresql.jdbcUrl | required ".Values.postgresql.jdbcUrl is required" | quote }}
 
