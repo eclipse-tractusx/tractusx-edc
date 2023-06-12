@@ -127,7 +127,7 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
         var transferProcessId = "id";
         var edr = EndpointDataReference.Builder.newInstance().endpoint("test").id(transferProcessId).build();
         var response = Json.createObjectBuilder()
-                .add(DataAddress.TYPE, EndpointDataReference.EDR_SIMPLE_TYPE)
+                .add(DataAddress.EDC_DATA_ADDRESS_TYPE, EndpointDataReference.EDR_SIMPLE_TYPE)
                 .add(EndpointDataReference.ENDPOINT, edr.getEndpoint())
                 .add(EndpointDataReference.ID, edr.getId())
                 .build();
@@ -164,7 +164,7 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
                 .add(EDR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
                 .build();
-        
+
         when(adapterTransferProcessService.findByAssetAndAgreement(assetId, null)).thenReturn(ServiceResult.success(List.of(entry)));
         when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(JsonObject.class))).thenReturn(Result.success(response));
 
