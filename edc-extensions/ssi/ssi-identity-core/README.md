@@ -1,7 +1,8 @@
 # SSI Core Identity Service Module
 
-This module contains an implementation of the EDC identity service for SSI. The SsiIdentityService  a `SsiTokenValidationService` for validating the `JWT` token
-Ultimately the validation is delegated to an implementation of `SsiCredentialClient`.
+This module contains an implementation of the EDC identity service for SSI.
+The SsiIdentityService contains a `SsiTokenValidationService` for validating the `JWT` token,
+that uses an implementation of `SsiCredentialClient` for validating the JWT token and then check custom rules registered in the `SsiValidationRuleRegistry`
 
 For obtaining the `JWT` token, the identity service also delegate to the `SsiCredentialClient` .
 
@@ -12,7 +13,7 @@ The implementation also provide a rule registry `SsiValidationRuleRegistry` wher
 
 Custom rule could be like:
 
-- audience validation
+- Audience validation
 - VP/VC validation
 - Expiration
 - ..etc
