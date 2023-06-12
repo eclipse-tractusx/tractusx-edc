@@ -101,7 +101,7 @@ public class SftpDataAddress extends DataAddress {
             this.address.getProperties().put(USER_PASSWORD, user.getPassword());
             if (user.getKeyPair() != null) {
                 this.address.getProperties().put(USER_PRIVATE_KEY, Base64.getEncoder().encodeToString(user.getKeyPair().getPrivate().getEncoded()));
-                this.address.getProperties().put(KEY_NAME, user.getName());
+                this.address.getProperties().put(EDC_DATA_ADDRESS_KEY_NAME, user.getName());
             }
             return this;
         }

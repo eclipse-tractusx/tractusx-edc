@@ -79,8 +79,6 @@ public class TransferProcessLocalCallbackTest {
 
         var edr = getEdr();
 
-        when(transferProcessStore.processIdForDataRequestId(edr.getId())).thenReturn(transferProcessId);
-
         var dataRequest = DataRequest.Builder.newInstance().id(edr.getId())
                 .destinationType("HttpProxy")
                 .assetId(assetId)
@@ -91,6 +89,8 @@ public class TransferProcessLocalCallbackTest {
                 .id(transferProcessId)
                 .dataRequest(dataRequest)
                 .build();
+
+        when(transferProcessStore.findForCorrelationId(edr.getId())).thenReturn(transferProcess);
 
         when(transferProcessStore.findById(transferProcessId)).thenReturn(transferProcess);
 
@@ -130,7 +130,7 @@ public class TransferProcessLocalCallbackTest {
 
         var edr = getEdr();
 
-        when(transferProcessStore.processIdForDataRequestId(edr.getId())).thenReturn(transferProcessId);
+        when(transferProcessStore.findForCorrelationId(edr.getId())).thenReturn(null);
 
         when(transferProcessStore.findById(transferProcessId)).thenReturn(null);
 
