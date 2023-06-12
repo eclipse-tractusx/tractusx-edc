@@ -176,3 +176,9 @@ nexusPublishing {
         delayBetween.set(Duration.ofSeconds(10))
     }
 }
+
+configurations.all {
+    // Check for updates every 5 mins
+    // TODO: REMOVE THIS BEFORE MERGING TO main!!!!
+    resolutionStrategy.cacheChangingModulesFor(5, TimeUnit.MINUTES)
+}
