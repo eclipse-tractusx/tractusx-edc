@@ -101,7 +101,6 @@ class ProvisionAdditionalHeadersExtensionTest {
         var transferMessage = TransferRequestMessage.Builder.newInstance()
                 .id("id")
                 .protocol("protocol")
-                .assetId("assetId")
                 .contractId("1:assetId:aContractId")
                 .dataDestination(DataAddress.Builder.newInstance().type("HttpProxy").build())
                 .callbackAddress("callbackAddress")
