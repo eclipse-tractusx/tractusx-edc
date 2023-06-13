@@ -502,7 +502,6 @@ postgresql:
     username: "user"
     password: "password"
 vault:
-  fullnameOverride: "vault"
   injector:
     enabled: false
   server:
@@ -512,7 +511,7 @@ vault:
     # Must be the same certificate that is configured in section 'daps'
     postStart:    # must be set externally!
   hashicorp:
-    url: ""
+    url: "http://{{ .Release.Name }}-vault:8200"
     token: ""
     timeout: 30
     healthCheck:
