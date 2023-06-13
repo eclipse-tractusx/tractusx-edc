@@ -1,6 +1,6 @@
-# Catena-X OAuth2 Extension
+# Tractus-X OAuth2 Extension
 
-## Why Catena-X needs this extension
+## Why Tractus-X needs this extension
 
 In IDS the DAPS token audience is always `idsc:IDS_CONNECTORS_ALL`. At first glance this makes it possible for other connectors to steal and reuse an received token. To mitigate this security risk IDS introduces something called `transportCertsSha256`, which couples the connector audience with its corresponding TLS/SSL certificate.
 
@@ -8,7 +8,7 @@ From [GitHub IDS-G](https://github.com/International-Data-Spaces-Association/IDS
 
 > - **transportCertsSha256** Contains the public keys of the used transport certificates, hashed using SHA256. The identifying X509 certificate should not be used for the communication encryption. Therefore, the receiving party needs to connect the identity of a connector by relating its hostname (from the communication encryption layer) and the used private/public key pair, with its IDS identity claim of the DAT. The public transportation key must be one of the `transportCertsSha256` values. Otherwise, the receiving connector must expect that the requesting connector is using a false identity claim. In general, this claim holds an Array of Strings, but it may optionally hold a single String instead if the Array would have exactly one element.
 
-The reason IDS did this is to prevent the IDS DAPS to know, which connectors talk to each other. But this solution introduces a new level of complexity for different deployment scenarios. The Catena-X OAuth2 Extension introduces the classic audience validation again, so that Catena-X does not have to deal with these things for now.
+The reason IDS did this is to prevent the IDS DAPS to know, which connectors talk to each other. But this solution introduces a new level of complexity for different deployment scenarios. The OAuth2 Extension introduces the classic audience validation again, so that users do not have to deal with these things for now.
 
 ## Configuration
 
@@ -32,12 +32,12 @@ When a connector receives a message, it will checks the token audience is equal 
 
 ![sequence diagram](./diagrams/sequence.png)
 
-## Catena-X Participant Extension
+##  Participant Extension
 
 Starting from `0.0.1-milestone-9` EDC requires a mandatory setting `edc.participant.id`, which in this case should be the BPN number which is transmitted over the wire to identifying the participants IDs.
 To verify that in the DAPS token an extension has been created, that extract from the `ClaimToken` the BPN number and then EDC compare that identity with the one provided over the wire, for security reason.
 
-By default the extension parse the `referringConnector` url and extract the BPN number as the last parameter in the URL eg (http://sokrates-controlplane/BPNSOKRATES).
+By default, the extension parse the `referringConnector` url and extract the BPN number as the last parameter in the URL eg (http://sokrates-controlplane/BPNSOKRATES).
 
 ### Configuration
 

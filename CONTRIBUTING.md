@@ -13,6 +13,7 @@ conceived from the outset as an open network with solutions ready for SMEs,
 where these companies will be able to participate quickly and with little IT
 infrastructure investment. Tractus-X is meant to be the PoC project of the
 Catena-X alliance focusing on parts traceability.
+ <!-- TODO: Can this reference stay? -->
 
 * <https://projects.eclipse.org/projects/automotive.tractusx>
 

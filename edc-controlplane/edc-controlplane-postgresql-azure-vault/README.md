@@ -35,7 +35,7 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.ids.catalog.id                               |          | urn:catalog:default                                                          |                            |
 | ids.webhook.address                              |          | <http://localhost:8282/api/v1/ids>                                           |                            |
 | edc.hostname                                     |          | localhost                                                                    |                            |
-| edc.oauth.token.url                              | X        | <https://daps.catena-x.net>                                                  |                            |
+| edc.oauth.token.url                              | X        | <https://daps.example.net>                                                   |                            |
 | edc.oauth.public.key.alias                       | X        | key-to-daps-certificate-in-keyvault                                          |                            |
 | edc.oauth.private.key.alias                      | X        | key-to-private-key-in-keyvault                                               |                            |
 | edc.oauth.client.id                              | X        | daps-oauth-client-id                                                         |                            |
@@ -103,7 +103,7 @@ edc.hostname=localhost
 edc.api.auth.key=password
 
 # OAuth / DAPS related configuration
-edc.oauth.token.url=https://daps.catena-x.net
+edc.oauth.token.url=https://daps.example.net
 edc.oauth.public.key.alias=key-to-daps-certificate-in-keyvault
 edc.oauth.private.key.alias=key-to-private-key-in-keyvault
 edc.oauth.client.id=daps-oauth-client-id
