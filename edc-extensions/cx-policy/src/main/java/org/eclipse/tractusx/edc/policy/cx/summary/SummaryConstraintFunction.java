@@ -35,6 +35,8 @@ import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdTypeFunctions.extr
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
 
 /**
+ * Implements Catena-X policies by verifying policy constraints against the summary credential.
+ * <p>
  * Verifies the presence of an entry in the {@link #SUMMARY_CREDENTIAL_ITEMS} of a summary credential token.
  */
 public class SummaryConstraintFunction extends AbstractVpConstraintFunction {
