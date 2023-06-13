@@ -62,7 +62,7 @@ class JsonLdTypeFunctionsTest {
     }
 
     /**
-     * Asserts that all objects on the collection are of a given type.
+     * Asserts that all objects in the collection are of a given type.
      */
     private void assertAllOfType(String type, List<JsonObject> objects) {
         assertThat(objects.stream()
