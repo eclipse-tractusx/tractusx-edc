@@ -35,6 +35,18 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_P
 /**
  * Enforces a Framework Agreement constraint.
  * <p>
+ * A policy constraints requiring a usecase framework credential take a left operand in the form:
+ * <pre>FrameworkAgreement.[type]</pre>
+ * <p>
+ * The following example requires a client to present a sustainability credential:
+ * <pre>
+ * "constraint": {
+ *     "leftOperand": "FrameworkAgreement.sustainability",
+ *     "operator": "eq",
+ *     "rightOperand": "active"
+ * }
+ * </pre>
+ * <p>
  * NB: This function will be enabled in the 3.2 release.
  */
 public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFunction {
