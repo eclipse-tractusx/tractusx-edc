@@ -32,7 +32,7 @@ When a connector receives a message, it will checks the token audience is equal 
 
 ![sequence diagram](./diagrams/sequence.png)
 
-##  Participant Extension
+## Participant Extension
 
 Starting from `0.0.1-milestone-9` EDC requires a mandatory setting `edc.participant.id`, which in this case should be the BPN number which is transmitted over the wire to identifying the participants IDs.
 To verify that in the DAPS token an extension has been created, that extract from the `ClaimToken` the BPN number and then EDC compare that identity with the one provided over the wire, for security reason.

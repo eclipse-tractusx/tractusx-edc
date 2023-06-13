@@ -50,7 +50,7 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 
 ## Source Code
 
-* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
 ## Requirements
 
