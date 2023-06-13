@@ -32,7 +32,7 @@ public class JsonLdValueFunctions {
     private static final String VALUE = "@value";
 
     /**
-     * Extracts the value of a root node and converts it to a string representaion. Note this method accepts null nodes as a convenience.
+     * Extracts the value of a root node and converts it to a string representation. Note this method accepts null nodes as a convenience.
      */
     @Nullable
     public static String extractStringValue(@Nullable JsonValue root) {
