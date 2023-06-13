@@ -14,19 +14,10 @@
 
 plugins {
     `java-library`
+    `java-test-fixtures`
 }
-
 
 dependencies {
-
-    implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.util)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-}
-
-
-// do not publish
-edcBuild {
-    publish.set(false)
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.jwt)
 }

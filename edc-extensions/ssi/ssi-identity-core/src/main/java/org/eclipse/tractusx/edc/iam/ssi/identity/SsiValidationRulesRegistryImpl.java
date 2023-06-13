@@ -12,21 +12,10 @@
  *
  */
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.iam.ssi.identity;
 
+import org.eclipse.edc.jwt.TokenValidationRulesRegistryImpl;
+import org.eclipse.tractusx.edc.iam.ssi.spi.SsiValidationRuleRegistry;
 
-dependencies {
-
-    implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.util)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-}
-
-
-// do not publish
-edcBuild {
-    publish.set(false)
+public class SsiValidationRulesRegistryImpl extends TokenValidationRulesRegistryImpl implements SsiValidationRuleRegistry {
 }

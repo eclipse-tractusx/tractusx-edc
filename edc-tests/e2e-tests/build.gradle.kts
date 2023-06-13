@@ -21,6 +21,7 @@ dependencies {
     testImplementation(project(":edc-extensions:control-plane-adapter-api"))
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.restAssured)
+    testImplementation(libs.nimbus.jwt)
     testImplementation(libs.postgres)
     testImplementation(libs.awaitility)
     testImplementation(libs.aws.s3)
@@ -38,8 +39,10 @@ dependencies {
     testImplementation(libs.edc.dsp)
     testImplementation(testFixtures(libs.edc.sql.core))
 
+
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 }
 
