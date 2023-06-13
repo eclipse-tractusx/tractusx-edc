@@ -32,7 +32,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static jakarta.json.Json.createBuilderFactory;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3C_VC_NS;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.W3CVcContext.W3C_VC_CONTEXT;
+import static org.eclipse.tractusx.edc.policy.cx.fixtures.W3cVcContext.W3C_VC_CONTEXT;
 
 /**
  * Test helpers for processing Json-Ld.

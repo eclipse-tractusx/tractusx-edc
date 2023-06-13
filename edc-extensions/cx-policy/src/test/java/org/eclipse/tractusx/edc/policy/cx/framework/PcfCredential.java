@@ -14,9 +14,6 @@
 
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
-/**
- *
- */
 public interface PcfCredential {
 
     String PCF_VP = """

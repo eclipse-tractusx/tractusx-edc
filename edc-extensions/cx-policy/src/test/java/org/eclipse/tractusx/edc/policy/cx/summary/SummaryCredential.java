@@ -60,7 +60,7 @@ public interface SummaryCredential {
                     "created": "2023-06-02T12:00:00Z",
                     "proofPurpose": "assertionMethod",
                     "verificationMethod": "did:web:example.com#key-1",
-                    "jws": "eyJhbGciOiJFZERTQSJ9.eyJpYXQiOjE2MjM1NzA3NDEsImV4cCI6MTYyMzU3NDM0MSwianRpIjoiMTIzNDU2NzgtMTIzNC0xMjM0LTEyMzQtMTIzNDU2Nzg5YWJjIiwicHJvb2YiOnsiaWQiOiJkaWQ6d2ViOmV4YW1wbGUuY29tIiwibmFtZSI6IkJlaXNwaWVsLU9yZ2FuaXNhdGlvbiJ9fQ.SignedExampleSignature"
+                    "jws": "xxxx"
                   }
                 }
               ]

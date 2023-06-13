@@ -17,7 +17,7 @@ package org.eclipse.tractusx.edc.policy.cx.fixtures;
 /**
  * Local copy of the W3C VC data model context for testing, obtained from {@code https://www.w3.org/ns/credentials/v2}.
  */
-public interface W3CVcContext {
+public interface W3cVcContext {
 
     String W3C_VC_CONTEXT = """
             {
