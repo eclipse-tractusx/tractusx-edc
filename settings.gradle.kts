@@ -46,6 +46,7 @@ include(":edc-extensions:control-plane-adapter-callback")
 include(":edc-extensions:edr-cache-sql")
 include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
+include("edc-extensions:ssi:jws2020-crypto-suite")
 
 
 
