@@ -1,7 +1,7 @@
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://www.w3.org/2018/credentials/examples/v1"
+    "https://w3id.org/2023/catenax/credentials/summary/v1"
   ],
   "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
   "type": [
@@ -17,22 +17,22 @@
     "type": "Summary-List",
     "name": "CX-Credentials",
     "items": [
-      "cx-active-member",
-      "cx-dismantler",
-      "cx-pcf",
-      "cx-sustainability",
-      "cx-quality",
-      "cx-traceability",
-      "cx-behavior-twin",
-      "cx-bpn"
+      "MembershipCredential",
+      "DismantlerCredential",
+      "PcfCredential",
+      "SustainabilityCredential",
+      "QualityCredential",
+      "TraceabilityCredential",
+      "BehaviorTwinCredential",
+      "BpnCredential"
     ],
-    "contract-templates": "https://public.catena-x.org/contracts/"
+    "contractTemplates": "https://public.catena-x.org/contracts/"
   },
   "proof": {
     "type": "Ed25519Signature2018",
     "created": "2023-06-02T12:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:web:example.com#key-1",
-    "jws": "eyJhbGciOiJFZERTQSJ9.eyJpYXQiOjE2MjM1NzA3NDEsImV4cCI6MTYyMzU3NDM0MSwianRpIjoiMTIzNDU2NzgtMTIzNC0xMjM0LTEyMzQtMTIzNDU2Nzg5YWJjIiwicHJvb2YiOnsiaWQiOiJkaWQ6d2ViOmV4YW1wbGUuY29tIiwibmFtZSI6IkJlaXNwaWVsLU9yZ2FuaXNhdGlvbiJ9fQ.SignedExampleSignature"
+    "jws": "xxxx"
   }
 }

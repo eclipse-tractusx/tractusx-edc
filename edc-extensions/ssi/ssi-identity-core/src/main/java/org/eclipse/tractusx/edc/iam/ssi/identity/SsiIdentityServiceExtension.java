@@ -23,7 +23,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiValidationRuleRegistry;
 
-@Provides({IdentityService.class, SsiValidationRuleRegistry.class})
+@Provides({ IdentityService.class, SsiValidationRuleRegistry.class })
 @Extension(SsiIdentityServiceExtension.EXTENSION_NAME)
 public class SsiIdentityServiceExtension implements ServiceExtension {
 
@@ -46,5 +46,4 @@ public class SsiIdentityServiceExtension implements ServiceExtension {
 
         context.registerService(IdentityService.class, identityService);
     }
-
 }

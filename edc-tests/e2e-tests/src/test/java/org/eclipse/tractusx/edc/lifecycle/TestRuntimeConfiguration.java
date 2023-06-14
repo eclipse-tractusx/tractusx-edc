@@ -31,7 +31,12 @@ public class TestRuntimeConfiguration {
     public static final String PLATO_NAME = "PLATO";
     public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
     public static final Integer PLATO_PROXIED_AAS_BACKEND_PORT = getFreePort();
-    public static final int MIW_PORT = getFreePort();
+    public static final int MIW_PLATO_PORT = getFreePort();
+
+    public static final int MIW_SOKRATES_PORT = getFreePort();
+
+    public static final int OAUTH_PORT = getFreePort();
+
     static final String DSP_PATH = "/api/v1/dsp";
     static final int PLATO_CONNECTOR_PORT = getFreePort();
     static final int PLATO_MANAGEMENT_PORT = getFreePort();
@@ -52,8 +57,12 @@ public class TestRuntimeConfiguration {
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
     static final String DB_SCHEMA_NAME = "testschema";
-    static final String MIW_URL = "http://localhost:" + MIW_PORT;
-  
+    static final String MIW_SOKRATES_URL = "http://localhost:" + MIW_SOKRATES_PORT;
+
+    static final String MIW_PLATO_URL = "http://localhost:" + MIW_PLATO_PORT;
+
+    static final String OAUTH_TOKEN_URL = "http://localhost:" + OAUTH_PORT;
+
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
         var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
@@ -105,7 +114,12 @@ public class TestRuntimeConfiguration {
     public static Map<String, String> sokratesSsiConfiguration() {
         var ssiConfiguration = new HashMap<String, String>() {
             {
-                put("tx.ssi.miw.url", MIW_URL);
+                put("tx.ssi.miw.url", MIW_SOKRATES_URL);
+                put("tx.ssi.oauth.token.url", OAUTH_TOKEN_URL);
+                put("tx.ssi.oauth.client.id", "client_id");
+                put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
+                put("tx.ssi.miw.authority.id", "authorityId");
+                put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
             }
         };
         var baseConfiguration = sokratesConfiguration();
@@ -180,7 +194,12 @@ public class TestRuntimeConfiguration {
     public static Map<String, String> platoSsiConfiguration() {
         var ssiConfiguration = new HashMap<String, String>() {
             {
-                put("tx.ssi.miw.url", MIW_URL);
+                put("tx.ssi.miw.url", MIW_PLATO_URL);
+                put("tx.ssi.oauth.token.url", OAUTH_TOKEN_URL);
+                put("tx.ssi.oauth.client.id", "client_id");
+                put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
+                put("tx.ssi.miw.authority.id", "authorityId");
+                put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
             }
         };
         var baseConfiguration = platoConfiguration();
