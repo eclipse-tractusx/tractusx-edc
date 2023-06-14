@@ -29,7 +29,7 @@ import static org.eclipse.edc.policy.model.Operator.GEQ;
 import static org.eclipse.edc.policy.model.Operator.GT;
 import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdTypeFunctions.extractObjectsOfType;
 import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdValueFunctions.extractStringValue;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.TX_USE_CASE_NS;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_USE_CASE_NS;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
 
 /**
@@ -51,7 +51,7 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_P
  */
 public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFunction {
     private static final String ACTIVE = "active";
-    public static final String CONTRACT_VERSION_PROPERTY = TX_USE_CASE_NS + "/contractVersion";
+    public static final String CONTRACT_VERSION_PROPERTY = CX_USE_CASE_NS + "/contractVersion";
 
     private String agreementType;
     private String agreementVersion;

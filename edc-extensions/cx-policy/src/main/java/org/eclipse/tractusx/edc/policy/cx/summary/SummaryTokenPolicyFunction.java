@@ -22,6 +22,7 @@ import org.eclipse.edc.spi.iam.TokenParameters;
 import java.util.function.BiFunction;
 
 import static java.lang.String.format;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_SUMMARY_CREDENTIAL;
 
 /**
  * Includes a summary credential in the token parameters.
@@ -34,7 +35,7 @@ public class SummaryTokenPolicyFunction implements  BiFunction<Policy, PolicyCon
         if (params == null) {
             throw new EdcException(format("%s not set in policy context", TokenParameters.Builder.class.getName()));
         }
-        // TODO set summary credential when we upgrade to the latest EDC snapshot
+        params.additional(CX_SUMMARY_CREDENTIAL, CX_SUMMARY_CREDENTIAL);
         return true;
     }
 }
