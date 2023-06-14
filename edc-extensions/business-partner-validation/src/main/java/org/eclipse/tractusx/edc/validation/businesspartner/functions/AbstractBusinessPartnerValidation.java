@@ -104,6 +104,10 @@ public abstract class AbstractBusinessPartnerValidation {
         }
 
         final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
+
+        if (participantAgent == null) {
+            return false;
+        }
         final Map<String, Object> claims = participantAgent.getClaims();
 
         if (!claims.containsKey(REFERRING_CONNECTOR_CLAIM)) {
