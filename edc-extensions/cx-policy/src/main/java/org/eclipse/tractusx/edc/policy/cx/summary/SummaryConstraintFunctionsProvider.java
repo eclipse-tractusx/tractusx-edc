@@ -27,7 +27,7 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PR
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
 
 /**
- * Registers {@link SummaryConstraintFunction} and {@link SummaryTokenConstraintFunction} instances with the runtime policy engine.
+ * Registers {@link SummaryConstraintFunction} and {@link SummaryTokenPolicyFunction} instances with the runtime policy engine.
  */
 public class SummaryConstraintFunctionsProvider {
 
@@ -49,23 +49,12 @@ public class SummaryConstraintFunctionsProvider {
      * Configures and registers required summary functions with the policy engine.
      */
     public static void registerFunctions(PolicyEngine engine) {
-        var tokenConstraintFunction = new SummaryTokenConstraintFunction();
+        var tokenPolicyFunction = new SummaryTokenPolicyFunction();
+        engine.registerPreValidator(CATALOG_REQUEST_SCOPE, tokenPolicyFunction);
+        engine.registerPreValidator(NEGOTIATION_REQUEST_SCOPE, tokenPolicyFunction);
+        engine.registerPreValidator(TRANSFER_PROCESS_REQUEST_SCOPE, tokenPolicyFunction);
 
         CREDENTIAL_MAPPINGS.forEach((credentialName, summaryType) -> {
-            engine.registerFunction(CATALOG_REQUEST_SCOPE,
-                    Permission.class,
-                    credentialName,
-                    tokenConstraintFunction);
-
-            engine.registerFunction(NEGOTIATION_REQUEST_SCOPE,
-                    Permission.class,
-                    credentialName,
-                    tokenConstraintFunction);
-
-            engine.registerFunction(TRANSFER_PROCESS_REQUEST_SCOPE,
-                    Permission.class,
-                    credentialName,
-                    tokenConstraintFunction);
 
             engine.registerFunction(CATALOG_SCOPE,
                     Permission.class,

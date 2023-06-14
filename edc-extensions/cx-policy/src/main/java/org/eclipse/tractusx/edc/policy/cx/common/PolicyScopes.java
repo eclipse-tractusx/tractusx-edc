@@ -18,7 +18,7 @@ package org.eclipse.tractusx.edc.policy.cx.common;
  * Defines standard EDC policy scopes.
  */
 public interface PolicyScopes {
-    String CATALOG_REQUEST_SCOPE = "contract.cataloging.request";
+    String CATALOG_REQUEST_SCOPE = "catalog.request";
     String NEGOTIATION_REQUEST_SCOPE = "contract.negotiation.request";
     String TRANSFER_PROCESS_REQUEST_SCOPE = "transfer.process.request";
 

@@ -39,24 +39,20 @@ class SummaryConstraintFunctionsProviderTest {
 
         registerFunctions(policyEngine);
 
+        assertTokenFunctionsRegistered(CATALOG_REQUEST_SCOPE, policyEngine);
+        assertTokenFunctionsRegistered(NEGOTIATION_REQUEST_SCOPE, policyEngine);
+        assertTokenFunctionsRegistered(TRANSFER_PROCESS_REQUEST_SCOPE, policyEngine);
+
         SummaryConstraintFunctionsProvider.CREDENTIAL_MAPPINGS.forEach((credentialName, summaryType) -> {
-            assertTokenFunctionsRegistered(CATALOG_REQUEST_SCOPE, policyEngine, credentialName);
             assertSummaryFunctionsRegistered(CATALOG_SCOPE, policyEngine, credentialName);
-
-            assertTokenFunctionsRegistered(NEGOTIATION_REQUEST_SCOPE, policyEngine, credentialName);
             assertSummaryFunctionsRegistered(NEGOTIATION_SCOPE, policyEngine, credentialName);
-
-            assertTokenFunctionsRegistered(TRANSFER_PROCESS_REQUEST_SCOPE, policyEngine, credentialName);
             assertSummaryFunctionsRegistered(TRANSFER_PROCESS_SCOPE, policyEngine, credentialName);
         });
+
     }
 
-    private void assertTokenFunctionsRegistered(String scope, PolicyEngine policyEngine, String credentialName) {
-        verify(policyEngine, times(1)).registerFunction(
-                eq(scope),
-                eq(Permission.class),
-                eq(credentialName),
-                any(SummaryTokenConstraintFunction.class));
+    private void assertTokenFunctionsRegistered(String scope, PolicyEngine policyEngine) {
+        verify(policyEngine, times(1)).registerPreValidator(eq(scope), any());
     }
 
     private void assertSummaryFunctionsRegistered(String scope, PolicyEngine policyEngine, String credentialName) {

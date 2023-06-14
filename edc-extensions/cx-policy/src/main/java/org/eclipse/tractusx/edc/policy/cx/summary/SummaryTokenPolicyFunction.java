@@ -14,27 +14,27 @@
 
 package org.eclipse.tractusx.edc.policy.cx.summary;
 
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.TokenParameters;
+
+import java.util.function.BiFunction;
 
 import static java.lang.String.format;
 
 /**
  * Includes a summary credential in the token parameters.
  */
-public class SummaryTokenConstraintFunction implements AtomicConstraintFunction<Permission> {
+public class SummaryTokenPolicyFunction implements  BiFunction<Policy, PolicyContext, Boolean> {
 
     @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext context) {
+    public Boolean apply(Policy policy, PolicyContext context) {
         var params = context.getContextData(TokenParameters.Builder.class);
         if (params == null) {
             throw new EdcException(format("%s not set in policy context", TokenParameters.Builder.class.getName()));
         }
         // TODO set summary credential when we upgrade to the latest EDC snapshot
-        return false;
+        return true;
     }
 }

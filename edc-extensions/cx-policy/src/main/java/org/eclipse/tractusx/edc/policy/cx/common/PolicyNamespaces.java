@@ -29,4 +29,6 @@ public interface PolicyNamespaces {
     String TX_USE_CASE_NS = TX_NS + "usecase";
     String TX_USE_CASE_NS_V1 = TX_USE_CASE_NS + "/v1";
 
+    String TX_SUMMARY_CREDENTIAL = "SummaryCredential";
+
 }
