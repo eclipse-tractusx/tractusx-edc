@@ -38,8 +38,8 @@ class Jws2020SignatureProvider implements SignatureAlgorithm {
             var detachedPayload = new Payload(data);
             var jws = new String(signature);
 
-            var parsedJWSObject = JWSObject.parse(jws, detachedPayload);
-            var isValid = parsedJWSObject.verify(verifier);
+            var parsedJwsObject = JWSObject.parse(jws, detachedPayload);
+            var isValid = parsedJwsObject.verify(verifier);
 
             if (!isValid) {
                 throw new VerificationError(VerificationError.Code.InvalidSignature);
@@ -97,10 +97,11 @@ class Jws2020SignatureProvider implements SignatureAlgorithm {
                     .findFirst();
             return jwsAlgorithm.orElseThrow(() -> new EdcException("Could not determine JWSAlgorithm for Curve " + okp.getCurve()));
         } else if (keyPair instanceof RSAKey rsaKey) {
-//            var jwsAlgorithm = JWSAlgorithm.Family.RSA.stream()
-//                    .filter(algo -> rsaKey.)
-//                    .findFirst();
-//            return jwsAlgorithm.orElseThrow(() -> new EdcException("Could not determine JWSAlgorithm for RSA Key "));
+            // todo: figure out jws algorithm for rsa key
+            //            var jwsAlgorithm = JWSAlgorithm.Family.RSA.stream()
+            //                    .filter(algo -> rsaKey.)
+            //                    .findFirst();
+            //            return jwsAlgorithm.orElseThrow(() -> new EdcException("Could not determine JWSAlgorithm for RSA Key "));
         }
         return null;
     }

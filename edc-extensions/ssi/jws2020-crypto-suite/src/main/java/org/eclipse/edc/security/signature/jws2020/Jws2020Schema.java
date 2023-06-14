@@ -52,6 +52,7 @@ class Jws2020Schema {
      *       }
      *     ],
      * </pre>
+     *
      * @param mapper The object mapper that is used to deserialize the {@code publicKeyJwk} part.
      * @return The {@link LdSchema} that represents the above structure. Never null.
      */

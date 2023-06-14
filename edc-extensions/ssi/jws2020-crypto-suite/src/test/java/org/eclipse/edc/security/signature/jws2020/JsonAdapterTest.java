@@ -28,7 +28,7 @@ class JsonAdapterTest {
                 .add("@type", "test-type")
                 .add("@value", "test-value")
                 .build();
-        var result= adapter.read(jo);
+        var result = adapter.read(jo);
         assertThat(result).isEqualTo("test-value");
     }
 

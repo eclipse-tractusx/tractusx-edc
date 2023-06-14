@@ -21,9 +21,9 @@ import static org.eclipse.edc.security.signature.jws2020.TestUtils.readResourceA
 
 class IssuerTests {
 
-    private static final JwsSignature2020Suite jws2020suite = new JwsSignature2020Suite(JacksonJsonLd.createObjectMapper());
+    private final JwsSignature2020Suite jws2020suite = new JwsSignature2020Suite(JacksonJsonLd.createObjectMapper());
     //used to load remote data from a local directory
-    private static final TestResourcesLoader loader = new TestResourcesLoader("https://org.eclipse.tractusx/", "jws2020/issuing/", SchemeRouter.defaultInstance());
+    private final TestResourcesLoader loader = new TestResourcesLoader("https://org.eclipse.tractusx/", "jws2020/issuing/", SchemeRouter.defaultInstance());
 
     @DisplayName("t0001: a simple credential to sign")
     @Test

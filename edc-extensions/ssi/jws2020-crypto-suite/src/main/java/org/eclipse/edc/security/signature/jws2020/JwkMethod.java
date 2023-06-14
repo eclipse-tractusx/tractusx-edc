@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.util.Objects;
 
 record JwkMethod(URI id, URI type, URI controller, JWK keyPair) implements KeyPair {
 
@@ -31,26 +30,6 @@ record JwkMethod(URI id, URI type, URI controller, JWK keyPair) implements KeyPa
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (JwkMethod) obj;
-        return Objects.equals(this.id, that.id) &&
-                Objects.equals(this.type, that.type) &&
-                Objects.equals(this.controller, that.controller) &&
-                Objects.equals(this.keyPair, that.keyPair);
-    }
-
-    @Override
-    public String toString() {
-        return "JwkMethod[" +
-                "id=" + id + ", " +
-                "type=" + type + ", " +
-                "controller=" + controller + ", " +
-                "keyPair=" + keyPair + ']';
     }
 
 }

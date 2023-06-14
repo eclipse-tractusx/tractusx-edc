@@ -14,7 +14,7 @@ class TestResourcesLoader implements DocumentLoader {
     private final DocumentLoader baseLoader;
     private final String resourcePath;
 
-    public TestResourcesLoader(String base, String resourcePath, DocumentLoader baseLoader) {
+    TestResourcesLoader(String base, String resourcePath, DocumentLoader baseLoader) {
         this.base = base;
         this.resourcePath = resourcePath;
         this.baseLoader = baseLoader;

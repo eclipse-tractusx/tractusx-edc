@@ -12,7 +12,7 @@ import java.util.Map;
 class JsonAdapter implements LdValueAdapter<JsonValue, Object> {
     private final ObjectMapper mapper;
 
-    public JsonAdapter(ObjectMapper mapper) {
+    JsonAdapter(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -28,9 +28,9 @@ class JsonAdapter implements LdValueAdapter<JsonValue, Object> {
 
     @Override
     public JsonValue write(Object value) {
-        if(value instanceof Map) {
+        if (value instanceof Map) {
             var jo = Json.createObjectBuilder();
-            jo.add(JsonLdKeywords.VALUE, Json.createObjectBuilder((Map)value));
+            jo.add(JsonLdKeywords.VALUE, Json.createObjectBuilder((Map) value));
             jo.add(JsonLdKeywords.TYPE, JsonLdKeywords.JSON);
             return mapper.convertValue(jo.build(), JsonValue.class);
         }

@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class TestUtils {
 
-    private static final ObjectMapper mapper = JacksonJsonLd.createObjectMapper();
+    private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
     public static KeyPair createKeyPair(JWK jwk) {
         var id = URI.create("https://org.eclipse.tractusx/keys/" + UUID.randomUUID());
@@ -27,13 +27,13 @@ public class TestUtils {
 
     public static JsonObject readResourceAsJson(String name) {
         try {
-            return mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(name), JsonObject.class);
+            return MAPPER.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(name), JsonObject.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static JsonObject expand(JsonObject object){
+    public static JsonObject expand(JsonObject object) {
         try {
             return JsonLd.expand(JsonDocument.of(object)).get().getJsonObject(0);
         } catch (JsonLdError e) {
@@ -41,7 +41,7 @@ public class TestUtils {
         }
     }
 
-    public static JsonObject expand(JsonObject object, DocumentLoader loader){
+    public static JsonObject expand(JsonObject object, DocumentLoader loader) {
         try {
             return JsonLd.expand(JsonDocument.of(object)).loader(loader).get().getJsonObject(0);
         } catch (JsonLdError e) {

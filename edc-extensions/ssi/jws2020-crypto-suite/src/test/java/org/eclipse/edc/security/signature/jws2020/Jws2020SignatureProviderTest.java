@@ -4,20 +4,16 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.Ed25519Signer;
 import com.nimbusds.jose.crypto.Ed25519Verifier;
 import com.nimbusds.jose.jwk.Curve;
-import com.nimbusds.jose.jwk.OctetKeyPair;
 import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
 import org.junit.jupiter.api.Test;
 
-import java.text.ParseException;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Jws2020SignatureProviderTest {
 
@@ -25,8 +21,8 @@ class Jws2020SignatureProviderTest {
     void test() throws JOSEException {
         // Generate a key pair with Ed25519 curve
         var jwk = new OctetKeyPairGenerator(Curve.Ed25519).generate();
-        var publicJWK = jwk.toPublicJWK();
-        System.out.println("OKP: " + publicJWK.toJSONString());
+        var publicJwk = jwk.toPublicJWK();
+        System.out.println("OKP: " + publicJwk.toJSONString());
 
         var signer = new Ed25519Signer(jwk);
         var payload = "foobar";
@@ -42,7 +38,7 @@ class Jws2020SignatureProviderTest {
         System.out.println("JWS: " + s);
 
 
-        var verifier = new Ed25519Verifier(publicJWK);
+        var verifier = new Ed25519Verifier(publicJwk);
 
         assertThat(jwsObject.verify(verifier)).isTrue();
         assertThat(jwsObject.getPayload().toString()).isEqualTo(payload);
