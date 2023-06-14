@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 public class SummaryConstraintFunctionTest {
     private static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
-    public static final String CX_QUALITY = "cx-quality";
+    public static final String CX_QUALITY = "QualityCredential";
     private Permission permission;
     private PolicyContext context;
 

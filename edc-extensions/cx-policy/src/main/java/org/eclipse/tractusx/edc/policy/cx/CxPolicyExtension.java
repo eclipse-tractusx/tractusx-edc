@@ -15,10 +15,12 @@
 package org.eclipse.tractusx.edc.policy.cx;
 
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
+import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
+import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider.registerBindings;
 import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider.registerFunctions;
 
 /**
@@ -30,6 +32,9 @@ public class CxPolicyExtension implements ServiceExtension {
     @Inject
     private PolicyEngine policyEngine;
 
+    @Inject
+    private RuleBindingRegistry bindingRegistry;
+
     @Override
     public String name() {
         return NAME;
@@ -38,5 +43,6 @@ public class CxPolicyExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         registerFunctions(policyEngine);
+        registerBindings(bindingRegistry);
     }
 }
