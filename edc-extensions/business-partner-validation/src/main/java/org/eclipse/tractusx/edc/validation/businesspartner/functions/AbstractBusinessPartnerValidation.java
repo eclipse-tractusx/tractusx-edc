@@ -27,6 +27,7 @@ import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -102,8 +103,13 @@ public abstract class AbstractBusinessPartnerValidation {
             monitor.debug(message);
             return false;
         }
-        
+
         var referringConnectorClaim = getReferringConnectorClaim(policyContext.getParticipantAgent());
+        final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
+
+        if (participantAgent == null) {
+            return false;
+        }
 
         if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
             return false;
