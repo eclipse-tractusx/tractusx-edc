@@ -127,7 +127,7 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
         var transferProcessId = "id";
         var edr = EndpointDataReference.Builder.newInstance().endpoint("test").id(transferProcessId).build();
         var response = Json.createObjectBuilder()
-                .add(DataAddress.EDC_DATA_ADDRESS_TYPE, EndpointDataReference.EDR_SIMPLE_TYPE)
+                .add(DataAddress.EDC_DATA_ADDRESS_TYPE_PROPERTY, EndpointDataReference.EDR_SIMPLE_TYPE)
                 .add(EndpointDataReference.ENDPOINT, edr.getEndpoint())
                 .add(EndpointDataReference.ID, edr.getId())
                 .build();
