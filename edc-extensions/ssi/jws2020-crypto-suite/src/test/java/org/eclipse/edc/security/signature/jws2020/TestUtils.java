@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ *
+ */
+
 package org.eclipse.edc.security.signature.jws2020;
 
 import com.apicatalog.jsonld.JsonLd;
@@ -15,17 +29,17 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.UUID;
 
-public class TestUtils {
+class TestUtils {
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
-    public static KeyPair createKeyPair(JWK jwk) {
+    static KeyPair createKeyPair(JWK jwk) {
         var id = URI.create("https://org.eclipse.tractusx/keys/" + UUID.randomUUID());
         var type = URI.create("https://w3id.org/security#JsonWebKey2020");
         return new JwkMethod(id, type, null, jwk);
     }
 
-    public static JsonObject readResourceAsJson(String name) {
+    static JsonObject readResourceAsJson(String name) {
         try {
             return MAPPER.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(name), JsonObject.class);
         } catch (IOException e) {
@@ -33,7 +47,7 @@ public class TestUtils {
         }
     }
 
-    public static JsonObject expand(JsonObject object) {
+    static JsonObject expand(JsonObject object) {
         try {
             return JsonLd.expand(JsonDocument.of(object)).get().getJsonObject(0);
         } catch (JsonLdError e) {
@@ -41,7 +55,7 @@ public class TestUtils {
         }
     }
 
-    public static JsonObject expand(JsonObject object, DocumentLoader loader) {
+    static JsonObject expand(JsonObject object, DocumentLoader loader) {
         try {
             return JsonLd.expand(JsonDocument.of(object)).loader(loader).get().getJsonObject(0);
         } catch (JsonLdError e) {
@@ -49,7 +63,7 @@ public class TestUtils {
         }
     }
 
-    public static String readResourceAsString(String name) {
+    static String readResourceAsString(String name) {
         try (var stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name)) {
             return new String(Objects.requireNonNull(stream).readAllBytes());
         } catch (IOException e) {
