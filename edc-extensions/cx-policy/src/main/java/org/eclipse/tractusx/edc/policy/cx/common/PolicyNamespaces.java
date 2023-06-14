@@ -23,12 +23,12 @@ public interface PolicyNamespaces {
     String W3C_VC_NS = W3C_VC_PREFIX + "/v1";
     String W3_VP_PROPERTY = W3C_VC_PREFIX + "/vp";
 
-    String TX_NS = "https://w3id.org/2023/catenax/credentials/";
-    String TX_SUMMARY_NS = TX_NS + "summary";
-    String TX_SUMMARY_NS_V1 = TX_SUMMARY_NS + "/v1";
-    String TX_USE_CASE_NS = TX_NS + "usecase";
-    String TX_USE_CASE_NS_V1 = TX_USE_CASE_NS + "/v1";
+    String CX_NS = "https://w3id.org/2023/catenax/credentials/";
+    String CX_SUMMARY_NS = CX_NS + "summary";
+    String CX_SUMMARY_NS_V1 = CX_SUMMARY_NS + "/v1";
+    String CX_USE_CASE_NS = CX_NS + "usecase";
+    String CX_USE_CASE_NS_V1 = CX_USE_CASE_NS + "/v1";
 
-    String TX_SUMMARY_CREDENTIAL = "SummaryCredential";
+    String CX_SUMMARY_CREDENTIAL = "SummaryCredential";
 
 }

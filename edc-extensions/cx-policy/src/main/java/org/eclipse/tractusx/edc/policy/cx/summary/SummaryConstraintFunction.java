@@ -40,8 +40,8 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_P
  * Verifies the presence of an entry in the {@link #SUMMARY_CREDENTIAL_ITEMS} of a summary credential token.
  */
 public class SummaryConstraintFunction extends AbstractVpConstraintFunction {
-    private static final String SUMMARY_CREDENTIAL_TYPE = PolicyNamespaces.TX_SUMMARY_NS + "/SummaryCredential";
-    private static final String SUMMARY_CREDENTIAL_ITEMS = PolicyNamespaces.TX_SUMMARY_NS + "/items";
+    private static final String SUMMARY_CREDENTIAL_TYPE = PolicyNamespaces.CX_SUMMARY_NS + "/SummaryCredential";
+    private static final String SUMMARY_CREDENTIAL_ITEMS = PolicyNamespaces.CX_SUMMARY_NS + "/items";
     private static final String CREDENTIAL_SUBJECT = "credentialSubject";
 
     private static final String ACTIVE = "active";
