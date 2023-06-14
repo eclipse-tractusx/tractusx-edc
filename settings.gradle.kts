@@ -29,7 +29,6 @@ include(":spi:ssi-spi")
 // core modules
 include(":core:edr-cache-core")
 
-
 include(":edc-extensions:business-partner-validation")
 include(":edc-extensions:cx-oauth2")
 include(":edc-extensions:data-encryption")
@@ -44,6 +43,7 @@ include(":edc-extensions:transferprocess-sftp-provisioner")
 include(":edc-extensions:control-plane-adapter-api")
 include(":edc-extensions:control-plane-adapter-callback")
 include(":edc-extensions:edr-cache-sql")
+include(":edc-extensions:cx-policy")
 include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
 
