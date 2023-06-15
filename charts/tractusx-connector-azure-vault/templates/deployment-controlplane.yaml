@@ -123,9 +123,9 @@ spec:
             - name: EDC_OAUTH_CLIENT_ID
               value: {{ .Values.daps.clientId | required ".Values.daps.clientId is required" | quote }}
             - name: EDC_OAUTH_PROVIDER_JWKS_URL
-              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.jwks }}
+              value: {{ printf "%s%s" (tpl .Values.daps.url .) .Values.daps.paths.jwks }}
             - name: EDC_OAUTH_TOKEN_URL
-              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.token }}
+              value: {{ printf "%s%s" (tpl .Values.daps.url .) .Values.daps.paths.token }}
             - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
               value: {{ .Values.vault.secretNames.dapsPrivateKey | required ".Values.vault.secretNames.dapsPrivateKey is required" | quote }}
             - name: EDC_OAUTH_CERTIFICATE_ALIAS

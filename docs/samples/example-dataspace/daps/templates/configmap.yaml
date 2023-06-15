@@ -31,7 +31,7 @@ data:
 
   omejdn.yml: |-
     ---
-    host: http://daps:4567/
+    host: http://{{ .Release.Name }}-daps:4567/
     path_prefix: ''
     bind_to: 0.0.0.0
     allow_origin: "*"
@@ -41,7 +41,7 @@ data:
       - yaml
     user_backend_default: yaml
     accept_audience: idsc:IDS_CONNECTORS_ALL
-    issuer: http://daps:4567/
+    issuer: http://{{ .Release.Name }}-daps:4567/
     environment: development
     default_audience:
       - idsc:IDS_CONNECTORS_ALL
