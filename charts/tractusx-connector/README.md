@@ -43,7 +43,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 
 ## Source Code
 
-* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
 ## Requirements
 

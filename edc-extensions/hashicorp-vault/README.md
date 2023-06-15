@@ -30,9 +30,9 @@ with level _WARNING_.
 
 ---
 
-### Health Checks in Catena-X
+### Health Checks
 
-If your project uses the Catena-X HashiCorp Vault please set `edc.vault.hashicorp.health.check.standby.ok` to _true_. Otherwise the health check would fail if the Vault is in standby.
+If your project uses the Tractus-X HashiCorp Vault please set `edc.vault.hashicorp.health.check.standby.ok` to _true_. Otherwise, the health check would fail if the Vault is in standby.
 
 ```plain
 # Logs of successful check with standby vault
@@ -90,14 +90,14 @@ or
 edc.oauth.private.key.alias=my-daps-key
 ```
 
-## Example: Catena-X Argo CD Vault Configuration
+## Example: Argo CD Vault Configuration
 
 ```properties
 #########
 # Vault #
 #########
 
-edc.vault.hashicorp.url=https://vault.demo.catena-x.net
+edc.vault.hashicorp.url=https://vault.demo.tractus-x.net
 # or even better configure token as k8 secret
 edc.vault.hashicorp.token=<token>
 edc.vault.hashicorp.api.secret.path=/v1/<tenant>/
@@ -107,6 +107,6 @@ edc.vault.hashicorp.health.check.standby.ok=true
 # E.g. OAuth Extension #
 ########################
 
-# from UI: secret stored in https://vault.demo.catena-x.net/ui/vault/secrets/<tenant>/show/my-daps-key
+# from UI: secret stored in https://vault.demo.tractus-x.net/ui/vault/secrets/<tenant>/show/my-daps-key
 edc.oauth.private.key.alias=my-daps-key
 ```
