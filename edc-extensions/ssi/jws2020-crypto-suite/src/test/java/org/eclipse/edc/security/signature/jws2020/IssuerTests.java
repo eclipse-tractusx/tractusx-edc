@@ -18,15 +18,28 @@ import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.ld.DocumentError;
 import com.apicatalog.ld.signature.SigningError;
 import com.apicatalog.vc.Vc;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
+import java.util.Date;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.security.signature.jws2020.TestUtils.createKeyPair;
@@ -39,11 +52,73 @@ class IssuerTests {
     //used to load remote data from a local directory
     private final TestResourcesLoader loader = new TestResourcesLoader("https://org.eclipse.tractusx/", "jws2020/issuing/", SchemeRouter.defaultInstance());
 
-    @DisplayName("t0001: a simple credential to sign")
+    @DisplayName("t0001: a simple credential to sign (EC Key)")
     @Test
-    void signSimpleCredential() throws SigningError, DocumentError {
+    void signSimpleCredential_ecKey() throws SigningError, DocumentError {
         var vc = readResourceAsJson("jws2020/issuing/0001_vc.json");
         var keypair = createKeyPair(KeyFactory.create(readResourceAsString("jws2020/issuing/private-key.json")));
+
+        var verificationMethodUrl = "https://org.eclipse.tractusx/verification-method";
+
+        var proofOptions = jws2020suite.createOptions()
+                .created(Instant.parse("2022-12-31T23:00:00Z"))
+                .verificationMethod(new JwkMethod(URI.create(verificationMethodUrl), null, null, null))
+                .purpose(URI.create("https://w3id.org/security#assertionMethod"));
+
+
+        var issuer = Vc.sign(vc, keypair, proofOptions).loader(loader);
+
+        // would throw an exception
+        var compacted = IssuerCompat.compact(issuer, "https://www.w3.org/ns/did/v1");
+        var verificationMethod = compacted.getJsonObject("sec:proof").get("verificationMethod");
+
+        assertThat(verificationMethod).describedAs("Expected a String!").isInstanceOf(JsonString.class);
+        assertThat(((JsonString) verificationMethod).getString()).isEqualTo(verificationMethodUrl);
+    }
+
+    @DisplayName("t0001: a simple credential to sign (RSA Key)")
+    @ParameterizedTest(name = "keySize = {0} bits")
+    @ValueSource(ints = {2048, 3072, 4096})
+    void signSimpleCredential_rsaKey(int keysize) throws SigningError, DocumentError, NoSuchAlgorithmException {
+        var vc = readResourceAsJson("jws2020/issuing/0001_vc.json");
+
+        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+        gen.initialize(keysize);
+        var keyPair = gen.generateKeyPair();
+
+        var jwk = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+                .privateKey((RSAPrivateKey) keyPair.getPrivate())
+                .keyUse(KeyUse.SIGNATURE)
+                .keyID(UUID.randomUUID().toString())
+                .issueTime(new Date())
+                .build();
+        var keypair = createKeyPair(jwk);
+
+        var verificationMethodUrl = "https://org.eclipse.tractusx/verification-method";
+
+        var proofOptions = jws2020suite.createOptions()
+                .created(Instant.parse("2022-12-31T23:00:00Z"))
+                .verificationMethod(new JwkMethod(URI.create(verificationMethodUrl), null, null, null))
+                .purpose(URI.create("https://w3id.org/security#assertionMethod"));
+
+
+        var issuer = Vc.sign(vc, keypair, proofOptions).loader(loader);
+
+        // would throw an exception
+        var compacted = IssuerCompat.compact(issuer, "https://www.w3.org/ns/did/v1");
+        var verificationMethod = compacted.getJsonObject("sec:proof").get("verificationMethod");
+
+        assertThat(verificationMethod).describedAs("Expected a String!").isInstanceOf(JsonString.class);
+        assertThat(((JsonString) verificationMethod).getString()).isEqualTo(verificationMethodUrl);
+    }
+
+    @DisplayName("t0001: a simple credential to sign (OctetKeyPair)")
+    @Test
+    void signSimpleCredential_octetKeyPair() throws SigningError, DocumentError, JOSEException {
+        var vc = readResourceAsJson("jws2020/issuing/0001_vc.json");
+
+        var jwk = new OctetKeyPairGenerator(Curve.Ed25519).generate();
+        var keypair = createKeyPair(jwk);
 
         var verificationMethodUrl = "https://org.eclipse.tractusx/verification-method";
 

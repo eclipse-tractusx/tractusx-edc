@@ -110,12 +110,8 @@ class Jws2020SignatureProvider implements SignatureAlgorithm {
                     .filter(algo -> Curve.forJWSAlgorithm(algo).contains(okp.getCurve()))
                     .findFirst();
             return jwsAlgorithm.orElseThrow(() -> new EdcException("Could not determine JWSAlgorithm for Curve " + okp.getCurve()));
-        } else if (keyPair instanceof RSAKey rsaKey) {
-            // todo: figure out jws algorithm for rsa key
-            //            var jwsAlgorithm = JWSAlgorithm.Family.RSA.stream()
-            //                    .filter(algo -> rsaKey.)
-            //                    .findFirst();
-            //            return jwsAlgorithm.orElseThrow(() -> new EdcException("Could not determine JWSAlgorithm for RSA Key "));
+        } else if (keyPair instanceof RSAKey) {
+            return JWSAlgorithm.RS512;
         }
         return null;
     }
