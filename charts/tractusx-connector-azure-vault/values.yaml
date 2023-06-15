@@ -495,8 +495,7 @@ dataplane:
     public: ""
 
 postgresql:
-  jdbcUrl: ""
-  fullnameOverride: "postgresql"
+  jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
   enabled: false

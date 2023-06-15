@@ -489,8 +489,7 @@ dataplane:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
 postgresql:
-  jdbcUrl: ""
-  fullnameOverride: "postgresql"
+  jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
       enabled: false
