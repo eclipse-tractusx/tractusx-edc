@@ -143,5 +143,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-java
 
+      # create non-default schema name to test usage of non-default schema
+      - name: setup postgres schema
+        run: |
+          sudo apt update
+          sudo apt install --yes postgresql-client
+          psql -h localhost -d postgres -U postgres -c 'CREATE SCHEMA testschema;'
+        env:
+          PGPASSWORD: password
+
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"

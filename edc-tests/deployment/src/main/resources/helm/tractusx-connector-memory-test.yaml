@@ -28,7 +28,7 @@
 ##  export DAPSKEY="<private-key-content>"
 ##  export DAPSCRT="<certificate-content>"
 ##  export YOUR_VAULT_SECRETS="daps-key:$DAPSKEY;daps-crt:$DAPSCRT"
-##  helm install trudy charts/tractusx-connector-memory -f charts/tractusx-connector-memory/example.yaml --set vault.secrets=$YOUR_VAULT_SECRETS
+##  helm install trudy charts/tractusx-connector-memory -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-memory-test.yaml --set vault.secrets=$YOUR_VAULT_SECRETS
 
 ---
 fullnameOverride: tx-inmem
@@ -63,7 +63,7 @@ vault:
   secrets:
 
 daps:
-  url: "http://daps:4567"
+  url: "http://{{ .Release.Name }}-daps:4567"
   clientId: "99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23:keyid:99:83:A7:17:86:FF:98:93:CE:A0:DD:A1:F1:36:FA:F6:0F:75:0A:23"
 
 backendService:

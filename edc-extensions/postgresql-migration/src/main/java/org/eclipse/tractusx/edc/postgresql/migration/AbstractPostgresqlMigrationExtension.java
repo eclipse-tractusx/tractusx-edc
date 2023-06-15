@@ -53,6 +53,8 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
 
         boolean enabled = context.getConfig()
                 .getBoolean(String.format("org.eclipse.tractusx.edc.postgresql.migration.%s.enabled", subSystemName), true);
+        String schema = context.getConfig()
+                .getString("org.eclipse.tractusx.edc.postgresql.migration.schema", "public");
 
         if (!enabled) {
             return;
@@ -79,6 +81,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
                         .dataSource(dataSource)
                         .table(schemaHistoryTableName)
                         .locations(migrationsLocation)
+                        .defaultSchema(schema)
                         .load();
 
         flyway.baseline();

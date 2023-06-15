@@ -27,7 +27,7 @@ export DAPS_CERT="$(cat daps.cert)"
 The in-memory vault can be seeded directly with secrets that are passed in `<key>:<value>;<key2>:<value2>;...` format.
 This config value can be passed to the runtime using the `vault.secrets` parameter. In addition, the runtime requires a
 couple of configuration parameters, all of which can be found in the section below. Please also consider using
-[this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/charts/tractusx-connector-memory/example.yaml)
+[this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-memory-test.yaml)
 to launch the application.
 
 Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
@@ -35,7 +35,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
 helm install my-release tractusx-edc/tractusx-connector-memory --version {{ .Version }} \
-     -f <path-to>/example.yaml \
+     -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="daps-cert:$DAPS_CERT;daps-key:$DAPS_KEY" \
 ```
 
