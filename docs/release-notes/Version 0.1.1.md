@@ -29,7 +29,7 @@ The following extensions are now included in the base image of the connector.
 
 ### 2.1 CX IAM OAuth2 Extension
 
-Using the open source OAuth Extension it is possible for a connector to re-use an IDS DAPS Token and forge the own identity (replay attack). To mitigate the security issue for the upcoming release Catena-X introduces its own OAuth2 IAM Extension. Except for the audience, the IAM configuration stays similar.
+Using the open source OAuth Extension it is possible for a connector to re-use an IDS DAPS Token and forge the own identity (replay attack). To mitigate the security issue for the upcoming release Tractus-X introduces its own OAuth2 IAM Extension. Except for the audience, the IAM configuration stays similar.
 
 [Documentation](../../edc-extensions/cx-oauth2/README.md)
 
