@@ -84,3 +84,5 @@ daps:
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"
 
+tests:
+  hookDeletePolicy: before-hook-creation
