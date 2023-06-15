@@ -268,7 +268,7 @@ spec:
 
             # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/hashicorp-vault
             - name: "EDC_VAULT_HASHICORP_URL"
-              value: {{ .Values.vault.hashicorp.url | required ".Values.vault.hashicorp.url is required" | quote }}
+              value: {{ tpl .Values.vault.hashicorp.url . | quote }}
             - name: "EDC_VAULT_HASHICORP_TOKEN"
               value: {{ .Values.vault.hashicorp.token | required ".Values.vault.hashicorp.token is required" | quote }}
             - name: "EDC_VAULT_HASHICORP_TIMEOUT_SECONDS"

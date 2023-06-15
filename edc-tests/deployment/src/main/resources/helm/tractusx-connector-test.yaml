@@ -63,7 +63,7 @@ postgresql:
 
 vault:
   hashicorp:
-    url: http://vault:8200
+    url: http://{{ .Release.Name }}-vault:8200
     token: root
 
   secretNames:
