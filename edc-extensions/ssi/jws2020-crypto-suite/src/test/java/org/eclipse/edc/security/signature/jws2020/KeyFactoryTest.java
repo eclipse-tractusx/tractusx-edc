@@ -47,11 +47,12 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.security.signature.jws2020.TestFunctions.readResourceAsString;
 
 class KeyFactoryTest {
 
     @Test
-    void create() throws JsonProcessingException {
+    void create_ecKey() throws JsonProcessingException {
         var json = """
                 {
                     "kty": "EC",
@@ -65,6 +66,34 @@ class KeyFactoryTest {
         assertThat(KeyFactory.create(json)).isInstanceOf(ECKey.class).extracting(JWK::isPrivate).isEqualTo(true);
         var map = new ObjectMapper().readValue(json, Map.class);
         assertThat(KeyFactory.create(map)).isInstanceOf(ECKey.class).extracting(JWK::isPrivate).isEqualTo(true);
+    }
+
+    @Test
+    void create_rsa() throws JsonProcessingException {
+        // the RSA key would violate the Checkstyle line length constraint
+        var json = readResourceAsString("rsakey.json");
+        
+        assertThat(KeyFactory.create(json)).isInstanceOf(RSAKey.class).extracting(JWK::isPrivate).isEqualTo(true);
+        var map = new ObjectMapper().readValue(json, Map.class);
+        assertThat(KeyFactory.create(map)).isInstanceOf(RSAKey.class).extracting(JWK::isPrivate).isEqualTo(true);
+    }
+
+    @Test
+    void create_okp() throws JsonProcessingException {
+        var json = """
+                {
+                   "kty" : "OKP",
+                   "crv" : "Ed25519",
+                   "x"   : "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+                   "d"   : "nWGxne_9WmC6hEr0kuwsxERJxWl7MmkZcDusAxyuf2A",
+                   "use" : "sig",
+                   "kid" : "FdFYFzERwC2uCBB46pZQi4GG85LujR8obt-KWRBICVQ"
+                 }
+                """;
+
+        assertThat(KeyFactory.create(json)).isInstanceOf(OctetKeyPair.class).extracting(JWK::isPrivate).isEqualTo(true);
+        var map = new ObjectMapper().readValue(json, Map.class);
+        assertThat(KeyFactory.create(map)).isInstanceOf(OctetKeyPair.class).extracting(JWK::isPrivate).isEqualTo(true);
     }
 
     @Test

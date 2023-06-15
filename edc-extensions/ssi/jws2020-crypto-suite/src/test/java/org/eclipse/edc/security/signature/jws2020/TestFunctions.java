@@ -14,10 +14,6 @@
 
 package org.eclipse.edc.security.signature.jws2020;
 
-import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.ld.signature.key.KeyPair;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
@@ -29,7 +25,7 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.UUID;
 
-class TestUtils {
+class TestFunctions {
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
@@ -43,22 +39,6 @@ class TestUtils {
         try {
             return MAPPER.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(name), JsonObject.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static JsonObject expand(JsonObject object) {
-        try {
-            return JsonLd.expand(JsonDocument.of(object)).get().getJsonObject(0);
-        } catch (JsonLdError e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static JsonObject expand(JsonObject object, DocumentLoader loader) {
-        try {
-            return JsonLd.expand(JsonDocument.of(object)).loader(loader).get().getJsonObject(0);
-        } catch (JsonLdError e) {
             throw new RuntimeException(e);
         }
     }

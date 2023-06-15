@@ -23,6 +23,11 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import java.io.IOException;
 import java.net.URI;
 
+/**
+ * JSON-LD document loader that allows to "redirect" the loading of remote documents (contexts,...).
+ * For example, referencing a remote context, or a remote verificationMethod would fail, if that document doesn't exist, but we need it
+ * for testing, so we can "redirect" the pointer to the local test resources folder.
+ */
 class TestResourcesLoader implements DocumentLoader {
     private final String base;
     private final DocumentLoader baseLoader;

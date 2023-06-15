@@ -42,9 +42,9 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.security.signature.jws2020.TestUtils.createKeyPair;
-import static org.eclipse.edc.security.signature.jws2020.TestUtils.readResourceAsJson;
-import static org.eclipse.edc.security.signature.jws2020.TestUtils.readResourceAsString;
+import static org.eclipse.edc.security.signature.jws2020.TestFunctions.createKeyPair;
+import static org.eclipse.edc.security.signature.jws2020.TestFunctions.readResourceAsJson;
+import static org.eclipse.edc.security.signature.jws2020.TestFunctions.readResourceAsString;
 
 class IssuerTests {
 

@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.security.signature.jws2020.TestUtils.readResourceAsJson;
+import static org.eclipse.edc.security.signature.jws2020.TestFunctions.readResourceAsJson;
 
 class VerifierTests {
 
