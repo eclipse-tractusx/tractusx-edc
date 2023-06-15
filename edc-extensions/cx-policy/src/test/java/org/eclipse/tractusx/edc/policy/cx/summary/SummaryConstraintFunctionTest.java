@@ -26,7 +26,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.TX_SUMMARY_NS_V1;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_SUMMARY_NS_V1;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
@@ -37,8 +37,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SummaryConstraintFunctionTest {
-    private static final Map<String, String> CONTEXT_CACHE = Map.of(TX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
-    public static final String CX_QUALITY = "cx-quality";
+    private static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
+    public static final String CX_QUALITY = "QualityCredential";
     private Permission permission;
     private PolicyContext context;
 

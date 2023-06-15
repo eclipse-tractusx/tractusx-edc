@@ -44,16 +44,16 @@ public interface SummaryCredential {
                     "type": "Summary-List",
                     "name": "CX-Credentials",
                     "items": [
-                      "cx-active-member",
-                      "cx-dismantler",
-                      "cx-pcf",
-                      "cx-sustainability",
-                      "cx-quality",
-                      "cx-traceability",
-                      "cx-behavior-twin",
-                      "cx-bpn"
+                      "MembershipCredential",
+                      "DismantlerCredential",
+                      "PcfCredential",
+                      "SustainabilityCredential",
+                      "QualityCredential",
+                      "TraceabilityCredential",
+                      "BehaviorTwinCredential",
+                      "BpnCredential"
                     ],
-                    "contract-templates": "https://public.catena-x.org/contracts/"
+                    "contractTemplates": "https://public.catena-x.org/contracts/"
                   },
                   "proof": {
                     "type": "Ed25519Signature2018",

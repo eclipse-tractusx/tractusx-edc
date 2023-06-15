@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.GEQ;
 import static org.eclipse.edc.policy.model.Operator.GT;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.TX_USE_CASE_NS_V1;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_USE_CASE_NS_V1;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class FrameworkAgreementConstraintFunctionTest {
-    private static final Map<String, String> CONTEXT_CACHE = Map.of(TX_USE_CASE_NS_V1, USE_CASE_CONTEXT);
+    private static final Map<String, String> CONTEXT_CACHE = Map.of(CX_USE_CASE_NS_V1, USE_CASE_CONTEXT);
     private Permission permission;
     private PolicyContext context;
 

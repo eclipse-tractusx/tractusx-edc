@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.policy.cx.summary;
 
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
+import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +25,7 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider.registerBindings;
 import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider.registerFunctions;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,7 +36,7 @@ import static org.mockito.Mockito.verify;
 class SummaryConstraintFunctionsProviderTest {
 
     @Test
-    void verify_registrations() {
+    void verify_function_registrations() {
         var policyEngine = mock(PolicyEngine.class);
 
         registerFunctions(policyEngine);
@@ -48,7 +50,21 @@ class SummaryConstraintFunctionsProviderTest {
             assertSummaryFunctionsRegistered(NEGOTIATION_SCOPE, policyEngine, credentialName);
             assertSummaryFunctionsRegistered(TRANSFER_PROCESS_SCOPE, policyEngine, credentialName);
         });
+    }
 
+    @Test
+    void verify_binding_registrations() {
+        var bindingRegistry = mock(RuleBindingRegistry.class);
+
+        registerBindings(bindingRegistry);
+
+        assertRuleTypeRegistered("Membership", bindingRegistry);
+        assertRuleTypeRegistered("Dismantler", bindingRegistry);
+        assertRuleTypeRegistered("FrameworkAgreement.pcf", bindingRegistry);
+        assertRuleTypeRegistered("FrameworkAgreement.sustainability", bindingRegistry);
+        assertRuleTypeRegistered("FrameworkAgreement.quality", bindingRegistry);
+        assertRuleTypeRegistered("FrameworkAgreement.traceability", bindingRegistry);
+        assertRuleTypeRegistered("FrameworkAgreement.behavioraltwin", bindingRegistry);
     }
 
     private void assertTokenFunctionsRegistered(String scope, PolicyEngine policyEngine) {
@@ -61,6 +77,15 @@ class SummaryConstraintFunctionsProviderTest {
                 eq(Permission.class),
                 eq(credentialName),
                 any(SummaryConstraintFunction.class));
+    }
+
+    private void assertRuleTypeRegistered(String ruleType, RuleBindingRegistry bindingRegistry) {
+        verify(bindingRegistry, times(1)).bind(ruleType, CATALOG_REQUEST_SCOPE);
+        verify(bindingRegistry, times(1)).bind(ruleType, CATALOG_SCOPE);
+        verify(bindingRegistry, times(1)).bind(ruleType, NEGOTIATION_REQUEST_SCOPE);
+        verify(bindingRegistry, times(1)).bind(ruleType, NEGOTIATION_SCOPE);
+        verify(bindingRegistry, times(1)).bind(ruleType, TRANSFER_PROCESS_REQUEST_SCOPE);
+        verify(bindingRegistry, times(1)).bind(ruleType, TRANSFER_PROCESS_SCOPE);
     }
 
 }
