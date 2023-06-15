@@ -326,3 +326,8 @@ serviceAccount:
 idsdaps:
   connectors:
     - certificate: |-
+
+# -- Configurations for Helm tests
+tests:
+  # -- Configure the hook-delete-policy for Helm tests
+  hookDeletePolicy: before-hook-creation,hook-succeeded
