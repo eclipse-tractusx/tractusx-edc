@@ -31,6 +31,7 @@ public class TestRuntimeConfiguration {
     public static final String PLATO_NAME = "PLATO";
     public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
     public static final Integer PLATO_PROXIED_AAS_BACKEND_PORT = getFreePort();
+    public static final int MIW_PORT = getFreePort();
     static final String DSP_PATH = "/api/v1/dsp";
     static final int PLATO_CONNECTOR_PORT = getFreePort();
     static final int PLATO_MANAGEMENT_PORT = getFreePort();
@@ -49,11 +50,10 @@ public class TestRuntimeConfiguration {
     static final String PLATO_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
     static final String PLATO_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
-
     static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
-
     static final String DB_SCHEMA_NAME = "testschema";
-    
+    static final String MIW_URL = "http://localhost:" + MIW_PORT;
+  
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
         var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
@@ -100,6 +100,17 @@ public class TestRuntimeConfiguration {
                 put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }
         };
+    }
+
+    public static Map<String, String> sokratesSsiConfiguration() {
+        var ssiConfiguration = new HashMap<String, String>() {
+            {
+                put("tx.ssi.miw.url", MIW_URL);
+            }
+        };
+        var baseConfiguration = sokratesConfiguration();
+        ssiConfiguration.putAll(baseConfiguration);
+        return ssiConfiguration;
     }
 
     public static Map<String, String> sokratesConfiguration() {
@@ -164,6 +175,17 @@ public class TestRuntimeConfiguration {
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
             }
         };
+    }
+
+    public static Map<String, String> platoSsiConfiguration() {
+        var ssiConfiguration = new HashMap<String, String>() {
+            {
+                put("tx.ssi.miw.url", MIW_URL);
+            }
+        };
+        var baseConfiguration = platoConfiguration();
+        ssiConfiguration.putAll(baseConfiguration);
+        return ssiConfiguration;
     }
 
     @NotNull
