@@ -51,8 +51,9 @@ public class TestRuntimeConfiguration {
     static final String PLATO_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
+    static final String DB_SCHEMA_NAME = "testschema";
     static final String MIW_URL = "http://localhost:" + MIW_PORT;
-
+  
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
         var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
@@ -95,6 +96,8 @@ public class TestRuntimeConfiguration {
                 put("edc.datasource.edr.url", jdbcUrl);
                 put("edc.datasource.edr.user", PostgresqlLocalInstance.USER);
                 put("edc.datasource.edr.password", PostgresqlLocalInstance.PASSWORD);
+                // use non-default schema name to test usage of non-default schema
+                put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }
         };
     }
@@ -187,6 +190,6 @@ public class TestRuntimeConfiguration {
 
     @NotNull
     public static String jdbcUrl(String name) {
-        return PostgresqlLocalInstance.JDBC_URL_PREFIX + name;
+        return PostgresqlLocalInstance.JDBC_URL_PREFIX + name + "?currentSchema=" + DB_SCHEMA_NAME;
     }
 }
