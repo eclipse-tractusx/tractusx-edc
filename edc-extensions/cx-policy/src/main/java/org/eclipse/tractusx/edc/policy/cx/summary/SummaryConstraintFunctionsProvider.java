@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.policy.cx.summary;
 
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
+import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 
 import java.util.Map;
@@ -35,14 +36,14 @@ public class SummaryConstraintFunctionsProvider {
      * Mappings from policy constraint left operand values to the corresponding item value in the summary VP.
      */
     static final Map<String, String> CREDENTIAL_MAPPINGS = Map.of(
-            "Membership", "cx-active-member",
-            "Dismantler", "cx-dismantler",
-            "FrameworkAgreement.pcf", "cx-pcf",
-            "FrameworkAgreement.sustainability", "cx-sustainability",
-            "FrameworkAgreement.quality", "cx-quality",
-            "FrameworkAgreement.traceability", "cx-traceability",
-            "FrameworkAgreement.behavioraltwin", "cx-behavior-twin",
-            "BPN", "cx-bpn"
+            "Membership", "MembershipCredential",
+            "Dismantler", "DismantlerCredential",
+            "FrameworkAgreement.pcf", "PcfCredential",
+            "FrameworkAgreement.sustainability", "SustainabilityCredential",
+            "FrameworkAgreement.quality", "QualityCredential",
+            "FrameworkAgreement.traceability", "TraceabilityCredential",
+            "FrameworkAgreement.behavioraltwin", "BehaviorTwinCredential",
+            "BPN", "BpnCredential"
     );
 
     /**
@@ -54,24 +55,35 @@ public class SummaryConstraintFunctionsProvider {
         engine.registerPreValidator(NEGOTIATION_REQUEST_SCOPE, tokenPolicyFunction);
         engine.registerPreValidator(TRANSFER_PROCESS_REQUEST_SCOPE, tokenPolicyFunction);
 
-        CREDENTIAL_MAPPINGS.forEach((credentialName, summaryType) -> {
+        CREDENTIAL_MAPPINGS.forEach((constraintName, summaryType) -> {
 
             engine.registerFunction(CATALOG_SCOPE,
                     Permission.class,
-                    credentialName,
+                    constraintName,
                     new SummaryConstraintFunction(summaryType));
 
             engine.registerFunction(NEGOTIATION_SCOPE,
                     Permission.class,
-                    credentialName,
+                    constraintName,
                     new SummaryConstraintFunction(summaryType));
 
             engine.registerFunction(TRANSFER_PROCESS_SCOPE,
                     Permission.class,
-                    credentialName,
+                    constraintName,
                     new SummaryConstraintFunction(summaryType));
         });
 
+    }
+
+    public static void registerBindings(RuleBindingRegistry registry) {
+        CREDENTIAL_MAPPINGS.forEach((constraintName, summaryType) -> {
+            registry.bind(constraintName, CATALOG_REQUEST_SCOPE);
+            registry.bind(constraintName, NEGOTIATION_REQUEST_SCOPE);
+            registry.bind(constraintName, TRANSFER_PROCESS_REQUEST_SCOPE);
+            registry.bind(constraintName, CATALOG_SCOPE);
+            registry.bind(constraintName, NEGOTIATION_SCOPE);
+            registry.bind(constraintName, TRANSFER_PROCESS_SCOPE);
+        });
     }
 
 }
