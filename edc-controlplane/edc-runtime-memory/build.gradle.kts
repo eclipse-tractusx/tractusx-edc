@@ -30,6 +30,7 @@ dependencies {
     }
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base"))
     runtimeOnly(libs.edc.core.controlplane)
+    testImplementation(libs.edc.junit)
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
