@@ -54,7 +54,6 @@ public class SsiIdentityServiceTest {
     @Test
     void verifyJwtToken_failed() {
         var token = TokenRepresentation.Builder.newInstance().token("test").build();
-        var claim = ClaimToken.Builder.newInstance().build();
 
         when(tokenValidationService.validate(token)).thenReturn(Result.failure("fail"));
 

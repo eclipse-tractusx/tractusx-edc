@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.Operator;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
@@ -48,6 +49,16 @@ public class PolicyHelperFunctions {
      */
     public static JsonObject businessPartnerNumberPolicy(String id, String... bpns) {
         return policyDefinitionBuilder(bnpPolicy(bpns))
+                .add(ID, id)
+                .build();
+    }
+
+    /**
+     * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
+     * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
+     */
+    public static JsonObject frameworkPolicy(String id, Map<String, String> permissions) {
+        return policyDefinitionBuilder(frameworkPolicy(permissions))
                 .add(ID, id)
                 .build();
     }
@@ -96,6 +107,28 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    private static JsonObject frameworkPolicy(Map<String, String> permissions) {
+        return Json.createObjectBuilder()
+                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder()
+                        .add(frameworkPermission(permissions)))
+                .build();
+    }
+
+    private static JsonObject frameworkPermission(Map<String, String> permissions) {
+
+        var constraints = permissions.entrySet().stream()
+                .map(permission -> atomicConstraint(permission.getKey(), Operator.EQ, permission.getValue()))
+                .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
+
+        return Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, "USE")
+                .add(ODRL_CONSTRAINT_ATTRIBUTE, Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add(ODRL_OR_CONSTRAINT_ATTRIBUTE, constraints)
+                        .build())
+                .build();
+    }
+
     private static JsonObject atomicConstraint(String leftOperand, Operator operator, Object rightOperand) {
         return Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
@@ -104,6 +137,4 @@ public class PolicyHelperFunctions {
                 .add(ODRL_RIGHT_OPERAND_ATTRIBUTE, rightOperand.toString())
                 .build();
     }
-
-
 }

@@ -12,23 +12,16 @@
  *
  */
 
-package org.eclipse.tractusx.edc.iam.ssi.miw.api;
+package org.eclipse.tractusx.edc.iam.ssi.miw.oauth2;
 
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+/**
+ * OAuth2 client for fetching an access token to be added when using the MIW APIs
+ */
 @ExtensionPoint
-public interface MiwApiClient {
-    String VP = "vp";
-
-    Result<List<Map<String, Object>>> getCredentials(Set<String> types);
-
-    Result<Map<String, Object>> createPresentation(List<Map<String, Object>> credentials, String audience);
-
-    Result<Void> verifyPresentation(String jwtPresentation, String audience);
-
+public interface MiwOauth2Client {
+    Result<TokenRepresentation> obtainRequestToken();
 }

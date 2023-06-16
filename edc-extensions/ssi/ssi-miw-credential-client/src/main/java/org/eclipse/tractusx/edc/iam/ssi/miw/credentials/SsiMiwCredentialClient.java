@@ -25,8 +25,8 @@ import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient.VP;
 
 public class SsiMiwCredentialClient implements SsiCredentialClient {
@@ -39,12 +39,11 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
 
     @Override
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        // TODO will need to take from the TokenParameters which are the credentials needed, REF https://github.com/eclipse-edc/Connector/pull/3150
-        return apiClient.getCredentials(Set.of(), parameters.getAudience())
+        return apiClient.getCredentials(parameters.getAdditional().keySet())
                 .compose(credentials -> createPresentation(credentials, parameters))
                 .compose(this::createToken);
     }
-    
+
     @Override
     public Result<ClaimToken> validate(TokenRepresentation tokenRepresentation) {
         return extractClaims(tokenRepresentation)
@@ -69,8 +68,10 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
     }
 
     private Result<ClaimToken> validatePresentation(ClaimToken claimToken, TokenRepresentation tokenRepresentation) {
-        return apiClient.verifyPresentation(tokenRepresentation.getToken())
-                .compose(v -> Result.success(claimToken));
+        return claimToken.getListClaim(AUDIENCE).stream().map(String.class::cast).findFirst()
+                .map(audience -> apiClient.verifyPresentation(tokenRepresentation.getToken(), audience)
+                        .compose(v -> Result.success(claimToken)))
+                .orElseGet(() -> Result.failure("Required audience (aud) claim is missing in token"));
     }
 
     private Result<ClaimToken> extractClaims(TokenRepresentation tokenRepresentation) {

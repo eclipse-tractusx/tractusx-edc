@@ -15,49 +15,57 @@
 package org.eclipse.tractusx.edc.iam.ssi.miw;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
-import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl;
+import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2ClientImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwApiClientExtension.MIW_AUTHORITY_ID;
-import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwApiClientExtension.MIW_BASE_URL;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension.CLIENT_ID;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension.CLIENT_SECRET_ALIAS;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension.TOKEN_URL;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class SsiMiwApiClientExtensionTest {
+public class SsiMiwOauth2ClientExtensionTest {
 
-    SsiMiwApiClientExtension extension;
+    SsiMiwOauth2ClientExtension extension;
 
     ServiceExtensionContext context;
+
+    Vault vault = mock(Vault.class);
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {
         this.context = spy(context);
         context.registerService(MiwApiClient.class, mock(MiwApiClient.class));
         context.registerService(TypeManager.class, new TypeManager());
-        extension = factory.constructInstance(SsiMiwApiClientExtension.class);
+        context.registerService(Vault.class, vault);
+        extension = factory.constructInstance(SsiMiwOauth2ClientExtension.class);
     }
 
     @Test
     void initialize() {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
-        when(config.getString(MIW_BASE_URL)).thenReturn("url");
-        when(config.getString(MIW_AUTHORITY_ID)).thenReturn("authorityId");
+        when(config.getString(TOKEN_URL)).thenReturn("url");
+        when(config.getString(CLIENT_ID)).thenReturn("clientId");
+        when(config.getString(CLIENT_SECRET_ALIAS)).thenReturn("clientSecretAlias");
+        when(vault.resolveSecret("clientSecretAlias")).thenReturn("clientSecret");
 
-
-        assertThat(extension.apiClient(context)).isInstanceOf(MiwApiClientImpl.class);
-        verify(config).getString(MIW_BASE_URL);
-        verify(config).getString(MIW_AUTHORITY_ID);
+        assertThat(extension.oauth2Client(context)).isInstanceOf(MiwOauth2ClientImpl.class);
+        verify(config).getString(TOKEN_URL);
+        verify(config).getString(CLIENT_ID);
+        verify(config).getString(CLIENT_SECRET_ALIAS);
+        verify(vault).resolveSecret("clientSecretAlias");
     }
 }
