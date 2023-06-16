@@ -71,7 +71,7 @@ vault:
     secrets:
   server:
 daps:
-  url: "http://{{ .Release.Name }}-daps:4567"
+  url: "http://daps:4567"
   clientId: "E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"

@@ -71,7 +71,7 @@ dataplane:
     accessKeyId: qwerty123
 
 postgresql:
-  jdbcUrl: jdbc:postgresql://postgresql:5432/edc
+  jdbcUrl: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc
   auth:
     username: user
     password: password
