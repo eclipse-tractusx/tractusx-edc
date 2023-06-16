@@ -19,6 +19,9 @@ aws = "2.20.86"
 rsApi = "3.1.0"
 jupiter = "5.9.3"
 assertj = "3.24.2"
+jakarta-json = "2.0.1"
+tink = "1.7.0"
+iron-vc = "0.8.1"
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
@@ -34,12 +37,14 @@ edc-spi-aggregateservices = { module = "org.eclipse.edc:aggregate-service-spi", 
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
+edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-jwt-core = { module = "org.eclipse.edc:jwt-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", version.ref = "edc" }
+edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
@@ -127,8 +132,11 @@ apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
+jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+tink = { module = "com.google.crypto.tink:tink", version.ref = "tink" }
+apicatalog-iron-vc = { module = "com.apicatalog:iron-verifiable-credentials", version.ref = "iron-vc" }
 
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
