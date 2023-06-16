@@ -20,4 +20,5 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jwt)
+    implementation(libs.jakartaJson)
 }

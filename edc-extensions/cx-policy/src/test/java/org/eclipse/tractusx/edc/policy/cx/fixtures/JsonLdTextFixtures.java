@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsonp.JSONPModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.json.JsonObject;
-import org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces;
+import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces;
 
 import java.io.StringReader;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.Map;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static jakarta.json.Json.createBuilderFactory;
 import static jakarta.json.Json.createObjectBuilder;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3C_VC_NS;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.W3C_VC_NS;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.W3cVcContext.W3C_VC_CONTEXT;
 
 /**
@@ -72,7 +72,7 @@ public class JsonLdTextFixtures {
     }
 
     /**
-     * Expands the document using the provided cache for resolving referenced contexts. The {@link PolicyNamespaces#W3C_VC_NS} context is implicitly added to the cache.
+     * Expands the document using the provided cache for resolving referenced contexts. The {@link CredentialsNamespaces#W3C_VC_NS} context is implicitly added to the cache.
      */
     public static JsonObject expand(JsonObject json, Map<String, String> contextCache) {
         var map = new HashMap<>(contextCache);

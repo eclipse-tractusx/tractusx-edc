@@ -12,23 +12,23 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 /**
  * Defines policy namespaces.
  */
-public interface PolicyNamespaces {
+public interface CredentialsNamespaces {
 
     String W3C_VC_PREFIX = "https://www.w3.org/2018/credentials";
     String W3C_VC_NS = W3C_VC_PREFIX + "/v1";
-    String W3_VP_PROPERTY = W3C_VC_PREFIX + "/vp";
-
+    String VP_PROPERTY = "vp";
     String CX_NS = "https://w3id.org/2023/catenax/credentials/";
     String CX_SUMMARY_NS = CX_NS + "summary";
     String CX_SUMMARY_NS_V1 = CX_SUMMARY_NS + "/v1";
+    String SUMMARY_CREDENTIAL_TYPE = CX_SUMMARY_NS + "/SummaryCredential";
+    String HOLDER_IDENTIFIER = CX_SUMMARY_NS + "/holderIdentifier";
     String CX_USE_CASE_NS = CX_NS + "usecase";
     String CX_USE_CASE_NS_V1 = CX_USE_CASE_NS + "/v1";
-
     String CX_SUMMARY_CREDENTIAL = "SummaryCredential";
-
+    String CREDENTIAL_SUBJECT = W3C_VC_PREFIX + "#credentialSubject";
 }

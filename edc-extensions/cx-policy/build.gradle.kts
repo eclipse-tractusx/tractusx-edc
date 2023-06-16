@@ -17,6 +17,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":spi:ssi-spi"))
     implementation(libs.edc.spi.policyengine)
     implementation(libs.jakartaJson)
     testImplementation(libs.jacksonJsonP)

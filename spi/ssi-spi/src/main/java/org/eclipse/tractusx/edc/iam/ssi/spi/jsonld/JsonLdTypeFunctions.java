@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -37,6 +37,9 @@ import static java.util.stream.Collectors.toSet;
 public class JsonLdTypeFunctions {
     private static final String TYPE = "@type";
     private static final Stream<JsonObject> EMPTY_STREAM = Stream.of();
+
+    private JsonLdTypeFunctions() {
+    }
 
     /**
      * Returns a stream of objects that are of the given Json-Ld type starting at the root.
@@ -100,8 +103,4 @@ public class JsonLdTypeFunctions {
         }
         return false;
     }
-
-    private JsonLdTypeFunctions() {
-    }
-
 }

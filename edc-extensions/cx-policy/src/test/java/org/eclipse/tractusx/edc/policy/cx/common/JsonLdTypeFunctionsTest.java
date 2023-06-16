@@ -24,9 +24,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdTypeFunctions.extractObjectsOfType;
-import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdTypeFunctions.partitionByType;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3C_VC_PREFIX;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.W3C_VC_PREFIX;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.partitionByType;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
 
@@ -36,6 +36,57 @@ class JsonLdTypeFunctionsTest {
 
     private static final String BAR_CREDENTIAL_TYPE = "BarCredential";
     private static final String FOO_CREDENTIAL_TYPE = "FooCredential";
+    private static final String FOO_CREDENTIAL = """
+            {
+              "type": "VerifiablePresentation",
+              "verifiableCredential": [
+                {
+                  "@context": [
+                    "https://www.w3.org/2018/credentials/v1"
+                  ],
+                  "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+                  "type": [
+                    "VerifiableCredential",
+                    "FooCredential"
+                  ]
+                }
+              ]
+            }""";
+    private static final String BAR_CREDENTIAL = """
+            {
+              "type": "VerifiablePresentation",
+              "verifiableCredential": [
+                {
+                  "@context": [
+                    "https://www.w3.org/2018/credentials/v1"
+                  ],
+                  "type": [
+                    "VerifiableCredential",
+                    "BarCredential"
+                  ]
+                }
+              ]
+            }""";
+    private static final String MULTIPLE_VCS_CLAIM = format("""
+            {
+              "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                {
+                  "vp":"test:vp"
+                }
+              ],
+              "vp": [%s,%s]
+            }""", FOO_CREDENTIAL, BAR_CREDENTIAL);
+    private static final String SINGLE_VC_CLAIM = format("""
+            {
+              "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                {
+                  "vp":"test:vp"
+                }
+              ],
+              "vp": %s
+            }""", FOO_CREDENTIAL);
 
     @Test
     void verify_credential_extraction() throws JsonProcessingException {
@@ -71,61 +122,6 @@ class JsonLdTypeFunctionsTest {
                 .filter(entryType -> type.equals(((JsonString) entryType).getString()))
                 .count()).isEqualTo(objects.size());
     }
-
-    private static final String FOO_CREDENTIAL = """
-            {
-              "type": "VerifiablePresentation",
-              "verifiableCredential": [
-                {
-                  "@context": [
-                    "https://www.w3.org/2018/credentials/v1"
-                  ],
-                  "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
-                  "type": [
-                    "VerifiableCredential",
-                    "FooCredential"
-                  ]
-                }
-              ]
-            }""";
-
-    private static final String BAR_CREDENTIAL = """
-            {
-              "type": "VerifiablePresentation",
-              "verifiableCredential": [
-                {
-                  "@context": [
-                    "https://www.w3.org/2018/credentials/v1"
-                  ],
-                  "type": [
-                    "VerifiableCredential",
-                    "BarCredential"
-                  ]
-                }
-              ]
-            }""";
-
-    private static final String MULTIPLE_VCS_CLAIM = format("""
-            {
-              "@context": [
-                "https://www.w3.org/2018/credentials/v1",
-                {
-                  "vp":"test:vp"
-                }
-              ],
-              "vp": [%s,%s]
-            }""", FOO_CREDENTIAL, BAR_CREDENTIAL);
-
-    private static final String SINGLE_VC_CLAIM = format("""
-            {
-              "@context": [
-                "https://www.w3.org/2018/credentials/v1",
-                {
-                  "vp":"test:vp"
-                }
-              ],
-              "vp": %s
-            }""", FOO_CREDENTIAL);
 
 
 }

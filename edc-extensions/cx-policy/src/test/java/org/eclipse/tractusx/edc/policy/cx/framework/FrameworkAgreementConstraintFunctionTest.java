@@ -29,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.GEQ;
 import static org.eclipse.edc.policy.model.Operator.GT;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_USE_CASE_NS_V1;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_USE_CASE_NS_V1;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
 import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
 import static org.eclipse.tractusx.edc.policy.cx.framework.PcfCredential.PCF_VP;
@@ -135,7 +135,7 @@ class FrameworkAgreementConstraintFunctionTest {
 
     private void setVpInContextVp() throws JsonProcessingException {
         var vp = expand(createObjectMapper().readValue(PCF_VP, JsonObject.class), CONTEXT_CACHE);
-        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(W3_VP_PROPERTY, vp), Map.of()));
+        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(VP_PROPERTY, vp), Map.of()));
     }
 
 

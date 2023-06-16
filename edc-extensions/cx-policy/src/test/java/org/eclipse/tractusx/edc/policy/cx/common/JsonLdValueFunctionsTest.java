@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdValueFunctions.extractStringValue;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.extractStringValue;
 
 class JsonLdValueFunctionsTest {
     private static final String VALUE = "@value";

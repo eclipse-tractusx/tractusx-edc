@@ -45,28 +45,14 @@ import static java.lang.String.format;
 public class MiwDispatcher extends Dispatcher {
 
     private static final TypeManager MAPPER = new TypeManager();
-
-    private static final String SUMMARY_JSON;
-
-    static {
-
-        var classloader = Thread.currentThread().getContextClassLoader();
-
-        try (var jsonStream = classloader.getResourceAsStream("summary-vc.json")) {
-            Objects.requireNonNull(jsonStream);
-            SUMMARY_JSON = new String(jsonStream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    
     private final String audience;
 
     private final Map<String, Object> summaryVc;
 
-    public MiwDispatcher(String bpn, String audience) {
+    public MiwDispatcher(String bpn, String vcFile, String audience) {
         this.audience = audience;
-        var json = format(SUMMARY_JSON, bpn);
+        var json = format(readVcContent(vcFile), bpn);
         summaryVc = MAPPER.readValue(json, new TypeReference<>() {
         });
     }
@@ -82,17 +68,37 @@ public class MiwDispatcher extends Dispatcher {
         };
     }
 
+    private String readVcContent(String vcFile) {
+        var classloader = Thread.currentThread().getContextClassLoader();
+
+        try (var jsonStream = classloader.getResourceAsStream(vcFile)) {
+            Objects.requireNonNull(jsonStream);
+            return new String(jsonStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private MockResponse credentialResponse() {
         return new MockResponse().setBody(MAPPER.writeValueAsString(Map.of("content", List.of(summaryVc))));
     }
 
     private MockResponse presentationResponse() {
         try {
-            var jwt = createJwt(UUID.randomUUID().toString(), createClaims(Instant.now(), Map.of("verifiableCredential", List.of(summaryVc))), testKey().toPrivateKey());
+            var jwt = createJwt(UUID.randomUUID().toString(), createClaims(Instant.now(), createVerifiablePresentationClaim()), testKey().toPrivateKey());
             return new MockResponse().setBody(MAPPER.writeValueAsString(Map.of("vp", jwt)));
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Map<String, Object> createVerifiablePresentationClaim() {
+        var ctx = List.of("https://www.w3.org/2018/credentials/v1");
+        var type = List.of("VerifiablePresentation");
+        return Map.of(
+                "@context", ctx,
+                "type", type,
+                "verifiableCredential", List.of(summaryVc));
     }
 
     private MockResponse presentationValidationResponse() {

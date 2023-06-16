@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -21,15 +21,16 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import org.jetbrains.annotations.Nullable;
 
-import static jakarta.json.JsonValue.ValueType.FALSE;
-import static jakarta.json.JsonValue.ValueType.TRUE;
-import static java.lang.String.valueOf;
+import static jakarta.json.JsonValue.ValueType;
 
 /**
  * Functions for working with Json-ld values.
  */
 public class JsonLdValueFunctions {
     private static final String VALUE = "@value";
+
+    private JsonLdValueFunctions() {
+    }
 
     /**
      * Extracts the value of a root node and converts it to a string representation. Note this method accepts null nodes as a convenience.
@@ -59,10 +60,10 @@ public class JsonLdValueFunctions {
         if (value instanceof JsonString valueString) {
             return valueString.getString();
         } else if (value instanceof JsonNumber valueNumber) {
-            return valueNumber.isIntegral() ? valueOf(valueNumber.longValue()) : valueOf(valueNumber.doubleValue());
-        } else if (TRUE == value.getValueType()) {
+            return valueNumber.isIntegral() ? String.valueOf(valueNumber.longValue()) : String.valueOf(valueNumber.doubleValue());
+        } else if (ValueType.TRUE == value.getValueType()) {
             return "TRUE";
-        } else if (FALSE == value.getValueType()) {
+        } else if (ValueType.FALSE == value.getValueType()) {
             return "FALSE";
         }
         return null;

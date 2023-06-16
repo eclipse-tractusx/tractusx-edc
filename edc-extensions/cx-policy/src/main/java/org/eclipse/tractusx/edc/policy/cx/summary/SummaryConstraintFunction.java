@@ -20,8 +20,8 @@ import jakarta.json.JsonValue;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractVpConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces;
 
 import java.util.Map;
 
@@ -31,8 +31,10 @@ import static jakarta.json.JsonValue.ValueType.STRING;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdTypeFunctions.extractObjectsOfType;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.SUMMARY_CREDENTIAL_TYPE;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
+
 
 /**
  * Implements Catena-X policies by verifying policy constraints against the summary credential.
@@ -40,8 +42,7 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_P
  * Verifies the presence of an entry in the {@link #SUMMARY_CREDENTIAL_ITEMS} of a summary credential token.
  */
 public class SummaryConstraintFunction extends AbstractVpConstraintFunction {
-    private static final String SUMMARY_CREDENTIAL_TYPE = PolicyNamespaces.CX_SUMMARY_NS + "/SummaryCredential";
-    private static final String SUMMARY_CREDENTIAL_ITEMS = PolicyNamespaces.CX_SUMMARY_NS + "/items";
+    private static final String SUMMARY_CREDENTIAL_ITEMS = CredentialsNamespaces.CX_SUMMARY_NS + "/items";
     private static final String CREDENTIAL_SUBJECT = "credentialSubject";
 
     private static final String ACTIVE = "active";
@@ -64,7 +65,7 @@ public class SummaryConstraintFunction extends AbstractVpConstraintFunction {
             return false;
         }
 
-        var vp = (JsonObject) context.getParticipantAgent().getClaims().get(W3_VP_PROPERTY);
+        var vp = (JsonObject) context.getParticipantAgent().getClaims().get(VP_PROPERTY);
         if (!validatePresentation(vp, context)) {
             return false;
         }

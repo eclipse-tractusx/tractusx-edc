@@ -20,30 +20,31 @@ import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdFieldExtractor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Collectors;
 
-import static jakarta.json.JsonValue.ValueType.ARRAY;
 import static jakarta.json.JsonValue.ValueType.OBJECT;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CREDENTIAL_SUBJECT;
 
 /**
  * Base processing for constraint functions that verify a permission against a Catena-X verifiable presentation.
  */
 public abstract class AbstractVpConstraintFunction implements AtomicConstraintFunction<Permission> {
-    protected static final String CREDENTIAL_SUBJECT = PolicyNamespaces.W3C_VC_PREFIX + "#credentialSubject";
 
     protected static final String VALUE = "@value";
-
-    protected final String errorPrefix;
-
-    protected final String credentialType;
-
     private static final String ERROR_PREFIX_TEMPLATE = "Invalid %s VC format: ";
+    protected final String errorPrefix;
+    protected final String credentialType;
+    private JsonLdFieldExtractor credentialSubjectExtractor = JsonLdFieldExtractor.Builder.newInstance()
+            .field(CREDENTIAL_SUBJECT)
+            .fieldAlias("credentialSubject")
+            .build();
 
     /**
      * Ctor.
@@ -54,6 +55,11 @@ public abstract class AbstractVpConstraintFunction implements AtomicConstraintFu
         requireNonNull(credentialType);
         this.credentialType = credentialType;
         this.errorPrefix = format(ERROR_PREFIX_TEMPLATE, credentialType);
+        this.credentialSubjectExtractor = JsonLdFieldExtractor.Builder.newInstance()
+                .field(CREDENTIAL_SUBJECT)
+                .fieldAlias("credentialSubject")
+                .errorPrefix(errorPrefix)
+                .build();
     }
 
     /**
@@ -96,23 +102,7 @@ public abstract class AbstractVpConstraintFunction implements AtomicConstraintFu
      */
     @Nullable
     protected JsonObject extractCredentialSubject(JsonObject credential, PolicyContext context) {
-        var subjectArray = credential.get(CREDENTIAL_SUBJECT);
-        if (subjectArray == null || subjectArray.getValueType() != ARRAY) {
-            context.reportProblem(errorPrefix + " no credentialSubject found");
-            return null;
-        }
-        if (subjectArray.asJsonArray().size() != 1) {
-            context.reportProblem(errorPrefix + " empty credentialSubject");
-            return null;
-        }
-
-        var subjectValue = subjectArray.asJsonArray().get(0);
-        if (subjectValue == null || subjectValue.getValueType() != OBJECT) {
-            context.reportProblem(errorPrefix + " invalid credentialSubject format");
-            return null;
-        }
-
-        return subjectValue.asJsonObject();
+        return credentialSubjectExtractor.extract(credential).onFailure(failure -> context.reportProblem(failure.getFailureDetail())).getContent();
     }
 
     /**
