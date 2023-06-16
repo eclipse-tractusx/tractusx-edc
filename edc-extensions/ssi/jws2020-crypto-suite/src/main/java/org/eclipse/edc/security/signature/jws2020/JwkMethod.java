@@ -37,8 +37,8 @@ record JwkMethod(URI id, URI type, URI controller, JWK keyPair) implements KeyPa
 
     private byte[] serializeKeyPair(JWK keyPair) {
         try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bos);
+            var bos = new ByteArrayOutputStream();
+            var out = new ObjectOutputStream(bos);
             out.writeObject(keyPair);
             return bos.toByteArray();
         } catch (IOException e) {

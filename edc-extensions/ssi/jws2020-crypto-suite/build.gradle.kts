@@ -16,7 +16,7 @@ plugins {
 }
 
 dependencies {
-    api(libs.edc.spi.jwt)
+    implementation(libs.edc.spi.jwt)
     implementation(libs.nimbus.jwt)
     implementation(libs.edc.spi.jsonld)
     implementation(libs.edc.jsonld)

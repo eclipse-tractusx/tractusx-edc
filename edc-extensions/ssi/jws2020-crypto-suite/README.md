@@ -19,17 +19,19 @@ check the `IssuerTests` and the `VerifierTests` for more comprehensive explanati
 ### Sign a VC
 
 ```java
-JwsSignature2020Suite suite=new JwsSignature2020Suite(JacksonJsonLd.createObjectMapper());
-JsonObject vc=createVcAsJsonLd();
-JWK keyPair=createKeyPairAsJwk();
-JwkMethod signKeys=new JwkMethod(id,type,controller,keyPair);
-var options=suite.createOptions()
-.created(Instant.now())
-.verificationMethod(signKeys) // embeds the proof
-.purpose(URI.create("https://w3id.org/security#assertionMethod"))
-Issuer signedVc=Vc.sign(vc,signKeys,options);
+JwsSignature2020Suite suite = new JwsSignature2020Suite(JacksonJsonLd.createObjectMapper());
+JsonObject vc = createVcAsJsonLd();
+JWK keyPair = createKeyPairAsJwk();
+JwkMethod signKeys = new JwkMethod(id,type,controller,keyPair);
 
-JsonObject compacted=IssuerCompat.compact(signedVc);
+var options = suite.createOptions()
+        .created(Instant.now())
+        .verificationMethod(signKeys) // embeds the proof
+        .purpose(URI.create("https://w3id.org/security#assertionMethod"));
+
+Issuer signedVc = Vc.sign(vc, signKeys, options);
+
+JsonObject compacted = IssuerCompat.compact(signedVc);
 ```
 
 ### Verify a VC
@@ -38,9 +40,10 @@ JsonObject compacted=IssuerCompat.compact(signedVc);
 JwsSignature2020Suite suite = new JwsSignature2020Suite(JacksonJsonLd.createObjectMapper());
 JsonObject vc = readSignedVc();
 Verifier result = Vc.verify(vc, suite);
+
 try {
     result.isValid();
-} catch(VerificationError error){
+} catch(VerificationError error) {
     //handle    
 }
 ```
