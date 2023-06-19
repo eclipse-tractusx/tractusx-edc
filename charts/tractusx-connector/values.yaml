@@ -489,8 +489,7 @@ dataplane:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
 postgresql:
-  jdbcUrl: ""
-  fullnameOverride: "postgresql"
+  jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
       enabled: false
@@ -502,7 +501,6 @@ postgresql:
     username: "user"
     password: "password"
 vault:
-  fullnameOverride: "vault"
   injector:
     enabled: false
   server:
@@ -512,7 +510,7 @@ vault:
     # Must be the same certificate that is configured in section 'daps'
     postStart:    # must be set externally!
   hashicorp:
-    url: ""
+    url: "http://{{ .Release.Name }}-vault:8200"
     token: ""
     timeout: 30
     healthCheck:
@@ -528,8 +526,7 @@ vault:
     dapsPrivateKey: daps-private-key
     dapsPublicKey: daps-public-key
 daps:
-  fullnameOverride: "daps"
-  url: ""
+  url: "http://{{ .Release.Name }}-daps:4567"
   clientId: ""
   paths:
     jwks: /jwks.json
@@ -571,3 +568,8 @@ serviceAccount:
 idsdaps:
   connectors:
     - certificate: |-
+
+# -- Configurations for Helm tests
+tests:
+  # -- Configure the hook-delete-policy for Helm tests
+  hookDeletePolicy: before-hook-creation,hook-succeeded

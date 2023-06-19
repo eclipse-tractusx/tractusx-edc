@@ -23,6 +23,8 @@ rootProject.name = "tractusx-edc"
 include(":spi:control-plane-adapter-spi")
 include(":spi:edr-cache-spi")
 include(":spi:core-spi")
+include(":spi:ssi-spi")
+
 
 // core modules
 include(":core:edr-cache-core")
@@ -42,12 +44,16 @@ include(":edc-extensions:transferprocess-sftp-provisioner")
 include(":edc-extensions:control-plane-adapter-api")
 include(":edc-extensions:control-plane-adapter-callback")
 include(":edc-extensions:edr-cache-sql")
+include("edc-extensions:ssi:ssi-identity-core")
+include("edc-extensions:ssi:ssi-miw-credential-client")
+include("edc-extensions:ssi:jws2020-crypto-suite")
 
 
 
 include(":edc-tests:e2e-tests")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:cucumber")
 

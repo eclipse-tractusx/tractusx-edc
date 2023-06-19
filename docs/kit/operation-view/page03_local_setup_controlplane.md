@@ -63,7 +63,7 @@ edc.hostname=localhost
 edc.api.auth.key=password
 
 # OAuth / DAPS related configuration
-edc.oauth.token.url=https://daps.catena-x.net
+edc.oauth.token.url=https://daps.example.net
 edc.oauth.certificate.alias=key-to-daps-certificate-in-keyvault
 edc.oauth.private.key.alias=key-to-private-key-in-keyvault
 edc.oauth.client.id=daps-oauth-client-id

@@ -495,8 +495,7 @@ dataplane:
     public: ""
 
 postgresql:
-  jdbcUrl: ""
-  fullnameOverride: "postgresql"
+  jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
   enabled: false
@@ -523,8 +522,7 @@ vault:
     dapsPublicKey: daps-public-key
 
 daps:
-  fullnameOverride: "daps"
-  url: ""
+  url: "http://{{ .Release.Name }}-daps:4567"
   clientId: ""
   paths:
     jwks: /jwks.json
@@ -551,3 +549,8 @@ serviceAccount:
 idsdaps:
   connectors:
     - certificate: |-
+
+# -- Configurations for Helm tests
+tests:
+  # -- Configure the hook-delete-policy for Helm tests
+  hookDeletePolicy: before-hook-creation,hook-succeeded

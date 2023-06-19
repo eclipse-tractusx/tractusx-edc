@@ -56,13 +56,14 @@ dataplane:
       accessKeyId: qwerty123
 
 postgresql:
-  username: user
-  password: password
-  jdbcUrl: jdbc:postgresql://postgresql:5432/edc
+  jdbcUrl: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc
+  auth:
+    username: user
+    password: password
 
 vault:
   hashicorp:
-    url: http://vault:8200
+    url: http://{{ .Release.Name }}-vault:8200
     token: root
 
   secretNames:
@@ -77,9 +78,11 @@ vault:
     secrets:
 
 daps:
-  url: "http://daps:4567"
+  url: "http://{{ .Release.Name }}-daps:4567"
   clientId: "E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"
 
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"
 
+tests:
+  hookDeletePolicy: before-hook-creation
