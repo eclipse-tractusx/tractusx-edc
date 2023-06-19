@@ -70,12 +70,11 @@ jobs:
           options: -v ${{ github.workspace }}/charts:/helm-docs
           run: helm-docs
 
-      - id: changes
-        uses: UnicornGlobal/has-changes-action@v1.0.11
-      - if: steps.changes.outputs.changed == 1
-        run: |
-          echo "Helm chart docs not up-to-date"
-          exit 1
+      - run: |
+          if [[ `git status --porcelain` ]]; then
+            echo "Helm chart docs not up-to-date"
+            exit 1
+          fi
   
   verify-formatting:
     runs-on: ubuntu-latest
