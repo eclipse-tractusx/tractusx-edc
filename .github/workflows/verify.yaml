@@ -129,7 +129,7 @@ jobs:
 
   postgres-tests:
     runs-on: ubuntu-latest
-    needs: [ verify-formatting ]
+    needs: [ verify-formatting, verify-license-headers ]
 
     services:
       postgres:
