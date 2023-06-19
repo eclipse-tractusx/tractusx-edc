@@ -20,7 +20,7 @@ rsApi = "3.1.0"
 jupiter = "5.9.3"
 assertj = "3.24.2"
 jakarta-json = "2.0.1"
-tink = "1.7.0"
+tink = "1.9.0"
 iron-vc = "0.8.1"
 
 [libraries]
