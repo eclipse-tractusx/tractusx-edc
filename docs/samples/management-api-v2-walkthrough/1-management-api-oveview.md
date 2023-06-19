@@ -24,8 +24,6 @@ The `MANAGEMENT_URL` specifies the URL of the management API and the prefix `v2`
 | Contract Agreement    | `<MANAGEMENT_URL>/v2/contractagreements`   |
 | Transfer Process      | `<MANAGEMENT_URL>/v2/transferprocesses`    |
 
-> Please note: The old Management API is now deprecated and is not tested for compliance. The `/v2` prefix is only a temporary part of the path and will be discarded once the migration to the new protocol is finished and the old API is taken out of service. Once that is done, the new management API can be reached through `MANAGEMENT_URL`.
-
 ## 2. Brief JSON-LD Introduction
 
 JSON-LD includes several important keywords that play a crucial role in defining the structure, semantics, and relationships within a JSON-LD document. Since some keys which are required in requests for the new management API aren't self-explanatory when you first see them, here are some of the most commonly used and important keywords in JSON-LD.
@@ -49,7 +47,7 @@ A namespace is defined by associating a prefix with a URI or IRI in the @context
 | dct    | Defines the prefix "dct" and associates it with the URI "https://purl.org/dc/terms/". The prefix "dct" can now be used in the JSON-LD document to represent terms from the Dublin Core Metadata Terms vocabulary. |
 | edc    | Defines the prefix "edc" and associates it with the URI "https://w3id.org/edc/v0.0.1/ns/". The prefix "edc" can now be used to represent terms from the EDC (Eclipse Dataspace Connect) vocabulary.               |
 | dcat   | Defines the prefix "dcat" and associates it with the URI "https://www.w3.org/ns/dcat/". The prefix "dcat" can now be used to represent terms from the DCAT (Data Catalog Vocabulary) vocabulary.                  |
-| odrl | Defines the prefix "odrl" and associates it with the URI "http://www.w3.org/ns/odrl/2/". The prefix "odrl" can now be used to represent terms from the ODRL (Open Digital Rights Language) vocabulary.            |
+| odrl   | Defines the prefix "odrl" and associates it with the URI "http://www.w3.org/ns/odrl/2/". The prefix "odrl" can now be used to represent terms from the ODRL (Open Digital Rights Language) vocabulary.            |
 | dspace | Defines the prefix "dspace" and associates it with the URI "https://w3id.org/dspace/v0.8/". The prefix "dspace" can now be used to represent terms from the DSpace vocabulary. |
 
 > Please note: The namespace `edc` currently is only a placeholder and does not lead to any JSON-LD context definition or vocabulary.

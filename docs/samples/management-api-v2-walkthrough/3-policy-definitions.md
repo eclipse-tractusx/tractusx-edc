@@ -19,7 +19,7 @@
             "rightExpression": {
               "value": "BPN"
             },
-            "operator": "EQ"
+            "operator": "eq"
           }
         ]
       }
@@ -50,7 +50,7 @@ Policy model is now pure [ODRL (Open Digital Rights Language)](https://www.w3.or
         "odrl:constraint": [
           {
             "odrl:leftOperand": "BusinessPartnerNumber",
-            "odrl:operator": "EQ",
+            "odrl:operator": "eq",
             "odrl:rightOperand":  "BPN"
           }]
       }
@@ -84,7 +84,7 @@ curl -X POST "${MANAGEMENT_URL}/v2/policydefinitions" \
                     "odrl:constraint": [
                       {
                         "odrl:leftOperand": "BusinessPartnerNumber",
-                        "odrl:operator": "EQ",
+                        "odrl:operator": "eq",
                         "odrl:rightOperand":  "BPN"
                       }]
                   }

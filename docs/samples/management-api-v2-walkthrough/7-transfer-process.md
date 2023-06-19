@@ -38,9 +38,7 @@
   "connectorAddress": "provider-dsp-url",
   "contractId": "contract-agreement-id",
   "dataDestination": {
-    "properties": {
-      "type": "HttpProxy"
-    }
+    "type": "HttpProxy"
   },
   "managedResources": false,
   "privateProperties": {
@@ -71,9 +69,7 @@ curl -X POST "${MANAGEMENT_URL}/v2/transferprocesses" \
               "connectorAddress": "provider-dsp-url",
               "contractId": "contract-agreement-id",
               "dataDestination": {
-                "properties": {
-                  "type": "HttpProxy"
-                }
+                "type": "HttpProxy"  
               },
               "managedResources": false,
               "privateProperties": {

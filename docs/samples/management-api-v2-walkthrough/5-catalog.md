@@ -6,7 +6,17 @@
 {
   "protocol" : "ids-protocol-http",
   "providerUrl": "http://provider-control-plane:8282/api/v1/ids",
-  "querySpec": null
+  "querySpec": {
+    "offset": 0,
+    "limit": 100,
+    "filter": "",
+    "range": {
+      "from": 0,
+      "to": 100
+    },
+    "sortField": "",
+    "criterion": ""
+  }
 }
 ```
 
@@ -21,7 +31,17 @@
   },
   "protocol" : "dataspace-protocol-http",
   "providerUrl": "http://provider-control-plane:8282/api/v1/dsp",
-  "querySpec": null
+  "querySpec": {
+    "offset": 0,
+    "limit": 100,
+    "filter": "",
+    "range": {
+      "from": 0,
+      "to": 100
+    },
+    "sortField": "",
+    "criterion": ""
+  }
 }
 ```
 
@@ -39,7 +59,17 @@ curl -X POST "${MANAGEMENT_URL}/v2/catalog/request" \
               },
               "protocol" : "dataspace-protocol-http",
               "providerUrl": "http://provider-control-plane:8282/api/v1/dsp",
-              "querySpec": null
+              "querySpec": {
+                "offset": 0,
+                "limit": 100,
+                "filter": "",
+                "range": {
+                    "from": 0,
+                    "to": 100
+                },
+                "sortField": "",
+                "criterion": ""
+              }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
