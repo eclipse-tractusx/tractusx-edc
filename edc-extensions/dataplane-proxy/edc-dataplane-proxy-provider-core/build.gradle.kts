@@ -30,6 +30,6 @@ dependencies {
     implementation(libs.jakarta.rsApi)
     implementation(libs.nimbus.jwt)
 
-    implementation(project(":edc-dataplane:edc-dataplane-proxy-provider-spi"))
+    implementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi"))
 }
 
