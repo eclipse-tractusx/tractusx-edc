@@ -233,9 +233,18 @@ jobs:
           git checkout main && git merge -X theirs releases --no-commit --no-ff
 
           # Extract release version
-          IFS=. read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH<<<"${{ env.RELEASE_VERSION }}"
-          # Compute new snapshot version
-          VERSION="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$((RELEASE_VERSION_PATCH+1))-SNAPSHOT"
+          IFS=. read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ env.RELEASE_VERSION }}"
+          INC=0
+          # Compute new snapshot version, do not increment snapshot on non-final releases, e.g. -rc1
+          if [ -z $SNAPSHOT ]; then
+            # snapshot
+            echo "${{ env.RELEASE_VERSION }} is a final release version, increase patch for next snapshot"
+            INC=1
+          else
+            echo "${{ env.RELEASE_VERSION }} is not a final release version (contains \"$SNAPSHOT\"), will not increase patch"
+          fi
+          
+          VERSION="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$((RELEASE_VERSION_PATCH+$INC))-SNAPSHOT"
           SNAPSHOT_VERSION=$VERSION
 
           # Persist the "version" in the gradle.properties
