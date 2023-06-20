@@ -22,12 +22,12 @@ import org.eclipse.edc.spi.iam.TokenParameters;
 import java.util.function.BiFunction;
 
 import static java.lang.String.format;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_SUMMARY_CREDENTIAL;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_SUMMARY_CREDENTIAL;
 
 /**
  * Includes a summary credential in the token parameters.
  */
-public class SummaryTokenPolicyFunction implements  BiFunction<Policy, PolicyContext, Boolean> {
+public class SummaryTokenPolicyFunction implements BiFunction<Policy, PolicyContext, Boolean> {
 
     @Override
     public Boolean apply(Policy policy, PolicyContext context) {

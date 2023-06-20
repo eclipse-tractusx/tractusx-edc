@@ -27,10 +27,11 @@ import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.GEQ;
 import static org.eclipse.edc.policy.model.Operator.GT;
-import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdTypeFunctions.extractObjectsOfType;
-import static org.eclipse.tractusx.edc.policy.cx.common.JsonLdValueFunctions.extractStringValue;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_USE_CASE_NS;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_USE_CASE_NS;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.extractStringValue;
+
 
 /**
  * Enforces a Framework Agreement constraint.
@@ -50,11 +51,14 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_P
  * NB: This function will be enabled in the 3.2 release.
  */
 public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFunction {
-    private static final String ACTIVE = "active";
     public static final String CONTRACT_VERSION_PROPERTY = CX_USE_CASE_NS + "/contractVersion";
-
+    private static final String ACTIVE = "active";
     private String agreementType;
     private String agreementVersion;
+
+    private FrameworkAgreementConstraintFunction(String credentialType) {
+        super(credentialType);
+    }
 
     @Override
     public boolean evaluate(Operator operator, Object rightValue, Permission permission, PolicyContext context) {
@@ -66,7 +70,7 @@ public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFu
             return false;
         }
 
-        var vp = (JsonObject) context.getParticipantAgent().getClaims().get(W3_VP_PROPERTY);
+        var vp = (JsonObject) context.getParticipantAgent().getClaims().get(VP_PROPERTY);
         if (!validatePresentation(vp, context)) {
             return false;
         }
@@ -125,15 +129,15 @@ public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFu
         }
     }
 
-    private FrameworkAgreementConstraintFunction(String credentialType) {
-        super(credentialType);
-    }
-
     /**
      * Configures a new constraint instance.
      */
     public static class Builder {
         private final FrameworkAgreementConstraintFunction constraint;
+
+        private Builder(String credentialType) {
+            constraint = new FrameworkAgreementConstraintFunction(credentialType);
+        }
 
         /**
          * Ctor.
@@ -164,10 +168,6 @@ public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFu
         public FrameworkAgreementConstraintFunction build() {
             requireNonNull(constraint.agreementType, "agreementType");
             return constraint;
-        }
-
-        private Builder(String credentialType) {
-            constraint = new FrameworkAgreementConstraintFunction(credentialType);
         }
     }
 

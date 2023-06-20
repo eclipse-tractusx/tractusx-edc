@@ -28,6 +28,8 @@ include(":spi:ssi-spi")
 
 // core modules
 include(":core:edr-cache-core")
+include(":core:json-ld-core")
+
 
 include(":edc-extensions:business-partner-validation")
 include(":edc-extensions:cx-oauth2")
@@ -47,7 +49,7 @@ include(":edc-extensions:cx-policy")
 include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
 include("edc-extensions:ssi:jws2020-crypto-suite")
-
+include(":edc-extensions:ssi:ssi-identity-extractor")
 
 
 include(":edc-tests:e2e-tests")

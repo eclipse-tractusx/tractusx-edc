@@ -44,8 +44,8 @@ import static org.eclipse.edc.api.model.IdResponseDto.EDC_ID_RESPONSE_DTO_TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.api.cp.adapter.TestFunctions.negotiationRequest;
 import static org.eclipse.tractusx.edc.api.cp.adapter.TestFunctions.openRequest;
-import static org.eclipse.tractusx.edc.api.cp.adapter.TestFunctions.requestDto;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
@@ -82,7 +82,8 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
         when(transformerRegistry.transform(any(), eq(NegotiateEdrRequest.class))).thenReturn(Result.success(openRequest));
         when(adapterTransferProcessService.initiateEdrNegotiation(openRequest)).thenReturn(ServiceResult.success(contractNegotiation));
         when(transformerRegistry.transform(any(IdResponseDto.class), eq(JsonObject.class))).thenReturn(Result.success(responseBody));
-        var request = requestDto();
+
+        var request = negotiationRequest();
 
         baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)

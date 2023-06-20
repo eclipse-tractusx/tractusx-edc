@@ -19,6 +19,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,19 +27,19 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.CX_SUMMARY_NS_V1;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyNamespaces.W3_VP_PROPERTY;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
-import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryCredential.SUMMARY_VP;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_SUMMARY_NS_V1;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.createObjectMapper;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.expand;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryCredential.SUMMARY_VP;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SummaryConstraintFunctionTest {
-    private static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
     public static final String CX_QUALITY = "QualityCredential";
+    private static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
     private Permission permission;
     private PolicyContext context;
 
@@ -48,7 +49,7 @@ public class SummaryConstraintFunctionTest {
 
         var function = new SummaryConstraintFunction(CX_QUALITY);
 
-        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(W3_VP_PROPERTY, vp), Map.of()));
+        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(VP_PROPERTY, vp), Map.of()));
 
         var result = function.evaluate(EQ, "active", permission, context);
 

@@ -27,13 +27,37 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.createObjectMapper;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.expand;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class AbstractVpConstraintFunctionTest {
+    private static final String FOO_CREDENTIAL = """
+            {
+              "@context": [
+                "https://www.w3.org/2018/credentials/v1"
+              ],
+              "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+              "type": [
+                "VerifiableCredential",
+                "FooCredential"
+              ],
+              "issuer": "did:web:test",
+              "credentialSubject": {
+                "id": "did:web:test"
+              }
+            }
+            """;
+    private static final String PRESENTATION = """
+            {
+              "@context": [
+                "https://www.w3.org/2018/credentials/v1"
+              ],
+              "type": "VerifiablePresentation"
+            }
+            """;
     private AbstractVpConstraintFunction function;
     private PolicyContext context;
 
@@ -82,30 +106,4 @@ class AbstractVpConstraintFunctionTest {
             }
         };
     }
-
-    private static final String FOO_CREDENTIAL = """
-            {
-              "@context": [
-                "https://www.w3.org/2018/credentials/v1"
-              ],
-              "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
-              "type": [
-                "VerifiableCredential",
-                "FooCredential"
-              ],
-              "issuer": "did:web:test",
-              "credentialSubject": {
-                "id": "did:web:test"
-              }
-            }
-            """;
-
-    private static final String PRESENTATION = """
-            {
-              "@context": [
-                "https://www.w3.org/2018/credentials/v1"
-              ],
-              "type": "VerifiablePresentation"
-            }
-            """;
 }

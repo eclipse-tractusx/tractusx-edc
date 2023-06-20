@@ -193,14 +193,8 @@ public class Participant {
         return getContractNegotiationField(negotiationId, "contractAgreementId");
     }
 
-    private String getContractNegotiationField(String negotiationId, String fieldName) {
-        return baseRequest()
-                .when()
-                .get("/v2/contractnegotiations/{id}", negotiationId)
-                .then()
-                .statusCode(200)
-                .extract().body().jsonPath()
-                .getString(format("'edc:%s'", fieldName));
+    public String getContractNegotiationError(String negotiationId) {
+        return getContractNegotiationField(negotiationId, "errorDetail");
     }
 
     public JsonObject getEdr(String transferProcessId) {
@@ -235,7 +229,6 @@ public class Participant {
                 .body()
                 .as(JsonArray.class);
     }
-
 
     /**
      * Returns this participant's BusinessPartnerNumber (=BPN). This is constructed of the runtime name plus "-BPN"
@@ -345,6 +338,25 @@ public class Participant {
 
     }
 
+    public JsonObject getDatasetForAsset(Participant provider, String assetId) {
+        var datasets = getCatalogDatasets(provider);
+        return datasets.stream()
+                .map(JsonValue::asJsonObject)
+                .filter(it -> assetId.equals(getDatasetAssetId(it)))
+                .findFirst()
+                .orElseThrow(() -> new EdcException(format("No dataset for asset %s in the catalog", assetId)));
+    }
+
+    private String getContractNegotiationField(String negotiationId, String fieldName) {
+        return baseRequest()
+                .when()
+                .get("/v2/contractnegotiations/{id}", negotiationId)
+                .then()
+                .statusCode(200)
+                .extract().body().jsonPath()
+                .getString(format("'edc:%s'", fieldName));
+    }
+
     private String getProxyData(Map<String, String> body) {
         return proxyRequest(body)
                 .then()
@@ -358,15 +370,6 @@ public class Participant {
                 .contentType("application/json")
                 .body(body)
                 .post(PROXY_SUBPATH);
-    }
-
-    public JsonObject getDatasetForAsset(Participant provider, String assetId) {
-        var datasets = getCatalogDatasets(provider);
-        return datasets.stream()
-                .map(JsonValue::asJsonObject)
-                .filter(it -> assetId.equals(getDatasetAssetId(it)))
-                .findFirst()
-                .orElseThrow(() -> new EdcException(format("No dataset for asset %s in the catalog", assetId)));
     }
 
     private RequestSpecification baseRequest() {
