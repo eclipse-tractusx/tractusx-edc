@@ -50,12 +50,6 @@ home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx
 sources:
   - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
 dependencies:
-  # IDS Dynamic Attribute Provisioning Service (IAM)
-  - name: daps
-    version: 0.0.1
-    repository: "file://./subcharts/omejdn"
-    alias: daps
-    condition: install.daps
   # PostgreSQL
   - name: postgresql
     alias: postgresql

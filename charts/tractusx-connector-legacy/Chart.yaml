@@ -22,12 +22,17 @@
 
 ---
 apiVersion: v2
-name: tractusx-connector
+name: tractusx-connector-legacy
+deprecated: true
 description: |
   A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
   Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
 
   This chart is intended for use with an _existing_ PostgreSQL database and an _existing_ HashiCorp Vault.
+
+  Deprecation notice: this chart uses DAPS, which was replaced with an SSI solution in v0.5.0 of Tractus-X EDC and is thus deprecated.
+  It will not be maintained, supported or tested anymore and it will be removed in future versions.
+
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -46,10 +51,16 @@ version: 0.4.1
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "0.4.1"
-home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-legacy
 sources:
-  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-legacy
 dependencies:
+  # IDS Dynamic Attribute Provisioning Service (IAM)
+  - name: daps
+    version: 0.0.1
+    repository: "file://./subcharts/omejdn"
+    alias: daps
+    condition: install.daps
   # HashiCorp Vault
   - name: vault
     alias: vault

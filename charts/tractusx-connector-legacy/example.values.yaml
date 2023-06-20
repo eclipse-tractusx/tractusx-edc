@@ -17,15 +17,12 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 
-
-install:
-  daps: false
-fullnameOverride: tx-plato
+fullnameOverride: tx-prod
 ################################
 # EDC ControlPlane + DataPlane #
 ################################
 participant:
-  id: "BPNPLATO"
+  id: "test-participant"
 controlplane:
   service:
     type: NodePort
@@ -35,20 +32,10 @@ controlplane:
   image:
     pullPolicy: Never
     tag: "latest"
-    repository: "edc-controlplane-postgresql-hashicorp-vault"
+    repository: "edc-controlplane-postgresql-hashicorp-vault-legacy"
   securityContext:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
-    # SSI configuration
-    ssi:
-      miw:
-        url: ""
-        authorityId: ""
-      oauth:
-        tokenurl: ""
-        client:
-          id: ""
-          secretAlias: "client-secret"
 dataplane:
   image:
     pullPolicy: Never
@@ -62,18 +49,49 @@ dataplane:
     secretAccessKey: qwerty123
     accessKeyId: qwerty123
 postgresql:
-  fullnameOverride: "plato-postgresql"
-  username: user
-  password: password
-  jdbcUrl: jdbc:postgresql://plato-postgresql:5432/edc
+  jdbcUrl: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc
+  auth:
+    username: user
+    password: password
 vault:
-  fullnameOverride: "plato-vault"
   hashicorp:
-    url: http://plato-vault:8200
+    url: http://{{ .Release.Name }}-vault:8200
     token: root
   secretNames:
+    transferProxyTokenSignerPublicKey: daps-crt
+    transferProxyTokenSignerPrivateKey: daps-key
     transferProxyTokenEncryptionAesKey: aes-keys
-    secrets:
+    dapsPrivateKey: daps-key
+    dapsPublicKey: daps-crt
   server:
+    postStart:
+      - sh
+      - -c
+      - |-
+        {
+        sleep 5
+
+        cat << EOF | /bin/vault kv put secret/daps-crt content=-
+        <<< ENTER CERTIFICATE CONTENT HERE!!! >>>
+        EOF
+
+
+        cat << EOF | /bin/vault kv put secret/daps-key content=-
+        <<< ENTER PRIVATE KEY CONTENT HERE !!! >>>
+        EOF
+
+
+        /bin/vault kv put secret/aes-keys content=YWVzX2VuY2tleV90ZXN0Cg==
+
+        }
+daps:
+  url: "http://{{ .Release.Name }}-daps:4567"
+  clientId: "E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"
+tests:
+  hookDeletePolicy: before-hook-creation
+idsdaps:
+  connectors:
+    - certificate: |-
+        <<< ENTER CERTIFICATE CONTENT HERE!!! >>>
