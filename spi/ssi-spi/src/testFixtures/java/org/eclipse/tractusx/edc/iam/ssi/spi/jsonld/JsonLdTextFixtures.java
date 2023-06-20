@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.fixtures;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -21,18 +21,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsonp.JSONPModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces;
 
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static jakarta.json.Json.createBuilderFactory;
-import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.W3C_VC_NS;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.W3cVcContext.W3C_VC_CONTEXT;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.W3cVcContext.W3C_VC_CONTEXT;
 
 /**
  * Test helpers for processing Json-Ld.
@@ -63,7 +61,7 @@ public class JsonLdTextFixtures {
     public static JsonObject compact(JsonObject json) {
         try {
             var document = JsonDocument.of(json);
-            var jsonFactory = createBuilderFactory(Map.of());
+            var jsonFactory = Json.createBuilderFactory(Map.of());
             var contextDocument = JsonDocument.of(jsonFactory.createObjectBuilder().build());
             return com.apicatalog.jsonld.JsonLd.compact(document, contextDocument).get();
         } catch (JsonLdError e) {
@@ -84,7 +82,7 @@ public class JsonLdTextFixtures {
             if (expanded.size() > 0) {
                 return expanded.getJsonObject(0);
             }
-            return createObjectBuilder().build();
+            return Json.createObjectBuilder().build();
         } catch (JsonLdError e) {
             throw new AssertionError(e);
         }

@@ -15,14 +15,16 @@
 package org.eclipse.tractusx.edc.iam.ssi.identity.extractor;
 
 import jakarta.json.JsonObject;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.agent.ParticipantAgentServiceExtension;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdFieldExtractor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CREDENTIAL_SUBJECT;
@@ -32,36 +34,34 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.extractStringValue;
 
-public class SummaryCredentialIdentityExtractor implements ParticipantAgentServiceExtension {
+public class CredentialIdentityExtractor implements ParticipantAgentServiceExtension {
 
-
+    public static final String IDENTITY_EXTRACTOR_PREFIX = "Identity extractor:";
     private final JsonLdFieldExtractor holderIdentifierExtractor = JsonLdFieldExtractor.Builder.newInstance()
             .field(HOLDER_IDENTIFIER)
             .fieldAlias("holderIdentifier")
+            .errorPrefix(IDENTITY_EXTRACTOR_PREFIX)
             .build();
     private final JsonLdFieldExtractor credentialSubjectExtractor = JsonLdFieldExtractor.Builder.newInstance()
             .field(CREDENTIAL_SUBJECT)
             .fieldAlias("credentialSubject")
+            .errorPrefix(IDENTITY_EXTRACTOR_PREFIX)
             .build();
 
     @Override
     public @NotNull Map<String, String> attributesFor(ClaimToken token) {
         var vp = (JsonObject) token.getClaim(VP_PROPERTY);
 
-        if (vp != null) {
-            var attributes = new HashMap<String, String>();
-            extractObjectsOfType(SUMMARY_CREDENTIAL_TYPE, vp)
-                    .map(this::extractHolderIdentifier)
-                    .filter(Result::succeeded)
-                    .map(Result::getContent)
-                    .findFirst()
-                    .ifPresent((bpn) -> {
-                        attributes.put(PARTICIPANT_IDENTITY, bpn);
-                    });
-            return attributes;
-        } else {
-            return Map.of();
-        }
+        var extractionResult = Optional.ofNullable(vp)
+                .map(v -> extractObjectsOfType(SUMMARY_CREDENTIAL_TYPE, v))
+                .orElse(Stream.empty())
+                .map(this::extractHolderIdentifier)
+                .findFirst()
+                .orElseThrow(() -> new EdcException("Failed to extract identity from the membership credential"));
+
+        var bpn = extractionResult.orElseThrow((failure) -> new EdcException(failure.getFailureDetail()));
+        return Map.of(PARTICIPANT_IDENTITY, bpn);
+
     }
 
     private Result<String> extractHolderIdentifier(JsonObject credential) {

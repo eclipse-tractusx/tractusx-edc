@@ -35,6 +35,6 @@ public class SsiIdentityExtractorExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        participantAgentService.register(new SummaryCredentialIdentityExtractor());
+        participantAgentService.register(new CredentialIdentityExtractor());
     }
 }

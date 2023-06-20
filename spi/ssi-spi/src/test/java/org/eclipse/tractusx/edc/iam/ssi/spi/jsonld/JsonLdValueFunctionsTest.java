@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 import org.junit.jupiter.api.Test;
 

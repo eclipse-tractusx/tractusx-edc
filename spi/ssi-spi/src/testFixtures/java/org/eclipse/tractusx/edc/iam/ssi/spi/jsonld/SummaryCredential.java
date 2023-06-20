@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.summary;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 /**
  * Sample summary credential.

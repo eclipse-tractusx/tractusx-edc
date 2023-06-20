@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.json.JsonObject;
@@ -25,10 +25,10 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.W3C_VC_PREFIX;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.createObjectMapper;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.expand;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.partitionByType;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.createObjectMapper;
-import static org.eclipse.tractusx.edc.policy.cx.fixtures.JsonLdTextFixtures.expand;
 
 class JsonLdTypeFunctionsTest {
     private static final String TYPE = "@type";

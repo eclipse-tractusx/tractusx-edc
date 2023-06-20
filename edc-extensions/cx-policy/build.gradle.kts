@@ -22,4 +22,5 @@ dependencies {
     implementation(libs.jakartaJson)
     testImplementation(libs.jacksonJsonP)
     testImplementation(libs.titaniumJsonLd)
+    testImplementation(testFixtures(project(":spi:ssi-spi")))
 }

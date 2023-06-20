@@ -19,8 +19,8 @@ plugins {
 
 dependencies {
     implementation(project(":spi:ssi-spi"))
-
     implementation(libs.edc.spi.core)
     implementation(libs.jakartaJson)
     testImplementation(testFixtures(libs.edc.junit))
+    testImplementation(testFixtures(project(":spi:ssi-spi")))
 }
