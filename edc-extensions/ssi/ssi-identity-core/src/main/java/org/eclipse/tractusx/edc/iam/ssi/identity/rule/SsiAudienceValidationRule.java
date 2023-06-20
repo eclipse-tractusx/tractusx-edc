@@ -38,7 +38,7 @@ public class SsiAudienceValidationRule implements TokenValidationRule {
         if (audiences.isEmpty()) {
             return Result.failure("Required audience (aud) claim is missing in token");
         } else if (!audiences.contains(endpointAudience)) {
-            return Result.failure("Token audience (aud) claim did not contain connector audience: " + endpointAudience);
+            return Result.failure("Token audience (aud) claim did not contain audience: " + endpointAudience);
         }
         return Result.success();
     }

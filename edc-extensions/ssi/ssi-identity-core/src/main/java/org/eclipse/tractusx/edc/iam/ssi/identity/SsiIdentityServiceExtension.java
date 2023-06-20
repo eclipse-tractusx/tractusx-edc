@@ -31,7 +31,7 @@ public class SsiIdentityServiceExtension implements ServiceExtension {
 
     public static final String EXTENSION_NAME = "SSI Identity Service";
 
-    @Setting(value = "SSI Endpoint audience")
+    @Setting(value = "SSI Endpoint audience of this connector")
     public static final String ENDPOINT_AUDIENCE = "tx.ssi.endpoint.audience";
 
     @Inject

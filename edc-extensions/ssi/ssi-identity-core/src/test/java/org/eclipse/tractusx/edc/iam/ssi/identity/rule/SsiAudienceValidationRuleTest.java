@@ -50,7 +50,7 @@ public class SsiAudienceValidationRuleTest {
 
         assertThat(result.succeeded()).isFalse();
         assertThat(result.getFailureMessages()).hasSize(1)
-                .contains("Token audience (aud) claim did not contain connector audience: test-audience");
+                .contains("Token audience (aud) claim did not contain audience: test-audience");
     }
 
     @Test

@@ -23,6 +23,9 @@ import static jakarta.json.JsonValue.ValueType.ARRAY;
 import static jakarta.json.JsonValue.ValueType.OBJECT;
 import static java.lang.String.format;
 
+/**
+ * Extractor for field from a {@link JsonObject} with a customizable error reporting
+ */
 public class JsonLdFieldExtractor {
 
     private String fieldAlias;
@@ -53,7 +56,7 @@ public class JsonLdFieldExtractor {
 
     public static class Builder {
 
-        JsonLdFieldExtractor extractor;
+        private final JsonLdFieldExtractor extractor;
 
         private Builder(JsonLdFieldExtractor extractor) {
             this.extractor = extractor;
@@ -77,7 +80,7 @@ public class JsonLdFieldExtractor {
             this.extractor.errorPrefix = errorPrefix;
             return this;
         }
-        
+
         public JsonLdFieldExtractor build() {
             Objects.requireNonNull(extractor.field);
             Objects.requireNonNull(extractor.fieldAlias);
