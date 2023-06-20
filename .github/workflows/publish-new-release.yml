@@ -233,7 +233,7 @@ jobs:
           git checkout main && git merge -X theirs releases --no-commit --no-ff
 
           # Extract release version
-          IFS=. read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ env.RELEASE_VERSION }}"
+          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ env.RELEASE_VERSION }}"
           INC=0
           # Compute new snapshot version, do not increment snapshot on non-final releases, e.g. -rc1
           if [ -z $SNAPSHOT ]; then
