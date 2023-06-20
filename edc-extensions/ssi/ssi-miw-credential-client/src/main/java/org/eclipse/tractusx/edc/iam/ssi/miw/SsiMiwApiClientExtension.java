@@ -38,7 +38,7 @@ public class SsiMiwApiClientExtension implements ServiceExtension {
 
     @Setting(value = "MIW Authority ID")
     public static final String MIW_AUTHORITY_ID = "tx.ssi.miw.authority.id";
-
+    
     @Inject
     private MiwOauth2Client oauth2Client;
 

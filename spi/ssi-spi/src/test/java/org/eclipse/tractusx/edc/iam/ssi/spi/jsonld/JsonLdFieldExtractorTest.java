@@ -50,8 +50,7 @@ public class JsonLdFieldExtractorTest {
         var subject = extractor.extract(summaryCredential);
         assertThat(subject).matches(Result::succeeded).extracting(Result::getContent)
                 .satisfies(jsonObject -> assertThat(jsonObject.containsKey(HOLDER_IDENTIFIER)).isTrue());
-
-
+        
     }
 
     @Test
@@ -63,7 +62,7 @@ public class JsonLdFieldExtractorTest {
                 .fieldAlias("holderIdentifier")
                 .errorPrefix("prefix")
                 .build();
-        
+
         var summaryCredential = extractObjectsOfType(SUMMARY_CREDENTIAL_TYPE, vp).findFirst().orElseThrow();
 
         var subject = extractor.extract(summaryCredential);

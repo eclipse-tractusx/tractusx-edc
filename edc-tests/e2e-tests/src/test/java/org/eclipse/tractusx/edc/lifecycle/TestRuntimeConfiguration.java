@@ -43,13 +43,13 @@ public class TestRuntimeConfiguration {
     static final String PLATO_CONNECTOR_PATH = "/api";
     static final String PLATO_MANAGEMENT_PATH = "/api/v1/management";
     static final int PLATO_DSP_API_PORT = getFreePort();
-    static final String PLATO_DSP_CALLBACK = "http://localhost:" + PLATO_DSP_API_PORT + DSP_PATH;
+    public static final String PLATO_DSP_CALLBACK = "http://localhost:" + PLATO_DSP_API_PORT + DSP_PATH;
     static final int SOKRATES_CONNECTOR_PORT = getFreePort();
     static final int SOKRATES_MANAGEMENT_PORT = getFreePort();
     static final String SOKRATES_CONNECTOR_PATH = "/api";
     static final String SOKRATES_MANAGEMENT_PATH = "/api/v1/management";
     static final int SOKRATES_DSP_API_PORT = getFreePort();
-    static final String SOKRATES_DSP_CALLBACK = "http://localhost:" + SOKRATES_DSP_API_PORT + DSP_PATH;
+    public static final String SOKRATES_DSP_CALLBACK = "http://localhost:" + SOKRATES_DSP_API_PORT + DSP_PATH;
     static final String SOKRATES_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
@@ -120,6 +120,7 @@ public class TestRuntimeConfiguration {
                 put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
                 put("tx.ssi.miw.authority.id", "authorityId");
                 put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
+                put("tx.ssi.endpoint.audience", SOKRATES_DSP_CALLBACK);
             }
         };
         var baseConfiguration = sokratesConfiguration();
@@ -200,6 +201,7 @@ public class TestRuntimeConfiguration {
                 put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
                 put("tx.ssi.miw.authority.id", "authorityId");
                 put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
+                put("tx.ssi.endpoint.audience", PLATO_DSP_CALLBACK);
             }
         };
         var baseConfiguration = platoConfiguration();

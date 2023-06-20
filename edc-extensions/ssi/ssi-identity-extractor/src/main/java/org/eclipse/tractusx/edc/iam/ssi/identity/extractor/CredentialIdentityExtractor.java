@@ -36,7 +36,8 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.e
 
 public class CredentialIdentityExtractor implements ParticipantAgentServiceExtension {
 
-    public static final String IDENTITY_EXTRACTOR_PREFIX = "Identity extractor:";
+    private static final String IDENTITY_EXTRACTOR_PREFIX = "Identity extractor:";
+
     private final JsonLdFieldExtractor holderIdentifierExtractor = JsonLdFieldExtractor.Builder.newInstance()
             .field(HOLDER_IDENTIFIER)
             .fieldAlias("holderIdentifier")

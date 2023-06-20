@@ -37,10 +37,10 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryCredential.SUMM
 
 public class CredentialIdentityExtractorTest {
 
-    private static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
+    static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
 
     CredentialIdentityExtractor extractor = new CredentialIdentityExtractor();
-    
+
     @Test
     void attributeFor() throws JsonProcessingException {
         var vp = expand(createObjectMapper().readValue(SUMMARY_VP, JsonObject.class), CONTEXT_CACHE);
