@@ -25,21 +25,13 @@ if [ "$#" -lt 1 ]; then
 fi
 
 VALUES_FILE=$1
-KEY_FILE=daps.key
-CERT_FILE=daps.cert
 
-# generate a new short-lived certificate and export the private key
-openssl req -newkey rsa:2048 -new -nodes -x509 -days 1 -keyout $KEY_FILE -out $CERT_FILE -subj "/CN=test"
+CLIENT_SECRET=$(openssl rand -base64 16)
+AES_KEY=$(echo aes_enckey_test | base64)
+echo "$AES_KEY" > aes.key
+echo "$CLIENT_SECRET" > client.secret
 
-DAPSCRT=$(cat $CERT_FILE)
-DAPSKEY=$(cat $KEY_FILE)
-AES_KEY=$( echo aes_enckey_test | base64)
-echo $AES_KEY > aes.key
-
-# replace the cert for DAPS
-yq -i ".idsdaps.connectors[0].certificate=\"$DAPSCRT\"" "$VALUES_FILE"
-
-# add a "postStart" command to the vault config, that creates a daps-key, daps-cert and an aes-keys secret
-yq -i ".vault.server.postStart |= [\"sh\",\"-c\",\"{\nsleep 5\n\ncat << EOF | /bin/vault kv put secret/daps-crt content=-\n$DAPSCRT\nEOF\n\n
-cat << EOF | /bin/vault kv put secret/daps-key content=-\n$DAPSKEY\nEOF\n\n
-/bin/vault kv put secret/aes-keys content=$AES_KEY\n\n}\"]" "$VALUES_FILE"
+# add a "postStart" command to the vault config, that creates a oauth client secret and an aes-keys secret
+yq -i ".vault.server.postStart |= [\"sh\",\"-c\",\"{\nsleep 5\n
+/bin/vault kv put secret/client-secret content=$CLIENT_SECRET\n
+/bin/vault kv put secret/aes-keys content=$AES_KEY\n}\"]" "$VALUES_FILE"

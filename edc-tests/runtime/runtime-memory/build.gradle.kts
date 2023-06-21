@@ -24,7 +24,18 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude("org.eclipse.edc", "oauth2-core")
         exclude("org.eclipse.edc", "oauth2-daps")
+
+//        runtimeOnly(project(":core:json-ld-core"))
+//        runtimeOnly(project(":edc-extensions:ssi:ssi-identity-core"))
+//        runtimeOnly(project(":edc-extensions:ssi:ssi-miw-credential-client"))
+//        runtimeOnly(project(":edc-extensions:ssi:ssi-identity-extractor"))
+//        runtimeOnly(project(":edc-extensions:cx-policy"))
         exclude(module = "data-encryption")
+        exclude(module = "json-ld-core")
+        exclude(module = "ssi-identity-core")
+        exclude(module = "ssi-miw-credential-client")
+        exclude(module = "ssi-identity-extractor")
+        exclude(module = "cx-policy")
     }
 
     implementation(project(":edc-tests:runtime:extensions"))
@@ -34,7 +45,7 @@ dependencies {
         exclude("org.eclipse.edc", "api-observability")
     }
 
-    
+
     implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)
