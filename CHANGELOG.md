@@ -340,7 +340,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc1...HEAD
+
+[0.5.0-rc1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.4.1...0.5.0-rc1
 
 [0.4.1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.3.3...0.4.1
 
