@@ -29,6 +29,7 @@ metadata:
     {{- include "txdc.runtime.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": {{ .Values.tests.hookDeletePolicy }}
 spec:
   containers:
     - name: wget

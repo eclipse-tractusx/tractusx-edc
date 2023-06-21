@@ -113,7 +113,7 @@ allprojects {
         configDirectory.set(rootProject.file("resources"))
 
         //checkstyle violations are reported at the WARN level
-        this.isShowViolations = System.getProperty("checkstyle.verbose", "false").toBoolean()
+        this.isShowViolations = System.getProperty("checkstyle.verbose", "true").toBoolean()
     }
 
 

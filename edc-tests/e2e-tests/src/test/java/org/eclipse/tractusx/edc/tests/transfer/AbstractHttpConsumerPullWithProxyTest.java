@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates;
@@ -71,8 +72,8 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
 
         PLATO.createAsset(assetId, Json.createObjectBuilder().build(), dataAddress);
 
-        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
-        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.createPolicy(createTestPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.createPolicy(createTestPolicy("policy-2", SOKRATES.getBpn()));
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
         var negotiationId = SOKRATES.negotiateContract(PLATO, assetId);
 
@@ -127,5 +128,9 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
     @AfterEach
     void teardown() throws IOException {
         server.shutdown();
+    }
+
+    protected JsonObject createTestPolicy(String policyId, String bpn) {
+        return businessPartnerNumberPolicy(policyId, bpn);
     }
 }

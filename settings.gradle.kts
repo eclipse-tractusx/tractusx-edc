@@ -23,9 +23,12 @@ rootProject.name = "tractusx-edc"
 include(":spi:control-plane-adapter-spi")
 include(":spi:edr-cache-spi")
 include(":spi:core-spi")
+include(":spi:ssi-spi")
+
 
 // core modules
 include(":core:edr-cache-core")
+include(":core:json-ld-core")
 
 
 include(":edc-extensions:business-partner-validation")
@@ -42,12 +45,17 @@ include(":edc-extensions:transferprocess-sftp-provisioner")
 include(":edc-extensions:control-plane-adapter-api")
 include(":edc-extensions:control-plane-adapter-callback")
 include(":edc-extensions:edr-cache-sql")
-
+include(":edc-extensions:cx-policy")
+include("edc-extensions:ssi:ssi-identity-core")
+include("edc-extensions:ssi:ssi-miw-credential-client")
+include("edc-extensions:ssi:jws2020-crypto-suite")
+include(":edc-extensions:ssi:ssi-identity-extractor")
 
 
 include(":edc-tests:e2e-tests")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:cucumber")
 
@@ -58,16 +66,17 @@ include(":edc-controlplane:edc-runtime-memory")
 include(":edc-controlplane:edc-controlplane-memory-hashicorp-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-azure-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
+include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault-legacy")
 
 // modules for dataplane artifacts
 include(":edc-dataplane")
 include(":edc-dataplane:edc-dataplane-azure-vault")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
-include(":edc-dataplane:edc-dataplane-proxy-consumer-api")
-include(":edc-dataplane:edc-dataplane-proxy-provider-spi")
-include(":edc-dataplane:edc-dataplane-proxy-provider-core")
-include(":edc-dataplane:edc-dataplane-proxy-provider-api")
+include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api")
+include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi")
+include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core")
+include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api")
 include(":edc-tests:edc-dataplane-proxy-e2e")
 
 

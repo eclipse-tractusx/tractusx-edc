@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.1] - 2023-05-31
+## [0.5.0-rc1] - 2023-06-21
+
+## [0.5.0-rc1] - 2023-06-21
+
+## Fixed
+
+Various fixes and improvements to our helm charts
+
+### Added
+
+Support for SSI (centralized MiW) (#459, #510)
+Support for the JsonWebSignature2020 Crypto Suite (#483)
+
+## Changed
+
+All Helm charts now use SSI instead of DAPS (#511)
+
+## Removed
+
+Support for DAPS as identity provider (#511)
 
 ## [0.4.1] - 2023-05-31
 
@@ -323,7 +342,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc1...HEAD
+
+[0.5.0-rc1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.4.1...0.5.0-rc1
 
 [0.4.1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.3.3...0.4.1
 

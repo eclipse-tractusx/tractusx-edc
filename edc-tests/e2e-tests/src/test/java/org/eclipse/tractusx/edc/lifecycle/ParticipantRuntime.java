@@ -34,7 +34,9 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
-        this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
+        if (!properties.containsKey("tx.ssi.miw.url")) {
+            this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
+        }
     }
 
     @Override

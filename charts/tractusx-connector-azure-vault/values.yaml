@@ -27,14 +27,12 @@
 # Declare variables to be passed into your templates.
 
 install:
-  daps: true
   postgresql: true
 fullnameOverride: ""
 nameOverride: ""
 
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
 imagePullSecrets: []
-
 customLabels: {}
 
 participant:
@@ -131,6 +129,18 @@ controlplane:
   businessPartnerValidation:
     log:
       agreementValidation: true
+  # SSI configuration
+  ssi:
+    miw:
+      url: ""
+      authorityId: ""
+    oauth:
+      tokenurl: ""
+      client:
+        id: ""
+        secretAlias: "client-secret"
+    endpoint:
+      audience: "http://this.audience"
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
@@ -495,8 +505,7 @@ dataplane:
     public: ""
 
 postgresql:
-  jdbcUrl: ""
-  fullnameOverride: "postgresql"
+  jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
   enabled: false
@@ -516,26 +525,10 @@ vault:
     certificate:
 
   secretNames:
-    transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
-    transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
+    transferProxyTokenSignerPrivateKey:
+    transferProxyTokenSignerPublicKey:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
-    dapsPrivateKey: daps-private-key
-    dapsPublicKey: daps-public-key
 
-daps:
-  fullnameOverride: "daps"
-  url: ""
-  clientId: ""
-  paths:
-    jwks: /jwks.json
-    token: /token
-  connectors:
-    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
-      name: sokrates
-      attributes:
-        referringConnector: http://sokrates-controlplane/BPNSOKRATES
-      # Must be the same certificate that is stores in section 'sokrates-vault'
-      certificate: ""    # must be set externally!
 backendService:
   httpProxyTokenReceiverUrl: ""
 serviceAccount:
@@ -548,6 +541,7 @@ serviceAccount:
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
   imagePullSecrets: []
-idsdaps:
-  connectors:
-    - certificate: |-
+# -- Configurations for Helm tests
+tests:
+  # -- Configure the hook-delete-policy for Helm tests
+  hookDeletePolicy: before-hook-creation,hook-succeeded

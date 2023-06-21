@@ -22,8 +22,12 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude("org.eclipse.edc", "oauth2-core")
-        exclude("org.eclipse.edc", "oauth2-daps")
+        exclude(module = "data-encryption")
+        exclude(module = "json-ld-core")
+        exclude(module = "ssi-identity-core")
+        exclude(module = "ssi-miw-credential-client")
+        exclude(module = "ssi-identity-extractor")
+        exclude(module = "cx-policy")
         exclude(module = "data-encryption")
         exclude(module = "hashicorp-vault")
     }

@@ -23,8 +23,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-install:
-  daps: true
 fullnameOverride: ""
 nameOverride: ""
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
@@ -130,6 +128,19 @@ runtime:
   businessPartnerValidation:
     log:
       agreementValidation: true
+  # SSI configuration
+  ssi:
+    miw:
+      url: ""
+      authorityId: ""
+    oauth:
+      tokenurl: ""
+      client:
+        id: ""
+        secretAlias: "client-secret"
+    endpoint:
+      audience: "http://this.audience"
+
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
@@ -290,16 +301,11 @@ vault:
   # secrets can be seeded by supplying them in a comma separated list key1:secret2,key2:secret2
   secrets: ""
   secretNames:
-    transferProxyTokenSignerPrivateKey: transfer-proxy-token-signer-private-key
-    transferProxyTokenSignerPublicKey: transfer-proxy-token-signer-public-key
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
-    dapsPrivateKey: daps-private-key
-    dapsPublicKey: daps-public-key
   server:
     postStart: |-
 daps:
-  fullnameOverride: "daps"
-  url: ""
+  url: "http://{{ .Release.Name }}-daps:4567"
   clientId: ""
   paths:
     jwks: /jwks.json
@@ -323,6 +329,7 @@ serviceAccount:
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
   imagePullSecrets: []
-idsdaps:
-  connectors:
-    - certificate: |-
+# -- Configurations for Helm tests
+tests:
+  # -- Configure the hook-delete-policy for Helm tests
+  hookDeletePolicy: before-hook-creation,hook-succeeded

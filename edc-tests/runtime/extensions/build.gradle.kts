@@ -18,8 +18,9 @@ plugins {
 
 
 dependencies {
-    
+
     implementation(libs.edc.core.controlplane)
+    implementation(libs.edc.util)
     // for the controller
     implementation(libs.jakarta.rsApi)
 }

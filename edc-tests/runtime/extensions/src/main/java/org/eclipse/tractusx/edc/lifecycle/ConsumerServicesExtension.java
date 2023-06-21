@@ -20,6 +20,8 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 
 public class ConsumerServicesExtension implements ServiceExtension {
+
+
     @Inject
     private WebService webService;
 
@@ -27,4 +29,5 @@ public class ConsumerServicesExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         webService.registerResource("default", new ConsumerEdrHandlerController(context.getMonitor()));
     }
+
 }

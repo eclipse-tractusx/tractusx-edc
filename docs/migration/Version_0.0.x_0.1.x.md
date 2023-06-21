@@ -298,7 +298,7 @@ must be renamed to `edc.dataplane.token.validation.endpoint`.
 ### 3.2 DataPlane Selector
 
 With this version a new feature was introduced which allows to have separate DataPlane instances for different
-transfer-flows (HttpProxy, S3, etc.). The Catena-X EDC team has additionally a new extension created which allows a
-simpler registration of additional dataplanes. Therefor some changes needs to be applied. Further documentation can
+transfer-flows (HttpProxy, S3, etc.). The Tractus-X EDC also has a new extension which allows for a
+simpler registration of additional dataplanes. Further documentation can
 be found in the extension folder:
 [dataplane-selector-configuration](../../edc-extensions/dataplane-selector-configuration/README.md)

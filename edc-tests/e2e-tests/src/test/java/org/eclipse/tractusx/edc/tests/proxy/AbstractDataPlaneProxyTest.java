@@ -47,10 +47,8 @@ public abstract class AbstractDataPlaneProxyTest {
 
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
-
-    MockWebServer server = new MockWebServer();
-
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private MockWebServer server;
 
     @Test
     @DisplayName("Verify E2E flow with Data Plane proxies and EDR")
@@ -175,6 +173,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
     @BeforeEach
     void setup() throws IOException {
+        server = new MockWebServer();
         server.start(PLATO_PROXIED_AAS_BACKEND_PORT);
     }
 
@@ -183,7 +182,7 @@ public abstract class AbstractDataPlaneProxyTest {
         server.shutdown();
     }
 
-    EventEnvelope<TransferProcessCompleted> waitForTransferCompletion() {
+    private EventEnvelope<TransferProcessCompleted> waitForTransferCompletion() {
         try {
             var request = server.takeRequest(20, TimeUnit.SECONDS);
             if (request != null) {

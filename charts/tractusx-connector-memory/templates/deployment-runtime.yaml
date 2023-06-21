@@ -115,21 +115,22 @@ spec:
             - name: EDC_PARTICIPANT_ID
               value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
 
-            ########################
-            ## DAPS CONFIGURATION ##
-            ########################
+            ##########################
+            # SSI / MIW CONFIGURATION
+            ##########################
+            - name: "TX_SSI_MIW_URL"
+              value: {{ .Values.runtime.ssi.miw.url }}
+            - name: "TX_SSI_MIW_AUTHORITY_ID"
+              value: {{ .Values.runtime.ssi.miw.authorityId }}
+            - name: "TX_SSI_OAUTH_TOKEN_URL"
+              value: {{ .Values.runtime.ssi.oauth.tokenurl }}
+            - name: "TX_SSI_OAUTH_CLIENT_ID"
+              value: {{ .Values.runtime.ssi.oauth.client.id }}
+            - name: "TX_SSI_OAUTH_CLIENT_SECRET_ALIAS"
+              value: {{ .Values.runtime.ssi.oauth.client.secretAlias }}
+            - name: "TX_SSI_ENDPOINT_AUDIENCE"
+              value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" .) .Values.runtime.endpoints.protocol.path | quote }}
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/iam/oauth2/oauth2-core
-            - name: EDC_OAUTH_CLIENT_ID
-              value: {{ .Values.daps.clientId | required ".Values.daps.clientId is required" | quote }}
-            - name: EDC_OAUTH_PROVIDER_JWKS_URL
-              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.jwks }}
-            - name: EDC_OAUTH_TOKEN_URL
-              value: {{ printf "%s%s" .Values.daps.url .Values.daps.paths.token }}
-            - name: EDC_OAUTH_PRIVATE_KEY_ALIAS
-              value: {{ .Values.vault.secretNames.dapsPrivateKey | required ".Values.vault.secretNames.dapsPrivateKey is required" | quote }}
-            - name: EDC_OAUTH_PUBLIC_KEY_ALIAS
-              value: {{ .Values.vault.secretNames.dapsPublicKey | required ".Values.vault.secretNames.dapsPublicKey is required" | quote }}
 
             #######
             # API #
@@ -209,10 +210,14 @@ spec:
             # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/data-plane-transfer
             - name: "EDC_TRANSFER_PROXY_ENDPOINT"
               value: {{ include "txdc.dataplane.url.public" . }}
+            {{- if .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
             - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey | quote }}
+            {{- end }}
+            {{- if .Values.vault.secretNames.transferProxyTokenSignerPublicKey }}
             - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
+            {{- end }}
 
             # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/http-receiver
             - name: "EDC_RECEIVER_HTTP_ENDPOINT"

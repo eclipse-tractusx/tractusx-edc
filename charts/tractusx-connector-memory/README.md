@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.1](https://img.shields.io/badge/AppVersion-0.4.1-informational?style=flat-square)
+![Version: 0.5.0-rc1](https://img.shields.io/badge/Version-0.5.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0-rc1](https://img.shields.io/badge/AppVersion-0.5.0--rc1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -25,15 +25,15 @@ export DAPS_CERT="$(cat daps.cert)"
 The in-memory vault can be seeded directly with secrets that are passed in `<key>:<value>;<key2>:<value2>;...` format.
 This config value can be passed to the runtime using the `vault.secrets` parameter. In addition, the runtime requires a
 couple of configuration parameters, all of which can be found in the section below. Please also consider using
-[this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/charts/tractusx-connector-memory/example.yaml)
+[this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-memory-test.yaml)
 to launch the application.
 
 Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.4.1 \
-     -f <path-to>/example.yaml \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-rc1 \
+     -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="daps-cert:$DAPS_CERT;daps-key:$DAPS_KEY" \
 ```
 
@@ -42,12 +42,6 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 ## Source Code
 
 * <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory>
-
-## Requirements
-
-| Repository | Name | Version |
-|------------|------|---------|
-| file://./subcharts/omejdn | daps(daps) | 0.0.1 |
 
 ## Values
 
@@ -60,14 +54,11 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | daps.connectors[0].certificate | string | `""` |  |
 | daps.connectors[0].id | string | `"E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"` |  |
 | daps.connectors[0].name | string | `"sokrates"` |  |
-| daps.fullnameOverride | string | `"daps"` |  |
 | daps.paths.jwks | string | `"/jwks.json"` |  |
 | daps.paths.token | string | `"/token"` |  |
-| daps.url | string | `""` |  |
+| daps.url | string | `"http://{{ .Release.Name }}-daps:4567"` |  |
 | fullnameOverride | string | `""` |  |
-| idsdaps.connectors[0].certificate | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
-| install.daps | bool | `true` |  |
 | nameOverride | string | `""` |  |
 | participant.id | string | `""` |  |
 | runtime.affinity | object | `{}` |  |
@@ -166,6 +157,12 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
+| runtime.ssi.endpoint.audience | string | `"http://this.audience"` |  |
+| runtime.ssi.miw.authorityId | string | `""` |  |
+| runtime.ssi.miw.url | string | `""` |  |
+| runtime.ssi.oauth.client.id | string | `""` |  |
+| runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |
+| runtime.ssi.oauth.tokenurl | string | `""` |  |
 | runtime.tolerations | list | `[]` |  |
 | runtime.url.ids | string | `""` | Explicitly declared url for reaching the ids api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` |  |
@@ -176,11 +173,9 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | serviceAccount.name | string | `""` |  |
-| vault.secretNames.dapsPrivateKey | string | `"daps-private-key"` |  |
-| vault.secretNames.dapsPublicKey | string | `"daps-public-key"` |  |
+| tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
+| tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
-| vault.secretNames.transferProxyTokenSignerPrivateKey | string | `"transfer-proxy-token-signer-private-key"` |  |
-| vault.secretNames.transferProxyTokenSignerPublicKey | string | `"transfer-proxy-token-signer-public-key"` |  |
 | vault.secrets | string | `""` |  |
 | vault.server.postStart | string | `""` |  |
 

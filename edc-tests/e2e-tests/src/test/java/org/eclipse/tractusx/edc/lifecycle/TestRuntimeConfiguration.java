@@ -31,27 +31,38 @@ public class TestRuntimeConfiguration {
     public static final String PLATO_NAME = "PLATO";
     public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
     public static final Integer PLATO_PROXIED_AAS_BACKEND_PORT = getFreePort();
+    public static final int MIW_PLATO_PORT = getFreePort();
+
+    public static final int MIW_SOKRATES_PORT = getFreePort();
+
+    public static final int OAUTH_PORT = getFreePort();
+
     static final String DSP_PATH = "/api/v1/dsp";
     static final int PLATO_CONNECTOR_PORT = getFreePort();
     static final int PLATO_MANAGEMENT_PORT = getFreePort();
     static final String PLATO_CONNECTOR_PATH = "/api";
     static final String PLATO_MANAGEMENT_PATH = "/api/v1/management";
     static final int PLATO_DSP_API_PORT = getFreePort();
-    static final String PLATO_DSP_CALLBACK = "http://localhost:" + PLATO_DSP_API_PORT + DSP_PATH;
+    public static final String PLATO_DSP_CALLBACK = "http://localhost:" + PLATO_DSP_API_PORT + DSP_PATH;
     static final int SOKRATES_CONNECTOR_PORT = getFreePort();
     static final int SOKRATES_MANAGEMENT_PORT = getFreePort();
     static final String SOKRATES_CONNECTOR_PATH = "/api";
     static final String SOKRATES_MANAGEMENT_PATH = "/api/v1/management";
     static final int SOKRATES_DSP_API_PORT = getFreePort();
-    static final String SOKRATES_DSP_CALLBACK = "http://localhost:" + SOKRATES_DSP_API_PORT + DSP_PATH;
+    public static final String SOKRATES_DSP_CALLBACK = "http://localhost:" + SOKRATES_DSP_API_PORT + DSP_PATH;
     static final String SOKRATES_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_PUBLIC_API_PORT = String.valueOf(getFreePort());
     static final String PLATO_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
     static final String PLATO_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
     static final String SOKRATES_DATAPLANE_CONTROL_PORT = String.valueOf(getFreePort());
-
     static final String SOKRATES_DATAPLANE_PROXY_PORT = String.valueOf(getFreePort());
-    
+    static final String DB_SCHEMA_NAME = "testschema";
+    static final String MIW_SOKRATES_URL = "http://localhost:" + MIW_SOKRATES_PORT;
+
+    static final String MIW_PLATO_URL = "http://localhost:" + MIW_PLATO_PORT;
+
+    static final String OAUTH_TOKEN_URL = "http://localhost:" + OAUTH_PORT;
+
     public static Map<String, String> sokratesPostgresqlConfiguration() {
         var baseConfiguration = sokratesConfiguration();
         var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
@@ -94,8 +105,27 @@ public class TestRuntimeConfiguration {
                 put("edc.datasource.edr.url", jdbcUrl);
                 put("edc.datasource.edr.user", PostgresqlLocalInstance.USER);
                 put("edc.datasource.edr.password", PostgresqlLocalInstance.PASSWORD);
+                // use non-default schema name to test usage of non-default schema
+                put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }
         };
+    }
+
+    public static Map<String, String> sokratesSsiConfiguration() {
+        var ssiConfiguration = new HashMap<String, String>() {
+            {
+                put("tx.ssi.miw.url", MIW_SOKRATES_URL);
+                put("tx.ssi.oauth.token.url", OAUTH_TOKEN_URL);
+                put("tx.ssi.oauth.client.id", "client_id");
+                put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
+                put("tx.ssi.miw.authority.id", "authorityId");
+                put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
+                put("tx.ssi.endpoint.audience", SOKRATES_DSP_CALLBACK);
+            }
+        };
+        var baseConfiguration = sokratesConfiguration();
+        ssiConfiguration.putAll(baseConfiguration);
+        return ssiConfiguration;
     }
 
     public static Map<String, String> sokratesConfiguration() {
@@ -162,8 +192,25 @@ public class TestRuntimeConfiguration {
         };
     }
 
+    public static Map<String, String> platoSsiConfiguration() {
+        var ssiConfiguration = new HashMap<String, String>() {
+            {
+                put("tx.ssi.miw.url", MIW_PLATO_URL);
+                put("tx.ssi.oauth.token.url", OAUTH_TOKEN_URL);
+                put("tx.ssi.oauth.client.id", "client_id");
+                put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
+                put("tx.ssi.miw.authority.id", "authorityId");
+                put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
+                put("tx.ssi.endpoint.audience", PLATO_DSP_CALLBACK);
+            }
+        };
+        var baseConfiguration = platoConfiguration();
+        ssiConfiguration.putAll(baseConfiguration);
+        return ssiConfiguration;
+    }
+
     @NotNull
     public static String jdbcUrl(String name) {
-        return PostgresqlLocalInstance.JDBC_URL_PREFIX + name;
+        return PostgresqlLocalInstance.JDBC_URL_PREFIX + name + "?currentSchema=" + DB_SCHEMA_NAME;
     }
 }

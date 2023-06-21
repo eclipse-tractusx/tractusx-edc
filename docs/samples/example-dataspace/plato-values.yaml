@@ -39,6 +39,16 @@ controlplane:
   securityContext:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
+    # SSI configuration
+    ssi:
+      miw:
+        url: ""
+        authorityId: ""
+      oauth:
+        tokenurl: ""
+        client:
+          id: ""
+          secretAlias: "client-secret"
 dataplane:
   image:
     pullPolicy: Never
@@ -62,17 +72,8 @@ vault:
     url: http://plato-vault:8200
     token: root
   secretNames:
-    transferProxyTokenSignerPublicKey: daps-crt
-    transferProxyTokenSignerPrivateKey: daps-key
     transferProxyTokenEncryptionAesKey: aes-keys
-    dapsPrivateKey: daps-key
-    dapsPublicKey: daps-crt
-    # this must be set through CLI args: --set vault.secrets=$YOUR_VAULT_SECRETS where YOUR_VAULT_SECRETS should
-    # be a string in the format "key1:secret1;key2:secret2;..."
     secrets:
   server:
-daps:
-  url: "http://daps:4567"
-  clientId: "E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:69"
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"

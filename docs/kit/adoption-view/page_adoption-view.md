@@ -28,7 +28,7 @@ The [EDC][edc-url] as a connector implements a framework agreement for sovereign
 
 The objective is to set up a decentralized software component on the part of the respective partner, which bundles the skills required to participate in a data room and enables peer-to-peer connections between participants.
 The focus here is particularly on the data sovereignty of the independent companies.
-The functionality required for this is bundled in the open-source project "Eclipse Dataspace Connectors", to which the Catena-X partners contribute as part of the Eclipse Foundation.
+The functionality required for this is bundled in the open-source project "Eclipse Dataspace Connector", to which members of the Eclipse Foundation contribute.
 
 The main difference between the EDC and the previous connectors of the [IDSA][idsa-url] is the separation of the communication into a channel for the metadata and one for the actual data exchange. The channel for the data supports various transmission protocols via so-called data plane extensions. The metadata is transmitted directly via the EDC interface, while the actual data exchange then takes place via the appropriate channel extension. In this way, a highly scalable data exchange is made possible.
 

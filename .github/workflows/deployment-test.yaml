@@ -79,11 +79,11 @@ jobs:
         with:
           imagename: edc-runtime-memory
           rootDir: edc-controlplane/edc-runtime-memory
-          values_file: charts/tractusx-connector-memory/example.yaml
+          values_file: edc-tests/deployment/src/main/resources/helm/tractusx-connector-memory-test.yaml
           helm_command: |-
             helm install tx-inmem charts/tractusx-connector-memory \
-            -f charts/tractusx-connector-memory/example.yaml \
-            --set vault.secrets="daps-crt:$(cat daps.cert);daps-key:$(cat daps.key)" \
+            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-memory-test.yaml \
+            --set vault.secrets="client-secret:$(cat client.secret)" \
             --wait-for-jobs --timeout=120s --dependency-update
             
             # wait for the pod to become ready
@@ -108,7 +108,7 @@ jobs:
             helm install tx-prod charts/tractusx-connector \
             -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
             --dependency-update \
-            --wait-for-jobs --timeout=120s
+            --wait-for-jobs --timeout=120s    
 
             # wait for the pod to become ready
             kubectl rollout status deployment tx-prod-controlplane
@@ -135,9 +135,8 @@ jobs:
           rootDir: "."
           values_file: edc-tests/deployment/src/main/resources/helm/tractusx-connector-azure-vault-test.yaml
           helm_command: |-
-            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name daps-crt --value "$(cat daps.cert)" > /dev/null
-            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name daps-key --value "$(cat daps.key)" > /dev/null
             az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name aes-keys --value "$(cat aes.key)" > /dev/null
+            az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name client-secret --value "$(cat client.secret)" > /dev/null
             
             helm install tx-prod charts/tractusx-connector-azure-vault \
              -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-azure-vault-test.yaml \

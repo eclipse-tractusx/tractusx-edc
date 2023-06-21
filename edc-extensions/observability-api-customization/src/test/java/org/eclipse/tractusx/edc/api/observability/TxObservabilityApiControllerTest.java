@@ -22,6 +22,7 @@ import org.eclipse.edc.connector.spi.contractdefinition.ContractDefinitionServic
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.spi.policydefinition.PolicyDefinitionService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.asset.DataAddressResolver;
@@ -44,6 +45,35 @@ import static org.mockito.Mockito.mock;
 public class TxObservabilityApiControllerTest {
 
     private static final String API_KEY = "12345";
+
+    // register all services that are required by the management API
+    protected void registerServiceMocks(EdcExtension extension) {
+        extension.registerServiceMock(DataAddressResolver.class, mock(DataAddressResolver.class));
+        extension.registerServiceMock(CatalogService.class, mock(CatalogService.class));
+        extension.registerServiceMock(ContractAgreementService.class, mock(ContractAgreementService.class));
+        extension.registerServiceMock(ContractDefinitionService.class, mock(ContractDefinitionService.class));
+        extension.registerServiceMock(AssetService.class, mock(AssetService.class));
+        extension.registerServiceMock(ContractNegotiationService.class, mock(ContractNegotiationService.class));
+        extension.registerServiceMock(PolicyDefinitionService.class, mock(PolicyDefinitionService.class));
+        extension.registerServiceMock(TransferProcessService.class, mock(TransferProcessService.class));
+        extension.registerServiceMock(JsonLd.class, mock(JsonLd.class));
+    }
+
+    static class BaseTest {
+        protected final int port = getFreePort();
+        protected String basePath;
+
+        protected BaseTest(String basePath) {
+            this.basePath = basePath;
+        }
+
+        protected RequestSpecification baseRequest() {
+            return given()
+                    .baseUri("http://localhost:" + port)
+                    .basePath(basePath)
+                    .when();
+        }
+    }
 
     @Nested
     @DisplayName("Allow unauthenticated access")
@@ -118,33 +148,4 @@ public class TxObservabilityApiControllerTest {
                     .body(notNullValue());
         }
     }
-
-    // register all services that are required by the management API
-    protected void registerServiceMocks(EdcExtension extension) {
-        extension.registerServiceMock(DataAddressResolver.class, mock(DataAddressResolver.class));
-        extension.registerServiceMock(CatalogService.class, mock(CatalogService.class));
-        extension.registerServiceMock(ContractAgreementService.class, mock(ContractAgreementService.class));
-        extension.registerServiceMock(ContractDefinitionService.class, mock(ContractDefinitionService.class));
-        extension.registerServiceMock(AssetService.class, mock(AssetService.class));
-        extension.registerServiceMock(ContractNegotiationService.class, mock(ContractNegotiationService.class));
-        extension.registerServiceMock(PolicyDefinitionService.class, mock(PolicyDefinitionService.class));
-        extension.registerServiceMock(TransferProcessService.class, mock(TransferProcessService.class));
-    }
-
-    static class BaseTest {
-        protected final int port = getFreePort();
-        protected String basePath;
-
-        protected BaseTest(String basePath) {
-            this.basePath = basePath;
-        }
-
-        protected RequestSpecification baseRequest() {
-            return given()
-                    .baseUri("http://localhost:" + port)
-                    .basePath(basePath)
-                    .when();
-        }
-    }
-
 }
