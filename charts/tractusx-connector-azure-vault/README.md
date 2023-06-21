@@ -50,13 +50,12 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 
 ## Source Code
 
-<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://./subcharts/omejdn | daps(daps) | 0.0.1 |
 | https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.1.6 |
 
 ## Values
@@ -161,20 +160,17 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
+| controlplane.ssi.endpoint.audience | string | `"http://this.audience"` |  |
+| controlplane.ssi.miw.authorityId | string | `""` |  |
+| controlplane.ssi.miw.url | string | `""` |  |
+| controlplane.ssi.oauth.client.id | string | `""` |  |
+| controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |
+| controlplane.ssi.oauth.tokenurl | string | `""` |  |
 | controlplane.tolerations | list | `[]` |  |
 | controlplane.url.ids | string | `""` | Explicitly declared url for reaching the ids api (e.g. if ingresses not used) |
 | controlplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | controlplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | customLabels | object | `{}` |  |
-| daps.clientId | string | `""` |  |
-| daps.connectors[0].attributes.referringConnector | string | `"http://sokrates-controlplane/BPNSOKRATES"` |  |
-| daps.connectors[0].certificate | string | `""` |  |
-| daps.connectors[0].id | string | `"E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"` |  |
-| daps.connectors[0].name | string | `"sokrates"` |  |
-| daps.fullnameOverride | string | `"daps"` |  |
-| daps.paths.jwks | string | `"/jwks.json"` |  |
-| daps.paths.token | string | `"/token"` |  |
-| daps.url | string | `""` |  |
 | dataplane.affinity | object | `{}` |  |
 | dataplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | dataplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -255,9 +251,7 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | dataplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | dataplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | fullnameOverride | string | `""` |  |
-| idsdaps.connectors[0].certificate | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
-| install.daps | bool | `true` |  |
 | install.postgresql | bool | `true` |  |
 | nameOverride | string | `""` |  |
 | participant.id | string | `""` |  |
@@ -265,24 +259,23 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
 | postgresql.enabled | bool | `false` |  |
-| postgresql.fullnameOverride | string | `"postgresql"` |  |
-| postgresql.jdbcUrl | string | `""` |  |
+| postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
 | postgresql.primary.persistence | string | `nil` |  |
 | postgresql.readReplicas.persistence.enabled | bool | `false` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | serviceAccount.name | string | `""` |  |
+| tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
+| tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.azure.certificate | string | `nil` |  |
 | vault.azure.client | string | `""` |  |
 | vault.azure.name | string | `""` |  |
 | vault.azure.secret | string | `nil` |  |
 | vault.azure.tenant | string | `""` |  |
-| vault.secretNames.dapsPrivateKey | string | `"daps-private-key"` |  |
-| vault.secretNames.dapsPublicKey | string | `"daps-public-key"` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
-| vault.secretNames.transferProxyTokenSignerPrivateKey | string | `"transfer-proxy-token-signer-private-key"` |  |
-| vault.secretNames.transferProxyTokenSignerPublicKey | string | `"transfer-proxy-token-signer-public-key"` |  |
+| vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
+| vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.10.0](https://github.com/norwoodj/helm-docs/releases/v1.10.0)
