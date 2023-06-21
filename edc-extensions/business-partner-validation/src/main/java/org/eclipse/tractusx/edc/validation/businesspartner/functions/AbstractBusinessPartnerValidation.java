@@ -102,8 +102,13 @@ public abstract class AbstractBusinessPartnerValidation {
             monitor.debug(message);
             return false;
         }
-        
-        var referringConnectorClaim = getReferringConnectorClaim(policyContext.getParticipantAgent());
+
+        final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
+
+        if (participantAgent == null) {
+            return false;
+        }
+        var referringConnectorClaim = getReferringConnectorClaim(participantAgent);
 
         if (referringConnectorClaim == null || referringConnectorClaim.isEmpty()) {
             return false;

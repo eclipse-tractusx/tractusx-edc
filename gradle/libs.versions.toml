@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.1.0"
+edc = "0.1.1"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
@@ -19,6 +19,8 @@ aws = "2.20.89"
 rsApi = "3.1.0"
 jupiter = "5.9.3"
 assertj = "3.24.2"
+titanium = "1.3.2"
+jackson = "2.15.2"
 jakarta-json = "2.0.1"
 tink = "1.9.0"
 iron-vc = "0.8.1"
@@ -66,6 +68,7 @@ edc-policy-engine = { module = "org.eclipse.edc:policy-engine", version.ref = "e
 edc-auth-tokenbased = { module = "org.eclipse.edc:auth-tokenbased", version.ref = "edc" }
 edc-auth-oauth2-core = { module = "org.eclipse.edc:oauth2-core", version.ref = "edc" }
 edc-auth-oauth2-daps = { module = "org.eclipse.edc:oauth2-daps", version.ref = "edc" }
+edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }
 edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
@@ -133,6 +136,8 @@ testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.re
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
+jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }
+titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 tink = { module = "com.google.crypto.tink:tink", version.ref = "tink" }

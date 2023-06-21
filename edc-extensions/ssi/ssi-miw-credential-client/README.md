@@ -11,4 +11,12 @@ just call the MIW for checking that the token and the VP claim inside are correc
 
 For obtaining a `JWT` token also it reaches the MIW, that will create a token with the `VP` claim inside.
 
-The MIW interaction in this first implementation is still WIP, since the MIW interface it's not stable or complete yet.
+## Configuration
+
+| Key                                     | Required | Example        | Description                       |
+|-----------------------------------------|----------|----------------|-----------------------------------|
+| tx.ssi.miw.url                          | X        |                | MIW URL                           |
+| tx.ssi.miw.authority.id                 | X        |                | BPN number of the authority       |
+| tx.ssi.oauth.token.url                  | X        |                | Token URL (Keycloak)              |
+| tx.ssi.oauth.client.id                  | X        |                | Client id                         |
+| tx.ssi.oauth.client.secret.alias        | X        |                | Vault alias for the client secret |

@@ -21,6 +21,11 @@ dependencies {
     implementation(project(":spi:ssi-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.http)
+    implementation(libs.edc.spi.jsonld)
+    implementation(libs.edc.auth.oauth2.client)
+    implementation(libs.edc.spi.jwt)
+    implementation(libs.jakartaJson)
     implementation(libs.nimbus.jwt)
+
     testImplementation(testFixtures(libs.edc.junit))
 }

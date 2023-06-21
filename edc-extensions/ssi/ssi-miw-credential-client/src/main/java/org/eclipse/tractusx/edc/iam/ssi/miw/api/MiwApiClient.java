@@ -25,10 +25,10 @@ import java.util.Set;
 public interface MiwApiClient {
     String VP = "vp";
 
-    Result<List<Map<String, Object>>> getCredentials(Set<String> types, String holderIdentifier);
+    Result<List<Map<String, Object>>> getCredentials(Set<String> types);
 
-    Result<Map<String, Object>> createPresentation(List<Map<String, Object>> credentials, String holderIdentifier);
+    Result<Map<String, Object>> createPresentation(List<Map<String, Object>> credentials, String audience);
 
-    Result<Void> verifyPresentation(String jwtPresentation);
+    Result<Void> verifyPresentation(String jwtPresentation, String audience);
 
 }

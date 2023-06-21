@@ -14,9 +14,11 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.miw;
 
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.miw.credentials.SsiMiwCredentialClient;
@@ -30,14 +32,22 @@ public class SsiMiwCredentialClientExtension implements ServiceExtension {
     @Inject
     private MiwApiClient apiClient;
 
+    @Inject
+    private JsonLd jsonLdService;
+
+    @Inject
+    private Monitor monitor;
+
     @Override
     public String name() {
         return EXTENSION_NAME;
     }
 
+
     @Provider
     public SsiCredentialClient credentialVerifier() {
-        return new SsiMiwCredentialClient(apiClient);
+        return new SsiMiwCredentialClient(apiClient, jsonLdService, monitor);
     }
+
 
 }

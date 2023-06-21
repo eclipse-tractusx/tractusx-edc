@@ -23,8 +23,11 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.json.Json;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +43,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient.VP;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -47,13 +51,17 @@ import static org.mockito.Mockito.when;
 
 public class SsiMiwCredentialClientTest {
 
+    private final String audience = "audience";
     SsiMiwCredentialClient credentialClient;
     MiwApiClient apiClient = mock(MiwApiClient.class);
+    JsonLd jsonLdService = mock(JsonLd.class);
+
+    Monitor monitor = mock(Monitor.class);
     private RSAKey key;
 
     @BeforeEach
     void setup() throws JOSEException {
-        credentialClient = new SsiMiwCredentialClient(apiClient);
+        credentialClient = new SsiMiwCredentialClient(apiClient, jsonLdService, monitor);
         key = testKey();
     }
 
@@ -61,24 +69,26 @@ public class SsiMiwCredentialClientTest {
     void validate_success() throws JOSEException {
         var claims = createClaims(Instant.now());
         var jwt = createJwt(UUID.randomUUID().toString(), claims, key.toPrivateKey());
-        when(apiClient.verifyPresentation(jwt)).thenReturn(Result.success());
+        when(apiClient.verifyPresentation(jwt, audience)).thenReturn(Result.success());
+        when(jsonLdService.expand(any())).thenReturn(Result.success(Json.createObjectBuilder().build()));
 
         var result = credentialClient.validate(TokenRepresentation.Builder.newInstance().token(jwt).build());
 
         assertThat(result).isNotNull().matches(Result::succeeded);
-        verify(apiClient).verifyPresentation(jwt);
+        verify(apiClient).verifyPresentation(jwt, audience);
     }
 
     @Test
     void validate_success_whenClientFails() throws JOSEException {
         var claims = createClaims(Instant.now());
         var jwt = createJwt(UUID.randomUUID().toString(), claims, key.toPrivateKey());
-        when(apiClient.verifyPresentation(jwt)).thenReturn(Result.failure("fail"));
+        when(apiClient.verifyPresentation(jwt, audience)).thenReturn(Result.failure("fail"));
+        when(jsonLdService.expand(any())).thenReturn(Result.success(Json.createObjectBuilder().build()));
 
         var result = credentialClient.validate(TokenRepresentation.Builder.newInstance().token(jwt).build());
 
         assertThat(result).isNotNull().matches(Result::failed);
-        verify(apiClient).verifyPresentation(jwt);
+        verify(apiClient).verifyPresentation(jwt, audience);
     }
 
     @Test
@@ -93,14 +103,13 @@ public class SsiMiwCredentialClientTest {
     @Test
     void obtainCredentials_success() {
 
-        var audience = "test";
         var jwt = "serialized";
         Map<String, Object> credential = Map.of();
         Map<String, Object> presentation = Map.of(VP, jwt);
 
         var credentials = List.of(credential);
 
-        when(apiClient.getCredentials(Set.of(), audience)).thenReturn(Result.success(credentials));
+        when(apiClient.getCredentials(Set.of())).thenReturn(Result.success(credentials));
         when(apiClient.createPresentation(credentials, audience)).thenReturn(Result.success(presentation));
         var result = credentialClient.obtainClientCredentials(TokenParameters.Builder.newInstance().audience(audience).build());
 
@@ -109,12 +118,14 @@ public class SsiMiwCredentialClientTest {
                 .extracting(TokenRepresentation::getToken)
                 .isEqualTo(jwt);
 
-        verify(apiClient).getCredentials(Set.of(), audience);
+        verify(apiClient).getCredentials(Set.of());
     }
 
     private JWTClaimsSet createClaims(Instant exp) {
         return new JWTClaimsSet.Builder()
                 .claim("foo", "bar")
+                .claim(VP, Map.of())
+                .audience(audience)
                 .expirationTime(Date.from(exp))
                 .build();
     }

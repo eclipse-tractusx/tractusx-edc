@@ -22,14 +22,17 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.eclipse.edc.spi.http.EdcHttpClient;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2Client;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -37,51 +40,104 @@ import static java.lang.String.format;
 public class MiwApiClientImpl implements MiwApiClient {
 
     public static final MediaType TYPE_JSON = MediaType.parse("application/json");
-    private static final String CREDENTIAL_PATH = "/api/credentials";
-    private static final String PRESENTATIONS_PATH = "/api/presentations";
+    public static final String CREDENTIAL_PATH = "/api/credentials";
+    public static final String PRESENTATIONS_PATH = "/api/presentations";
+    public static final String PRESENTATIONS_VALIDATION_PATH = "/api/presentations/validation";
+    public static final String HOLDER_IDENTIFIER = "holderIdentifier";
 
+    public static final String ISSUER_IDENTIFIER = "issuerIdentifier";
+    public static final String VERIFIABLE_CREDENTIALS = "verifiableCredentials";
+    public static final String VP_FIELD = "vp";
+    public static final String CONTENT_FIELD = "content";
+    private static final String PRESENTATIONS_QUERY_PARAMS = "?asJwt=true&audience=%s";
     private final EdcHttpClient httpClient;
     private final String baseUrl;
+    private final MiwOauth2Client oauth2Client;
     private final ObjectMapper mapper;
     private final Monitor monitor;
 
-    public MiwApiClientImpl(EdcHttpClient httpClient, String baseUrl, ObjectMapper mapper, Monitor monitor) {
+    private final String authorityId;
+
+    private final String participantId;
+
+    public MiwApiClientImpl(EdcHttpClient httpClient, String baseUrl, MiwOauth2Client oauth2Client, String participantId, String authorityId, ObjectMapper mapper, Monitor monitor) {
         this.httpClient = httpClient;
         this.baseUrl = baseUrl;
+        this.oauth2Client = oauth2Client;
+        this.participantId = participantId;
+        this.authorityId = authorityId;
         this.mapper = mapper;
         this.monitor = monitor;
     }
 
     @Override
-    public Result<List<Map<String, Object>>> getCredentials(Set<String> types, String holderIdentifier) {
+    public Result<List<Map<String, Object>>> getCredentials(Set<String> types) {
 
         var params = new ArrayList<String>();
-        params.add(format("holderIdentifier=%s", holderIdentifier));
+        params.add(format("%s=%s", ISSUER_IDENTIFIER, authorityId));
 
         if (!types.isEmpty()) {
             params.add(format("type=%s", String.join(",", types)));
         }
-        
+
         var queryParams = "?" + String.join("&", params);
         var url = baseUrl + CREDENTIAL_PATH + queryParams;
-        var request = new Request.Builder().get().url(url).build();
 
-        return executeRequest(request, new TypeReference<>() {
-        });
+        return baseRequestWithToken().map(builder -> builder.get().url(url).build())
+                .compose(request -> executeRequest(request, new TypeReference<Map<String, Object>>() {
+                }))
+                .compose(this::handleGetCredentialResponse);
     }
 
     @Override
-    public Result<Map<String, Object>> createPresentation(List<Map<String, Object>> credentials, String holderIdentifier) {
+    public Result<Map<String, Object>> createPresentation(List<Map<String, Object>> credentials, String audience) {
         try {
-            var body = Map.of("holderIdentifier", holderIdentifier, "verifiableCredentials", credentials);
-            var url = baseUrl + PRESENTATIONS_PATH + "?asJwt=true";
+            var body = Map.of(HOLDER_IDENTIFIER, participantId, VERIFIABLE_CREDENTIALS, credentials);
+            var url = baseUrl + PRESENTATIONS_PATH + format(PRESENTATIONS_QUERY_PARAMS, audience);
             var requestBody = RequestBody.create(mapper.writeValueAsString(body), TYPE_JSON);
-            var request = new Request.Builder().post(requestBody).url(url).build();
 
-            return executeRequest(request, new TypeReference<>() {
-            });
+            return baseRequestWithToken().map(builder -> builder.post(requestBody).url(url).build())
+                    .compose(request -> executeRequest(request, new TypeReference<>() {
+                    }));
         } catch (JsonProcessingException e) {
             return Result.failure(e.getMessage());
+        }
+    }
+
+    @Override
+    public Result<Void> verifyPresentation(String jwtPresentation, String audience) {
+        try {
+            var body = Map.of(VP_FIELD, jwtPresentation);
+            var url = baseUrl + PRESENTATIONS_VALIDATION_PATH + format(PRESENTATIONS_QUERY_PARAMS, audience);
+            var requestBody = RequestBody.create(mapper.writeValueAsString(body), TYPE_JSON);
+
+            return baseRequestWithToken().map(builder -> builder.post(requestBody).url(url).build())
+                    .compose(request -> executeRequest(request, new TypeReference<Map<String, Object>>() {
+                    }))
+                    .compose(this::handleVerifyResult);
+        } catch (JsonProcessingException e) {
+            return Result.failure(e.getMessage());
+        }
+    }
+
+    private Result<List<Map<String, Object>>> handleGetCredentialResponse(Map<String, Object> response) {
+        var content = response.get(CONTENT_FIELD);
+
+        if (content == null) {
+            return Result.failure("Missing content field in the credentials response");
+        }
+        return Result.success((List<Map<String, Object>>) content);
+    }
+
+    private Result<Void> handleVerifyResult(Map<String, Object> response) {
+        var valid = Optional.ofNullable(response.get("valid"))
+                .map(Boolean.TRUE::equals)
+                .orElse(false);
+
+        if (valid) {
+            return Result.success();
+        } else {
+            return Result.failure(format("Verification failed with response: %s", response));
         }
     }
 
@@ -91,11 +147,6 @@ public class MiwApiClientImpl implements MiwApiClient {
         } catch (IOException e) {
             return Result.failure(e.getMessage());
         }
-    }
-
-    @Override
-    public Result<Void> verifyPresentation(String jwtPresentation) {
-        return Result.success();
     }
 
     private <R> Result<R> handleResponse(Response response, TypeReference<R> tr) {
@@ -122,4 +173,14 @@ public class MiwApiClientImpl implements MiwApiClient {
         return Result.failure(msg);
     }
 
+
+    private Result<Request.Builder> baseRequestWithToken() {
+        return oauth2Client.obtainRequestToken()
+                .map(this::baseRequestWithToken);
+    }
+
+    private Request.Builder baseRequestWithToken(TokenRepresentation tokenRepresentation) {
+        return new Request.Builder()
+                .addHeader("Authorization", format("Bearer %s", tokenRepresentation.getToken()));
+    }
 }

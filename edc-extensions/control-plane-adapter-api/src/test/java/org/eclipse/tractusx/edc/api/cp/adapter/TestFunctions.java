@@ -14,6 +14,8 @@
 
 package org.eclipse.tractusx.edc.api.cp.adapter;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
@@ -21,6 +23,9 @@ import org.eclipse.tractusx.edc.api.cp.adapter.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.spi.cp.adapter.model.NegotiateEdrRequest;
 
 import java.util.UUID;
+
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class TestFunctions {
 
@@ -48,15 +53,18 @@ public class TestFunctions {
         return createOffer(UUID.randomUUID().toString(), UUID.randomUUID().toString());
     }
 
-    public static NegotiateEdrRequestDto requestDto() {
-        return NegotiateEdrRequestDto.Builder.newInstance()
-                .connectorAddress("test")
-                .connectorId("id")
-                .protocol("test-protocol")
-                .offer(ContractOfferDescription.Builder.newInstance()
-                        .offerId("offerId")
-                        .assetId("assetId")
-                        .policy(Policy.Builder.newInstance().build()).build())
+    public static JsonObject negotiationRequest() {
+        return Json.createObjectBuilder()
+                .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
+                .add(EDC_NAMESPACE + "connectorId", "test")
+                .add(EDC_NAMESPACE + "providerId", "test")
+                .add(EDC_NAMESPACE + "connectorAddress", "test")
+                .add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http")
+                .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
+                        .add(EDC_NAMESPACE + "offerId", "offerId")
+                        .add(EDC_NAMESPACE + "assetId", "assetId")
+                        .add(EDC_NAMESPACE + "policy", Json.createObjectBuilder().build())
+                )
                 .build();
     }
 

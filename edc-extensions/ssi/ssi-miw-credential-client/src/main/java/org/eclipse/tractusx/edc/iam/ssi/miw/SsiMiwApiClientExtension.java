@@ -25,6 +25,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl;
+import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2Client;
 
 
 @Extension(SsiMiwApiClientExtension.EXTENSION_NAME)
@@ -34,6 +35,12 @@ public class SsiMiwApiClientExtension implements ServiceExtension {
 
     @Setting(value = "MIW API base url")
     public static final String MIW_BASE_URL = "tx.ssi.miw.url";
+
+    @Setting(value = "MIW Authority ID")
+    public static final String MIW_AUTHORITY_ID = "tx.ssi.miw.authority.id";
+    
+    @Inject
+    private MiwOauth2Client oauth2Client;
 
     @Inject
     private EdcHttpClient httpClient;
@@ -52,8 +59,10 @@ public class SsiMiwApiClientExtension implements ServiceExtension {
     @Provider
     public MiwApiClient apiClient(ServiceExtensionContext context) {
         var baseUrl = context.getConfig().getString(MIW_BASE_URL);
+        var authorityId = context.getConfig().getString(MIW_AUTHORITY_ID);
 
-        return new MiwApiClientImpl(httpClient, baseUrl, typeManager.getMapper(), monitor);
+
+        return new MiwApiClientImpl(httpClient, baseUrl, oauth2Client, context.getParticipantId(), authorityId, typeManager.getMapper(), monitor);
     }
 
 }

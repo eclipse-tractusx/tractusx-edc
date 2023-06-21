@@ -15,9 +15,12 @@
 package org.eclipse.tractusx.edc.iam.ssi.miw.credentials;
 
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.json.Json;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
@@ -25,26 +28,30 @@ import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient.VP;
 
 public class SsiMiwCredentialClient implements SsiCredentialClient {
 
     private final MiwApiClient apiClient;
 
-    public SsiMiwCredentialClient(MiwApiClient apiClient) {
+    private final JsonLd jsonLdService;
+    private final Monitor monitor;
+
+    public SsiMiwCredentialClient(MiwApiClient apiClient, JsonLd jsonLdService, Monitor monitor) {
         this.apiClient = apiClient;
+        this.jsonLdService = jsonLdService;
+        this.monitor = monitor;
     }
 
     @Override
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        // TODO will need to take from the TokenParameters which are the credentials needed, REF https://github.com/eclipse-edc/Connector/pull/3150
-        return apiClient.getCredentials(Set.of(), parameters.getAudience())
+        return apiClient.getCredentials(parameters.getAdditional().keySet())
                 .compose(credentials -> createPresentation(credentials, parameters))
                 .compose(this::createToken);
     }
-    
+
     @Override
     public Result<ClaimToken> validate(TokenRepresentation tokenRepresentation) {
         return extractClaims(tokenRepresentation)
@@ -69,8 +76,10 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
     }
 
     private Result<ClaimToken> validatePresentation(ClaimToken claimToken, TokenRepresentation tokenRepresentation) {
-        return apiClient.verifyPresentation(tokenRepresentation.getToken())
-                .compose(v -> Result.success(claimToken));
+        return claimToken.getListClaim(AUDIENCE).stream().map(String.class::cast).findFirst()
+                .map(audience -> apiClient.verifyPresentation(tokenRepresentation.getToken(), audience)
+                        .compose(v -> Result.success(claimToken)))
+                .orElseGet(() -> Result.failure("Required audience (aud) claim is missing in token"));
     }
 
     private Result<ClaimToken> extractClaims(TokenRepresentation tokenRepresentation) {
@@ -80,6 +89,10 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
             var tokenBuilder = ClaimToken.Builder.newInstance();
             jwt.getJWTClaimsSet().getClaims().entrySet().stream()
                     .filter(entry -> entry.getValue() != null)
+                    .map(this::mapClaim)
+                    .peek(this::logIfError)
+                    .filter(Result::succeeded)
+                    .map(Result::getContent)
                     .forEach(entry -> tokenBuilder.claim(entry.getKey(), entry.getValue()));
 
             return Result.success(tokenBuilder.build());
@@ -88,4 +101,17 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
         }
     }
 
+    private Result<Map.Entry<String, Object>> mapClaim(Map.Entry<String, Object> entry) {
+        if (entry.getKey().equals(VP)) {
+            var json = Json.createObjectBuilder((Map<String, Object>) entry.getValue()).build();
+            return jsonLdService.expand(json)
+                    .map((expanded) -> Map.entry(entry.getKey(), expanded));
+        } else {
+            return Result.success(entry);
+        }
+    }
+
+    private void logIfError(Result<?> result) {
+        result.onFailure(f -> monitor.warning(f.getFailureDetail()));
+    }
 }

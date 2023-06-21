@@ -17,6 +17,7 @@ package org.eclipse.tractusx.edc.iam.ssi.identity;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiValidationRuleRegistry;
@@ -25,8 +26,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.iam.ssi.identity.SsiIdentityServiceExtension.ENDPOINT_AUDIENCE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiIdentityServiceExtensionTest {
@@ -41,12 +45,19 @@ public class SsiIdentityServiceExtensionTest {
         context.registerService(SsiCredentialClient.class, mock(SsiCredentialClient.class));
         extension = factory.constructInstance(SsiIdentityServiceExtension.class);
     }
-    
+
     @Test
     void initialize() {
+        var cfg = mock(Config.class);
+        when(context.getConfig()).thenReturn(cfg);
+        when(cfg.getString(ENDPOINT_AUDIENCE)).thenReturn("test");
+
         extension.initialize(context);
 
         assertThat(context.getService(IdentityService.class)).isNotNull().isInstanceOf(SsiIdentityService.class);
         assertThat(context.getService(SsiValidationRuleRegistry.class)).isNotNull().isInstanceOf(SsiValidationRulesRegistryImpl.class);
+
+        verify(cfg).getString(ENDPOINT_AUDIENCE);
+
     }
 }
