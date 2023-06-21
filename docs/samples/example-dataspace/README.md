@@ -64,17 +64,17 @@ a `postStart` element to the chart's configuration file:
 
 ```shell
 # for sokrates
-CONFIG_FILE=sokrates-values.yaml
+VALUES_FILE=sokrates-values.yaml
 CLIENT_SECRET=<sokrates-oauth-client-secret>
-
+AES_KEY=$(cat sokrates.aes.key)
 yq -i ".vault.server.postStart |= [\"sh\",\"-c\",\"{\nsleep 5\n
 /bin/vault kv put secret/client-secret content=$CLIENT_SECRET\n
 /bin/vault kv put secret/aes-keys content=$AES_KEY\n}\"]" "$VALUES_FILE"
 
 # for plato
-CONFIG_FILE=plato-values.yaml
+VALUES_FILE=plato-values.yaml
 CLIENT_SECRET=<plato-oauth-client-secret>
-
+AES_KEY=$(cat plato.aes.key)
 yq -i ".vault.server.postStart |= [\"sh\",\"-c\",\"{\nsleep 5\n
 /bin/vault kv put secret/client-secret content=$CLIENT_SECRET\n
 /bin/vault kv put secret/aes-keys content=$AES_KEY\n}\"]" "$VALUES_FILE"
