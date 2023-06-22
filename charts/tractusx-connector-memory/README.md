@@ -6,38 +6,43 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please 
 
 **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory>
 
-This chart uses an in-memory secrets vault, which is required to contain the following secrets on application start:
+## Setting up SSI
 
-- `daps-cert`: contains the x509 certificate of the connector.
-- `daps-key`: the private key of the x509 certificate
+### Preconditions
 
-These must be obtained from a DAPS instance, the process of which is out of the scope of this document. Alternatively,
-self-signed certificates can be used for testing:
+- the Managed Identity Walled (MIW) must be running and reachable via network
+- the necessary set of VerifiableCredentials for this participant must be pushed to MIW. This is typically done by the
+  Portal during participant onboarding
+- KeyCloak must be running and reachable via network
+- an account with KeyCloak must be created for this BPN and the connector must be able to obtain access tokens
+- the client ID and client secret corresponding to that account must be known
 
-```shell
-openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout daps.key -out daps.cert -subj "/CN=test"
-export DAPS_KEY="$(cat daps.key)"
-export DAPS_CERT="$(cat daps.cert)"
-```
+### Preparatory work
 
-## Launching the application
+- store your KeyCloak client secret in the HashiCorp vault. The exact procedure will depend on your deployment of HashiCorp Vault and
+  is out of scope of this document. But by default, Tractus-X EDC expects to find the secret under `secret/client-secret`.
 
-The in-memory vault can be seeded directly with secrets that are passed in `<key>:<value>;<key2>:<value2>;...` format.
-This config value can be passed to the runtime using the `vault.secrets` parameter. In addition, the runtime requires a
-couple of configuration parameters, all of which can be found in the section below. Please also consider using
-[this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-memory-test.yaml)
-to launch the application.
+### Configure the chart
 
+Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
+- `runtime.ssi.miw.url`: the URL
+- `runtime.ssi.miw.authorityId`: the BPN of the issuer authority
+- `runtime.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
+- `runtime.ssi.oauth.client.id`: client ID for KeyCloak
+- `runtime.ssi.oauth.client.secretAlias`: the alias under which the client secret is stored in the vault. Defaults to `client-secret`.
+
+### Launching the application
+
+As an easy starting point, please consider using [this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml)
+to launch the application. The configuration values mentioned above (`controlplane.ssi.*`) will have to be adapted manually.
 Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
 helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-rc1 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
-     --set vault.secrets="daps-cert:$DAPS_CERT;daps-key:$DAPS_KEY" \
+     --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
-
-Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the private key.
 
 ## Source Code
 
@@ -157,7 +162,6 @@ Note that `DAPS_CERT` contains the x509 certificate, `DAPS_KEY` contains the pri
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| runtime.ssi.endpoint.audience | string | `"http://this.audience"` |  |
 | runtime.ssi.miw.authorityId | string | `""` |  |
 | runtime.ssi.miw.url | string | `""` |  |
 | runtime.ssi.oauth.client.id | string | `""` |  |
