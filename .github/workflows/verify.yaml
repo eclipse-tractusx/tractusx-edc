@@ -76,6 +76,7 @@ jobs:
 
       - run: |
           cd ${{ github.workspace }}
+          git status --porcelain
           if [[ -n `git status --porcelain` ]]; then
             echo "Helm chart docs not up-to-date"
             exit 1
