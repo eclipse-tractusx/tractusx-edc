@@ -29,6 +29,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 | `<MANAGEMENT_URL>/edrs`         | POST   | none                     |
 
 #### Payload
+
 ```json
 {
   "@context": {
@@ -58,6 +59,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 ```
 
 #### Response
+
 ```json
 {
   "@type": "edc:IdResponseDto",
@@ -78,11 +80,12 @@ The new API is seamlessly deployed under the well-known management API context, 
 
 - This endpoint will retrieve all EDR entries by their `assetId` or `agreementId` references, which are passed as `query parameters`.
 
-| Path                                         | Method | Query Params             |
-|----------------------------------------------|--------|--------------------------|
-| `<MANAGEMENT_URL>/edrs`                      | GET    | assetId<br/> agreementId |
+| Path                                         | Method | Query Params         |
+|----------------------------------------------|--------|----------------------|
+| `<MANAGEMENT_URL>/edrs`                      | GET    | assetId, agreementId |
 
 #### Response
+
 ```json
 [
   {
@@ -109,6 +112,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 | `<MANAGEMENT_URL>/edrs/{trasfer-process-id}` | GET    | none                     |
 
 #### Response
+
 ```json
 {
   "@type": "edc:DataAddress",
