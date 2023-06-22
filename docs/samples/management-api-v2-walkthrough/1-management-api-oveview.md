@@ -48,7 +48,7 @@ A namespace is defined by associating a prefix with a URI or IRI in the @context
 | edc    | Defines the prefix "edc" and associates it with the URI "https://w3id.org/edc/v0.0.1/ns/". The prefix "edc" can now be used to represent terms from the EDC (Eclipse Dataspace Connect) vocabulary.               |
 | dcat   | Defines the prefix "dcat" and associates it with the URI "https://www.w3.org/ns/dcat/". The prefix "dcat" can now be used to represent terms from the DCAT (Data Catalog Vocabulary) vocabulary.                  |
 | odrl   | Defines the prefix "odrl" and associates it with the URI "http://www.w3.org/ns/odrl/2/". The prefix "odrl" can now be used to represent terms from the ODRL (Open Digital Rights Language) vocabulary.            |
-| dspace | Defines the prefix "dspace" and associates it with the URI "https://w3id.org/dspace/v0.8/". The prefix "dspace" can now be used to represent terms from the DSpace vocabulary. |
+| dspace | Defines the prefix "dspace" and associates it with the URI "https://w3id.org/dspace/v0.8/". The prefix "dspace" can now be used to represent terms from the DSpace vocabulary.                                    |
 
 > Please note: The namespace `edc` currently is only a placeholder and does not lead to any JSON-LD context definition or vocabulary.
 > This will change at a later date.
