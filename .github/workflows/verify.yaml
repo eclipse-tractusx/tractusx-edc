@@ -64,10 +64,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          cd ${{ github.workspace }}
-          git status
-
       - uses: addnab/docker-run-action@v3
         with:
           image: jnorwood/helm-docs:v1.10.0
