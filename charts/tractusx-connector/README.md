@@ -9,30 +9,35 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 
 **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
-This chart uses Hashicorp Vault, which is expected to contain the following secrets on application start:
+## Setting up SSI
 
-- `daps-cert`: contains the x509 certificate of the connector.
-- `daps-key`: the private key of the x509 certificate
-- `aes-keys`: a 128bit, 256bit or 512bit string used to encrypt data. Must be stored in base64 format.
+### Preconditions
 
-These must be obtained from a DAPS instance, the process of which is out of the scope of this document. Alternatively,
-self-signed certificates can be used for testing:
+- the Managed Identity Walled (MIW) must be running and reachable via network
+- the necessary set of VerifiableCredentials for this participant must be pushed to MIW. This is typically done by the
+  Portal during participant onboarding
+- KeyCloak must be running and reachable via network
+- an account with KeyCloak must be created for this BPN and the connector must be able to obtain access tokens
+- the client ID and client secret corresponding to that account must be known
 
-```shell
-openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout daps.key -out daps.cert -subj "/CN=test"
-export DAPS_KEY="$(cat daps.key)"
-export DAPS_CERT="$(cat daps.cert)"
-```
+### Preparatory work
 
-## Launching the application
+- store your KeyCloak client secret in the HashiCorp vault. The exact procedure will depend on your deployment of HashiCorp Vault and
+  is out of scope of this document. But by default, Tractus-X EDC expects to find the secret under `secret/client-secret`.
 
-The following requirements must be met before launching the application:
+### Configure the chart
 
-- Write access to a HashiCorp Vault instance is required to run this chart
-- Secrets are seeded in advance
+Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
+- `controlplane.ssi.miw.url`: the URL
+- `controlplane.ssi.miw.authorityId`: the BPN of the issuer authority
+- `controlplane.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
+- `controlplane.ssi.oauth.client.id`: client ID for KeyCloak
+- `controlplane.ssi.oauth.client.secretAlias`: the alias under which the client secret is stored in the vault. Defaults to `client-secret`.
 
-Please also consider using [this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml)
-to launch the application.
+### Launching the application
+
+As an easy starting point, please consider using [this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml)
+to launch the application. The configuration values mentioned above (`controlplane.ssi.*`) will have to be adapted manually.
 Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
@@ -154,7 +159,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0-rc1 \
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| controlplane.ssi.endpoint.audience | string | `"http://this.audience"` |  |
 | controlplane.ssi.miw.authorityId | string | `""` |  |
 | controlplane.ssi.miw.url | string | `""` |  |
 | controlplane.ssi.oauth.client.id | string | `""` |  |
