@@ -73,7 +73,7 @@ jobs:
       - run: |
           cd ${{ github.workspace }}
           git status --porcelain
-          if [[ -n `git status --porcelain` ]]; then
+          if $(git diff --quiet --exit-code); then
             echo "Helm chart docs up to date"
           else
             echo "Helm chart docs not up to date"
