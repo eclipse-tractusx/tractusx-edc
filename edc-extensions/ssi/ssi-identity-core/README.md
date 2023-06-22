@@ -18,4 +18,8 @@ Custom rule could be like:
 - Expiration
 - ..etc
 
-This module it's still in development, but it will likely to contain also the Identity extractor from the `ClaimToken`
+## Configuration
+
+| Key                                     | Required | Example        | Description                           |
+|-----------------------------------------|----------|----------------|---------------------------------------|
+| tx.ssi.endpoint.audience                | X        |                | Endpoint URL for audience check (DSP) |

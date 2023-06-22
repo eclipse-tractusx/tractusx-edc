@@ -1,6 +1,6 @@
 # tractusx-connector
 
-![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.1](https://img.shields.io/badge/AppVersion-0.4.1-informational?style=flat-square)
+![Version: 0.5.0-rc1](https://img.shields.io/badge/Version-0.5.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0-rc1](https://img.shields.io/badge/AppVersion-0.5.0--rc1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
@@ -37,19 +37,18 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.4.1 \
+helm install my-release tractusx-edc/tractusx-connector --version 0.5.0-rc1 \
      -f <path-to>/tractusx-connector-test.yaml
 ```
 
 ## Source Code
 
-<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://./subcharts/omejdn | daps(daps) | 0.0.1 |
 | https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.1.6 |
 | https://helm.releases.hashicorp.com | vault(vault) | 0.20.0 |
 
@@ -155,20 +154,17 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
+| controlplane.ssi.endpoint.audience | string | `"http://this.audience"` |  |
+| controlplane.ssi.miw.authorityId | string | `""` |  |
+| controlplane.ssi.miw.url | string | `""` |  |
+| controlplane.ssi.oauth.client.id | string | `""` |  |
+| controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |
+| controlplane.ssi.oauth.tokenurl | string | `""` |  |
 | controlplane.tolerations | list | `[]` |  |
 | controlplane.url.ids | string | `""` | Explicitly declared url for reaching the ids api (e.g. if ingresses not used) |
 | controlplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | controlplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | customLabels | object | `{}` |  |
-| daps.clientId | string | `""` |  |
-| daps.connectors[0].attributes.referringConnector | string | `"http://sokrates-controlplane/BPNSOKRATES"` |  |
-| daps.connectors[0].certificate | string | `""` |  |
-| daps.connectors[0].id | string | `"E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"` |  |
-| daps.connectors[0].name | string | `"sokrates"` |  |
-| daps.fullnameOverride | string | `"daps"` |  |
-| daps.paths.jwks | string | `"/jwks.json"` |  |
-| daps.paths.token | string | `"/token"` |  |
-| daps.url | string | `""` |  |
 | dataplane.affinity | object | `{}` |  |
 | dataplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | dataplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -249,38 +245,39 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | dataplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | fullnameOverride | string | `""` |  |
-| idsdaps.connectors[0].certificate | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
-| install.daps | bool | `true` |  |
 | install.postgresql | bool | `true` |  |
 | install.vault | bool | `true` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.controlplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the controlplane component |
+| networkPolicy.controlplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for cp (defaults to all namespaces) |
+| networkPolicy.dataplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the dataplane component |
+| networkPolicy.dataplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for dp (defaults to all namespaces) |
+| networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
 | participant.id | string | `""` |  |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
-| postgresql.fullnameOverride | string | `"postgresql"` |  |
-| postgresql.jdbcUrl | string | `""` |  |
+| postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
 | postgresql.primary.persistence.enabled | bool | `false` |  |
 | postgresql.readReplicas.persistence.enabled | bool | `false` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | serviceAccount.name | string | `""` |  |
-| vault.fullnameOverride | string | `"vault"` |  |
+| tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
+| tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.hashicorp.healthCheck.enabled | bool | `true` |  |
 | vault.hashicorp.healthCheck.standbyOk | bool | `true` |  |
 | vault.hashicorp.paths.health | string | `"/v1/sys/health"` |  |
 | vault.hashicorp.paths.secret | string | `"/v1/secret"` |  |
 | vault.hashicorp.timeout | int | `30` |  |
 | vault.hashicorp.token | string | `""` |  |
-| vault.hashicorp.url | string | `""` |  |
+| vault.hashicorp.url | string | `"http://{{ .Release.Name }}-vault:8200"` |  |
 | vault.injector.enabled | bool | `false` |  |
-| vault.secretNames.dapsPrivateKey | string | `"daps-private-key"` |  |
-| vault.secretNames.dapsPublicKey | string | `"daps-public-key"` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
-| vault.secretNames.transferProxyTokenSignerPrivateKey | string | `"transfer-proxy-token-signer-private-key"` |  |
-| vault.secretNames.transferProxyTokenSignerPublicKey | string | `"transfer-proxy-token-signer-public-key"` |  |
+| vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
+| vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |
 | vault.server.dev.devRootToken | string | `"root"` |  |
 | vault.server.dev.enabled | bool | `true` |  |
 | vault.server.postStart | string | `nil` |  |

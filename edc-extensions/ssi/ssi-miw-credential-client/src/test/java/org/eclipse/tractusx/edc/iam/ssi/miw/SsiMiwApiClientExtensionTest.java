@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwApiClientExtension.MIW_AUTHORITY_ID;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwApiClientExtension.MIW_BASE_URL;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -52,8 +53,11 @@ public class SsiMiwApiClientExtensionTest {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
         when(config.getString(MIW_BASE_URL)).thenReturn("url");
+        when(config.getString(MIW_AUTHORITY_ID)).thenReturn("authorityId");
+
 
         assertThat(extension.apiClient(context)).isInstanceOf(MiwApiClientImpl.class);
         verify(config).getString(MIW_BASE_URL);
+        verify(config).getString(MIW_AUTHORITY_ID);
     }
 }

@@ -43,8 +43,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
     @Override
     public <T extends Event> Result<Void> invoke(CallbackEventRemoteMessage<T> message) {
-        if (message.getEventEnvelope().getPayload() instanceof TransferProcessStarted) {
-            var transferProcessStarted = (TransferProcessStarted) message.getEventEnvelope().getPayload();
+        if (message.getEventEnvelope().getPayload() instanceof TransferProcessStarted transferProcessStarted) {
             if (transferProcessStarted.getDataAddress() != null) {
                 return EndpointDataAddressConstants.to(transferProcessStarted.getDataAddress())
                         .compose(this::storeEdr)
@@ -57,8 +56,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
     private Result<Void> storeEdr(EndpointDataReference edr) {
         return transactionContext.execute(() -> {
             // TODO upstream api for getting the TP with the DataRequest#id
-            var transferProcessId = transferProcessStore.processIdForDataRequestId(edr.getId());
-            var transferProcess = transferProcessStore.findById(transferProcessId);
+            var transferProcess = transferProcessStore.findForCorrelationId(edr.getId());
             if (transferProcess != null) {
                 var cacheEntry = EndpointDataReferenceEntry.Builder.newInstance()
                         .transferProcessId(transferProcess.getId())
@@ -69,7 +67,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                 edrCache.save(cacheEntry, edr);
                 return Result.success();
             } else {
-                return Result.failure(format("Failed to find a transfer process with ID %s", transferProcessId));
+                return Result.failure(format("Failed to find a transfer process with correlation ID %s", edr.getId()));
             }
         });
 

@@ -27,9 +27,9 @@ dependencies {
     testImplementation(libs.edc.dpf.http)
     testImplementation(project(":spi:edr-cache-spi"))
     testImplementation(project(":core:edr-cache-core"))
-    testImplementation(project(":edc-dataplane:edc-dataplane-proxy-consumer-api"))
-    testImplementation(project(":edc-dataplane:edc-dataplane-proxy-provider-api"))
-    testImplementation(project(":edc-dataplane:edc-dataplane-proxy-provider-core"))
+    testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
+    testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api"))
+    testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core"))
 
 }
 

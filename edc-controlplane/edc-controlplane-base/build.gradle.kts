@@ -27,17 +27,23 @@ dependencies {
     runtimeOnly(project(":edc-extensions:business-partner-validation"))
     runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
     runtimeOnly(project(":edc-extensions:data-encryption"))
-    runtimeOnly(project(":edc-extensions:cx-oauth2"))
+
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:observability-api-customization"))
     runtimeOnly(project(":edc-extensions:control-plane-adapter-api"))
     runtimeOnly(project(":edc-extensions:control-plane-adapter-callback"))
 
+    // needed for SSI integration
+    runtimeOnly(project(":core:json-ld-core"))
+    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-core"))
+    runtimeOnly(project(":edc-extensions:ssi:ssi-miw-credential-client"))
+    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-extractor"))
+    runtimeOnly(project(":edc-extensions:cx-policy"))
+
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
-    runtimeOnly(libs.edc.auth.oauth2.core)
-    runtimeOnly(libs.edc.auth.oauth2.daps)
+
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.dsp)
     runtimeOnly(libs.edc.spi.jwt)
