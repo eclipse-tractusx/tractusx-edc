@@ -64,10 +64,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          cd ${{ github.workspace }}
-          git status --porcelain
-
       - uses: addnab/docker-run-action@v3
         with:
           image: jnorwood/helm-docs:v1.10.0
@@ -78,7 +74,9 @@ jobs:
           cd ${{ github.workspace }}
           git status --porcelain
           if [[ -n `git status --porcelain` ]]; then
-            echo "Helm chart docs not up-to-date"
+            echo "Helm chart docs up to date"
+          else
+            echo "Helm chart docs not up to date"
             exit 1
           fi
   
