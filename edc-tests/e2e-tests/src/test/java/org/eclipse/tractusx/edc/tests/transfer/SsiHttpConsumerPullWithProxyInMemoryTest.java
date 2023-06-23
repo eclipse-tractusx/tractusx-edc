@@ -58,13 +58,14 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
             PLATO_BPN,
             platoSsiConfiguration()
     );
-    
+
     private MockWebServer oauthServer;
     private MockWebServer miwPlatoServer;
     private MockWebServer miwSokratesServer;
 
     @BeforeEach
     void setup() throws IOException {
+        super.setup();
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
         oauthServer = new MockWebServer();
