@@ -21,25 +21,21 @@
 #
 
 ---
-name: "Build"
+name: "Publish Artefacts"
 
 on:
-  push:
+  workflow_run:
+    workflows: [ "Test-All" ]
     branches:
       - main
       - releases
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - release/*
+      - hotfix/*
+    types:
+      - completed
   release:
     types:
       - published
-  pull_request:
-    paths-ignore:
-      - 'charts/**'
-      - 'docs/**'
-      - '**/*.md'
-    branches:
-      - '*'
   workflow_dispatch:
 
 
