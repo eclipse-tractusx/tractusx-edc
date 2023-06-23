@@ -46,17 +46,17 @@ concurrency:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   run-verify:
-    uses: ./.github/workflows/verify.yml
+    uses: ./.github/workflows/verify.yaml
     secrets: inherit
 
   run-deployment-test:
-    uses: ./.github/workflows/deployment-test.yml
+    uses: ./.github/workflows/deployment-test.yaml
     secrets: inherit
 
   summary:
     needs:
-      - unit-test
-      - deployment-test
+      - run-verify
+      - run-deployment-test
     runs-on: ubuntu-latest
     steps:
       # Runs a single command using the runners shell
