@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -52,7 +53,12 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
 
     private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
     private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
-    MockWebServer server = new MockWebServer();
+    MockWebServer server;
+
+    @BeforeEach
+    void setup() throws IOException {
+        server = new MockWebServer();
+    }
 
     @Test
     void transferData_privateBackend() throws IOException, InterruptedException {
