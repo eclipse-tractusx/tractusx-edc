@@ -71,7 +71,6 @@ jobs:
           run: helm-docs
 
       - run: |
-          cd ${{ github.workspace }}
           if $(git diff --quiet --exit-code); then
             echo "Helm chart docs up to date"
           else
