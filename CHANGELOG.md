@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0-rc1] - 2023-06-21
+## [0.5.0-rc2] - 2023-06-23
+
+## [0.5.0-rc2] - 2023-06-23
+
+### Changed
+
+Upgraded to EDC 0.1.2
 
 ## [0.5.0-rc1] - 2023-06-21
 
@@ -342,7 +348,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc1...HEAD
+[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc2...HEAD
+
+[0.5.0-rc2]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc1...0.5.0-rc2
 
 [0.5.0-rc1]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.4.1...0.5.0-rc1
 

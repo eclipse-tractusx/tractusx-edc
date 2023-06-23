@@ -18,6 +18,8 @@ import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
+import org.eclipse.edc.spi.response.ResponseStatus;
+import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallbackRegistry;
 
@@ -41,13 +43,13 @@ public class InProcessCallbackMessageDispatcher implements RemoteMessageDispatch
     }
 
     @Override
-    public <T, M extends RemoteMessage> CompletableFuture<T> send(Class<T> responseType, M message) {
+    public <T, M extends RemoteMessage> CompletableFuture<StatusResult<T>> dispatch(Class<T> responseType, M message) {
         if (message instanceof CallbackEventRemoteMessage) {
             var result = registry.handleMessage((CallbackEventRemoteMessage<? extends Event>) message);
             if (result.succeeded()) {
-                return CompletableFuture.completedFuture(null);
+                return CompletableFuture.completedFuture(StatusResult.success(null));
             } else {
-                return CompletableFuture.failedFuture(new EdcException(result.getFailureDetail()));
+                return CompletableFuture.completedFuture(StatusResult.failure(ResponseStatus.FATAL_ERROR, result.getFailureDetail()));
             }
         }
         return CompletableFuture.failedFuture(new EdcException(format("Message of type %s not supported", message.getClass().getSimpleName())));
