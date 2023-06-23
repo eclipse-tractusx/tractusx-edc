@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The **Endpoint Data Reference** serves the purpose of streamlining the interactions between consumer connector operators. Through its API, acts as a facade for two fundamental processes involved in Asset consumption: **contract negotiation** and **transfer process** initialization. Additionally, it enables the management of **EDR**s (Endpoint Data References).
+The **Endpoint Data Reference** serves the purpose of streamlining the consumer connector operators' interactions. Through its API, acts as a facade for two fundamental processes involved in Asset consumption: **contract negotiation** and **transfer process** initialization and additionally, it enables the management of **EDR**s (Endpoint Data References).
 
 ## Configuration
 
@@ -37,22 +37,22 @@ The new API is seamlessly deployed under the well-known management API context, 
     "odrl": "http://www.w3.org/ns/odrl/2/"
   },
   "@type": "NegotiationInitiateRequestDto",
-  "connectorAddress": "{{ _['-provider-dsp-url'] }}",
+  "connectorAddress": "<PROVIDER_DSP_URL>",
   "protocol": "dataspace-protocol-http",
-  "connectorId": "{{ _['connector-id'] }}",
-  "providerId": "{{ _['provider-id'] }}",
+  "connectorId": "<CONNECTOR_ID>",
+  "providerId": "<PROVIDER_ID>",
   "offer": {
-    "offerId": "{{ _['offer-id'] }}",
-    "assetId": "{{ _['asset-id'] }}",
+    "offerId": "<OFFER_ID>",
+    "assetId": "<ASSET_ID>",
     "policy": {
       "@type": "odrl:Set",
       "odrl:permission": {
-        "odrl:target": "{{ _['asset-id'] }}",
+        "odrl:target": "<ASSET_ID>",
         "odrl:action": {
           "odrl:type": "USE"
         }
       },
-      "odrl:target": "{{ _['asset-id'] }}"
+      "odrl:target": "<ASSET_ID>"
     }
   }
 }
@@ -107,9 +107,9 @@ The new API is seamlessly deployed under the well-known management API context, 
 
 - This endpoint, through the `transfer-process-id` passed as `path variable`, will retrieve the actual EDR.
 
-| Path                                         | Method | Query Params             |
-|----------------------------------------------|--------|--------------------------|
-| `<MANAGEMENT_URL>/edrs/{trasfer-process-id}` | GET    | none                     |
+| Path                                          | Method | Query Params             |
+|-----------------------------------------------|--------|--------------------------|
+| `<MANAGEMENT_URL>/edrs/{transfer-process-id}` | GET    | none                     |
 
 #### Response
 
