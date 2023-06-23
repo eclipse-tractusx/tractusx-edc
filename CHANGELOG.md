@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0-rc2] - 2023-06-23
 
-## [0.5.0-rc2] - 2023-06-23
-
 ### Changed
 
 Upgraded to EDC 0.1.2
