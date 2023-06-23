@@ -58,6 +58,26 @@ jobs:
             eval $cmd;
             exit 1;
           fi
+
+  verify-helm-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/charts:/helm-docs
+          run: helm-docs
+
+      - run: |
+          if $(git diff --quiet --exit-code); then
+            echo "Helm chart docs up to date"
+          else
+            echo "Helm chart docs not up to date:"
+            git diff
+            exit 1
+          fi
   
   verify-formatting:
     runs-on: ubuntu-latest
