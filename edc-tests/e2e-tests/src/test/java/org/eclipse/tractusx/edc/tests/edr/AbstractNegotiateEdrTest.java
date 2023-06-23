@@ -30,6 +30,8 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.tractusx.edc.helpers.ReceivedEvent;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -57,10 +59,15 @@ public abstract class AbstractNegotiateEdrTest {
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
-    MockWebServer server = new MockWebServer();
+    MockWebServer server;
 
     ObjectMapper mapper = new ObjectMapper();
 
+
+    @BeforeEach
+    void setup() {
+        server = new MockWebServer();
+    }
 
     @Test
     @DisplayName("Verify that the callbacks are invoked when negotiating an EDR")
@@ -141,5 +148,9 @@ public abstract class AbstractNegotiateEdrTest {
         }
     }
 
+    @AfterEach
+    void teardown() throws IOException {
+        server.shutdown();
+    }
 
 }
