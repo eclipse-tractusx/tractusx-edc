@@ -52,6 +52,7 @@ project.subprojects.forEach {
     dependencies {
         jacocoAggregation(project(it.path))
     }
+
 }
 
 allprojects {
@@ -175,4 +176,8 @@ nexusPublishing {
         maxRetries.set(120)
         delayBetween.set(Duration.ofSeconds(10))
     }
+}
+
+tasks.check {
+    dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
 }

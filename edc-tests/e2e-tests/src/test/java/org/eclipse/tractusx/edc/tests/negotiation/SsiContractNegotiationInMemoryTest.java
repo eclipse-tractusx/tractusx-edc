@@ -12,9 +12,8 @@
  *
  */
 
-package org.eclipse.tractusx.edc.tests.transfer;
+package org.eclipse.tractusx.edc.tests.negotiation;
 
-import jakarta.json.JsonObject;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
@@ -25,9 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
-import java.util.Map;
 
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_PLATO_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_SOKRATES_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.OAUTH_PORT;
@@ -41,16 +38,9 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoS
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesSsiConfiguration;
 
 @EndToEndTest
-public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
+public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiateTest {
+    public static final String SUMMARY_VC_TEMPLATE = "summary-vc-no-dismantler.json";
 
-    public static final String SUMMARY_VC_TEMPLATE = "summary-vc.json";
-    @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-ssi",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
-            sokratesSsiConfiguration()
-    );
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
@@ -59,13 +49,20 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
             platoSsiConfiguration()
     );
 
-    private MockWebServer oauthServer;
-    private MockWebServer miwPlatoServer;
-    private MockWebServer miwSokratesServer;
+    @RegisterExtension
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:runtime-memory-ssi",
+            SOKRATES_NAME,
+            SOKRATES_BPN,
+            sokratesSsiConfiguration()
+    );
+    MockWebServer miwSokratesServer;
+    MockWebServer miwPlatoServer;
+    MockWebServer oauthServer;
+
 
     @BeforeEach
     void setup() throws IOException {
-        super.setup();
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
         oauthServer = new MockWebServer();
@@ -85,10 +82,5 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
         oauthServer.shutdown();
-    }
-
-    @Override
-    protected JsonObject createTestPolicy(String policyId, String bpn) {
-        return frameworkPolicy(policyId, Map.of("Dismantler", "active"));
     }
 }

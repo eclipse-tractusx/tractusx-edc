@@ -22,25 +22,9 @@
 name: "Verify"
 
 on:
-  push:
-    branches:
-      - main
-      - releases
-      - previews/*
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-  release:
-    types:
-      - published
-  pull_request:
-    paths-ignore:
-      - 'charts/**'
+  workflow_call:
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-concurrency:
-  # cancel older running jobs on the same branch
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   
@@ -57,6 +41,26 @@ jobs:
             echo "$violations files without license headers were found:";
             eval $cmd;
             exit 1;
+          fi
+
+  verify-helm-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/charts:/helm-docs
+          run: helm-docs
+
+      - run: |
+          if $(git diff --quiet --exit-code); then
+            echo "Helm chart docs up to date"
+          else
+            echo "Helm chart docs not up to date:"
+            git diff
+            exit 1
           fi
   
   verify-formatting:
