@@ -8,13 +8,12 @@ The **Endpoint Data Reference** serves the purpose of streamlining the consumer 
 
 The new API is seamlessly deployed under the well-known management API context, requiring no additional configuration. However, this is not the case for the EDR Cache storage. The EDR Cache provides two implementations: `InMemory` and `SQL`. The `edc-runtime-memory` bundle utilizes the `InMemory` implementation for the EDR Cache without any extra setup. On the other hand, the SQL Cache, found in the `edc-controlplane-postgresql-*` bundles, utilizes the SQL implementation and requires database access for schema migration and data management.
 
-| property                                                  | description                                          | required  | default value |
-|-----------------------------------------------------------|------------------------------------------------------|-----------|---------------|
-| edc.datasource.edr.name                                   | Defines the name associated with the EDR data source | false     | edr           |
-| edc.datasource.edr.url                                    | Defines the database address to access the EDR data  | true      |               |
-| edc.datasource.edr.user                                   | Defines EDR database username                        | true      |               |
-| edc.datasource.edr.password                               | Defines EDR database password                        | true      |               |
-| org.eclipse.tractusx.edc.postgresql.migration.edr.enabled | Enables EDR database migration	                      | true      |               |
+| property                                                  | description                                          | required | default value |
+|-----------------------------------------------------------|------------------------------------------------------|----------|---------------|
+| edc.datasource.edr.name                                   | Defines the name associated with the EDR data source | false    | edr           |
+| edc.datasource.edr.url                                    | Defines the database address to access the EDR data  | true     |               |
+| edc.datasource.edr.user                                   | Defines EDR database username                        | true     |               |
+| edc.datasource.edr.password                               | Defines EDR database password                        | true     |               |
 
 ## Features
 
@@ -58,7 +57,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 }
 ```
 
-#### Response
+#### EDR Negotiation Response
 
 ```json
 {
@@ -84,7 +83,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 |----------------------------------------------|--------|----------------------|
 | `<MANAGEMENT_URL>/edrs`                      | GET    | assetId, agreementId |
 
-#### Response
+#### EDR Entry Response
 
 ```json
 [
@@ -111,7 +110,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 |-----------------------------------------------|--------|--------------------------|
 | `<MANAGEMENT_URL>/edrs/{transfer-process-id}` | GET    | none                     |
 
-#### Response
+#### EDR Response
 
 ```json
 {
