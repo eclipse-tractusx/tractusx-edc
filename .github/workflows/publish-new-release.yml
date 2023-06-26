@@ -174,7 +174,7 @@ jobs:
   # Release: GitHub tag & release; Merges back releases into main; Starts a new development cycle;
   github-release:
     name: Publish new github release
-    needs: [ release-version ]
+    needs: [ release-version, maven-release, docker-release, helm-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write

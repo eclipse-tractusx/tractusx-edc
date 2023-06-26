@@ -22,26 +22,9 @@
 name: "Deployment Tests"
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-  release:
-    types:
-      - published
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-    branches:
-      - '*'
+  workflow_call:
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
 
