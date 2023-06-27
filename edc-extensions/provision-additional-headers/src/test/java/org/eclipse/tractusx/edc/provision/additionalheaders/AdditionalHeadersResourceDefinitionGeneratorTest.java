@@ -20,6 +20,9 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.connector.transfer.spi.provision.ProviderResourceDefinitionGenerator;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -30,11 +33,15 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AdditionalHeadersResourceDefinitionGeneratorTest {
 
-    private final AdditionalHeadersResourceDefinitionGenerator generator =
-            new AdditionalHeadersResourceDefinitionGenerator();
+    private final ContractAgreementService contractAgreementService = mock();
+    private final ProviderResourceDefinitionGenerator generator = new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService);
 
     @Test
     void canGenerate_shouldReturnFalseForNotHttpDataAddresses() {
@@ -73,16 +80,33 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
                 DataRequest.Builder.newInstance()
                         .id(UUID.randomUUID().toString())
                         .dataDestination(dataAddress)
+                        .contractId("contractId")
                         .build();
         var build = Policy.Builder.newInstance().build();
+        when(contractAgreementService.findById(any())).thenReturn(contractAgreementWithBpn("bpn"));
 
         var result = generator.generate(dataRequest, dataAddress, build);
 
         assertThat(result)
                 .asInstanceOf(type(AdditionalHeadersResourceDefinition.class))
-                .extracting(AdditionalHeadersResourceDefinition::getDataAddress)
-                .extracting(address -> HttpDataAddress.Builder.newInstance().copyFrom(address).build())
-                .extracting(HttpDataAddress::getBaseUrl)
-                .isEqualTo("http://any");
+                .satisfies(resourceDefinition -> {
+                    assertThat(resourceDefinition.getDataAddress())
+                            .extracting(address -> HttpDataAddress.Builder.newInstance().copyFrom(address).build())
+                            .extracting(HttpDataAddress::getBaseUrl)
+                            .isEqualTo("http://any");
+                    assertThat(resourceDefinition.getContractId()).isEqualTo("contractId");
+                    assertThat(resourceDefinition.getBpn()).isEqualTo("bpn");
+                });
+        verify(contractAgreementService).findById("contractId");
+    }
+
+    private static ContractAgreement contractAgreementWithBpn(String bpn) {
+        return ContractAgreement.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .consumerId(bpn)
+                .providerId("providerId")
+                .assetId("assetId")
+                .policy(Policy.Builder.newInstance().build())
+                .build();
     }
 }

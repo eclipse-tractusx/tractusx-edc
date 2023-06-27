@@ -49,19 +49,19 @@ class AdditionalHeadersProvisionerTest {
 
     @Test
     void cannotDeprovisionAdditionalHeadersResourceDefinition() {
-        assertThat(provisioner.canDeprovision(mock(AdditionalHeadersProvisionedResource.class)))
-                .isFalse();
+        assertThat(provisioner.canDeprovision(mock(AdditionalHeadersProvisionedResource.class))).isFalse();
         assertThat(provisioner.canDeprovision(mock(ProvisionedResource.class))).isFalse();
     }
 
     @Test
-    void shouldAddContractIdAdditionalHeader() {
+    void shouldAddAdditionalHeaders() {
         var address = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
         var resourceDefinition =
                 AdditionalHeadersResourceDefinition.Builder.newInstance()
                         .id(UUID.randomUUID().toString())
                         .transferProcessId(UUID.randomUUID().toString())
                         .contractId("contractId")
+                        .bpn("bpn")
                         .dataAddress(address)
                         .build();
 
@@ -77,6 +77,7 @@ class AdditionalHeadersProvisionerTest {
                 .extracting(a -> HttpDataAddress.Builder.newInstance().copyFrom(a).build())
                 .extracting(HttpDataAddress::getAdditionalHeaders)
                 .asInstanceOf(map(String.class, String.class))
-                .containsEntry("Edc-Contract-Agreement-Id", "contractId");
+                .containsEntry("Edc-Contract-Agreement-Id", "contractId")
+                .containsEntry("Edc-Bpn", "bpn");
     }
 }
