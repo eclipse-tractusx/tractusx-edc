@@ -57,7 +57,6 @@ include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
 include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
-include(":edc-tests:cucumber")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
