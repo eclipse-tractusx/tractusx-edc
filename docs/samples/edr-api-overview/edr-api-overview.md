@@ -19,7 +19,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 
 ### EDR Negotiation | Contract Negotiation and Transfer Process in a single request
 
-- This endpoint will perform the contract negotiation, transfer process and EDR storage respectively.
+This endpoint will perform the contract negotiation, transfer process and EDR storage respectively.
 
 > Please note that the `data destination` will always be `HttpProxy`, requiring a request against the provider's `data-plane` to fetch the asset data.
 
@@ -77,7 +77,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 
 ### EDR Management | Fetch cached EDRs
 
-- This endpoint will retrieve all EDR entries by their `assetId` or `agreementId` references, which are passed as `query parameters`.
+This endpoint will retrieve all EDR entries by their `assetId` or `agreementId` references, which are passed as `query parameters`.
 
 | Path                                         | Method | Query Params         |
 |----------------------------------------------|--------|----------------------|
@@ -104,7 +104,7 @@ The new API is seamlessly deployed under the well-known management API context, 
 ]
 ```
 
-- This endpoint, through the `transfer-process-id` passed as `path variable`, will retrieve the actual EDR.
+This endpoint, through the `transfer-process-id` passed as `path variable`, will retrieve the actual EDR.
 
 | Path                                          | Method | Query Params             |
 |-----------------------------------------------|--------|--------------------------|
