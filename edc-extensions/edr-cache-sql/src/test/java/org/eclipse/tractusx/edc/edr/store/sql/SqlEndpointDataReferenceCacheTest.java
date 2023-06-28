@@ -25,6 +25,7 @@ import org.eclipse.tractusx.edc.edr.store.sql.schema.EdrStatements;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.postgres.PostgresEdrStatements;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
@@ -33,10 +34,15 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.Clock;
 
+import static java.util.UUID.randomUUID;
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edr;
+import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edrEntry;
 import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCache.SEPARATOR;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @PostgresqlDbIntegrationTest
@@ -69,6 +75,20 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
     @AfterEach
     void tearDown(PostgresqlStoreSetupExtension extension) throws SQLException {
         extension.runQuery("DROP TABLE " + statements.getEdrTable() + " CASCADE");
+    }
+
+    @Test
+    void verify_unoffensive_secretKey() {
+        var tpId = "tp1";
+        var assetId = "asset1";
+        var edrId = "edr1";
+
+        var edr = edr(edrId);
+        var entry = edrEntry(assetId, randomUUID().toString(), tpId);
+
+        getStore().save(entry, edr);
+
+        verify(vault).storeSecret(argThat(s -> s.startsWith("edr--")), anyString());
     }
 
     @Override
