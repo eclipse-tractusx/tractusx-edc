@@ -126,5 +126,5 @@ public abstract class EndpointDataReferenceCacheBaseTest {
                 .extracting(StoreResult::reason)
                 .isEqualTo(StoreFailure.Reason.NOT_FOUND);
     }
-    
+
 }
