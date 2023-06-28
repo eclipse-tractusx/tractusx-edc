@@ -6,30 +6,13 @@
 {
   "connectorAddress": "provider-dsp-url",
   "protocol": "dataspace-protocol-http",
-  "connectorId": "provider-id",
-  "providerId": "provider-id",
+  "connectorId": "<CONNECTOR-ID>",
+  "providerId": "<PROVIDER-ID>",
   "offer": {
-    "offerId": "offer-id",
-    "assetId": "asset-id",
+    "offerId": "<OFFER-ID>",
+    "assetId": "<ASSET-ID>",
     "policy": {
-      "permissions": [
-        {
-          "action": {
-            "type": "USE"
-          },
-          "constraints": [
-            {
-              "leftExpression": {
-                "value": "BusinessPartnerNumber"
-              },
-              "rightExpression": {
-                "value": "BPN"
-              },
-              "operator": "EQ"
-            }
-          ]
-        }
-      ],
+      "permissions": [],
       "prohibition": [],
       "obligation": []
     }
@@ -50,33 +33,23 @@
   "@type": "NegotiationInitiateRequestDto",
   "connectorAddress": "provider-dsp-url",
   "protocol": "dataspace-protocol-http",
-  "connectorId": "provider-id",
-  "providerId": "provider-id",
+  "connectorId": "<CONNECTOR-ID>",
+  "providerId": "<PROVIDER-ID>",
   "offer": {
-    "offerId": "offer-id",
-    "assetId": "asset-id",
+    "offerId": "<ODRL-SET-ID>",
+    "assetId": "<ASSET-ID>",
     "policy": {
       "@type": "odrl:Set",
-      "odrl:permission": {
-        "odrl:target": "asset-id",
-        "odrl:action": {
-          "odrl:type": "USE"
-        },
-        "odrl:constraint": {
-          "odrl:or": {
-            "odrl:leftOperand": "BusinessPartnerNumber",
-            "odrl:operator": "EQ",
-            "odrl:rightOperand": "BPN"
-          }
-        }
-      },
+      "odrl:permission": [],
       "odrl:prohibition": [],
       "odrl:obligation": [],
-      "odrl:target": "asset-id"
+      "odrl:target": "<ASSET-ID>"
     }
   }
 }
 ```
+The `offerId` and `policy` must be the `odrl:Set` `@id` and content, respectively, of the one you chose to agree with from the `dcat:dataset` in the `dcat:catalog`.
+
 
 ## Request
 

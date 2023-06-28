@@ -5,7 +5,7 @@
 ```json
 {
   "protocol" : "ids-protocol-http",
-  "providerUrl": "http://provider-control-plane:8282/api/v1/ids",
+  "providerUrl": "<PROVIDER-URL>",
   "querySpec": {
     "offset": 0,
     "limit": 100,
@@ -27,27 +27,25 @@
 ```json
 {
   "@context": {
-    "vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "protocol" : "dataspace-protocol-http",
-  "providerUrl": "http://provider-control-plane:8282/api/v1/dsp",
+  "providerUrl": "<PROVIDER-URL>",
   "querySpec": {
     "offset": 0,
     "limit": 100,
-    "filter": "",
-    "range": {
-      "from": 0,
-      "to": 100
-    },
-    "sortField": "",
-    "criterion": ""
+    "filterExpression": {
+      "operandLeft": "<OPERAND-LEFT>",
+      "operator": "<OPERATOR>",
+      "operandRight": "<OPERAND-RIGHT>"
+    }
   }
 }
 ```
 
 ## Request
 
-In this case we fetch a provider catalog without using `queryspec`.
+In this case we fetch a provider catalog.
 
 ```bash
 curl -X POST "${MANAGEMENT_URL}/v2/catalog/request" \
@@ -61,14 +59,7 @@ curl -X POST "${MANAGEMENT_URL}/v2/catalog/request" \
               "providerUrl": "http://provider-control-plane:8282/api/v1/dsp",
               "querySpec": {
                 "offset": 0,
-                "limit": 100,
-                "filter": "",
-                "range": {
-                    "from": 0,
-                    "to": 100
-                },
-                "sortField": "",
-                "criterion": ""
+                "limit": 100
               }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'

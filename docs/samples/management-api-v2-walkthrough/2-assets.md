@@ -5,17 +5,18 @@
 ```json
 {
   "asset": {
-    "id": "asset-id",
+    "id": "<ASSET-ID>",
     "properties": {
-      "name": "asset-name",
-      "description": "asset-description",
-      "version": "0.0.1",
-      "contenttype": "application/json"
+      "name": "<ASSET-NAME>",
+      "description": "<ASSET-DESCRIPTION>",
+      "version": "<ASSET-VERSION>",
+      "contenttype": "<ASSET-CONTENT-TYPE>"
     }
   },
   "dataAddress": {
-    "type": "asset-address-type",
-    "keyName": "asset-key-name"
+    "properties": {
+      "type": "<SUPPORTED-TYPE>"
+    }
   }
 }
 ```
@@ -31,21 +32,19 @@
   },
   "@type": "AssetEntryDto",
   "asset": {
-    "@id": "asset-id",
+    "@id": "<ASSET-ID>",
     "properties": {
-      "name": "asset-name",
-      "description": "asset-description",
-      "version": "0.0.1",
-      "contenttype": "application/json"
+      "name": "<ASSET-NAME>",
+      "description": "<ASSET-DESCRIPTION>",
+      "version": "<ASSET-VERSION>",
+      "contenttype": "<ASSET-CONTENT-TYPE>"
     },
     "privateProperties": {
-      "pvt-prop-1": "prt-prov-val-1",
-      "pvt-prop-2": "prt-prov-val-2"
+      "private-property": "<PRIVATE-PROPERTY-VALUE>",
     }
   },
   "dataAddress": {
-    "type": "asset-address-type",
-    "keyName": "asset-key-name"
+    "type": "<SUPPORTED-TYPE>"
   }
 }
 ```
@@ -55,7 +54,9 @@ Private properties will not be sent through the dataplane and are only accessibl
 This enables the storage of additional information pertaining the asset, that is not relevant for the consumer, but is nonetheless useful for the provider.
 Private properties are stores inside the `privateProperties` field.
 
-> Please note: `privateProperties` are entirely optional and the field is not required for creating or updating an asset.
+> Please note: 
+> - `privateProperties` are entirely optional and the field is not required for creating or updating an asset.
+> - `dataAddress` should correspond to one of the supported types by the connector, e.g. HttpData and AmazonS3, and it should include all the necessary properties associated with the chosen type.
 
 ## Request
 
@@ -75,8 +76,8 @@ curl -X POST "${MANAGEMENT_URL}/v2/assets" \
                 "@id": "asset-id"
               },
               "dataAddress": {
-                "type": "asset-address-type",
-                "keyName": "asset-key-name"
+                "type": "HttpData",
+                "baseUrl": "https://jsonplaceholder.typicode.com/todos"
               }
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'

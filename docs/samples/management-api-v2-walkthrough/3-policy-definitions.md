@@ -4,7 +4,7 @@
 
 ```json
 {
-  "id": "policy-definition-id",
+  "id": "<POLICY-DEFINITION-ID>",
   "policy": {
     "permissions": [
       {
@@ -14,12 +14,12 @@
         "constraints": [
           {
             "leftExpression": {
-              "value": "BusinessPartnerNumber"
+              "value": "<LEFT-EXPRESSION-VALUE>"
             },
             "rightExpression": {
-              "value": "BPN"
+              "value": "<RIGHT-EXPRESSION-VALUE>"
             },
-            "operator": "eq"
+            "operator": "<OPERATOR>"
           }
         ]
       }
@@ -33,6 +33,7 @@
 ## New JSON-LD Document
 
 Policy model is now pure [ODRL (Open Digital Rights Language)](https://www.w3.org/TR/odrl-model/) and going through it would help get a more complete picture.
+
 > Please note: In our samples, except from `odrl` vocabulary terms that must override `edc` default prefixing, properties **WILL NOT** be explicitly namespaced, and internal nodes **WILL NOT** be typed, relying on `@vocab` prefixing and root schema type inheritance respectively.
 
 ```json
@@ -42,16 +43,16 @@ Policy model is now pure [ODRL (Open Digital Rights Language)](https://www.w3.or
     "odrl": "http://www.w3.org/ns/odrl/2/"
   },
   "@type":"PolicyDefinition",
-  "@id": "policy-definition-id",
+  "@id": "<POLICY-DEFINITION-ID>",
   "policy": {
     "odrl:permission": [
       {
         "odrl:action": "USE",
         "odrl:constraint": [
           {
-            "odrl:leftOperand": "BusinessPartnerNumber",
-            "odrl:operator": "eq",
-            "odrl:rightOperand":  "BPN"
+            "odrl:leftOperand": "<LEFT-OPERAND>",
+            "odrl:operator": "<OPERATOR>",
+            "odrl:rightOperand":  "<RIGHT-OPERAND>"
           }]
       }
     ],

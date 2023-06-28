@@ -4,14 +4,14 @@
 
 ```json
 {
-  "id": "contract-definition-id",
-  "accessPolicyId": "policy-id",
-  "contractPolicyId": "policy-id",
+  "id": "<CONTRACT-DEFINITION-ID>",
+  "accessPolicyId": "<ACCESS-POLICY-ID>",
+  "contractPolicyId": "<CONTRACT-POLICY-ID>",
   "assetsSelector": [
     {
-      "operandLeft": "id",
-      "operator": "=",
-      "operandRight": "asset-id"
+      "operandLeft": "<OPERAND-LEFT>",
+      "operator": "<OPERATOR>",
+      "operandRight": "<OPERAND-RIGHT>"
     }
   ]
 }
@@ -27,14 +27,14 @@
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "ContractDefinition",
-  "@id": "contract-definition-id",
-  "accessPolicyId": "policy-id",
-  "contractPolicyId": "policy-id",
+  "@id": "<CONTRACT-DEFINITION-ID>",
+  "accessPolicyId": "<ACCESS-POLICY-ID>",
+  "contractPolicyId": "<CONTRACT-POLICY-ID>",
   "assetsSelector": [
     {
-      "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-      "operator": "=",
-      "operandRight": "asset-id"
+      "operandLeft": "<OPERAND-LEFT>",
+      "operator": "<OPERATOR>",
+      "operandRight": "<OPERAND-RIGHT>"
     }
   ]
 }

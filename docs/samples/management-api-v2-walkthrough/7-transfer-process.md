@@ -4,17 +4,17 @@
 
 ```json
 {
-  "assetId": "asset-id",
-  "connectorAddress": "provider-dsp-url",
-  "contractId": "contract-agreement-id",
+  "assetId": "<ASSET-ID>",
+  "connectorAddress": "<CONNECTOR-ADDRESS>",
+  "contractId": "<CONTRACT-AGREEMENT-ID>",
   "dataDestination": {
     "properties": {
-      "type": "HttpProxy"
+      "type": "<SUPPORTED-TYPE>"
     }
   },
   "managedResources": false,
   "privateProperties": {
-    "receiverHttpEndpoint": "backend-service-endpoint"
+    "receiverHttpEndpoint": "<RECEIVER-HTTP-ENDPOINT>"
   },
   "protocol": "ids-protocol-http",
   "transferType": {
@@ -34,23 +34,21 @@
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "odrl": "http://www.w3.org/ns/odrl/2/"
   },
-  "assetId": "asset-id",
-  "connectorAddress": "provider-dsp-url",
-  "contractId": "contract-agreement-id",
+  "assetId": "<ASSET-ID>",
+  "connectorAddress": "<CONNECTOR-ADDRESS>",
+  "contractId": "<CONTRACT-AGREEMENT-ID>",
   "dataDestination": {
-    "type": "HttpProxy"
+    "type": "<SUPPORTED-TYPE>"
   },
   "managedResources": false,
   "privateProperties": {
-    "receiverHttpEndpoint": "backend-service-endpoint"
+    "receiverHttpEndpoint": "<RECEIVER-HTTP-ENDPOINT>"
   },
   "protocol": "dataspace-protocol-http",
-  "transferType": {
-    "contentType": "application/octet-stream",
-    "isFinite": true
-  }
 }
 ```
+
+`dataDestination` should correspond to one of the supported types listed in the provider's catalog `dcat:distribution`, and it should include all the necessary properties associated with the chosen type.
 
 ## Request
 
@@ -73,13 +71,9 @@ curl -X POST "${MANAGEMENT_URL}/v2/transferprocesses" \
               },
               "managedResources": false,
               "privateProperties": {
-                "receiverHttpEndpoint": "backend-service-endpoint"
+                "receiverHttpEndpoint": "http://receiver/endpoint"
               },
-              "protocol": "dataspace-protocol-http",
-              "transferType": {
-                "contentType": "application/octet-stream",
-                "isFinite": true
-              }
+              "protocol": "dataspace-protocol-http"
             }' \
     -s -o /dev/null -w 'Response Code: %{http_code}\n'
 ```
