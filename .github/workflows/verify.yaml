@@ -159,3 +159,20 @@ jobs:
 
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
+
+  miw-integration-tests:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: [ verify-formatting, verify-license-headers ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-java
+
+      - uses: actions/checkout@v2
+      - name: Starting MIW, Keycloak and Postgres Servers
+        run: |
+          docker-compose -f edc-tests/e2e-tests/src/test/resources/docker-compose.yml up -d 
+
+      - name: Run MIW E2E tests
+        run: ./gradlew test -DincludeTags="MiwIntegrationTest"
