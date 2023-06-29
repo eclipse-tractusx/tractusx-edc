@@ -172,7 +172,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Starting MIW, Keycloak and Postgres Servers
         run: |
-          docker-compose -f edc-tests/e2e-tests/src/test/resources/docker-compose.yml up -d 
+          docker compose -f edc-tests/e2e-tests/src/test/resources/docker-compose.yml up -d 
 
       - name: Run MIW E2E tests
         run: ./gradlew test -DincludeTags="MiwIntegrationTest"
