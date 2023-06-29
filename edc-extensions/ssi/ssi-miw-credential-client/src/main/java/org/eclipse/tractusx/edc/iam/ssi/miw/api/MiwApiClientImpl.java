@@ -137,7 +137,9 @@ public class MiwApiClientImpl implements MiwApiClient {
         if (valid) {
             return Result.success();
         } else {
-            return Result.failure(format("Verification failed with response: %s", response));
+            var msg = "MIW verification failed";
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
     }
 

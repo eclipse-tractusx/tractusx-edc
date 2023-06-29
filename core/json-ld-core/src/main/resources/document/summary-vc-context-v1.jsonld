@@ -18,7 +18,7 @@
       "@id": "summary:items",
       "@type": "https://schema.org/Text"
     },
-    "contract-template": {
+    "contractTemplate": {
       "@id": "summary:contract-template",
       "@type": "https://schema.org/Text"
     }
