@@ -31,4 +31,6 @@ public interface CredentialsNamespaces {
     String CX_USE_CASE_NS_V1 = CX_USE_CASE_NS + "/v1";
     String CX_SUMMARY_CREDENTIAL = "SummaryCredential";
     String CREDENTIAL_SUBJECT = W3C_VC_PREFIX + "#credentialSubject";
+    String CREDENTIAL_ISSUER = W3C_VC_PREFIX + "#issuer";
+
 }

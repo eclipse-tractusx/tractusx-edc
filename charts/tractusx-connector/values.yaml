@@ -128,6 +128,7 @@ controlplane:
     miw:
       url: ""
       authorityId: ""
+      authorityIssuer: ""
     oauth:
       tokenurl: ""
       client:

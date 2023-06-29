@@ -122,6 +122,8 @@ spec:
               value: {{ .Values.runtime.ssi.miw.url }}
             - name: "TX_SSI_MIW_AUTHORITY_ID"
               value: {{ .Values.runtime.ssi.miw.authorityId }}
+            - name: "TX_SSI_MIW_AUTHORITY_ISSUER"
+              value: {{ .Values.runtime.ssi.miw.authorityIssuer }}
             - name: "TX_SSI_OAUTH_TOKEN_URL"
               value: {{ .Values.runtime.ssi.oauth.tokenurl }}
             - name: "TX_SSI_OAUTH_CLIENT_ID"

@@ -159,6 +159,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-r
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | runtime.ssi.miw.authorityId | string | `""` |  |
+| runtime.ssi.miw.authorityIssuer | string | `""` |  |
 | runtime.ssi.miw.url | string | `""` |  |
 | runtime.ssi.oauth.client.id | string | `""` |  |
 | runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |

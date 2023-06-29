@@ -45,13 +45,16 @@ import static java.lang.String.format;
 public class MiwDispatcher extends Dispatcher {
 
     private static final TypeManager MAPPER = new TypeManager();
-    
+
     private final String audience;
+
+    private final String credentialSubjectId;
 
     private final Map<String, Object> summaryVc;
 
-    public MiwDispatcher(String bpn, String vcFile, String audience) {
+    public MiwDispatcher(String bpn, String vcFile, String credentialSubjectId, String audience) {
         this.audience = audience;
+        this.credentialSubjectId = credentialSubjectId;
         var json = format(readVcContent(vcFile), bpn);
         summaryVc = MAPPER.readValue(json, new TypeReference<>() {
         });
@@ -107,6 +110,7 @@ public class MiwDispatcher extends Dispatcher {
 
     private JWTClaimsSet createClaims(Instant exp, Map<String, Object> presentation) {
         return new JWTClaimsSet.Builder()
+                .issuer(credentialSubjectId)
                 .claim("vp", presentation)
                 .audience(audience)
                 .expirationTime(Date.from(exp))
