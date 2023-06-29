@@ -17,6 +17,7 @@ package org.eclipse.tractusx.edc.tests.catalog;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.tag.MiwIntegrationTest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -65,6 +66,7 @@ public class MiwSsiCatalogTest {
     }
 
     @Test
+    @DisplayName("Verify that Sokrates receives only the offers he is permitted to")
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
         // arrange
         SOKRATES.createAsset("test-asset");

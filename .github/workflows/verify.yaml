@@ -160,7 +160,7 @@ jobs:
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
 
-  miw-integration-tests:
+  ssi-integration-tests:
     runs-on: ubuntu-latest
     continue-on-error: true
     needs: [ verify-formatting, verify-license-headers ]
