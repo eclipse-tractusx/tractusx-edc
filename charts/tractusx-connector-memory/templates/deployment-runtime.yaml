@@ -76,8 +76,8 @@ spec:
           {{- if .Values.runtime.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.runtime.endpoints.observability.path }}/check/liveness
-              port: {{ .Values.runtime.endpoints.observability.port }}
+              path: {{ .Values.runtime.endpoints.default.path }}/check/liveness
+              port: {{ .Values.runtime.endpoints.default.port }}
             initialDelaySeconds: {{ .Values.runtime.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.runtime.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.runtime.livenessProbe.timeoutSeconds }}
@@ -87,8 +87,8 @@ spec:
           {{- if .Values.runtime.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.runtime.endpoints.observability.path }}/check/readiness
-              port: {{ .Values.runtime.endpoints.observability.port }}
+              path: {{ .Values.runtime.endpoints.default.path }}/check/readiness
+              port: {{ .Values.runtime.endpoints.default.port }}
             initialDelaySeconds: {{ .Values.runtime.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.runtime.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.runtime.readinessProbe.timeoutSeconds }}
@@ -168,12 +168,6 @@ spec:
               value: {{ .Values.runtime.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_IDS_PATH"
               value: {{ .Values.runtime.endpoints.protocol.path | quote }}
-            - name: "WEB_HTTP_OBSERVABILITY_PORT"
-              value: {{ .Values.runtime.endpoints.observability.port | quote}}
-            - name: "WEB_HTTP_OBSERVABILITY_PATH"
-              value: {{ .Values.runtime.endpoints.observability.path | quote}}
-            - name: "TRACTUSX_API_OBSERVABILITY_ALLOW-INSECURE"
-              value: {{ .Values.runtime.endpoints.observability.insecure | quote }}
             - name: "WEB_HTTP_PUBLIC_PORT"
               value: {{ .Values.runtime.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
