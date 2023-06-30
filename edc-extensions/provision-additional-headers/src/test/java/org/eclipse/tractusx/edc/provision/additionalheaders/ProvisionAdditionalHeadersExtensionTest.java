@@ -20,97 +20,35 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.contract.spi.negotiation.store.ContractNegotiationStore;
-import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.connector.contract.spi.validation.ContractValidationService;
-import org.eclipse.edc.connector.spi.transferprocess.TransferProcessProtocolService;
-import org.eclipse.edc.connector.transfer.spi.flow.DataFlowController;
-import org.eclipse.edc.connector.transfer.spi.flow.DataFlowManager;
-import org.eclipse.edc.connector.transfer.spi.types.DataFlowResponse;
-import org.eclipse.edc.connector.transfer.spi.types.protocol.TransferRequestMessage;
-import org.eclipse.edc.junit.annotations.ComponentTest;
-import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.service.spi.result.ServiceResult;
-import org.eclipse.edc.spi.asset.AssetIndex;
-import org.eclipse.edc.spi.iam.ClaimToken;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
-import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
+import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
+import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
+import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.argThat;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ComponentTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(DependencyInjectionExtension.class)
 class ProvisionAdditionalHeadersExtensionTest {
 
-    private final DataFlowController dataFlowController = mock(DataFlowController.class);
-    private final RemoteMessageDispatcherRegistry dispatcherRegistry = mock(RemoteMessageDispatcherRegistry.class);
-
-    private final ContractNegotiationStore contractNegotiationStore = mock(ContractNegotiationStore.class);
-    private final ContractValidationService contractValidationService = mock(ContractValidationService.class);
+    private final ResourceManifestGenerator resourceManifestGenerator = mock();
+    private final ProvisionManager provisionManager = mock();
 
     @BeforeEach
-    void setUp(EdcExtension extension) {
-        extension.setConfiguration(Map.of("edc.ids.id", "urn:connector:test"));
-        when(dataFlowController.canHandle(any(), any())).thenReturn(true);
-        when(dataFlowController.initiateFlow(any(), any(), any())).thenReturn(StatusResult.success(DataFlowResponse.Builder.newInstance().build()));
-        extension.registerServiceMock(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
-        extension.registerServiceMock(ContractNegotiationStore.class, contractNegotiationStore);
-        extension.registerServiceMock(ContractValidationService.class, contractValidationService);
+    void setUp(ServiceExtensionContext context) {
+        context.registerService(ResourceManifestGenerator.class, resourceManifestGenerator);
+        context.registerService(ProvisionManager.class, provisionManager);
     }
 
     @Test
-    void shouldPutContractIdAsHeaderInDataAddress(
-            TransferProcessProtocolService transferProcessProtocolService,
-            AssetIndex assetIndex,
-            DataFlowManager dataFlowManager) {
+    void initializeShouldRegisterProvisioner(ProvisionAdditionalHeadersExtension extension, ServiceExtensionContext context) {
+        extension.initialize(context);
 
-        var agreement = ContractAgreement.Builder.newInstance()
-                .id("aContractId")
-                .providerId("provider")
-                .consumerId("consumer")
-                .policy(Policy.Builder.newInstance().build())
-                .assetId("assetId")
-                .build();
-
-        when(dispatcherRegistry.send(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
-        when(contractNegotiationStore.findContractAgreement(any())).thenReturn(agreement);
-        when(contractValidationService.validateAgreement(any(), any())).thenReturn(Result.success(agreement));
-
-        dataFlowManager.register(dataFlowController);
-        var asset = Asset.Builder.newInstance().id("assetId").build();
-        var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
-        assetIndex.create(asset, dataAddress);
-
-        var transferMessage = TransferRequestMessage.Builder.newInstance()
-                .id("id")
-                .protocol("protocol")
-                .contractId("1:assetId:aContractId")
-                .dataDestination(DataAddress.Builder.newInstance().type("HttpProxy").build())
-                .callbackAddress("callbackAddress")
-                .build();
-
-        var result = transferProcessProtocolService.notifyRequested(transferMessage, ClaimToken.Builder.newInstance().build());
-
-        assertThat(result).matches(ServiceResult::succeeded);
-
-        await().atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> verify(dataFlowController).initiateFlow(any(), argThat(it -> "1:assetId:aContractId".equals(it.getProperty("header:Edc-Contract-Agreement-Id"))), any()));
+        verify(resourceManifestGenerator).registerGenerator(isA(AdditionalHeadersResourceDefinitionGenerator.class));
+        verify(provisionManager).register(isA(AdditionalHeadersProvisioner.class));
     }
 }

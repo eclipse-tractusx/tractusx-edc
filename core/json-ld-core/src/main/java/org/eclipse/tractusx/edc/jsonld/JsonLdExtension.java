@@ -34,10 +34,12 @@ public class JsonLdExtension implements ServiceExtension {
 
     public static final String CREDENTIALS_V_1 = "https://www.w3.org/2018/credentials/v1";
     public static final String CREDENTIALS_SUMMARY_V_1 = "https://w3id.org/2023/catenax/credentials/summary/v1";
+    public static final String CREDENTIALS_SUMMARY_V_1_FALLBACK = "https://catenax-ng.github.io/product-core-schemas/SummaryVC.json";
     private static final String PREFIX = "document" + File.separator;
     private static final Map<String, String> FILES = Map.of(
             CREDENTIALS_V_1, PREFIX + "credential-v1.jsonld",
-            CREDENTIALS_SUMMARY_V_1, PREFIX + "summary-vc-context-v1.jsonld");
+            CREDENTIALS_SUMMARY_V_1, PREFIX + "summary-vc-context-v1.jsonld",
+            CREDENTIALS_SUMMARY_V_1_FALLBACK, PREFIX + "summary-vc-context-v1.jsonld");
     @Inject
     private JsonLd jsonLdService;
 
