@@ -46,7 +46,7 @@ import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuerySingle;
 
 public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements EndpointDataReferenceCache {
 
-    public static final String SEPARATOR = "__";
+    public static final String SEPARATOR = "--";
     public static final String VAULT_PREFIX = "edr" + SEPARATOR;
     private final EdrStatements statements;
     private final Clock clock;
