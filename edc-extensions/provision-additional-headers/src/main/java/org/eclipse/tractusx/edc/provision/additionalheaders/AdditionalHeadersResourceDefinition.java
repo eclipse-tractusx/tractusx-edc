@@ -33,6 +33,7 @@ class AdditionalHeadersResourceDefinition extends ResourceDefinition {
 
     private String contractId;
     private DataAddress dataAddress;
+    private String bpn;
 
     @Override
     public Builder toBuilder() {
@@ -45,6 +46,10 @@ class AdditionalHeadersResourceDefinition extends ResourceDefinition {
 
     public String getContractId() {
         return contractId;
+    }
+
+    public String getBpn() {
+        return bpn;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
@@ -61,12 +66,17 @@ class AdditionalHeadersResourceDefinition extends ResourceDefinition {
         }
 
         public Builder contractId(String contractId) {
-            this.resourceDefinition.contractId = contractId;
+            resourceDefinition.contractId = contractId;
             return this;
         }
 
         public Builder dataAddress(DataAddress dataAddress) {
-            this.resourceDefinition.dataAddress = dataAddress;
+            resourceDefinition.dataAddress = dataAddress;
+            return this;
+        }
+
+        public Builder bpn(String bpn) {
+            resourceDefinition.bpn = bpn;
             return this;
         }
     }

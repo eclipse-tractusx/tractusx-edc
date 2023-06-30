@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
 import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -38,10 +39,13 @@ public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
 
+    @Inject
+    private ContractAgreementService contractAgreementService;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
         typeManager.registerTypes(AdditionalHeadersResourceDefinition.class, AdditionalHeadersProvisionedResource.class);
-        resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator());
+        resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService));
         provisionManager.register(new AdditionalHeadersProvisioner());
     }
 }
