@@ -282,13 +282,11 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Added
 
-- Control-Plane
-  extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+- Control-Plane extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
   - run the EDC with multiple data planes at once
 - Control-Plane extension ([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
   - add data plane instances to the control plane by configuration
-- Data-Plane
-  extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
+- Data-Plane extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
   - transfer from and to AWS S3 buckets
 - Control-Plane extension ([data-encryption](edc-extensions/data-encryption))
   - Data-Plane authentication attribute transmitted during data-plane-transfer can be encrypted symmetrically (AES)
@@ -357,7 +355,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc2...HEAD
+[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc3...HEAD
+
+[0.5.0-rc3]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc2...0.5.0-rc3
 
 [0.5.0-rc2]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc1...0.5.0-rc2
 
