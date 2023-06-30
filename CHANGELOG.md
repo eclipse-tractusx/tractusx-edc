@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## Removed
+
 Removed the interim solution `observability-api-customization` and use the upstream extension `Observability API` instead
 
 ## [0.5.0-rc3] - 2023-06-30

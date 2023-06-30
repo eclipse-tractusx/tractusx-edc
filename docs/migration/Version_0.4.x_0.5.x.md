@@ -66,8 +66,10 @@ It is not recommended for production use anymore and is solely intended as a fal
 SSI. We do not test it, nor do we provide support for it after the release of Tractus-X EDC `0.5.0`.
 
 ## The Observability API changes
-The following settings are removed because the `observability-api-customization` extension will be no longer used. The 
-`Observability API` extension will be used instead
+
+The following settings are removed because the `observability-api-customization` extension will be no longer used.
+The `Observability API` extension will be used instead
+
 - `observability.port`
 - `observability.path`
 - `observability.insecure`
