@@ -72,7 +72,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0-rc2 \
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"observability":{"insecure":true,"path":"/observability","port":8085},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | controlplane.endpoints.control.port | int | `8083` | port for incoming api calls |
@@ -86,10 +86,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0-rc2 \
 | controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
 | controlplane.endpoints.metrics.path | string | `"/metrics"` | path for incoming api calls |
 | controlplane.endpoints.metrics.port | int | `9090` | port for incoming api calls |
-| controlplane.endpoints.observability | object | `{"insecure":true,"path":"/observability","port":8085}` | observability api with unsecured access, must not be internet facing |
-| controlplane.endpoints.observability.insecure | bool | `true` | allow or disallow insecure access, i.e. access without authentication |
-| controlplane.endpoints.observability.path | string | `"/observability"` | observability api, provides /health /readiness and /liveness endpoints |
-| controlplane.endpoints.observability.port | int | `8085` | port for incoming API calls |
 | controlplane.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | ids api, used for inter connector communication and must be internet facing |
 | controlplane.endpoints.protocol.path | string | `"/api/v1/dsp"` | path for incoming api calls |
 | controlplane.endpoints.protocol.port | int | `8084` | port for incoming api calls |
@@ -187,9 +183,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0-rc2 \
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
 | dataplane.endpoints.metrics.port | int | `9090` |  |
-| dataplane.endpoints.observability.insecure | bool | `true` | allow or disallow insecure access, i.e. access without authentication |
-| dataplane.endpoints.observability.path | string | `"/observability"` | observability api, provides /health /readiness and /liveness endpoints |
-| dataplane.endpoints.observability.port | int | `8085` | port for incoming API calls |
 | dataplane.endpoints.proxy.path | string | `"/proxy"` |  |
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
