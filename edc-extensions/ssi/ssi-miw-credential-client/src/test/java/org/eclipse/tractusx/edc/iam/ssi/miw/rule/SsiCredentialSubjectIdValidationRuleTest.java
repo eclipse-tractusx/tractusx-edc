@@ -36,7 +36,7 @@ public class SsiCredentialSubjectIdValidationRuleTest {
 
     static final Map<String, String> CONTEXT_CACHE = Map.of(CX_SUMMARY_NS_V1, SummaryContext.SUMMARY_CONTEXT);
 
-    SsiCredentialSubjectIdValidationRule validationRule = new SsiCredentialSubjectIdValidationRule(mock(Monitor.class));
+    private final SsiCredentialSubjectIdValidationRule validationRule = new SsiCredentialSubjectIdValidationRule(mock(Monitor.class));
 
     @Test
     void checkRule() throws JsonProcessingException {
@@ -49,7 +49,7 @@ public class SsiCredentialSubjectIdValidationRuleTest {
 
         assertThat(result.succeeded()).isTrue();
     }
-    
+
     @Test
     void checkRule_shouldFail_whenIssuerMissingInClaims() throws JsonProcessingException {
         var vp = expand(createObjectMapper().readValue(SUMMARY_VP, JsonObject.class), CONTEXT_CACHE);

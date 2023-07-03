@@ -119,17 +119,15 @@ spec:
             # SSI / MIW CONFIGURATION
             ##########################
             - name: "TX_SSI_MIW_URL"
-              value: {{ .Values.runtime.ssi.miw.url }}
+              value: {{ .Values.runtime.ssi.miw.url | quote }}
             - name: "TX_SSI_MIW_AUTHORITY_ID"
-              value: {{ .Values.runtime.ssi.miw.authorityId }}
-            - name: "TX_SSI_MIW_AUTHORITY_ISSUER"
-              value: {{ .Values.runtime.ssi.miw.authorityIssuer }}
+              value: {{ .Values.runtime.ssi.miw.authorityId | quote }}
             - name: "TX_SSI_OAUTH_TOKEN_URL"
-              value: {{ .Values.runtime.ssi.oauth.tokenurl }}
+              value: {{ .Values.runtime.ssi.oauth.tokenurl | quote }}
             - name: "TX_SSI_OAUTH_CLIENT_ID"
-              value: {{ .Values.runtime.ssi.oauth.client.id }}
+              value: {{ .Values.runtime.ssi.oauth.client.id | quote }}
             - name: "TX_SSI_OAUTH_CLIENT_SECRET_ALIAS"
-              value: {{ .Values.runtime.ssi.oauth.client.secretAlias }}
+              value: {{ .Values.runtime.ssi.oauth.client.secretAlias | quote }}
             - name: "TX_SSI_ENDPOINT_AUDIENCE"
               value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" .) .Values.runtime.endpoints.protocol.path | quote }}
 

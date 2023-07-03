@@ -38,9 +38,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiMiwConfigurationExtensionTest {
 
-    SsiMiwConfigurationExtension extension;
+    private SsiMiwConfigurationExtension extension;
 
-    ServiceExtensionContext context;
+    private ServiceExtensionContext context;
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {

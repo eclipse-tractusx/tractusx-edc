@@ -34,6 +34,10 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
 
+/**
+ * {@link TokenValidationRule} that compares the issuer in the Verifiable Credential (Summary) with the one provided
+ * by configuration.
+ */
 public class SsiCredentialIssuerValidationRule implements TokenValidationRule {
 
     private static final String SUBJECT_ISSUER_EXTRACTOR_PREFIX = "Credential issuer extractor:";
@@ -71,11 +75,11 @@ public class SsiCredentialIssuerValidationRule implements TokenValidationRule {
 
     }
 
-    private Result<Void> validateCredentialIssuer(String credentialSubjectId) {
-        if (credentialIssuer.equals(credentialSubjectId)) {
+    private Result<Void> validateCredentialIssuer(String extractedCredentialIssuer) {
+        if (credentialIssuer.equals(extractedCredentialIssuer)) {
             return Result.success();
         } else {
-            return Result.failure(format("Invalid credential issuer: expected %s, found %s", credentialIssuer, credentialSubjectId));
+            return Result.failure(format("Invalid credential issuer: expected %s, found %s", credentialIssuer, extractedCredentialIssuer));
         }
     }
 

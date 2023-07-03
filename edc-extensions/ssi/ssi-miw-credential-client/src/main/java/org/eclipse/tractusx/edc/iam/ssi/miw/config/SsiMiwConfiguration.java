@@ -44,8 +44,7 @@ public class SsiMiwConfiguration {
         public static Builder newInstance() {
             return new Builder();
         }
-
-
+        
         public Builder url(String url) {
             config.url = url;
             return this;

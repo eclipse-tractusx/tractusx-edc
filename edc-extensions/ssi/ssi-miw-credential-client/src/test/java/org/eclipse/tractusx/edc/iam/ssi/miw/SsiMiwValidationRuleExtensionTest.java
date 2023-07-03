@@ -33,10 +33,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiMiwValidationRuleExtensionTest {
 
-    SsiMiwValidationRuleExtension extension;
-
-    SsiValidationRuleRegistry registry = mock(SsiValidationRuleRegistry.class);
-    SsiMiwConfiguration cfg = mock(SsiMiwConfiguration.class);
+    private final SsiValidationRuleRegistry registry = mock(SsiValidationRuleRegistry.class);
+    private final SsiMiwConfiguration cfg = mock(SsiMiwConfiguration.class);
+    private SsiMiwValidationRuleExtension extension;
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {
@@ -55,5 +54,5 @@ public class SsiMiwValidationRuleExtensionTest {
 
         verify(cfg).getAuthorityIssuer();
     }
-    
+
 }

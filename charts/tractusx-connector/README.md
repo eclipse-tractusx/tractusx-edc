@@ -30,7 +30,6 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
 - `controlplane.ssi.miw.url`: the URL
 - `controlplane.ssi.miw.authorityId`: the BPN of the issuer authority
-- `controlplane.ssi.miw.authorityIssuer`: the DID URL of the issuer authority
 - `controlplane.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
 - `controlplane.ssi.oauth.client.id`: client ID for KeyCloak
 - `controlplane.ssi.oauth.client.secretAlias`: the alias under which the client secret is stored in the vault. Defaults to `client-secret`.
@@ -157,7 +156,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0-rc3 \
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | controlplane.ssi.miw.authorityId | string | `""` |  |
-| controlplane.ssi.miw.authorityIssuer | string | `""` |  |
 | controlplane.ssi.miw.url | string | `""` |  |
 | controlplane.ssi.oauth.client.id | string | `""` |  |
 | controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |

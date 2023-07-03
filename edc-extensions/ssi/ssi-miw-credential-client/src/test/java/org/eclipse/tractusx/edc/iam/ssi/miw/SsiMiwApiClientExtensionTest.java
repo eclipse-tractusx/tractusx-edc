@@ -33,9 +33,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiMiwApiClientExtensionTest {
 
-    SsiMiwApiClientExtension extension;
-
-    SsiMiwConfiguration cfg = mock(SsiMiwConfiguration.class);
+    private final SsiMiwConfiguration cfg = mock(SsiMiwConfiguration.class);
+    private SsiMiwApiClientExtension extension;
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {

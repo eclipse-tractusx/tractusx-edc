@@ -35,6 +35,10 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
 
+/**
+ * {@link TokenValidationRule} that compares the issuer of the VP (JWT format) with the credential subject id of
+ * the Verifiable Credential (Summary)
+ */
 public class SsiCredentialSubjectIdValidationRule implements TokenValidationRule {
 
     private static final String CREDENTIAL_SUBJECT_EXTRACTOR_PREFIX = "Credential subject extractor:";

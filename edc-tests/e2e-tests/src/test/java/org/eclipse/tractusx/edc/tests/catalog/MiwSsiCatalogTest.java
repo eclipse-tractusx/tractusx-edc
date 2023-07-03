@@ -56,7 +56,7 @@ public class MiwSsiCatalogTest {
                 put("tx.ssi.oauth.client.id", "miw_private_client");
                 put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
                 put("tx.ssi.miw.authority.id", "BPNL000000000000");
-//                put("tx.ssi.miw.authority.issuer", "did:web:localhost%3A8080:BPNL000000000000");
+                put("tx.ssi.miw.authority.issuer", "did:web:localhost%3A8080:BPNL000000000000");
                 put("tx.vault.seed.secrets", "client_secret_alias:miw_private_client");
                 put("tx.ssi.endpoint.audience", SOKRATES_DSP_CALLBACK);
             }

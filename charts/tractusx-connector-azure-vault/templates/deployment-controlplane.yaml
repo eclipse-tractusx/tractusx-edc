@@ -119,17 +119,15 @@ spec:
             # SSI / MIW CONFIGURATION
             ##########################
             - name: "TX_SSI_MIW_URL"
-              value: {{ .Values.controlplane.ssi.miw.url }}
+              value: {{ .Values.controlplane.ssi.miw.url | quote }}
             - name: "TX_SSI_MIW_AUTHORITY_ID"
-              value: {{ .Values.controlplane.ssi.miw.authorityId }}
-            - name: "TX_SSI_MIW_AUTHORITY_ISSUER"
-              value: {{ .Values.controlplane.ssi.miw.authorityIssuer }}
+              value: {{ .Values.controlplane.ssi.miw.authorityId | quote }}
             - name: "TX_SSI_OAUTH_TOKEN_URL"
-              value: {{ .Values.controlplane.ssi.oauth.tokenurl }}
+              value: {{ .Values.controlplane.ssi.oauth.tokenurl | quote }}
             - name: "TX_SSI_OAUTH_CLIENT_ID"
-              value: {{ .Values.controlplane.ssi.oauth.client.id }}
+              value: {{ .Values.controlplane.ssi.oauth.client.id | quote }}
             - name: "TX_SSI_OAUTH_CLIENT_SECRET_ALIAS"
-              value: {{ .Values.controlplane.ssi.oauth.client.secretAlias }}
+              value: {{ .Values.controlplane.ssi.oauth.client.secretAlias | quote }}
             - name: "TX_SSI_ENDPOINT_AUDIENCE"
               value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" .) .Values.controlplane.endpoints.protocol.path | quote }}
 
