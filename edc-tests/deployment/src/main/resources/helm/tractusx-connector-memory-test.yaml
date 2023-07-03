@@ -40,6 +40,10 @@ runtime:
   endpoints:
     management:
       authKey: password
+  ssi:
+    miw:
+      url: "http://localhost:8080"
+      authorityId: "authorityId"
   image:
     pullPolicy: Never
     tag: "latest"

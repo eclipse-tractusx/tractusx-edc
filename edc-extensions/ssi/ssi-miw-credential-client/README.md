@@ -1,7 +1,7 @@
 # MIW Client Credential Module
 
 This module contains an implementation of the `SsiCredentialClient` interface for SSI.
-It basically narrow down to two operations:
+It basically narrows down to two operations:
 
 - obtaining a token for protocol communication
 - validating the token
@@ -13,10 +13,13 @@ For obtaining a `JWT` token also it reaches the MIW, that will create a token wi
 
 ## Configuration
 
-| Key                                     | Required | Example        | Description                       |
-|-----------------------------------------|----------|----------------|-----------------------------------|
-| tx.ssi.miw.url                          | X        |                | MIW URL                           |
-| tx.ssi.miw.authority.id                 | X        |                | BPN number of the authority       |
-| tx.ssi.oauth.token.url                  | X        |                | Token URL (Keycloak)              |
-| tx.ssi.oauth.client.id                  | X        |                | Client id                         |
-| tx.ssi.oauth.client.secret.alias        | X        |                | Vault alias for the client secret |
+| Key                              | Required | Example        | Description                       |
+|----------------------------------|----------|----------------|-----------------------------------|
+| tx.ssi.miw.url                   | X        |                | MIW URL                           |
+| tx.ssi.miw.authority.id          | X        |                | BPN number of the authority       |
+| tx.ssi.miw.authority.issuer      |          |                | The id of the issuer (DID)        |
+| tx.ssi.oauth.token.url           | X        |                | Token URL (Keycloak)              |
+| tx.ssi.oauth.client.id           | X        |                | Client id                         |
+| tx.ssi.oauth.client.secret.alias | X        |                | Vault alias for the client secret |
+
+By default, the `tx.ssi.miw.authority.issuer` is composed with `did:web:<tx.ssi.miw.url>:<tx.ssi.miw.authority.id>
