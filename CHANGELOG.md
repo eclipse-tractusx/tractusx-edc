@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+Removed the interim solution `observability-api-customization` and use the upstream extension `Observability API` instead
+
 ## [0.5.0-rc3] - 2023-06-30
 
 ### Fixed
@@ -22,7 +26,7 @@ Upgraded to EDC 0.1.2
 
 ## [0.5.0-rc1] - 2023-06-21
 
-## Fixed
+### Fixed
 
 Various fixes and improvements to our helm charts
 
@@ -31,11 +35,11 @@ Various fixes and improvements to our helm charts
 Support for SSI (centralized MiW) (#459, #510)
 Support for the JsonWebSignature2020 Crypto Suite (#483)
 
-## Changed
+### Changed
 
 All Helm charts now use SSI instead of DAPS (#511)
 
-## Removed
+### Removed
 
 Support for DAPS as identity provider (#511)
 

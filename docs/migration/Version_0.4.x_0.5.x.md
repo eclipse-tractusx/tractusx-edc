@@ -64,3 +64,14 @@ the associated [documentation](https://github.com/eclipse-tractusx/ssi-docu/tree
 There is one Helm chart named `tractusx-connector-legacy` that is a carbon-copy of the old connector chart using DAPS.
 It is not recommended for production use anymore and is solely intended as a fallback or as a way to gradually move to
 SSI. We do not test it, nor do we provide support for it after the release of Tractus-X EDC `0.5.0`.
+
+## The Observability API changes
+
+The following settings are removed because the `observability-api-customization` extension will be no longer used.
+The `Observability API` extension will be used instead
+
+- `observability.port`
+- `observability.path`
+- `observability.insecure`
+
+The status (`/health`, `/startup`, `/liveness`, `/readiness`) of the EDC can be checked by using the default endpoint.

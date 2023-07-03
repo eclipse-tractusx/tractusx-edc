@@ -51,9 +51,5 @@ spec:
       targetPort: ids
       protocol: TCP
       name: ids
-    - port: {{ .Values.runtime.endpoints.observability.port}}
-      targetPort: observability
-      protocol: TCP
-      name: observability
   selector:
     {{- include "txdc.runtime.selectorLabels" . | nindent 4 }}

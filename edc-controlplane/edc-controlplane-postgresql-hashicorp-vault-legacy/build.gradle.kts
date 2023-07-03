@@ -33,7 +33,6 @@ dependencies {
     runtimeOnly(project(":edc-extensions:data-encryption"))
     runtimeOnly(project(":edc-extensions:cx-oauth2"))
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
-    runtimeOnly(project(":edc-extensions:observability-api-customization"))
     runtimeOnly(project(":edc-extensions:control-plane-adapter-api"))
     runtimeOnly(project(":edc-extensions:control-plane-adapter-callback"))
 
@@ -43,6 +42,7 @@ dependencies {
     runtimeOnly(libs.edc.auth.oauth2.core)
     runtimeOnly(libs.edc.auth.oauth2.daps)
     runtimeOnly(libs.edc.api.management)
+    runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.dsp)
     runtimeOnly(libs.edc.spi.jwt)
     runtimeOnly(libs.bundles.edc.dpf)

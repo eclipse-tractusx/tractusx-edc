@@ -118,14 +118,7 @@ controlplane:
       port: 9090
       # -- path for incoming api calls
       path: /metrics
-    # -- observability api with unsecured access, must not be internet facing
-    observability:
-      # -- port for incoming API calls
-      port: 8085
-      # -- observability api, provides /health /readiness and /liveness endpoints
-      path: /observability
-      # -- allow or disallow insecure access, i.e. access without authentication
-      insecure: true
+
   businessPartnerValidation:
     log:
       agreementValidation: true
@@ -355,13 +348,6 @@ dataplane:
     proxy:
       port: 8186
       path: /proxy
-    observability:
-      # -- port for incoming API calls
-      port: 8085
-      # -- observability api, provides /health /readiness and /liveness endpoints
-      path: /observability
-      # -- allow or disallow insecure access, i.e. access without authentication
-      insecure: true
     metrics:
       port: 9090
       path: /metrics

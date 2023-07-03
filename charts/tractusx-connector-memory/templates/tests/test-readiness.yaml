@@ -35,5 +35,5 @@ spec:
     - name: wget
       image: curlimages/curl
       command: [ 'curl' ]
-      args: [ '{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.observability.port $.Values.runtime.endpoints.observability.path -}}' ]
+      args: [ '{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.default.port $.Values.runtime.endpoints.default.path -}}' ]
   restartPolicy: Never
