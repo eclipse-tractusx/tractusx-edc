@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-prepare
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
@@ -80,7 +80,7 @@ jobs:
     needs: test-prepare
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
@@ -107,7 +107,7 @@ jobs:
       needs.secret-presence.outputs.AZURE_KV_CREDS
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
       - name: "Login to AZ CLI"
         run: |
           az login --service-principal -u="${{ secrets.AZURE_CLIENT_ID }}" --password="${{ secrets.AZURE_CLIENT_SECRET }}" --tenant="${{ secrets.AZURE_TENANT_ID }}"
