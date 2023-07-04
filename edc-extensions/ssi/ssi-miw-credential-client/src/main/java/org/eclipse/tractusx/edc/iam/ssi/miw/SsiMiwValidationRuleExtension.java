@@ -16,31 +16,20 @@ package org.eclipse.tractusx.edc.iam.ssi.miw;
 
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.http.EdcHttpClient;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
-import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl;
 import org.eclipse.tractusx.edc.iam.ssi.miw.config.SsiMiwConfiguration;
-import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2Client;
+import org.eclipse.tractusx.edc.iam.ssi.miw.rule.SsiCredentialIssuerValidationRule;
+import org.eclipse.tractusx.edc.iam.ssi.miw.rule.SsiCredentialSubjectIdValidationRule;
+import org.eclipse.tractusx.edc.iam.ssi.spi.SsiValidationRuleRegistry;
 
+@Extension(SsiMiwValidationRuleExtension.EXTENSION_NAME)
+public class SsiMiwValidationRuleExtension implements ServiceExtension {
 
-@Extension(SsiMiwApiClientExtension.EXTENSION_NAME)
-public class SsiMiwApiClientExtension implements ServiceExtension {
-
-    public static final String EXTENSION_NAME = "SSI MIW Api Client";
-
+    protected static final String EXTENSION_NAME = "SSI MIW validation rules extension";
     @Inject
-    private MiwOauth2Client oauth2Client;
-
-    @Inject
-    private EdcHttpClient httpClient;
-
-    @Inject
-    private TypeManager typeManager;
+    private SsiValidationRuleRegistry registry;
 
     @Inject
     private Monitor monitor;
@@ -53,9 +42,9 @@ public class SsiMiwApiClientExtension implements ServiceExtension {
         return EXTENSION_NAME;
     }
 
-    @Provider
-    public MiwApiClient apiClient(ServiceExtensionContext context) {
-        return new MiwApiClientImpl(httpClient, miwConfiguration.getUrl(), oauth2Client, context.getParticipantId(), miwConfiguration.getAuthorityId(), typeManager.getMapper(), monitor);
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        registry.addRule(new SsiCredentialSubjectIdValidationRule(monitor));
+        registry.addRule(new SsiCredentialIssuerValidationRule(miwConfiguration.getAuthorityIssuer(), monitor));
     }
-
 }
