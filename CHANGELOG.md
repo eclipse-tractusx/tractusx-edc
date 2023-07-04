@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+Upgraded to EDC 0.1.3
+
 ### Removed
 
 Removed the interim solution `observability-api-customization` and use the upstream extension `Observability API` instead
