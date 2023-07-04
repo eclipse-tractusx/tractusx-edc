@@ -27,5 +27,6 @@ dependencies {
     implementation(libs.jakartaJson)
     implementation(libs.nimbus.jwt)
 
+    testImplementation(testFixtures(project(":spi:ssi-spi")))
     testImplementation(testFixtures(libs.edc.junit))
 }

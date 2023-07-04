@@ -15,3 +15,5 @@
 org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwCredentialClientExtension
 org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwApiClientExtension
 org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension
+org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwValidationRuleExtension
+org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension
