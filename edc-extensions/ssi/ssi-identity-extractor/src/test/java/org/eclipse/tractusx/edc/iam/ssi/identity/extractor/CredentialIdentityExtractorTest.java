@@ -26,14 +26,14 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
-import static org.eclipse.tractusx.edc.iam.ssi.identity.extractor.fixtures.Credentials.SIMPLE_VP;
-import static org.eclipse.tractusx.edc.iam.ssi.identity.extractor.fixtures.Credentials.SUMMARY_VP_NO_HOLDER;
-import static org.eclipse.tractusx.edc.iam.ssi.identity.extractor.fixtures.Credentials.SUMMARY_VP_NO_SUBJECT;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_SUMMARY_NS_V1;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.createObjectMapper;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTextFixtures.expand;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryCredential.SIMPLE_VP;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryCredential.SUMMARY_VP;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryCredential.SUMMARY_VP_NO_HOLDER;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryCredential.SUMMARY_VP_NO_SUBJECT;
 
 public class CredentialIdentityExtractorTest {
 

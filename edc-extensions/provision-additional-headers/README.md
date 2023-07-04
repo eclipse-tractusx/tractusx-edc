@@ -8,3 +8,4 @@ This gives for example the provider backend service the possibility to audit the
 The following headers are added to the `HttpDataAddress`:
 
 - `Edc-Contract-Agreement-Id`: the id of the contract agreement
+- `Edc-Bpn`: the BPN of the consumer

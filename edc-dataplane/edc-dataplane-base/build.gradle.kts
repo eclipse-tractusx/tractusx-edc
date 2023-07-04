@@ -24,7 +24,6 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":core:edr-cache-core"))
-    runtimeOnly(project(":edc-extensions:observability-api-customization"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core"))
@@ -41,4 +40,5 @@ dependencies {
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.ext.http)
+    runtimeOnly(libs.edc.api.observability)
 }

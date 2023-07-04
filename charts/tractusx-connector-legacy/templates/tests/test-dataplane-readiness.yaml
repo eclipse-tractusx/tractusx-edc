@@ -32,5 +32,5 @@ spec:
     - name: wget
       image: curlimages/curl
       command: [ 'curl' ]
-      args: [ '{{- printf "http://%s-dataplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.observability.port $.Values.dataplane.endpoints.observability.path -}}' ]
+      args: [ '{{- printf "http://%s-dataplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.default.port $.Values.dataplane.endpoints.default.path -}}' ]
   restartPolicy: Never

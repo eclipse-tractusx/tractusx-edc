@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.transfer.spi.provision.ProviderResourceDefinitionGenerator;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
@@ -27,9 +29,16 @@ import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 class AdditionalHeadersResourceDefinitionGenerator implements ProviderResourceDefinitionGenerator {
+
+    private final ContractAgreementService contractAgreementService;
+
+    AdditionalHeadersResourceDefinitionGenerator(ContractAgreementService contractAgreementService) {
+        this.contractAgreementService = contractAgreementService;
+    }
 
     @Override
     public boolean canGenerate(DataRequest dataRequest, DataAddress dataAddress, Policy policy) {
@@ -39,10 +48,16 @@ class AdditionalHeadersResourceDefinitionGenerator implements ProviderResourceDe
     @Override
     public @Nullable ResourceDefinition generate(
             DataRequest dataRequest, DataAddress dataAddress, Policy policy) {
+        var bpn = Optional.of(dataRequest.getContractId())
+                .map(contractAgreementService::findById)
+                .map(ContractAgreement::getConsumerId)
+                .orElse(null);
+
         return AdditionalHeadersResourceDefinition.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
                 .dataAddress(dataAddress)
                 .contractId(dataRequest.getContractId())
+                .bpn(bpn)
                 .build();
     }
 }

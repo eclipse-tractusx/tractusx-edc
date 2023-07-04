@@ -119,6 +119,7 @@ public class TestRuntimeConfiguration {
                 put("tx.ssi.oauth.client.id", "client_id");
                 put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
                 put("tx.ssi.miw.authority.id", "authorityId");
+                put("tx.ssi.miw.authority.issuer", "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000");
                 put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
                 put("tx.ssi.endpoint.audience", SOKRATES_DSP_CALLBACK);
             }
@@ -200,6 +201,7 @@ public class TestRuntimeConfiguration {
                 put("tx.ssi.oauth.client.id", "client_id");
                 put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
                 put("tx.ssi.miw.authority.id", "authorityId");
+                put("tx.ssi.miw.authority.issuer", "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000");
                 put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
                 put("tx.ssi.endpoint.audience", PLATO_DSP_CALLBACK);
             }

@@ -111,14 +111,6 @@ runtime:
       port: 8084
       # -- path for incoming api calls
       path: /api/v1/dsp
-    # -- observability api with unsecured access, must not be internet facing
-    observability:
-      # -- port for incoming API calls
-      port: 8085
-      # -- observability api, provides /health /readiness and /liveness endpoints
-      path: /observability
-      # -- allow or disallow insecure access, i.e. access without authentication
-      insecure: true
     public:
       port: 8086
       path: /api/public

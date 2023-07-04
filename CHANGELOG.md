@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-rc4] - 2023-07-04
+
+### Changed
+
+Upgraded to EDC 0.1.3
+
+### Removed
+
+Removed the interim solution `observability-api-customization` and use the upstream extension `Observability API` instead
+
 ## [0.5.0-rc3] - 2023-06-30
+
+### Fixed
+
+-   Replace '\_\_' with '--' in the Sql EDR Store (#538)
+-   Adapt Postman Collection for RC1/RC2 (#535)
 
 ## [0.5.0-rc2] - 2023-06-23
 
@@ -17,7 +32,7 @@ Upgraded to EDC 0.1.2
 
 ## [0.5.0-rc1] - 2023-06-21
 
-## Fixed
+### Fixed
 
 Various fixes and improvements to our helm charts
 
@@ -26,11 +41,11 @@ Various fixes and improvements to our helm charts
 Support for SSI (centralized MiW) (#459, #510)
 Support for the JsonWebSignature2020 Crypto Suite (#483)
 
-## Changed
+### Changed
 
 All Helm charts now use SSI instead of DAPS (#511)
 
-## Removed
+### Removed
 
 Support for DAPS as identity provider (#511)
 
@@ -273,13 +288,11 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Added
 
--   Control-Plane
-    extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+-   Control-Plane extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
     -   run the EDC with multiple data planes at once
 -   Control-Plane extension ([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
     -   add data plane instances to the control plane by configuration
--   Data-Plane
-    extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
+-   Data-Plane extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
     -   transfer from and to AWS S3 buckets
 -   Control-Plane extension ([data-encryption](edc-extensions/data-encryption))
     -   Data-Plane authentication attribute transmitted during data-plane-transfer can be encrypted symmetrically (AES)
@@ -348,7 +361,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc3...HEAD
+[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc4...HEAD
+
+[0.5.0-rc4]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc3...0.5.0-rc4
 
 [0.5.0-rc3]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc2...0.5.0-rc3
 

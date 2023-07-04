@@ -128,6 +128,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
         var rq = server.takeRequest();
         assertThat(rq.getHeader(authCodeHeaderName)).isEqualTo(authCode);
         assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isEqualTo(contractAgreementId.get());
+        assertThat(rq.getHeader("Edc-Bpn")).isEqualTo(SOKRATES.getBpn());
         assertThat(rq.getMethod()).isEqualToIgnoringCase("GET");
     }
 

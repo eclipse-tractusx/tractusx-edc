@@ -32,9 +32,7 @@ import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class AdditionalHeadersProvisioner
-        implements Provisioner<
-        AdditionalHeadersResourceDefinition, AdditionalHeadersProvisionedResource> {
+public class AdditionalHeadersProvisioner implements Provisioner<AdditionalHeadersResourceDefinition, AdditionalHeadersProvisionedResource> {
 
     @Override
     public boolean canProvision(ResourceDefinition resourceDefinition) {
@@ -53,6 +51,7 @@ public class AdditionalHeadersProvisioner
                 HttpDataAddress.Builder.newInstance()
                         .copyFrom(resourceDefinition.getDataAddress())
                         .addAdditionalHeader("Edc-Contract-Agreement-Id", resourceDefinition.getContractId())
+                        .addAdditionalHeader("Edc-Bpn", resourceDefinition.getBpn())
                         .build();
 
         var provisioned =
