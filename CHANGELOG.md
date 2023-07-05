@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0-rc4] - 2023-07-04
-
 ### Changed
 
 Upgraded to EDC 0.1.3
+
+## [0.5.0-rc4] - 2023-07-04
 
 ### Removed
 

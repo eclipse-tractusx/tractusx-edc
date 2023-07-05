@@ -133,7 +133,9 @@ public class AdapterEdrControllerTest extends RestControllerTestBase {
                 .add(EndpointDataReference.ID, edr.getId())
                 .build();
 
+        var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
         when(adapterTransferProcessService.findByTransferProcessId(transferProcessId)).thenReturn(ServiceResult.success(edr));
+        when(transformerRegistry.transform(any(EndpointDataReference.class), eq(DataAddress.class))).thenReturn(Result.success(dataAddress));
         when(transformerRegistry.transform(any(DataAddress.class), eq(JsonObject.class))).thenReturn(Result.success(response));
 
         baseRequest()

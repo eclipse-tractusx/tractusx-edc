@@ -23,11 +23,12 @@ import static org.eclipse.edc.protocol.dsp.spi.types.HttpMessageProtocol.DATASPA
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class TransferProcessHelperFunctions {
-    
+
     public static JsonObject createTransferRequest(String dataRequestId, String connectorAddress, String contractId, String assetId, boolean managedResources, JsonObject destination) {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "TransferRequestDto")
                 .add(ID, dataRequestId)
+                .add(EDC_NAMESPACE + "connectorId", "connectorId")
                 .add(EDC_NAMESPACE + "dataDestination", destination)
                 .add(EDC_NAMESPACE + "protocol", DATASPACE_PROTOCOL_HTTP)
                 .add(EDC_NAMESPACE + "assetId", assetId)

@@ -22,12 +22,13 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataAddressConstants;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,9 +46,12 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.getEdr;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.getTransferProcessStartedEvent;
 import static org.eclipse.tractusx.edc.cp.adapter.callback.TestFunctions.remoteMessage;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -63,10 +67,12 @@ public class TransferProcessLocalCallbackTest {
 
     TransferProcessLocalCallback callback;
 
+    TypeTransformerRegistry transformerRegistry = mock(TypeTransformerRegistry.class);
+
 
     @BeforeEach
     void setup() {
-        callback = new TransferProcessLocalCallback(edrCache, transferProcessStore, transactionContext);
+        callback = new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext);
     }
 
     @Test
@@ -79,6 +85,7 @@ public class TransferProcessLocalCallbackTest {
 
         var edr = getEdr();
 
+
         var dataRequest = DataRequest.Builder.newInstance().id(edr.getId())
                 .destinationType("HttpProxy")
                 .assetId(assetId)
@@ -90,12 +97,12 @@ public class TransferProcessLocalCallbackTest {
                 .dataRequest(dataRequest)
                 .build();
 
+        when(transformerRegistry.transform(any(DataAddress.class), eq(EndpointDataReference.class))).thenReturn(Result.success(edr));
         when(transferProcessStore.findForCorrelationId(edr.getId())).thenReturn(transferProcess);
-
         when(transferProcessStore.findById(transferProcessId)).thenReturn(transferProcess);
 
 
-        var event = getTransferProcessStartedEvent(EndpointDataAddressConstants.from(edr));
+        var event = getTransferProcessStartedEvent(DataAddress.Builder.newInstance().type(EDR_SIMPLE_TYPE).build());
 
         var cacheEntryCaptor = ArgumentCaptor.forClass(EndpointDataReferenceEntry.class);
         var edrCaptor = ArgumentCaptor.forClass(EndpointDataReference.class);
@@ -130,11 +137,13 @@ public class TransferProcessLocalCallbackTest {
 
         var edr = getEdr();
 
+        when(transformerRegistry.transform(any(DataAddress.class), eq(EndpointDataReference.class))).thenReturn(Result.success(edr));
+
         when(transferProcessStore.findForCorrelationId(edr.getId())).thenReturn(null);
 
         when(transferProcessStore.findById(transferProcessId)).thenReturn(null);
 
-        var event = getTransferProcessStartedEvent(EndpointDataAddressConstants.from(edr));
+        var event = getTransferProcessStartedEvent(DataAddress.Builder.newInstance().type(EDR_SIMPLE_TYPE).build());
         var message = remoteMessage(event);
 
         var result = callback.invoke(message);
@@ -147,6 +156,9 @@ public class TransferProcessLocalCallbackTest {
     void invoke_shouldFail_withInvalidDataAddress() {
 
         var event = getTransferProcessStartedEvent(DataAddress.Builder.newInstance().type("HttpProxy").build());
+
+        when(transformerRegistry.transform(any(DataAddress.class), eq(EndpointDataReference.class)))
+                .thenReturn(Result.failure("failure"));
 
         var message = remoteMessage(event);
 
