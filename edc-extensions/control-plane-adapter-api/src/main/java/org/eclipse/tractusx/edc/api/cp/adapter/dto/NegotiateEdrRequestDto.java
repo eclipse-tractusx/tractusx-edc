@@ -14,8 +14,6 @@
 
 package org.eclipse.tractusx.edc.api.cp.adapter.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 
@@ -35,16 +33,12 @@ public class NegotiateEdrRequestDto {
     public static final String EDR_REQUEST_DTO_OFFER = EDC_NAMESPACE + "offer";
     public static final String EDR_REQUEST_DTO_CALLBACK_ADDRESSES = EDC_NAMESPACE + "callbackAddresses";
 
-    @NotBlank(message = "connectorAddress is mandatory")
     private String connectorAddress;
-    @NotBlank(message = "protocol is mandatory")
     private String protocol = "ids-multipart";
-    @NotBlank(message = "connectorId is mandatory")
     private String connectorId;
 
     private String providerId;
 
-    @NotNull(message = "offer cannot be null")
     private ContractOfferDescription offer;
     private List<CallbackAddress> callbackAddresses = new ArrayList<>();
 
