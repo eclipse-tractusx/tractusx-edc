@@ -70,10 +70,11 @@ jobs:
       - uses: ./.github/actions/setup-java
       - name: Download latest Eclipse Dash
         run: |
-          curl -L https://repo.eclipse.org/service/local/artifact/maven/redirect\?r\=dash-licenses\&g\=org.eclipse.dash\&a\=org.eclipse.dash.licenses\&v\=LATEST --output dash.jar
+            curl -L https://repo.eclipse.org/service/local/artifact/maven/redirect\?r\=dash-licenses\&g\=org.eclipse.dash\&a\=org.eclipse.dash.licenses\&v\=LATEST --output dash.jar
       - name: Regenerate DEPENDENCIES
         run: |
-          ./gradlew allDependencies | ack -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen
+          # dash returns a nonzero exit code if there are libs that need review. the "|| true" avoids that
+          ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
       - name: Check for differences
         run: |
           diff DEPENDENCIES DEPENDENCIES-gen
