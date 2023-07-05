@@ -208,6 +208,8 @@ spec:
             - name: "configuration"
               mountPath: "/app/logging.properties"
               subPath: "logging.properties"
+            - name: "tmp"
+              mountPath: "/tmp"
       volumes:
         - name: "configuration"
           configMap:
@@ -217,6 +219,8 @@ spec:
                 path: "opentelemetry.properties"
               - key: "logging.properties"
                 path: "logging.properties"
+        - name: "tmp"
+          emptyDir: { }
       {{- with .Values.dataplane.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -21,6 +21,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
+import org.eclipse.tractusx.edc.api.cp.adapter.transform.EndpointDataReferenceToDataAddressTransformer;
 import org.eclipse.tractusx.edc.api.cp.adapter.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
 import org.eclipse.tractusx.edc.api.cp.adapter.transform.JsonObjectToNegotiateEdrRequestDtoTransformer;
 import org.eclipse.tractusx.edc.api.cp.adapter.transform.NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer;
@@ -51,6 +52,7 @@ public class AdapterApiExtension implements ServiceExtension {
         transformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
         transformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
         transformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer());
+        transformerRegistry.register(new EndpointDataReferenceToDataAddressTransformer());
         webService.registerResource(apiConfig.getContextAlias(), new AdapterEdrController(adapterTransferProcessService, jsonLdService, transformerRegistry));
     }
 }
