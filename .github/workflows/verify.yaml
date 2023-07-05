@@ -75,6 +75,9 @@ jobs:
         run: |
           # dash returns a nonzero exit code if there are libs that need review. the "|| true" avoids that
           ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
+          grep -E 'restricted' DEPENDENCIES | if test $(wc -l) -gt 0; then 
+            echo "::warning file=DEPENDENCIES,title=Restricted Dependencies found::Some dependencies are marked 'restricted' - please review them" 
+          fi
       - name: Check for differences
         run: |
           diff DEPENDENCIES DEPENDENCIES-gen
