@@ -21,8 +21,8 @@ Removed the interim solution `observability-api-customization` and use the upstr
 
 ### Fixed
 
--   Replace '\_\_' with '--' in the Sql EDR Store (#538)
--   Adapt Postman Collection for RC1/RC2 (#535)
+- Replace '\_\_' with '--' in the Sql EDR Store (#538)
+- Adapt Postman Collection for RC1/RC2 (#535)
 
 ## [0.5.0-rc2] - 2023-06-23
 
@@ -288,14 +288,14 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ### Added
 
--   Control-Plane extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
-    -   run the EDC with multiple data planes at once
--   Control-Plane extension ([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
-    -   add data plane instances to the control plane by configuration
--   Data-Plane extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
-    -   transfer from and to AWS S3 buckets
--   Control-Plane extension ([data-encryption](edc-extensions/data-encryption))
-    -   Data-Plane authentication attribute transmitted during data-plane-transfer can be encrypted symmetrically (AES)
+- Control-Plane extension ([data-plane-selector-client](https://github.com/eclipse-edc/Connector/tree/v0.0.1-milestone-5/extensions/data-plane-selector/selector-client))
+  - run the EDC with multiple data planes at once
+- Control-Plane extension ([dataplane-selector-configuration](edc-extensions/dataplane-selector-configuration))
+  - add data plane instances to the control plane by configuration
+- Data-Plane extension ([s3-data-plane](https://github.com/eclipse-edc/Connector/tree/main/extensions/aws/data-plane-s3))
+  - transfer from and to AWS S3 buckets
+- Control-Plane extension ([data-encryption](edc-extensions/data-encryption))
+  - Data-Plane authentication attribute transmitted during data-plane-transfer can be encrypted symmetrically (AES)
 
 ### Changed
 
