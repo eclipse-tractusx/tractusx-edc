@@ -54,9 +54,6 @@ dataplane:
     pullPolicy: Never
     tag: "latest"
     repository: "edc-dataplane-hashicorp-vault"
-  securityContext:
-    # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
-    readOnlyRootFilesystem: false
   aws:
     endpointOverride: http://minio:9000
     secretAccessKey: qwerty123

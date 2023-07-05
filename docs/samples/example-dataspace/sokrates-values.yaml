@@ -35,9 +35,6 @@ controlplane:
     pullPolicy: Never
     tag: "latest"
     repository: "edc-controlplane-postgresql-hashicorp-vault"
-  securityContext:
-    # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
-    readOnlyRootFilesystem: false
   # SSI configuration
   ssi:
     miw:
