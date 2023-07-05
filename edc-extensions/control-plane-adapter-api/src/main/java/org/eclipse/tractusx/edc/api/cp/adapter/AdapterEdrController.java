@@ -28,7 +28,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataAddressConstants;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 
-@Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
+@Consumes({ MediaType.APPLICATION_JSON })
+@Produces({ MediaType.APPLICATION_JSON })
 @Path("/adapter/edrs")
 public class AdapterEdrController implements AdapterEdrApi {
 
@@ -80,17 +80,6 @@ public class AdapterEdrController implements AdapterEdrApi {
     }
 
     @GET
-    @Path("/{id}")
-    @Override
-    public JsonObject getEdr(@PathParam("id") String transferProcessId) {
-        var edr = adapterTransferProcessService.findByTransferProcessId(transferProcessId).orElseThrow(exceptionMapper(EndpointDataReference.class, transferProcessId));
-
-        return transformerRegistry.transform(EndpointDataAddressConstants.from(edr), JsonObject.class)
-                .compose(jsonLdService::compact)
-                .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
-    }
-
-    @GET
     @Override
     public List<JsonObject> queryEdrs(@QueryParam("assetId") String assetId, @QueryParam("agreementId") String agreementId) {
         if (assetId == null && agreementId == null) {
@@ -105,6 +94,17 @@ public class AdapterEdrController implements AdapterEdrApi {
                 .filter(Result::succeeded)
                 .map(Result::getContent)
                 .collect(Collectors.toList());
+    }
+
+    @GET
+    @Path("/{id}")
+    @Override
+    public JsonObject getEdr(@PathParam("id") String transferProcessId) {
+        var edr = adapterTransferProcessService.findByTransferProcessId(transferProcessId).orElseThrow(exceptionMapper(EndpointDataReference.class, transferProcessId));
+        return transformerRegistry.transform(edr, DataAddress.class)
+                .compose(dataAddress -> transformerRegistry.transform(dataAddress, JsonObject.class))
+                .compose(jsonLdService::compact)
+                .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
     }
 
     private void logIfError(Result<?> result) {

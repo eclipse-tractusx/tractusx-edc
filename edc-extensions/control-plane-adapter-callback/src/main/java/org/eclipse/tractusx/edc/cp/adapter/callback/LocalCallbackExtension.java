@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallbackRegistry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.service.AdapterTransferProcessService;
@@ -67,6 +68,9 @@ public class LocalCallbackExtension implements ServiceExtension {
     @Inject
     private EndpointDataReferenceCache endpointDataReferenceCache;
 
+    @Inject
+    private TypeTransformerRegistry transformerRegistry;
+
     @Override
     public String name() {
         return NAME;
@@ -76,7 +80,7 @@ public class LocalCallbackExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
 
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor));
-        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, transactionContext));
+        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext));
 
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));

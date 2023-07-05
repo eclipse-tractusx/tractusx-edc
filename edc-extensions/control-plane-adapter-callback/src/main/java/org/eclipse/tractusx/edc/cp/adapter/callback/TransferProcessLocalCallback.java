@@ -19,9 +19,9 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataAddressConstants;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.spi.cp.adapter.callback.InProcessCallback;
@@ -32,12 +32,14 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
     private final EndpointDataReferenceCache edrCache;
     private final TransferProcessStore transferProcessStore;
+    private final TypeTransformerRegistry transformerRegistry;
 
     private final TransactionContext transactionContext;
 
-    public TransferProcessLocalCallback(EndpointDataReferenceCache edrCache, TransferProcessStore transferProcessStore, TransactionContext transactionContext) {
+    public TransferProcessLocalCallback(EndpointDataReferenceCache edrCache, TransferProcessStore transferProcessStore, TypeTransformerRegistry transformerRegistry, TransactionContext transactionContext) {
         this.edrCache = edrCache;
         this.transferProcessStore = transferProcessStore;
+        this.transformerRegistry = transformerRegistry;
         this.transactionContext = transactionContext;
     }
 
@@ -45,7 +47,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
     public <T extends Event> Result<Void> invoke(CallbackEventRemoteMessage<T> message) {
         if (message.getEventEnvelope().getPayload() instanceof TransferProcessStarted transferProcessStarted) {
             if (transferProcessStarted.getDataAddress() != null) {
-                return EndpointDataAddressConstants.to(transferProcessStarted.getDataAddress())
+                return transformerRegistry.transform(transferProcessStarted.getDataAddress(), EndpointDataReference.class)
                         .compose(this::storeEdr)
                         .mapTo();
             }
