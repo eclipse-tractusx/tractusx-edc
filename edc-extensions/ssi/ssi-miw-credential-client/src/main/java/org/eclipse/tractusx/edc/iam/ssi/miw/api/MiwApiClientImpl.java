@@ -164,17 +164,25 @@ public class MiwApiClientImpl implements MiwApiClient {
             var body = Objects.requireNonNull(response.body()).string();
             return Result.success(mapper.readValue(body, tr));
         } catch (IOException e) {
-            monitor.debug("Failed to parse response from MIW");
+            monitor.severe("Failed to parse response from MIW");
             return Result.failure(e.getMessage());
         }
     }
 
     private <R> Result<R> handleError(Response response) {
-        var msg = format("MIW API returned %s", response.code());
-        monitor.debug(msg);
-        return Result.failure(msg);
+        var body = "";
+        if (response.body() != null) {
+            try {
+                body = response.body().string();
+            } catch (IOException e) {
+                monitor.severe("Failed to read response from MIW");
+                return Result.failure(e.getMessage());
+            }
+        }
+        var code = response.code();
+        monitor.severe(format("MIW API returned %s with body: %s", code, body));
+        return Result.failure(format("MIW API returned %s", code));
     }
-
 
     private Result<Request.Builder> baseRequestWithToken() {
         return oauth2Client.obtainRequestToken()

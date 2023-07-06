@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-test1] - 2023-07-06
+
 ## [0.5.0-rc5] - 2023-07-05
 
 ### Changed
@@ -363,7 +365,9 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 
 ## [0.0.1] - 2022-05-13
 
-[Unreleased]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc5...HEAD
+[Unreleased]: https://github.com/paullatzelsperger/tractusx-edc/compare/0.5.0-test1...HEAD
+
+[0.5.0-test1]: https://github.com/paullatzelsperger/tractusx-edc/compare/0.5.0-rc5...0.5.0-test1
 
 [0.5.0-rc5]: https://github.com/eclipse-tractusx/tractusx-edc/compare/0.5.0-rc4...0.5.0-rc5
 
