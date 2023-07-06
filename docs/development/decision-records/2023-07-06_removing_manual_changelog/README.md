@@ -25,6 +25,12 @@ Thus, the commit log should be easily digestible and understandable, assuming a 
 First, we need to fix the release process. It seems that at the time of this writing, the release PR contains _all_
 commits, instead of just the delta between `main` and the last release.
 
+This is because upon merging normal PRs, we typically do a "Squash-And-Merge". The same thing was done on release PRs,
+which caused the git histories of `main` and `releases` to diverge.
+
+> **For this to work, it is imperative to create a "Merge commit" for release PRs as that will preserve commits!**
+
 This is also reflected in the automatically generated changelog, for
 example [0.5.0-rc5](https://github.com/eclipse-tractusx/tractusx-edc/releases/tag/0.5.0-rc5). Once that is fixed, we can
-delete the CHANGELOG.md file and [this GH action to update it (line 44)](../../../../.github/workflows/draft-new-release.yaml).
+delete the CHANGELOG.md file
+and [this GH action to update it (line 44)](../../../../.github/workflows/draft-new-release.yaml).
