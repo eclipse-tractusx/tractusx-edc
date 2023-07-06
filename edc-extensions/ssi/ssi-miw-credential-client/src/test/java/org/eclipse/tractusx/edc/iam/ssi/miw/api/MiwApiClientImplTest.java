@@ -49,21 +49,23 @@ import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.PRESENTA
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.PRESENTATIONS_VALIDATION_PATH;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.VERIFIABLE_CREDENTIALS;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.VP_FIELD;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MiwApiClientImplTest {
 
     static final String BASE_URL = "http://localhost:8080";
+    private final Consumer<Request> emptyAcceptor = (r) -> {
+    };
     Interceptor interceptor = mock(Interceptor.class);
     MiwApiClientImpl client;
     Monitor monitor = mock(Monitor.class);
     MiwOauth2Client oauth2Client = mock(MiwOauth2Client.class);
     ObjectMapper mapper = new ObjectMapper();
-
     String participantId = "participantId";
-
     String authorityId = "authorityId";
 
     @BeforeEach
@@ -148,13 +150,15 @@ public class MiwApiClientImplTest {
     void createPresentation_fails_whenMiwFails() throws IOException {
 
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
-                .thenAnswer(invocation -> createResponse(500, invocation));
+                .thenAnswer(invocation -> createResponse(500, invocation, emptyAcceptor, "Request Failed"));
 
         when(oauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("testToken").build()));
 
         var result = client.createPresentation(List.of(), "audience");
 
         assertThat(result).isNotNull().matches(Result::failed);
+
+        verify(monitor).severe(contains("Request Failed"));
     }
 
     @Test
@@ -166,7 +170,7 @@ public class MiwApiClientImplTest {
 
         assertThat(result).isNotNull().matches(Result::failed);
     }
-    
+
     @Test
     void verifyPresentation() throws IOException {
         var jwt = "jwt";
