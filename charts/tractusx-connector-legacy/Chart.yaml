@@ -32,7 +32,6 @@ description: |
 
   Deprecation notice: this chart uses DAPS, which was replaced with an SSI solution in v0.5.0 of Tractus-X EDC and is thus deprecated.
   It will not be maintained, supported or tested anymore and it will be removed in future versions.
-
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -45,12 +44,12 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.5.0-rc5
+version: 0.5.0-test1
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "0.5.0-rc5"
+appVersion: "0.5.0-test1"
 home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-legacy
 sources:
   - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-legacy
