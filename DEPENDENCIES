@@ -161,7 +161,7 @@ maven/mavencentral/io.netty/netty-transport/4.1.91.Final, Apache-2.0 AND BSD-3-C
 maven/mavencentral/io.netty/netty-transport/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opencensus/opencensus-api/0.31.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opencensus/opencensus-contrib-http-util/0.31.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.27.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.27.0, Apache-2.0, approved, #9270
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.27.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.27.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.28, Apache-2.0, approved, clearlydefined
@@ -476,7 +476,7 @@ maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.20.91, Apache-2.0, app
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.20.98, Apache-2.0, approved, #8604
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.20.91, Apache-2.0, approved, #8608
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.20.98, Apache-2.0, approved, #8608
-maven/mavencentral/software.amazon.awssdk/iam/2.20.91, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/iam/2.20.91, Apache-2.0, approved, #9271
 maven/mavencentral/software.amazon.awssdk/json-utils/2.20.91, Apache-2.0, approved, #8614
 maven/mavencentral/software.amazon.awssdk/json-utils/2.20.98, Apache-2.0, approved, #8614
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.20.91, Apache-2.0, approved, #8636
@@ -493,7 +493,7 @@ maven/mavencentral/software.amazon.awssdk/s3/2.20.91, Apache-2.0, approved, #862
 maven/mavencentral/software.amazon.awssdk/s3/2.20.98, Apache-2.0, approved, #8623
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.20.91, Apache-2.0, approved, #8611
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.20.98, Apache-2.0, approved, #8611
-maven/mavencentral/software.amazon.awssdk/sts/2.20.91, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sts/2.20.91, Apache-2.0, approved, #9269
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.20.91, Apache-2.0, approved, #8622
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.20.98, Apache-2.0, approved, #8622
 maven/mavencentral/software.amazon.awssdk/utils/2.20.91, Apache-2.0, approved, #8625
