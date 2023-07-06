@@ -84,4 +84,5 @@ See [LICENSE](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE
 [release-url]: https://github.com/eclipse-tractusx/tractusx-edc/releases
 
 random change 1
+random change 2
 
