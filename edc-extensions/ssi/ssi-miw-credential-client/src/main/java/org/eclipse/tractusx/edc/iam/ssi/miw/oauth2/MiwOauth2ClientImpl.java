@@ -38,6 +38,10 @@ public class MiwOauth2ClientImpl implements MiwOauth2Client {
         return oauth2Client.requestToken(createRequest());
     }
 
+    public MiwOauth2ClientConfiguration getConfiguration() {
+        return configuration;
+    }
+
     @NotNull
     private Oauth2CredentialsRequest createRequest() {
         var builder = SharedSecretOauth2CredentialsRequest.Builder.newInstance()

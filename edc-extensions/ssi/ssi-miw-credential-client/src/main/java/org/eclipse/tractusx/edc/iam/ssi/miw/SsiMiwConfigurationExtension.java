@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import static java.lang.String.format;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.utils.PathUtils.removeTrailingSlash;
 
 
 @Extension(SsiMiwConfigurationExtension.EXTENSION_NAME)
@@ -43,7 +44,7 @@ public class SsiMiwConfigurationExtension implements ServiceExtension {
 
     @Provider
     public SsiMiwConfiguration miwConfiguration(ServiceExtensionContext context) {
-        var baseUrl = context.getConfig().getString(MIW_BASE_URL);
+        var baseUrl = removeTrailingSlash(context.getConfig().getString(MIW_BASE_URL));
         var authorityId = context.getConfig().getString(MIW_AUTHORITY_ID);
         var authorityIssuer = authorityIssuer(context, baseUrl, authorityId);
 

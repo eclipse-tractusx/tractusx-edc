@@ -28,6 +28,8 @@ import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2ClientImpl;
 
 import java.util.Objects;
 
+import static org.eclipse.tractusx.edc.iam.ssi.miw.utils.PathUtils.removeTrailingSlash;
+
 
 @Extension(SsiMiwOauth2ClientExtension.EXTENSION_NAME)
 public class SsiMiwOauth2ClientExtension implements ServiceExtension {
@@ -61,7 +63,7 @@ public class SsiMiwOauth2ClientExtension implements ServiceExtension {
     }
 
     private MiwOauth2ClientConfiguration createConfiguration(ServiceExtensionContext context) {
-        var tokenUrl = context.getConfig().getString(TOKEN_URL);
+        var tokenUrl = removeTrailingSlash(context.getConfig().getString(TOKEN_URL));
         var clientId = context.getConfig().getString(CLIENT_ID);
         var clientSecretAlias = context.getConfig().getString(CLIENT_SECRET_ALIAS);
         var clientSecret = vault.resolveSecret(clientSecretAlias);
