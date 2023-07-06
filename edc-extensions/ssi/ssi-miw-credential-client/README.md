@@ -11,6 +11,11 @@ just call the MIW for checking that the token and the VP claim inside are correc
 
 For obtaining a `JWT` token also it reaches the MIW, that will create a token with the `VP` claim inside.
 
+This module also contains two additional validation rules of VP/VC on the provider side.
+
+- `SsiCredentialIssuerValidationRule`    checks if the issuer of the Verifiable Credential matches `tx.ssi.miw.authority.issuer`
+- `SsiCredentialSubjectIdValidationRule` checks if the issuer of the JWT/VP matches the credential subject id in the Verifiable Credential
+
 ## Configuration
 
 | Key                              | Required | Example        | Description                       |
@@ -23,3 +28,7 @@ For obtaining a `JWT` token also it reaches the MIW, that will create a token wi
 | tx.ssi.oauth.client.secret.alias | X        |                | Vault alias for the client secret |
 
 By default, the `tx.ssi.miw.authority.issuer` is composed with `did:web:<tx.ssi.miw.url>:<tx.ssi.miw.authority.id>
+
+Another mandatory settings is `tx.ssi.endpoint.audience` which is described [here](../ssi-identity-core/README.md)
+
+> Note: the `edc.participant.id` should match the BPN number contained in the OAuth2/Keycloak token and the one assigned by the portal to the user's organization.
