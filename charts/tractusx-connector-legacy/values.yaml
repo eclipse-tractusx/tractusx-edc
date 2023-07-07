@@ -107,7 +107,7 @@ controlplane:
       port: 8083
       # -- path for incoming api calls
       path: /control
-    # -- ids api, used for inter connector communication and must be internet facing
+    # -- dsp api, used for inter connector communication and must be internet facing
     protocol:
       # -- port for incoming api calls
       port: 8084
@@ -279,8 +279,8 @@ controlplane:
   # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
   affinity: {}
   url:
-    # -- Explicitly declared url for reaching the ids api (e.g. if ingresses not used)
-    ids: ""
+    # -- Explicitly declared url for reaching the dsp api (e.g. if ingresses not used)
+    protocol: ""
 dataplane:
   image:
     # -- Which derivate of the data plane to use. when left empty the deployment will select the correct image automatically

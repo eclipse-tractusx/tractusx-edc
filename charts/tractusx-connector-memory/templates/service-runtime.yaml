@@ -48,8 +48,8 @@ spec:
       protocol: TCP
       name: validation
     - port: {{ .Values.runtime.endpoints.protocol.port }}
-      targetPort: ids
+      targetPort: protocol
       protocol: TCP
-      name: ids
+      name: protocol
   selector:
     {{- include "txdc.runtime.selectorLabels" . | nindent 4 }}
