@@ -135,7 +135,7 @@ public abstract class AbstractNegotiateEdrTest {
     }
 
 
-    ReceivedEvent waitForEvent(ReceivedEvent event) {
+    private ReceivedEvent waitForEvent(ReceivedEvent event) {
         try {
             var request = server.takeRequest(20, TimeUnit.SECONDS);
             if (request != null) {

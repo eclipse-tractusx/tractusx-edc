@@ -53,7 +53,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
 
     private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
     private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
-    MockWebServer server;
+    private MockWebServer server;
 
     @BeforeEach
     void setup() throws IOException {

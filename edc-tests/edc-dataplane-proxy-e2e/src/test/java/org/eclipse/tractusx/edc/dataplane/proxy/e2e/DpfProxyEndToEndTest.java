@@ -103,7 +103,7 @@ public class DpfProxyEndToEndTest {
     @AfterEach
     void tearDown() throws IOException {
         if (mockEndpoint != null) {
-            mockEndpoint.close();
+            mockEndpoint.shutdown();
         }
     }
 
