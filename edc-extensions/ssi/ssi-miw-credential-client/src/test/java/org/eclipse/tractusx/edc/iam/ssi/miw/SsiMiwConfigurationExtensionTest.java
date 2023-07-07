@@ -97,4 +97,28 @@ public class SsiMiwConfigurationExtensionTest {
 
     }
 
+    @Test
+    void initialize_withTrailingUrl() {
+        var url = "http://localhost:8080/";
+        var authorityId = "id";
+
+        var cfg = mock(Config.class);
+        when(context.getConfig()).thenReturn(cfg);
+
+        when(cfg.getString(MIW_BASE_URL)).thenReturn(url);
+        when(cfg.getString(MIW_AUTHORITY_ID)).thenReturn(authorityId);
+        when(cfg.getString(eq(MIW_AUTHORITY_ISSUER), anyString())).thenAnswer(answer -> answer.getArgument(1));
+
+        var miwConfig = extension.miwConfiguration(context);
+
+        verify(cfg).getString(MIW_BASE_URL);
+        verify(cfg).getString(MIW_AUTHORITY_ID);
+        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUER), anyString());
+
+        assertThat(miwConfig.getUrl()).isEqualTo("http://localhost:8080");
+        assertThat(miwConfig.getAuthorityId()).isEqualTo(authorityId);
+        assertThat(miwConfig.getAuthorityIssuer()).isEqualTo(format(AUTHORITY_ID_TEMPLATE, "localhost%3A8080", authorityId));
+
+    }
+
 }
