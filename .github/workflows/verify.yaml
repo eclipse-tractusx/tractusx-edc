@@ -187,9 +187,8 @@ jobs:
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
 
-  ssi-integration-tests:
+  miw-integration-tests:
     runs-on: ubuntu-latest
-    continue-on-error: true
     needs: [ verify-formatting, verify-license-headers ]
 
     steps:
@@ -199,7 +198,30 @@ jobs:
       - uses: actions/checkout@v2
       - name: Starting MIW, Keycloak and Postgres Servers
         run: |
-          docker compose -f edc-tests/e2e-tests/src/test/resources/docker-compose.yml up -d 
+          cd edc-tests/miw-tests/src/test/resources/docker-environment
+          docker compose up --wait
 
-      - name: Run MIW E2E tests
-        run: ./gradlew test -DincludeTags="MiwIntegrationTest"
+      - uses: nick-fields/retry@v2
+        name: Wait for MIW
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: |
+            code=$(curl -IL -sw "%{http_code}" http://localhost:8000/api/actuator/health -o /dev/null)
+            if [ "$code" -ne "401" ]; then
+              echo "MIW not ready yet, status = $code"
+              exit 1;
+            fi
+
+      - name: Seed test data
+        run: |
+          docker exec docker-environment-postgres-1 /opt/seed.sh
+
+      - name: Run MIW Integration tests
+        run: | 
+          ./gradlew -p edc-tests/miw-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
+      - name: Run SSI E2E tests
+        run: |
+          pwd
+          ./gradlew compileJava compileTestJava
+          ./gradlew -p edc-tests/e2e-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
