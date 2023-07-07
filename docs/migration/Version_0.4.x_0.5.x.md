@@ -75,3 +75,21 @@ The `Observability API` extension will be used instead
 - `observability.insecure`
 
 The status (`/health`, `/startup`, `/liveness`, `/readiness`) of the EDC can be checked by using the default endpoint.
+
+## The Consumer Pull flow changes
+
+Starting from `0.5.0-rc5` which incorporates `EDC` 0.1.3, the consumer pull has been simplified in upstream, and it
+can cause some breaking changes on users usage. The change is reflected in this [diagram](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/architecture/data-transfer/diagrams/transfer-data-plane-consumer-pull.png).
+
+The main difference is that in the previous iteration of the pull flow there were two EDRs involved. One created by the provider while serving
+a transfer request, and one created by the consumer (wrapping the provider one). The consumer one then was dispatched to the EDR receivers for requesting
+the data via consumer dataplane.
+
+In the current iteration the receivers now receive directly the provider EDR without the double "wrapping" and can be used directly to fetch data
+from the provider dataplane, without passing thought to the consumer dataplane.
+
+The shape of the EDR has not been changed so, if in the backend systems the EDR#endpoint was used as url for fetching data, it should not cause any
+breaking changes.
+
+If the backend system manually forward the EDR to the consumer dataplane or tries to decode it via consumer validate token APIs,
+this will not work with signature check errors, as the EDR is the one signed by the provider.
