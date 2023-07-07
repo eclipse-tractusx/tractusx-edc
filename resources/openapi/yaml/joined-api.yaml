@@ -1,17 +1,48 @@
 openapi: 3.0.1
+info:
+  title: tx-edc-extensions-api
+  description: Tractus X Extensions REST API Doc
+  version: 0.5.0-SNAPSHOT
+servers:
+- url: /
 paths:
+  /aas/request:
+    post:
+      tags:
+      - Data Plane Proxy API
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+      responses:
+        default:
+          description: Requests asset data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetRequest'
   /adapter/edrs:
     get:
+      tags:
+      - Control Plane Adapter EDR Api
       description: Returns all EndpointDataReference entry according to a query
       operationId: queryEdrs
       parameters:
-      - in: query
-        name: assetId
+      - name: assetId
+        in: query
+        required: false
+        style: form
+        explode: true
         schema:
           type: string
           example: null
-      - in: query
-        name: agreementId
+      - name: agreementId
+        in: query
+        required: false
+        style: form
+        explode: true
         schema:
           type: string
           example: null
@@ -25,6 +56,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/EndpointDataReferenceEntry'
         "400":
+          description: Request was malformed
           content:
             application/json:
               schema:
@@ -32,10 +64,9 @@ paths:
                 example: null
                 items:
                   $ref: '#/components/schemas/ApiErrorDetail'
-          description: Request was malformed
+    post:
       tags:
       - Control Plane Adapter EDR Api
-    post:
       description: Initiates an EDR negotiation by handling a contract negotiation
         first and then a transfer process for a given offer and with the given counter
         part. Please note that successfully invoking this endpoint only means that
@@ -46,15 +77,13 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties:
-                $ref: '#/components/schemas/NegotiateEdrRequestDto'
-              example: null
               properties:
                 empty:
                   type: boolean
                   example: null
                 valueType:
                   type: string
+                  example: null
                   enum:
                   - ARRAY
                   - OBJECT
@@ -63,15 +92,18 @@ paths:
                   - "TRUE"
                   - "FALSE"
                   - "NULL"
-                  example: null
+              additionalProperties:
+                $ref: '#/components/schemas/NegotiateEdrRequestDto'
+              example: null
       responses:
         "200":
+          description: The negotiation was successfully initiated.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/IdResponseDto'
-          description: The negotiation was successfully initiated.
         "400":
+          description: Request body was malformed
           content:
             application/json:
               schema:
@@ -79,37 +111,30 @@ paths:
                 example: null
                 items:
                   $ref: '#/components/schemas/ApiErrorDetail'
-          description: Request body was malformed
-      tags:
-      - Control Plane Adapter EDR Api
   /adapter/edrs/{id}:
     get:
+      tags:
+      - Control Plane Adapter EDR Api
       description: Gets an EDR  with the given transfer process ID)
       operationId: getEdr
       parameters:
-      - in: path
-        name: id
+      - name: id
+        in: path
         required: true
+        style: simple
+        explode: false
         schema:
           type: string
           example: null
       responses:
         "200":
+          description: The EDR cached
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataAddressDto'
-          description: The EDR cached
         "400":
-          content:
-            application/json:
-              schema:
-                type: array
-                example: null
-                items:
-                  $ref: '#/components/schemas/ApiErrorDetail'
           description: "Request was malformed, e.g. id was null"
-        "404":
           content:
             application/json:
               schema:
@@ -117,14 +142,29 @@ paths:
                 example: null
                 items:
                   $ref: '#/components/schemas/ApiErrorDetail'
+        "404":
           description: An EDR with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+  /gateway/{paths}:
+    get:
       tags:
-      - Control Plane Adapter EDR Api
+      - Data Plane Proxy API
+      operationId: requestAsset
+      responses:
+        default:
+          description: Gets asset data
+          content:
+            application/json: {}
 components:
   schemas:
     Action:
       type: object
-      example: null
       properties:
         constraint:
           $ref: '#/components/schemas/Constraint'
@@ -134,9 +174,9 @@ components:
         type:
           type: string
           example: null
+      example: null
     ApiErrorDetail:
       type: object
-      example: null
       properties:
         invalidValue:
           type: string
@@ -150,9 +190,22 @@ components:
         type:
           type: string
           example: null
+      example: null
+    AssetRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+          example: null
+        endpointUrl:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null
+      example: null
     CallbackAddress:
       type: object
-      example: null
       properties:
         authCodeId:
           type: string
@@ -161,32 +214,32 @@ components:
           type: string
           example: null
         events:
+          uniqueItems: true
           type: array
           example: null
           items:
             type: string
             example: null
-          uniqueItems: true
         transactional:
           type: boolean
           example: null
         uri:
           type: string
           example: null
-    Constraint:
-      type: object
-      discriminator:
-        propertyName: edctype
       example: null
+    Constraint:
+      required:
+      - edctype
+      type: object
       properties:
         edctype:
           type: string
           example: null
-      required:
-      - edctype
+      example: null
+      discriminator:
+        propertyName: edctype
     ContractOfferDescription:
       type: object
-      example: null
       properties:
         assetId:
           type: string
@@ -196,17 +249,11 @@ components:
           example: null
         policy:
           $ref: '#/components/schemas/Policy'
-        validity:
-          type: integer
-          format: int64
-          example: null
-      required:
-      - assetId
-      - offerId
-      - policy
-    DataAddressDto:
-      type: object
       example: null
+    DataAddressDto:
+      required:
+      - properties
+      type: object
       properties:
         '@context':
           type: object
@@ -220,11 +267,9 @@ components:
             type: string
             example: null
           example: null
-      required:
-      - properties
+      example: null
     Duty:
       type: object
-      example: null
       properties:
         action:
           $ref: '#/components/schemas/Action'
@@ -246,9 +291,9 @@ components:
         target:
           type: string
           example: null
+      example: null
     EndpointDataReferenceEntry:
       type: object
-      example: null
       properties:
         agreementId:
           type: string
@@ -259,9 +304,9 @@ components:
         transferProcessId:
           type: string
           example: null
+      example: null
     IdResponseDto:
       type: object
-      example: null
       properties:
         '@context':
           type: object
@@ -276,17 +321,16 @@ components:
           type: integer
           format: int64
           example: null
+      example: null
     JsonObject:
       type: object
-      additionalProperties:
-        $ref: '#/components/schemas/JsonValue'
-      example: null
       properties:
         empty:
           type: boolean
           example: null
         valueType:
           type: string
+          example: null
           enum:
           - ARRAY
           - OBJECT
@@ -295,13 +339,15 @@ components:
           - "TRUE"
           - "FALSE"
           - "NULL"
-          example: null
+      additionalProperties:
+        $ref: '#/components/schemas/JsonValue'
+      example: null
     JsonValue:
       type: object
-      example: null
       properties:
         valueType:
           type: string
+          example: null
           enum:
           - ARRAY
           - OBJECT
@@ -310,10 +356,14 @@ components:
           - "TRUE"
           - "FALSE"
           - "NULL"
-          example: null
-    NegotiateEdrRequestDto:
-      type: object
       example: null
+    NegotiateEdrRequestDto:
+      required:
+      - connectorAddress
+      - connectorId
+      - offer
+      - protocol
+      type: object
       properties:
         callbackAddresses:
           type: array
@@ -334,14 +384,9 @@ components:
         providerId:
           type: string
           example: null
-      required:
-      - connectorAddress
-      - connectorId
-      - offer
-      - protocol
+      example: null
     Permission:
       type: object
-      example: null
       properties:
         action:
           $ref: '#/components/schemas/Action'
@@ -364,17 +409,17 @@ components:
         target:
           type: string
           example: null
+      example: null
     Policy:
       type: object
-      example: null
       properties:
         '@type':
           type: string
+          example: null
           enum:
           - SET
           - OFFER
           - CONTRACT
-          example: null
         assignee:
           type: string
           example: null
@@ -408,9 +453,9 @@ components:
         target:
           type: string
           example: null
+      example: null
     Prohibition:
       type: object
-      example: null
       properties:
         action:
           $ref: '#/components/schemas/Action'
@@ -428,3 +473,4 @@ components:
         target:
           type: string
           example: null
+      example: null
