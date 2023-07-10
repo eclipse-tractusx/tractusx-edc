@@ -93,3 +93,5 @@ breaking changes.
 
 If the backend system manually forward the EDR to the consumer dataplane or tries to decode it via consumer validate token APIs,
 this will not work with signature check errors, as the EDR is the one signed by the provider.
+
+> Note the custom property `cid` in the EDR, it's not available anymore. The property it's still available inside the JWT `authCode`
