@@ -48,8 +48,8 @@
   }
 }
 ```
-The `offerId` and `policy` must be the `odrl:Set` `@id` and content, respectively, of the one you chose to agree with from the `dcat:dataset` in the `dcat:catalog`.
 
+The `offerId` and `policy` must be the `odrl:Set` `@id` and content, respectively, of the one you chose to agree with from the `dcat:dataset` in the `dcat:catalog`.
 
 ## Request
 

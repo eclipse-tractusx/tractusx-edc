@@ -54,9 +54,9 @@ Private properties will not be sent through the dataplane and are only accessibl
 This enables the storage of additional information pertaining the asset, that is not relevant for the consumer, but is nonetheless useful for the provider.
 Private properties are stores inside the `privateProperties` field.
 
-> Please note: 
-> - `privateProperties` are entirely optional and the field is not required for creating or updating an asset.
-> - `dataAddress` should correspond to one of the supported types by the connector, e.g. HttpData and AmazonS3, and it should include all the necessary properties associated with the chosen type.
+> Please note:
+> `privateProperties` are entirely optional and the field is not required for creating or updating an asset.
+> `dataAddress` should correspond to one of the supported types by the connector, e.g. HttpData and AmazonS3, and it should include all the necessary properties associated with the chosen type.
 
 ## Request
 
