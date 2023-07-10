@@ -38,6 +38,7 @@ import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPar
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_PROXIED_AAS_BACKEND_PORT;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PROXIED_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
@@ -54,7 +55,7 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane proxies and EDR")
     void httpPullDataTransfer_withEdrAndProxy() throws IOException {
 
-        var eventsUrl = server.url("/events");
+        var eventsUrl = server.url(PROXIED_PATH);
 
         var assetId = "api-asset-1";
         var authCodeHeaderName = "test-authkey";
@@ -97,7 +98,7 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane proxies fails when EDR is not found")
     void httpPullDataTransfer_withoutEdr() throws IOException {
 
-        var eventsUrl = server.url("/events");
+        var eventsUrl = server.url(PROXIED_PATH);
 
         var assetId = "api-asset-1";
         var authCodeHeaderName = "test-authkey";
@@ -125,7 +126,7 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane proxies and Two EDR")
     void httpPullDataTransfer_shouldFailForAsset_withTwoEdrAndProxy() throws IOException {
 
-        var eventsUrl = server.url("/events");
+        var eventsUrl = server.url(PROXIED_PATH);
 
         var assetId = "api-asset-1";
         var authCodeHeaderName = "test-authkey";

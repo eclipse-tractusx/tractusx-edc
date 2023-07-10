@@ -31,6 +31,9 @@ public class TestRuntimeConfiguration {
     public static final String PLATO_NAME = "PLATO";
     public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
     public static final Integer PLATO_PROXIED_AAS_BACKEND_PORT = getFreePort();
+
+    public static final String PROXIED_PATH = "/events";
+
     public static final int MIW_PLATO_PORT = getFreePort();
 
     public static final int MIW_SOKRATES_PORT = getFreePort();
@@ -187,7 +190,7 @@ public class TestRuntimeConfiguration {
                 put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + PLATO_PUBLIC_API_PORT + "/api/public\"}");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
-                put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT);
+                put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT + PROXIED_PATH);
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
             }
         };
