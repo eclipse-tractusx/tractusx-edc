@@ -899,7 +899,7 @@
 		},
 		{
 			"key": "CONSUMER_ADAPTER_URL",
-			"value": "http://localhost:31364/management/adapter",
+			"value": "http://localhost:31364/management",
 			"type": "string"
 		}
 	]

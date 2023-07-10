@@ -44,7 +44,7 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
-@Path("/adapter/edrs")
+@Path("/edrs")
 public class AdapterEdrController implements AdapterEdrApi {
 
     private final AdapterTransferProcessService adapterTransferProcessService;

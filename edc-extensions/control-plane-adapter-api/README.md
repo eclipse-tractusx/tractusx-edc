@@ -1,10 +1,10 @@
 # Control Plane Adapter API (EDR management)
 
-This module provide a new APIs on top of the EDC management APIs for dealing with EDRs token.
+This module provides extensions to the EDC management API for dealing with EDR tokens.
 
-The APIs are mounted in the same context of the `management` APIs. So no additional configuration is required.
+The extensions are added to the same context as the management APIs, so no additional configuration is required.
 
-The base path of the API will be `<mgmtContext>/adapter/edrs`
+The base path of the API will be `<mgmtContext>/edrs`
 
 This module for now provides three APIs:
 

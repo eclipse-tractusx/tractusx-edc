@@ -120,12 +120,12 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         }
 
         var httpDataAddressResult = extractSourceDataAddress(token, configuration);
-        HttpDataAddress httpDataAddress = null;
+        HttpDataAddress httpDataAddress;
 
         if (httpDataAddressResult.succeeded()) {
             httpDataAddress = httpDataAddressResult.getContent();
         } else {
-            monitor.debug(join(", ", httpDataAddressResult.getFailureMessages()));
+            monitor.debug("Request to token validation endpoint failed with errors: " + join(", ", httpDataAddressResult.getFailureMessages()));
             response.resume(createMessageResponse(UNAUTHORIZED, "Failed to decode data address", context.getMediaType()));
             return;
         }

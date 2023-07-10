@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 @ApiTest
 public class AdapterEdrControllerTest extends RestControllerTestBase {
 
-    public static final String ADAPTER_EDR_PATH = "/adapter/edrs";
+    public static final String ADAPTER_EDR_PATH = "/edrs";
     private final JsonLd jsonLdService = new TitaniumJsonLd(monitor);
     AdapterTransferProcessService adapterTransferProcessService = mock(AdapterTransferProcessService.class);
     TypeTransformerRegistry transformerRegistry = mock(TypeTransformerRegistry.class);
