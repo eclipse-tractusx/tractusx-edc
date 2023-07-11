@@ -28,7 +28,7 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -112,7 +112,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
             }
             return edr;
         } else {
-            var resolvedEdrs = edrCache.referencesForAsset(request.getAssetId());
+            var resolvedEdrs = edrCache.referencesForAsset(request.getAssetId(), request.getProviderId());
             if (resolvedEdrs.isEmpty()) {
                 throw new BadRequestException("No EDR for asset: " + request.getAssetId());
             } else if (resolvedEdrs.size() > 1) {
@@ -128,17 +128,10 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     private void handleCompletion(AsyncResponse response, StreamResult<Void> result, Throwable throwable) {
         if (result != null && result.failed()) {
             switch (result.reason()) {
-                case NOT_FOUND:
-                    response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());
-                    break;
-                case NOT_AUTHORIZED:
-                    response.resume(status(UNAUTHORIZED).type(APPLICATION_JSON).build());
-                    break;
-                case GENERAL_ERROR:
-                    response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + result.reason());
+                case NOT_FOUND -> response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());
+                case NOT_AUTHORIZED -> response.resume(status(UNAUTHORIZED).type(APPLICATION_JSON).build());
+                case GENERAL_ERROR -> response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
+                default -> throw new IllegalStateException("Unexpected value: " + result.reason());
             }
         } else if (throwable != null) {
             reportError(response, throwable);

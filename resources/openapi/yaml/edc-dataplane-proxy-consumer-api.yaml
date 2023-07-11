@@ -29,6 +29,9 @@ components:
         endpointUrl:
           type: string
           example: null
+        providerId:
+          type: string
+          example: null
         transferProcessId:
           type: string
           example: null

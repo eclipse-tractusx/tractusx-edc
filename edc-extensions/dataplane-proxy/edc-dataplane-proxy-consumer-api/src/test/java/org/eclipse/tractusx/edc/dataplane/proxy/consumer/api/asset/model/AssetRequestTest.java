@@ -27,7 +27,13 @@ class AssetRequestTest {
     void verify_SerializeDeserialize() throws JsonProcessingException {
         var mapper = new ObjectMapper();
 
-        var request = AssetRequest.Builder.newInstance().assetId("asset1").endpointUrl("https://test.com").transferProcessId("tp1").build();
+        var request = AssetRequest.Builder.newInstance()
+                .assetId("asset1")
+                .endpointUrl("https://test.com")
+                .providerId("providerId")
+                .transferProcessId("tp1")
+                .build();
+        
         var serialized = mapper.writeValueAsString(request);
 
         var deserialized = mapper.readValue(serialized, AssetRequest.class);
@@ -35,6 +41,8 @@ class AssetRequestTest {
         assertThat(deserialized.getAssetId()).isEqualTo(request.getAssetId());
         assertThat(deserialized.getTransferProcessId()).isEqualTo(request.getTransferProcessId());
         assertThat(deserialized.getEndpointUrl()).isEqualTo(request.getEndpointUrl());
+        assertThat(deserialized.getProviderId()).isEqualTo(request.getProviderId());
+
     }
 
     @Test

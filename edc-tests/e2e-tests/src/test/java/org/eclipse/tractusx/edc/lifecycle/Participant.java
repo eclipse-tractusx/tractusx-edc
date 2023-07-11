@@ -327,7 +327,9 @@ public class Participant {
     }
 
     public Response pullProxyDataResponseByAssetId(Participant provider, String assetId) {
-        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        var body = Map.of("assetId", assetId,
+                "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint),
+                "providerId", provider.bpn);
         return proxyRequest(body);
     }
 

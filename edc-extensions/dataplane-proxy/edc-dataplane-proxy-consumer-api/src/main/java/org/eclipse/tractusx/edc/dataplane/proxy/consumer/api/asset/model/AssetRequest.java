@@ -29,7 +29,12 @@ import static java.util.Objects.requireNonNull;
 public class AssetRequest {
     private String transferProcessId;
     private String assetId;
+
+    private String providerId;
     private String endpointUrl;
+
+    private AssetRequest() {
+    }
 
     public String getTransferProcessId() {
         return transferProcessId;
@@ -43,12 +48,17 @@ public class AssetRequest {
         return endpointUrl;
     }
 
-    private AssetRequest() {
+    public String getProviderId() {
+        return providerId;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         private final AssetRequest request;
+
+        private Builder() {
+            request = new AssetRequest();
+        }
 
         @JsonCreator
         public static Builder newInstance() {
@@ -70,16 +80,17 @@ public class AssetRequest {
             return this;
         }
 
+        public Builder providerId(String providerId) {
+            request.providerId = providerId;
+            return this;
+        }
+
         public AssetRequest build() {
             if (request.assetId == null && request.transferProcessId == null) {
                 throw new NullPointerException("An assetId or endpointReferenceId must be set");
             }
             requireNonNull(request.endpointUrl, "endpointUrl");
             return request;
-        }
-
-        private Builder() {
-            request = new AssetRequest();
         }
     }
 }

@@ -21,7 +21,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.edr.core.defaults.InMemoryEndpointDataReferenceCache;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 
 /**
  * Registers default services for the EDR cache.

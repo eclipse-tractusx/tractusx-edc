@@ -21,7 +21,7 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.HttpDataAddress;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
