@@ -24,6 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_SUMMARY_V_1;
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_V_1;
+import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_ED25519_V1;
+import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_JWS_V1;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -46,5 +48,8 @@ public class JsonLdExtensionTest {
         extension.initialize(context);
         jsonLdService.registerCachedDocument(eq(CREDENTIALS_V_1), any());
         jsonLdService.registerCachedDocument(eq(CREDENTIALS_SUMMARY_V_1), any());
+        jsonLdService.registerCachedDocument(eq(SECURITY_JWS_V1), any());
+        jsonLdService.registerCachedDocument(eq(SECURITY_ED25519_V1), any());
+
     }
 }

@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.miw;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -21,6 +22,7 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
+import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2ClientConfiguration;
 import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2ClientImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,4 +70,27 @@ public class SsiMiwOauth2ClientExtensionTest {
         verify(config).getString(CLIENT_SECRET_ALIAS);
         verify(vault).resolveSecret("clientSecretAlias");
     }
+
+    @Test
+    void initialize_withTrailingUrl() {
+        var config = mock(Config.class);
+        when(context.getConfig()).thenReturn(config);
+        when(config.getString(TOKEN_URL)).thenReturn("http://localhost:8080/");
+        when(config.getString(CLIENT_ID)).thenReturn("clientId");
+        when(config.getString(CLIENT_SECRET_ALIAS)).thenReturn("clientSecretAlias");
+        when(vault.resolveSecret("clientSecretAlias")).thenReturn("clientSecret");
+
+        assertThat(extension.oauth2Client(context))
+                .asInstanceOf(InstanceOfAssertFactories.type(MiwOauth2ClientImpl.class))
+                .extracting(MiwOauth2ClientImpl::getConfiguration)
+                .extracting(MiwOauth2ClientConfiguration::getTokenUrl)
+                .isEqualTo("http://localhost:8080");
+        
+        verify(config).getString(TOKEN_URL);
+        verify(config).getString(CLIENT_ID);
+        verify(config).getString(CLIENT_SECRET_ALIAS);
+        verify(vault).resolveSecret("clientSecretAlias");
+    }
+
+
 }

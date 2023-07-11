@@ -27,7 +27,7 @@ dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
     implementation(libs.edc.azure.vault)
     constraints {
-        implementation("net.minidev:json-smart:2.4.11") {
+        implementation("net.minidev:json-smart:2.5.0") {
             because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
         }
     }

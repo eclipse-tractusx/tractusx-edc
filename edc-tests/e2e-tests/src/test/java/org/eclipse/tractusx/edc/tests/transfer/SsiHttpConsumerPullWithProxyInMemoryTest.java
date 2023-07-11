@@ -20,7 +20,8 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.token.KeycloakDispatcher;
 import org.eclipse.tractusx.edc.token.MiwDispatcher;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -59,13 +60,12 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
             platoSsiConfiguration()
     );
 
-    private MockWebServer oauthServer;
-    private MockWebServer miwPlatoServer;
-    private MockWebServer miwSokratesServer;
+    private static MockWebServer oauthServer;
+    private static MockWebServer miwPlatoServer;
+    private static MockWebServer miwSokratesServer;
 
-    @BeforeEach
-    void setup() throws IOException {
-        super.setup();
+    @BeforeAll
+    static void prepare() throws IOException {
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
         oauthServer = new MockWebServer();
@@ -82,11 +82,17 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
         oauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
-    @AfterEach
-    void teardown() throws IOException {
+    @AfterAll
+    static void unwind() throws IOException {
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
         oauthServer.shutdown();
+    }
+
+    @BeforeEach
+    void setup() throws IOException {
+        super.setup();
+
     }
 
     @Override

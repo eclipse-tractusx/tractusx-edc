@@ -25,9 +25,12 @@ import jakarta.ws.rs.core.PathSegment;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.connector.dataplane.spi.resolver.DataAddressResolver;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationHandlerRegistry;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfiguration;
@@ -43,6 +46,7 @@ import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static jakarta.ws.rs.core.Response.status;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.joining;
 import static org.eclipse.tractusx.edc.dataplane.proxy.provider.api.response.ResponseHelper.createMessageResponse;
@@ -53,8 +57,6 @@ import static org.eclipse.tractusx.edc.dataplane.proxy.provider.api.response.Res
 @Path("/" + ProviderGatewayController.GATEWAY_PATH)
 public class ProviderGatewayController implements ProviderGatewayApi {
     protected static final String GATEWAY_PATH = "gateway";
-
-    private static final String HTTP_DATA = "HttpData";
     private static final String BASE_URL = "baseUrl";
     private static final String ASYNC = "async";
 
@@ -65,16 +67,20 @@ public class ProviderGatewayController implements ProviderGatewayApi {
     private final GatewayConfigurationRegistry configurationRegistry;
     private final AuthorizationHandlerRegistry authorizationRegistry;
 
+    private final DataAddressResolver dataAddressResolver;
+
     private final Monitor monitor;
 
     private final ExecutorService executorService;
 
     public ProviderGatewayController(DataPlaneManager dataPlaneManager,
+                                     DataAddressResolver dataAddressResolver,
                                      GatewayConfigurationRegistry configurationRegistry,
                                      AuthorizationHandlerRegistry authorizationRegistry,
                                      ExecutorService executorService,
                                      Monitor monitor) {
         this.dataPlaneManager = dataPlaneManager;
+        this.dataAddressResolver = dataAddressResolver;
         this.configurationRegistry = configurationRegistry;
         this.authorizationRegistry = authorizationRegistry;
         this.executorService = executorService;
@@ -98,6 +104,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
             token = token.substring(BEARER_PREFIX.length());
         }
 
+
         var uriInfo = context.getUriInfo();
         var segments = uriInfo.getPathSegments();
         if (segments.size() < 3 || !GATEWAY_PATH.equals(segments.get(0).getPath())) {
@@ -112,6 +119,22 @@ public class ProviderGatewayController implements ProviderGatewayApi {
             return;
         }
 
+        var httpDataAddressResult = extractSourceDataAddress(token, configuration);
+        HttpDataAddress httpDataAddress;
+
+        if (httpDataAddressResult.succeeded()) {
+            httpDataAddress = httpDataAddressResult.getContent();
+        } else {
+            monitor.debug("Request to token validation endpoint failed with errors: " + join(", ", httpDataAddressResult.getFailureMessages()));
+            response.resume(createMessageResponse(UNAUTHORIZED, "Failed to decode data address", context.getMediaType()));
+            return;
+        }
+
+        if (!configuration.getProxiedPath().startsWith(httpDataAddress.getBaseUrl())) {
+            response.resume(createMessageResponse(NOT_FOUND, "Data address path not matched", context.getMediaType()));
+            return;
+        }
+
         // calculate the sub-path, which all segments after the GATEWAY segment, including the alias segment
         var subPath = segments.stream().skip(1).map(PathSegment::getPath).collect(joining("/"));
         if (!authenticate(token, configuration.getAuthorizationType(), subPath, context, response)) {
@@ -120,7 +143,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
 
         // calculate the request path, which all segments after the alias segment
         var requestPath = segments.stream().skip(2).map(PathSegment::getPath).collect(joining("/"));
-        var flowRequest = createRequest(requestPath, configuration);
+        var flowRequest = createRequest(requestPath, configuration, httpDataAddress);
 
         // transfer the data asynchronously
         var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
@@ -132,13 +155,13 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         }
     }
 
-    private DataFlowRequest createRequest(String subPath, GatewayConfiguration configuration) {
+    private DataFlowRequest createRequest(String subPath, GatewayConfiguration configuration, HttpDataAddress httpDataAddress) {
         var path = configuration.getProxiedPath() + "/" + subPath;
 
-        var sourceAddress = DataAddress.Builder.newInstance()
-                .type(HTTP_DATA)
-                .property(BASE_URL, path)
-                .build();
+        var sourceAddressBuilder = HttpDataAddress.Builder.newInstance()
+                .property(BASE_URL, path);
+
+        httpDataAddress.getAdditionalHeaders().forEach(sourceAddressBuilder::addAdditionalHeader);
 
         var destinationAddress = DataAddress.Builder.newInstance()
                 .type(ASYNC)
@@ -147,7 +170,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         return DataFlowRequest.Builder.newInstance()
                 .processId(randomUUID().toString())
                 .trackable(false)
-                .sourceDataAddress(sourceAddress)
+                .sourceDataAddress(sourceAddressBuilder.build())
                 .destinationDataAddress(destinationAddress)
                 .traceContext(Map.of())
                 .build();
@@ -203,4 +226,16 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         response.resume(entity);
     }
 
+
+    private Result<HttpDataAddress> extractSourceDataAddress(String token, GatewayConfiguration configuration) {
+        return dataAddressResolver.resolve(token).map(dataAddress -> mapToHttpDataAddress(dataAddress, configuration, token));
+    }
+
+    private HttpDataAddress mapToHttpDataAddress(DataAddress dataAddress, GatewayConfiguration configuration, String token) {
+        var builder = HttpDataAddress.Builder.newInstance().copyFrom(dataAddress);
+        if (configuration.isForwardEdrToken()) {
+            builder.addAdditionalHeader(configuration.getForwardEdrTokenHeaderKey(), token);
+        }
+        return builder.build();
+    }
 }

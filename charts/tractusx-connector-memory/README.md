@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.5.0-rc5](https://img.shields.io/badge/Version-0.5.0--rc5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0-rc5](https://img.shields.io/badge/AppVersion-0.5.0--rc5-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0](https://img.shields.io/badge/AppVersion-0.5.0-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -10,7 +10,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please 
 
 ### Preconditions
 
-- the Managed Identity Walled (MIW) must be running and reachable via network
+- the [Managed Identity Walled (MIW)](https://github.com/catenax-ng/tx-managed-identity-wallets) must be running and reachable via network
 - the necessary set of VerifiableCredentials for this participant must be pushed to MIW. This is typically done by the
   Portal during participant onboarding
 - KeyCloak must be running and reachable via network
@@ -39,7 +39,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-rc5 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```

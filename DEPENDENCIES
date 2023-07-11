@@ -75,7 +75,7 @@ maven/mavencentral/com.puppycrawl.tools/checkstyle/10.0, LGPL-2.1-or-later, appr
 maven/mavencentral/com.squareup.okhttp3/mockwebserver/5.0.0-alpha.11, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/mockwebserver3/5.0.0-alpha.11, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.11.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.squareup.okhttp3/okhttp-jvm/5.0.0-alpha.11, Apache-2.0, restricted, clearlydefined
+maven/mavencentral/com.squareup.okhttp3/okhttp-jvm/5.0.0-alpha.11, Apache-2.0, approved, #9263
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.11.0, Apache-2.0, approved, #9240
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
 maven/mavencentral/com.squareup.okhttp3/okhttp/5.0.0-alpha.11, Apache-2.0, approved, clearlydefined
@@ -88,8 +88,8 @@ maven/mavencentral/commons-codec/commons-codec/1.15, Apache-2.0 AND BSD-3-Clause
 maven/mavencentral/commons-collections/commons-collections/3.2.2, Apache-2.0, approved, CQ10385
 maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ10162
 maven/mavencentral/dev.failsafe/failsafe-okhttp/3.3.2, Apache-2.0, approved, #9178
-maven/mavencentral/dev.failsafe/failsafe/3.3.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/dev.failsafe/failsafe/3.3.2, , restricted, clearlydefined
+maven/mavencentral/dev.failsafe/failsafe/3.3.1, Apache-2.0, approved, #9268
+maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
 maven/mavencentral/info.picocli/picocli/4.6.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.github.classgraph/classgraph/4.8.138, MIT, approved, CQ22530
 maven/mavencentral/io.github.classgraph/classgraph/4.8.154, MIT, approved, CQ22530
@@ -161,7 +161,7 @@ maven/mavencentral/io.netty/netty-transport/4.1.91.Final, Apache-2.0 AND BSD-3-C
 maven/mavencentral/io.netty/netty-transport/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opencensus/opencensus-api/0.31.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opencensus/opencensus-contrib-http-util/0.31.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.27.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.27.0, Apache-2.0, approved, #9270
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.27.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.27.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.28, Apache-2.0, approved, clearlydefined
@@ -170,15 +170,15 @@ maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.28, Apache-2.0
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.31, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor/reactor-core/3.4.27, Apache-2.0, approved, #7517
 maven/mavencentral/io.projectreactor/reactor-core/3.4.29, Apache-2.0, approved, #7517
-maven/mavencentral/io.rest-assured/json-path/5.3.1, , restricted, clearlydefined
-maven/mavencentral/io.rest-assured/rest-assured-common/5.3.1, , restricted, clearlydefined
-maven/mavencentral/io.rest-assured/rest-assured/5.3.1, , restricted, clearlydefined
-maven/mavencentral/io.rest-assured/xml-path/5.3.1, , restricted, clearlydefined
+maven/mavencentral/io.rest-assured/json-path/5.3.1, Apache-2.0, approved, #9261
+maven/mavencentral/io.rest-assured/rest-assured-common/5.3.1, Apache-2.0, approved, #9264
+maven/mavencentral/io.rest-assured/rest-assured/5.3.1, Apache-2.0, approved, #9262
+maven/mavencentral/io.rest-assured/xml-path/5.3.1, Apache-2.0, approved, #9267
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.2, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations/2.2.10, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.2, Apache-2.0, approved, #5929
-maven/mavencentral/io.swagger.core.v3/swagger-core/2.2.10, , restricted, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-core/2.2.10, Apache-2.0, approved, #9265
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-integration/2.2.10, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.2, Apache-2.0, approved, clearlydefined
@@ -209,16 +209,16 @@ maven/mavencentral/net.java.dev.jna/jna-platform/5.13.0, Apache-2.0 OR LGPL-2.1-
 maven/mavencentral/net.java.dev.jna/jna-platform/5.6.0, Apache-2.0 OR LGPL-2.1-or-later, approved, CQ22390
 maven/mavencentral/net.java.dev.jna/jna/5.12.1, Apache-2.0 OR LGPL-2.1-or-later, approved, #3217
 maven/mavencentral/net.java.dev.jna/jna/5.13.0, Apache-2.0 AND LGPL-2.1-or-later, approved, #6709
-maven/mavencentral/net.minidev/accessors-smart/2.4.11, Apache-2.0, approved, #7515
+maven/mavencentral/net.minidev/accessors-smart/2.5.0, , restricted, clearlydefined
 maven/mavencentral/net.minidev/json-smart/2.4.10, Apache-2.0, approved, #3288
-maven/mavencentral/net.minidev/json-smart/2.4.11, Apache-2.0, approved, #3288
+maven/mavencentral/net.minidev/json-smart/2.5.0, , restricted, clearlydefined
 maven/mavencentral/net.sf.saxon/Saxon-HE/10.6, MPL-2.0 AND W3C, approved, #7945
 maven/mavencentral/org.antlr/antlr4-runtime/4.9.3, BSD-3-Clause, approved, #322
 maven/mavencentral/org.apache.commons/commons-compress/1.23.0, Apache-2.0 AND BSD-3-Clause, approved, #7506
 maven/mavencentral/org.apache.commons/commons-lang3/3.11, Apache-2.0, approved, CQ22642
 maven/mavencentral/org.apache.commons/commons-lang3/3.12.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.commons/commons-pool2/2.11.1, Apache-2.0, approved, CQ23795
-maven/mavencentral/org.apache.groovy/groovy-bom/4.0.11, , restricted, clearlydefined
+maven/mavencentral/org.apache.groovy/groovy-bom/4.0.11, Apache-2.0, approved, #9266
 maven/mavencentral/org.apache.groovy/groovy-json/4.0.11, Apache-2.0, approved, #7411
 maven/mavencentral/org.apache.groovy/groovy-xml/4.0.11, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.groovy/groovy/4.0.11, Apache-2.0 AND BSD-3-Clause AND MIT, approved, #1742
@@ -350,7 +350,6 @@ maven/mavencentral/org.eclipse.edc/util/0.1.3, Apache-2.0, approved, technology.
 maven/mavencentral/org.eclipse.edc/validator-core/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-azure/0.1.3, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/vault-filesystem/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/web-spi/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-jakarta-servlet-api/5.0.2, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api/2.0.0, EPL-2.0 OR Apache-2.0, approved, rt.jetty
@@ -476,7 +475,7 @@ maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.20.91, Apache-2.0, app
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.20.98, Apache-2.0, approved, #8604
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.20.91, Apache-2.0, approved, #8608
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.20.98, Apache-2.0, approved, #8608
-maven/mavencentral/software.amazon.awssdk/iam/2.20.91, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/iam/2.20.91, Apache-2.0, approved, #9271
 maven/mavencentral/software.amazon.awssdk/json-utils/2.20.91, Apache-2.0, approved, #8614
 maven/mavencentral/software.amazon.awssdk/json-utils/2.20.98, Apache-2.0, approved, #8614
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.20.91, Apache-2.0, approved, #8636
@@ -493,7 +492,7 @@ maven/mavencentral/software.amazon.awssdk/s3/2.20.91, Apache-2.0, approved, #862
 maven/mavencentral/software.amazon.awssdk/s3/2.20.98, Apache-2.0, approved, #8623
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.20.91, Apache-2.0, approved, #8611
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.20.98, Apache-2.0, approved, #8611
-maven/mavencentral/software.amazon.awssdk/sts/2.20.91, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sts/2.20.91, Apache-2.0, approved, #9269
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.20.91, Apache-2.0, approved, #8622
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.20.98, Apache-2.0, approved, #8622
 maven/mavencentral/software.amazon.awssdk/utils/2.20.91, Apache-2.0, approved, #8625

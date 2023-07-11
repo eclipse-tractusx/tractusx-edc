@@ -14,42 +14,32 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.provider.core;
 
-import com.nimbusds.jose.crypto.RSASSAVerifier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.auth.AuthorizationHandlerRegistryImpl;
-import org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.auth.JwtAuthorizationHandler;
-import org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.auth.RsaPublicKeyParser;
 import org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.configuration.GatewayConfigurationRegistryImpl;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationExtension;
-import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationHandler;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationHandlerRegistry;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfigurationRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.spi.result.Result.failure;
 import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.configuration.GatewayConfigurationLoader.loadConfiguration;
 import static org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfiguration.NO_AUTHORIZATION;
-import static org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfiguration.TOKEN_AUTHORIZATION;
 
 /**
  * Registers default services for the data plane provider proxy implementation.
  */
 @Extension(value = ProxyProviderCoreExtension.NAME)
-@Provides({GatewayConfigurationRegistry.class, AuthorizationHandlerRegistry.class})
+@Provides({ GatewayConfigurationRegistry.class, AuthorizationHandlerRegistry.class })
 public class ProxyProviderCoreExtension implements ServiceExtension {
     static final String NAME = "Data Plane Provider Proxy Core";
-
-    @Setting
-    private static final String PUBLIC_KEY = "tx.dpf.data.proxy.public.key";
 
     @Inject(required = false)
     private AuthorizationExtension authorizationExtension;
@@ -75,7 +65,7 @@ public class ProxyProviderCoreExtension implements ServiceExtension {
             authorizationExtension = (c, p) -> success();
         }
 
-        var authorizationRegistry = creatAuthorizationRegistry();
+        var authorizationRegistry = createAuthorizationRegistry();
         context.registerService(AuthorizationHandlerRegistry.class, authorizationRegistry);
 
         loadConfiguration(context).forEach(configuration -> {
@@ -85,30 +75,12 @@ public class ProxyProviderCoreExtension implements ServiceExtension {
     }
 
     @NotNull
-    private AuthorizationHandlerRegistryImpl creatAuthorizationRegistry() {
+    private AuthorizationHandlerRegistryImpl createAuthorizationRegistry() {
         var authorizationRegistry = new AuthorizationHandlerRegistryImpl();
 
         authorizationRegistry.register(NO_AUTHORIZATION, (t, p) -> success());
 
-        authorizationRegistry.register(TOKEN_AUTHORIZATION, createJwtAuthorizationHandler());
-
         return authorizationRegistry;
     }
-
-    @NotNull
-    private AuthorizationHandler createJwtAuthorizationHandler() {
-        var publicCertKey = vault.resolveSecret(PUBLIC_KEY);
-
-        if (publicCertKey == null) {
-            monitor.warning("Data proxy public key not set in the vault. Disabling JWT authorization for the proxy data.");
-            return (t, p) -> failure("Authentication disabled");
-        }
-
-        var publicKey = new RsaPublicKeyParser().parsePublicKey(publicCertKey);
-        var verifier = new RSASSAVerifier(publicKey);
-
-        return new JwtAuthorizationHandler(verifier, authorizationExtension, monitor);
-    }
-
 
 }

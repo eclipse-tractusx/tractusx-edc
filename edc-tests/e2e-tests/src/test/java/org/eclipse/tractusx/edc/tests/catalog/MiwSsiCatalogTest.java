@@ -37,8 +37,8 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokrat
 public class MiwSsiCatalogTest {
 
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    static final String MIW_SOKRATES_URL = "http://localhost:8080";
-    static final String OAUTH_TOKEN_URL = "http://localhost:8081/realms/miw_test/protocol/openid-connect/token";
+    static final String MIW_SOKRATES_URL = "http://localhost:8000";
+    static final String OAUTH_TOKEN_URL = "http://localhost:8080/realms/miw_test/protocol/openid-connect/token";
 
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
@@ -56,7 +56,7 @@ public class MiwSsiCatalogTest {
                 put("tx.ssi.oauth.client.id", "miw_private_client");
                 put("tx.ssi.oauth.client.secret.alias", "client_secret_alias");
                 put("tx.ssi.miw.authority.id", "BPNL000000000000");
-                put("tx.ssi.miw.authority.issuer", "did:web:localhost%3A8080:BPNL000000000000");
+                put("tx.ssi.miw.authority.issuer", "did:web:localhost%3A8000:BPNL000000000000");
                 put("tx.vault.seed.secrets", "client_secret_alias:miw_private_client");
                 put("tx.ssi.endpoint.audience", SOKRATES_DSP_CALLBACK);
             }

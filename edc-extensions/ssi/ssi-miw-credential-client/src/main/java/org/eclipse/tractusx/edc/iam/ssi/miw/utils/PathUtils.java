@@ -12,20 +12,18 @@
  *
  */
 
-package org.eclipse.tractusx.edc.dataplane.proxy.provider.core.gateway.auth;
+package org.eclipse.tractusx.edc.iam.ssi.miw.utils;
 
-import org.junit.jupiter.api.Test;
+public class PathUtils {
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+    private PathUtils() {
+    }
 
-/**
- * Verifies RSA public key parsing.
- */
-class RsaPublicKeyParserTest {
-
-    @Test
-    void verify_canParseKey() {
-        var key = new RsaPublicKeyParser().parsePublicKey(TestTokens.generatePublic());
-        assertNotNull(key);
+    public static String removeTrailingSlash(String path) {
+        var fixedPath = path;
+        if (fixedPath.endsWith("/")) {
+            fixedPath = fixedPath.substring(0, fixedPath.length() - 1);
+        }
+        return fixedPath;
     }
 }

@@ -25,11 +25,6 @@ dependencies {
         exclude("org.eclipse.edc", "oauth2-core")
         exclude("org.eclipse.edc", "oauth2-daps")
 
-//        runtimeOnly(project(":core:json-ld-core"))
-//        runtimeOnly(project(":edc-extensions:ssi:ssi-identity-core"))
-//        runtimeOnly(project(":edc-extensions:ssi:ssi-miw-credential-client"))
-//        runtimeOnly(project(":edc-extensions:ssi:ssi-identity-extractor"))
-//        runtimeOnly(project(":edc-extensions:cx-policy"))
         exclude(module = "data-encryption")
         exclude(module = "json-ld-core")
         exclude(module = "ssi-identity-core")
