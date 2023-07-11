@@ -1,6 +1,6 @@
 openapi: 3.0.1
 paths:
-  /adapter/edrs:
+  /edrs:
     get:
       description: Returns all EndpointDataReference entry according to a query
       operationId: queryEdrs
@@ -82,7 +82,7 @@ paths:
           description: Request body was malformed
       tags:
       - Control Plane Adapter EDR Api
-  /adapter/edrs/{id}:
+  /edrs/{id}:
     get:
       description: Gets an EDR  with the given transfer process ID)
       operationId: getEdr
@@ -139,7 +139,7 @@ components:
       example: null
       properties:
         invalidValue:
-          type: string
+          type: object
           example: null
         message:
           type: string
@@ -196,14 +196,6 @@ components:
           example: null
         policy:
           $ref: '#/components/schemas/Policy'
-        validity:
-          type: integer
-          format: int64
-          example: null
-      required:
-      - assetId
-      - offerId
-      - policy
     DataAddressDto:
       type: object
       example: null
@@ -220,8 +212,6 @@ components:
             type: string
             example: null
           example: null
-      required:
-      - properties
     Duty:
       type: object
       example: null
@@ -334,11 +324,6 @@ components:
         providerId:
           type: string
           example: null
-      required:
-      - connectorAddress
-      - connectorId
-      - offer
-      - protocol
     Permission:
       type: object
       example: null

@@ -19,9 +19,11 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,7 +37,6 @@ import static java.lang.String.valueOf;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.proxy.e2e.EdrCacheSetup.createEntries;
 import static org.eclipse.tractusx.edc.dataplane.proxy.e2e.KeyStoreSetup.createKeyStore;
-import static org.eclipse.tractusx.edc.dataplane.proxy.e2e.VaultSetup.createVaultStore;
 import static org.hamcrest.Matchers.is;
 
 
@@ -56,12 +57,16 @@ import static org.hamcrest.Matchers.is;
  */
 @EndToEndTest
 public class DpfProxyEndToEndTest {
+
     public static final String KEYSTORE_PASS = "test123";
     private static final String LAUNCHER_MODULE = ":edc-tests:edc-dataplane-proxy-e2e";
     private static final int CONSUMER_HTTP_PORT = getFreePort();
     private static final int CONSUMER_PROXY_PORT = getFreePort();
     private static final int PRODUCER_HTTP_PORT = getFreePort();
     private static final int MOCK_ENDPOINT_PORT = getFreePort();
+
+    private static final int VALIDATION_ENDPOINT_PORT = getFreePort();
+
     private static final String PROXY_SUBPATH = "proxy/aas/request";
     private static final String SINGLE_TRANSFER_ID = "5355d524-2616-43df-9096-558afffff659";
     private static final String SINGLE_ASSET_ID = "79f13b89-59a6-4278-8c8e-8540849dbab8";
@@ -69,6 +74,7 @@ public class DpfProxyEndToEndTest {
     private static final String REQUEST_TEMPLATE_TP = "{\"transferProcessId\": \"%s\", \"endpointUrl\" : \"http://localhost:%s/api/gateway/aas/test\"}";
     private static final String REQUEST_TEMPLATE_ASSET = "{\"assetId\": \"%s\", \"endpointUrl\" : \"http://localhost:%s/api/gateway/aas/test\"}";
     private static final String MOCK_ENDPOINT_200_BODY = "{\"message\":\"test\"}";
+
     @RegisterExtension
     static EdcRuntimeExtension consumer = new EdcRuntimeExtension(
             LAUNCHER_MODULE,
@@ -77,6 +83,7 @@ public class DpfProxyEndToEndTest {
                     "web.http.port", valueOf(CONSUMER_HTTP_PORT),
                     "tx.dpf.consumer.proxy.port", valueOf(CONSUMER_PROXY_PORT)
             )));
+
     @RegisterExtension
     static EdcRuntimeExtension provider = new EdcRuntimeExtension(
             LAUNCHER_MODULE,
@@ -85,32 +92,42 @@ public class DpfProxyEndToEndTest {
                     "web.http.port", valueOf(PRODUCER_HTTP_PORT),
                     "tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + MOCK_ENDPOINT_PORT
             )));
-    private MockWebServer mockEndpoint;
+    private static MockWebServer mockEndpoint = new MockWebServer();
+    private static MockWebServer mockValidationEndpoint = new MockWebServer();
+    private final TypeManager typeManager = new TypeManager();
 
     private static Map<String, String> baseConfig(Map<String, String> values) {
         var map = new HashMap<>(values);
-        map.put("edc.vault", createVaultStore());
         map.put("edc.keystore", createKeyStore(KEYSTORE_PASS));
         map.put("edc.keystore.password", KEYSTORE_PASS);
+        map.put("edc.dataplane.token.validation.endpoint", "http://localhost:" + VALIDATION_ENDPOINT_PORT);
         return map;
     }
 
-    @BeforeEach
-    void setUp() {
-        mockEndpoint = new MockWebServer();
+    @AfterAll
+    static void tearDown() throws IOException {
+        mockEndpoint.shutdown();
+        mockValidationEndpoint.shutdown();
     }
 
-    @AfterEach
-    void tearDown() throws IOException {
-        if (mockEndpoint != null) {
-            mockEndpoint.shutdown();
-        }
+    @BeforeAll
+    static void setUp() {
+        mockEndpoint = new MockWebServer();
+        mockValidationEndpoint = new MockWebServer();
     }
 
     @Test
     void verify_end2EndFlows() throws IOException {
 
         seedEdrCache();
+
+        var dataAddress = HttpDataAddress.Builder.newInstance().baseUrl("http://localhost:" + MOCK_ENDPOINT_PORT).build();
+
+        mockValidationEndpoint.start(VALIDATION_ENDPOINT_PORT);
+        mockValidationEndpoint.enqueue(new MockResponse().setBody(typeManager.writeValueAsString(dataAddress)));
+        mockValidationEndpoint.enqueue(new MockResponse().setBody(typeManager.writeValueAsString(dataAddress)));
+        mockValidationEndpoint.enqueue(new MockResponse().setBody(typeManager.writeValueAsString(dataAddress)));
+        mockValidationEndpoint.enqueue(new MockResponse().setBody(typeManager.writeValueAsString(dataAddress)));
 
         // set up the HTTP endpoint
         mockEndpoint.enqueue(new MockResponse().setBody(MOCK_ENDPOINT_200_BODY));

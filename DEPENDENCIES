@@ -350,7 +350,6 @@ maven/mavencentral/org.eclipse.edc/util/0.1.3, Apache-2.0, approved, technology.
 maven/mavencentral/org.eclipse.edc/validator-core/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-azure/0.1.3, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/vault-filesystem/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/web-spi/0.1.3, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-jakarta-servlet-api/5.0.2, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api/2.0.0, EPL-2.0 OR Apache-2.0, approved, rt.jetty

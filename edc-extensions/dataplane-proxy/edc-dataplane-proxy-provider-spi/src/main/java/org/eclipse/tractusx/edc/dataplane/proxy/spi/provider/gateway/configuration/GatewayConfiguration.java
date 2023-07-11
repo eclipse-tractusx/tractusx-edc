@@ -18,16 +18,22 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * A configuration that exposes a proxied endpoint via an alias. Each configuration is associated with an extensible {@code authorizationType} such as
- * {@link #TOKEN_AUTHORIZATION} (the default) and {@link #NO_AUTHORIZATION}. The {@code proxiedPath} will be prepended to a request sub-path to create an absolute endpoint
+ * {@link #NO_AUTHORIZATION} (the default) and {@link #NO_AUTHORIZATION}. The {@code proxiedPath} will be prepended to a request sub-path to create an absolute endpoint
  * URL where data is fetched from.
  */
 public class GatewayConfiguration {
-    public static final String TOKEN_AUTHORIZATION = "token";
     public static final String NO_AUTHORIZATION = "none";
 
     private String alias;
     private String proxiedPath;
-    private String authorizationType = TOKEN_AUTHORIZATION;
+    private String authorizationType = NO_AUTHORIZATION;
+
+    private boolean forwardEdrToken;
+    private String forwardEdrTokenHeaderKey;
+
+
+    private GatewayConfiguration() {
+    }
 
     public String getAlias() {
         return alias;
@@ -41,12 +47,21 @@ public class GatewayConfiguration {
         return authorizationType;
     }
 
-    private GatewayConfiguration() {
+    public boolean isForwardEdrToken() {
+        return forwardEdrToken;
+    }
+
+    public String getForwardEdrTokenHeaderKey() {
+        return forwardEdrTokenHeaderKey;
     }
 
     public static class Builder {
 
         private final GatewayConfiguration configuration;
+
+        private Builder() {
+            configuration = new GatewayConfiguration();
+        }
 
         public static Builder newInstance() {
             return new Builder();
@@ -67,15 +82,21 @@ public class GatewayConfiguration {
             return this;
         }
 
+        public Builder forwardEdrToken(boolean forwardEdrToken) {
+            this.configuration.forwardEdrToken = forwardEdrToken;
+            return this;
+        }
+
+        public Builder forwardEdrTokenHeaderKey(String forwardEdrTokenHeaderKey) {
+            this.configuration.forwardEdrTokenHeaderKey = forwardEdrTokenHeaderKey;
+            return this;
+        }
+
         public GatewayConfiguration build() {
             requireNonNull(configuration.alias, "alias");
             requireNonNull(configuration.proxiedPath, "proxiedPath");
             requireNonNull(configuration.authorizationType, "authorizationType");
             return configuration;
-        }
-
-        private Builder() {
-            configuration = new GatewayConfiguration();
         }
     }
 }
