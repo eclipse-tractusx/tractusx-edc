@@ -63,12 +63,9 @@ If you are using the MIW and KeyCloak instances deployed to `INT`, the following
 - KeyCloak Token URL: https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token
 - Authority BPN: `BPNL00000003CRHK`
 
-> Please be aware that the above values are _only_ valid for the Catena-X INT environment and _will_ change on other
-> environments!
-
-> For instructions on how to set up a local MIW + KeyCloak, please take a look
->
-at [this documentation](https://github.com/catenax-ng/tx-managed-identity-wallets/blob/features/java-did-web/README.md).
+> Please be aware that the above values are *only* valid for the Catena-X INT environment and *will* change on other
+> environments! For instructions on how to set up a local MIW + KeyCloak, please take a look
+> at [this documentation](https://github.com/catenax-ng/tx-managed-identity-wallets/blob/features/java-did-web/README.md).
 
 ### Further documentation on SSI
 
@@ -90,7 +87,7 @@ the [SSI Documentation Repository](https://github.com/eclipse-tractusx/ssi-docu/
   fail. However, the ManagementAPI can still be used to create Assets, Policies and ContractDefinitions.
 - At the time of releasing Tractus-X EDC `0.5.0`, a couple of critical issues regarding MIW are
   still [in progress](https://jira.catena-x.net/projects/CGD/issues/CGD-291), and the code base is still on a feature
-  branch. For those reasons we recommend to use _non-production data only_!
+  branch. For those reasons we recommend to use *non-production data only*!
 - the centralized MIW is an interim solution, and is bound to be replaced with a decentralized/distributed architecture
   in upcoming Catena-X releases.
 
