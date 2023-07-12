@@ -27,9 +27,11 @@ fullnameOverride: ""
 nameOverride: ""
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
 imagePullSecrets: []
+# -- To add some custom labels
 customLabels: {}
 
 participant:
+  # -- BPN Number
   id: ""
 
 runtime:
@@ -44,13 +46,6 @@ runtime:
     enabled: false
     port: 1044
     suspendOnStart: false
-  internationalDataSpaces:
-    id: TXDC
-    description: Tractus-X Eclipse IDS Data Space Connector
-    title: ""
-    maintainer: ""
-    curator: ""
-    catalogId: TXDC-Catalog
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
@@ -120,15 +115,21 @@ runtime:
   businessPartnerValidation:
     log:
       agreementValidation: true
+
   # SSI configuration
   ssi:
     miw:
+      # -- MIW URL
       url: ""
+      # -- The BPN of the issuer authority
       authorityId: ""
     oauth:
+      # -- The URL (of KeyCloak), where access tokens can be obtained
       tokenurl: ""
       client:
+        # -- The client ID for KeyCloak
         id: ""
+        # -- The alias under which the client secret is stored in the vault.
         secretAlias: "client-secret"
 
   service:

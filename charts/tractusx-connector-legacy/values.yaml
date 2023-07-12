@@ -34,9 +34,11 @@ fullnameOverride: ""
 nameOverride: ""
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
 imagePullSecrets: []
+# -- To add some custom labels
 customLabels: {}
 
 participant:
+  # -- BPN Number
   id: ""
 
 controlplane:
@@ -52,13 +54,6 @@ controlplane:
     enabled: false
     port: 1044
     suspendOnStart: false
-  internationalDataSpaces:
-    id: TXDC
-    description: Tractus-X Eclipse IDS Data Space Connector
-    title: ""
-    maintainer: ""
-    curator: ""
-    catalogId: TXDC-Catalog
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
