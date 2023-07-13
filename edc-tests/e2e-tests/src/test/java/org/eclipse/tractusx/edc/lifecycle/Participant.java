@@ -171,7 +171,7 @@ public class Participant {
         var response = baseRequest()
                 .when()
                 .body(requestBody)
-                .post("/adapter/edrs")
+                .post("/edrs")
                 .then();
 
         var body = response.extract().body().asString();
@@ -200,7 +200,7 @@ public class Participant {
     public JsonObject getEdr(String transferProcessId) {
         return baseRequest()
                 .when()
-                .get("/adapter/edrs/{id}", transferProcessId)
+                .get("/edrs/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -211,7 +211,7 @@ public class Participant {
     public JsonArray getEdrEntriesByAssetId(String assetId) {
         return baseRequest()
                 .when()
-                .get("/adapter/edrs?assetId={assetId}", assetId)
+                .get("/edrs?assetId={assetId}", assetId)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -222,7 +222,7 @@ public class Participant {
     public JsonArray getEdrEntriesByAgreementId(String agreementId) {
         return baseRequest()
                 .when()
-                .get("/adapter/edrs?agreementId={agreementId}", agreementId)
+                .get("/edrs?agreementId={agreementId}", agreementId)
                 .then()
                 .statusCode(200)
                 .extract()

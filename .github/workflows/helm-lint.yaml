@@ -41,41 +41,35 @@ jobs:
   helm-lint:
     runs-on: ubuntu-latest
     steps:
-    ##############
-    ### Set-Up ###
-    ##############
-    -
-      uses: actions/checkout@v3.5.2
-      with:
-        fetch-depth: 0
-    -
-      name: helm (setup)
-      uses: azure/setup-helm@v3.5
-      with:
-        version: v3.8.1
-    -
-      name: python (setup)
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.7
-    -
-      name: chart-testing (setup)
-      uses: helm/chart-testing-action@v2.4.0
-    #####################
-    ### Chart Testing ###
-    #####################
-    -
-      name: chart-testing (list-changed)
-      id: list-changed
-      run: |
-        changed=$(ct list-changed --config ct.yaml --target-branch main)
-        if [[ -n "$changed" ]]; then
-          echo "changed=true" >> $GITHUB_OUTPUT
-        fi
-    -
-      name: chart-testing (lint)
-      if: steps.list-changed.outputs.changed == 'true'
-      run: |
-        ct lint \
-          --config ct.yaml \
-          --all
+      ##############
+      ### Set-Up ###
+      ##############
+      - uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0
+      - name: helm (setup)
+        uses: azure/setup-helm@v3.5
+        with:
+          version: v3.8.1
+      - name: python (setup)
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+      - name: chart-testing (setup)
+        uses: helm/chart-testing-action@v2.4.0
+      #####################
+      ### Chart Testing ###
+      #####################
+      - name: chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config ct.yaml --target-branch main)
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      - name: chart-testing (lint)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          ct lint \
+            --config ct.yaml \
+            --all

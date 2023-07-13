@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.5.0-rc5](https://img.shields.io/badge/Version-0.5.0--rc5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0-rc5](https://img.shields.io/badge/AppVersion-0.5.0--rc5-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0](https://img.shields.io/badge/AppVersion-0.5.0-informational?style=flat-square) 
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -10,7 +10,7 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please 
 
 ### Preconditions
 
-- the Managed Identity Walled (MIW) must be running and reachable via network
+- the [Managed Identity Walled (MIW)](https://github.com/catenax-ng/tx-managed-identity-wallets) must be running and reachable via network
 - the necessary set of VerifiableCredentials for this participant must be pushed to MIW. This is typically done by the
   Portal during participant onboarding
 - KeyCloak must be running and reachable via network
@@ -39,7 +39,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-rc5 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
@@ -53,7 +53,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-r
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | backendService.httpProxyTokenReceiverUrl | string | `""` |  |
-| customLabels | object | `{}` |  |
+| customLabels | object | `{}` | To add some custom labels |
 | daps.clientId | string | `""` |  |
 | daps.connectors[0].attributes.referringConnector | string | `"http://sokrates-controlplane/BPNSOKRATES"` |  |
 | daps.connectors[0].certificate | string | `""` |  |
@@ -65,7 +65,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-r
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
-| participant.id | string | `""` |  |
+| participant.id | string | `""` | BPN Number |
 | runtime.affinity | object | `{}` |  |
 | runtime.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | runtime.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -121,12 +121,6 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-r
 | runtime.ingresses[1].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
 | runtime.ingresses[1].tls.secretName | string | `""` | If present overwrites the default secret name |
 | runtime.initContainers | list | `[]` |  |
-| runtime.internationalDataSpaces.catalogId | string | `"TXDC-Catalog"` |  |
-| runtime.internationalDataSpaces.curator | string | `""` |  |
-| runtime.internationalDataSpaces.description | string | `"Tractus-X Eclipse IDS Data Space Connector"` |  |
-| runtime.internationalDataSpaces.id | string | `"TXDC"` |  |
-| runtime.internationalDataSpaces.maintainer | string | `""` |  |
-| runtime.internationalDataSpaces.title | string | `""` |  |
 | runtime.livenessProbe.enabled | bool | `true` | Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | runtime.livenessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | runtime.livenessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first liveness check |
@@ -158,11 +152,11 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0-r
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| runtime.ssi.miw.authorityId | string | `""` |  |
-| runtime.ssi.miw.url | string | `""` |  |
-| runtime.ssi.oauth.client.id | string | `""` |  |
-| runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |
-| runtime.ssi.oauth.tokenurl | string | `""` |  |
+| runtime.ssi.miw.authorityId | string | `""` | The BPN of the issuer authority |
+| runtime.ssi.miw.url | string | `""` | MIW URL |
+| runtime.ssi.oauth.client.id | string | `""` | The client ID for KeyCloak |
+| runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
+| runtime.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
 | runtime.tolerations | list | `[]` |  |
 | runtime.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` |  |

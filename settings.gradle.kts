@@ -52,6 +52,7 @@ include(":edc-extensions:ssi:ssi-identity-extractor")
 
 
 include(":edc-tests:e2e-tests")
+include(":edc-tests:miw-tests")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
 include(":edc-tests:runtime:runtime-memory-ssi")

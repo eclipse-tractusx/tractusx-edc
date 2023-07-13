@@ -31,5 +31,8 @@ dependencies {
     implementation(libs.nimbus.jwt)
 
     implementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi"))
+
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.okhttp.mockwebserver)
 }
 

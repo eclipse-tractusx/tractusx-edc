@@ -36,24 +36,21 @@ jobs:
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
-      -
-        name: Extract version from branch name (for release branches)
+      - name: Extract version from branch name (for release branches)
         if: startsWith(github.event.pull_request.head.ref, 'release/')
         run: |
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
           VERSION=${BRANCH_NAME#release/}
 
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
-      -
-        name: Extract version from branch name (for hotfix branches)
+      - name: Extract version from branch name (for hotfix branches)
         if: startsWith(github.event.pull_request.head.ref, 'hotfix/')
         run: |
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
           VERSION=${BRANCH_NAME#hotfix/}
 
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
-      -
-        name: Output release version
+      - name: Output release version
         id: release-version
         run: |
           echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_OUTPUT
@@ -102,12 +99,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [{dir: edc-controlplane, img: edc-runtime-memory},
-                {dir: edc-controlplane, img: edc-controlplane-memory-hashicorp-vault},
-                {dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault},
-                {dir: edc-controlplane, img: edc-controlplane-postgresql-azure-vault},
-                {dir: edc-dataplane,    img: edc-dataplane-azure-vault},
-                {dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault}]
+        variant: [ { dir: edc-controlplane, img: edc-runtime-memory },
+                   { dir: edc-controlplane, img: edc-controlplane-memory-hashicorp-vault },
+                   { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
+                   { dir: edc-controlplane, img: edc-controlplane-postgresql-azure-vault },
+                   { dir: edc-dataplane,    img: edc-dataplane-azure-vault },
+                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault } ]
 
     steps:
       - uses: actions/checkout@v3.5.2
@@ -136,21 +133,17 @@ jobs:
 
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
-      -
-        name: Export RELEASE_VERSION env
+      - name: Export RELEASE_VERSION env
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
-      -
-        uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 0
-      -
-        name: Install Helm
+      - name: Install Helm
         uses: azure/setup-helm@v3.5
         with:
           version: v3.8.1
-      -
-        name: Package helm, update index.yaml and push to gh-pages
+      - name: Package helm, update index.yaml and push to gh-pages
         run: |
           # Prepare git env
           git config user.name "eclipse-tractusx-bot"
@@ -183,17 +176,14 @@ jobs:
       pull-requests: write
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
     steps:
-      -
-        name: Export RELEASE_VERSION env
+      - name: Export RELEASE_VERSION env
         run: |
           echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
-      -
-        uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3.5.2
         with:
           # 0 to fetch the full history due to upcoming merge of releases into main branch
           fetch-depth: 0
-      -
-        name: Create Release Tag
+      - name: Create Release Tag
         id: create_release_tag
         run: |
           # Prepare git env
@@ -207,22 +197,16 @@ jobs:
           # Create & push tag
           git tag --force ${{ env.RELEASE_VERSION }}
           git push --force origin ${{ env.RELEASE_VERSION }}
-      -
-        name: Create Github Release
-        id: create_release
-        uses: thomaseizinger/create-release@1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
-          tag_name: ${{ env.RELEASE_VERSION }}
-          name: ${{ env.RELEASE_VERSION }}
-          draft: false
-          prerelease: false
-      -
-        uses: ./.github/actions/setup-java
-      -
-        name: Merge releases back into main and set new snapshot version
+          generateReleaseNotes: true
+          tag: ${{ env.RELEASE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          makeLatest: true
+          removeArtifacts: true
+      - uses: ./.github/actions/setup-java
+      - name: Merge releases back into main and set new snapshot version
         if: github.event.pull_request.base.ref == 'releases'
         run: |
           # Prepare git env

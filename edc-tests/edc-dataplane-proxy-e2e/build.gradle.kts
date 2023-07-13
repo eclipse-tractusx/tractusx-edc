@@ -23,7 +23,6 @@ dependencies {
 
     // test runtime config
     testImplementation(libs.edc.config.filesystem)
-    testImplementation(libs.edc.vault.filesystem)
     testImplementation(libs.edc.dpf.http)
     testImplementation(project(":spi:edr-cache-spi"))
     testImplementation(project(":core:edr-cache-core"))

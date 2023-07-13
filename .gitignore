@@ -109,3 +109,5 @@ buildNumber.properties
 ### Helm
 **/*.lock
 **/*.tgz
+
+edc-tests/miw-tests/src/test/resources/docker-environment/postgres_data/

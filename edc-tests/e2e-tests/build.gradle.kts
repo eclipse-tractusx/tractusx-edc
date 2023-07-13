@@ -44,6 +44,7 @@ dependencies {
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
+    testImplementation(libs.edc.auth.oauth2.client)
 }
 
 // do not publish

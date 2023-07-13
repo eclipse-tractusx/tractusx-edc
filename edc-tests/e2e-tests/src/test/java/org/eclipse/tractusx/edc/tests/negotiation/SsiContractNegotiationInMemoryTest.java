@@ -19,8 +19,8 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.token.KeycloakDispatcher;
 import org.eclipse.tractusx.edc.token.MiwDispatcher;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
@@ -56,13 +56,13 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
             SOKRATES_BPN,
             sokratesSsiConfiguration()
     );
-    MockWebServer miwSokratesServer;
-    MockWebServer miwPlatoServer;
-    MockWebServer oauthServer;
+    private static MockWebServer miwSokratesServer;
+    private static MockWebServer miwPlatoServer;
+    private static MockWebServer oauthServer;
 
 
-    @BeforeEach
-    void setup() throws IOException {
+    @BeforeAll
+    static void setup() throws IOException {
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
         oauthServer = new MockWebServer();
@@ -79,8 +79,8 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
         oauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
-    @AfterEach
-    void teardown() throws IOException {
+    @AfterAll
+    static void teardown() throws IOException {
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
         oauthServer.shutdown();
