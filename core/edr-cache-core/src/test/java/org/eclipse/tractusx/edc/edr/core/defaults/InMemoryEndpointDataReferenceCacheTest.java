@@ -14,8 +14,8 @@
 
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 
 class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheBaseTest {
     private final InMemoryEndpointDataReferenceCache cache = new InMemoryEndpointDataReferenceCache();

@@ -19,8 +19,8 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.util.concurrency.LockManager;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
@@ -66,12 +67,22 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
 
     @Override
     @NotNull
-    public List<EndpointDataReference> referencesForAsset(String assetId) {
+    public List<EndpointDataReference> referencesForAsset(String assetId, String providerId) {
         var entries = entriesByAssetId.get(assetId);
+
+        Predicate<EndpointDataReferenceEntry> providerIdFilter = (cached) ->
+                Optional.ofNullable(providerId)
+                        .map(id -> id.equals(cached.getProviderId()))
+                        .orElse(true);
+
         if (entries == null) {
             return emptyList();
         }
-        return entries.stream().map(e -> resolveReference(e.getTransferProcessId())).filter(Objects::nonNull).collect(toList());
+        return entries.stream()
+                .filter(providerIdFilter)
+                .map(e -> resolveReference(e.getTransferProcessId()))
+                .filter(Objects::nonNull)
+                .collect(toList());
     }
 
     @Override

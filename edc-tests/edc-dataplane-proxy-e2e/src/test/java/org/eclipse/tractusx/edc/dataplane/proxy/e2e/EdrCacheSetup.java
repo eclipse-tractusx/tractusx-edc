@@ -16,7 +16,7 @@ package org.eclipse.tractusx.edc.dataplane.proxy.e2e;
 
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.edr.core.defaults.PersistentCacheEntry;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,7 @@ They are currently only available in Tractus-X EDC.
 
 This extension allows for validation of business partners within the access policy.
 
-## Control Plane Adapter
+## Control Plane EDR APIs
 
 The goal of this extension is to simplify the process of retrieving data out of EDC.
 It returns `EndpointDataReference` object, hiding all the communication details for contract offers,

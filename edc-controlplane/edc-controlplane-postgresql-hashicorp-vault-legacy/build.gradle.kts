@@ -28,13 +28,14 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":core:edr-cache-core"))
+    runtimeOnly(project(":core:edr-core"))
     runtimeOnly(project(":edc-extensions:business-partner-validation"))
     runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
     runtimeOnly(project(":edc-extensions:data-encryption"))
     runtimeOnly(project(":edc-extensions:cx-oauth2"))
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
-    runtimeOnly(project(":edc-extensions:control-plane-adapter-api"))
-    runtimeOnly(project(":edc-extensions:control-plane-adapter-callback"))
+    runtimeOnly(project(":edc-extensions:edr:edr-api"))
+    runtimeOnly(project(":edc-extensions:edr:edr-callback"))
 
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.config.filesystem)
@@ -55,7 +56,7 @@ dependencies {
 
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
     runtimeOnly(project(":edc-extensions:hashicorp-vault"))
-    runtimeOnly(project(":edc-extensions:edr-cache-sql"))
+    runtimeOnly(project(":edc-extensions:edr:edr-cache-sql"))
     runtimeOnly(libs.bundles.edc.sqlstores)
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)

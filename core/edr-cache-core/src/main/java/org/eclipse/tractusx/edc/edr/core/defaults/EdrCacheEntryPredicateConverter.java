@@ -15,22 +15,19 @@
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
 import org.eclipse.edc.spi.query.BaseCriterionToPredicateConverter;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
 public class EdrCacheEntryPredicateConverter extends BaseCriterionToPredicateConverter<EndpointDataReferenceEntry> {
 
     @Override
     protected Object property(String key, Object object) {
-        if (object instanceof EndpointDataReferenceEntry) {
-            var entry = (EndpointDataReferenceEntry) object;
-            switch (key) {
-                case "assetId":
-                    return entry.getAssetId();
-                case "agreementId":
-                    return entry.getAgreementId();
-                default:
-                    return null;
-            }
+        if (object instanceof EndpointDataReferenceEntry entry) {
+            return switch (key) {
+                case "assetId" -> entry.getAssetId();
+                case "agreementId" -> entry.getAgreementId();
+                case "providerId" -> entry.getProviderId();
+                default -> null;
+            };
         }
         throw new IllegalArgumentException("Can only handle objects of type " + EndpointDataReferenceEntry.class.getSimpleName() + " but received an " + object.getClass().getSimpleName());
     }

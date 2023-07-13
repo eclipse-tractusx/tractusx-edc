@@ -1,0 +1,460 @@
+openapi: 3.0.1
+paths:
+  /edrs:
+    get:
+      description: Returns all EndpointDataReference entry according to a query
+      operationId: queryEdrs
+      parameters:
+      - in: query
+        name: assetId
+        schema:
+          type: string
+          example: null
+      - in: query
+        name: agreementId
+        schema:
+          type: string
+          example: null
+      - in: query
+        name: providerId
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/EndpointDataReferenceEntry'
+        "400":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: Request was malformed
+      tags:
+      - Control Plane EDR Api
+    post:
+      description: Initiates an EDR negotiation by handling a contract negotiation
+        first and then a transfer process for a given offer and with the given counter
+        part. Please note that successfully invoking this endpoint only means that
+        the negotiation was initiated.
+      operationId: initiateEdrNegotiation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/NegotiateEdrRequestDto'
+              example: null
+              properties:
+                empty:
+                  type: boolean
+                  example: null
+                valueType:
+                  type: string
+                  enum:
+                  - ARRAY
+                  - OBJECT
+                  - STRING
+                  - NUMBER
+                  - "TRUE"
+                  - "FALSE"
+                  - "NULL"
+                  example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+          description: The negotiation was successfully initiated.
+        "400":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: Request body was malformed
+      tags:
+      - Control Plane EDR Api
+  /edrs/{id}:
+    delete:
+      description: Delete an EDR  with the given transfer process ID
+      operationId: deleteEdr
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataAddressDto'
+          description: The EDR cached
+        "400":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: An EDR with the given ID does not exist
+      tags:
+      - Control Plane EDR Api
+    get:
+      description: Gets an EDR  with the given transfer process ID
+      operationId: getEdr
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataAddressDto'
+          description: The EDR cached
+        "400":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ApiErrorDetail'
+          description: An EDR with the given ID does not exist
+      tags:
+      - Control Plane EDR Api
+components:
+  schemas:
+    Action:
+      type: object
+      example: null
+      properties:
+        constraint:
+          $ref: '#/components/schemas/Constraint'
+        includedIn:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+    ApiErrorDetail:
+      type: object
+      example: null
+      properties:
+        invalidValue:
+          type: object
+          example: null
+        message:
+          type: string
+          example: null
+        path:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+    CallbackAddress:
+      type: object
+      example: null
+      properties:
+        authCodeId:
+          type: string
+          example: null
+        authKey:
+          type: string
+          example: null
+        events:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+          uniqueItems: true
+        transactional:
+          type: boolean
+          example: null
+        uri:
+          type: string
+          example: null
+    Constraint:
+      type: object
+      discriminator:
+        propertyName: edctype
+      example: null
+      properties:
+        edctype:
+          type: string
+          example: null
+      required:
+      - edctype
+    ContractOfferDescription:
+      type: object
+      example: null
+      properties:
+        assetId:
+          type: string
+          example: null
+        offerId:
+          type: string
+          example: null
+        policy:
+          $ref: '#/components/schemas/Policy'
+    DataAddressDto:
+      type: object
+      example: null
+      properties:
+        '@context':
+          type: object
+          example: null
+        '@type':
+          type: string
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+    Duty:
+      type: object
+      example: null
+      properties:
+        action:
+          $ref: '#/components/schemas/Action'
+        assignee:
+          type: string
+          example: null
+        assigner:
+          type: string
+          example: null
+        consequence:
+          $ref: '#/components/schemas/Duty'
+        constraints:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Constraint'
+        parentPermission:
+          $ref: '#/components/schemas/Permission'
+        target:
+          type: string
+          example: null
+    EndpointDataReferenceEntry:
+      type: object
+      example: null
+      properties:
+        agreementId:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null
+    IdResponseDto:
+      type: object
+      example: null
+      properties:
+        '@context':
+          type: object
+          example: null
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: null
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+    JsonObject:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/JsonValue'
+      example: null
+      properties:
+        empty:
+          type: boolean
+          example: null
+        valueType:
+          type: string
+          enum:
+          - ARRAY
+          - OBJECT
+          - STRING
+          - NUMBER
+          - "TRUE"
+          - "FALSE"
+          - "NULL"
+          example: null
+    JsonValue:
+      type: object
+      example: null
+      properties:
+        valueType:
+          type: string
+          enum:
+          - ARRAY
+          - OBJECT
+          - STRING
+          - NUMBER
+          - "TRUE"
+          - "FALSE"
+          - "NULL"
+          example: null
+    NegotiateEdrRequestDto:
+      type: object
+      example: null
+      properties:
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          example: null
+        offer:
+          $ref: '#/components/schemas/ContractOfferDescription'
+        protocol:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+    Permission:
+      type: object
+      example: null
+      properties:
+        action:
+          $ref: '#/components/schemas/Action'
+        assignee:
+          type: string
+          example: null
+        assigner:
+          type: string
+          example: null
+        constraints:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Constraint'
+        duties:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Duty'
+        target:
+          type: string
+          example: null
+    Policy:
+      type: object
+      example: null
+      properties:
+        '@type':
+          type: string
+          enum:
+          - SET
+          - OFFER
+          - CONTRACT
+          example: null
+        assignee:
+          type: string
+          example: null
+        assigner:
+          type: string
+          example: null
+        extensibleProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        inheritsFrom:
+          type: string
+          example: null
+        obligations:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Duty'
+        permissions:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Permission'
+        prohibitions:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Prohibition'
+        target:
+          type: string
+          example: null
+    Prohibition:
+      type: object
+      example: null
+      properties:
+        action:
+          $ref: '#/components/schemas/Action'
+        assignee:
+          type: string
+          example: null
+        assigner:
+          type: string
+          example: null
+        constraints:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Constraint'
+        target:
+          type: string
+          example: null

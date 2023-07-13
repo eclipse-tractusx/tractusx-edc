@@ -27,8 +27,10 @@ dependencies {
     implementation(libs.edc.dpf.util)
     implementation(libs.edc.ext.http)
 
-    implementation(project(":spi:edr-cache-spi"))
+    implementation(project(":spi:edr-spi"))
 
     testImplementation(libs.edc.junit)
+    testImplementation(testFixtures(libs.edc.core.jersey))
+    testImplementation(libs.restAssured)
 }
 

@@ -16,7 +16,7 @@ package org.eclipse.tractusx.edc.edr.core.defaults;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
 /**
  * A wrapper to persist {@link EndpointDataReferenceEntry}s and {@link EndpointDataReference}s.
