@@ -83,12 +83,12 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Control IDS URL
+Control DSP URL
 */}}
 {{- define "txdc.runtime.url.protocol" -}}
-{{- if .Values.runtime.url.protocol }}{{/* if ids api url has been specified explicitly */}}
+{{- if .Values.runtime.url.protocol }}{{/* if dsp api url has been specified explicitly */}}
 {{- .Values.runtime.url.protocol }}
-{{- else }}{{/* else when ids api url has not been specified explicitly */}}
+{{- else }}{{/* else when dsp api url has not been specified explicitly */}}
 {{- with (index .Values.runtime.ingresses 0) }}
 {{- if .enabled }}{{/* if ingress enabled */}}
 {{- if .tls.enabled }}{{/* if TLS enabled */}}

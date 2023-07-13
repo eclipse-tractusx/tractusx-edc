@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0](https://img.shields.io/badge/AppVersion-0.5.0-informational?style=flat-square) 
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0](https://img.shields.io/badge/AppVersion-0.5.0-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -87,7 +87,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0 \
 | runtime.endpoints.management.authKey | string | `""` | authentication key, must be attached to each 'X-Api-Key' request header |
 | runtime.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | runtime.endpoints.management.port | int | `8081` | port for incoming api calls |
-| runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | ids api, used for inter connector communication and must be internet facing |
+| runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
 | runtime.endpoints.protocol.path | string | `"/api/v1/dsp"` | path for incoming api calls |
 | runtime.endpoints.protocol.port | int | `8084` | port for incoming api calls |
 | runtime.endpoints.validation | object | `{"path":"/validation","port":8082}` | validation api, only used by the data plane and should not be added to any ingress |
@@ -158,7 +158,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0 \
 | runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
 | runtime.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
 | runtime.tolerations | list | `[]` |  |
-| runtime.url.ids | string | `""` | Explicitly declared url for reaching the ids api (e.g. if ingresses not used) |
+| runtime.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` |  |
 | runtime.url.readiness | string | `""` |  |
 | runtime.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
