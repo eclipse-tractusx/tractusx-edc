@@ -26,5 +26,6 @@ public class EdrMapping extends TranslationMapping {
         add("assetId", statements.getAssetIdColumn());
         add("agreementId", statements.getAgreementIdColumn());
         add("providerId", statements.getProviderIdColumn());
+        add("state", statements.getStateColumn());
     }
 }

@@ -38,7 +38,7 @@ dependencies {
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
     testImplementation(testFixtures(libs.edc.sql.core))
-
+    testImplementation(libs.awaitility)
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))

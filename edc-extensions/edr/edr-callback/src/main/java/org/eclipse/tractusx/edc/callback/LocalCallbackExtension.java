@@ -74,7 +74,7 @@ public class LocalCallbackExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
 
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor));
-        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext));
+        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext, monitor));
 
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));

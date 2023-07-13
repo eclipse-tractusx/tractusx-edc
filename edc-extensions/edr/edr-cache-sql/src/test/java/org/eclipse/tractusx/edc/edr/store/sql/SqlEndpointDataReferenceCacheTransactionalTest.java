@@ -22,6 +22,7 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.EdrStatements;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.postgres.PostgresEdrStatements;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +39,7 @@ import java.time.Clock;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest.CONNECTOR_NAME;
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edr;
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edrEntry;
 import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCache.VAULT_PREFIX;
@@ -62,12 +64,12 @@ public class SqlEndpointDataReferenceCacheTransactionalTest {
     TypeManager typeManager = new TypeManager();
 
     @BeforeEach
-    void setUp(PostgresqlTransactionalStoreSetupExtension extension) throws IOException {
+    void setUp(PostgresqlTransactionalStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
 
         when(vault.deleteSecret(any())).thenReturn(Result.success());
         when(vault.storeSecret(any(), any())).thenReturn(Result.success());
 
-        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock);
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock, queryExecutor, CONNECTOR_NAME);
         var schema = Files.readString(Paths.get("./docs/schema.sql"));
         extension.runQuery(schema);
 

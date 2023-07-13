@@ -18,7 +18,7 @@ public final class CoreConstants {
 
     public static final String TX_PREFIX = "tx";
     public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
-
+    
     private CoreConstants() {
     }
 }

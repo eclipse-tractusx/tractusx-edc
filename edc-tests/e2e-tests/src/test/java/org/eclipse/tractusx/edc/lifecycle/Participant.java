@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.lifecycle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -198,14 +199,18 @@ public class Participant {
     }
 
     public JsonObject getEdr(String transferProcessId) {
-        return baseRequest()
-                .when()
-                .get("/edrs/{id}", transferProcessId)
-                .then()
+        return getEdrRequest(transferProcessId)
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(JsonObject.class);
+    }
+
+    public ValidatableResponse getEdrRequest(String transferProcessId) {
+        return baseRequest()
+                .when()
+                .get("/edrs/{id}", transferProcessId)
+                .then();
     }
 
     public JsonArray getEdrEntriesByAssetId(String assetId) {

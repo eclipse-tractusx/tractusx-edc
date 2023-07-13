@@ -21,7 +21,9 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.ResultSetMapper;
+import org.eclipse.edc.sql.lease.SqlLeaseContextBuilder;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -35,14 +37,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Clock;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuery;
-import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuerySingle;
+import static java.util.stream.Collectors.toList;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.PROVIDER_ID;
 
 public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements EndpointDataReferenceCache {
 
@@ -52,12 +56,18 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     private final Clock clock;
     private final Vault vault;
 
+    private final SqlLeaseContextBuilder leaseContext;
 
-    public SqlEndpointDataReferenceCache(DataSourceRegistry dataSourceRegistry, String dataSourceName, TransactionContext transactionContext, EdrStatements statements, ObjectMapper objectMapper, Vault vault, Clock clock) {
-        super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper);
+
+    public SqlEndpointDataReferenceCache(DataSourceRegistry dataSourceRegistry, String dataSourceName,
+                                         TransactionContext transactionContext, EdrStatements statements,
+                                         ObjectMapper objectMapper, Vault vault, Clock clock,
+                                         QueryExecutor queryExecutor, String connectorId) {
+        super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = statements;
         this.clock = clock;
         this.vault = vault;
+        leaseContext = SqlLeaseContextBuilder.with(transactionContext, connectorId, statements, clock, queryExecutor);
     }
 
     @Override
@@ -77,8 +87,29 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     }
 
     @Override
+    public @Nullable EndpointDataReferenceEntry findByTransferProcessId(String transferProcessId) {
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                return findById(connection, transferProcessId, this::mapResultSet);
+            } catch (Exception exception) {
+                throw new EdcPersistenceException(exception);
+            }
+        });
+    }
+
+    @Override
     public @NotNull List<EndpointDataReference> referencesForAsset(String assetId, String providerId) {
-        return internalQuery(queryFor("assetId", assetId), this::mapToEdrId).map(this::referenceFromEntry).collect(Collectors.toList());
+        var querySpec = QuerySpec.Builder.newInstance();
+        querySpec.filter(filterFor(ASSET_ID, assetId));
+
+        if (providerId != null) {
+            querySpec.filter(filterFor(PROVIDER_ID, providerId));
+        }
+
+        return internalQuery(querySpec.build(), this::mapToWrapper)
+                .filter(wrapper -> filterActive(wrapper.getEntry()))
+                .map(EndpointDataReferenceEntryWrapper::getEdrId)
+                .map(this::referenceFromEntry).collect(Collectors.toList());
     }
 
     @Override
@@ -91,10 +122,40 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 var sql = statements.getInsertTemplate();
-                var createdAt = clock.millis();
-                executeQuery(connection, sql, entry.getTransferProcessId(), entry.getAssetId(), entry.getAgreementId(), edr.getId(), entry.getProviderId(), createdAt, createdAt);
+                queryExecutor.execute(connection, sql,
+                        entry.getTransferProcessId(),
+                        entry.getAssetId(),
+                        entry.getAgreementId(),
+                        edr.getId(),
+                        entry.getProviderId(),
+                        entry.getExpirationTimestamp(),
+                        entry.getState(),
+                        entry.getStateCount(),
+                        entry.getStateTimestamp(),
+                        entry.getErrorDetail(),
+                        entry.getCreatedAt(),
+                        entry.getUpdatedAt());
                 vault.storeSecret(VAULT_PREFIX + edr.getId(), toJson(edr)).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
             } catch (Exception exception) {
+                throw new EdcPersistenceException(exception);
+            }
+        });
+    }
+
+    @Override
+    public void update(EndpointDataReferenceEntry entry) {
+        transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                leaseContext.withConnection(connection).breakLease(entry.getTransferProcessId());
+                var sql = statements.getUpdateTemplate();
+                queryExecutor.execute(connection, sql,
+                        entry.getState(),
+                        entry.getStateCount(),
+                        entry.getStateTimestamp(),
+                        entry.getErrorDetail(),
+                        entry.getUpdatedAt(),
+                        entry.getTransferProcessId());
+            } catch (SQLException exception) {
                 throw new EdcPersistenceException(exception);
             }
         });
@@ -106,39 +167,77 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
             try (var connection = getConnection()) {
                 var entryWrapper = findById(connection, id, this::mapToWrapper);
                 if (entryWrapper != null) {
-                    executeQuery(connection, statements.getDeleteByIdTemplate(), id);
+                    leaseContext.withConnection(connection).acquireLease(id);
+                    queryExecutor.execute(connection, statements.getDeleteByIdTemplate(), id);
+                    leaseContext.withConnection(connection).breakLease(id);
                     vault.deleteSecret(VAULT_PREFIX + entryWrapper.getEdrId()).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
                     return StoreResult.success(entryWrapper.getEntry());
                 } else {
                     return StoreResult.notFound(format("EDR with id %s not found", id));
                 }
-            } catch (Exception exception) {
+            } catch (SQLException exception) {
                 throw new EdcPersistenceException(exception);
+            }
+        });
+    }
+
+    @Override
+    public @NotNull List<EndpointDataReferenceEntry> nextNotLeased(int max, Criterion... criteria) {
+        return transactionContext.execute(() -> {
+            var filter = Arrays.stream(criteria).collect(toList());
+            var querySpec = QuerySpec.Builder.newInstance().filter(filter).limit(max).build();
+            var statement = statements.createQuery(querySpec);
+            statement.addWhereClause(statements.getNotLeasedFilter());
+            statement.addParameter(clock.millis());
+
+            try (
+                    var connection = getConnection();
+                    var stream = queryExecutor.query(getConnection(), true, this::mapResultSet, statement.getQueryAsString(), statement.getParameters())
+            ) {
+                var negotiations = stream.collect(toList());
+                negotiations.forEach(cn -> leaseContext.withConnection(connection).acquireLease(cn.getId()));
+                return negotiations;
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
             }
         });
     }
 
     private <T> T findById(Connection connection, String id, ResultSetMapper<T> resultSetMapper) {
         var sql = statements.getFindByTransferProcessIdTemplate();
-        return executeQuerySingle(connection, false, resultSetMapper, sql, id);
+        return queryExecutor.single(connection, false, resultSetMapper, sql, id);
     }
 
     @NotNull
     private <T> Stream<T> internalQuery(QuerySpec spec, ResultSetMapper<T> resultSetMapper) {
-        try {
-            var queryStmt = statements.createQuery(spec);
-            return executeQuery(getConnection(), true, resultSetMapper, queryStmt.getQueryAsString(), queryStmt.getParameters());
-        } catch (SQLException exception) {
-            throw new EdcPersistenceException(exception);
-        }
+        return transactionContext.execute(() -> {
+            try {
+                var queryStmt = statements.createQuery(spec);
+                return queryExecutor.query(getConnection(), true, resultSetMapper, queryStmt.getQueryAsString(), queryStmt.getParameters());
+            } catch (SQLException exception) {
+                throw new EdcPersistenceException(exception);
+            }
+        });
+
     }
 
     private EndpointDataReferenceEntry mapResultSet(ResultSet resultSet) throws SQLException {
+        Long expirationTimestamp = resultSet.getLong(statements.getExpirationTimestampColumn());
+        if (resultSet.wasNull()) {
+            expirationTimestamp = null;
+        }
         return EndpointDataReferenceEntry.Builder.newInstance()
                 .transferProcessId(resultSet.getString(statements.getTransferProcessIdColumn()))
                 .assetId(resultSet.getString(statements.getAssetIdColumn()))
                 .agreementId(resultSet.getString(statements.getAgreementIdColumn()))
                 .providerId(resultSet.getString(statements.getProviderIdColumn()))
+                .state(resultSet.getInt(statements.getStateColumn()))
+                .stateTimestamp(resultSet.getLong(statements.getStateTimestampColumn()))
+                .stateCount(resultSet.getInt(statements.getStateCountColumn()))
+                .createdAt(resultSet.getLong(statements.getCreatedAtColumn()))
+                .updatedAt(resultSet.getLong(statements.getUpdatedAtColumn()))
+                .errorDetail(resultSet.getString(statements.getErrorDetailColumn()))
+                .expirationTimestamp(expirationTimestamp)
                 .build();
     }
 
@@ -158,14 +257,12 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
         return null;
     }
 
-    private QuerySpec queryFor(String field, String value) {
-        var filter = Criterion.Builder.newInstance()
+    private Criterion filterFor(String field, Object value) {
+        return Criterion.Builder.newInstance()
                 .operandLeft(field)
                 .operator("=")
                 .operandRight(value)
                 .build();
-
-        return QuerySpec.Builder.newInstance().filter(filter).build();
     }
 
     private static class EndpointDataReferenceEntryWrapper {

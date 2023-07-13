@@ -22,6 +22,7 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
@@ -31,6 +32,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -51,6 +53,7 @@ import static org.eclipse.tractusx.edc.callback.TestFunctions.getEdr;
 import static org.eclipse.tractusx.edc.callback.TestFunctions.getTransferProcessStartedEvent;
 import static org.eclipse.tractusx.edc.callback.TestFunctions.remoteMessage;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -72,7 +75,7 @@ public class TransferProcessLocalCallbackTest {
 
     @BeforeEach
     void setup() {
-        callback = new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext);
+        callback = new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext, mock(Monitor.class));
     }
 
     @Test
@@ -97,9 +100,15 @@ public class TransferProcessLocalCallbackTest {
                 .dataRequest(dataRequest)
                 .build();
 
+        var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()
+                .agreementId(contractId)
+                .transferProcessId(transferProcessId)
+                .assetId(assetId).build();
+
         when(transformerRegistry.transform(any(DataAddress.class), eq(EndpointDataReference.class))).thenReturn(Result.success(edr));
         when(transferProcessStore.findForCorrelationId(edr.getId())).thenReturn(transferProcess);
         when(transferProcessStore.findById(transferProcessId)).thenReturn(transferProcess);
+        when(edrCache.queryForEntries(any())).thenReturn(Stream.of(edrEntry));
 
 
         var event = getTransferProcessStartedEvent(DataAddress.Builder.newInstance().type(EDR_SIMPLE_TYPE).build());
@@ -112,7 +121,8 @@ public class TransferProcessLocalCallbackTest {
         assertThat(result.succeeded()).isTrue();
 
         verify(edrCache).save(cacheEntryCaptor.capture(), edrCaptor.capture());
-
+        verify(edrCache).update(argThat(entry -> entry.getState() == EndpointDataReferenceEntryStates.EXPIRED.code()));
+        
         assertThat(edrCaptor.getValue()).usingRecursiveComparison().isEqualTo(edr);
 
     }

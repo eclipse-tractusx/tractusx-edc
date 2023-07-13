@@ -34,6 +34,7 @@ import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,11 +50,15 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.api.edr.TestFunctions.negotiationRequest;
 import static org.eclipse.tractusx.edc.api.edr.TestFunctions.openRequest;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_PROVIDER_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_STATE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TYPE;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.PROVIDER_ID;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -154,10 +159,10 @@ public class EdrControllerTest extends RestControllerTestBase {
 
     @Test
     void queryEdrs_shouldReturnCachedEntries_whenAssetIdIsProvided() {
-        var assetId = "id";
-        var transferProcessId = "id";
-        var agreementId = "id";
-        var providerId = "id";
+        var assetId = "assetId";
+        var transferProcessId = "transferProcessId";
+        var agreementId = "agreementId";
+        var providerId = "providerId";
 
 
         var entry = EndpointDataReferenceEntry.Builder.newInstance()
@@ -165,6 +170,7 @@ public class EdrControllerTest extends RestControllerTestBase {
                 .agreementId(agreementId)
                 .assetId(assetId)
                 .providerId(providerId)
+                .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                 .build();
 
         var response = Json.createObjectBuilder()
@@ -173,9 +179,10 @@ public class EdrControllerTest extends RestControllerTestBase {
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
                 .add(EDR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
                 .add(EDR_ENTRY_PROVIDER_ID, entry.getProviderId())
+                .add(EDR_ENTRY_STATE, entry.getEdrState())
                 .build();
 
-        var filter = QuerySpec.Builder.newInstance().filter(fieldFilter("assetId", assetId)).build();
+        var filter = QuerySpec.Builder.newInstance().filter(fieldFilter(ASSET_ID, assetId)).build();
 
         when(edrService.findBy(eq(filter))).thenReturn(ServiceResult.success(List.of(entry)));
         when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(JsonObject.class))).thenReturn(Result.success(response));
@@ -188,7 +195,8 @@ public class EdrControllerTest extends RestControllerTestBase {
                 .body("[0].'edc:transferProcessId'", is(entry.getTransferProcessId()))
                 .body("[0].'edc:agreementId'", is(entry.getAgreementId()))
                 .body("[0].'edc:assetId'", is(entry.getAssetId()))
-                .body("[0].'edc:providerId'", is(entry.getProviderId()));
+                .body("[0].'edc:providerId'", is(entry.getProviderId()))
+                .body("[0].'tx:edrState'", is(entry.getEdrState()));
 
     }
 
@@ -216,8 +224,8 @@ public class EdrControllerTest extends RestControllerTestBase {
                 .build();
 
         var filter = QuerySpec.Builder.newInstance()
-                .filter(fieldFilter("agreementId", agreementId))
-                .filter(fieldFilter("providerId", entry.getProviderId()))
+                .filter(fieldFilter(AGREEMENT_ID, agreementId))
+                .filter(fieldFilter(PROVIDER_ID, entry.getProviderId()))
                 .build();
 
         when(edrService.findBy(eq(filter))).thenReturn(ServiceResult.success(List.of(entry)));

@@ -16,8 +16,11 @@ package org.eclipse.tractusx.edc.edr.spi;
 
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates;
 
 import java.util.UUID;
+
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
 
 public class TestFunctions {
 
@@ -31,11 +34,16 @@ public class TestFunctions {
     }
 
     public static EndpointDataReferenceEntry edrEntry(String assetId, String agreementId, String transferProcessId) {
+        return edrEntry(assetId, agreementId, transferProcessId, NEGOTIATED);
+    }
+
+    public static EndpointDataReferenceEntry edrEntry(String assetId, String agreementId, String transferProcessId, EndpointDataReferenceEntryStates state) {
         return EndpointDataReferenceEntry.Builder.newInstance()
                 .assetId(assetId)
                 .agreementId(agreementId)
                 .transferProcessId(transferProcessId)
                 .providerId(UUID.randomUUID().toString())
+                .state(state.code())
                 .build();
     }
 }

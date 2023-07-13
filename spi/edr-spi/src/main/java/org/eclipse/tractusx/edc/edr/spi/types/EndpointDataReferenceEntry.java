@@ -15,37 +15,76 @@
 package org.eclipse.tractusx.edc.edr.spi.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import org.eclipse.edc.spi.entity.StatefulEntity;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Predicate;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.DELETED;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.ERROR;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
 
 /**
  * An entry in the cache for an {@link EndpointDataReference}.
  */
 @JsonDeserialize(builder = EndpointDataReferenceEntry.Builder.class)
-public class EndpointDataReferenceEntry {
+public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataReferenceEntry> {
 
     public static final String SIMPLE_TYPE = "EndpointDataReferenceEntry";
-
     public static final String EDR_ENTRY_TYPE = TX_NAMESPACE + SIMPLE_TYPE;
-    public static final String EDR_ENTRY_ASSET_ID = EDC_NAMESPACE + "assetId";
-    public static final String EDR_ENTRY_AGREEMENT_ID = EDC_NAMESPACE + "agreementId";
-    public static final String EDR_ENTRY_TRANSFER_PROCESS_ID = EDC_NAMESPACE + "transferProcessId";
-    public static final String EDR_ENTRY_PROVIDER_ID = EDC_NAMESPACE + "providerId";
-
+    public static final String EDR_ENTRY_STATE = TX_NAMESPACE + "edrState";
+    public static final String EDR_ENTRY_EXPIRATION_DATE = TX_NAMESPACE + "expirationDate";
+    public static final String ASSET_ID = "assetId";
+    public static final String EDR_ENTRY_ASSET_ID = EDC_NAMESPACE + ASSET_ID;
+    public static final String AGREEMENT_ID = "agreementId";
+    public static final String EDR_ENTRY_AGREEMENT_ID = EDC_NAMESPACE + AGREEMENT_ID;
+    public static final String TRANSFER_PROCESS_ID = "transferProcessId";
+    public static final String EDR_ENTRY_TRANSFER_PROCESS_ID = EDC_NAMESPACE + TRANSFER_PROCESS_ID;
+    public static final String PROVIDER_ID = "providerId";
+    public static final String EDR_ENTRY_PROVIDER_ID = EDC_NAMESPACE + PROVIDER_ID;
     private String assetId;
     private String agreementId;
     private String transferProcessId;
 
     private String providerId;
 
+    private Long expirationTimestamp;
+
     private EndpointDataReferenceEntry() {
+        state = NEGOTIATED.code();
+    }
+
+    @Override
+    public String getId() {
+        return getTransferProcessId();
+    }
+
+
+    @Override
+    public EndpointDataReferenceEntry copy() {
+        var builder = Builder.newInstance()
+                .transferProcessId(transferProcessId)
+                .agreementId(agreementId)
+                .assetId(assetId)
+                .providerId(providerId)
+                .expirationTimestamp(expirationTimestamp);
+        return copy(builder);
+    }
+
+    @JsonIgnore
+    public String getEdrState() {
+        return EndpointDataReferenceEntryStates.from(getState()).name();
     }
 
     public String getAssetId() {
@@ -64,6 +103,10 @@ public class EndpointDataReferenceEntry {
         return providerId;
     }
 
+    public Long getExpirationTimestamp() {
+        return expirationTimestamp;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(assetId, agreementId, transferProcessId);
@@ -79,12 +122,44 @@ public class EndpointDataReferenceEntry {
         return transferProcessId.equals(that.transferProcessId);
     }
 
+    public void transitionToRefreshing() {
+        transition(REFRESHING, REFRESHING, NEGOTIATED);
+    }
+
+    public void transitionToNegotiated() {
+        transition(NEGOTIATED, NEGOTIATED, REFRESHING);
+    }
+
+    public void transitionError() {
+        transition(ERROR, REFRESHING, NEGOTIATED);
+    }
+
+    public void transitionToExpired() {
+        transition(EXPIRED, EXPIRED, NEGOTIATED, REFRESHING);
+    }
+
+    public void transitionToDeleted() {
+        transition(DELETED, DELETED, EXPIRED, REFRESHING, NEGOTIATED);
+    }
+
+
+    private void transition(EndpointDataReferenceEntryStates end, Predicate<EndpointDataReferenceEntryStates> canTransitTo) {
+        if (!canTransitTo.test(EndpointDataReferenceEntryStates.from(state))) {
+            throw new IllegalStateException(format("Cannot transition from state %s to %s", EndpointDataReferenceEntryStates.from(state), EndpointDataReferenceEntryStates.from(end.code())));
+        }
+        transitionTo(end.code());
+    }
+
+    private void transition(EndpointDataReferenceEntryStates end, EndpointDataReferenceEntryStates... starts) {
+        transition(end, (state) -> Arrays.stream(starts).anyMatch(s -> s == state));
+    }
+
+
     @JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-        private final EndpointDataReferenceEntry entry;
+    public static class Builder extends StatefulEntity.Builder<EndpointDataReferenceEntry, Builder> {
 
         private Builder() {
-            entry = new EndpointDataReferenceEntry();
+            super(new EndpointDataReferenceEntry());
         }
 
         @JsonCreator
@@ -93,30 +168,43 @@ public class EndpointDataReferenceEntry {
         }
 
         public Builder assetId(String assetId) {
-            entry.assetId = assetId;
+            entity.assetId = assetId;
             return this;
         }
 
         public Builder agreementId(String agreementId) {
-            entry.agreementId = agreementId;
+            entity.agreementId = agreementId;
             return this;
         }
 
         public Builder transferProcessId(String transferProcessId) {
-            entry.transferProcessId = transferProcessId;
+            entity.transferProcessId = transferProcessId;
+            entity.id = transferProcessId;
             return this;
         }
 
         public Builder providerId(String providerId) {
-            entry.providerId = providerId;
+            entity.providerId = providerId;
+            return this;
+        }
+
+        public Builder expirationTimestamp(Long expirationTimestamp) {
+            entity.expirationTimestamp = expirationTimestamp;
+            return this;
+        }
+
+        @Override
+        public Builder self() {
             return this;
         }
 
         public EndpointDataReferenceEntry build() {
-            requireNonNull(entry.assetId, "assetId");
-            requireNonNull(entry.agreementId, "agreementId");
-            requireNonNull(entry.transferProcessId, "transferProcessId");
-            return entry;
+            super.build();
+            requireNonNull(entity.assetId, ASSET_ID);
+            requireNonNull(entity.agreementId, AGREEMENT_ID);
+            requireNonNull(entity.transferProcessId, TRANSFER_PROCESS_ID);
+
+            return entity;
         }
     }
 

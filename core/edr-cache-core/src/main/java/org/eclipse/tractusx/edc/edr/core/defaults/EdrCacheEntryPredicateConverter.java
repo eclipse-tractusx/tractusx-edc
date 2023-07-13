@@ -26,6 +26,7 @@ public class EdrCacheEntryPredicateConverter extends BaseCriterionToPredicateCon
                 case "assetId" -> entry.getAssetId();
                 case "agreementId" -> entry.getAgreementId();
                 case "providerId" -> entry.getProviderId();
+                case "state" -> entry.getState();
                 default -> null;
             };
         }

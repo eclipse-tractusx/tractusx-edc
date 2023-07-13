@@ -59,6 +59,14 @@ public class DataWiper {
 
     public void clearEdrCache() {
         var edrCache = context.getService(EndpointDataReferenceCache.class);
-        edrCache.queryForEntries(QuerySpec.max()).forEach(entry -> edrCache.deleteByTransferProcessId(entry.getTransferProcessId()));
+        edrCache.queryForEntries(QuerySpec.max()).forEach(entry -> {
+            try {
+                entry.transitionToDeleted();
+                edrCache.update(entry);
+                edrCache.deleteByTransferProcessId(entry.getTransferProcessId());
+            } catch (Exception e) {
+                context.getMonitor().warning("Failed to clean up the cache", e);
+            }
+        });
     }
 }

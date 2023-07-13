@@ -12,13 +12,14 @@
  *
  */
 
-package org.eclipse.tractusx.edc.edr.core.service;
+package org.eclipse.tractusx.edc.edr.core;
 
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.eclipse.tractusx.edc.edr.core.EdrCoreExtension;
+import org.eclipse.tractusx.edc.edr.core.manager.EdrManagerImpl;
+import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,9 +43,9 @@ public class EdrCoreExtensionTest {
     @Test
     void shouldInitializeTheExtension(ServiceExtensionContext context) {
         extension.initialize(context);
-        
-        var service = extension.adapterTransferProcessService();
-        assertThat(service).isInstanceOf(EdrServiceImpl.class);
+
+        var service = context.getService(EdrManager.class);
+        assertThat(service).isInstanceOf(EdrManagerImpl.class);
 
     }
 }

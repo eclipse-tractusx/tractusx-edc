@@ -15,12 +15,13 @@
 package org.eclipse.tractusx.edc.edr.store.sql.schema;
 
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.sql.lease.LeaseStatements;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
 
 /**
  * Sql Statements for DataPlane Store
  */
-public interface EdrStatements {
+public interface EdrStatements extends LeaseStatements {
 
     default String getEdrTable() {
         return "edc_edr_cache";
@@ -54,12 +55,33 @@ public interface EdrStatements {
         return "updated_at";
     }
 
+    default String getStateColumn() {
+        return "state";
+    }
+
+    default String getExpirationTimestampColumn() {
+        return "expiration_timestamp";
+    }
+
+    default String getStateCountColumn() {
+        return "state_count";
+    }
+
+    default String getStateTimestampColumn() {
+        return "state_timestamp";
+    }
+
+    default String getErrorDetailColumn() {
+        return "error_detail";
+    }
 
     String getFindByTransferProcessIdTemplate();
 
     SqlQueryStatement createQuery(QuerySpec querySpec);
 
     String getInsertTemplate();
+
+    String getUpdateTemplate();
 
     String getDeleteByIdTemplate();
 

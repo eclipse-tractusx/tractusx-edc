@@ -44,6 +44,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.PROVIDER_ID;
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
@@ -124,13 +127,13 @@ public class EdrController implements EdrApi {
     private QuerySpec querySpec(String assetId, String agreementId, String providerId) {
         var queryBuilder = QuerySpec.Builder.newInstance();
         if (assetId != null) {
-            queryBuilder.filter(fieldFilter("assetId", assetId));
+            queryBuilder.filter(fieldFilter(ASSET_ID, assetId));
         }
         if (agreementId != null) {
-            queryBuilder.filter(fieldFilter("agreementId", agreementId));
+            queryBuilder.filter(fieldFilter(AGREEMENT_ID, agreementId));
         }
         if (providerId != null) {
-            queryBuilder.filter(fieldFilter("providerId", agreementId));
+            queryBuilder.filter(fieldFilter(PROVIDER_ID, agreementId));
         }
         return queryBuilder.build();
     }
