@@ -205,6 +205,7 @@ jobs:
   swagger-api:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/publish-swagger-api
         with:
           downstreamVersion: testing
