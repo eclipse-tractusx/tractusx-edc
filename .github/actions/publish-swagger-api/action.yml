@@ -19,12 +19,15 @@
 #
 
 ---
-name: "Publish OpenAPI spec to Swagger"
-description: "Publish OpenAPI spec to Swagger"
+name: "Publish Merged Up-/Downstream OpenAPI spec to Swagger"
+description: "Publish Merged Up-/Downstream OpenAPI spec to Swagger"
 inputs:
-  releaseVersion:
+  downstreamReleaseVersion:
     required: true
-    description: "The version of the release"
+    description: "The version of the downstream release"
+  upstreamReleaseVersion:
+    required: true
+    description: "The version of the corresponding upstream release"
 runs:
   env:
     SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_TOKEN }}
@@ -38,34 +41,37 @@ runs:
         distribution: 'temurin'
         cache: 'gradle'
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3.3.0
 
     - name: Resolve TX EDC API Spec
       shell: bash
       run: |
-        ./gradlew  :edc-extensions:control-plane-adapter-api:resolve
-        ./gradlew  :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
-        ./gradlew  :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
-        ./gradlew -PapiTitle="tx-edc-extensions-api" -PapiDescription="Tractus X Extensions REST API Doc" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/joined_api.yaml
+        ./gradlew :edc-extensions:control-plane-adapter-api:resolve
+        ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
+        ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
 
-    # TODO: probably something prebuilt for this, use that instead
     - uses: actions/setup-node@v3
 
-    # install swaggerhub CLI
     - name: Install SwaggerHub CLI
       run: npm i -g swaggerhub-cli
 
-    # TODO: download and merge
+    - name: Get Upstream API
+      run: |
+        cd ./resources/openapi/yaml
+        swaggerhub api:get eclipse-edc-bot/management-api/${upstreamReleaseVersion}
+        swaggerhub api:get eclipse-edc-bot/control-api/${upstreamReleaseVersion}
+
+    - name: Merge API Specs
+      run: |
+        ./gradlew -PapiTitle="tractusx-edc-api" -PapiDescription="Tractus X EDC API Doc" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-joined-api.yaml
 
     # create API, will fail if exists
-    # TODO: adapt
     - name: Create API
       continue-on-error: true
       run: |
-        swaggerhub api:create ${{ env.SWAGGERHUB_USER }}/${{ matrix.apiGroup}} -f ${{ matrix.apiGroup }}.yaml --visibility=public --published=unpublish
+        swaggerhub api:create ${{ env.SWAGGERHUB_USER }}/tractusx-edc -f ./resources/openapi/yaml/tractusx-edc-joined-api.yaml --visibility=public --published=unpublish
 
     # Post the API to SwaggerHub as "unpublished", because published APIs cannot be overwritten
-    # TODO: adapt
     - name: Publish API Specs to SwaggerHub
       run: |
-        swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/${{ matrix.apiGroup}} -f ${{ matrix.apiGroup }}.yaml --visibility=public --published=unpublish
+        swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc -f ./resources/openapi/yaml/tractusx-edc-joined-api.yaml --visibility=public --published=unpublish

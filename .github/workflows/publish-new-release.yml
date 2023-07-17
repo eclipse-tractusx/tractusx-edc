@@ -255,3 +255,16 @@ jobs:
           git commit --message "Introduce new snapshot version $SNAPSHOT_VERSION"
 
           git push origin main
+
+  swaggerhub-apidoc:
+    name: Publish new github release
+    needs: [ release-version, maven-release, docker-release, helm-release, github-release ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
+    steps:
+      - uses: actions/publish-swagger-api
+        with:
+          downstreamReleaseVersion: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+          upstreamReleaseVersion: 0.1.4-SNAPSHOT
