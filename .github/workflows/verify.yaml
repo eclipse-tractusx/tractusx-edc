@@ -200,3 +200,12 @@ jobs:
           pwd
           ./gradlew compileJava compileTestJava
           ./gradlew -p edc-tests/e2e-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
+
+  # this is for testing only; remove later
+  swagger-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/publish-swagger-api
+        with:
+          downstreamVersion: testing
+          upstreamVersion: 0.1.4-SNAPSHOT
