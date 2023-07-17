@@ -204,9 +204,52 @@ jobs:
   # this is for testing only; remove later
   swagger-api:
     runs-on: ubuntu-latest
+    env:
+      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_TOKEN }}
+      SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
+      DOWNSTREAM_VERSION: testing
+      UPSTREAM_VERSION: 0.1.4-SNAPSHOT
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/publish-swagger-api
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3.11.0
         with:
-          downstreamVersion: testing
-          upstreamVersion: 0.1.4-SNAPSHOT
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Resolve TX EDC API Spec
+        shell: bash
+        run: |
+          ./gradlew :edc-extensions:control-plane-adapter-api:resolve
+          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
+          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
+
+      - uses: actions/setup-node@v3
+
+      - name: Install SwaggerHub CLI
+        run: npm i -g swaggerhub-cli
+
+      - name: Download upstream API specs
+        run: |
+          cd resources/openapi/yaml
+          swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }}
+          swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }}
+
+      - name: Merge API specs
+        run: |
+          ./gradlew -PapiTitle="tractusx-edc-api" -PapiDescription="Tractus EDC API Doc" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
+
+      # create API, will fail if exists
+      - name: Create API
+        continue-on-error: true
+        run: |
+          swaggerhub api:create ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
+
+      # Post the API to SwaggerHub as "unpublished", because published APIs cannot be overwritten
+      - name: Publish API Specs to SwaggerHub
+        run: |
+          swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
+
+      
