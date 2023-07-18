@@ -15,7 +15,7 @@
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
 import org.eclipse.edc.spi.persistence.Lease;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -23,7 +23,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.HashMap;
 
-class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheBaseTest {
+class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheTestBase {
     private final HashMap<String, Lease> leases = new HashMap<>();
     private InMemoryEndpointDataReferenceCache cache;
 
@@ -36,7 +36,7 @@ class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheB
     protected EndpointDataReferenceCache getStore() {
         return cache;
     }
-    
+
     @Override
     protected void lockEntity(String negotiationId, String owner, Duration duration) {
         leases.put(negotiationId, new Lease(owner, Clock.systemUTC().millis(), duration.toMillis()));

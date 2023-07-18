@@ -134,6 +134,7 @@ restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssu
 apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache-sshd" }
 apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }

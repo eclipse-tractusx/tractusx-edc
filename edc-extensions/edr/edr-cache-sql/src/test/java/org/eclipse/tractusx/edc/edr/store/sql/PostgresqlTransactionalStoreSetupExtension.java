@@ -50,7 +50,7 @@ public class PostgresqlTransactionalStoreSetupExtension implements BeforeEachCal
 
     private final String datasourceName;
     private final QueryExecutor queryExecutor;
-    private final Monitor monitor = mock(Monitor.class);
+    private final Monitor monitor = mock();
     private DataSourceRegistry dataSourceRegistry = null;
     private DataSource dataSource = null;
     private Connection connection = null;

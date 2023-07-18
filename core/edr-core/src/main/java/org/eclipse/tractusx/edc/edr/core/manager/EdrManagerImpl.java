@@ -184,7 +184,7 @@ public class EdrManagerImpl implements EdrManager {
                     .execute("Start an EDR token renewal");
         } else {
             breakLease(edrEntry);
-            return true;
+            return false;
         }
     }
 
@@ -200,7 +200,7 @@ public class EdrManagerImpl implements EdrManager {
                     .execute("Start an EDR token deletion");
         } else {
             breakLease(edrEntry);
-            return true;
+            return false;
         }
     }
 

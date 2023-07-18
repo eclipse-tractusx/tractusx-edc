@@ -35,7 +35,7 @@ public class RenewalEdrInMemoryTest extends AbstractRenewalEdrTest {
             ":edc-tests:runtime:runtime-memory",
             SOKRATES_NAME,
             SOKRATES_BPN,
-            renewalConfiguration(sokratesConfiguration(), "60")
+            renewalConfiguration(sokratesConfiguration())
     );
 
     @RegisterExtension
@@ -43,6 +43,6 @@ public class RenewalEdrInMemoryTest extends AbstractRenewalEdrTest {
             ":edc-tests:runtime:runtime-memory",
             PLATO_NAME,
             PLATO_BPN,
-            renewalConfiguration(platoConfiguration(), "60")
+            renewalConfiguration(platoConfiguration())
     );
 }

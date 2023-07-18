@@ -27,20 +27,16 @@ public class TestFunctions {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static Map<String, String> renewalConfiguration(Map<String, String> config, String retention) {
+    public static Map<String, String> renewalConfiguration(Map<String, String> config) {
         var ssiConfiguration = new HashMap<String, String>() {
             {
                 put("edc.edr.state-machine.expiring-duration", "4");
-                put("edc.edr.state-machine.expired-retention", retention);
+                put("edc.edr.state-machine.expired-retention", "1");
                 put("edc.transfer.proxy.token.validity.seconds", "4");
             }
         };
         ssiConfiguration.putAll(config);
         return ssiConfiguration;
-    }
-
-    public static Map<String, String> renewalConfiguration(Map<String, String> config) {
-        return renewalConfiguration(config, "1");
     }
 
     public static ReceivedEvent waitForEvent(MockWebServer server, ReceivedEvent event) {

@@ -39,7 +39,7 @@ import java.time.Clock;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest.CONNECTOR_NAME;
+import static org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase.CONNECTOR_NAME;
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edr;
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edrEntry;
 import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCache.VAULT_PREFIX;

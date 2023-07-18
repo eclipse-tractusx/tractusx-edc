@@ -40,7 +40,7 @@ import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryS
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
 import static org.hamcrest.Matchers.hasSize;
 
-public abstract class EndpointDataReferenceCacheBaseTest {
+public abstract class EndpointDataReferenceCacheTestBase {
 
     public static final String CONNECTOR_NAME = "test-connector";
 

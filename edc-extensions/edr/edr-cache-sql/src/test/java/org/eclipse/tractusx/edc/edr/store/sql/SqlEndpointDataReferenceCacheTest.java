@@ -21,7 +21,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.EdrStatements;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.postgres.PostgresEdrStatements;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 @PostgresqlDbIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
-public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheBaseTest {
+public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheTestBase {
 
     EdrStatements statements = new PostgresEdrStatements();
     SqlEndpointDataReferenceCache cache;

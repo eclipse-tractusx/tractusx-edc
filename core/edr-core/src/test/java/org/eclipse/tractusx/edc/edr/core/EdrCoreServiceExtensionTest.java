@@ -16,7 +16,6 @@ package org.eclipse.tractusx.edc.edr.core;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.edr.core.service.EdrServiceImpl;
 import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
@@ -30,17 +29,14 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(DependencyInjectionExtension.class)
 public class EdrCoreServiceExtensionTest {
 
-    EdrCoreServiceExtension extension;
-
     @BeforeEach
-    void setUp(ObjectFactory factory, ServiceExtensionContext context) {
+    void setUp(ServiceExtensionContext context) {
         context.registerService(EdrManager.class, mock(EdrManager.class));
         context.registerService(EndpointDataReferenceCache.class, mock(EndpointDataReferenceCache.class));
-        extension = factory.constructInstance(EdrCoreServiceExtension.class);
     }
 
     @Test
-    void shouldInitializeTheExtension(ServiceExtensionContext context) {
+    void shouldInitializeTheExtension(ServiceExtensionContext context, EdrCoreServiceExtension extension) {
         extension.initialize(context);
 
         var service = extension.edrService();

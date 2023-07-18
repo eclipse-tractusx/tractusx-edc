@@ -51,14 +51,14 @@ public class EdrCoreExtension implements ServiceExtension {
     public static final long DEFAULT_EXPIRED_RETENTION = 60;
 
     protected static final String NAME = "EDR Core";
-    @Setting(value = "The iteration wait time in milliseconds in the edr state machine. Default value " + DEFAULT_ITERATION_WAIT, type = "long")
+    @Setting(value = "The iteration wait time in milliseconds in the edr state machine.", type = "long", defaultValue = "" + DEFAULT_ITERATION_WAIT)
     private static final String EDR_STATE_MACHINE_ITERATION_WAIT_MILLIS = "edc.edr.state-machine.iteration-wait-millis";
-    @Setting(value = "The batch size in the edr negotiation state machine. Default value " + DEFAULT_BATCH_SIZE, type = "int")
+    @Setting(value = "The batch size in the edr negotiation state machine.", type = "int", defaultValue = "" + DEFAULT_BATCH_SIZE)
     private static final String EDR_STATE_MACHINE_BATCH_SIZE = "edc.edr.state-machine.batch-size";
-    @Setting(value = "The minimum duration on which the EDR token can be eligible for renewal. Default value " + DEFAULT_EXPIRING_DURATION + " (seconds)", type = "long")
+    @Setting(value = "The minimum duration on which the EDR token can be eligible for renewal", type = "long", defaultValue = "" + DEFAULT_EXPIRING_DURATION)
     private static final String EDR_STATE_MACHINE_EXPIRING_DURATION = "edc.edr.state-machine.expiring-duration";
 
-    @Setting(value = "The minimum duration on with the EDR token can be eligible for deletion when it's expired. Default value " + DEFAULT_EXPIRED_RETENTION + " (seconds)", type = "long")
+    @Setting(value = "The minimum duration on with the EDR token can be eligible for deletion when it's expired.", type = "long", defaultValue = "" + DEFAULT_EXPIRED_RETENTION)
     private static final String EDR_STATE_MACHINE_EXPIRED_RETENTION = "edc.edr.state-machine.expired-retention";
 
     @Inject
