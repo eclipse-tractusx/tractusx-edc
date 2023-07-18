@@ -233,9 +233,8 @@ jobs:
 
       - name: Download upstream API specs
         run: |
-          cd resources/openapi/yaml
-          swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }}
-          swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }}
+          swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-management-api.yaml
+          swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-control-api.yaml
 
       - name: Merge API specs
         run: |
