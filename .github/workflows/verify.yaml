@@ -219,6 +219,8 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
+      - run: ./gradlew projects
+
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
