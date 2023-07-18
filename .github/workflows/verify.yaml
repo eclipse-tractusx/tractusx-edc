@@ -249,4 +249,3 @@ jobs:
       - name: Publish API Specs to SwaggerHub
         run: |
           swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
-
