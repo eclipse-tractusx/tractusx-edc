@@ -233,7 +233,6 @@ jobs:
 
       - name: Download upstream API specs
         run: |
-          echo $DOWNSTREAM_VERSION
           swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-management-api.yaml
           swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-control-api.yaml
 
