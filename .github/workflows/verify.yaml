@@ -208,7 +208,7 @@ jobs:
     env:
       SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_TOKEN }}
       SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
-      DOWNSTREAM_VERSION: testing
+      DOWNSTREAM_VERSION: testinge
       UPSTREAM_VERSION: 0.1.4-SNAPSHOT
     steps:
       - uses: actions/checkout@v3
@@ -225,7 +225,6 @@ jobs:
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
-          ./gradlew :edc-extensions:control-plane-adapter-api:resolve
           ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
           ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
 
