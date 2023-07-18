@@ -206,9 +206,9 @@ jobs:
   swagger-api:
     runs-on: ubuntu-latest
     env:
-      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_TOKEN }}
+      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
       SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
-      DOWNSTREAM_VERSION: testinge
+      DOWNSTREAM_VERSION: testing
       UPSTREAM_VERSION: 0.1.4-SNAPSHOT
     steps:
       - uses: actions/checkout@v3
@@ -219,8 +219,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
-
-      - run: ./gradlew projects
 
       - name: Resolve TX EDC API Spec
         shell: bash
