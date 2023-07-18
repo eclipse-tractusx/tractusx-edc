@@ -107,6 +107,12 @@ spec:
             {{- end }}
           {{- end }}
 
+            ########################
+            ## ID CONFIGURATION ##
+            ########################
+            - name: EDC_PARTICIPANT_ID
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
+
             #######
             # API #
             #######
