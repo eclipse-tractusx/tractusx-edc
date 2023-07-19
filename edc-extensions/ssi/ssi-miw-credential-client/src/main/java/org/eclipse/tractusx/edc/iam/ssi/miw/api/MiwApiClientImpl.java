@@ -74,6 +74,11 @@ public class MiwApiClientImpl implements MiwApiClient {
     public Result<List<Map<String, Object>>> getCredentials(Set<String> types) {
 
         var params = new ArrayList<String>();
+
+        if (!participantId.isEmpty()) {
+            params.add(format((HOLDER_IDENTIFIER + "=%s"), participantId));
+        }
+
         params.add(format("%s=%s", ISSUER_IDENTIFIER, authorityId));
 
         if (!types.isEmpty()) {
