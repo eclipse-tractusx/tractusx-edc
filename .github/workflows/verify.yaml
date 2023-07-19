@@ -207,8 +207,6 @@ jobs:
     env:
       SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
       SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
-      DOWNSTREAM_VERSION: testing
-      UPSTREAM_VERSION: 0.1.4-SNAPSHOT
     steps:
       - uses: actions/checkout@v3
 
@@ -219,20 +217,28 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
+      - name: Setup node
+        uses: actions/setup-node@v3
+
+      - name: Install tools
+        run: |
+          npm i -g swaggerhub-cli
+          apt install -y crudini
+
+      - name: Extract versions
+        run: |
+          export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
+          export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
+
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
           ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
           ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
 
-      - uses: actions/setup-node@v3
-
-      - name: Install SwaggerHub CLI
-        run: npm i -g swaggerhub-cli
 
       - name: Download upstream API specs
         run: |
-          echo ${{ vars.TESTVAR }}
           swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-management-api.yaml
           swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-control-api.yaml
 
