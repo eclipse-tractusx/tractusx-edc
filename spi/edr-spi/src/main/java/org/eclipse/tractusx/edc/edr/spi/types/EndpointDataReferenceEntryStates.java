@@ -28,11 +28,10 @@ public enum EndpointDataReferenceEntryStates {
     REFRESHING(100),
 
     EXPIRED(200),
+
     ERROR(300),
 
-    DELETED(400);
-
-
+    DELETING(400);
     private final int code;
 
     EndpointDataReferenceEntryStates(int code) {

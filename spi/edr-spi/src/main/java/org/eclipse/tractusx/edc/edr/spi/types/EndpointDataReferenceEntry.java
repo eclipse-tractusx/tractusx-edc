@@ -29,7 +29,7 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.DELETED;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.DELETING;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.ERROR;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
@@ -138,10 +138,9 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
         transition(EXPIRED, EXPIRED, NEGOTIATED, REFRESHING);
     }
 
-    public void transitionToDeleted() {
-        transition(DELETED, DELETED, EXPIRED, REFRESHING, NEGOTIATED);
+    public void transitionToDeleting() {
+        transition(DELETING, DELETING, EXPIRED);
     }
-
 
     private void transition(EndpointDataReferenceEntryStates end, Predicate<EndpointDataReferenceEntryStates> canTransitTo) {
         if (!canTransitTo.test(EndpointDataReferenceEntryStates.from(state))) {

@@ -369,7 +369,7 @@ public abstract class EndpointDataReferenceCacheTestBase {
 
         assertThatThrownBy(() -> getStore().deleteByTransferProcessId(entry.getTransferProcessId())).isInstanceOf(IllegalStateException.class);
     }
-
+    
     protected abstract EndpointDataReferenceCache getStore();
 
     protected abstract void lockEntity(String negotiationId, String owner, Duration duration);

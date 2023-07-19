@@ -83,4 +83,5 @@ public interface EndpointDataReferenceCache extends StateEntityStore<EndpointDat
      */
     StoreResult<EndpointDataReferenceEntry> deleteByTransferProcessId(String id);
 
+
 }

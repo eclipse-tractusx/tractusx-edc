@@ -54,6 +54,7 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     private final LockManager lockManager;
     private final EdrCacheEntryPredicateConverter predicateConverter = new EdrCacheEntryPredicateConverter();
 
+
     private final Map<String, List<EndpointDataReferenceEntry>> entriesByAssetId;
 
     private final Map<String, EndpointDataReferenceEntry> entriesByEdrId;
@@ -174,7 +175,7 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
 
-    public @NotNull List<EndpointDataReferenceEntry> leaseAndGet(int max, Criterion... criteria) {
+    private @NotNull List<EndpointDataReferenceEntry> leaseAndGet(int max, Criterion... criteria) {
         return lockManager.writeLock(() -> {
             var filterPredicate = Arrays.stream(criteria).map(predicateConverter::convert).reduce(x -> true, Predicate::and);
             var entities = entriesByEdrId.values().stream()

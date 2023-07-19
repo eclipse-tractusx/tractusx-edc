@@ -15,11 +15,8 @@
 package org.eclipse.tractusx.edc.tests.edr;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Condition;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,21 +25,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.time.Duration.ofSeconds;
-import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
-import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
-import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
-import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
-import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEvent;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
@@ -50,9 +40,8 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRAT
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
-import static org.eclipse.tractusx.edc.tests.edr.TestFunctions.waitForEvent;
 
-public abstract class AbstractRenewalEdrTest {
+public abstract class AbstractDeleteEdrTest {
 
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
@@ -65,23 +54,17 @@ public abstract class AbstractRenewalEdrTest {
     }
 
     @Test
-    @DisplayName("Verify that the EDR is renewed")
-    void negotiateEdr_shouldRenewTheEdr() throws IOException {
-
-        var expectedEvents = List.of(
-                createEvent(TransferProcessCompleted.class),
-                createEvent(TransferProcessCompleted.class));
+    @DisplayName("Verify that expired EDR are deleted")
+    void negotiateEdr_shouldRemoveExpiredEdrs() throws IOException {
 
         var assetId = UUID.randomUUID().toString();
-        var url = server.url("/mock/api");
-        server.start();
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
         PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
                 .add(EDC_NAMESPACE + "type", "HttpData")
                 .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", url.toString())
+                .add(EDC_NAMESPACE + "baseUrl", "http://test:8080")
                 .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
                 .add(EDC_NAMESPACE + "authCode", authCode)
                 .build());
@@ -91,35 +74,27 @@ public abstract class AbstractRenewalEdrTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(url.toString(), true, Set.of("transfer.process.completed")))
                 .build();
-
-        expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
 
         SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
 
-        var events = expectedEvents.stream()
-                .map(receivedEvent -> waitForEvent(server, receivedEvent))
-                .collect(Collectors.toList());
-
-        assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
-
-        JsonArrayBuilder edrCaches = Json.createArrayBuilder();
+        var expired = new ArrayList<String>();
 
         await().atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var localEdrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
-                    assertThat(localEdrCaches).hasSizeGreaterThan(1);
-                    localEdrCaches.forEach(edrCaches::add);
+                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var localExpired = edrCaches.stream()
+                            .filter(json -> json.asJsonObject().getJsonString("tx:edrState").getString().equals(EXPIRED.name()))
+                            .map(json -> json.asJsonObject().getJsonString("edc:transferProcessId").getString())
+                            .toList();
+                    assertThat(localExpired).hasSizeGreaterThan(0);
+                    expired.add(localExpired.get(0));
                 });
 
+        await().atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> expired.forEach((id) -> SOKRATES.getEdrRequest(id).statusCode(404)));
 
-        assertThat(edrCaches.build())
-                .extracting(json -> json.asJsonObject().getJsonString("tx:edrState").getString())
-                .areAtMost(1, anyOf(stateCondition(NEGOTIATED.name(), "Negotiated"), stateCondition(REFRESHING.name(), "Refreshing")))
-                .areAtLeast(1, stateCondition(EXPIRED.name(), "Expired"));
     }
-
 
     @AfterEach
     void teardown() throws IOException {

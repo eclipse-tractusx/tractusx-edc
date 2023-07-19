@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.retry.ExponentialWaitStrategy;
@@ -60,6 +61,7 @@ import static org.eclipse.tractusx.edc.edr.core.EdrCoreExtension.DEFAULT_EXPIRIN
 import static org.eclipse.tractusx.edc.edr.core.EdrCoreExtension.DEFAULT_ITERATION_WAIT;
 import static org.eclipse.tractusx.edc.edr.core.EdrCoreExtension.DEFAULT_SEND_RETRY_BASE_DELAY;
 import static org.eclipse.tractusx.edc.edr.core.EdrCoreExtension.DEFAULT_SEND_RETRY_LIMIT;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.DELETING;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.from;
@@ -110,6 +112,7 @@ public class EdrManagerImpl implements EdrManager {
         stateMachineManager = StateMachineManager.Builder.newInstance("edr-manager", monitor, executorInstrumentation, waitStrategy)
                 .processor(processEdrInState(NEGOTIATED, this::processNegotiated))
                 .processor(processEdrInState(EXPIRED, this::processExpired))
+                .processor(processDeletingEdr(this::processDeleting))
                 .build();
 
         stateMachineManager.start();
@@ -136,14 +139,14 @@ public class EdrManagerImpl implements EdrManager {
         update(edrEntry);
     }
 
-    protected void transitionToDeleted(EndpointDataReferenceEntry edrEntry) {
-        edrEntry.transitionToDeleted();
-        update(edrEntry);
-    }
-
     protected void transitionToError(EndpointDataReferenceEntry edrEntry, String message) {
         edrEntry.setErrorDetail(message);
         edrEntry.transitionError();
+        update(edrEntry);
+    }
+
+    protected void transitionToDeleting(EndpointDataReferenceEntry edrEntry) {
+        edrEntry.transitionToDeleting();
         update(edrEntry);
     }
 
@@ -156,6 +159,16 @@ public class EdrManagerImpl implements EdrManager {
     private StateProcessorImpl<EndpointDataReferenceEntry> processEdrInState(EndpointDataReferenceEntryStates state, Function<EndpointDataReferenceEntry, Boolean> function) {
         var filter = new Criterion[]{ hasState(state.code()) };
         return new StateProcessorImpl<>(() -> edrCache.nextNotLeased(batchSize, filter), telemetry.contextPropagationMiddleware(function));
+    }
+
+
+    private StateProcessorImpl<EndpointDataReferenceEntry> processDeletingEdr(Function<EndpointDataReferenceEntry, Boolean> function) {
+        var query = QuerySpec.Builder.newInstance()
+                .filter(hasState(DELETING.code()))
+                .limit(batchSize)
+                .build();
+
+        return new StateProcessorImpl<>(() -> edrCache.queryForEntries(query).collect(Collectors.toList()), telemetry.contextPropagationMiddleware(function));
     }
 
     private ContractRequest createContractRequest(NegotiateEdrRequest request) {
@@ -189,23 +202,35 @@ public class EdrManagerImpl implements EdrManager {
     }
 
     private boolean processExpired(EndpointDataReferenceEntry edrEntry) {
-        if (shouldBeRemoved(edrEntry)) {
-            return entityRetryProcessFactory.doSyncProcess(edrEntry, () -> deleteEntry(edrEntry))
-                    .onDelay(this::breakLease)
-                    .onSuccess((n, result) -> {
-                    })
-                    .onFailure((n, throwable) -> transitionToExpired(n))
-                    .onFatalError((n, failure) -> transitionToError(n, failure.getFailureDetail()))
-                    .onRetryExhausted((n, failure) -> transitionToError(n, format("Failed delete EDR token: %s", failure.getFailureDetail())))
-                    .execute("Start an EDR token deletion");
+        return entityRetryProcessFactory.doSimpleProcess(edrEntry, () -> checkExpiration(edrEntry))
+                .onDelay(this::breakLease)
+                .execute("Start EDR token deletion check");
+
+    }
+
+
+    private boolean processDeleting(EndpointDataReferenceEntry edrEntry) {
+        return entityRetryProcessFactory.doSyncProcess(edrEntry, () -> deleteEntry(edrEntry))
+                .onDelay(this::breakLease)
+                .onSuccess((n, result) -> {
+                })
+                .onFailure((n, throwable) -> transitionToDeleting(n))
+                .onFatalError((n, failure) -> transitionToError(n, failure.getFailureDetail()))
+                .onRetryExhausted((n, failure) -> transitionToError(n, format("Failed deleted EDR token: %s", failure.getFailureDetail())))
+                .execute("Start EDR token deletion");
+    }
+
+    private boolean checkExpiration(EndpointDataReferenceEntry entry) {
+        if (shouldBeRemoved(entry)) {
+            transitionToDeleting(entry);
+            return true;
         } else {
-            breakLease(edrEntry);
+            breakLease(entry);
             return false;
         }
     }
 
     private StatusResult<Void> deleteEntry(EndpointDataReferenceEntry entry) {
-        this.transitionToDeleted(entry);
         var result = edrCache.deleteByTransferProcessId(entry.getTransferProcessId());
         if (result.succeeded()) {
             monitor.debug(format("Deleted EDR cached entry for transfer process id %s", entry.getTransferProcessId()));
