@@ -223,19 +223,21 @@ jobs:
       - name: Install tools
         run: |
           npm i -g swaggerhub-cli
-          apt install -y crudini
+          sudo apt install -y crudini
 
       - name: Extract versions
         run: |
           export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
           export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
+          
+          [ -z $DOWNSTREAM_VERSION ] && exit 1
+          [ -z UPSTREAM_VERSION ] && exit 1
 
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
           ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
           ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
-
 
       - name: Download upstream API specs
         run: |
