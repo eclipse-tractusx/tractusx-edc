@@ -79,7 +79,9 @@ public class MiwApiClientImplTest {
         var credentialType = "test";
 
         var response = Map.of("content", List.of(Map.of("id", "test")));
-        var expectedUrl = format(BASE_URL + CREDENTIAL_PATH + "?issuerIdentifier=%s&type=%s", authorityId, credentialType);
+        var expectedUrl = format(BASE_URL + CREDENTIAL_PATH + "?holderIdentifier=%s&issuerIdentifier=%s&type=%s", participantId, authorityId, credentialType);
+
+
 
         Consumer<Request> requestAcceptor = (request) -> {
             assertThat(request.url().url().toString()).isEqualTo(expectedUrl);
