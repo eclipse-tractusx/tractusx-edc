@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
@@ -38,16 +39,19 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcess.Type.CONSUMER;
 import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
+import static org.eclipse.tractusx.edc.edr.core.EdrCoreExtension.DEFAULT_BATCH_SIZE;
 import static org.eclipse.tractusx.edc.edr.core.EdrCoreExtension.DEFAULT_EXPIRING_DURATION;
 import static org.eclipse.tractusx.edc.edr.core.fixtures.TestFunctions.getContractNegotiation;
 import static org.eclipse.tractusx.edc.edr.core.fixtures.TestFunctions.getNegotiateEdrRequest;
 import static org.eclipse.tractusx.edc.edr.core.manager.EdrManagerImpl.LOCAL_CALLBACK;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.DELETING;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.ERROR;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
@@ -193,8 +197,8 @@ public class EdrManagerImplTest {
     }
 
     @Test
-    @DisplayName("Verify that EDR is deleted when the retention period is over")
-    void initial_shouldDeleteTheEntry_whenTheRetentionPeriodIsOver() {
+    @DisplayName("Verify that EDR state should transition to deleting when the retention period is over")
+    void initial_shouldTransitionToDeleting_whenTheRetentionPeriodIsOver() {
         var expiration = Instant.now().atOffset(ZoneOffset.UTC).toInstant().minusSeconds(DEFAULT_EXPIRING_DURATION + 10);
         var edrEntry = edrEntryBuilder().state(EXPIRED.code()).expirationTimestamp(expiration.toEpochMilli()).build();
 
@@ -202,7 +206,28 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry))
                 .thenReturn(emptyList());
 
-        when(edrCache.deleteByTransferProcessId(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
+        edrManager.start();
+
+        await().untilAsserted(() -> verify(edrCache).update(argThat(p -> p.getState() == DELETING.code())));
+    }
+
+    @Test
+    @DisplayName("Verify that EDR is deleted when state is DELETING")
+    void initial_shouldDeleteTheEntry_whenTheRetentionPeriodIsOver() {
+        var expiration = Instant.now().atOffset(ZoneOffset.UTC).toInstant().minusSeconds(DEFAULT_EXPIRING_DURATION + 10);
+        var edrEntry = edrEntryBuilder().state(DELETING.code()).expirationTimestamp(expiration.toEpochMilli()).build();
+
+        var query = QuerySpec.Builder.newInstance()
+                .filter(hasState(DELETING.code()))
+                .limit(DEFAULT_BATCH_SIZE)
+                .build();
+        
+        when(edrCache.queryForEntries(query))
+                .thenReturn(Stream.of(edrEntry))
+                .thenReturn(Stream.empty());
+
+
+        when(edrCache.deleteByTransferProcessId(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success());
 
         edrManager.start();
 

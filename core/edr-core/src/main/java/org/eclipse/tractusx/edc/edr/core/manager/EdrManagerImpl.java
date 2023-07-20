@@ -134,11 +134,6 @@ public class EdrManagerImpl implements EdrManager {
         update(edrEntry);
     }
 
-    protected void transitionToExpired(EndpointDataReferenceEntry edrEntry) {
-        edrEntry.transitionToExpired();
-        update(edrEntry);
-    }
-
     protected void transitionToError(EndpointDataReferenceEntry edrEntry, String message) {
         edrEntry.setErrorDetail(message);
         edrEntry.transitionError();
