@@ -23,24 +23,9 @@ name: "Publish OpenAPI to Swaggerhub"
 
 on:
   workflow_call:
-    inputs:
-      downstream-version:
-        required: false
-        type: string
-      upstream-version:
-        required: false
-        type: string
-
-  workflow_dispatch:
-    inputs:
-      downstream-version:
-        required: false
-        description: "Version of the Tractus-X EDC API to be should be published"
-        type: string
-      upstream-version:
-        required: false
-        description: "Version of upstream EDC which is to be used"
-        type: string
+  workflow_run:
+    branches:
+      - feature/swagger-api-2
 
 jobs:
   swagger-api:
@@ -61,39 +46,30 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
 
-      - name: Install Swagger CLI
+      - name: Install tools
         run: |
           npm i -g swaggerhub-cli
+          sudo apt install -y crudini
 
       - name: Extract versions
         run: |
-          if [ -z ${{ inputs.downstream-version }} ]; then
-            export DOWNSTREAM_VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
-          else
-            export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
-          fi
-          
-          if [ -z ${{ inputs.upstream-version }} ]; then
-            export UPSTREAM_VERSION=$(grep "edc = " gradle/libs.versions.toml  | awk -F= '{print $2}' | jq -r)
-          else
-            export UPSTREAM_VERSION=${{ inputs.upstream-version }}
-          fi
-          echo "DOWNSTREAM_VERSION=$DOWNSTREAM_VERSION" >> "$GITHUB_ENV"
-          echo "UPSTREAM_VERSION=$UPSTREAM_VERSION" >> "$GITHUB_ENV"
+          export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
+          export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
 
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
-          ./gradlew resolve
+          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
+          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
 
       - name: Download upstream API specs
         run: |
-          curl -X GET https://api.swaggerhub.com/apis/eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }}/swagger.yaml > resources/openapi/yaml/upstream-management-api.yaml
-          curl -X GET https://api.swaggerhub.com/apis/eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }}/swagger.yaml > resources/openapi/yaml/upstream-control-api.yaml
+          swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-management-api.yaml
+          swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-control-api.yaml
 
       - name: Merge API specs
         run: |
-          ./gradlew -PapiTitle="Tractus-X EDC REST API" -PapiDescription="Tractus-X EDC API Documentation" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
+          ./gradlew -PapiTitle="tractusx-edc-api" -PapiDescription="Tractus EDC API Doc" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
 
       # create API, will fail if exists
       - name: Create API
@@ -104,10 +80,4 @@ jobs:
       # Post the API to SwaggerHub as "unpublished", because published APIs cannot be overwritten
       - name: Publish API Specs to SwaggerHub
         run: |
-          if [[ ${{ env.DOWNSTREAM_VERSION }} != *-SNAPSHOT ]]; then
-            echo "no snapshot, will set the API to 'published'";
-            swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=publish
-          else
-            echo "snapshot, will set the API to 'unpublished'";
-            swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
-          fi
+          swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
