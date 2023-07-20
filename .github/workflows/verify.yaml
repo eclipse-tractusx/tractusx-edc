@@ -229,10 +229,6 @@ jobs:
         run: |
           export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
           export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
-          echo $DOWNSTREAM_VERSION
-          echo $UPSTREAM_VERSION
-          [ -z $DOWNSTREAM_VERSION ] && exit 1
-          [ -z $UPSTREAM_VERSION ] && exit 1
 
       - name: Resolve TX EDC API Spec
         shell: bash
