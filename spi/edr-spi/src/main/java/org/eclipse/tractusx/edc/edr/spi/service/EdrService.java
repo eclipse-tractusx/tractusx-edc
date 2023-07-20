@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.edr.spi.service;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
@@ -26,6 +27,7 @@ import java.util.List;
 /**
  * Service for opening a transfer process.
  */
+@ExtensionPoint
 public interface EdrService {
 
     /**

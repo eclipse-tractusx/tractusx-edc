@@ -24,11 +24,13 @@ dependencies {
     implementation(libs.edc.core.sql)
     implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.spi.transaction.datasource)
+    implementation(libs.edc.sql.lease)
 
     testImplementation(libs.edc.transaction.local)
 
     testImplementation(testFixtures(project(":spi:edr-spi")))
     testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.sql.lease))
 
     testImplementation(testFixtures(libs.edc.junit))
 

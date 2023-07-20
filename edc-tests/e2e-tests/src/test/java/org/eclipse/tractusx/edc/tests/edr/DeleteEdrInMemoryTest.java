@@ -14,8 +14,9 @@
 
 package org.eclipse.tractusx.edc.tests.edr;
 
-import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
-import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
+
+import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
@@ -24,23 +25,24 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRAT
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.tests.edr.TestFunctions.renewalConfiguration;
 
-@PostgresqlDbIntegrationTest
-public class NegotiateEdrPostgresqlTest extends AbstractNegotiateEdrTest {
+@EndToEndTest
+public class DeleteEdrInMemoryTest extends AbstractDeleteEdrTest {
 
     @RegisterExtension
-    protected static final PgParticipantRuntime SOKRATES_RUNTIME = new PgParticipantRuntime(
-            ":edc-tests:runtime:runtime-postgresql",
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:runtime-memory",
             SOKRATES_NAME,
             SOKRATES_BPN,
-            sokratesConfiguration()
-    );
-    @RegisterExtension
-    protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
-            ":edc-tests:runtime:runtime-postgresql",
-            PLATO_NAME,
-            PLATO_BPN,
-            platoConfiguration()
+            renewalConfiguration(sokratesConfiguration(), "5")
     );
 
+    @RegisterExtension
+    protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:runtime-memory",
+            PLATO_NAME,
+            PLATO_BPN,
+            renewalConfiguration(platoConfiguration())
+    );
 }

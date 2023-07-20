@@ -25,6 +25,9 @@ import org.jetbrains.annotations.Nullable;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_EXPIRATION_DATE;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_PROVIDER_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_STATE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TYPE;
 
@@ -42,6 +45,9 @@ public class JsonObjectFromEndpointDataReferenceEntryTransformer extends Abstrac
                 .add(EDR_ENTRY_AGREEMENT_ID, dto.getAgreementId())
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, dto.getTransferProcessId())
                 .add(EDR_ENTRY_ASSET_ID, dto.getAssetId())
+                .add(EDR_ENTRY_PROVIDER_ID, dto.getProviderId())
+                .add(EDR_ENTRY_STATE, dto.getEdrState())
+                .add(EDR_ENTRY_EXPIRATION_DATE, dto.getExpirationTimestamp())
                 .build();
     }
 

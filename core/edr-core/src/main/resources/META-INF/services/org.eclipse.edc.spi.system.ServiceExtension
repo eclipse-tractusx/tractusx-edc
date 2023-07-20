@@ -13,3 +13,4 @@
 #
 
 org.eclipse.tractusx.edc.edr.core.EdrCoreExtension
+org.eclipse.tractusx.edc.edr.core.EdrCoreServiceExtension

@@ -15,6 +15,8 @@
 package org.eclipse.tractusx.edc.edr.store.sql;
 
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.SqlQueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.local.LocalDataSourceRegistry;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
 
@@ -46,14 +49,17 @@ import static org.mockito.Mockito.when;
 public class PostgresqlTransactionalStoreSetupExtension implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, ParameterResolver {
 
     private final String datasourceName;
+    private final QueryExecutor queryExecutor;
+    private final Monitor monitor = mock();
     private DataSourceRegistry dataSourceRegistry = null;
     private DataSource dataSource = null;
     private Connection connection = null;
     private LocalTransactionContext transactionContext = null;
-    private Monitor monitor = mock(Monitor.class);
+
 
     public PostgresqlTransactionalStoreSetupExtension(String datasourceName) {
         this.datasourceName = datasourceName;
+        this.queryExecutor = new SqlQueryExecutor();
     }
 
     public PostgresqlTransactionalStoreSetupExtension() {
@@ -111,7 +117,7 @@ public class PostgresqlTransactionalStoreSetupExtension implements BeforeEachCal
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         var type = parameterContext.getParameter().getParameterizedType();
-        return type.equals(PostgresqlTransactionalStoreSetupExtension.class);
+        return List.of(PostgresqlTransactionalStoreSetupExtension.class, QueryExecutor.class).contains(type);
     }
 
     @Override
@@ -120,6 +126,8 @@ public class PostgresqlTransactionalStoreSetupExtension implements BeforeEachCal
         var type = parameterContext.getParameter().getParameterizedType();
         if (type.equals(PostgresqlTransactionalStoreSetupExtension.class)) {
             return this;
+        } else if (type.equals(QueryExecutor.class)) {
+            return queryExecutor;
         }
         return null;
     }

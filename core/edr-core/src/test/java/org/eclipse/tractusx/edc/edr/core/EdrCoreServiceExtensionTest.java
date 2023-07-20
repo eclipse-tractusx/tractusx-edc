@@ -12,13 +12,12 @@
  *
  */
 
-package org.eclipse.tractusx.edc.edr.core.service;
+package org.eclipse.tractusx.edc.edr.core;
 
-import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.eclipse.tractusx.edc.edr.core.EdrCoreExtension;
+import org.eclipse.tractusx.edc.edr.core.service.EdrServiceImpl;
+import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,22 +27,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class EdrCoreExtensionTest {
-
-    EdrCoreExtension extension;
+public class EdrCoreServiceExtensionTest {
 
     @BeforeEach
-    void setUp(ObjectFactory factory, ServiceExtensionContext context) {
-        context.registerService(ContractNegotiationService.class, mock(ContractNegotiationService.class));
+    void setUp(ServiceExtensionContext context) {
+        context.registerService(EdrManager.class, mock(EdrManager.class));
         context.registerService(EndpointDataReferenceCache.class, mock(EndpointDataReferenceCache.class));
-        extension = factory.constructInstance(EdrCoreExtension.class);
     }
 
     @Test
-    void shouldInitializeTheExtension(ServiceExtensionContext context) {
+    void shouldInitializeTheExtension(ServiceExtensionContext context, EdrCoreServiceExtension extension) {
         extension.initialize(context);
-        
-        var service = extension.adapterTransferProcessService();
+
+        var service = extension.edrService();
         assertThat(service).isInstanceOf(EdrServiceImpl.class);
 
     }

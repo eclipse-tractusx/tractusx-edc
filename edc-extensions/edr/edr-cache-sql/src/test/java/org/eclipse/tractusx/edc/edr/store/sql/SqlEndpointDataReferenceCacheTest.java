@@ -18,8 +18,10 @@ import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.EdrStatements;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.postgres.PostgresEdrStatements;
@@ -33,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.Clock;
+import java.time.Duration;
 
 import static java.util.UUID.randomUUID;
 import static org.eclipse.tractusx.edc.edr.spi.TestFunctions.edr;
@@ -47,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 @PostgresqlDbIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
-public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheBaseTest {
+public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheTestBase {
 
     EdrStatements statements = new PostgresEdrStatements();
     SqlEndpointDataReferenceCache cache;
@@ -58,17 +61,19 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
 
     TypeManager typeManager = new TypeManager();
 
+    LeaseUtil leaseUtil;
 
     @BeforeEach
-    void setUp(PostgresqlStoreSetupExtension extension) throws IOException {
+    void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
 
         when(vault.deleteSecret(any())).thenReturn(Result.success());
         when(vault.storeSecret(any(), any())).thenReturn(Result.success());
         when(vault.resolveSecret(any())).then(a -> edrJson(a.getArgument(0)));
 
-        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock);
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock, queryExecutor, CONNECTOR_NAME);
         var schema = Files.readString(Paths.get("./docs/schema.sql"));
         extension.runQuery(schema);
+        leaseUtil = new LeaseUtil(extension.getTransactionContext(), extension::getConnection, statements, clock);
 
     }
 
@@ -94,6 +99,16 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
     @Override
     protected EndpointDataReferenceCache getStore() {
         return cache;
+    }
+
+    @Override
+    protected void lockEntity(String negotiationId, String owner, Duration duration) {
+        leaseUtil.leaseEntity(negotiationId, owner, duration);
+    }
+
+    @Override
+    protected boolean isLockedBy(String negotiationId, String owner) {
+        return leaseUtil.isLeased(negotiationId, owner);
     }
 
 

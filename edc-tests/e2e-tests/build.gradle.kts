@@ -38,13 +38,16 @@ dependencies {
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
     testImplementation(testFixtures(libs.edc.sql.core))
-
+    testImplementation(libs.awaitility)
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
     testImplementation(libs.edc.auth.oauth2.client)
+    testImplementation(libs.testcontainers.junit)
+    testImplementation(libs.testcontainers.postgres)
+
 }
 
 // do not publish

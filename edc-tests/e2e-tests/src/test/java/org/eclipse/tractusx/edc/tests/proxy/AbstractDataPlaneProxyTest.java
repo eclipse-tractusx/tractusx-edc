@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +58,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
         var eventsUrl = server.url(PROXIED_PATH);
 
-        var assetId = "api-asset-1";
+        var assetId = UUID.randomUUID().toString();
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
         PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
@@ -100,7 +101,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
         var eventsUrl = server.url(PROXIED_PATH);
 
-        var assetId = "api-asset-1";
+        var assetId = UUID.randomUUID().toString();
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
         PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
@@ -128,7 +129,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
         var eventsUrl = server.url(PROXIED_PATH);
 
-        var assetId = "api-asset-1";
+        var assetId = UUID.randomUUID().toString();
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
         PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()

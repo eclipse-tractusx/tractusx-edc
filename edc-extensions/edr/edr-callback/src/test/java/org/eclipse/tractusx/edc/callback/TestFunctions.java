@@ -14,6 +14,14 @@
 
 package org.eclipse.tractusx.edc.callback;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
@@ -25,6 +33,8 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -73,7 +83,7 @@ public class TestFunctions {
     public static EndpointDataReference getEdr() {
         return EndpointDataReference.Builder.newInstance()
                 .id("dataRequestId")
-                .authCode("authCode")
+                .authCode(createToken())
                 .authKey("authKey")
                 .endpoint("http://endpoint")
                 .build();
@@ -92,5 +102,23 @@ public class TestFunctions {
                 .payload(event)
                 .build();
         return new CallbackEventRemoteMessage<T>(callback, envelope, "local");
+    }
+
+    private static String createToken() {
+        try {
+            var key = new RSAKeyGenerator(2048)
+                    .keyUse(KeyUse.SIGNATURE)
+                    .keyID(UUID.randomUUID().toString())
+                    .generate();
+
+            var claims = new JWTClaimsSet.Builder().expirationTime(new Date(Instant.now().toEpochMilli())).build();
+            var header = new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(UUID.randomUUID().toString()).build();
+
+            var jwt = new SignedJWT(header, claims);
+            jwt.sign(new RSASSASigner(key.toPrivateKey()));
+            return jwt.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

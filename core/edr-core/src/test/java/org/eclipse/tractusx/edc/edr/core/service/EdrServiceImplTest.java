@@ -15,36 +15,33 @@
 package org.eclipse.tractusx.edc.edr.core.service;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.service.spi.result.ServiceFailure;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.edr.core.service.EdrServiceImpl.LOCAL_CALLBACK;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class EdrServiceImplTest {
 
-    ContractNegotiationService contractNegotiationService = mock(ContractNegotiationService.class);
+    EdrManager edrManager = mock(EdrManager.class);
 
     EndpointDataReferenceCache endpointDataReferenceCache = mock(EndpointDataReferenceCache.class);
 
@@ -52,15 +49,13 @@ public class EdrServiceImplTest {
 
     @BeforeEach
     void setup() {
-        transferService = new EdrServiceImpl(contractNegotiationService, endpointDataReferenceCache);
+        transferService = new EdrServiceImpl(edrManager, endpointDataReferenceCache);
     }
 
     @Test
     void initEdrNegotiation_shouldFireContractNegotiation_WhenUsingCallbacks() {
 
-        var captor = ArgumentCaptor.forClass(ContractRequest.class);
-
-        when(contractNegotiationService.initiateNegotiation(any())).thenReturn(getContractNegotiation());
+        when(edrManager.initiateEdrNegotiation(any())).thenReturn(StatusResult.success(getContractNegotiation()));
 
         var negotiateEdrRequest = getNegotiateEdrRequest();
 
@@ -68,16 +63,6 @@ public class EdrServiceImplTest {
 
         assertThat(result.succeeded()).isTrue();
         assertThat(result.getContent()).isNotNull();
-
-        verify(contractNegotiationService).initiateNegotiation(captor.capture());
-
-        var msg = captor.getValue();
-
-        assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().containsAll(negotiateEdrRequest.getCallbackAddresses());
-        assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().contains(LOCAL_CALLBACK);
-        assertThat(msg.getRequestData().getContractOffer()).usingRecursiveComparison().isEqualTo(negotiateEdrRequest.getOffer());
-        assertThat(msg.getRequestData().getProtocol()).isEqualTo(negotiateEdrRequest.getProtocol());
-        assertThat(msg.getRequestData().getCounterPartyAddress()).isEqualTo(negotiateEdrRequest.getConnectorAddress());
 
     }
 
@@ -152,7 +137,7 @@ public class EdrServiceImplTest {
                 .extracting(ServiceResult::getContent)
                 .extracting(List::size)
                 .isEqualTo(0);
-        
+
     }
 
     private NegotiateEdrRequest getNegotiateEdrRequest() {

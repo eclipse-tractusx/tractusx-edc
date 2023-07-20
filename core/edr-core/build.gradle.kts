@@ -23,10 +23,14 @@ dependencies {
     implementation(libs.edc.spi.aggregateservices)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.controlplane)
+    implementation(libs.edc.statemachine)
 
     implementation(project(":spi:edr-spi"))
-    
+    implementation(project(":spi:core-spi"))
+
+
     testImplementation(libs.edc.junit)
+    testImplementation(libs.awaitility)
     testImplementation(testFixtures(project(":spi:edr-spi")))
 
 }
