@@ -37,3 +37,10 @@ spec:
       command: [ 'curl' ]
       args: [ '{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.default.port $.Values.runtime.endpoints.default.path -}}' ]
   restartPolicy: Never
+  securityContext:
+    fsGroup: 101 # curl_group
+    runAsGroup: 101 # curl_group
+    runAsNonRoot: true
+    runAsUser: 100 # curl_user
+    seccompProfile:
+        type: RuntimeDefault

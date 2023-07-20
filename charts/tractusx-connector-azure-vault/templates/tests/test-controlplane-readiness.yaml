@@ -34,3 +34,10 @@ spec:
       command: [ 'curl' ]
       args: [ '{{- printf "http://%s-controlplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.default.port $.Values.controlplane.endpoints.default.path -}}' ]
   restartPolicy: Never
+  securityContext:
+    fsGroup: 101 # curl_group
+    runAsGroup: 101 # curl_group
+    runAsNonRoot: true
+    runAsUser: 100 # curl_user
+    seccompProfile:
+        type: RuntimeDefault
