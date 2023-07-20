@@ -58,8 +58,9 @@ jobs:
           [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] && 
           [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] && 
           [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] && 
-          [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && 
-          echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  && 
+          [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && 
           exit 0
 
   build-docker-images:
@@ -127,3 +128,10 @@ jobs:
           fi
           echo "Publishing Version $VERSION to Sonatype"
           ./gradlew publishToSonatype ${cmd} --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
+
+  publish-to-swaggerhub:
+    name: "Publish OpenAPI spec to Swaggerhub"
+    permissions:
+      contents: read
+    needs: [ secret-presence ]
+    uses: ./.github/workflows/publish-swaggerhub.yaml
