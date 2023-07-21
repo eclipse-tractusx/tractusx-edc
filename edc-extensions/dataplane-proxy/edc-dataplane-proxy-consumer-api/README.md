@@ -17,6 +17,27 @@ The path is `<proxyContext>/aas/request` and the body is something like this exa
 The body should contain the `assetId` or the `transferProcessId` which identify the data that we want to fetch
 and an `endpointUrl` which is the provider gateway on which the data is available. More info [here](../edc-dataplane-proxy-provider-api/README.md) on the gateway.
 
+Alternatively if the `endpointUrl` is not known or the gateway on the provider side is not configured, it can be omitted and the `Edr#endpointUrl`
+will be used. In this scenario if needed users can provide additional properties to the request for composing the final
+url:
+
+- `pathSegments` sub path to append to the base url
+- `queryParams` query parameters to add to the url
+
+Example with base url `http://localhost:8080/test`
+
+```json
+{
+  "assetId": "1",
+  "pathSegments": "/sub",
+  "queryParams": "foo=bar"
+}
+```
+
+The final url will look like `http://localhost:8080/test/sub?foo=bar` composed by the DataPlane manager with the Http request flow,
+
+> Note: the endpoint is not protected with configured `AuthenticationService`, which most likely will be the token based (auth key) one.
+
 ## Configuration
 
 | Key                             | Required | Default       | Description                |

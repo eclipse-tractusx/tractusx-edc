@@ -391,6 +391,7 @@ public class Participant {
     private Response proxyRequest(Map<String, String> body) {
         return given()
                 .baseUri(proxyUrl)
+                .header("x-api-key", apiKey)
                 .contentType("application/json")
                 .body(body)
                 .post(PROXY_SUBPATH);

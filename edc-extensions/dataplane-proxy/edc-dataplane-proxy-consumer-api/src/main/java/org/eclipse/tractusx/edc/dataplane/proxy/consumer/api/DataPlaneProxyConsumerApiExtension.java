@@ -14,6 +14,8 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.consumer.api;
 
+import org.eclipse.edc.api.auth.spi.AuthenticationRequestFilter;
+import org.eclipse.edc.api.auth.spi.AuthenticationService;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -64,6 +66,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private WebServiceConfigurer configurer;
 
     @Inject
+    private AuthenticationService authenticationService;
+
+    @Inject
     private Monitor monitor;
 
     private ExecutorService executorService;
@@ -80,6 +85,7 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
         executorService = newFixedThreadPool(context.getSetting(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL));
 
+        webService.registerResource(CONSUMER_API_ALIAS, new AuthenticationRequestFilter(authenticationService));
         webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());
         webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrCache, dataPlaneManager, executorService, monitor));
     }
