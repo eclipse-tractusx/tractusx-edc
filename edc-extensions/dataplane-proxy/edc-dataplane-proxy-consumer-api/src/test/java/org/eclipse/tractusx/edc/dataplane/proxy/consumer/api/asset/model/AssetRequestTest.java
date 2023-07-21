@@ -32,8 +32,10 @@ class AssetRequestTest {
                 .endpointUrl("https://test.com")
                 .providerId("providerId")
                 .transferProcessId("tp1")
+                .queryParams("params")
+                .pathSegments("path")
                 .build();
-        
+
         var serialized = mapper.writeValueAsString(request);
 
         var deserialized = mapper.readValue(serialized, AssetRequest.class);
@@ -42,13 +44,14 @@ class AssetRequestTest {
         assertThat(deserialized.getTransferProcessId()).isEqualTo(request.getTransferProcessId());
         assertThat(deserialized.getEndpointUrl()).isEqualTo(request.getEndpointUrl());
         assertThat(deserialized.getProviderId()).isEqualTo(request.getProviderId());
+        assertThat(deserialized.getPathSegments()).isEqualTo(request.getPathSegments());
+        assertThat(deserialized.getQueryParams()).isEqualTo(request.getQueryParams());
 
     }
 
     @Test
     void verify_NullArguments() {
-        assertThatThrownBy(() -> AssetRequest.Builder.newInstance().endpointUrl("https://test.com").build()).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> AssetRequest.Builder.newInstance().assetId("asset1").build()).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> AssetRequest.Builder.newInstance().build()).isInstanceOf(NullPointerException.class);
     }
 
     @Test

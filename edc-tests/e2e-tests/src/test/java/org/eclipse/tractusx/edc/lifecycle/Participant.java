@@ -331,6 +331,17 @@ public class Participant {
         return getProxyData(body);
     }
 
+
+    public String pullProviderDataPlaneDataByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId);
+        return getProxyData(body);
+    }
+
+    public String pullProviderDataPlaneDataByAssetIdAndCustomProperties(Participant provider, String assetId, String path, String params) {
+        var body = Map.of("assetId", assetId, "pathSegments", path, "queryParams", params);
+        return getProxyData(body);
+    }
+
     public Response pullProxyDataResponseByAssetId(Participant provider, String assetId) {
         var body = Map.of("assetId", assetId,
                 "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint),
@@ -341,6 +352,12 @@ public class Participant {
     public String pullProxyDataByTransferProcessId(Participant provider, String transferProcessId) {
         var body = Map.of("transferProcessId", transferProcessId,
                 "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return getProxyData(body);
+
+    }
+
+    public String pullProviderDataPlaneDataByTransferProcessId(Participant provider, String transferProcessId) {
+        var body = Map.of("transferProcessId", transferProcessId);
         return getProxyData(body);
 
     }

@@ -19,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * A request for asset data. The request may contain a transfer process ID or asset ID and must specify an endpoint for retrieving the data.
  */
@@ -32,6 +30,10 @@ public class AssetRequest {
 
     private String providerId;
     private String endpointUrl;
+
+    private String queryParams;
+
+    private String pathSegments;
 
     private AssetRequest() {
     }
@@ -50,6 +52,14 @@ public class AssetRequest {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public String getQueryParams() {
+        return queryParams;
+    }
+
+    public String getPathSegments() {
+        return pathSegments;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
@@ -85,11 +95,20 @@ public class AssetRequest {
             return this;
         }
 
+        public Builder queryParams(String queryParams) {
+            request.queryParams = queryParams;
+            return this;
+        }
+
+        public Builder pathSegments(String pathSegments) {
+            request.pathSegments = pathSegments;
+            return this;
+        }
+
         public AssetRequest build() {
             if (request.assetId == null && request.transferProcessId == null) {
                 throw new NullPointerException("An assetId or endpointReferenceId must be set");
             }
-            requireNonNull(request.endpointUrl, "endpointUrl");
             return request;
         }
     }

@@ -26,6 +26,7 @@ import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -48,8 +50,12 @@ import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
+import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
+import static org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController.BASE_URL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ApiTest
@@ -240,6 +246,61 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .post(ASSET_REQUEST_PATH)
                 .then()
                 .statusCode(400);
+
+    }
+
+    @Test
+    void requestAsset_shouldReturnData_withDataPlaneUrl() throws IOException {
+
+        var transferProcessId = "tp";
+        var url = "http://localhost:8080/test";
+        var request = Map.of("transferProcessId", transferProcessId, PATH, "/path", QUERY_PARAMS, "test=10&foo=bar");
+        var edr = EndpointDataReference.Builder.newInstance()
+                .id(transferProcessId)
+                .authKey("authKey")
+                .authCode("authCode")
+                .endpoint(url)
+                .build();
+
+        var response = Map.of("response", "ok");
+        var responseBytes = mapper.writeValueAsBytes(response);
+
+        var datasource = mock(DataSource.class);
+        var partStream = mock(DataSource.Part.class);
+
+        when(datasource.openPartStream()).thenReturn(StreamResult.success(Stream.of(partStream)));
+        when(partStream.openStream()).thenReturn(new ByteArrayInputStream(responseBytes));
+
+        when(cache.resolveReference(transferProcessId)).thenReturn(edr);
+        when(dataPlaneManager.transfer(any(DataSink.class), any()))
+                .thenAnswer(a -> {
+                    AsyncStreamingDataSink sink = a.getArgument(0);
+                    return sink.transfer(datasource);
+                });
+
+        var proxyResponseBytes = baseRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .post(ASSET_REQUEST_PATH)
+                .then()
+                .statusCode(200)
+                .extract().body().asByteArray();
+
+        var proxyResponse = mapper.readValue(proxyResponseBytes, new TypeReference<Map<String, String>>() {
+        });
+
+        assertThat(proxyResponse).containsAllEntriesOf(response);
+
+        var captor = ArgumentCaptor.forClass(DataFlowRequest.class);
+        verify(dataPlaneManager).transfer(any(DataSink.class), captor.capture());
+
+
+        var flowRequest = captor.getValue();
+
+        assertThat(flowRequest.getSourceDataAddress().getProperty(BASE_URL)).isEqualTo(edr.getEndpoint());
+
+        assertThat(flowRequest.getProperties().get(QUERY_PARAMS)).isEqualTo(request.get(QUERY_PARAMS));
+        assertThat(flowRequest.getProperties().get(PATH)).isEqualTo(request.get(PATH));
 
     }
 
