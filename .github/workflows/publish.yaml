@@ -50,6 +50,7 @@ jobs:
     outputs:
       DOCKER_HUB_TOKEN: ${{ steps.secret-presence.outputs.DOCKER_HUB_TOKEN }}
       HAS_OSSRH: ${{ steps.secret-presence.outputs.HAS_OSSRH }}
+      HAS_SWAGGER: ${{ steps.secret-presence.outputs.HAS_SWAGGER }}
     steps:
       - name: Check whether secrets exist
         id: secret-presence
