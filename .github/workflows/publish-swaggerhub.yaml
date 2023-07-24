@@ -23,9 +23,13 @@ name: "Publish OpenAPI to Swaggerhub"
 
 on:
   workflow_call:
-  push:
-    branches:
-      - feature/swagger-api-2
+    inputs:
+      downstream-version:
+        required: false
+        type: string
+      upstream-version:
+        required: false
+        type: string
 
 jobs:
   swagger-api:
@@ -53,8 +57,17 @@ jobs:
 
       - name: Extract versions
         run: |
-          export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
-          export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
+          if [ -z ${{ inputs.downstream-version }} ]; then
+            export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
+          else
+            export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
+          fi
+          
+          if [ -z ${{ inputs.upstream-version }} ]; then
+            export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
+          else
+            export UPSTREAM_VERSION=${{ inputs.upstream-version }}
+          fi
 
       - name: Resolve TX EDC API Spec
         shell: bash
