@@ -22,6 +22,9 @@
 name: "Publish OpenAPI to Swaggerhub"
 
 on:
+  push:
+    branches:
+      - feature/swagger-api-2
   workflow_call:
     inputs:
       downstream-version:
@@ -53,18 +56,17 @@ jobs:
       - name: Install tools
         run: |
           npm i -g swaggerhub-cli
-          sudo apt install -y crudini
 
       - name: Extract versions
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
-            export DOWNSTREAM_VERSION=$(crudini --get ./gradle.properties '' version)
+            export DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')
           else
             export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
           fi
           
           if [ -z ${{ inputs.upstream-version }} ]; then
-            export UPSTREAM_VERSION=$(crudini --get ./gradle/libs.versions.toml versions edc | sed 's/"//g')-SNAPSHOT
+            export UPSTREAM_VERSION=$(sed -nr "/^\[versions\]/ { :l /^edc[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle/libs.versions.toml | tr -d ' ' | tr -d '"')-SNAPSHOT
           else
             export UPSTREAM_VERSION=${{ inputs.upstream-version }}
           fi
