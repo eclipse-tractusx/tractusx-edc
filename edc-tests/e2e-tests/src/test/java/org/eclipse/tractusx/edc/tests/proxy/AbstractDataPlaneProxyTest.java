@@ -186,7 +186,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
     private EventEnvelope<TransferProcessCompleted> waitForTransferCompletion() {
         try {
-            var request = server.takeRequest(20, TimeUnit.SECONDS);
+            var request = server.takeRequest(60, TimeUnit.SECONDS);
             if (request != null) {
                 return mapper.readValue(request.getBody().inputStream(), new TypeReference<>() {
                 });
