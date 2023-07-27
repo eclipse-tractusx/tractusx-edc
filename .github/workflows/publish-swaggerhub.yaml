@@ -22,6 +22,9 @@
 name: "Publish OpenAPI to Swaggerhub"
 
 on:
+  push:
+    branches:
+      - feature/swagger-api-2
   workflow_call:
     inputs:
       downstream-version:
