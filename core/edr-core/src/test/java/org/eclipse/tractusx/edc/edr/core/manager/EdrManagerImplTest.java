@@ -106,9 +106,9 @@ public class EdrManagerImplTest {
 
         assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().containsAll(negotiateEdrRequest.getCallbackAddresses());
         assertThat(msg.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().contains(LOCAL_CALLBACK);
-        assertThat(msg.getRequestData().getContractOffer()).usingRecursiveComparison().isEqualTo(negotiateEdrRequest.getOffer());
-        assertThat(msg.getRequestData().getProtocol()).isEqualTo(negotiateEdrRequest.getProtocol());
-        assertThat(msg.getRequestData().getCounterPartyAddress()).isEqualTo(negotiateEdrRequest.getConnectorAddress());
+        assertThat(msg.getContractOffer()).usingRecursiveComparison().isEqualTo(negotiateEdrRequest.getOffer());
+        assertThat(msg.getProtocol()).isEqualTo(negotiateEdrRequest.getProtocol());
+        assertThat(msg.getCounterPartyAddress()).isEqualTo(negotiateEdrRequest.getConnectorAddress());
 
     }
 
@@ -118,7 +118,7 @@ public class EdrManagerImplTest {
         var edrEntry = edrEntryBuilder().state(NEGOTIATED.code()).build();
         var transferProcess = createTransferProcessBuilder().build();
         when(edrCache.nextNotLeased(anyInt(), stateIs(NEGOTIATED.code()))).thenReturn(List.of(edrEntry)).thenReturn(emptyList());
-        when(edrCache.findByTransferProcessId(edrEntry.getTransferProcessId())).thenReturn(edrEntry);
+        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(transferProcess);
         when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(transferProcess));
 
@@ -138,7 +138,7 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry))
                 .thenReturn(emptyList());
 
-        when(edrCache.findByTransferProcessId(edrEntry.getTransferProcessId())).thenReturn(edrEntry);
+        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(transferProcess);
         when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(transferProcess));
 
@@ -159,7 +159,7 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry))
                 .thenReturn(emptyList());
 
-        when(edrCache.findByTransferProcessId(edrEntry.getTransferProcessId())).thenReturn(edrEntry);
+        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(null);
 
         edrManager.start();
@@ -179,7 +179,7 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry.copy()))
                 .thenReturn(emptyList());
 
-        when(edrCache.findByTransferProcessId(edrEntry.getTransferProcessId())).thenReturn(edrEntry);
+        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(transferProcess);
         when(transferProcessService.initiateTransfer(any()))
                 .thenReturn(ServiceResult.badRequest("bad"))
@@ -221,7 +221,7 @@ public class EdrManagerImplTest {
                 .filter(hasState(DELETING.code()))
                 .limit(DEFAULT_BATCH_SIZE)
                 .build();
-        
+
         when(edrCache.queryForEntries(query))
                 .thenReturn(Stream.of(edrEntry))
                 .thenReturn(Stream.empty());
@@ -253,7 +253,6 @@ public class EdrManagerImplTest {
                 .processId(processId)
                 .protocol("protocol")
                 .connectorAddress("http://an/address")
-                .managedResources(false)
                 .build();
 
         return TransferProcess.Builder.newInstance()
@@ -273,7 +272,7 @@ public class EdrManagerImplTest {
     }
 
     private Criterion[] stateIs(int state) {
-        return aryEq(new Criterion[]{ hasState(state) });
+        return aryEq(new Criterion[] {hasState(state)});
     }
 
 }

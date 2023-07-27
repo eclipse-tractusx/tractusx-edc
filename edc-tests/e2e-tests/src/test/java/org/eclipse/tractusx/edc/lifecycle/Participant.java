@@ -107,7 +107,7 @@ public class Participant {
         baseRequest()
                 .body(asset)
                 .when()
-                .post("/v2/assets")
+                .post("/v3/assets")
                 .then()
                 .statusCode(200)
                 .contentType(JSON);

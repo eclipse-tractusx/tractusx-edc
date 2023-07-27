@@ -90,14 +90,29 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     }
 
     @Override
-    public @Nullable EndpointDataReferenceEntry findByTransferProcessId(String transferProcessId) {
+    public @Nullable StoreResult<EndpointDataReferenceEntry> findByIdAndLease(String transferProcessId) {
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                return findById(connection, transferProcessId, this::mapResultSet);
+                var entity = findById(connection, transferProcessId, this::mapResultSet);
+                if (entity == null) {
+                    return StoreResult.notFound(format("EndpointDataReference %s not found", transferProcessId));
+                }
+                leaseContext.withConnection(connection).acquireLease(entity.getId());
+                return StoreResult.success(entity);
             } catch (Exception exception) {
                 throw new EdcPersistenceException(exception);
             }
         });
+    }
+
+    @Override
+    public StoreResult<EndpointDataReferenceEntry> findByCorrelationIdAndLease(String correlationId) {
+        return findByIdAndLease(correlationId);
+    }
+
+    @Override
+    public void save(EndpointDataReferenceEntry entity) {
+        throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
     }
 
     @Override

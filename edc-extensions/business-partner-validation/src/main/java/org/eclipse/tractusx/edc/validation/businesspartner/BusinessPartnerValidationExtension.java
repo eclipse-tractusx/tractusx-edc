@@ -34,7 +34,9 @@ import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPar
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerPermissionFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerProhibitionFunction;
 
-import static org.eclipse.edc.policy.engine.spi.PolicyEngine.ALL_SCOPES;
+import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
+import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
+import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
 
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
@@ -93,15 +95,18 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         final BusinessPartnerProhibitionFunction prohibitionFunction =
                 new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
 
-        ruleBindingRegistry.bind("USE", ALL_SCOPES);
-        ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, ALL_SCOPES);
+        bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
+        bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
+        bindToScope(dutyFunction, permissionFunction, prohibitionFunction, CATALOGING_SCOPE);
+    }
 
-        policyEngine.registerFunction(
-                ALL_SCOPES, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
-        policyEngine.registerFunction(
-                ALL_SCOPES, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
-        policyEngine.registerFunction(
-                ALL_SCOPES, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
+    private void bindToScope(BusinessPartnerDutyFunction dutyFunction, BusinessPartnerPermissionFunction permissionFunction, BusinessPartnerProhibitionFunction prohibitionFunction, String scope) {
+        ruleBindingRegistry.bind("USE", scope);
+        ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
+
+        policyEngine.registerFunction(scope, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
+        policyEngine.registerFunction(scope, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
+        policyEngine.registerFunction(scope, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
     }
 
     private Boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {

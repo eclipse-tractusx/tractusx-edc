@@ -23,6 +23,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.EdrStatements;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.postgres.PostgresEdrStatements;
 import org.junit.jupiter.api.AfterEach;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @PostgresqlDbIntegrationTest
-@ExtendWith(PostgresqlTransactionalStoreSetupExtension.class)
+@ExtendWith(PostgresqlStoreSetupExtension.class)
 public class SqlEndpointDataReferenceCacheTransactionalTest {
 
     EdrStatements statements = new PostgresEdrStatements();
@@ -64,7 +65,7 @@ public class SqlEndpointDataReferenceCacheTransactionalTest {
     TypeManager typeManager = new TypeManager();
 
     @BeforeEach
-    void setUp(PostgresqlTransactionalStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
+    void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
 
         when(vault.deleteSecret(any())).thenReturn(Result.success());
         when(vault.storeSecret(any(), any())).thenReturn(Result.success());
@@ -144,7 +145,7 @@ public class SqlEndpointDataReferenceCacheTransactionalTest {
     }
 
     @AfterEach
-    void tearDown(PostgresqlTransactionalStoreSetupExtension extension) throws SQLException {
+    void tearDown(PostgresqlStoreSetupExtension extension) throws SQLException {
         extension.runQuery("DROP TABLE " + statements.getEdrTable() + " CASCADE");
     }
 

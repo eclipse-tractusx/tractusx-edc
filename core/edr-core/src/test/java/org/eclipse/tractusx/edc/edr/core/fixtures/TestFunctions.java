@@ -35,7 +35,6 @@ public class TestFunctions {
                         .id("id")
                         .assetId("assetId")
                         .policy(Policy.Builder.newInstance().build())
-                        .providerId("provider")
                         .build())
                 .build();
     }
