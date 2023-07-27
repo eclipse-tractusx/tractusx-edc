@@ -69,6 +69,18 @@ vault:
     # this must be set through CLI args: --set vault.secrets=$YOUR_VAULT_SECRETS where YOUR_VAULT_SECRETS should
     # be a string in the format "key1:secret1;key2:secret2;..."
     secrets:
+  server:
+    postStart:
+      - sh
+      - -c
+      - |-
+        {
+        sleep 5
+
+        /bin/vault kv put secret/client-secret content=+8zouIJsXHio2vC8gOtSlQ==
+
+        /bin/vault kv put secret/aes-keys content=YWVzX2VuY2tleV90ZXN0Cg==
+        }
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"
 tests:

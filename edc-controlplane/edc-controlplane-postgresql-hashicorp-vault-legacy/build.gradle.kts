@@ -55,7 +55,7 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
-    runtimeOnly(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(libs.edc.vault.hashicorp)
     runtimeOnly(project(":edc-extensions:edr:edr-cache-sql"))
     runtimeOnly(libs.bundles.edc.sqlstores)
     runtimeOnly(libs.edc.transaction.local)
