@@ -15,10 +15,10 @@
 package org.eclipse.tractusx.edc.api.edr;
 
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectToNegotiateEdrRequestDtoTransformer;
@@ -36,18 +36,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class EdrApiExtensionTest {
 
-    EdrApiExtension extension;
-
-    TypeTransformerRegistry transformerRegistry = mock(TypeTransformerRegistry.class);
-
-    WebService webService = mock(WebService.class);
-
-    ManagementApiConfiguration configuration = mock(ManagementApiConfiguration.class);
+    private final ManagementApiTypeTransformerRegistry transformerRegistry = mock();
+    private final WebService webService = mock(WebService.class);
+    private final ManagementApiConfiguration configuration = mock(ManagementApiConfiguration.class);
+    private EdrApiExtension extension;
 
     @BeforeEach
     void setUp(ObjectFactory factory, ServiceExtensionContext context) {
         context.registerService(WebService.class, webService);
-        context.registerService(TypeTransformerRegistry.class, transformerRegistry);
+        context.registerService(ManagementApiTypeTransformerRegistry.class, transformerRegistry);
         context.registerService(ManagementApiConfiguration.class, configuration);
         extension = factory.constructInstance(EdrApiExtension.class);
     }
