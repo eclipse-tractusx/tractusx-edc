@@ -31,13 +31,13 @@ import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPar
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +71,7 @@ class BusinessPartnerValidationExtensionTest {
         extension.initialize(serviceExtensionContext);
 
         // verify
-        verify(policyEngine)
+        verify(policyEngine, times(3))
                 .registerFunction(
                         anyString(),
                         eq(Duty.class),
@@ -86,7 +86,7 @@ class BusinessPartnerValidationExtensionTest {
         extension.initialize(serviceExtensionContext);
 
         // verify
-        verify(policyEngine, Mockito.times(1))
+        verify(policyEngine, times(3))
                 .registerFunction(
                         anyString(),
                         eq(Permission.class),
@@ -101,7 +101,7 @@ class BusinessPartnerValidationExtensionTest {
         extension.initialize(serviceExtensionContext);
 
         // verify
-        verify(policyEngine, Mockito.times(1))
+        verify(policyEngine, times(3))
                 .registerFunction(
                         anyString(),
                         eq(Prohibition.class),
@@ -119,7 +119,7 @@ class BusinessPartnerValidationExtensionTest {
         extension.initialize(serviceExtensionContext);
 
         // verify
-        verify(policyEngine)
+        verify(policyEngine, times(3))
                 .registerFunction(
                         anyString(),
                         eq(Permission.class),

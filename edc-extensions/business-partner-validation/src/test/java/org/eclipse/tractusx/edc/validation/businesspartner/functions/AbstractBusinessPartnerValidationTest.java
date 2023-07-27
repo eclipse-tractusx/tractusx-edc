@@ -55,7 +55,7 @@ class AbstractBusinessPartnerValidationTest {
         this.policyContext = Mockito.mock(PolicyContext.class);
         this.participantAgent = Mockito.mock(ParticipantAgent.class);
 
-        Mockito.when(policyContext.getParticipantAgent()).thenReturn(participantAgent);
+        Mockito.when(policyContext.getContextData(eq(ParticipantAgent.class))).thenReturn(participantAgent);
 
         validation = new AbstractBusinessPartnerValidation(monitor, true) {
         };
