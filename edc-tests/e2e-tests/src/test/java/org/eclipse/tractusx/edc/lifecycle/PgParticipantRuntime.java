@@ -22,7 +22,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
-import org.eclipse.tractusx.edc.helpers.TxPostgresqlLocalInstance;
+import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
 import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -40,21 +40,21 @@ public class PgParticipantRuntime extends ParticipantRuntime {
     private static final String POSTGRES_IMAGE_NAME = "postgres:14.2";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
-
-
     private final String dbName;
-    public PostgreSQLContainer<?> postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
-            .withExposedPorts(5432)
-            .withUsername(USER)
-            .withPassword(PASSWORD)
-            .withDatabaseName("itest");
-    private TxPostgresqlLocalInstance helper;
+    public PostgreSQLContainer<?> postgreSqlContainer;
 
     public PgParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, bpn, properties);
         this.dbName = runtimeName.toLowerCase();
         this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
         this.registerServiceMock(Vault.class, new InMemoryVaultOverride(mock(Monitor.class)));
+
+        postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
+                .withLabel("runtime", dbName)
+                .withExposedPorts(5432)
+                .withUsername(USER)
+                .withPassword(PASSWORD)
+                .withDatabaseName(dbName);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class PgParticipantRuntime extends ParticipantRuntime {
 
     @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        helper = new TxPostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
+        PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
         helper.createDatabase(dbName);
         super.bootExtensions(context, serviceExtensions);
     }
