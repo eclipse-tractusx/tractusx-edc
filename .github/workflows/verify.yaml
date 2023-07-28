@@ -161,7 +161,7 @@ jobs:
           PGPASSWORD: password
 
       - name: Run Postgresql E2E tests
-        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
+        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
 
   miw-integration-tests:
     runs-on: ubuntu-latest
