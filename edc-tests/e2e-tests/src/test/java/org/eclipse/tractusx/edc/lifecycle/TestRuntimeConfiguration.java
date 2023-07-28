@@ -14,9 +14,6 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
-import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -166,8 +163,4 @@ public class TestRuntimeConfiguration {
         return ssiConfiguration;
     }
 
-    @NotNull
-    public static String jdbcUrl(String name) {
-        return PostgresqlLocalInstance.JDBC_URL_PREFIX + name + "?currentSchema=" + DB_SCHEMA_NAME;
-    }
 }

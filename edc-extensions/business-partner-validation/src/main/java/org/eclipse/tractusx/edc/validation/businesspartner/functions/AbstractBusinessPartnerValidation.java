@@ -103,7 +103,7 @@ public abstract class AbstractBusinessPartnerValidation {
             return false;
         }
 
-        final ParticipantAgent participantAgent = policyContext.getParticipantAgent();
+        final ParticipantAgent participantAgent = policyContext.getContextData(ParticipantAgent.class);
 
         if (participantAgent == null) {
             return false;
@@ -149,7 +149,7 @@ public abstract class AbstractBusinessPartnerValidation {
             policyContext.reportProblem(message);
             return false;
         }
-        if (!(businessPartnerNumber instanceof String)) {
+        if (!(businessPartnerNumber instanceof String businessPartnerNumberStr)) {
             final String message =
                     format(
                             FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING,
@@ -159,7 +159,6 @@ public abstract class AbstractBusinessPartnerValidation {
             return false;
         }
 
-        var businessPartnerNumberStr = (String) businessPartnerNumber;
         var agreement = policyContext.getContextData(ContractAgreement.class);
         var isCorrectBusinessPartner = isCorrectBusinessPartner(referringConnectorClaim, businessPartnerNumberStr);
 

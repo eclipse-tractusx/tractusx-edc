@@ -32,11 +32,9 @@ public class AssetHelperFunctions {
     public static JsonObject createAsset(String id, JsonObject assetProperties, JsonObject dataAddress) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, createContextBuilder())
-                .add(TYPE, EDC_NAMESPACE + "AssetEntryDto")
-                .add(EDC_NAMESPACE + "asset", Json.createObjectBuilder()
-                        .add(ID, id)
-                        .add(EDC_NAMESPACE + "properties", assetProperties)
-                        .build())
+                .add(TYPE, "Asset")
+                .add(ID, id)
+                .add(EDC_NAMESPACE + "properties", assetProperties)
                 .add(EDC_NAMESPACE + "dataAddress", dataAddress)
                 .build();
 

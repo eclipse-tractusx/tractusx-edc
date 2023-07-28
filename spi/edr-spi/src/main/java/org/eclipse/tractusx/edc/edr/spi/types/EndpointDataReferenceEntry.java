@@ -82,6 +82,11 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
         return copy(builder);
     }
 
+    @Override
+    public String stateAsString() {
+        return EndpointDataReferenceEntryStates.from(state).toString();
+    }
+
     @JsonIgnore
     public String getEdrState() {
         return EndpointDataReferenceEntryStates.from(getState()).name();

@@ -17,7 +17,6 @@ package org.eclipse.tractusx.edc.callback;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -51,20 +50,14 @@ public class ContractNegotiationCallback implements InProcessCallback {
 
     private Result<Void> initiateTransfer(ContractNegotiationFinalized negotiationFinalized) {
 
-        var dataRequest =
-                DataRequest.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .assetId(negotiationFinalized.getContractAgreement().getAssetId())
-                        .contractId(negotiationFinalized.getContractAgreement().getId())
-                        .connectorId(negotiationFinalized.getCounterPartyId())
-                        .connectorAddress(negotiationFinalized.getCounterPartyAddress())
-                        .protocol(negotiationFinalized.getProtocol())
-                        .dataDestination(DATA_DESTINATION)
-                        .managedResources(false)
-                        .build();
-
         var transferRequest = TransferRequest.Builder.newInstance()
-                .dataRequest(dataRequest)
+                .id(UUID.randomUUID().toString())
+                .assetId(negotiationFinalized.getContractAgreement().getAssetId())
+                .contractId(negotiationFinalized.getContractAgreement().getId())
+                .connectorId(negotiationFinalized.getCounterPartyId())
+                .connectorAddress(negotiationFinalized.getCounterPartyAddress())
+                .protocol(negotiationFinalized.getProtocol())
+                .dataDestination(DATA_DESTINATION)
                 .callbackAddresses(negotiationFinalized.getCallbackAddresses())
                 .build();
 

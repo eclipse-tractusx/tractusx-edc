@@ -15,11 +15,11 @@
 package org.eclipse.tractusx.edc.api.edr;
 
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.tractusx.edc.api.edr.transform.EndpointDataReferenceToDataAddressTransformer;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
@@ -41,7 +41,7 @@ public class EdrApiExtension implements ServiceExtension {
     private EdrService edrService;
 
     @Inject
-    private TypeTransformerRegistry transformerRegistry;
+    private ManagementApiTypeTransformerRegistry transformerRegistry;
 
     @Inject
     private JsonLd jsonLdService;

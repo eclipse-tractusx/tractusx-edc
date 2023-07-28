@@ -40,6 +40,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.toList;
@@ -86,11 +87,23 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
     @Override
-    public @Nullable EndpointDataReferenceEntry findByTransferProcessId(String transferProcessId) {
+    public @Nullable StoreResult<EndpointDataReferenceEntry> findByIdAndLease(String transferProcessId) {
         return lockManager.readLock(() -> {
             var edr = edrsByTransferProcessId.get(transferProcessId);
-            return entriesByEdrId.get(edr.getId());
+            var edrEntry = entriesByEdrId.get(edr.getId());
+            return edrEntry == null ? StoreResult.notFound(format("EndpointDataReferenceEntry %s not found", transferProcessId)) :
+                    StoreResult.success(edrEntry);
         });
+    }
+
+    @Override
+    public StoreResult<EndpointDataReferenceEntry> findByCorrelationIdAndLease(String correlationId) {
+        return findByIdAndLease(correlationId);
+    }
+
+    @Override
+    public void save(EndpointDataReferenceEntry entity) {
+        throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
     }
 
     @Override

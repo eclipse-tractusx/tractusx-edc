@@ -18,7 +18,8 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.edc.api.model.IdResponseDto;
+import org.eclipse.edc.api.model.IdResponse;
+import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -29,7 +30,6 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
-import static org.eclipse.edc.api.model.IdResponseDto.EDC_ID_RESPONSE_DTO_TYPE;
+import static org.eclipse.edc.api.model.IdResponse.ID_RESPONSE_TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
@@ -71,7 +71,7 @@ public class EdrControllerTest extends RestControllerTestBase {
     public static final String EDR_PATH = "/edrs";
     private final JsonLd jsonLdService = new TitaniumJsonLd(monitor);
     EdrService edrService = mock(EdrService.class);
-    TypeTransformerRegistry transformerRegistry = mock(TypeTransformerRegistry.class);
+    ManagementApiTypeTransformerRegistry transformerRegistry = mock();
 
     @BeforeEach
     void setup() {
@@ -84,12 +84,12 @@ public class EdrControllerTest extends RestControllerTestBase {
 
         var openRequest = openRequest();
         var contractNegotiation = getContractNegotiation();
-        var responseBody = Json.createObjectBuilder().add(TYPE, EDC_ID_RESPONSE_DTO_TYPE).add(ID, contractNegotiation.getId()).build();
+        var responseBody = Json.createObjectBuilder().add(TYPE, ID_RESPONSE_TYPE).add(ID, contractNegotiation.getId()).build();
 
         when(transformerRegistry.transform(any(JsonObject.class), eq(NegotiateEdrRequestDto.class))).thenReturn(Result.success(NegotiateEdrRequestDto.Builder.newInstance().build()));
         when(transformerRegistry.transform(any(), eq(NegotiateEdrRequest.class))).thenReturn(Result.success(openRequest));
         when(edrService.initiateEdrNegotiation(openRequest)).thenReturn(ServiceResult.success(contractNegotiation));
-        when(transformerRegistry.transform(any(IdResponseDto.class), eq(JsonObject.class))).thenReturn(Result.success(responseBody));
+        when(transformerRegistry.transform(any(IdResponse.class), eq(JsonObject.class))).thenReturn(Result.success(responseBody));
 
         var request = negotiationRequest();
 

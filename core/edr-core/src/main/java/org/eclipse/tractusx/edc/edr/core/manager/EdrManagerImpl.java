@@ -16,10 +16,8 @@ package org.eclipse.tractusx.edc.edr.core.manager;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequestData;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
@@ -48,7 +46,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -152,7 +149,7 @@ public class EdrManagerImpl implements EdrManager {
 
 
     private StateProcessorImpl<EndpointDataReferenceEntry> processEdrInState(EndpointDataReferenceEntryStates state, Function<EndpointDataReferenceEntry, Boolean> function) {
-        var filter = new Criterion[]{ hasState(state.code()) };
+        var filter = new Criterion[] {hasState(state.code())};
         return new StateProcessorImpl<>(() -> edrCache.nextNotLeased(batchSize, filter), telemetry.contextPropagationMiddleware(function));
     }
 
@@ -169,15 +166,11 @@ public class EdrManagerImpl implements EdrManager {
     private ContractRequest createContractRequest(NegotiateEdrRequest request) {
         var callbacks = Stream.concat(request.getCallbackAddresses().stream(), Stream.of(LOCAL_CALLBACK)).collect(Collectors.toList());
 
-        var requestData = ContractRequestData.Builder.newInstance()
+        return ContractRequest.Builder.newInstance()
+                .counterPartyAddress(request.getConnectorAddress())
                 .contractOffer(request.getOffer())
                 .protocol(request.getProtocol())
-                .counterPartyAddress(request.getConnectorAddress())
-                .connectorId(request.getConnectorId())
-                .build();
-
-        return ContractRequest.Builder.newInstance()
-                .requestData(requestData)
+                .providerId(request.getConnectorId())
                 .callbackAddresses(callbacks).build();
     }
 
@@ -244,21 +237,13 @@ public class EdrManagerImpl implements EdrManager {
         }
         var dataRequest = transferProcess.getDataRequest();
 
-        var newDataRequest = DataRequest.Builder.newInstance()
-                .id(UUID.randomUUID().toString())
+        var transferRequest = TransferRequest.Builder.newInstance()
                 .assetId(dataRequest.getAssetId())
                 .connectorId(dataRequest.getConnectorId())
                 .contractId(dataRequest.getContractId())
                 .protocol(dataRequest.getProtocol())
                 .connectorAddress(dataRequest.getConnectorAddress())
                 .dataDestination(dataRequest.getDataDestination())
-                .destinationType(dataRequest.getDestinationType())
-                .processId(dataRequest.getProcessId())
-                .managedResources(dataRequest.isManagedResources())
-                .build();
-
-        var transferRequest = TransferRequest.Builder.newInstance()
-                .dataRequest(newDataRequest)
                 .callbackAddresses(transferProcess.getCallbackAddresses())
                 .build();
 

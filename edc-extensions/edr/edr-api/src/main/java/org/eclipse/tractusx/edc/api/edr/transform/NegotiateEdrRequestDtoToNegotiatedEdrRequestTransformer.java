@@ -14,15 +14,15 @@
 
 package org.eclipse.tractusx.edc.api.edr.transform;
 
-import org.eclipse.edc.api.transformer.DtoTransformer;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.transform.spi.TransformerContext;
+import org.eclipse.edc.transform.spi.TypeTransformer;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements DtoTransformer<NegotiateEdrRequestDto, NegotiateEdrRequest> {
+public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements TypeTransformer<NegotiateEdrRequestDto, NegotiateEdrRequest> {
 
     @Override
     public Class<NegotiateEdrRequestDto> getInputType() {
@@ -39,7 +39,6 @@ public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements 
         var contractOffer = ContractOffer.Builder.newInstance()
                 .id(object.getOffer().getOfferId())
                 .assetId(object.getOffer().getAssetId())
-                .providerId(getId(object.getProviderId(), object.getConnectorAddress()))
                 .policy(object.getOffer().getPolicy())
                 .build();
 

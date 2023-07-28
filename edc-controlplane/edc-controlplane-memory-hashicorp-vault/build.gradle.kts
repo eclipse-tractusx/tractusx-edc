@@ -26,7 +26,7 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
-    runtimeOnly(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(libs.edc.vault.hashicorp)
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.dpf.transfer)
 

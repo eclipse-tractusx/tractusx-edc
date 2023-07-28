@@ -73,7 +73,7 @@ public abstract class EndpointDataReferenceCacheTestBase {
         var entry = edrEntry("assetId", "agreementId", "tpId");
         getStore().save(entry, edr("edrId"));
 
-        assertThat(getStore().findByTransferProcessId(entry.getTransferProcessId())).isNotNull();
+        assertThat(getStore().findByCorrelationIdAndLease(entry.getTransferProcessId())).isNotNull();
     }
 
     @Test
@@ -369,7 +369,7 @@ public abstract class EndpointDataReferenceCacheTestBase {
 
         assertThatThrownBy(() -> getStore().deleteByTransferProcessId(entry.getTransferProcessId())).isInstanceOf(IllegalStateException.class);
     }
-    
+
     protected abstract EndpointDataReferenceCache getStore();
 
     protected abstract void lockEntity(String negotiationId, String owner, Duration duration);

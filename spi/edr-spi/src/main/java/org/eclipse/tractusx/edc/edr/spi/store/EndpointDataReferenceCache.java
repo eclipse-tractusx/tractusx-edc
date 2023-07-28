@@ -43,7 +43,7 @@ public interface EndpointDataReferenceCache extends StateEntityStore<EndpointDat
      * Resolves an {@link EndpointDataReference} for the transfer process, returning null if one does not exist.
      */
     @Nullable
-    EndpointDataReferenceEntry findByTransferProcessId(String transferProcessId);
+    StoreResult<EndpointDataReferenceEntry> findByIdAndLease(String transferProcessId);
 
     /**
      * Resolves the {@link EndpointDataReference}s for the asset.

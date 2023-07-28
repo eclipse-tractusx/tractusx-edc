@@ -25,7 +25,7 @@ plugins {
 
 dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
-    implementation(project(":edc-extensions:hashicorp-vault"))
+    runtimeOnly(libs.edc.vault.hashicorp)
     runtimeOnly(project(":edc-extensions:edr:edr-cache-sql"))
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)

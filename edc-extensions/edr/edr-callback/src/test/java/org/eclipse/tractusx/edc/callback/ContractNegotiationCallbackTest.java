@@ -82,18 +82,17 @@ public class ContractNegotiationCallbackTest {
         verify(transferProcessService).initiateTransfer(captor.capture());
 
 
-        var tp = captor.getValue();
+        var transferRequest = captor.getValue();
 
-        assertThat(tp.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().containsAll(event.getCallbackAddresses());
+        assertThat(transferRequest.getCallbackAddresses()).usingRecursiveFieldByFieldElementComparator().containsAll(event.getCallbackAddresses());
 
-        assertThat(tp.getDataRequest()).satisfies(dataRequest -> {
-
-            assertThat(dataRequest.getContractId()).isEqualTo(event.getContractAgreement().getId());
-            assertThat(dataRequest.getAssetId()).isEqualTo(event.getContractAgreement().getAssetId());
-            assertThat(dataRequest.getConnectorAddress()).isEqualTo(event.getCounterPartyAddress());
-            assertThat(dataRequest.getConnectorId()).isEqualTo(event.getCounterPartyId());
-            assertThat(dataRequest.getProtocol()).isEqualTo(event.getProtocol());
-            assertThat(dataRequest.getDataDestination()).usingRecursiveComparison().isEqualTo(DATA_DESTINATION);
+        assertThat(transferRequest).satisfies(tp -> {
+            assertThat(tp.getContractId()).isEqualTo(event.getContractAgreement().getId());
+            assertThat(tp.getAssetId()).isEqualTo(event.getContractAgreement().getAssetId());
+            assertThat(tp.getConnectorAddress()).isEqualTo(event.getCounterPartyAddress());
+            assertThat(tp.getConnectorId()).isEqualTo(event.getCounterPartyId());
+            assertThat(tp.getProtocol()).isEqualTo(event.getProtocol());
+            assertThat(tp.getDataDestination()).usingRecursiveComparison().isEqualTo(DATA_DESTINATION);
         });
 
     }

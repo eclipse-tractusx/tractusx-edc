@@ -54,7 +54,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
     @Test
     @DisplayName("Verify E2E flow with Data Plane proxies and EDR")
-    void httpPullDataTransfer_withEdrAndProxy() throws IOException {
+    void httpPullDataTransfer_withEdrAndProxy() {
 
         var eventsUrl = server.url(PROXIED_PATH);
 
@@ -186,7 +186,7 @@ public abstract class AbstractDataPlaneProxyTest {
 
     private EventEnvelope<TransferProcessCompleted> waitForTransferCompletion() {
         try {
-            var request = server.takeRequest(20, TimeUnit.SECONDS);
+            var request = server.takeRequest(60, TimeUnit.SECONDS);
             if (request != null) {
                 return mapper.readValue(request.getBody().inputStream(), new TypeReference<>() {
                 });

@@ -75,7 +75,6 @@ public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
         var request = transformer.transform(dto, context);
 
         assertThat(request).isNotNull();
-        assertThat(request.getOffer().getProviderId()).asString().isEqualTo(dto.getConnectorAddress());
     }
 
     @Test
@@ -91,6 +90,5 @@ public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
 
         var request = transformer.transform(dto, context);
         assertThat(request).isNotNull();
-        assertThat(request.getOffer().getProviderId()).asString().isEqualTo("urn:connector:test-provider");
     }
 }

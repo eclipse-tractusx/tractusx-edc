@@ -24,7 +24,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.edc.api.model.IdResponseDto;
+import org.eclipse.edc.api.model.IdResponse;
+import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -33,7 +34,6 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
@@ -48,18 +48,18 @@ import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.PROVIDER_ID;
 
-@Consumes({ MediaType.APPLICATION_JSON })
-@Produces({ MediaType.APPLICATION_JSON })
+@Consumes({MediaType.APPLICATION_JSON})
+@Produces({MediaType.APPLICATION_JSON})
 @Path("/edrs")
 public class EdrController implements EdrApi {
 
     private final EdrService edrService;
-    private final TypeTransformerRegistry transformerRegistry;
+    private final ManagementApiTypeTransformerRegistry transformerRegistry;
     private final JsonLd jsonLdService;
 
     private Monitor monitor;
 
-    public EdrController(EdrService edrService, JsonLd jsonLdService, TypeTransformerRegistry transformerRegistry) {
+    public EdrController(EdrService edrService, JsonLd jsonLdService, ManagementApiTypeTransformerRegistry transformerRegistry) {
         this.edrService = edrService;
         this.jsonLdService = jsonLdService;
         this.transformerRegistry = transformerRegistry;
@@ -75,12 +75,12 @@ public class EdrController implements EdrApi {
 
         var contractNegotiation = edrService.initiateEdrNegotiation(edrNegotiationRequest).orElseThrow(exceptionMapper(NegotiateEdrRequest.class));
 
-        var responseDto = IdResponseDto.Builder.newInstance()
+        var idResponse = IdResponse.Builder.newInstance()
                 .id(contractNegotiation.getId())
                 .createdAt(contractNegotiation.getCreatedAt())
                 .build();
 
-        return transformerRegistry.transform(responseDto, JsonObject.class)
+        return transformerRegistry.transform(idResponse, JsonObject.class)
                 .compose(jsonLdService::compact)
                 .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
     }

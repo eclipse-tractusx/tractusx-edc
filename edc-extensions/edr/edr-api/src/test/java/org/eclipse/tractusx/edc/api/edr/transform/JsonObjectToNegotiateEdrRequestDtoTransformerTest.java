@@ -19,7 +19,6 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
-import org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -35,12 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.ASSET_ID;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.OFFER_ID;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto.CALLBACK_ADDRESSES;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto.CONNECTOR_ADDRESS;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto.CONNECTOR_ID;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto.OFFER;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto.PROTOCOL;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.NegotiationInitiateRequestDto.PROVIDER_ID;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CALLBACK_ADDRESSES;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CONNECTOR_ADDRESS;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CONNECTOR_ID;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CONTRACT_REQUEST_TYPE;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.OFFER;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.PROTOCOL;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.PROVIDER_ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
@@ -72,7 +72,7 @@ class JsonObjectToNegotiateEdrRequestDtoTransformerTest {
     @Test
     void transform() {
         var jsonObject = Json.createObjectBuilder()
-                .add(TYPE, NegotiationInitiateRequestDto.TYPE)
+                .add(TYPE, CONTRACT_REQUEST_TYPE)
                 .add(CONNECTOR_ADDRESS, "test-address")
                 .add(PROTOCOL, "test-protocol")
                 .add(CONNECTOR_ID, "test-conn-id")
@@ -115,7 +115,7 @@ class JsonObjectToNegotiateEdrRequestDtoTransformerTest {
         when(context.problem()).thenReturn(new ProblemBuilder(context));
 
         var jsonObject = Json.createObjectBuilder()
-                .add(TYPE, NegotiationInitiateRequestDto.TYPE)
+                .add(TYPE, CONTRACT_REQUEST_TYPE)
                 .add(EDC_NAMESPACE + "notFound", "test-address")
                 .build();
 
