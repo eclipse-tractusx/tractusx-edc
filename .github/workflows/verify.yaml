@@ -137,6 +137,7 @@ jobs:
 
   postgres-tests:
     runs-on: ubuntu-latest
+
     needs: [ verify-formatting, verify-license-headers ]
 
     services:
@@ -148,10 +149,17 @@ jobs:
           POSTGRES_PASSWORD: password
 
     steps:
+      - name: Issue warning
+        run: |
+          echo "::warning file=verify.yaml,line=138,title=Deactivated PostgreSQL tests::Deactivated the PostgreSQL tests until https://github.com/eclipse-edc/Connector/pull/3336 is merged and packaged in a version"
+
       - uses: actions/checkout@v3
+        if: ${{ false }}  # disabled until https://github.com/eclipse-edc/Connector/pull/3336 is merged and packaged in a version
       - uses: ./.github/actions/setup-java
+        if: ${{ false }}  # disabled until https://github.com/eclipse-edc/Connector/pull/3336 is merged and packaged in a version
 
       - name: Run Postgresql E2E tests
+        if: ${{ false }}  # disabled until https://github.com/eclipse-edc/Connector/pull/3336 is merged and packaged in a version
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
 
   miw-integration-tests:
