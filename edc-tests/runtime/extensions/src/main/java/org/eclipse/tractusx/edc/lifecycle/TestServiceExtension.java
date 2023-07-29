@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import org.eclipse.edc.connector.transfer.spi.status.StatusCheckerRegistry;
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -30,6 +31,6 @@ public class TestServiceExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         // takes care that ongoing HTTP transfers are actually completed, otherwise they would
         // always stay in the "STARTED" state
-        registry.register("HttpProxy", (transferProcess, resources) -> true);
+        registry.register("HttpProxy", (tp, r) -> tp.getType() == TransferProcess.Type.CONSUMER);
     }
 }

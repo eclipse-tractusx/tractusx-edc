@@ -17,19 +17,27 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.eclipse.tractusx.edc.data.encryption.data;
+package org.eclipse.tractusx.edc.data.encryption;
 
-public interface CryptoDataFactory {
+public class ArrayUtil {
 
-    DecryptedData decryptedFromText(String text);
+    private ArrayUtil() {
+    }
 
-    DecryptedData decryptedFromBase64(String base64);
+    public static byte[] concat(byte[] a, byte[] b) {
+        byte[] c = new byte[a.length + b.length];
+        System.arraycopy(a, 0, c, 0, a.length);
+        System.arraycopy(b, 0, c, a.length, b.length);
+        return c;
+    }
 
-    DecryptedData decryptedFromBytes(byte[] bytes);
+    public static byte[] subArray(byte[] a, int startIndex, int length) {
+        if (startIndex + length > a.length) {
+            throw new IllegalArgumentException("Start index + length is greater than array length");
+        }
 
-    EncryptedData encryptedFromText(String text);
-
-    EncryptedData encryptedFromBase64(String base64);
-
-    EncryptedData encryptedFromBytes(byte[] bytes);
+        byte[] b = new byte[length];
+        System.arraycopy(a, startIndex, b, 0, length);
+        return b;
+    }
 }
