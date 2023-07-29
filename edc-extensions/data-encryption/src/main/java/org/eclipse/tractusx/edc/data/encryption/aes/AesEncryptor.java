@@ -57,7 +57,7 @@ public class AesEncryptor implements DataEncrypter {
      * this encryptor will produce encrypted text in Base64.
      *
      * @param vault       A Vault instance that contains the encryption key. Keys should never be held in memory.
-     * @param secretAlias The alias under which the key was stored in the vault
+     * @param secretAlias The alias under which the key was stored in the vault. The key, which is stored in the vault under the given alias, must be in Base64 format
      */
     public AesEncryptor(Vault vault, String secretAlias) {
         this.vault = vault;
@@ -68,6 +68,7 @@ public class AesEncryptor implements DataEncrypter {
             throw new EdcException("Error while instantiating Cipher", e);
         }
     }
+
 
     @Override
     public String encrypt(String raw) {
@@ -86,25 +87,9 @@ public class AesEncryptor implements DataEncrypter {
         }
     }
 
-    private SecretKey getKey(String alias) {
-        var secretBase64 = vault.resolveSecret(alias);
-        if (secretBase64 == null) {
-            throw new EdcException("Cannot perform AES encryption: secret key not found in vault");
-        }
-        var decoded = decoder.decode(secretBase64);
-        if (isAllowedSize(decoded)) {
-            return new SecretKeySpec(decoded, AES);
-        }
-        throw new EdcException("Expected a key size of 16, 24 or 32 bytes byt found " + decoded.length);
-    }
-
     /**
-     * Check is the decoded byte array is 16, 24 or 32 bytes in size
+     * The encrypted text is expected in Base64 format: it is simply the ciphertext encoded as Base64
      */
-    private boolean isAllowedSize(byte[] decoded) {
-        return Arrays.stream(ALLOWED_SIZES).anyMatch(i -> i == decoded.length);
-    }
-
     @Override
     public String decrypt(String encrypted) {
         var key = getKey(secretAlias);
@@ -132,6 +117,25 @@ public class AesEncryptor implements DataEncrypter {
         byte[] iv = new byte[length];
         new SecureRandom().nextBytes(iv);
         return iv;
+    }
+
+    private SecretKey getKey(String alias) {
+        var secretBase64 = vault.resolveSecret(alias);
+        if (secretBase64 == null) {
+            throw new EdcException("Cannot perform AES encryption: secret key not found in vault");
+        }
+        var decoded = decoder.decode(secretBase64);
+        if (isAllowedSize(decoded)) {
+            return new SecretKeySpec(decoded, AES);
+        }
+        throw new EdcException("Expected a key size of 16, 24 or 32 bytes byt found " + decoded.length);
+    }
+
+    /**
+     * Check is the decoded byte array is 16, 24 or 32 bytes in size
+     */
+    private boolean isAllowedSize(byte[] decoded) {
+        return Arrays.stream(ALLOWED_SIZES).anyMatch(i -> i == decoded.length);
     }
 
 
