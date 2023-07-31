@@ -64,7 +64,7 @@ spec:
           {{- if .Values.controlplane.image.repository }}
           image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- else }}
-          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault-legacy:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
           ports:
