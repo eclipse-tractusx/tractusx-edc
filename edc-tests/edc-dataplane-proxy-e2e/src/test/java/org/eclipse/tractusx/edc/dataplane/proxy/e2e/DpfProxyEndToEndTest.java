@@ -74,6 +74,7 @@ public class DpfProxyEndToEndTest {
     private static final String REQUEST_TEMPLATE_TP = "{\"transferProcessId\": \"%s\", \"endpointUrl\" : \"http://localhost:%s/api/gateway/aas/test\"}";
     private static final String REQUEST_TEMPLATE_ASSET = "{\"assetId\": \"%s\", \"endpointUrl\" : \"http://localhost:%s/api/gateway/aas/test\"}";
     private static final String MOCK_ENDPOINT_200_BODY = "{\"message\":\"test\"}";
+    private static final String API_KEY = "testkey";
 
     @RegisterExtension
     static EdcRuntimeExtension consumer = new EdcRuntimeExtension(
@@ -81,9 +82,9 @@ public class DpfProxyEndToEndTest {
             "consumer",
             baseConfig(Map.of(
                     "web.http.port", valueOf(CONSUMER_HTTP_PORT),
+                    "edc.api.auth.key", API_KEY,
                     "tx.dpf.consumer.proxy.port", valueOf(CONSUMER_PROXY_PORT)
             )));
-
     @RegisterExtension
     static EdcRuntimeExtension provider = new EdcRuntimeExtension(
             LAUNCHER_MODULE,
@@ -184,6 +185,7 @@ public class DpfProxyEndToEndTest {
         return given()
                 .baseUri("http://localhost:" + CONSUMER_PROXY_PORT)
                 .contentType("application/json")
+                .header("x-api-key", API_KEY)
                 .body(body);
     }
 

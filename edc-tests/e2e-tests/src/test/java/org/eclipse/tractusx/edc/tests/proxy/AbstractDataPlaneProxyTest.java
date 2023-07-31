@@ -17,11 +17,14 @@ package org.eclipse.tractusx.edc.tests.proxy;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
+import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +52,12 @@ public abstract class AbstractDataPlaneProxyTest {
 
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    private static final String CUSTOM_BASE_PATH = "/custom";
+    private static final String CUSTOM_SUB_PATH = "/sub";
+
+    private static final String CUSTOM_QUERY_PARAMS = "foo=bar";
+
+    private static final String CUSTOM_FULL_PATH = CUSTOM_BASE_PATH + CUSTOM_SUB_PATH + "?" + CUSTOM_QUERY_PARAMS;
     private final ObjectMapper mapper = new ObjectMapper();
     private MockWebServer server;
 
@@ -171,6 +180,102 @@ public abstract class AbstractDataPlaneProxyTest {
         server.enqueue(new MockResponse().setBody(body));
         data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent2.getPayload().getTransferProcessId());
         assertThat(data).isEqualTo(body);
+    }
+
+    @Test
+    @DisplayName("Verify E2E flow with Data Plane provider and EDR")
+    void httpPullDataTransfer_withEdrAndProviderDataPlaneProxy() throws IOException {
+
+        var eventsUrl = server.url(PROXIED_PATH);
+
+        var assetId = UUID.randomUUID().toString();
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "contentType", "application/json")
+                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
+                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
+                .add(EDC_NAMESPACE + "authCode", authCode)
+                .build());
+
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+
+        var callbacks = Json.createArrayBuilder()
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .build();
+
+        // response to callback
+        server.enqueue(new MockResponse());
+
+        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+
+        var transferEvent = waitForTransferCompletion();
+
+        var body = "{\"response\": \"ok\"}";
+
+        server.enqueue(new MockResponse().setBody(body));
+        var data = SOKRATES.pullProviderDataPlaneDataByAssetId(PLATO, assetId);
+        assertThat(data).isEqualTo(body);
+
+        server.enqueue(new MockResponse().setBody(body));
+        data = SOKRATES.pullProviderDataPlaneDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
+        assertThat(data).isEqualTo(body);
+    }
+
+
+    @Test
+    @DisplayName("Verify E2E flow with Data Plane provider and EDR")
+    void httpPullDataTransfer_withEdrAndProviderDataPlaneProxyAndCustomProperties() throws IOException {
+
+        var eventsUrl = server.url(PROXIED_PATH);
+
+        var customUrl = server.url(CUSTOM_BASE_PATH);
+
+        var body = "{\"response\": \"ok\"}";
+
+        server.setDispatcher(new Dispatcher() {
+            @NotNull
+            @Override
+            public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
+                return switch (recordedRequest.getPath()) {
+                    case PROXIED_PATH -> new MockResponse();
+                    case CUSTOM_FULL_PATH -> new MockResponse().setBody(body);
+                    default -> new MockResponse().setResponseCode(404);
+                };
+            }
+        });
+
+        var assetId = UUID.randomUUID().toString();
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "contentType", "application/json")
+                .add(EDC_NAMESPACE + "baseUrl", customUrl.toString())
+                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
+                .add(EDC_NAMESPACE + "authCode", authCode)
+                .add(EDC_NAMESPACE + "proxyPath", "true")
+                .add(EDC_NAMESPACE + "proxyQueryParams", "true")
+                .build());
+
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+
+        var callbacks = Json.createArrayBuilder()
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .build();
+
+        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+
+        waitForTransferCompletion();
+
+        var data = SOKRATES.pullProviderDataPlaneDataByAssetIdAndCustomProperties(PLATO, assetId, CUSTOM_SUB_PATH, CUSTOM_QUERY_PARAMS);
+        assertThat(data).isEqualTo(body);
+
     }
 
     @BeforeEach
