@@ -65,7 +65,6 @@ include(":edc-controlplane:edc-runtime-memory")
 include(":edc-controlplane:edc-controlplane-memory-hashicorp-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-azure-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
-include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault-legacy")
 
 // modules for dataplane artifacts
 include(":edc-dataplane")
