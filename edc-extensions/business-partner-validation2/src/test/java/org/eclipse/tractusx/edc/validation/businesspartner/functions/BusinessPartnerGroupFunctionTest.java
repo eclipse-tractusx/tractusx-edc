@@ -20,6 +20,7 @@ import org.eclipse.edc.policy.model.LiteralExpression;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -91,7 +92,7 @@ class BusinessPartnerGroupFunctionTest {
     @DisplayName("Right-hand operand is not String or Collection<?>")
     void evaluate_rightOperandNotStringOrCollection() {
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(List.of("test-group"));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(List.of("test-group")));
 
         assertThat(function.evaluate(EQ, 42, createPermission(EQ, List.of("test-group")), context)).isFalse();
         assertThat(function.evaluate(EQ, 42L, createPermission(EQ, List.of("test-group")), context)).isFalse();
@@ -111,7 +112,7 @@ class BusinessPartnerGroupFunctionTest {
 
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(assignedBpn);
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
     }
 

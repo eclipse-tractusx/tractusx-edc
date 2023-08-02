@@ -34,4 +34,5 @@ dependencies {
     testImplementation(libs.edc.transaction.local)
     testImplementation(testFixtures(libs.edc.core.sql))
     testImplementation(testFixtures(libs.edc.junit))
+    testImplementation(testFixtures(project(":edc-extensions:business-partner-validation2")))
 }
