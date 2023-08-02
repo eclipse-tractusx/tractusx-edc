@@ -35,6 +35,7 @@ import static java.lang.String.format;
  * Abstract class for BusinessPartnerNumber validation. This class may be inherited from the EDC
  * policy enforcing functions for duties, permissions and prohibitions.
  */
+@Deprecated(forRemoval = true, since = "0.5.0")
 public abstract class AbstractBusinessPartnerValidation {
 
     // Developer Note:
@@ -92,6 +93,8 @@ public abstract class AbstractBusinessPartnerValidation {
      */
     protected boolean evaluate(
             final Operator operator, final Object rightValue, final PolicyContext policyContext) {
+
+        monitor.warning("This policy evaluation function was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC");
 
         if (policyContext.hasProblems() && !policyContext.getProblems().isEmpty()) {
             String problems = String.join(", ", policyContext.getProblems());

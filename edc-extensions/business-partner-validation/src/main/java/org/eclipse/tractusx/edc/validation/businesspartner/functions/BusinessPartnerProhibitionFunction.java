@@ -29,6 +29,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 /**
  * AtomicConstraintFunction to validate business partner numbers for edc prohibitions.
  */
+@Deprecated(forRemoval = true, since = "0.5.0")
 public class BusinessPartnerProhibitionFunction extends AbstractBusinessPartnerValidation
         implements AtomicConstraintFunction<Prohibition> {
 

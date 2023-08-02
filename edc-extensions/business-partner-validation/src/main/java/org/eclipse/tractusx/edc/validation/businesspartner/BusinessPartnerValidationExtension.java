@@ -38,6 +38,7 @@ import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionRes
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
 
+@Deprecated(forRemoval = true, since = "0.5.0")
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     /**
@@ -96,6 +97,8 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, CATALOGING_SCOPE);
+
+        monitor.warning("This extension was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC");
     }
 
     private void bindToScope(BusinessPartnerDutyFunction dutyFunction, BusinessPartnerPermissionFunction permissionFunction, BusinessPartnerProhibitionFunction prohibitionFunction, String scope) {
