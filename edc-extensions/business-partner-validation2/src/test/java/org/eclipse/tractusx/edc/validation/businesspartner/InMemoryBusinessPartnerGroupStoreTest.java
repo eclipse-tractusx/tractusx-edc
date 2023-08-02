@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
 
+import org.eclipse.tractusx.edc.validation.businesspartner.defaults.InMemoryBusinessPartnerGroupStore;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
 import org.eclipse.tractusx.edc.validation.businesspartner.store.BusinessPartnerGroupStoreTestBase;
 

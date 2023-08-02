@@ -19,7 +19,6 @@ import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
@@ -42,22 +41,18 @@ import static org.eclipse.edc.connector.contract.spi.validation.ContractValidati
  * {
  *     "constraint": {
  *         "leftOperand": "BusinessPartnerGroup",
- *         "operator": "{ eq | neq | in | isAllOf | isAnyOf | isNoneOf }",
- *         "rightOperand": ["GROUP_ID1", ... "GROUP_IDN"]
+ *         "operator": "isAnyOf",
+ *         "rightOperand": ["gold_customer","platin_partner"]
  *     }
  * }
  * </pre>
  * <p>
- * Note that the {@link BusinessPartnerGroupFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction<Permission>}, thus it is registered with the {@link PolicyEngine}
- * for the {@link Permission} class.
+ * Note that the {@link BusinessPartnerGroupFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction}, thus it is registered with the {@link PolicyEngine}  for the {@link Permission} class.
  */
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = {"policy", "contract"})
 public class BusinessPartnerEvaluationExtension implements ServiceExtension {
 
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerGroup";
-    public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";
-    @Setting(value = "Enable logging when evaluating the business partner constraints in the agreement validation", type = "boolean", defaultValue = DEFAULT_LOG_AGREEMENT_EVALUATION)
-    public static final String BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION = "tractusx.businesspartnervalidation.log.agreement.validation";
     private static final String USE = "USE";
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
@@ -68,8 +63,6 @@ public class BusinessPartnerEvaluationExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var monitor = context.getMonitor();
-        var logAgreementEvaluation = logAgreementEvaluationSetting(context);
         var function = new BusinessPartnerGroupFunction(store);
 
         bindToScope(function, TRANSFER_SCOPE);
@@ -83,9 +76,4 @@ public class BusinessPartnerEvaluationExtension implements ServiceExtension {
 
         policyEngine.registerFunction(scope, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
     }
-
-    private boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
-        return Boolean.parseBoolean(context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, DEFAULT_LOG_AGREEMENT_EVALUATION));
-    }
-
 }

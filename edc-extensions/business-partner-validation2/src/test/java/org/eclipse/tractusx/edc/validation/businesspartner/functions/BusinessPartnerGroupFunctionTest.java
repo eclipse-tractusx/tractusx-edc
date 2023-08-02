@@ -31,6 +31,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -114,6 +115,26 @@ class BusinessPartnerGroupFunctionTest {
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
+    }
+
+    @Test
+    void evaluate_noEntryForBpn() {
+        var operator = NEQ;
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
+
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
+    }
+
+    @Test
+    void evaluate_noGroupsAssignedToBpn() {
+        var operator = NEQ;
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
+
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
     }
 
     private Permission createPermission(Operator op, List<String> rightOperand) {

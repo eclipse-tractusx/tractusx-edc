@@ -58,8 +58,8 @@ import static org.eclipse.edc.policy.model.Operator.NEQ;
  * <p/>
  * The following operators are supported:
  * <ul>
- *     <li>{@link Operator#EQ}: must be exactly in - and only in - that particular group</li>
- *     <li>{@link Operator#NEQ}: must not be in a particular group</li>
+ *     <li>{@link Operator#EQ}: must be exactly in - and only in - that particular group or set of groups</li>
+ *     <li>{@link Operator#NEQ}: must not be in a particular group or set of groups</li>
  *     <li>{@link Operator#IN}: must be in <em>any</em> of the specified groups</li>
  *     <li>{@link Operator#IS_ALL_OF}: must be in <em>all</em> of the specified groups</li>
  *     <li>{@link Operator#IS_ANY_OF}: must be in <em>any</em> of the specified groups</li>
@@ -68,11 +68,10 @@ import static org.eclipse.edc.policy.model.Operator.NEQ;
  *
  * @see BusinessPartnerGroupStore
  */
-
 public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
     public static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
-    private static final Map<Operator, Function<BpnGroupTuple, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
+    private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerGroupStore store;
 
     public BusinessPartnerGroupFunction(BusinessPartnerGroupStore store) {
@@ -86,33 +85,59 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     }
 
 
+    /**
+     * Policy evaluation function that checks whether a given BusinessPartnerNumber is covered by a given policy.
+     * The evaluation is prematurely aborted (returns {@code false}) if:
+     * <ul>
+     *     <li>No {@link ParticipantAgent} was found on the {@link PolicyContext}</li>
+     *     <li>The operator is invalid. Check {@link BusinessPartnerGroupFunction#ALLOWED_OPERATORS} for valid operators.</li>
+     *     <li>No database entry was found for the BPN (taken from the {@link ParticipantAgent})</li>
+     *     <li>A database entry was found, but no group-IDs were assigned</li>
+     *     <li>The right value is anything other than {@link String} or {@link Collection}</li>
+     * </ul>
+     */
     @Override
     public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext policyContext) {
         final ParticipantAgent participantAgent = policyContext.getContextData(ParticipantAgent.class);
 
+        // No participant agent found in context
         if (participantAgent == null) {
             policyContext.reportProblem("ParticipantAgent not found on PolicyContext");
             return false;
         }
+
+        // invalid operator
         if (!ALLOWED_OPERATORS.contains(operator)) {
             var ops = ALLOWED_OPERATORS.stream().map(Enum::name).collect(Collectors.joining(", "));
             policyContext.reportProblem(format("Operator must be one of [%s] but was [%s]", ops, operator.name()));
             return false;
         }
 
+
         var bpn = getBpnClaim(participantAgent);
         var groups = store.resolveForBpn(bpn);
+
+        // BPN not found in database
         if (groups.failed()) {
             policyContext.reportProblem(groups.getFailureDetail());
             return false;
         }
+        var assignedGroups = groups.getContent();
 
+        // BPN was found, but it does not have groups assigned.
+        if (assignedGroups.isEmpty()) {
+            policyContext.reportProblem("No groups were assigned to BPN " + bpn);
+            return false;
+        }
+
+        // right-operand is anything other than String or Collection
         var rightOperand = parseRightOperand(rightValue, policyContext);
         if (rightOperand == null) {
             return false;
         }
 
-        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupTuple(groups.getContent(), rightOperand));
+        //call evaluator function
+        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand));
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
@@ -142,23 +167,26 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         return bpnClaim;
     }
 
-    private Boolean evaluateIn(BpnGroupTuple bpnGroupTuple) {
-        var assigned = bpnGroupTuple.assignedGroups;
+    private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
+        var assigned = bpnGroupHolder.assignedGroups;
         // checks whether both lists overlap
-        return bpnGroupTuple.allowedGroups
+        return bpnGroupHolder.allowedGroups
                 .stream()
                 .distinct()
                 .anyMatch(assigned::contains);
     }
 
-    private Boolean evaluateNotEquals(BpnGroupTuple bpnGroupTuple) {
-        return !evaluateIn(bpnGroupTuple);
+    private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
+        return !evaluateIn(bpnGroupHolder);
     }
 
-    private Boolean evaluateEquals(BpnGroupTuple bpnGroupTuple) {
-        return bpnGroupTuple.allowedGroups.equals(bpnGroupTuple.assignedGroups);
+    private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
+        return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
     }
 
-    private record BpnGroupTuple(List<String> assignedGroups, List<String> allowedGroups) {
+    /**
+     * Internal utility class to hold the list of assigned groups for a BPN, and the list of groups specified in the policy ("allowed groups").
+     */
+    private record BpnGroupHolder(List<String> assignedGroups, List<String> allowedGroups) {
     }
 }

@@ -34,6 +34,8 @@ import static java.lang.String.format;
 /**
  * Abstract class for BusinessPartnerNumber validation. This class may be inherited from the EDC
  * policy enforcing functions for duties, permissions and prohibitions.
+ *
+ * @deprecated Please use {@code BusinessPartnerGroupFunction} instead
  */
 @Deprecated(forRemoval = true, since = "0.5.0")
 public abstract class AbstractBusinessPartnerValidation {
