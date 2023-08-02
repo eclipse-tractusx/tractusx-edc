@@ -102,13 +102,17 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         var bpn = getBpnClaim(participantAgent);
         var groups = store.resolveForBpn(bpn);
+        if (groups.failed()) {
+            policyContext.reportProblem(groups.getFailureDetail());
+            return false;
+        }
 
         var rightOperand = parseRightOperand(rightValue, policyContext);
         if (rightOperand == null) {
             return false;
         }
 
-        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupTuple(groups, rightOperand));
+        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupTuple(groups.getContent(), rightOperand));
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {

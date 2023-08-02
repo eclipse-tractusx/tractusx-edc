@@ -17,5 +17,4 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 #
-org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerEvaluationExtension
-org.eclipse.tractusx.edc.validation.businesspartner.DefaultStoreProviderExtension
+org.eclipse.tractusx.edc.validation.businesspartner.store.SqlBusinessPartnerGroupStoreExtension

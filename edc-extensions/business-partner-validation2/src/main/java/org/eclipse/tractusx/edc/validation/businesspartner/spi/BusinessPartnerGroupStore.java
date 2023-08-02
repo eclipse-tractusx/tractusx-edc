@@ -14,8 +14,16 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.spi;
 
+import org.eclipse.edc.spi.result.StoreResult;
+
 import java.util.List;
 
 public interface BusinessPartnerGroupStore {
-    List<String> resolveForBpn(String businessPartnerNumber);
+    StoreResult<List<String>> resolveForBpn(String businessPartnerNumber);
+
+    StoreResult<Void> save(String businessPartnerNumber, List<String> groups);
+
+    StoreResult<Void> delete(String businessPartnerNumber);
+
+    StoreResult<Void> update(String businessPartnerNumber, List<String> groups);
 }
