@@ -77,13 +77,14 @@ allprojects {
         }
     }
 
-    val downloadDir = rootProject.layout.projectDirectory.dir("build/downloads")
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(annotationProcessorVersion)
         outputDirectory.set(project.buildDir)
-        additionalInputDirectory.set(downloadDir.asFile)
-        downloadDirectory.set(downloadDir.asFile)
+        // uncomment the following lines to enable the Autodoc-2-Markdown converter
+        // only available with EDC 0.2.1 SNAPSHOT
+        // additionalInputDirectory.set(downloadDir.asFile)
+        // downloadDirectory.set(downloadDir.asFile)
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
