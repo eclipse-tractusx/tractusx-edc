@@ -90,10 +90,8 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         var logAgreementEvaluation = logAgreementEvaluationSetting(context);
 
         final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerPermissionFunction permissionFunction =
-                new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerProhibitionFunction prohibitionFunction =
-                new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
+        final BusinessPartnerPermissionFunction permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
+        final BusinessPartnerProhibitionFunction prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
 
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
