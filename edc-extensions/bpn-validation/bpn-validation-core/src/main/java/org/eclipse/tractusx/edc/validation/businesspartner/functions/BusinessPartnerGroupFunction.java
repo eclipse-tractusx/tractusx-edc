@@ -56,7 +56,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  * <p>
  * Upon evaluation, the {@link BusinessPartnerGroupFunction} will take the {@link ParticipantAgent}s BPN, use it to resolve the groups that the BPN is part of, and check, whether `"gold_partner"` and
  * `"platin_partner"` are amongst those groups.
- * <p/>
+ * <p>
  * The following operators are supported:
  * <ul>
  *     <li>{@link Operator#EQ}: must be exactly in - and only in - that particular group or set of groups</li>
