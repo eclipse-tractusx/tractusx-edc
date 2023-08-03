@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.policyengine)
 
+    testImplementation(libs.edc.junit)
     testFixturesImplementation(libs.edc.junit)
     testFixturesImplementation(libs.junit.jupiter.api)
     testFixturesImplementation(libs.assertj)
