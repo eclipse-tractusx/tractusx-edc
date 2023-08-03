@@ -35,12 +35,12 @@ import static org.eclipse.edc.connector.contract.spi.validation.ContractValidati
  *     <li>{@link org.eclipse.edc.connector.contract.spi.validation.ContractValidationService#NEGOTIATION_SCOPE}</li>
  *     <li>{@link org.eclipse.edc.connector.contract.spi.validation.ContractValidationService#TRANSFER_SCOPE}</li>
  * </ul>
- * The rule to which the function is bound is {@link BusinessPartnerEvaluationExtension#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
+ * The rule to which the function is bound is {@link BusinessPartnerGroupFunction#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
  * like this:
  * <pre>
  * {
  *     "constraint": {
- *         "leftOperand": "BusinessPartnerGroup",
+ *         "leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
  *         "operator": "isAnyOf",
  *         "rightOperand": ["gold_customer","platin_partner"]
  *     }
@@ -52,7 +52,6 @@ import static org.eclipse.edc.connector.contract.spi.validation.ContractValidati
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = {"policy", "contract"})
 public class BusinessPartnerEvaluationExtension implements ServiceExtension {
 
-    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerGroup";
     private static final String USE = "USE";
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
@@ -72,8 +71,8 @@ public class BusinessPartnerEvaluationExtension implements ServiceExtension {
 
     private void bindToScope(BusinessPartnerGroupFunction function, String scope) {
         ruleBindingRegistry.bind(USE, scope);
-        ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
+        ruleBindingRegistry.bind(BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
 
-        policyEngine.registerFunction(scope, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
+        policyEngine.registerFunction(scope, Permission.class, BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY, function);
     }
 }

@@ -19,6 +19,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
 
+/**
+ * Postgres-specific statement templates for the {@link SqlBusinessPartnerGroupStore}
+ */
 public class PostgresBusinessPartnerGroupStatements implements BusinessPartnerGroupStatements {
     @Override
     public String findByBpnTemplate() {
@@ -44,7 +47,7 @@ public class PostgresBusinessPartnerGroupStatements implements BusinessPartnerGr
     public String updateTemplate() {
         return format("UPDATE %s SET %s=?%s WHERE %s=?", getTable(), getGroupsColumn(), getFormatJsonOperator(), getBpnColumn());
     }
-    
+
     @NotNull
     private String getFormatJsonOperator() {
         return PostgresDialect.getJsonCastOperator();

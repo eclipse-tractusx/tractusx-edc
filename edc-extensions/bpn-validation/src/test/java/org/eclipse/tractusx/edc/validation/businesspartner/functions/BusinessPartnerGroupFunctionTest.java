@@ -48,7 +48,7 @@ import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
-import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerEvaluationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY;
+import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
 import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.REFERRING_CONNECTOR_CLAIM;
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;

@@ -35,6 +35,7 @@ import static org.eclipse.edc.policy.model.Operator.IS_ALL_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 /**
  * This function evaluates, that a particular {@link ParticipantAgent} is a member of a particular group.
@@ -46,7 +47,7 @@ import static org.eclipse.edc.policy.model.Operator.NEQ;
  * <pre>
  * {
  *     "constraint": {
- *         "leftOperand": "BusinessPartnerGroup",
+ *         "leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
  *         "operator": "isAnyOf",
  *         "rightOperand": ["gold_customer","platin_partner"]
  *     }
@@ -70,6 +71,7 @@ import static org.eclipse.edc.policy.model.Operator.NEQ;
  */
 public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
     public static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
+    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerGroupStore store;
