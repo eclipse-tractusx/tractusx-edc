@@ -19,6 +19,9 @@ import org.eclipse.edc.spi.result.StoreResult;
 import java.util.List;
 
 public interface BusinessPartnerGroupStore {
+    String NOT_FOUND_TEMPLATE = "BPN %s was not found";
+    String ALREADY_EXISTS_TEMPLATE = "BPN %s already exists in database";
+
     StoreResult<List<String>> resolveForBpn(String businessPartnerNumber);
 
     StoreResult<Void> save(String businessPartnerNumber, List<String> groups);

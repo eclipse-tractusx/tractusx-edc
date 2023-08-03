@@ -28,7 +28,7 @@ public class InMemoryBusinessPartnerGroupStore implements BusinessPartnerGroupSt
     public StoreResult<List<String>> resolveForBpn(String businessPartnerNumber) {
         var entry = cache.get(businessPartnerNumber);
         return entry == null ?
-                StoreResult.notFound("BPN " + businessPartnerNumber + " was not found in database") :
+                StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerNumber)) :
                 StoreResult.success(entry);
     }
 
@@ -36,7 +36,7 @@ public class InMemoryBusinessPartnerGroupStore implements BusinessPartnerGroupSt
     public StoreResult<Void> save(String businessPartnerNumber, List<String> groups) {
         //to maintain behavioural consistency with the SQL store
         if (cache.containsKey(businessPartnerNumber)) {
-            return StoreResult.alreadyExists("BPN " + businessPartnerNumber + " already exists in database");
+            return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(businessPartnerNumber));
         }
         cache.put(businessPartnerNumber, groups);
         return StoreResult.success();
@@ -46,7 +46,7 @@ public class InMemoryBusinessPartnerGroupStore implements BusinessPartnerGroupSt
     public StoreResult<Void> delete(String businessPartnerNumber) {
 
         return cache.remove(businessPartnerNumber) == null ?
-                StoreResult.notFound("BPN " + businessPartnerNumber + " was not found in database") :
+                StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerNumber)) :
                 StoreResult.success();
     }
 
@@ -56,6 +56,6 @@ public class InMemoryBusinessPartnerGroupStore implements BusinessPartnerGroupSt
             cache.put(businessPartnerNumber, groups);
             return StoreResult.success();
         }
-        return StoreResult.notFound("BPN " + businessPartnerNumber + " was not found in database");
+        return StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerNumber));
     }
 }

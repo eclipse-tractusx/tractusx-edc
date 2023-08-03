@@ -49,7 +49,7 @@ public class SqlBusinessPartnerGroupStore extends AbstractSqlStore implements Bu
                 var sql = statements.findByBpnTemplate();
                 var list = queryExecutor.single(connection, true, this::mapJson, sql, businessPartnerNumber);
                 return list == null ?
-                        StoreResult.notFound("BPN " + businessPartnerNumber + " was not found") :
+                        StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerNumber)) :
                         StoreResult.success(list);
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
@@ -63,7 +63,7 @@ public class SqlBusinessPartnerGroupStore extends AbstractSqlStore implements Bu
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 if (exists(businessPartnerNumber, connection)) {
-                    return StoreResult.alreadyExists("BPN " + businessPartnerNumber + " already exists in database");
+                    return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(businessPartnerNumber));
                 }
                 var sql = statements.insertTemplate();
                 queryExecutor.execute(connection, sql, businessPartnerNumber, toJson(groups));
@@ -81,7 +81,7 @@ public class SqlBusinessPartnerGroupStore extends AbstractSqlStore implements Bu
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 if (!exists(businessPartnerNumber, connection)) {
-                    return StoreResult.notFound("BPN " + businessPartnerNumber + " was not found");
+                    return StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerNumber));
                 }
                 var sql = statements.deleteTemplate();
                 queryExecutor.execute(connection, sql, businessPartnerNumber);
@@ -98,7 +98,7 @@ public class SqlBusinessPartnerGroupStore extends AbstractSqlStore implements Bu
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 if (!exists(businessPartnerNumber, connection)) {
-                    return StoreResult.notFound("BPN " + businessPartnerNumber + " was not found");
+                    return StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerNumber));
                 }
                 var sql = statements.updateTemplate();
                 queryExecutor.execute(connection, sql, toJson(groups), businessPartnerNumber);
