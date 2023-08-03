@@ -23,7 +23,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-extensions:business-partner-validation2"))
+    implementation(project(":edc-extensions:bpn-validation"))
 
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transaction.datasource)
@@ -34,5 +34,5 @@ dependencies {
     testImplementation(libs.edc.transaction.local)
     testImplementation(testFixtures(libs.edc.core.sql))
     testImplementation(testFixtures(libs.edc.junit))
-    testImplementation(testFixtures(project(":edc-extensions:business-partner-validation2")))
+    testImplementation(testFixtures(project(":edc-extensions:bpn-validation")))
 }
