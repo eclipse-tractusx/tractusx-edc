@@ -14,14 +14,14 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.store;
 
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class BusinessPartnerGroupStoreTestBase {
+public abstract class BusinessPartnerStoreTestBase {
 
     @Test
     void resolveForBpn() {
@@ -79,5 +79,5 @@ public abstract class BusinessPartnerGroupStoreTestBase {
         assertThat(getStore().update("test-bpn", List.of("foo", "bar")).succeeded()).isFalse();
     }
 
-    protected abstract BusinessPartnerGroupStore getStore();
+    protected abstract BusinessPartnerStore getStore();
 }

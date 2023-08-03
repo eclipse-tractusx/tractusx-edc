@@ -19,7 +19,7 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,16 +67,16 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  *     <li>{@link Operator#IS_NONE_OF}: must <em>not</em> be in any of the specified groups</li>
  * </ul>
  *
- * @see BusinessPartnerGroupStore
+ * @see BusinessPartnerStore
  */
 public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
     public static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
-    private final BusinessPartnerGroupStore store;
+    private final BusinessPartnerStore store;
 
-    public BusinessPartnerGroupFunction(BusinessPartnerGroupStore store) {
+    public BusinessPartnerGroupFunction(BusinessPartnerStore store) {
         this.store = store;
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);

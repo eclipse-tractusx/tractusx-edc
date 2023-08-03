@@ -15,13 +15,13 @@
 package org.eclipse.tractusx.edc.validation.businesspartner.defaults;
 
 import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InMemoryBusinessPartnerGroupStore implements BusinessPartnerGroupStore {
+public class InMemoryBusinessPartnerStore implements BusinessPartnerStore {
     private final Map<String, List<String>> cache = new HashMap<>();
 
     @Override

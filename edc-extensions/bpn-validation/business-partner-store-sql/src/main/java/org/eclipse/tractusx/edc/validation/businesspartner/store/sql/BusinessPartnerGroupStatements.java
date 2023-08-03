@@ -15,7 +15,7 @@
 package org.eclipse.tractusx.edc.validation.businesspartner.store.sql;
 
 /**
- * Statement templates and SQL table+column names required for the {@link SqlBusinessPartnerGroupStore}
+ * Statement templates and SQL table+column names required for the {@link SqlBusinessPartnerStore}
  */
 public interface BusinessPartnerGroupStatements {
 

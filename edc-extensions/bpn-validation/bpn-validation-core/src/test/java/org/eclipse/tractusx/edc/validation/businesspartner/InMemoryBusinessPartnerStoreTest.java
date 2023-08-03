@@ -14,17 +14,17 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
 
-import org.eclipse.tractusx.edc.validation.businesspartner.defaults.InMemoryBusinessPartnerGroupStore;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
-import org.eclipse.tractusx.edc.validation.businesspartner.store.BusinessPartnerGroupStoreTestBase;
+import org.eclipse.tractusx.edc.validation.businesspartner.defaults.InMemoryBusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.store.BusinessPartnerStoreTestBase;
 
-class InMemoryBusinessPartnerGroupStoreTest extends BusinessPartnerGroupStoreTestBase {
+class InMemoryBusinessPartnerStoreTest extends BusinessPartnerStoreTestBase {
 
 
-    private final InMemoryBusinessPartnerGroupStore store = new InMemoryBusinessPartnerGroupStore();
+    private final InMemoryBusinessPartnerStore store = new InMemoryBusinessPartnerStore();
 
     @Override
-    protected BusinessPartnerGroupStore getStore() {
+    protected BusinessPartnerStore getStore() {
         return store;
     }
 }

@@ -22,7 +22,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
@@ -58,7 +58,7 @@ public class BusinessPartnerEvaluationExtension implements ServiceExtension {
     @Inject
     private PolicyEngine policyEngine;
     @Inject
-    private BusinessPartnerGroupStore store;
+    private BusinessPartnerStore store;
 
     @Override
     public void initialize(ServiceExtensionContext context) {

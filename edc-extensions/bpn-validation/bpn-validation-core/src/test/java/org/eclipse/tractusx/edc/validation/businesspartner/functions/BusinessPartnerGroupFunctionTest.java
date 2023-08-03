@@ -21,7 +21,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class BusinessPartnerGroupFunctionTest {
     private static final String TEST_BPN = "BPN000TEST";
     private final PolicyContext context = mock();
     private BusinessPartnerGroupFunction function;
-    private BusinessPartnerGroupStore store;
+    private BusinessPartnerStore store;
 
     @BeforeEach
     void setUp() {

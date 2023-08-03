@@ -24,10 +24,10 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.BusinessPartnerGroupStatements;
 import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.PostgresBusinessPartnerGroupStatements;
-import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.SqlBusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.SqlBusinessPartnerStore;
 
 @Extension("Registers an SQL implementation for the BusinessPartnerGroupStore")
 public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
@@ -47,9 +47,9 @@ public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
     private BusinessPartnerGroupStatements statements;
 
     @Provider
-    public BusinessPartnerGroupStore sqlStore(ServiceExtensionContext context) {
+    public BusinessPartnerStore sqlStore(ServiceExtensionContext context) {
         var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
-        return new SqlBusinessPartnerGroupStore(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, getStatements());
+        return new SqlBusinessPartnerStore(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, getStatements());
     }
 
     private BusinessPartnerGroupStatements getStatements() {

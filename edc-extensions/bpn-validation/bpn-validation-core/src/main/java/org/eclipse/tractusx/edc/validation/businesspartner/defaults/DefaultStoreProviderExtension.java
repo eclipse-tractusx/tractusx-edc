@@ -17,13 +17,13 @@ package org.eclipse.tractusx.edc.validation.businesspartner.defaults;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 @Extension("Provides a default BusinessPartnerGroupStore")
 public class DefaultStoreProviderExtension implements ServiceExtension {
 
     @Provider(isDefault = true)
-    public BusinessPartnerGroupStore createInMemStore() {
-        return new InMemoryBusinessPartnerGroupStore();
+    public BusinessPartnerStore createInMemStore() {
+        return new InMemoryBusinessPartnerStore();
     }
 }

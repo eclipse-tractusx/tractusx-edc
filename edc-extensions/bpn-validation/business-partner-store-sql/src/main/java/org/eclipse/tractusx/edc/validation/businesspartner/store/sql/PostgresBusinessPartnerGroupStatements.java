@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import static java.lang.String.format;
 
 /**
- * Postgres-specific statement templates for the {@link SqlBusinessPartnerGroupStore}
+ * Postgres-specific statement templates for the {@link SqlBusinessPartnerStore}
  */
 public class PostgresBusinessPartnerGroupStatements implements BusinessPartnerGroupStatements {
     @Override

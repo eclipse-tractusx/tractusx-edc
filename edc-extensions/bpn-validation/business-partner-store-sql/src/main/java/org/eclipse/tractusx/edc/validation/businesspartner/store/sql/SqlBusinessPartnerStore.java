@@ -22,7 +22,7 @@ import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerGroupStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -30,13 +30,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
-public class SqlBusinessPartnerGroupStore extends AbstractSqlStore implements BusinessPartnerGroupStore {
+public class SqlBusinessPartnerStore extends AbstractSqlStore implements BusinessPartnerStore {
     private static final TypeReference<List<String>> LIST_OF_STRING = new TypeReference<>() {
     };
     private final BusinessPartnerGroupStatements statements;
 
-    public SqlBusinessPartnerGroupStore(DataSourceRegistry dataSourceRegistry, String dataSourceName, TransactionContext transactionContext,
-                                        ObjectMapper objectMapper, QueryExecutor queryExecutor, BusinessPartnerGroupStatements statements) {
+    public SqlBusinessPartnerStore(DataSourceRegistry dataSourceRegistry, String dataSourceName, TransactionContext transactionContext,
+                                   ObjectMapper objectMapper, QueryExecutor queryExecutor, BusinessPartnerGroupStatements statements) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = statements;
     }
