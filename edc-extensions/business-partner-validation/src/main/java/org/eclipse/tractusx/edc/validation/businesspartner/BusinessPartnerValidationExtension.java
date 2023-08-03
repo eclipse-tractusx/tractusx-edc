@@ -38,13 +38,17 @@ import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionRes
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
 
+/**
+ * Business partner number evaluation function.
+ *
+ * @deprecated Please use {@code BusinessPartnerEvaluationExtension} instead.
+ */
+@Deprecated(forRemoval = true, since = "0.5.0")
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     /**
-     * The key for business partner numbers constraints. Must be used as left operand when declaring
-     * constraints.
-     *
-     * <p>Example:
+     * The key for business partner numbers constraints. Must be used as left operand when declaring constraints.
+     * <p/>Example:
      *
      * <pre>
      * {
@@ -90,14 +94,14 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         var logAgreementEvaluation = logAgreementEvaluationSetting(context);
 
         final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerPermissionFunction permissionFunction =
-                new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerProhibitionFunction prohibitionFunction =
-                new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
+        final BusinessPartnerPermissionFunction permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
+        final BusinessPartnerProhibitionFunction prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
 
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, CATALOGING_SCOPE);
+
+        monitor.warning("This extension was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC");
     }
 
     private void bindToScope(BusinessPartnerDutyFunction dutyFunction, BusinessPartnerPermissionFunction permissionFunction, BusinessPartnerProhibitionFunction prohibitionFunction, String scope) {

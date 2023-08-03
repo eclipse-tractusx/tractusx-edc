@@ -81,6 +81,10 @@ allprojects {
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(annotationProcessorVersion)
         outputDirectory.set(project.buildDir)
+        // uncomment the following lines to enable the Autodoc-2-Markdown converter
+        // only available with EDC 0.2.1 SNAPSHOT
+        // additionalInputDirectory.set(downloadDir.asFile)
+        // downloadDirectory.set(downloadDir.asFile)
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {

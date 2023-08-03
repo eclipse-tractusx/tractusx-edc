@@ -33,6 +33,8 @@ include(":core:json-ld-core")
 
 
 include(":edc-extensions:business-partner-validation")
+include(":edc-extensions:bpn-validation")
+include(":edc-extensions:business-partner-store-sql")
 include(":edc-extensions:cx-oauth2")
 include(":edc-extensions:data-encryption")
 include(":edc-extensions:dataplane-selector-configuration")

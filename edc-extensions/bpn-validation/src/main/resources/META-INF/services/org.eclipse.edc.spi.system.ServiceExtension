@@ -17,10 +17,5 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 #
-org.eclipse.tractusx.edc.postgresql.migration.AssetPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.ContractDefinitionPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.EdrPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.BusinessGroupPostgresMigrationExtension
+org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerEvaluationExtension
+org.eclipse.tractusx.edc.validation.businesspartner.defaults.DefaultStoreProviderExtension
