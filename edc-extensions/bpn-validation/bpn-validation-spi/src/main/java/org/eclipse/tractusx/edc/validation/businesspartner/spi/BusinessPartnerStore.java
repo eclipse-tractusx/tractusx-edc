@@ -14,10 +14,12 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.spi;
 
+import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.result.StoreResult;
 
 import java.util.List;
 
+@ExtensionPoint
 public interface BusinessPartnerStore {
     String NOT_FOUND_TEMPLATE = "BPN %s was not found";
     String ALREADY_EXISTS_TEMPLATE = "BPN %s already exists in database";

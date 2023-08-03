@@ -20,7 +20,6 @@
 plugins {
     `java-library`
     `maven-publish`
-    `java-test-fixtures`
 }
 
 dependencies {

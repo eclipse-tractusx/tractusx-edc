@@ -20,7 +20,6 @@
 plugins {
     `java-library`
     `maven-publish`
-    `java-test-fixtures`
 }
 
 dependencies {
@@ -29,8 +28,4 @@ dependencies {
     implementation(libs.edc.spi.policy)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.policyengine)
-
-    testFixturesImplementation(libs.edc.junit)
-    testFixturesImplementation(libs.junit.jupiter.api)
-    testFixturesImplementation(libs.assertj)
 }
