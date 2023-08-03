@@ -1,4 +1,4 @@
-# Business Partner Validation Extension 
+# Business Partner Validation Extension
 
 > this extension is deprecated and should not be used anymore
 > Please use the `bpn-validation` module instead!

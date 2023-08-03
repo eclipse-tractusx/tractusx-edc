@@ -19,7 +19,6 @@ import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
@@ -68,11 +67,6 @@ public class BusinessPartnerEvaluationExtension implements ServiceExtension {
         bindToScope(function, TRANSFER_SCOPE);
         bindToScope(function, NEGOTIATION_SCOPE);
         bindToScope(function, CATALOGING_SCOPE);
-    }
-
-    @Provider
-    public BusinessPartnerService createBusinessPartnerService() {
-        return new BusinessPartnerServiceImpl(store);
     }
 
     private void bindToScope(BusinessPartnerGroupFunction function, String scope) {
