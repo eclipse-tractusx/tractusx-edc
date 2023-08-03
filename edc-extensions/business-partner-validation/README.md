@@ -1,4 +1,7 @@
-# Business Partner Validation Extension
+# Business Partner Validation Extension 
+
+> this extension is deprecated and should not be used anymore
+> Please use the `bpn-validation` module instead!
 
 Using the Business Partner Validation Extension it's possible to add configurable validation against
 BPNs in the `ContractDefinition.AccessPolicy`. Using a BPN in `ContractDefinition.ContractPolicy` is possible, too, but once the contract is complete there is no policy enforcement in place from the EDC.
