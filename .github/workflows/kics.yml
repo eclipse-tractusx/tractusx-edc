@@ -50,6 +50,7 @@ jobs:
           disable_secrets: true
           output_path: kicsResults/
           output_formats: "json,sarif"
+          exclude_paths: "edc-tests/miw-tests/src/test/resources/docker-environment/docker-compose.yaml"
 
       - name: Upload SARIF file for GitHub Advanced Security Dashboard
         if: always()
