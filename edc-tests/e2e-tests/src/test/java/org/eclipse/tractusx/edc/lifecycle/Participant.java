@@ -33,6 +33,7 @@ import org.eclipse.tractusx.edc.helpers.ContractDefinitionHelperFunctions;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,6 +51,7 @@ import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDataset
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
 import static org.eclipse.tractusx.edc.helpers.ContractNegotiationHelperFunctions.createNegotiationRequest;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createTransferRequest;
 import static org.mockito.Mockito.mock;
 
@@ -138,6 +140,20 @@ public class Participant {
                 .then()
                 .statusCode(200)
                 .contentType(JSON);
+    }
+
+    public void storeBusinessPartner(String bpn, String... groups) {
+        var body = Json.createObjectBuilder()
+                .add(ID, bpn)
+                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .build();
+        baseRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/business-partner-groups")
+                .then()
+                .statusCode(204);
     }
 
     public String negotiateContract(Participant other, String assetId) {
@@ -403,4 +419,6 @@ public class Participant {
                 .header("x-api-key", apiKey)
                 .contentType(JSON);
     }
+
+
 }

@@ -35,7 +35,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -187,11 +186,11 @@ class BusinessPartnerGroupApiControllerTest extends RestControllerTestBase {
     }
 
     private JsonObject createJsonObject() {
-        return Json.createObjectBuilder()
+        return jsonLdService.expand(Json.createObjectBuilder()
                 .add(ID, "test-bpn")
                 .add(CONTEXT, Json.createObjectBuilder().add(TX_PREFIX, TX_NAMESPACE).build())
-                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder((Set.of("group1", "group2", "group3"))))
-                .build();
+                .add(TX_NAMESPACE + "groups", String.join(",", "group1", "group2", "group3"))
+                .build()).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
     }
 
 }

@@ -96,7 +96,7 @@ public abstract class AbstractBusinessPartnerValidation {
     protected boolean evaluate(
             final Operator operator, final Object rightValue, final PolicyContext policyContext) {
 
-        monitor.warning("This policy evaluation function was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC");
+        monitor.warning("This policy evaluation function (class [%s]) was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC".formatted(getClass().getSimpleName()));
 
         if (policyContext.hasProblems() && !policyContext.getProblems().isEmpty()) {
             String problems = String.join(", ", policyContext.getProblems());

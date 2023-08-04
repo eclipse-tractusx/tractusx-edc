@@ -43,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 
@@ -117,7 +118,10 @@ public class BusinessPartnerGroupApiController implements BusinessPartnerGroupAp
     @NotNull
     private List<String> getGroups(JsonObject object) {
         try {
-            return object.getJsonArray(TX_NAMESPACE + "groups").stream().map(jv -> ((JsonString) jv).getString()).toList();
+            return object.getJsonArray(TX_NAMESPACE + "groups")
+                    .stream()
+                    .map(jv -> ((JsonString) jv.asJsonObject().get(VALUE)).getString())
+                    .toList();
         } catch (Exception ex) {
             throw new InvalidRequestException(ex.getMessage());
         }

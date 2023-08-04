@@ -44,6 +44,7 @@ dependencies {
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
+    testImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     testImplementation(libs.edc.auth.oauth2.client)
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgres)
