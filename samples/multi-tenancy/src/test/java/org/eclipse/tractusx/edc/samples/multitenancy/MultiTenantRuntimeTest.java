@@ -1,0 +1,55 @@
+package org.eclipse.tractusx.edc.samples.multitenancy;
+
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatcher;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+class MultiTenantRuntimeTest {
+
+    private final Monitor monitor = mock();
+    private final MultiTenantRuntime runtime =
+            new MultiTenantRuntime() {
+                @Override
+                protected @NotNull Monitor createMonitor() {
+                    return monitor;
+                }
+            };
+
+    @Test
+    void throwsExceptionIfNoTenantsPropertyProvided() {
+        assertThrows(EdcException.class, runtime::boot);
+        verify(monitor, never()).info(argThat(connectorIsReady()));
+    }
+
+    @Test
+    void throwsExceptionIfTenantsFileDoesNotExist() {
+        System.setProperty("edc.tenants.path", "unexistentfile");
+
+        assertThrows(EdcException.class, runtime::boot);
+        verify(monitor, never()).info(argThat(connectorIsReady()));
+    }
+
+    @Test
+    void threadForEveryTenant() {
+        System.setProperty("edc.tenants.path", "./src/test/resources/tenants.properties");
+
+        runtime.boot();
+
+        verify(monitor, times(2)).info(argThat(connectorIsReady()));
+    }
+
+    @NotNull
+    private ArgumentMatcher<String> connectorIsReady() {
+        return message -> message.endsWith(" ready");
+    }
+
+}
