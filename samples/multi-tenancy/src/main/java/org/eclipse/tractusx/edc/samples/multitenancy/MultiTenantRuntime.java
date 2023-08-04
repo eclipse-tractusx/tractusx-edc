@@ -53,8 +53,9 @@ public class MultiTenantRuntime extends BaseRuntime {
                 .map(this::toUrl)
                 .toArray(URL[]::new);
 
+        Thread runtimeThread = null;
         try (var classLoader = URLClassLoader.newInstance(classPathEntries, getSystemClassLoader())) {
-            var runtimeThread = new Thread(() -> {
+            runtimeThread = new Thread(() -> {
                 try {
                     Thread.currentThread().setContextClassLoader(classLoader);
                     super.boot();
@@ -68,7 +69,10 @@ public class MultiTenantRuntime extends BaseRuntime {
 
             runtimeThread.join(20_000);
 
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException e) {
+            runtimeThread.interrupt();
+            throw new EdcException(e);
+        } catch (IOException e) {
             throw new EdcException(e);
         } finally {
             System.setProperties(baseProperties);
@@ -94,7 +98,7 @@ public class MultiTenantRuntime extends BaseRuntime {
         try {
             return new File(entry).toURI().toURL();
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new EdcException(e);
         }
     }
 }

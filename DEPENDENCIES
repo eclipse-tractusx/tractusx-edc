@@ -273,6 +273,7 @@ maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.2.0, Apache-2.0, appro
 maven/mavencentral/org.eclipse.edc/dsp/0.2.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.2.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http/0.2.0, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/iam-mock/0.2.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jersey-core/0.2.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jersey-micrometer/0.2.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jersey-providers/0.2.0, Apache-2.0, approved, technology.edc

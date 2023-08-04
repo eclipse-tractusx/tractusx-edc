@@ -3,12 +3,15 @@
 This sample show how to create a custom runtime to run multiple EDC tenants in a single java process.
 
 ## How it works
+
 In a Java Runtime, multiple "sub-runtimes" with dedicated classloader can be launched in parallel, giving object-level
 separation (an object instantiated by a sub-runtime cannot be accessed by another sub-runtime).
 
 ## How to use
+
 The module provides an extension of the `BaseRuntime` class called `MultiTenantRuntime`.
 This class can be set in the `build.gradle.kts` as the main class:
+
 ```kotlin
 application {
     mainClass.set("org.eclipse.tractusx.edc.samples.multitenancy.MultiTenantRuntime")
@@ -18,6 +21,7 @@ application {
 This runtime looks for a properties file which path can be specified with the `edc.tenants.path` property.
 
 In this file the tenants are defined through settings, e.g.:
+
 ```properties
 edc.tenants.tenant1.edc.fs.config=/config/path
 edc.tenants.tenant2.edc.fs.config=/config/path
@@ -28,6 +32,7 @@ Using this file the EDC will run with 3 tenants: `tenant1`, `tenant2` and `tenan
 configuration file.
 Everything that stays after the tenant name in the setting key will be loaded in the tenant runtime, so *theoretically*
 (but not recommended) you could define all the tenants configuration in the tenants properties file:
+
 ```properties
 edc.tenants.tenant1.web.http.port=18181
 edc.tenants.tenant1.any.other.setting=value
@@ -38,16 +43,19 @@ edc.tenants.tenant3.web.http.port=38181
 ## Sample
 
 Build:
+
 ```shell
 ./gradlew :samples:multi-tenancy:build
 ```
 
 Run:
+
 ```shell
 java -jar -Dedc.tenants.path=samples/multi-tenancy/tenants.properties samples/multi-tenancy/build/libs/multitenant.jar
 ```
 
 Create a PolicyDefinition on `first` tenant:
+
 ```shell
 curl -X POST http://localhost:18183/management/v2/policydefinitions \
     --header 'Content-Type: application/json' \
@@ -64,11 +72,14 @@ curl -X POST http://localhost:18183/management/v2/policydefinitions \
                 '
 ```
 
-Get `first` tenant assets:
+Get `first` tenant policy definitions:
+
 ```shell
 curl -X POST http://localhost:18183/management/v2/policydefinitions/request
 ```
+
 Will get a list containing the PolicyDefinition we created:
+
 ```json
 [
   {
@@ -94,16 +105,20 @@ Will get a list containing the PolicyDefinition we created:
 ]
 ```
 
-`second` and `third` tenants will have no assets:
+`second` and `third` tenants will have no policy definitions:
+
 ```shell
 curl -X POST http://localhost:28183/management/v2/policydefinitions/request
 ```
+
 and
+
 ```shell
 curl -X POST http://localhost:38183/management/v2/policydefinitions/request
 ```
 
 will return
+
 ```json
 []
 ```
