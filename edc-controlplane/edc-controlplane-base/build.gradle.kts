@@ -34,8 +34,6 @@ dependencies {
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))
-    // for legacy BPN validation
-    runtimeOnly(project(":edc-extensions:business-partner-validation"))
 
     // needed for SSI integration
     runtimeOnly(project(":core:json-ld-core"))

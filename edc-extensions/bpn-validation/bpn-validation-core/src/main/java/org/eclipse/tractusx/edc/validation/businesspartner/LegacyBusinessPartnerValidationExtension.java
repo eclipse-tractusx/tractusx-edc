@@ -28,7 +28,6 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerDutyFunction;
@@ -90,13 +89,13 @@ public class LegacyBusinessPartnerValidationExtension implements ServiceExtensio
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        final Monitor monitor = context.getMonitor();
+        var monitor = context.getMonitor();
 
         var logAgreementEvaluation = logAgreementEvaluationSetting(context);
 
-        final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerPermissionFunction permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerProhibitionFunction prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
+        var dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
+        var permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
+        var prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
 
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
@@ -114,7 +113,7 @@ public class LegacyBusinessPartnerValidationExtension implements ServiceExtensio
         policyEngine.registerFunction(scope, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
     }
 
-    private Boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
+    private boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
         return Boolean.parseBoolean(context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, DEFAULT_LOG_AGREEMENT_EVALUATION));
     }
 }

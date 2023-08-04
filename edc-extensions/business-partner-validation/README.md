@@ -1,192 +1,154 @@
 # Business Partner Validation Extension
 
-> this extension is deprecated and should not be used anymore
-> Please use the `bpn-validation` module instead!
+This extension is used to introduce the capability to a connector to evaluate two types of policies:
 
-Using the Business Partner Validation Extension it's possible to add configurable validation against
-BPNs in the `ContractDefinition.AccessPolicy`. Using a BPN in `ContractDefinition.ContractPolicy` is possible, too, but once the contract is complete there is no policy enforcement in place from the EDC.
+- A Business Partner Group policy: evaluates, whether a certain BPN belongs to a certain group. For example, a
+  participating company categorizes other dataspace participants in three
+  groups: `"customer"`, `"gold_customer"`, `"platin_customer"`. Then, that company may want to show certain assets only
+  to a specific group. The Business Partner Group Policy enables that semantic.
+- [not recommended] a Business Partner Number Policy: evaluates, whether the BPN in question is contained in a list of "
+  white-listed" BPNs. That whitelist is hard-coded directly on the policy. This policy is **not recommended anymore**
+  due to
+  concerns of scalability and maintainability. Each time such a policy is evaluated, the runtime will log a warning.
 
-It is recommended to have a basic understanding of the EDC contract/policy domain before using this extension. The
-corresponding documentation can be found in the [EDC GitHub Repository](https://github.com/eclipse-edc/Connector).
+Technically, both these policies and their evaluation functions can be used in several circumstances, which in EDC are
+called *scopes*. More information on how to bind policy functions to scopes can be found in
+the [official documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/policy-engine.md).
 
-The business partner number of another connector is part of its DAPS token. Once a BPN constraint is used in an access
-policy the connector checks the token before sending out contract offers.
+Both previously mentioned evaluation functions are bound to the following scopes:
 
-Example of business partner constraint:
+- `catalog`: determines, what policies (specifically: constraints) are to be evaluated when requesting the catalog (
+  i.e. "access policy")
+- `contract.negotiation`: determines, which policies/constraints are to be evaluated during the negotiation phase (
+  i.e. "contract policy")
+- `transfer.process`: determines, which policies/constraints are to be evaluated when performing a data transfer, e.g.
+  contract expiry
 
-```json
-{
-  "leftExpression": {
-    "value": "BusinessPartner"
-  },
-  "rightExpression": {
-    "value": "BPNLCDQ90000X42KU"
-  },
-  "operator": "EQ"
-}
-```
+## Business Partner Group Policy
 
-The `leftExpression` must always contain 'BusinessPartner', so that the policy functions of this extension are invoked.
-Additionally, the only `operator` that is supported by these policy functions is 'EQ'. Finally, the `rightExpression`
-must contain the Business Partner Number.
+This policy states, that a certain BPN must, may or must not be member of a certain group. Groups may be represented as
+scalar, or as comma-separated lists. For semantic expression, the following ODRL operators are
+supported: `eq`, `neq`, `in`, `isAllOf`, `isAnyOf`, `isNoneOf`. The following example demonstrates a full JSON-LD
+structure in expanded form, containing such a constraint.
 
-## Single BusinessPartnerNumber example
-
-The most simple BPN policy would allow the usage of certain data to a single Business Partner. An example `Policy` is
-shown below. In this example the `edctype` properties are added, so that this policy may even be sent to the Management API.
+### Example
 
 ```json
 {
-  "uid": "<PolicyId>",
-  "prohibitions": [],
-  "obligations": [],
-  "permissions": [
-    {
-      "edctype": "dataspaceconnector:permission",
-      "action": {
-        "type": "USE"
-      },
-      "constraints": [
-        {
-          "edctype": "AtomicConstraint",
-          "leftExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "BusinessPartnerNumber"
-          },
-          "rightExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "<BPN>"
-          },
-          "operator": "EQ"
-        }
-      ]
+  "@type": "https://w3id.org/edc/v0.0.1/ns/PolicyDefinitionDto",
+  "https://w3id.org/edc/v0.0.1/ns/policy": {
+    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "permission": {
+      "action": "USE",
+      "constraint": {
+        "@type": "http://www.w3.org/ns/odrl/2/LogicalConstraint",
+        "or": [
+          {
+            "@type": "http://www.w3.org/ns/odrl/2/Constraint",
+            "leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
+            "operator": "http://www.w3.org/ns/odrl/2/isAllOf",
+            "rightOperand": "greek,philosopher"
+          }
+        ]
+      }
     }
-  ]
+  },
+  "@id": "some-policy-id"
 }
 ```
 
-## Multiple BusinessPartnerNumber example
+The first important take-away is the `constraint` object, which contains a single expression that mandates, that in
+order to fulfill the policy, a business partner must be `greek` and they must be a `philosopher`. Whether a
+particular BPN has either of these groups assigned is determined by the `ParticipantAgent`, and by a subsequent lookup
+in an internal database. See [the next section](#manipulating-groups) for details.
 
-To define multiple BPN and allow multiple participants to use the data the `orconstraint` should be used.
-It will permit the constraints contained to be evaluated using the `OR` operator.
+The second important aspect is the `leftOperand`, which must
+be `"https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup"`. Together with the scope, the `leftOperand` determines,
+which constraint functions is called to evaluate the policy. Here, it is the `BusinessPartnerGroupFunction`.
+
+### Manipulating groups
+
+The `bpn-evaluation` module provides a simple CRUD REST API to manipulate BPN <> group associations. Each BPN is stored
+in an internal database together with the groups that it was assigned. The OpenAPI specification can be
+found [here](../../resources/openapi/yaml/bpn-validation-api.yaml).
+
+## Business Partner Number Policy [not recommended]
+
+This policy mandates, that a particular Business Partner Number must be contained in a white-list that is hard-coded on
+the policy. Here, only the ODRL `eq"` operator is supported, and the `rightOperand` must be the white-listed BPN.
+
+### Example
 
 ```json
 {
-  "permissions": [
-    {
-      "edctype": "dataspaceconnector:permission",
-      "action": {
-        "type": "USE"
-      },
-      "constraints": [
-        {
-          "edctype": "dataspaceconnector:orconstraint",
-          "constraints": [
+  "@type": "https://w3id.org/edc/v0.0.1/ns/PolicyDefinitionDto",
+  "https://w3id.org/edc/v0.0.1/ns/policy": {
+    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "permission": [
+      {
+        "action": "USE",
+        "constraint": {
+          "@type": "http://www.w3.org/ns/odrl/2/LogicalConstraint",
+          "or": [
             {
-              "edctype": "AtomicConstraint",
-              "leftExpression": {
-                "edctype": "dataspaceconnector:literalexpression",
-                "value": "BusinessPartnerNumber"
-              },
-              "rightExpression": {
-                "edctype": "dataspaceconnector:literalexpression",
-                "value": "<BPN1>"
-              },
-              "operator": "EQ"
-            },
-            {
-              "edctype": "AtomicConstraint",
-              "leftExpression": {
-                "edctype": "dataspaceconnector:literalexpression",
-                "value": "BusinessPartnerNumber"
-              },
-              "rightExpression": {
-                "edctype": "dataspaceconnector:literalexpression",
-                "value": "<BPN2>"
-              },
-              "operator": "EQ"
-            },
-            
-            ...
-            
-            // other constraints can be added
+              "@type": "http://www.w3.org/ns/odrl/2/Constraint",
+              "leftOperand": "BusinessPartnerNumber",
+              "operator": "eq",
+              "rightOperand": "BPN00001234"
+            }
           ]
         }
-      ],
-      "duties": []
-    }
-  ]
+      }
+    ]
+  },
+  "@id": "some-policy-id"
 }
 ```
 
-## Important: EDC Policies are input sensitive
+Again, the `leftOperand` must be `"BusinessPartnerNumber`, and it determines, which constraint function is evaluated
+(here: `BusinessPartnerPermissionFunction`). The evaluation of the example policy only succeeds, when
+the `ParticipantAgent`'s BPN is `"BPN00001234"`.
 
-Please be aware that the EDC ignores all Rules and Constraint it does not understand. This could cause your constrained policies to be public.
-
-### Example 1 for accidentially public
+In case multiple BPNs are to be white-listed, the policy would contain multiple `or` constraints:
 
 ```json
 {
-  "uid": "1",
-  "prohibitions": [],
-  "obligations": [],
-  "permissions": [
-    {
-      "edctype": "dataspaceconnector:permission",
-      "action": {
-        "type": "MY-USE"
-      },
-      "constraints": [
-        {
-          "edctype": "AtomicConstraint",
-          "leftExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "BusinessPartnerNumber"
-          },
-          "rightExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "BPNLCDQ90000X42KU"
-          },
-          "operator": "EQ"
+  "@type": "https://w3id.org/edc/v0.0.1/ns/PolicyDefinitionDto",
+  "https://w3id.org/edc/v0.0.1/ns/policy": {
+    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "permission": [
+      {
+        "action": "USE",
+        "constraint": {
+          "@type": "http://www.w3.org/ns/odrl/2/LogicalConstraint",
+          "or": [
+            {
+              "@type": "http://www.w3.org/ns/odrl/2/Constraint",
+              "leftOperand": "BusinessPartnerNumber",
+              "operator": "eq",
+              "rightOperand": "BPN00001234"
+            },
+            {
+              "@type": "http://www.w3.org/ns/odrl/2/Constraint",
+              "leftOperand": "BusinessPartnerNumber",
+              "operator": "eq",
+              "rightOperand": "BPN00005678"
+            }
+          ]
         }
-      ]
-    }
-  ]
+      }
+    ]
+  },
+  "@id": "some-policy-id"
 }
 ```
 
-This policy is public available, even though the constraint is described correct. The reason is, that this extension only registeres the Policy.Action `USE` within the EDC. Any other Action Type will have the EDC ignore the corresponding permission, hence interpret the polics as public policy.
+The second policy expresses that the BPN of the participant in question must be either `"BPN00001234"`
+*or* `"BPN00005678"`.
 
-### Example 2 for accidentially public
+### Deprecation warning
 
-```json
-{
-  "uid": "1",
-  "prohibitions": [],
-  "obligations": [],
-  "permissions": [
-    {
-      "edctype": "dataspaceconnector:permission",
-      "action": {
-        "type": "USE"
-      },
-      "constraints": [
-        {
-          "edctype": "AtomicConstraint",
-          "leftExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "BusinesPartnerNumber"
-          },
-          "rightExpression": {
-            "edctype": "dataspaceconnector:literalexpression",
-            "value": "BPNLCDQ90000X42KU"
-          },
-          "operator": "EQ"
-        }
-      ]
-    }
-  ]
-}
-```
-
-This policy is public available, too. The cause is a typo in the left-expression of the constraint. This extension only registers the `Constraint.LeftExpression` `BusinessPartnerNumber` within the EDC. Any other term will have the EDC ignore the corresponding constraint, hence interpret the policies as public policy.
+The Business Partner Number Policy is not recommended for production use because it is severely limited in terms of
+scalability and maintainability. Everytime a new participant onboards onto or off-boards from the dataspace, every
+existing participant would have to either enter new contract definitions, effectively duplicating them, or update *all
+existing policies*. That would be a significant maintenance and migration effort.
