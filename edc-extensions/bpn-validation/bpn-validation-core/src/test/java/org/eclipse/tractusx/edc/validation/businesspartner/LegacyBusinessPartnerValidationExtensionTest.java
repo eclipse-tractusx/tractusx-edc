@@ -1,21 +1,22 @@
 /*
- * Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ *   Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ *   See the NOTICE file(s) distributed with this work for additional
+ *   information regarding copyright ownership.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ *   This program and the accompanying materials are made available under the
+ *   terms of the Apache License, Version 2.0 which is available at
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: Apache-2.0
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *   License for the specific language governing permissions and limitations
+ *   under the License.
+ *
+ *   SPDX-License-Identifier: Apache-2.0
+ *
  */
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
@@ -27,7 +28,7 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerPermissionFunction;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerPermissionFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,9 +42,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class BusinessPartnerValidationExtensionTest {
+class LegacyBusinessPartnerValidationExtensionTest {
 
-    private BusinessPartnerValidationExtension extension;
+    private LegacyBusinessPartnerValidationExtension extension;
 
     // mocks
     private ServiceExtensionContext serviceExtensionContext;
@@ -61,7 +62,7 @@ class BusinessPartnerValidationExtensionTest {
 
         when(serviceExtensionContext.getMonitor()).thenReturn(monitor);
 
-        extension = new BusinessPartnerValidationExtension(ruleBindingRegistry, policyEngine);
+        extension = new LegacyBusinessPartnerValidationExtension(ruleBindingRegistry, policyEngine);
     }
 
     @Test
@@ -75,7 +76,7 @@ class BusinessPartnerValidationExtensionTest {
                 .registerFunction(
                         anyString(),
                         eq(Duty.class),
-                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        eq(LegacyBusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
     }
 
@@ -90,7 +91,7 @@ class BusinessPartnerValidationExtensionTest {
                 .registerFunction(
                         anyString(),
                         eq(Permission.class),
-                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        eq(LegacyBusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
     }
 
@@ -105,14 +106,14 @@ class BusinessPartnerValidationExtensionTest {
                 .registerFunction(
                         anyString(),
                         eq(Prohibition.class),
-                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        eq(LegacyBusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
     }
 
     @Test
     void testLogConfiguration() {
 
-        when(serviceExtensionContext.getSetting(BusinessPartnerValidationExtension.BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, "true")).thenReturn("false");
+        when(serviceExtensionContext.getSetting(LegacyBusinessPartnerValidationExtension.BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, "true")).thenReturn("false");
 
         var captor = ArgumentCaptor.forClass(BusinessPartnerPermissionFunction.class);
         // invoke
@@ -123,7 +124,7 @@ class BusinessPartnerValidationExtensionTest {
                 .registerFunction(
                         anyString(),
                         eq(Permission.class),
-                        eq(BusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        eq(LegacyBusinessPartnerValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY),
                         captor.capture());
 
         assertThat(captor.getValue().isLogAgreementEvaluation()).isFalse();

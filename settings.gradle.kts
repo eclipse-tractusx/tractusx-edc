@@ -32,7 +32,6 @@ include(":core:edr-core")
 include(":core:json-ld-core")
 
 
-include(":edc-extensions:business-partner-validation")
 include(":edc-extensions:bpn-validation")
 include(":edc-extensions:bpn-validation:bpn-validation-api")
 include(":edc-extensions:bpn-validation:bpn-validation-spi")

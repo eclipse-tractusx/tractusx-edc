@@ -1,24 +1,25 @@
 /*
- * Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ *   Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ *   See the NOTICE file(s) distributed with this work for additional
+ *   information regarding copyright ownership.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ *   This program and the accompanying materials are made available under the
+ *   terms of the Apache License, Version 2.0 which is available at
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: Apache-2.0
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *   License for the specific language governing permissions and limitations
+ *   under the License.
+ *
+ *   SPDX-License-Identifier: Apache-2.0
+ *
  */
 
-package org.eclipse.tractusx.edc.validation.businesspartner.functions;
+package org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy;
 
 import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
@@ -75,8 +76,7 @@ public abstract class AbstractBusinessPartnerValidation {
      * @param businessPartnerNumber   of the constraint
      * @return true if claim contains the business partner number
      */
-    private static boolean isCorrectBusinessPartner(
-            String referringConnectorClaim, String businessPartnerNumber) {
+    private static boolean isCorrectBusinessPartner(String referringConnectorClaim, String businessPartnerNumber) {
         return referringConnectorClaim.contains(businessPartnerNumber);
     }
 
@@ -93,14 +93,13 @@ public abstract class AbstractBusinessPartnerValidation {
      * @param policyContext context of the policy with claims
      * @return true if claims are from the constrained business partner
      */
-    protected boolean evaluate(
-            final Operator operator, final Object rightValue, final PolicyContext policyContext) {
+    public boolean evaluate(Operator operator, Object rightValue, PolicyContext policyContext) {
 
         monitor.warning("This policy evaluation function (class [%s]) was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC".formatted(getClass().getSimpleName()));
 
         if (policyContext.hasProblems() && !policyContext.getProblems().isEmpty()) {
-            String problems = String.join(", ", policyContext.getProblems());
-            String message =
+            var problems = String.join(", ", policyContext.getProblems());
+            var message =
                     format(
                             "BusinessPartnerNumberValidation: Rejecting PolicyContext with problems. Problems: %s",
                             problems);
@@ -108,7 +107,7 @@ public abstract class AbstractBusinessPartnerValidation {
             return false;
         }
 
-        final ParticipantAgent participantAgent = policyContext.getContextData(ParticipantAgent.class);
+        var participantAgent = policyContext.getContextData(ParticipantAgent.class);
 
         if (participantAgent == null) {
             return false;
@@ -122,7 +121,7 @@ public abstract class AbstractBusinessPartnerValidation {
         if (operator == Operator.EQ) {
             return isBusinessPartnerNumber(referringConnectorClaim, rightValue, policyContext);
         } else {
-            final String message = format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
+            var message = format(FAIL_EVALUATION_BECAUSE_UNSUPPORTED_OPERATOR, operator);
             monitor.warning(message);
             policyContext.reportProblem(message);
             return false;
@@ -131,11 +130,10 @@ public abstract class AbstractBusinessPartnerValidation {
 
     @Nullable
     private String getReferringConnectorClaim(ParticipantAgent participantAgent) {
-        Object referringConnectorClaimObject = null;
         String referringConnectorClaim = null;
         var claims = participantAgent.getClaims();
 
-        referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
+        var referringConnectorClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
 
         if (referringConnectorClaimObject instanceof String) {
             referringConnectorClaim = (String) referringConnectorClaimObject;
@@ -149,13 +147,13 @@ public abstract class AbstractBusinessPartnerValidation {
 
     private boolean isBusinessPartnerNumber(String referringConnectorClaim, Object businessPartnerNumber, PolicyContext policyContext) {
         if (businessPartnerNumber == null) {
-            final String message = format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
+            var message = format(FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING, "null");
             monitor.warning(message);
             policyContext.reportProblem(message);
             return false;
         }
         if (!(businessPartnerNumber instanceof String businessPartnerNumberStr)) {
-            final String message =
+            var message =
                     format(
                             FAIL_EVALUATION_BECAUSE_RIGHT_VALUE_NOT_STRING,
                             businessPartnerNumber.getClass().getName());
