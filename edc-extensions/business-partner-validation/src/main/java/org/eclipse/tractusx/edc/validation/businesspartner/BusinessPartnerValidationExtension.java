@@ -48,7 +48,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     /**
      * The key for business partner numbers constraints. Must be used as left operand when declaring constraints.
-     * <p/>Example:
+     * <p>Example:
      *
      * <pre>
      * {

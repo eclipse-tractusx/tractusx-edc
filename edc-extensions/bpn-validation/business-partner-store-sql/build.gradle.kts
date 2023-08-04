@@ -23,7 +23,16 @@ plugins {
 }
 
 dependencies {
-    api(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
-    api(project(":edc-extensions:bpn-validation:bpn-validation-api"))
-    api(project(":edc-extensions:bpn-validation:bpn-validation-core"))
+    implementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
+
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.transaction.datasource)
+    implementation(libs.edc.spi.transactionspi)
+    implementation(libs.edc.core.sql)
+
+
+    testImplementation(libs.edc.transaction.local)
+    testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.junit))
+    testImplementation(testFixtures(project(":edc-extensions:bpn-validation:bpn-validation-core")))
 }

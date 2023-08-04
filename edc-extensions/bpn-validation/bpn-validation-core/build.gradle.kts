@@ -20,10 +20,19 @@
 plugins {
     `java-library`
     `maven-publish`
+    `java-test-fixtures`
 }
 
 dependencies {
     api(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
-    api(project(":edc-extensions:bpn-validation:bpn-validation-api"))
-    api(project(":edc-extensions:bpn-validation:bpn-validation-core"))
+    implementation(project(":spi:core-spi"))
+    api(libs.edc.spi.core)
+    implementation(libs.edc.spi.policy)
+    implementation(libs.edc.spi.contract)
+    implementation(libs.edc.spi.policyengine)
+
+    testImplementation(libs.edc.junit)
+    testFixturesImplementation(libs.edc.junit)
+    testFixturesImplementation(libs.junit.jupiter.api)
+    testFixturesImplementation(libs.assertj)
 }
