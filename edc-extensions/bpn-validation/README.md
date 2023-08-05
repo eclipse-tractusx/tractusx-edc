@@ -152,3 +152,6 @@ The Business Partner Number Policy is not recommended for production use because
 scalability and maintainability. Everytime a new participant onboards onto or off-boards from the dataspace, every
 existing participant would have to either enter new contract definitions, effectively duplicating them, or update *all
 existing policies*. That would be a significant maintenance and migration effort.
+
+For that reason, the Business Partner Number Policy is marked as deprecated, and is scheduled for removal in EDC 0.6.x.
+Please consider upgrading your environment at your earliest convenience.

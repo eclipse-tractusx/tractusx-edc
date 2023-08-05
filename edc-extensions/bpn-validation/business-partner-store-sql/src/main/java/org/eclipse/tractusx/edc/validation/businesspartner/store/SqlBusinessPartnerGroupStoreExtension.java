@@ -35,6 +35,7 @@ public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
     private static final String DEFAULT_DATASOURCE_NAME = "bpn";
     @Setting(value = "Datasource name for the SQL BusinessPartnerGroup store", defaultValue = DEFAULT_DATASOURCE_NAME)
     private static final String DATASOURCE_SETTING_NAME = "edc.datasource.bpn.name";
+    private static final String NAME = "SQL Business Partner Store";
     @Inject
     private DataSourceRegistry dataSourceRegistry;
     @Inject
@@ -50,6 +51,11 @@ public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
     public BusinessPartnerStore sqlStore(ServiceExtensionContext context) {
         var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
         return new SqlBusinessPartnerStore(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, getStatements());
+    }
+
+    @Override
+    public String name() {
+        return NAME;
     }
 
     private BusinessPartnerGroupStatements getStatements() {
