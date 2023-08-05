@@ -32,7 +32,7 @@ spec:
     {{/* Poke the pod's management API   */}}
     - name: readiness
       image: curlimages/curl
-      command: [ 'curl' ]
+      command: [ 'curl', '--fail' ]
       args: [ '{{- printf "http://%s-controlplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.default.port $.Values.controlplane.endpoints.default.path -}}' ]
 
     {{/* Try adding a BPN Group to the store via the management API   */}}

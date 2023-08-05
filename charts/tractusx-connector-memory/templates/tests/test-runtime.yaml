@@ -34,19 +34,8 @@ spec:
   containers:
     - name: readiness
       image: curlimages/curl
-      command: [ 'curl' ]
+      command: [ 'curl', '--fail' ]
       args: [ '{{- printf "http://%s-runtime:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.default.port $.Values.runtime.endpoints.default.path -}}' ]
-  {{/* Try adding a BPN Group to the store via the management API   */}}
-    - name: mgmt-api-bpn-store
-      image: curlimages/curl
-      command: [ 'curl', '-X', 'POST', '--fail','-H','Content-Type: application/json', '-H', '{{- printf "x-api-key: %s" $.Values.runtime.endpoints.management.authKey }}', '-d', '{
-                  @context": {
-                          "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
-                      },
-                      "@id": "tx:BPN000001234",
-                      "tx:groups": ["group1", "group2", "group3"]
-                  }' ]
-      args: [ '{{- printf "http://%s-runtime:%v%s/business-partner-groups" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.management.port $.Values.runtime.endpoints.management.path -}}' ]
   restartPolicy: Never
   securityContext:
     fsGroup: 101 # curl_group

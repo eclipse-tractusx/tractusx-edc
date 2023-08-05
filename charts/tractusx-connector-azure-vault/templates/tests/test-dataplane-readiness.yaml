@@ -31,7 +31,7 @@ spec:
   containers:
     - name: wget
       image: curlimages/curl
-      command: [ 'curl' ]
+      command: [ 'curl', '--fail' ]
       args: [ '{{- printf "http://%s-dataplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.dataplane.endpoints.default.port $.Values.dataplane.endpoints.default.path -}}' ]
   restartPolicy: Never
   securityContext:
@@ -40,4 +40,4 @@ spec:
     runAsNonRoot: true
     runAsUser: 100 # curl_user
     seccompProfile:
-        type: RuntimeDefault
+      type: RuntimeDefault
