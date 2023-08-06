@@ -40,9 +40,9 @@ spec:
       protocol: TCP
       name: control
     - port: {{ .Values.runtime.endpoints.management.port }}
-      targetPort: data
+      targetPort: management
       protocol: TCP
-      name: data
+      name: management
     - port: {{ .Values.runtime.endpoints.validation.port }}
       targetPort: validation
       protocol: TCP
