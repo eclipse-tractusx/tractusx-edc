@@ -81,6 +81,8 @@ include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api")
 include(":edc-tests:edc-dataplane-proxy-e2e")
 
+include(":samples:multi-tenancy")
+
 
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
