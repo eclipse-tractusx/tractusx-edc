@@ -74,7 +74,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IdResponseDto'
+                $ref: '#/components/schemas/IdResponse'
           description: The negotiation was successfully initiated.
         "400":
           content:
@@ -103,7 +103,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataAddressDto'
+                $ref: '#/components/schemas/DataAddress'
           description: The EDR cached
         "400":
           content:
@@ -140,7 +140,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataAddressDto'
+                $ref: '#/components/schemas/DataAddress'
           description: The EDR cached
         "400":
           content:
@@ -238,21 +238,15 @@ components:
           example: null
         policy:
           $ref: '#/components/schemas/Policy'
-    DataAddressDto:
+    DataAddress:
       type: object
       example: null
       properties:
-        '@context':
-          type: object
-          example: null
         '@type':
           type: string
-          example: null
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-            example: null
+          example: https://w3id.org/edc/v0.0.1/ns/DataAddress
+        type:
+          type: string
           example: null
     Duty:
       type: object
@@ -288,23 +282,57 @@ components:
         assetId:
           type: string
           example: null
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+        errorDetail:
+          type: string
+          example: null
+        expirationTimestamp:
+          type: integer
+          format: int64
+          example: null
+        id:
+          type: string
+          example: null
         providerId:
           type: string
+          example: null
+        state:
+          type: integer
+          format: int32
+          example: null
+        stateCount:
+          type: integer
+          format: int32
+          example: null
+        stateTimestamp:
+          type: integer
+          format: int64
+          example: null
+        traceContext:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
           example: null
         transferProcessId:
           type: string
           example: null
-    IdResponseDto:
+        updatedAt:
+          type: integer
+          format: int64
+          example: null
+    IdResponse:
       type: object
-      example: null
-      properties:
+      example:
         '@context':
-          type: object
-          example: null
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': id-value
+        createdAt: 1688465655
+      properties:
         '@id':
-          type: string
-          example: null
-        '@type':
           type: string
           example: null
         createdAt:

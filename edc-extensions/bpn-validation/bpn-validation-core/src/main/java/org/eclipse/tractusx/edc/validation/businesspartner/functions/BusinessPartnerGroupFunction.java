@@ -21,6 +21,7 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +101,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
      */
     @Override
     public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext policyContext) {
-        final ParticipantAgent participantAgent = policyContext.getContextData(ParticipantAgent.class);
+        var participantAgent = policyContext.getContextData(ParticipantAgent.class);
 
         // No participant agent found in context
         if (participantAgent == null) {
@@ -144,7 +145,8 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
         if (rightValue instanceof String) {
-            return List.of(rightValue.toString());
+            var tokens = ((String) rightValue).split(",");
+            return Arrays.asList(tokens);
         }
         if (rightValue instanceof Collection<?>) {
             return ((Collection<?>) rightValue).stream().map(Object::toString).toList();

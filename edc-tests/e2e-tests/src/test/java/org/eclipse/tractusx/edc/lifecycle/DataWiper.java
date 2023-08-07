@@ -20,8 +20,10 @@ import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import java.util.stream.Collectors;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 
 /**
  * Helper class to delete all objects from a runtime's data stores.
@@ -39,6 +41,13 @@ public class DataWiper {
         clearPolicies();
         clearContractDefinitions();
         clearEdrCache();
+        clearBusinessPartnerStore();
+    }
+
+    public void clearBusinessPartnerStore() {
+        var bps = context.getService(BusinessPartnerStore.class);
+        bps.delete(SOKRATES_BPN);
+        bps.delete(PLATO_BPN);
     }
 
     public void clearContractDefinitions() {
@@ -49,7 +58,7 @@ public class DataWiper {
     public void clearPolicies() {
         var ps = context.getService(PolicyDefinitionStore.class);
         // must .collect() here, otherwise we'll get a ConcurrentModificationException
-        ps.findAll(QuerySpec.max()).collect(Collectors.toList()).forEach(p -> ps.delete(p.getId()));
+        ps.findAll(QuerySpec.max()).toList().forEach(p -> ps.delete(p.getId()));
     }
 
     public void clearAssetIndex() {

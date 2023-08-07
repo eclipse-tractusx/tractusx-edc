@@ -228,6 +228,16 @@ spec:
             - name: "EDC_DATASOURCE_EDR_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
 
+            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/bpn-validation/business-partner-store-sql
+            - name: "EDC_DATASOURCE_BPN_NAME"
+              value: "bpn"
+            - name: "EDC_DATASOURCE_BPN_USER"
+              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
+            - name: "EDC_DATASOURCE_BPN_PASSWORD"
+              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
+            - name: "EDC_DATASOURCE_BPN_URL"
+              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
+
             ################
             ## DATA PLANE ##
             ################

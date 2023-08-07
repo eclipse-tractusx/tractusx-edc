@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.tests.negotiation;
 
 import jakarta.json.Json;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
@@ -58,7 +59,8 @@ public abstract class AbstractContractNegotiateTest {
                 .add(EDC_NAMESPACE + "authCode", authCode)
                 .build());
 
-        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
+        PLATO.storeBusinessPartner(SOKRATES.getBpn(), "allowed-group");
+        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.NEQ, "forbidden-group"));
         PLATO.createPolicy(frameworkPolicy("policy-2", Map.of("Dismantler", "active")));
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 

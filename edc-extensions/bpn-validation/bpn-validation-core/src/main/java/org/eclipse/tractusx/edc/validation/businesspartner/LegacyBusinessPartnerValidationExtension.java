@@ -1,21 +1,22 @@
 /*
- * Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ *   Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ *   See the NOTICE file(s) distributed with this work for additional
+ *   information regarding copyright ownership.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ *   This program and the accompanying materials are made available under the
+ *   terms of the Apache License, Version 2.0 which is available at
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: Apache-2.0
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *   License for the specific language governing permissions and limitations
+ *   under the License.
+ *
+ *   SPDX-License-Identifier: Apache-2.0
+ *
  */
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
@@ -27,12 +28,11 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerDutyFunction;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerPermissionFunction;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerProhibitionFunction;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerDutyFunction;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerPermissionFunction;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerProhibitionFunction;
 
 import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
@@ -44,7 +44,7 @@ import static org.eclipse.edc.connector.contract.spi.validation.ContractValidati
  * @deprecated Please use {@code BusinessPartnerEvaluationExtension} instead.
  */
 @Deprecated(forRemoval = true, since = "0.5.0")
-public class BusinessPartnerValidationExtension implements ServiceExtension {
+public class LegacyBusinessPartnerValidationExtension implements ServiceExtension {
 
     /**
      * The key for business partner numbers constraints. Must be used as left operand when declaring constraints.
@@ -72,10 +72,10 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
     @Inject
     private PolicyEngine policyEngine;
 
-    public BusinessPartnerValidationExtension() {
+    public LegacyBusinessPartnerValidationExtension() {
     }
 
-    public BusinessPartnerValidationExtension(
+    public LegacyBusinessPartnerValidationExtension(
             final RuleBindingRegistry ruleBindingRegistry, final PolicyEngine policyEngine) {
         this.ruleBindingRegistry = ruleBindingRegistry;
         this.policyEngine = policyEngine;
@@ -89,13 +89,13 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        final Monitor monitor = context.getMonitor();
+        var monitor = context.getMonitor();
 
         var logAgreementEvaluation = logAgreementEvaluationSetting(context);
 
-        final BusinessPartnerDutyFunction dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerPermissionFunction permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
-        final BusinessPartnerProhibitionFunction prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
+        var dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
+        var permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
+        var prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
 
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
         bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
@@ -113,7 +113,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         policyEngine.registerFunction(scope, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
     }
 
-    private Boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
+    private boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
         return Boolean.parseBoolean(context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, DEFAULT_LOG_AGREEMENT_EVALUATION));
     }
 }

@@ -107,6 +107,10 @@ public class PgParticipantRuntime extends ParticipantRuntime {
                 put("edc.datasource.edr.url", jdbcUrl);
                 put("edc.datasource.edr.user", USER);
                 put("edc.datasource.edr.password", PASSWORD);
+                put("edc.datasource.bpn.name", "bpn");
+                put("edc.datasource.bpn.url", jdbcUrl);
+                put("edc.datasource.bpn.user", USER);
+                put("edc.datasource.bpn.password", PASSWORD);
                 // use non-default schema name to test usage of non-default schema
                 put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }

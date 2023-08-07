@@ -29,7 +29,13 @@ components:
         endpointUrl:
           type: string
           example: null
+        pathSegments:
+          type: string
+          example: null
         providerId:
+          type: string
+          example: null
+        queryParams:
           type: string
           example: null
         transferProcessId:

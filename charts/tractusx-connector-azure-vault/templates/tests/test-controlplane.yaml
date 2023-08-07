@@ -21,7 +21,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{include "txdc.fullname" .}}test-controlplane-readiness"
+  name: "{{include "txdc.fullname" .}}-test-controlplane"
   labels:
     {{- include "txdc.controlplane.labels" . | nindent 4 }}
   annotations:
@@ -29,10 +29,23 @@ metadata:
     "helm.sh/hook-delete-policy": {{ .Values.tests.hookDeletePolicy }}
 spec:
   containers:
-    - name: wget
+    {{/* Poke the pod's management API   */}}
+    - name: readiness
       image: curlimages/curl
-      command: [ 'curl' ]
+      command: [ 'curl', '--fail' ]
       args: [ '{{- printf "http://%s-controlplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.default.port $.Values.controlplane.endpoints.default.path -}}' ]
+
+    {{/* Try adding a BPN Group to the store via the management API   */}}
+    - name: mgmt-api-bpn-store
+      image: curlimages/curl
+      command: [ 'curl', '-X', 'POST', '--fail','-H','Content-Type: application/json', '-H', '{{- printf "x-api-key: %s" $.Values.controlplane.endpoints.management.authKey }}', '-d', '{
+                    "@context": {
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                    },
+                    "@id": "tx:BPN000001234",
+                    "tx:groups": ["group1", "group2", "group3"]
+                }' ]
+      args: [ '{{- printf "http://%s-controlplane:%v%s/business-partner-groups" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.management.port $.Values.controlplane.endpoints.management.path -}}' ]
   restartPolicy: Never
   securityContext:
     fsGroup: 101 # curl_group
@@ -40,4 +53,4 @@ spec:
     runAsNonRoot: true
     runAsUser: 100 # curl_user
     seccompProfile:
-        type: RuntimeDefault
+      type: RuntimeDefault
