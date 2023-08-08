@@ -61,7 +61,7 @@ jobs:
           [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] && 
           [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  && 
-          [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
           exit 0
 
   build-docker-images:
