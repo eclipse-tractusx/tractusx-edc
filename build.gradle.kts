@@ -155,6 +155,7 @@ subprojects {
 
             val agentFile = project.buildDir.resolve("opentelemetry-javaagent.jar")
             // create task to download the opentelemetry agent
+            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.27.0/opentelemetry-javaagent.jar"
             val downloadOtel = tasks.create("downloadOtel") {
                 // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
                 onlyIf {
@@ -168,7 +169,7 @@ subprojects {
                 doLast {
                     val download = { url: String, destFile: File -> ant.invokeMethod("get", mapOf("src" to url, "dest" to destFile)) }
                     logger.lifecycle("Downloading OpenTelemetry Agent")
-                    download("https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.27.0/opentelemetry-javaagent.jar", agentFile)
+                    download(openTelemetryAgentUrl, agentFile)
                 }
             }
 
@@ -176,7 +177,6 @@ subprojects {
             apply(plugin = "com.bmuschko.docker-remote-api")
             // configure the "dockerize" task
             val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
-                logger.info("using otel jar {}", agentFile)
                 val dockerContextDir = project.projectDir
                 dockerFile.set(file("$dockerContextDir/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
@@ -188,7 +188,7 @@ subprojects {
                 buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
                 inputDir.set(file(dockerContextDir))
             }
-            // make sure "shadowJar" always runs before "dockerize" and after "copyOtel"
+            // make sure  always runs after "dockerize" and after "copyOtel"
             dockerTask.dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
                     .dependsOn(downloadOtel)
         }

@@ -40,6 +40,7 @@ RUN adduser \
 USER "$APP_USER"
 WORKDIR /app
 
+COPY ${JAR} edc-controlplane.jar
 COPY ${OTEL_JAR} opentelemetry-javaagent.jar
 
 HEALTHCHECK NONE

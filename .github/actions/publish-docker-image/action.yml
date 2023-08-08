@@ -50,6 +50,14 @@ runs:
   steps:
     - uses: actions/checkout@v3.3.0
 
+    - name: Download OpenTelemetry
+      shell: bash
+      run: |-
+        # "jq -r" removes the quotation marks, that would trip up "wget"
+        URL=$(grep "val openTelemetryAgentUrl = " build.gradle.kts | awk -F'= ' '{print $2}' | jq -r)
+        wget -O ${{ inputs.rootDir }}/opentelemetry-javaagent.jar -q $URL
+        
+
     #####################
     # Login to DockerHub
     #####################
@@ -97,6 +105,7 @@ runs:
         file: ${{ inputs.rootDir }}/src/main/docker/Dockerfile
         build-args: |
           JAR=${{ inputs.rootDir }}/build/libs/${{ inputs.imagename }}.jar
+          OTEL_JAR=${{ inputs.rootDir }}/opentelemetry-javaagent.jar
         push: ${{ inputs.do_push == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
