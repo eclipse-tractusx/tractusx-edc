@@ -239,3 +239,10 @@ jobs:
           git commit --message "Introduce new snapshot version $SNAPSHOT_VERSION"
 
           git push origin main
+
+  publish-to-swaggerhub:
+    name: "Publish OpenAPI spec to Swaggerhub"
+    permissions:
+      contents: read
+    needs: [ secret-presence ]
+    uses: ./.github/workflows/publish-swaggerhub.yaml
