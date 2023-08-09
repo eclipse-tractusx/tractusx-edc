@@ -135,5 +135,6 @@ jobs:
     permissions:
       contents: read
     needs: [ secret-presence ]
-    if: needs.secret-presence.output.HAS_SWAGGER
+    if: needs.secret-presence.outputs.HAS_SWAGGER
     uses: ./.github/workflows/publish-swaggerhub.yaml
+    secrets: inherit

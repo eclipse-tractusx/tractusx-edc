@@ -39,7 +39,7 @@ import java.util.Set;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 
 @OpenAPIDefinition(info = @Info(description = "With this API clients can create, read, update and delete BusinessPartnerNumber groups. It allows the assigning of BPNs to groups.", title = "Business Partner Group API"))
-@Tag(name = "BusinessPartnerGroup")
+@Tag(name = "Business Partner Group")
 public interface BusinessPartnerGroupApi {
 
 
