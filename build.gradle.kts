@@ -153,24 +153,44 @@ subprojects {
                 file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
 
+            val agentFile = project.buildDir.resolve("opentelemetry-javaagent.jar")
+            // create task to download the opentelemetry agent
+            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.27.0/opentelemetry-javaagent.jar"
+            val downloadOtel = tasks.create("downloadOtel") {
+                // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
+                onlyIf {
+                    !agentFile.exists()
+                }
+                // this task could be the first in the graph, so "build/" may not yet exist. Let's be defensive
+                doFirst {
+                    project.buildDir.mkdirs()
+                }
+                // download the jar file
+                doLast {
+                    val download = { url: String, destFile: File -> ant.invokeMethod("get", mapOf("src" to url, "dest" to destFile)) }
+                    logger.lifecycle("Downloading OpenTelemetry Agent")
+                    download(openTelemetryAgentUrl, agentFile)
+                }
+            }
+
             //actually apply the plugin to the (sub-)project
-
             apply(plugin = "com.bmuschko.docker-remote-api")
-
             // configure the "dockerize" task
-            val dockerTask = tasks.create("dockerize", DockerBuildImage::class) {
-                dockerFile.set(file("${project.projectDir}/src/main/docker/Dockerfile"))
+            val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
+                val dockerContextDir = project.projectDir
+                dockerFile.set(file("$dockerContextDir/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
                 // specify platform with the -Dplatform flag:
                 if (System.getProperty("platform") != null)
                     platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
-                inputDir.set(file(project.projectDir))
+                buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
+                inputDir.set(file(dockerContextDir))
             }
-
-            // make sure "shadowJar" always runs before "dockerize"
-            dockerTask.dependsOn(tasks.findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+            // make sure  always runs after "dockerize" and after "copyOtel"
+            dockerTask.dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+                    .dependsOn(downloadOtel)
         }
     }
 }
