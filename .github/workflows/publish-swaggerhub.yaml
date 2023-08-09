@@ -31,6 +31,17 @@ on:
         required: false
         type: string
 
+  workflow_dispatch:
+    inputs:
+      downstream-version:
+        required: false
+        description: "Version of the Tractus-X EDC API to be should be published"
+        type: string
+      upstream-version:
+        required: false
+        description: "Version of upstream EDC which is to be used"
+        type: string
+
 jobs:
   swagger-api:
     runs-on: ubuntu-latest
@@ -50,20 +61,20 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
 
-      - name: Install tools
+      - name: Install Swagger CLI
         run: |
           npm i -g swaggerhub-cli
 
       - name: Extract versions
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
-            export DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')
+            export DOWNSTREAM_VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           else
             export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
           fi
           
           if [ -z ${{ inputs.upstream-version }} ]; then
-            export UPSTREAM_VERSION=$(sed -nr "/^\[versions\]/ { :l /^edc[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle/libs.versions.toml | tr -d ' ' | tr -d '"')-SNAPSHOT
+            export UPSTREAM_VERSION=$(grep "edc = " gradle/libs.versions.toml  | awk -F= '{print $2}' | jq -r)
           else
             export UPSTREAM_VERSION=${{ inputs.upstream-version }}
           fi
@@ -71,8 +82,7 @@ jobs:
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
-          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
-          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
+          ./gradlew resolve
 
       - name: Download upstream API specs
         run: |
@@ -81,7 +91,7 @@ jobs:
 
       - name: Merge API specs
         run: |
-          ./gradlew -PapiTitle="tractusx-edc-api" -PapiDescription="Tractus EDC API Doc" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
+          ./gradlew -PapiTitle="Tractus-X EDC REST API" -PapiDescription="Tractus-X EDC API Documentation" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
 
       # create API, will fail if exists
       - name: Create API
