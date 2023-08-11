@@ -34,6 +34,9 @@ participant:
   # -- BPN Number
   id: ""
 
+# -- Add custom ca certificates to the truststore
+customCaCerts: {}
+
 runtime:
   image:
     repository: ""

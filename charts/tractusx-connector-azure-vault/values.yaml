@@ -295,6 +295,9 @@ controlplane:
     # -- Explicitly declared url for reaching the dsp api (e.g. if ingresses not used)
     protocol: ""
 
+# -- Add custom ca certificates to the truststore
+customCaCerts: {}
+
 dataplane:
   image:
     # -- Which derivate of the data plane to use. when left empty the deployment will select the correct image automatically

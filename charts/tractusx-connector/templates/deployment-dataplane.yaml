@@ -53,9 +53,39 @@ spec:
       serviceAccountName: {{ include "txdc.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.dataplane.podSecurityContext | nindent 8 }}
-      {{- if .Values.dataplane.initContainers }}
+      {{- if or .Values.dataplane.initContainers .Values.customCaCerts }}
       initContainers:
+        {{- if .Values.dataplane.initContainers }}
         {{- toYaml .Values.dataplane.initContainers | nindent 8 }}
+        {{- end }}
+        {{- if .Values.customCaCerts }}
+        - name: custom-cacerts
+          # either use the specified image, or use the default one
+          {{- if .Values.dataplane.image.repository }}
+          image: "{{ .Values.dataplane.image.repository }}:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          image: "tractusx/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.dataplane.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp /opt/java/openjdk/lib/security/cacerts /workdir/
+              find /cacerts -type f \( -iname \*.crt -o -iname \*.pem \) -exec echo "{}" \; | while read PEM_FILE_PATH; do
+                PEM_FILE=${PEM_FILE_PATH##*/}
+                ALIAS=${PEM_FILE%.*}
+                echo "adding ${PEM_FILE} with alias ${ALIAS} to cacerts ..."
+                keytool -import -noprompt -trustcacerts -alias ${ALIAS} -file ${PEM_FILE_PATH} -keystore /workdir/cacerts -storepass changeit
+              done
+          securityContext:
+            {{- toYaml .Values.dataplane.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: custom-cacertificates
+              mountPath: /cacerts
+            - name: custom-cacerts
+              mountPath: /workdir
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -215,6 +245,11 @@ spec:
             - name: "configuration"
               mountPath: "/app/logging.properties"
               subPath: "logging.properties"
+            {{- if .Values.customCaCerts }}
+            - name: custom-cacerts
+              mountPath: /opt/java/openjdk/lib/security/cacerts
+              subPath: cacerts
+            {{- end }}
             - name: "tmp"
               mountPath: "/tmp"
       volumes:
@@ -226,6 +261,15 @@ spec:
                 path: "opentelemetry.properties"
               - key: "logging.properties"
                 path: "logging.properties"
+        {{- if .Values.customCaCerts }}
+        - name: custom-cacertificates
+          configMap:
+            name: {{ include "txdc.fullname" . }}-custom-cacerts
+            defaultMode: 0400
+        - name: custom-cacerts
+          emptyDir:
+            sizeLimit: 1Mi
+        {{- end }}
         - name: "tmp"
           emptyDir: { }
       {{- with .Values.dataplane.nodeSelector }}
