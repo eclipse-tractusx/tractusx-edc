@@ -53,6 +53,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.0 \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | backendService.httpProxyTokenReceiverUrl | string | `""` |  |
+| customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | To add some custom labels |
 | daps.clientId | string | `""` |  |
 | daps.connectors[0].attributes.referringConnector | string | `"http://sokrates-controlplane/BPNSOKRATES"` |  |

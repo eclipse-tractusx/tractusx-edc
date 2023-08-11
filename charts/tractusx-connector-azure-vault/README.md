@@ -164,6 +164,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | controlplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | controlplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
+| customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | To add some custom labels |
 | dataplane.affinity | object | `{}` |  |
 | dataplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
