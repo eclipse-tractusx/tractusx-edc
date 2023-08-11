@@ -53,8 +53,10 @@ spec:
       serviceAccountName: {{ include "txdc.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.controlplane.podSecurityContext | nindent 8 }}
+      {{- if .Values.controlplane.initContainers }}
       initContainers:
         {{- toYaml .Values.controlplane.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
