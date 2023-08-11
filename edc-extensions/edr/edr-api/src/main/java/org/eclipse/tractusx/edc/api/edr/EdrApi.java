@@ -26,8 +26,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.ApiCoreSchema;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiSchema;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
-import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.api.edr.schema.EdrSchema;
 
 @OpenAPIDefinition
 @Tag(name = "Control Plane EDR Api")
@@ -41,18 +40,18 @@ public interface EdrApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })
-    JsonObject initiateEdrNegotiation(@Schema(implementation = NegotiateEdrRequestDto.class) JsonObject dto);
+    JsonObject initiateEdrNegotiation(@Schema(implementation = EdrSchema.NegotiateEdrRequestSchema.class) JsonObject dto);
 
     @Operation(description = "Returns all EndpointDataReference entry according to a query",
             responses = {
                     @ApiResponse(responseCode = "200",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = EndpointDataReferenceEntry.class)))),
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = EdrSchema.EndpointDataReferenceEntrySchema.class)))),
                     @ApiResponse(responseCode = "400", description = "Request was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))) }
     )
     JsonArray queryEdrs(String assetId, String agreementId, String providerId);
 
-    @Operation(description = "Gets an EDR  with the given transfer process ID",
+    @Operation(description = "Gets an EDR with the given transfer process ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "The EDR cached",
                             content = @Content(schema = @Schema(implementation = ManagementApiSchema.DataAddressSchema.class))),
@@ -64,10 +63,9 @@ public interface EdrApi {
     )
     JsonObject getEdr(String transferProcessId);
 
-    @Operation(description = "Delete an EDR  with the given transfer process ID",
+    @Operation(description = "Delete an EDR with the given transfer process ID",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "The EDR cached",
-                            content = @Content(schema = @Schema(implementation = ManagementApiSchema.DataAddressSchema.class))),
+                    @ApiResponse(responseCode = "200", description = "The EDR cached was deleted successfully"),
                     @ApiResponse(responseCode = "400", description = "Request was malformed, e.g. id was null",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "404", description = "An EDR with the given ID does not exist",
