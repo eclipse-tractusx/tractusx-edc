@@ -25,9 +25,11 @@ dependencies {
 
     implementation(libs.edc.api.management)
     implementation(libs.edc.spi.aggregateservices)
+    implementation(libs.edc.core.validator)
     implementation(libs.jakarta.rsApi)
 
     testImplementation(testFixtures(libs.edc.core.jersey))
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.ext.jersey.providers)
 }

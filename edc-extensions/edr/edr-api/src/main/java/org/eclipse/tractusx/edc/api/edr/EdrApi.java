@@ -21,14 +21,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.ApiCoreSchema;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiSchema;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
-
-import java.util.List;
 
 @OpenAPIDefinition
 @Tag(name = "Control Plane EDR Api")
@@ -49,9 +48,9 @@ public interface EdrApi {
                     @ApiResponse(responseCode = "200",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = EndpointDataReferenceEntry.class)))),
                     @ApiResponse(responseCode = "400", description = "Request was malformed",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))}
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))) }
     )
-    List<JsonObject> queryEdrs(String assetId, String agreementId, String providerId);
+    JsonArray queryEdrs(String assetId, String agreementId, String providerId);
 
     @Operation(description = "Gets an EDR  with the given transfer process ID",
             responses = {

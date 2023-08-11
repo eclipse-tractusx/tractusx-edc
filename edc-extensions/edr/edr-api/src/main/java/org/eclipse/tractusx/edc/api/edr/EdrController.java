@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.api.edr;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -26,7 +27,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.api.model.IdResponse;
 import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
@@ -34,42 +34,45 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.edc.web.spi.exception.ValidationFailureException;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import static jakarta.json.stream.JsonCollectors.toJsonArray;
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.PROVIDER_ID;
 
-@Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
+@Consumes({ MediaType.APPLICATION_JSON })
+@Produces({ MediaType.APPLICATION_JSON })
 @Path("/edrs")
 public class EdrController implements EdrApi {
 
     private final EdrService edrService;
     private final ManagementApiTypeTransformerRegistry transformerRegistry;
-    private final JsonLd jsonLdService;
+    private final JsonObjectValidatorRegistry validatorRegistry;
+    private final Monitor monitor;
 
-    private Monitor monitor;
-
-    public EdrController(EdrService edrService, JsonLd jsonLdService, ManagementApiTypeTransformerRegistry transformerRegistry) {
+    public EdrController(EdrService edrService, ManagementApiTypeTransformerRegistry transformerRegistry,
+                         JsonObjectValidatorRegistry validatorRegistry, Monitor monitor) {
         this.edrService = edrService;
-        this.jsonLdService = jsonLdService;
         this.transformerRegistry = transformerRegistry;
+        this.validatorRegistry = validatorRegistry;
+        this.monitor = monitor;
     }
 
     @POST
     @Override
     public JsonObject initiateEdrNegotiation(JsonObject requestObject) {
-        var edrNegotiationRequest = jsonLdService.expand(requestObject)
-                .compose(expanded -> transformerRegistry.transform(expanded, NegotiateEdrRequestDto.class))
+        validatorRegistry.validate(EDR_REQUEST_DTO_TYPE, requestObject).orElseThrow(ValidationFailureException::new);
+
+        var edrNegotiationRequest = transformerRegistry.transform(requestObject, NegotiateEdrRequestDto.class)
                 .compose(dto -> transformerRegistry.transform(dto, NegotiateEdrRequest.class))
                 .orElseThrow(InvalidRequestException::new);
 
@@ -81,25 +84,23 @@ public class EdrController implements EdrApi {
                 .build();
 
         return transformerRegistry.transform(idResponse, JsonObject.class)
-                .compose(jsonLdService::compact)
                 .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
     }
 
     @GET
     @Override
-    public List<JsonObject> queryEdrs(@QueryParam("assetId") String assetId, @QueryParam("agreementId") String agreementId, @QueryParam("providerId") String providerId) {
+    public JsonArray queryEdrs(@QueryParam("assetId") String assetId, @QueryParam("agreementId") String agreementId, @QueryParam("providerId") String providerId) {
         if (assetId == null && agreementId == null) {
             throw new InvalidRequestException("At least one of this query parameter is required [assetId,agreementId]");
         }
         return edrService.findBy(querySpec(assetId, agreementId, providerId))
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class))
                 .stream()
-                .map(edrCached -> transformerRegistry.transform(edrCached, JsonObject.class)
-                        .compose(jsonLdService::compact))
+                .map(edrCached -> transformerRegistry.transform(edrCached, JsonObject.class))
                 .peek(this::logIfError)
                 .filter(Result::succeeded)
                 .map(Result::getContent)
-                .collect(Collectors.toList());
+                .collect(toJsonArray());
     }
 
     @GET
@@ -109,7 +110,6 @@ public class EdrController implements EdrApi {
         var edr = edrService.findByTransferProcessId(transferProcessId).orElseThrow(exceptionMapper(EndpointDataReference.class, transferProcessId));
         return transformerRegistry.transform(edr, DataAddress.class)
                 .compose(dataAddress -> transformerRegistry.transform(dataAddress, JsonObject.class))
-                .compose(jsonLdService::compact)
                 .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
     }
 

@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.api.edr;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -23,6 +24,7 @@ import org.eclipse.edc.connector.api.management.configuration.transform.Manageme
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.query.Criterion;
@@ -30,6 +32,10 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
+import org.eclipse.edc.validator.spi.ValidationResult;
+import org.eclipse.edc.validator.spi.Violation;
+import org.eclipse.edc.web.jersey.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
@@ -63,6 +69,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ApiTest
@@ -72,6 +79,7 @@ public class EdrControllerTest extends RestControllerTestBase {
     private final JsonLd jsonLdService = new TitaniumJsonLd(monitor);
     EdrService edrService = mock(EdrService.class);
     ManagementApiTypeTransformerRegistry transformerRegistry = mock();
+    JsonObjectValidatorRegistry validatorRegistry = mock();
 
     @BeforeEach
     void setup() {
@@ -81,6 +89,7 @@ public class EdrControllerTest extends RestControllerTestBase {
 
     @Test
     void initEdrNegotiation_shouldWork_whenValidRequest() {
+        when(validatorRegistry.validate(any(), any())).thenReturn(ValidationResult.success());
 
         var openRequest = openRequest();
         var contractNegotiation = getContractNegotiation();
@@ -105,6 +114,7 @@ public class EdrControllerTest extends RestControllerTestBase {
 
     @Test
     void initEdrNegotiation_shouldReturnBadRequest_whenValidInvalidRequest() {
+        when(validatorRegistry.validate(any(), any())).thenReturn(ValidationResult.success());
 
         var request = NegotiateEdrRequestDto.Builder.newInstance().build();
         when(transformerRegistry.transform(any(JsonObject.class), eq(NegotiateEdrRequestDto.class))).thenReturn(Result.failure("fail"));
@@ -116,6 +126,23 @@ public class EdrControllerTest extends RestControllerTestBase {
                 .then()
                 .statusCode(400);
 
+    }
+
+    @Test
+    void initEdrNegotiation_shouldReturnBadRequest_whenValidationFails() {
+        when(validatorRegistry.validate(any(), any())).thenReturn(ValidationResult.failure(Violation.violation("failure", "failure path")));
+        var request = negotiationRequest();
+
+        given()
+                .port(port)
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON)
+                .post(EDR_PATH)
+                .then()
+                .statusCode(400)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        verifyNoInteractions(transformerRegistry);
     }
 
     @Test
@@ -279,7 +306,13 @@ public class EdrControllerTest extends RestControllerTestBase {
 
     @Override
     protected Object controller() {
-        return new EdrController(edrService, jsonLdService, transformerRegistry);
+        return new EdrController(edrService, transformerRegistry, validatorRegistry, monitor);
+    }
+
+    @Override
+    protected Object additionalResource() {
+        final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
+        return new JerseyJsonLdInterceptor(this.jsonLdService, objectMapper);
     }
 
     private RequestSpecification baseRequest() {
