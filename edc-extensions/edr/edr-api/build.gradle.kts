@@ -32,4 +32,5 @@ dependencies {
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.ext.jersey.providers)
+    testImplementation(libs.edc.core.transform)
 }
