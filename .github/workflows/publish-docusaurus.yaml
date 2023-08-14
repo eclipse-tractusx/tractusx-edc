@@ -1,0 +1,109 @@
+#
+#  Copyright (c) 2023 Mercedes Benz Tech Innovation GmbH
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+name: "Create Docker images"
+
+on:
+  workflow_dispatch:
+    inputs:
+      downstream-version:
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      downstream-version:
+        required: false
+        type: string
+
+jobs:
+  publish-docusaurus:
+    name: "Publish docusaurus documentation as zip file"
+    runs-on: ubuntu-latest
+    env:
+      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
+      SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Setup node"
+        uses: actions/setup-node@v3
+
+      - name: "Install tools"
+        run: |
+          npm i -g swaggerhub-cli markdownlint-cli2 @synx-ai/oas3-mdx
+
+      - name: "Extract version"
+        run: |
+          if [ -z ${{ inputs.downstream-version }} ]; then
+            export DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')
+          else
+            export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
+          fi
+
+      - name: "Gather documentation files"
+        run: |
+          mkdir ${{ runner.temp }}/tractusx-edc
+          rsync -a --prune-empty-dirs --include '*' ./docs/kit ${{ runner.temp }}/tractusx-edc/
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/02_operation_view/03_deployment_via_helm
+          cp ./docs/samples/example-dataspace/README.md {{ runner.temp }}/tractusx-edc/02_operation-_iew/03_deployment_via_helm/00_example_dataspace.md
+          cp ./docs/samples/edr-api-overview/edr_api_overview.md {{ runner.temp }}/tractusx-edc/02_operation_view/03_deployment_via_helm/01_edr_api_overview.md
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/02_operation_view/04_test_your_setup
+          cp ./docs/development/postman/README.md {{ runner.temp }}/tractusx-edc/02_operation_view/04_test_your_setup/00_postman.md
+          cp ./docs/samples/Transfer\ Data.md {{ runner.temp }}/tractusx-edc/02_operation_view/04_test_your_setup/02_transfer_data.md
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/02_operation_view/05_migration
+          cp ./docs/migration/* {{ runner.temp }}/tractusx-edc/02_operation_view/05_migration/
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/03_development_view
+          cp ./docs/README.md {{ runner.temp }}/tractusx-edc/03_development_view/00_tractusx_edc.md
+          cp ./core/edr-core/README.md {{ runner.temp }}/tractusx-edc/03_development_view/06_edr_core.md
+          cp ./docs/development/Release.md {{ runner.temp }}/tractusx-edc/03_development_view/07_release.md
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/03_development_view/03_edc_controlplane
+          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --exclude '*' ./edc-controlplane {{ runner.temp }}/tractusx-edc/03_development_view/03_edc_controlplane
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/03_development_view/04_edc_dataplane
+          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --exclude '*' ./edc-dataplane {{ runner.temp }}/tractusx-edc/03_development_view/04_edc_dataplane
+          
+          mkdir -p {{ runner.temp }}/tractusx-edc/03_development_view/05_edc_extensions
+          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --exclude '*' ./edc-extensions {{ runner.temp }}/tractusx-edc/03_development_view/05_edc_extensions
+
+          mkdir -p {{ runner.temp }}/tractusx-edc/04_documentation
+          cp ./docs/development/coding-principles.md {{ runner.temp }}/tractusx-edc/04_documentation/02_coding_principles.md
+          cp ./pr-etiquette.md {{ runner.temp }}/tractusx-edc/04_documentation/03_pr_etiquette.md
+          cp ./styleguide.md {{ runner.temp }}/tractusx-edc/04_documentation/04_styleguide.md
+          
+          
+          mkdir ${{ runner.temp }}/swaggerhub
+          swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/swaggerhub/openapi.yaml
+          oas3-mdx -s ${{ runner.temp }}/swaggerhub/openapi.yaml -o {{ runner.temp }}/tractusx-edc/03_development_view/02_openapi/
+          
+          
+          markdownlint -cli2 ${{ runner.temp }}/tractusx-edc/
+          
+      - name: "Release docusaurus docs as zip file"
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: zip
+          filename: docusaurus_tractusx_edc.zip
+          directory: ${{ runner.temp }}/tractusx-edc

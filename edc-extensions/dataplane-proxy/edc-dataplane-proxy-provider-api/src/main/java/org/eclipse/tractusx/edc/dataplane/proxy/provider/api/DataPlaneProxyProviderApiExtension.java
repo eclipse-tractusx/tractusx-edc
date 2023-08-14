@@ -23,7 +23,10 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.web.spi.WebServer;
 import org.eclipse.edc.web.spi.WebService;
+import org.eclipse.edc.web.spi.configuration.WebServiceConfigurer;
+import org.eclipse.edc.web.spi.configuration.WebServiceSettings;
 import org.eclipse.tractusx.edc.dataplane.proxy.provider.api.gateway.ProviderGatewayController;
 import org.eclipse.tractusx.edc.dataplane.proxy.provider.api.validation.ProxyProviderDataAddressResolver;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationHandlerRegistry;
@@ -44,6 +47,17 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
     private static final String THREAD_POOL_SIZE = "tx.dpf.provider.proxy.thread.pool";
     @Setting
     private static final String CONTROL_PLANE_VALIDATION_ENDPOINT = "edc.dataplane.token.validation.endpoint";
+
+    @Setting
+    private static final String PROVIDER_PORT = "web.http.gateway.port";
+
+    private static final int DEFAULT_PROVIDER_PORT = 8187;
+
+    @Setting
+    private static final String PROVIDER_PATH = "web.http.gateway.port";
+
+    private static final String DEFAULT_PROVIDER_PATH = "/provider";
+
     @Inject
     private WebService webService;
 
@@ -52,6 +66,9 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
 
     @Inject
     private Monitor monitor;
+
+    @Inject
+    private WebServer webServer;
 
     @Inject
     private GatewayConfigurationRegistry configurationRegistry;
@@ -65,6 +82,9 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
     @Inject
     private EdcHttpClient httpClient;
 
+    @Inject
+    private WebServiceConfigurer configurer;
+
     private ExecutorService executorService;
 
     @Override
@@ -74,6 +94,19 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+        var port = context.getSetting(PROVIDER_PORT, DEFAULT_PROVIDER_PORT);
+        var path = context.getSetting(PROVIDER_PATH, DEFAULT_PROVIDER_PATH);
+
+        var webServiceSettings = WebServiceSettings.Builder.newInstance()
+                .apiConfigKey(CONSUMER_CONFIG_KEY)
+                .contextAlias(CONSUMER_API_ALIAS)
+                .defaultPath(path)
+                .defaultPort(port)
+                .name(NAME)
+                .build();
+        configurer.configure(context, webServer, webServiceSettings);
+
+
         executorService = newFixedThreadPool(context.getSetting(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL));
 
         var validationEndpoint = context.getConfig().getString(CONTROL_PLANE_VALIDATION_ENDPOINT);

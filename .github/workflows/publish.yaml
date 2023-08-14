@@ -137,3 +137,11 @@ jobs:
     needs: [ secret-presence ]
     if: needs.secret-presence.output.HAS_SWAGGER
     uses: ./.github/workflows/publish-swaggerhub.yaml
+
+  publish-docusaurus:
+    name: Publish docusaurus docs
+    permissions:
+      contents: read
+    needs: [ secret-presence, publish-to-swaggerhub ]
+    if: needs.secret-presence.output.HAS_SWAGGER
+    uses: ./.github/workflows/publish-docusaurus.yaml
