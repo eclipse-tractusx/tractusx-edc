@@ -44,7 +44,7 @@ public interface EdrApi {
 
     @Operation(description = "Returns all EndpointDataReference entry according to a query",
             responses = {
-                    @ApiResponse(responseCode = "200",
+                    @ApiResponse(responseCode = "200", description = "The ERD cache was retrieved",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = EdrSchema.EndpointDataReferenceEntrySchema.class)))),
                     @ApiResponse(responseCode = "400", description = "Request was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))) }
