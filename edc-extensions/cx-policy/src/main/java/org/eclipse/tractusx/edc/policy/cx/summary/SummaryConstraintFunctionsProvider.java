@@ -18,8 +18,12 @@ import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.unmodifiableMap;
+import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_REQUEST_SCOPE;
@@ -35,16 +39,26 @@ public class SummaryConstraintFunctionsProvider {
     /**
      * Mappings from policy constraint left operand values to the corresponding item value in the summary VP.
      */
-    static final Map<String, String> CREDENTIAL_MAPPINGS = Map.of(
-            "Membership", "MembershipCredential",
-            "Dismantler", "DismantlerCredential",
-            "FrameworkAgreement.pcf", "PcfCredential",
-            "FrameworkAgreement.sustainability", "SustainabilityCredential",
-            "FrameworkAgreement.quality", "QualityCredential",
-            "FrameworkAgreement.traceability", "TraceabilityCredential",
-            "FrameworkAgreement.behavioraltwin", "BehaviorTwinCredential",
-            "BPN", "BpnCredential"
-    );
+    static final Map<String, String> CREDENTIAL_MAPPINGS;
+
+
+    static {
+        var initialMappings = Map.of(
+                "Membership", "MembershipCredential",
+                "Dismantler", "DismantlerCredential",
+                "FrameworkAgreement.pcf", "PcfCredential",
+                "FrameworkAgreement.sustainability", "SustainabilityCredential",
+                "FrameworkAgreement.quality", "QualityCredential",
+                "FrameworkAgreement.traceability", "TraceabilityCredential",
+                "FrameworkAgreement.behavioraltwin", "BehaviorTwinCredential",
+                "BPN", "BpnCredential"
+        );
+        var mappings = new HashMap<>(initialMappings);
+        initialMappings.forEach((credentialName, summaryType) -> {
+            mappings.put(TX_NAMESPACE + credentialName, summaryType);
+        });
+        CREDENTIAL_MAPPINGS = unmodifiableMap(mappings);
+    }
 
     /**
      * Configures and registers required summary functions with the policy engine.
@@ -84,6 +98,11 @@ public class SummaryConstraintFunctionsProvider {
             registry.bind(constraintName, NEGOTIATION_SCOPE);
             registry.bind(constraintName, TRANSFER_PROCESS_SCOPE);
         });
+
+        registry.bind(ODRL_SCHEMA + "use", CATALOG_SCOPE);
+        registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
+        registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
+
     }
 
 }

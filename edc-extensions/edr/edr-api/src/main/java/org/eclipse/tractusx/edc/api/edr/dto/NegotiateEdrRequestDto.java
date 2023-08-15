@@ -25,7 +25,8 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public class NegotiateEdrRequestDto {
 
-    public static final String EDR_REQUEST_DTO_TYPE = TX_NAMESPACE + "NegotiateEdrRequestDto";
+    public static final String EDR_REQUEST_SIMPLE_DTO_TYPE = "NegotiateEdrRequestDto";
+    public static final String EDR_REQUEST_DTO_TYPE = TX_NAMESPACE + EDR_REQUEST_SIMPLE_DTO_TYPE;
     public static final String EDR_REQUEST_DTO_CONNECTOR_ADDRESS = EDC_NAMESPACE + "connectorAddress";
     public static final String EDR_REQUEST_DTO_PROTOCOL = EDC_NAMESPACE + "protocol";
     public static final String EDR_REQUEST_DTO_CONNECTOR_ID = EDC_NAMESPACE + "connectorId";

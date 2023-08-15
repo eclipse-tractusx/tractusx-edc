@@ -27,6 +27,7 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerSt
 import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 
 /**
  * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction} for the following scopes:
@@ -49,7 +50,7 @@ import static org.eclipse.edc.connector.contract.spi.validation.ContractValidati
  * <p>
  * Note that the {@link BusinessPartnerGroupFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction}, thus it is registered with the {@link PolicyEngine}  for the {@link Permission} class.
  */
-@Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = {"policy", "contract"})
+@Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = { "policy", "contract" })
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     private static final String USE = "USE";
@@ -71,6 +72,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     private void bindToScope(BusinessPartnerGroupFunction function, String scope) {
         ruleBindingRegistry.bind(USE, scope);
+        ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
         ruleBindingRegistry.bind(BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
 
         policyEngine.registerFunction(scope, Permission.class, BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY, function);

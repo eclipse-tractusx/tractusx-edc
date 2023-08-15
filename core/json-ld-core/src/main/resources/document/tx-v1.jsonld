@@ -1,0 +1,21 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "BusinessPartnerNumber": "tx:BusinessPartnerNumber",
+    "NegotiationInitiateRequestDto": "tx:NegotiationInitiateRequestDto",
+    "BusinessPartnerGroup": "tx:BusinessPartnerGroup",
+    "EndpointDataReferenceEntry": "tx:EndpointDataReferenceEntry",
+    "Membership": "tx:Membership",
+    "Dismantler": "tx:Dismantler",
+    "FrameworkAgreement.pcf": "tx:FrameworkAgreement.pcf",
+    "FrameworkAgreement.sustainability": "tx:FrameworkAgreement.sustainability",
+    "FrameworkAgreement.quality": "tx:FrameworkAgreement.quality",
+    "FrameworkAgreement.traceability": "tx:FrameworkAgreement.traceability",
+    "FrameworkAgreement.behavioraltwin": "tx:FrameworkAgreement.behavioraltwin",
+    "BPN": "tx:BPN",
+    "expirationDate": "tx:expirationDate",
+    "edrState": "tx:edrState"
+  }
+}
