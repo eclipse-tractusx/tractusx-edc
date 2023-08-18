@@ -104,10 +104,12 @@ jobs:
           
           zip -r ${{ runner.temp }}/tractusx-edc-docusaurus.zip ${{ runner.temp }}/tractusx-edc
           
-      - uses: xresloader/upload-to-github-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload docusaurus docs to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          file: "${{ runner.temp }}/tractusx-edc-docusaurus.zip"
-          tags: true
-          draft: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ runner.temp }}/tractusx-edc-docusaurus.zip
+          asset_name: docusaurus_docs
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Docusaurus documentation for TractusX EDC"
