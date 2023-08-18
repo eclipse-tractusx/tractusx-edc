@@ -102,8 +102,6 @@ jobs:
           
           swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/tractusx-edc/tractusx-edc-${{ env.DOWNSTREAM_VERSION }}.yaml
           
-          markdownlint-cli2 ${{ runner.temp }}/tractusx-edc/Connector\ Kit/
-          
       - name: "Release docusaurus docs as zip file"
         uses: thedoctor0/zip-release@0.7.1
         with:

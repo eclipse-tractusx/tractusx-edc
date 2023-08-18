@@ -22,15 +22,18 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 
 ### Preparatory work
 
-- store your KeyCloak client secret in the Azure KeyVault. The exact procedure is as follows:
- ```bash
- az keyvault secret set --vault-name <YOUR_VAULT_NAME> --name client-secret --value "$YOUR_CLIENT_SECRET"
- ```
+Store your KeyCloak client secret in the Azure KeyVault. The exact procedure is as follows:
+
+```bash
+az keyvault secret set --vault-name <YOUR_VAULT_NAME> --name client-secret --value "$YOUR_CLIENT_SECRET"
+```
+
  By default, Tractus-X EDC expects to find the secret under `client-secret`.
 
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
+
 - `controlplane.ssi.miw.url`: the URL
 - `controlplane.ssi.miw.authorityId`: the BPN of the issuer authority
 - `controlplane.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
@@ -55,7 +58,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 
 ## Source Code
 
-* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
 ## Requirements
 
