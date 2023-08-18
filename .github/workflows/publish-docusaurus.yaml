@@ -60,47 +60,50 @@ jobs:
 
       - name: "Gather documentation files"
         run: |
-          mkdir -p ${{ runner.temp }}/tractusx-edc
-          rsync -a --prune-empty-dirs --include '*' ./docs/kit ${{ runner.temp }}/tractusx-edc/
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit
+          rsync -a --prune-empty-dirs --include '*' ./docs/kit/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/
           
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/03_deployment_via_helm
+          cp ./docs/samples/example-dataspace/README.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/03_deployment_via_helm/00_example_dataspace.md
+          cp ./docs/samples/edr-api-overview/edr-api-overview.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/03_deployment_via_helm/01_edr_api_overview.md
           
-          mkdir -p ${{ runner.temp }}/tractusx-edc/02_operation_view/03_deployment_via_helm
-          cp ./docs/samples/example-dataspace/README.md ${{ runner.temp }}/tractusx-edc/02_operation_view/03_deployment_via_helm/00_example_dataspace.md
-          cp ./docs/samples/edr-api-overview/edr-api-overview.md ${{ runner.temp }}/tractusx-edc/02_operation_view/03_deployment_via_helm/01_edr_api_overview.md
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/04_Test\ Your\ Setup
+          cp ./docs/development/postman/README.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/04_Test\ Your\ Setup/00_postman.md
+          cp ./docs/samples/Transfer\ Data.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/04_Test\ Your\ Setup/02_transfer_data.md
+          cp -r ./docs/samples/diagrams ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/04_Test\ Your\ Setup/
           
-          mkdir -p ${{ runner.temp }}/tractusx-edc/02_operation_view/04_test_your_setup
-          cp ./docs/development/postman/README.md ${{ runner.temp }}/tractusx-edc/02_operation_view/04_test_your_setup/00_postman.md
-          cp ./docs/samples/Transfer\ Data.md ${{ runner.temp }}/tractusx-edc/02_operation_view/04_test_your_setup/02_transfer_data.md
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/05_Migration
+          cp ./docs/migration/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/05_Migration/
           
-          mkdir -p ${{ runner.temp }}/tractusx-edc/02_operation_view/05_migration
-          cp ./docs/migration/* ${{ runner.temp }}/tractusx-edc/02_operation_view/05_migration/
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View
+          cp ./docs/README.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/00_tractusx_edc.md
+          cp ./core/edr-core/README.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/06_edr_core.md
+          cp ./docs/development/Release.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/07_release.md
           
-          mkdir -p ${{ runner.temp }}/tractusx-edc/03_development_view
-          cp ./docs/README.md ${{ runner.temp }}/tractusx-edc/03_development_view/00_tractusx_edc.md
-          cp ./core/edr-core/README.md ${{ runner.temp }}/tractusx-edc/03_development_view/06_edr_core.md
-          cp ./docs/development/Release.md ${{ runner.temp }}/tractusx-edc/03_development_view/07_release.md
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/03_EDC\ Controlplane
+          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-controlplane/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/03_EDC\ Controlplane
           
-          mkdir -p ${{ runner.temp }}/tractusx-edc/03_development_view/03_edc_controlplane
-          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --exclude '*' ./edc-controlplane ${{ runner.temp }}/tractusx-edc/03_development_view/03_edc_controlplane
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/04_EDC\ Dataplane
+          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-dataplane/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/04_EDC\ Dataplane
           
-          mkdir -p ${{ runner.temp }}/tractusx-edc/03_development_view/04_edc_dataplane
-          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --exclude '*' ./edc-dataplane ${{ runner.temp }}/tractusx-edc/03_development_view/04_edc_dataplane
-          
-          mkdir -p ${{ runner.temp }}/tractusx-edc/03_development_view/05_edc_extensions
-          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --exclude '*' ./edc-extensions ${{ runner.temp }}/tractusx-edc/03_development_view/05_edc_extensions
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/05_EDC\ Extensions
+          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-extensions/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/05_EDC\ Extensions
 
-          mkdir -p ${{ runner.temp }}/tractusx-edc/04_documentation
-          cp ./docs/development/coding-principles.md ${{ runner.temp }}/tractusx-edc/04_documentation/02_coding_principles.md
-          cp ./pr-etiquette.md ${{ runner.temp }}/tractusx-edc/04_documentation/03_pr_etiquette.md
-          cp ./styleguide.md ${{ runner.temp }}/tractusx-edc/04_documentation/04_styleguide.md
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation
+          cp ./docs/development/coding-principles.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/02_coding_principles.md
+          cp ./pr_etiquette.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/03_pr_etiquette.md
+          cp ./styleguide.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/04_styleguide.md
+          cp ./SECURITY.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/05_security.md
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources
+          cp ./resources/save_actions_scr.png ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources/
           
-          swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/tractusx-edc/03_development_view/02_openapi/TractusX_EDC_OpenAPI.yaml
+          swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/tractusx-edc/tractusx-edc-${{ env.DOWNSTREAM_VERSION }}.yaml
           
-          markdownlint-cli2 ${{ runner.temp }}/tractusx-edc/
+          markdownlint-cli2 ${{ runner.temp }}/tractusx-edc/Connector\ Kit/
           
       - name: "Release docusaurus docs as zip file"
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: zip
           filename: docusaurus_tractusx_edc.zip
-          directory: ${{ runner.temp }}/tractusx-edc
+          directory: "${{ runner.temp }}/tractusx-edc/Connector\ Kit"

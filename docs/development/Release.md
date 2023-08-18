@@ -38,6 +38,5 @@ The Eclipse Bot is able to approve dependencies automatically, if the license ca
    from maven central.
 2. Create the Eclipse IP Issues or ask an Eclipse Commiter to do this for you.
 
-
 [maven-shield]: https://img.shields.io/badge/Apache%20Maven-URL-blue
 [maven-url]: https://maven.apache.org
