@@ -22,6 +22,9 @@
 name: "Create Docker images"
 
 on:
+  push:
+    branches:
+      - docs/docusaurus-publishing
   workflow_dispatch:
     inputs:
       downstream-version:
