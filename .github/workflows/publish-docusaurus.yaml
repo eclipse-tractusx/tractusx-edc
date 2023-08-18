@@ -94,11 +94,7 @@ jobs:
           cp ./pr-etiquette.md ${{ runner.temp }}/tractusx-edc/04_documentation/03_pr_etiquette.md
           cp ./styleguide.md ${{ runner.temp }}/tractusx-edc/04_documentation/04_styleguide.md
           
-          
-          mkdir -p ${{ runner.temp }}/swaggerhub
-          swaggerhub api:get -j ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/swaggerhub/openapi.json
-          oas3-mdx --spec ${{ runner.temp }}/swaggerhub/openapi.json  ${{ runner.temp }}/tractusx-edc/03_development_view/02_openapi/
-          
+          swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/tractusx-edc/03_development_view/02_openapi/TractusX_EDC_OpenAPI.yaml
           
           markdownlint-cli2 ${{ runner.temp }}/tractusx-edc/
           
