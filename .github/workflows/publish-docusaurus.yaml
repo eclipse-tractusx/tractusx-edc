@@ -104,12 +104,6 @@ jobs:
           
           zip -r ${{ runner.temp }}/tractusx-edc-docusaurus.zip ${{ runner.temp }}/tractusx-edc
           
-      - name: Upload docusaurus docs to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ runner.temp }}/tractusx-edc-docusaurus.zip
-          asset_name: docusaurus_docs
-          tag: ${{ github.ref }}
-          overwrite: true
-          body: "Docusaurus documentation for TractusX EDC"
+      - name: todo
+        run: |
+          echo "Todo: publish release file"
