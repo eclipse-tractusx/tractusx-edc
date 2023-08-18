@@ -19,7 +19,7 @@
 #
 
 ---
-name: "Create Docker images"
+name: "Publish docusaurus documentation"
 
 on:
   push:
@@ -107,4 +107,4 @@ jobs:
         with:
           type: zip
           filename: docusaurus_tractusx_edc.zip
-          directory: "${{ runner.temp }}/tractusx-edc/Connector\ Kit"
+          directory: '${{ runner.temp }}/tractusx-edc/Connector Kit'
