@@ -102,9 +102,12 @@ jobs:
           
           swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/tractusx-edc/tractusx-edc-${{ env.DOWNSTREAM_VERSION }}.yaml
           
-      - name: "Release docusaurus docs as zip file"
-        uses: thedoctor0/zip-release@0.7.1
+          zip -r ${{ runner.temp }}/tractusx-edc-docusaurus.zip ${{ runner.temp }}/tractusx-edc
+          
+      - uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          type: zip
-          filename: docusaurus_tractusx_edc.zip
-          directory: '${{ runner.temp }}/tractusx-edc/Connector Kit'
+          file: "${{ runner.temp }}/tractusx-edc-docusaurus.zip"
+          tags: true
+          draft: true
