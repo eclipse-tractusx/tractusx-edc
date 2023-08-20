@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.config.filesystem)
     implementation(libs.edc.util)
+    implementation(libs.edc.core.controlplane)
 
     implementation(project(":spi:edr-spi"))
 

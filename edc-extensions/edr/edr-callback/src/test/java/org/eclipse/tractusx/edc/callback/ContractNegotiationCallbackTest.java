@@ -15,14 +15,13 @@
 package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationAccepted;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationConfirmed;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationDeclined;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationAgreed;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationEvent;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFailed;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationOffered;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationTerminated;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
@@ -127,9 +126,9 @@ public class ContractNegotiationCallbackTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                     baseBuilder(ContractNegotiationAccepted.Builder.newInstance()).build(),
-                    baseBuilder(ContractNegotiationConfirmed.Builder.newInstance()).build(),
-                    baseBuilder(ContractNegotiationDeclined.Builder.newInstance()).build(),
-                    baseBuilder(ContractNegotiationFailed.Builder.newInstance()).build(),
+                    baseBuilder(ContractNegotiationAgreed.Builder.newInstance()).build(),
+                    // baseBuilder(ContractNegotiationFinalized.Builder.newInstance()).build(),
+                    baseBuilder(ContractNegotiationVerified.Builder.newInstance()).build(),
                     baseBuilder(ContractNegotiationInitiated.Builder.newInstance()).build(),
                     baseBuilder(ContractNegotiationOffered.Builder.newInstance()).build(),
                     baseBuilder(ContractNegotiationRequested.Builder.newInstance()).build(),

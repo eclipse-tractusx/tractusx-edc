@@ -14,10 +14,10 @@
 
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
-import org.eclipse.edc.spi.query.BaseCriterionToPredicateConverter;
+import org.eclipse.edc.connector.defaults.storage.CriterionToPredicateConverterImpl;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
-public class EdrCacheEntryPredicateConverter extends BaseCriterionToPredicateConverter<EndpointDataReferenceEntry> {
+public class EdrCacheEntryPredicateConverter extends CriterionToPredicateConverterImpl {
 
     @Override
     protected Object property(String key, Object object) {

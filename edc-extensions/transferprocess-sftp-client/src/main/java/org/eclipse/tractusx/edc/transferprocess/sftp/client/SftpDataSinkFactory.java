@@ -37,15 +37,6 @@ public class SftpDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        if (!canHandle(request)) {
-            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
-        }
-
-        return VALID;
-    }
-
-    @Override
     public DataSink createSink(DataFlowRequest request) {
         if (!canHandle(request)) {
             return null;
@@ -64,5 +55,14 @@ public class SftpDataSinkFactory implements DataSinkFactory {
         SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
 
         return new SftpDataSink(sftpClientWrapper);
+    }
+
+    @Override
+    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
+        if (!canHandle(request)) {
+            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+        }
+
+        return Result.success();
     }
 }

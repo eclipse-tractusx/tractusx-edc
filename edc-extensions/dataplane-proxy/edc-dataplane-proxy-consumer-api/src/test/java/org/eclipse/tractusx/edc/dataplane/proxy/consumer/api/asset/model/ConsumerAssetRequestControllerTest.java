@@ -297,7 +297,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
 
         var flowRequest = captor.getValue();
 
-        assertThat(flowRequest.getSourceDataAddress().getProperty(BASE_URL)).isEqualTo(edr.getEndpoint());
+        assertThat(flowRequest.getSourceDataAddress().getStringProperty(BASE_URL)).isEqualTo(edr.getEndpoint());
 
         assertThat(flowRequest.getProperties().get(QUERY_PARAMS)).isEqualTo(request.get(QUERY_PARAMS));
         assertThat(flowRequest.getProperties().get(PATH)).isEqualTo(request.get(PATH));
