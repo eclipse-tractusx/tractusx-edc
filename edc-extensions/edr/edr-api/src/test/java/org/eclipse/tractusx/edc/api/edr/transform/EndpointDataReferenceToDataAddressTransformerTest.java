@@ -51,10 +51,10 @@ public class EndpointDataReferenceToDataAddressTransformerTest {
 
         assertThat(dataAddress).isNotNull();
         assertThat(dataAddress.getType()).isEqualTo(EDR_SIMPLE_TYPE);
-        assertThat(dataAddress.getProperty(ID)).isEqualTo(dto.getId());
-        assertThat(dataAddress.getProperty(ENDPOINT)).isEqualTo(dto.getEndpoint());
-        assertThat(dataAddress.getProperty(AUTH_KEY)).isEqualTo(dto.getAuthKey());
-        assertThat(dataAddress.getProperty(AUTH_CODE)).isEqualTo(dto.getAuthCode());
+        assertThat(dataAddress.getStringProperty(ID)).isEqualTo(dto.getId());
+        assertThat(dataAddress.getStringProperty(ENDPOINT)).isEqualTo(dto.getEndpoint());
+        assertThat(dataAddress.getStringProperty(AUTH_KEY)).isEqualTo(dto.getAuthKey());
+        assertThat(dataAddress.getStringProperty(AUTH_CODE)).isEqualTo(dto.getAuthCode());
 
     }
 }

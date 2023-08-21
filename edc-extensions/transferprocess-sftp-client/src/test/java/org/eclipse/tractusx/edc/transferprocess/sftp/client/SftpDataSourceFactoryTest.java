@@ -28,41 +28,45 @@ import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import java.util.Map;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 class SftpDataSourceFactoryTest {
 
     @Test
     void validate_valid() {
-        SftpDataSourceFactory dataSourceFactory = new SftpDataSourceFactory();
-        SftpUser sftpUser = SftpUser.Builder.newInstance().name("name").build();
-        SftpLocation sftpLocation = SftpLocation.Builder.newInstance().host("host").port(22).path("path").build();
+        var dataSourceFactory = new SftpDataSourceFactory();
+        var sftpUser = SftpUser.Builder.newInstance().name("name").build();
+        var sftpLocation = SftpLocation.Builder.newInstance().host("host").port(22).path("path").build();
 
-        SftpDataAddress sftpDataAddress =
+        var sftpDataAddress =
                 SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        DataFlowRequest request = Mockito.mock(DataFlowRequest.class);
-        Mockito.when(request.getSourceDataAddress()).thenReturn(sftpDataAddress);
+        var request = mock(DataFlowRequest.class);
+        when(request.getSourceDataAddress()).thenReturn(sftpDataAddress);
 
-        Assertions.assertTrue(dataSourceFactory.validate(request).succeeded());
+        Assertions.assertTrue(dataSourceFactory.validateRequest(request).succeeded());
     }
 
     @Test
     void validate_invalidDataAddressType() {
-        SftpDataSourceFactory dataSourceFactory = new SftpDataSourceFactory();
-        DataAddress dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
-        DataFlowRequest request = Mockito.mock(DataFlowRequest.class);
-        Mockito.when(request.getSourceDataAddress()).thenReturn(dataAddress);
+        var dataSourceFactory = new SftpDataSourceFactory();
+        var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
+        var request = mock(DataFlowRequest.class);
+        when(request.getSourceDataAddress()).thenReturn(dataAddress);
 
-        Assertions.assertTrue(dataSourceFactory.validate(request).failed());
+        Assertions.assertTrue(dataSourceFactory.validateRequest(request).failed());
     }
 
     @Test
     void validate_invalidDataAddressParameters() {
-        SftpDataSourceFactory dataSourceFactory = new SftpDataSourceFactory();
-        final Map<String, String> properties =
+        var dataSourceFactory = new SftpDataSourceFactory();
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationHost", "localhost",
@@ -71,45 +75,45 @@ class SftpDataSourceFactoryTest {
                         "userName", "name",
                         "userPassword", "password");
 
-        DataAddress dataAddress = DataAddress.Builder.newInstance().properties(properties).build();
-        DataFlowRequest request = Mockito.mock(DataFlowRequest.class);
-        Mockito.when(request.getSourceDataAddress()).thenReturn(dataAddress);
+        var dataAddress = DataAddress.Builder.newInstance().properties(properties).build();
+        var request = mock(DataFlowRequest.class);
+        when(request.getSourceDataAddress()).thenReturn(dataAddress);
 
-        Assertions.assertTrue(dataSourceFactory.validate(request).failed());
+        Assertions.assertTrue(dataSourceFactory.validateRequest(request).failed());
     }
 
     @Test
     void createSink_successful() {
-        SftpDataSourceFactory dataSourceFactory = new SftpDataSourceFactory();
-        SftpUser sftpUser = SftpUser.Builder.newInstance().name("name").build();
-        SftpLocation sftpLocation =
+        var dataSourceFactory = new SftpDataSourceFactory();
+        var sftpUser = SftpUser.Builder.newInstance().name("name").build();
+        var sftpLocation =
                 SftpLocation.Builder.newInstance().host("127.0.0.1").port(22).path("path").build();
-        SftpClientConfig sftpClientConfig =
+        var sftpClientConfig =
                 SftpClientConfig.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
 
-        SftpDataAddress sftpDataAddress =
+        var sftpDataAddress =
                 SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        DataFlowRequest request = Mockito.mock(DataFlowRequest.class);
-        Mockito.when(request.getSourceDataAddress()).thenReturn(sftpDataAddress);
+        var request = mock(DataFlowRequest.class);
+        when(request.getSourceDataAddress()).thenReturn(sftpDataAddress);
 
-        try (MockedStatic<SftpClientWrapperImpl> staticWrapper =
-                     Mockito.mockStatic(SftpClientWrapperImpl.class)) {
+        try (var staticWrapper =
+                     mockStatic(SftpClientWrapperImpl.class)) {
             staticWrapper
                     .when(() -> SftpClientWrapperImpl.getSftpClient(sftpClientConfig))
-                    .thenReturn(Mockito.mock(SftpClient.class));
+                    .thenReturn(mock(SftpClient.class));
             Assertions.assertNotNull(dataSourceFactory.createSource(request));
 
             staticWrapper.verify(
-                    () -> SftpClientWrapperImpl.getSftpClient(Mockito.any()), Mockito.times(1));
+                    () -> SftpClientWrapperImpl.getSftpClient(any()), times(1));
         }
     }
 
     @Test
     void createSink_invalidDataAddressType() {
-        SftpDataSourceFactory dataSourceFactory = new SftpDataSourceFactory();
-        DataAddress dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
-        DataFlowRequest request = Mockito.mock(DataFlowRequest.class);
-        Mockito.when(request.getSourceDataAddress()).thenReturn(dataAddress);
+        var dataSourceFactory = new SftpDataSourceFactory();
+        var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
+        var request = mock(DataFlowRequest.class);
+        when(request.getSourceDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertNull(dataSourceFactory.createSource(request));
     }

@@ -15,17 +15,19 @@
 package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationAccepted;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationConfirmed;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationDeclined;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationAgreed;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationEvent;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFailed;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationOffered;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationTerminated;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
+import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
@@ -60,6 +62,16 @@ public class ContractNegotiationCallbackTest {
     Monitor monitor = mock(Monitor.class);
 
     ContractNegotiationCallback callback;
+
+    private static <T extends ContractNegotiationEvent, B extends ContractNegotiationEvent.Builder<T, B>> B baseBuilder(B builder) {
+        var callbacks = List.of(CallbackAddress.Builder.newInstance().uri("http://local").events(Set.of("test")).build());
+        return builder
+                .contractNegotiationId("id")
+                .protocol("test")
+                .callbackAddresses(callbacks)
+                .counterPartyAddress("addr")
+                .counterPartyId("provider");
+    }
 
     @BeforeEach
     void setup() {
@@ -121,15 +133,31 @@ public class ContractNegotiationCallbackTest {
         verifyNoInteractions(transferProcessService);
     }
 
+    @Test
+    void invoke_whenFinalized() {
+        var evt = baseBuilder(ContractNegotiationFinalized.Builder.newInstance().contractAgreement(
+                ContractAgreement.Builder.newInstance()
+                        .providerId("test-provider")
+                        .assetId("test-asset")
+                        .policy(Policy.Builder.newInstance().build())
+                        .id("test-id")
+                        .consumerId("test-consumer")
+                        .build())).build();
+        var message = remoteMessage(evt);
+        when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
+
+        callback.invoke(message);
+        verify(transferProcessService).initiateTransfer(any(TransferRequest.class));
+    }
+
     private static class EventInstances implements ArgumentsProvider {
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                     baseBuilder(ContractNegotiationAccepted.Builder.newInstance()).build(),
-                    baseBuilder(ContractNegotiationConfirmed.Builder.newInstance()).build(),
-                    baseBuilder(ContractNegotiationDeclined.Builder.newInstance()).build(),
-                    baseBuilder(ContractNegotiationFailed.Builder.newInstance()).build(),
+                    baseBuilder(ContractNegotiationAgreed.Builder.newInstance()).build(),
+                    baseBuilder(ContractNegotiationVerified.Builder.newInstance()).build(),
                     baseBuilder(ContractNegotiationInitiated.Builder.newInstance()).build(),
                     baseBuilder(ContractNegotiationOffered.Builder.newInstance()).build(),
                     baseBuilder(ContractNegotiationRequested.Builder.newInstance()).build(),
@@ -138,14 +166,6 @@ public class ContractNegotiationCallbackTest {
 
         }
 
-        private <T extends ContractNegotiationEvent, B extends ContractNegotiationEvent.Builder<T, B>> B baseBuilder(B builder) {
-            var callbacks = List.of(CallbackAddress.Builder.newInstance().uri("http://local").events(Set.of("test")).build());
-            return builder
-                    .contractNegotiationId("id")
-                    .protocol("test")
-                    .callbackAddresses(callbacks)
-                    .counterPartyAddress("addr")
-                    .counterPartyId("provider");
-        }
+
     }
 }
