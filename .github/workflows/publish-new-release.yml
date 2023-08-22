@@ -244,5 +244,8 @@ jobs:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
       contents: read
-    needs: [ secret-presence ]
+    needs: [ release-version ]
     uses: ./.github/workflows/publish-swaggerhub.yaml
+    with:
+      downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+    secrets: inherit
