@@ -32,7 +32,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_password() {
-        var properties = Map.of(
+        Map<String, Object> properties = Map.of(
                 "type", "sftp",
                 "locationHost", "localhost",
                 "locationPort", "22",
@@ -59,7 +59,7 @@ class SftpDataAddressTest {
         var keyPair = keyPairGenerator.generateKeyPair();
         var privateKeyBytes = keyPair.getPrivate().getEncoded();
 
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationHost", "localhost",
@@ -84,7 +84,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_noAuth() {
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationHost", "localhost",
@@ -106,7 +106,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_invalidKeyPairBrokenBase64() {
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationHost", "localhost",
@@ -127,7 +127,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_invalidKeyPairButCorrectBase64() {
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationHost", "localhost",
@@ -148,7 +148,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_portNaN() {
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationHost", "localhost",
@@ -168,7 +168,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_missingParameter() {
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "sftp",
                         "locationPort", "22",
@@ -185,7 +185,7 @@ class SftpDataAddressTest {
 
     @Test
     void fromDataAddress_notSftp() {
-        var properties =
+        Map<String, Object> properties =
                 Map.of(
                         "type", "somethingOtherThanSftp",
                         "locationHost", "localhost",

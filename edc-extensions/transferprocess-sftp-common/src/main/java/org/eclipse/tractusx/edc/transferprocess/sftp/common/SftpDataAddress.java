@@ -57,25 +57,25 @@ public class SftpDataAddress extends DataAddress {
         } catch (NullPointerException e) {
             throw new EdcSftpException(e.getMessage(), e);
         } catch (NumberFormatException e) {
-            throw new EdcSftpException(format("Port for SftpLocation %s/%s not a number", dataAddress.getProperty(LOCATION_HOST), dataAddress.getProperty(LOCATION_PATH)), e);
+            throw new EdcSftpException(format("Port for SftpLocation %s/%s not a number", dataAddress.getStringProperty(LOCATION_HOST), dataAddress.getStringProperty(LOCATION_PATH)), e);
         }
     }
 
     private static SftpLocation createSftpLocation(DataAddress dataAddress) {
         return SftpLocation.Builder.newInstance()
-                .host(dataAddress.getProperty(LOCATION_HOST))
-                .port(Integer.parseInt(dataAddress.getProperty(LOCATION_PORT, "22")))
-                .path(dataAddress.getProperty(LOCATION_PATH))
+                .host(dataAddress.getStringProperty(LOCATION_HOST))
+                .port(Integer.parseInt(dataAddress.getStringProperty(LOCATION_PORT, "22")))
+                .path(dataAddress.getStringProperty(LOCATION_PATH))
                 .build();
     }
 
     private static SftpUser createSftpUser(DataAddress dataAddress) {
         return SftpUser.Builder.newInstance()
-                .name(dataAddress.getProperty(USER_NAME))
-                .password(dataAddress.getProperty(USER_PASSWORD))
+                .name(dataAddress.getStringProperty(USER_NAME))
+                .password(dataAddress.getStringProperty(USER_PASSWORD))
                 .keyPair(SftpUserKeyPairGenerator.getKeyPairFromPrivateKey(
-                        dataAddress.getProperty(USER_PRIVATE_KEY),
-                        dataAddress.getProperty(USER_NAME)))
+                        dataAddress.getStringProperty(USER_PRIVATE_KEY),
+                        dataAddress.getStringProperty(USER_NAME)))
                 .build();
     }
 

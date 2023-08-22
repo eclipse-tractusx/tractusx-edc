@@ -25,9 +25,9 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
-    id("com.diffplug.spotless") version "6.19.0"
+    id("com.diffplug.spotless") version "6.20.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.bmuschko.docker-remote-api") version "9.3.1"
+    id("com.bmuschko.docker-remote-api") version "9.3.2"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -65,10 +65,10 @@ allprojects {
         implementation("org.slf4j:slf4j-api:2.0.7")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.9.3"))
+        testImplementation(platform("org.junit:junit-bom:5.10.0"))
 
         constraints {
-            implementation("org.yaml:snakeyaml:2.0") {
+            implementation("org.yaml:snakeyaml:2.1") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
             implementation("net.minidev:json-smart:2.5.0") {
@@ -81,6 +81,10 @@ allprojects {
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(annotationProcessorVersion)
         outputDirectory.set(project.buildDir)
+        // uncomment the following lines to enable the Autodoc-2-Markdown converter
+        // only available with EDC 0.2.1 SNAPSHOT
+        // additionalInputDirectory.set(downloadDir.asFile)
+        // downloadDirectory.set(downloadDir.asFile)
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
@@ -149,24 +153,44 @@ subprojects {
                 file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
 
+            val agentFile = project.buildDir.resolve("opentelemetry-javaagent.jar")
+            // create task to download the opentelemetry agent
+            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.27.0/opentelemetry-javaagent.jar"
+            val downloadOtel = tasks.create("downloadOtel") {
+                // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
+                onlyIf {
+                    !agentFile.exists()
+                }
+                // this task could be the first in the graph, so "build/" may not yet exist. Let's be defensive
+                doFirst {
+                    project.buildDir.mkdirs()
+                }
+                // download the jar file
+                doLast {
+                    val download = { url: String, destFile: File -> ant.invokeMethod("get", mapOf("src" to url, "dest" to destFile)) }
+                    logger.lifecycle("Downloading OpenTelemetry Agent")
+                    download(openTelemetryAgentUrl, agentFile)
+                }
+            }
+
             //actually apply the plugin to the (sub-)project
-
             apply(plugin = "com.bmuschko.docker-remote-api")
-
             // configure the "dockerize" task
-            val dockerTask = tasks.create("dockerize", DockerBuildImage::class) {
-                dockerFile.set(file("${project.projectDir}/src/main/docker/Dockerfile"))
+            val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
+                val dockerContextDir = project.projectDir
+                dockerFile.set(file("$dockerContextDir/src/main/docker/Dockerfile"))
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
                 // specify platform with the -Dplatform flag:
                 if (System.getProperty("platform") != null)
                     platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
-                inputDir.set(file(project.projectDir))
+                buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
+                inputDir.set(file(dockerContextDir))
             }
-
-            // make sure "shadowJar" always runs before "dockerize"
-            dockerTask.dependsOn(tasks.findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+            // make sure  always runs after "dockerize" and after "copyOtel"
+            dockerTask.dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+                    .dependsOn(downloadOtel)
         }
     }
 }

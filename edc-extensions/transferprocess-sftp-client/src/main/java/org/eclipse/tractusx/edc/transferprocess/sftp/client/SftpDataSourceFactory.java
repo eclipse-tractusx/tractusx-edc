@@ -34,15 +34,6 @@ public class SftpDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        if (!canHandle(request)) {
-            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
-        }
-
-        return VALID;
-    }
-
-    @Override
     public DataSource createSource(DataFlowRequest request) {
         if (!canHandle(request)) {
             return null;
@@ -58,5 +49,13 @@ public class SftpDataSourceFactory implements DataSourceFactory {
 
         SftpClientWrapper sftpClientWrapper = new SftpClientWrapperImpl(sftpClientConfig);
         return new SftpDataSource(sftpClientWrapper);
+    }
+
+    @Override
+    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
+        if (!canHandle(request)) {
+            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+        }
+        return Result.success();
     }
 }

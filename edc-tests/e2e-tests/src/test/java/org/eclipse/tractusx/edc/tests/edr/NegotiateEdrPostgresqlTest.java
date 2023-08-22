@@ -22,8 +22,8 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoPostgresqlConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesPostgresqlConfiguration;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
+import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 
 @PostgresqlDbIntegrationTest
 public class NegotiateEdrPostgresqlTest extends AbstractNegotiateEdrTest {
@@ -33,14 +33,14 @@ public class NegotiateEdrPostgresqlTest extends AbstractNegotiateEdrTest {
             ":edc-tests:runtime:runtime-postgresql",
             SOKRATES_NAME,
             SOKRATES_BPN,
-            sokratesPostgresqlConfiguration()
+            sokratesConfiguration()
     );
     @RegisterExtension
     protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql",
             PLATO_NAME,
             PLATO_BPN,
-            platoPostgresqlConfiguration()
+            platoConfiguration()
     );
 
 }

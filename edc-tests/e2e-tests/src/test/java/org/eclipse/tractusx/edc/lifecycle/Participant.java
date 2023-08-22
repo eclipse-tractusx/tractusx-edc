@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.lifecycle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -32,6 +33,7 @@ import org.eclipse.tractusx.edc.helpers.ContractDefinitionHelperFunctions;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,6 +51,7 @@ import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDataset
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
 import static org.eclipse.tractusx.edc.helpers.ContractNegotiationHelperFunctions.createNegotiationRequest;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createTransferRequest;
 import static org.mockito.Mockito.mock;
 
@@ -106,7 +109,7 @@ public class Participant {
         baseRequest()
                 .body(asset)
                 .when()
-                .post("/v2/assets")
+                .post("/v3/assets")
                 .then()
                 .statusCode(200)
                 .contentType(JSON);
@@ -137,6 +140,20 @@ public class Participant {
                 .then()
                 .statusCode(200)
                 .contentType(JSON);
+    }
+
+    public void storeBusinessPartner(String bpn, String... groups) {
+        var body = Json.createObjectBuilder()
+                .add(ID, bpn)
+                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .build();
+        baseRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/business-partner-groups")
+                .then()
+                .statusCode(204);
     }
 
     public String negotiateContract(Participant other, String assetId) {
@@ -198,14 +215,18 @@ public class Participant {
     }
 
     public JsonObject getEdr(String transferProcessId) {
-        return baseRequest()
-                .when()
-                .get("/edrs/{id}", transferProcessId)
-                .then()
+        return getEdrRequest(transferProcessId)
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(JsonObject.class);
+    }
+
+    public ValidatableResponse getEdrRequest(String transferProcessId) {
+        return baseRequest()
+                .when()
+                .get("/edrs/{id}", transferProcessId)
+                .then();
     }
 
     public JsonArray getEdrEntriesByAssetId(String assetId) {
@@ -326,14 +347,33 @@ public class Participant {
         return getProxyData(body);
     }
 
+
+    public String pullProviderDataPlaneDataByAssetId(Participant provider, String assetId) {
+        var body = Map.of("assetId", assetId);
+        return getProxyData(body);
+    }
+
+    public String pullProviderDataPlaneDataByAssetIdAndCustomProperties(Participant provider, String assetId, String path, String params) {
+        var body = Map.of("assetId", assetId, "pathSegments", path, "queryParams", params);
+        return getProxyData(body);
+    }
+
     public Response pullProxyDataResponseByAssetId(Participant provider, String assetId) {
-        var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        var body = Map.of("assetId", assetId,
+                "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint),
+                "providerId", provider.bpn);
         return proxyRequest(body);
     }
 
     public String pullProxyDataByTransferProcessId(Participant provider, String transferProcessId) {
         var body = Map.of("transferProcessId", transferProcessId,
                 "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));
+        return getProxyData(body);
+
+    }
+
+    public String pullProviderDataPlaneDataByTransferProcessId(Participant provider, String transferProcessId) {
+        var body = Map.of("transferProcessId", transferProcessId);
         return getProxyData(body);
 
     }
@@ -367,6 +407,7 @@ public class Participant {
     private Response proxyRequest(Map<String, String> body) {
         return given()
                 .baseUri(proxyUrl)
+                .header("x-api-key", apiKey)
                 .contentType("application/json")
                 .body(body)
                 .post(PROXY_SUBPATH);
@@ -378,4 +419,6 @@ public class Participant {
                 .header("x-api-key", apiKey)
                 .contentType(JSON);
     }
+
+
 }

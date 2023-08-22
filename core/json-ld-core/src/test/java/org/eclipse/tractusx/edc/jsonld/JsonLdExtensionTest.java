@@ -22,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.net.URI;
+
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_SUMMARY_V_1;
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_V_1;
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_ED25519_V1;
@@ -46,10 +48,10 @@ public class JsonLdExtensionTest {
     @Test
     void initialize(ServiceExtensionContext context) {
         extension.initialize(context);
-        jsonLdService.registerCachedDocument(eq(CREDENTIALS_V_1), any());
-        jsonLdService.registerCachedDocument(eq(CREDENTIALS_SUMMARY_V_1), any());
-        jsonLdService.registerCachedDocument(eq(SECURITY_JWS_V1), any());
-        jsonLdService.registerCachedDocument(eq(SECURITY_ED25519_V1), any());
+        jsonLdService.registerCachedDocument(eq(CREDENTIALS_V_1), any(URI.class));
+        jsonLdService.registerCachedDocument(eq(CREDENTIALS_SUMMARY_V_1), any(URI.class));
+        jsonLdService.registerCachedDocument(eq(SECURITY_JWS_V1), any(URI.class));
+        jsonLdService.registerCachedDocument(eq(SECURITY_ED25519_V1), any(URI.class));
 
     }
 }

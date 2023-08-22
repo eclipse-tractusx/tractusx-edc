@@ -28,8 +28,7 @@ dependencies {
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "cx-policy")
-        exclude(module = "data-encryption")
-        exclude(module = "hashicorp-vault")
+        exclude(group = "org.eclipse.edc", "vault-hashicorp")
     }
 
     implementation(project(":edc-tests:runtime:extensions"))

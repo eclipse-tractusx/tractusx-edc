@@ -17,8 +17,8 @@ plugins {
 }
 
 dependencies {
-    testImplementation(project(":spi:edr-cache-spi"))
-    testImplementation(project(":edc-extensions:control-plane-adapter-api"))
+    testImplementation(project(":spi:edr-spi"))
+    testImplementation(project(":edc-extensions:edr:edr-api"))
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.nimbus.jwt)
@@ -38,13 +38,17 @@ dependencies {
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
     testImplementation(testFixtures(libs.edc.sql.core))
-
+    testImplementation(libs.awaitility)
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
+    testImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     testImplementation(libs.edc.auth.oauth2.client)
+    testImplementation(libs.testcontainers.junit)
+    testImplementation(libs.testcontainers.postgres)
+
 }
 
 // do not publish

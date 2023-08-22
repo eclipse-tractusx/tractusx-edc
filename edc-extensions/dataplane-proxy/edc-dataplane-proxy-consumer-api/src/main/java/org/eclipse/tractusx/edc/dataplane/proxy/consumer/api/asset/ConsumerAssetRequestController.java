@@ -25,12 +25,15 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -41,15 +44,17 @@ import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static jakarta.ws.rs.core.Response.status;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
+import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
+import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
 
 /**
  * Implements the HTTP proxy API.
  */
 @Path("/aas")
 public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
+    public static final String BASE_URL = "baseUrl";
     private static final String HTTP_DATA = "HttpData";
     private static final String ASYNC_TYPE = "async";
-    private static final String BASE_URL = "baseUrl";
     private static final String HEADER_AUTHORIZATION = "header:authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
@@ -76,15 +81,19 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         // resolve the EDR and add it to the request
         var edr = resolveEdr(request);
 
-        var sourceAddress = DataAddress.Builder.newInstance()
-                .type(HTTP_DATA)
-                .property(BASE_URL, request.getEndpointUrl())
-                .property(HEADER_AUTHORIZATION, BEARER_PREFIX + edr.getAuthCode())
-                .build();
+        var sourceAddress = Optional.ofNullable(request.getEndpointUrl())
+                .map(url -> gatewayAddress(url, edr))
+                .orElseGet(() -> dataPlaneAddress(edr));
+
 
         var destinationAddress = DataAddress.Builder.newInstance()
                 .type(ASYNC_TYPE)
                 .build();
+
+
+        var properties = Optional.ofNullable(request.getEndpointUrl())
+                .map((url) -> Map.<String, String>of())
+                .orElseGet(() -> dataPlaneProperties(request));
 
         var flowRequest = DataFlowRequest.Builder.newInstance()
                 .processId(randomUUID().toString())
@@ -92,6 +101,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                 .sourceDataAddress(sourceAddress)
                 .destinationDataAddress(destinationAddress)
                 .traceContext(Map.of())
+                .properties(properties)
                 .build();
 
         // transfer the data asynchronously
@@ -104,6 +114,30 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         }
     }
 
+
+    private Map<String, String> dataPlaneProperties(AssetRequest request) {
+        var props = new HashMap<String, String>();
+        Optional.ofNullable(request.getQueryParams()).ifPresent((queryParams) -> props.put(QUERY_PARAMS, queryParams));
+        Optional.ofNullable(request.getPathSegments()).ifPresent((path) -> props.put(PATH, path));
+        return props;
+    }
+
+    private DataAddress gatewayAddress(String url, EndpointDataReference edr) {
+        return HttpDataAddress.Builder.newInstance()
+                .baseUrl(url)
+                .property(HEADER_AUTHORIZATION, BEARER_PREFIX + edr.getAuthCode())
+                .build();
+    }
+
+    private DataAddress dataPlaneAddress(EndpointDataReference edr) {
+        return HttpDataAddress.Builder.newInstance()
+                .baseUrl(edr.getEndpoint())
+                .proxyQueryParams("true")
+                .proxyPath("true")
+                .property(HEADER_AUTHORIZATION, edr.getAuthCode())
+                .build();
+    }
+
     private EndpointDataReference resolveEdr(AssetRequest request) {
         if (request.getTransferProcessId() != null) {
             var edr = edrCache.resolveReference(request.getTransferProcessId());
@@ -112,7 +146,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
             }
             return edr;
         } else {
-            var resolvedEdrs = edrCache.referencesForAsset(request.getAssetId());
+            var resolvedEdrs = edrCache.referencesForAsset(request.getAssetId(), request.getProviderId());
             if (resolvedEdrs.isEmpty()) {
                 throw new BadRequestException("No EDR for asset: " + request.getAssetId());
             } else if (resolvedEdrs.size() > 1) {
@@ -128,17 +162,10 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     private void handleCompletion(AsyncResponse response, StreamResult<Void> result, Throwable throwable) {
         if (result != null && result.failed()) {
             switch (result.reason()) {
-                case NOT_FOUND:
-                    response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());
-                    break;
-                case NOT_AUTHORIZED:
-                    response.resume(status(UNAUTHORIZED).type(APPLICATION_JSON).build());
-                    break;
-                case GENERAL_ERROR:
-                    response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + result.reason());
+                case NOT_FOUND -> response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());
+                case NOT_AUTHORIZED -> response.resume(status(UNAUTHORIZED).type(APPLICATION_JSON).build());
+                case GENERAL_ERROR -> response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
+                default -> throw new IllegalStateException("Unexpected value: " + result.reason());
             }
         } else if (throwable != null) {
             reportError(response, throwable);

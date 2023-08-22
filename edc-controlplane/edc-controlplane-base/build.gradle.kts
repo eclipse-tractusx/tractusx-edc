@@ -24,13 +24,16 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":core:edr-cache-core"))
-    runtimeOnly(project(":edc-extensions:business-partner-validation"))
+    runtimeOnly(project(":core:edr-core"))
     runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
     runtimeOnly(project(":edc-extensions:data-encryption"))
 
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
-    runtimeOnly(project(":edc-extensions:control-plane-adapter-api"))
-    runtimeOnly(project(":edc-extensions:control-plane-adapter-callback"))
+    runtimeOnly(project(":edc-extensions:edr:edr-api"))
+    runtimeOnly(project(":edc-extensions:edr:edr-callback"))
+
+    // needed for BPN validation
+    runtimeOnly(project(":edc-extensions:bpn-validation"))
 
     // needed for SSI integration
     runtimeOnly(project(":core:json-ld-core"))
@@ -44,6 +47,7 @@ dependencies {
     runtimeOnly(libs.edc.auth.tokenbased)
 
     runtimeOnly(libs.edc.api.management)
+    runtimeOnly(libs.edc.api.management.config)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.dsp)
     runtimeOnly(libs.edc.spi.jwt)

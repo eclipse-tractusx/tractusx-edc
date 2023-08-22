@@ -34,8 +34,6 @@ on:
     types:
       - published
   pull_request:
-    paths-ignore:
-      - 'charts/**'
   workflow_dispatch:
 
 concurrency:

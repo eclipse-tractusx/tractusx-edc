@@ -19,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * A request for asset data. The request may contain a transfer process ID or asset ID and must specify an endpoint for retrieving the data.
  */
@@ -29,7 +27,16 @@ import static java.util.Objects.requireNonNull;
 public class AssetRequest {
     private String transferProcessId;
     private String assetId;
+
+    private String providerId;
     private String endpointUrl;
+
+    private String queryParams;
+
+    private String pathSegments;
+
+    private AssetRequest() {
+    }
 
     public String getTransferProcessId() {
         return transferProcessId;
@@ -43,12 +50,25 @@ public class AssetRequest {
         return endpointUrl;
     }
 
-    private AssetRequest() {
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public String getQueryParams() {
+        return queryParams;
+    }
+
+    public String getPathSegments() {
+        return pathSegments;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         private final AssetRequest request;
+
+        private Builder() {
+            request = new AssetRequest();
+        }
 
         @JsonCreator
         public static Builder newInstance() {
@@ -70,16 +90,26 @@ public class AssetRequest {
             return this;
         }
 
+        public Builder providerId(String providerId) {
+            request.providerId = providerId;
+            return this;
+        }
+
+        public Builder queryParams(String queryParams) {
+            request.queryParams = queryParams;
+            return this;
+        }
+
+        public Builder pathSegments(String pathSegments) {
+            request.pathSegments = pathSegments;
+            return this;
+        }
+
         public AssetRequest build() {
             if (request.assetId == null && request.transferProcessId == null) {
                 throw new NullPointerException("An assetId or endpointReferenceId must be set");
             }
-            requireNonNull(request.endpointUrl, "endpointUrl");
             return request;
-        }
-
-        private Builder() {
-            request = new AssetRequest();
         }
     }
 }

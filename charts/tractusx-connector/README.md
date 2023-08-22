@@ -1,6 +1,6 @@
 # tractusx-connector
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.0](https://img.shields.io/badge/AppVersion-0.5.0-informational?style=flat-square)
+![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.1](https://img.shields.io/badge/AppVersion-0.5.1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
@@ -42,7 +42,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector --version 0.5.0 \
+helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
      -f <path-to>/tractusx-connector-test.yaml
 ```
 
@@ -86,7 +86,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0 \
 | controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
 | controlplane.endpoints.metrics.path | string | `"/metrics"` | path for incoming api calls |
 | controlplane.endpoints.metrics.port | int | `9090` | port for incoming api calls |
-| controlplane.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | ids api, used for inter connector communication and must be internet facing |
+| controlplane.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
 | controlplane.endpoints.protocol.path | string | `"/api/v1/dsp"` | path for incoming api calls |
 | controlplane.endpoints.protocol.port | int | `8084` | port for incoming api calls |
 | controlplane.env | object | `{}` |  |
@@ -117,12 +117,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0 \
 | controlplane.ingresses[1].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
 | controlplane.ingresses[1].tls.secretName | string | `""` | If present overwrites the default secret name |
 | controlplane.initContainers | list | `[]` |  |
-| controlplane.internationalDataSpaces.catalogId | string | `"TXDC-Catalog"` |  |
-| controlplane.internationalDataSpaces.curator | string | `""` |  |
-| controlplane.internationalDataSpaces.description | string | `"Tractus-X Eclipse IDS Data Space Connector"` |  |
-| controlplane.internationalDataSpaces.id | string | `"TXDC"` |  |
-| controlplane.internationalDataSpaces.maintainer | string | `""` |  |
-| controlplane.internationalDataSpaces.title | string | `""` |  |
 | controlplane.livenessProbe.enabled | bool | `true` | Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | controlplane.livenessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | controlplane.livenessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first liveness check |
@@ -155,16 +149,17 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0 \
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| controlplane.ssi.miw.authorityId | string | `""` |  |
-| controlplane.ssi.miw.url | string | `""` |  |
-| controlplane.ssi.oauth.client.id | string | `""` |  |
-| controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` |  |
-| controlplane.ssi.oauth.tokenurl | string | `""` |  |
+| controlplane.ssi.miw.authorityId | string | `""` | The BPN of the issuer authority |
+| controlplane.ssi.miw.url | string | `""` | MIW URL |
+| controlplane.ssi.oauth.client.id | string | `""` | The client ID for KeyCloak |
+| controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
+| controlplane.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
 | controlplane.tolerations | list | `[]` |  |
-| controlplane.url.ids | string | `""` | Explicitly declared url for reaching the ids api (e.g. if ingresses not used) |
+| controlplane.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | controlplane.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | controlplane.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
-| customLabels | object | `{}` |  |
+| customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
+| customLabels | object | `{}` | To add some custom labels |
 | dataplane.affinity | object | `{}` |  |
 | dataplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | dataplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -251,7 +246,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.0 \
 | networkPolicy.dataplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the dataplane component |
 | networkPolicy.dataplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for dp (defaults to all namespaces) |
 | networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
-| participant.id | string | `""` |  |
+| participant.id | string | `""` | BPN Number |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |

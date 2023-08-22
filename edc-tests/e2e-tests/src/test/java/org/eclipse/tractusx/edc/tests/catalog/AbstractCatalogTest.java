@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.tests.catalog;
 
 
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetPolicies;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.noConstraintPolicyDefinition;
 import static org.eclipse.tractusx.edc.helpers.QueryHelperFunctions.createQuery;
@@ -39,6 +41,7 @@ public abstract class AbstractCatalogTest {
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
     @Test
+    @DisplayName("Plato gets catalog from Sokrates. No constraints.")
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
         // arrange
         SOKRATES.createAsset("test-asset");
@@ -61,8 +64,8 @@ public abstract class AbstractCatalogTest {
     }
 
     @Test
-    @DisplayName("Verify that Plato receives only the offers he is permitted to")
-    void requestCatalog_filteredByBpn_shouldReject() {
+    @DisplayName("Verify that Plato receives only the offers he is permitted to (using the legacy BPN validation)")
+    void requestCatalog_filteredByBpnLegacy_shouldReject() {
         var onlyPlatoId = "ap";
         var onlyDiogenesId = "db";
 
@@ -88,12 +91,44 @@ public abstract class AbstractCatalogTest {
         assertThat(catalog).hasSize(2);
     }
 
+
+    @Test
+    @DisplayName("Verify that Plato receives only the offers he is permitted to (using the new BPN validation)")
+    void requestCatalog_filteredByBpn_shouldReject() {
+        var philosopherId = "ap";
+        var mathId = "db";
+
+        var mustBeGreekPhilosopher = businessPartnerGroupPolicy(philosopherId, Operator.IS_ANY_OF, "greek_customer", "philosopher");
+        var mustBeGreekMathematician = businessPartnerGroupPolicy(mathId, Operator.IS_ALL_OF, "greek_customer", "mathematician");
+        var noConstraintPolicyId = "no-constraint";
+
+
+        SOKRATES.storeBusinessPartner(PLATO.getBpn(), "greek_customer", "philosopher");
+        SOKRATES.createPolicy(mustBeGreekPhilosopher);
+        SOKRATES.createPolicy(mustBeGreekMathematician);
+        SOKRATES.createPolicy(noConstraintPolicyDefinition(noConstraintPolicyId));
+
+        SOKRATES.createAsset("test-asset1");
+        SOKRATES.createAsset("test-asset2");
+        SOKRATES.createAsset("test-asset3");
+
+        SOKRATES.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
+
+
+        // act
+        var catalog = PLATO.getCatalogDatasets(SOKRATES);
+        assertThat(catalog).hasSize(2);
+    }
+
     @Test
     @DisplayName("Multiple ContractDefinitions exist for one Asset")
     void requestCatalog_multipleOffersForAsset() {
+        SOKRATES.storeBusinessPartner(PLATO.getBpn(), "test-group");
         SOKRATES.createAsset("asset-1");
         SOKRATES.createPolicy(noConstraintPolicyDefinition("policy-1"));
-        SOKRATES.createPolicy(businessPartnerNumberPolicy("policy-2", PLATO.getBpn()));
+        SOKRATES.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ANY_OF, "test-group"));
 
         SOKRATES.createContractDefinition("asset-1", "def1", "policy-1", "policy-1");
         SOKRATES.createContractDefinition("asset-1", "def2", "policy-2", "policy-1");
@@ -110,9 +145,10 @@ public abstract class AbstractCatalogTest {
     @DisplayName("Catalog with 1000 offers")
     void requestCatalog_of1000Assets_shouldContainAll() {
         var policyId = "policy-1";
-        var policy = businessPartnerNumberPolicy(policyId, PLATO.getBpn());
+        var policy = businessPartnerGroupPolicy(policyId, Operator.IS_NONE_OF, "test-group1", "test-group2");
         SOKRATES.createPolicy(policy);
         SOKRATES.createPolicy(noConstraintPolicyDefinition("noconstraint"));
+        SOKRATES.storeBusinessPartner(PLATO.getBpn(), "test-group-3");
 
         range(0, 1000)
                 .forEach(i -> {

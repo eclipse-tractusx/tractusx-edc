@@ -14,7 +14,6 @@
 
 package org.eclipse.tractusx.edc.tests.edr;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -28,7 +27,7 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
-import org.eclipse.tractusx.edc.helpers.ReceivedEvent;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,13 +44,14 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEvent;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.tests.edr.TestFunctions.waitForEvent;
 
 public abstract class AbstractNegotiateEdrTest {
 
@@ -60,9 +59,6 @@ public abstract class AbstractNegotiateEdrTest {
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
     MockWebServer server;
-
-    ObjectMapper mapper = new ObjectMapper();
-
 
     @BeforeEach
     void setup() {
@@ -99,8 +95,9 @@ public abstract class AbstractNegotiateEdrTest {
                 .add(EDC_NAMESPACE + "authCode", authCode)
                 .build());
 
-        PLATO.createPolicy(businessPartnerNumberPolicy("policy-1", SOKRATES.getBpn()));
-        PLATO.createPolicy(businessPartnerNumberPolicy("policy-2", SOKRATES.getBpn()));
+        PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
+        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.IS_NONE_OF, "forbidden-policy"));
+        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ALL_OF, "test-group1", "test-group2"));
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
 
@@ -113,7 +110,7 @@ public abstract class AbstractNegotiateEdrTest {
         SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
 
         var events = expectedEvents.stream()
-                .map(this::waitForEvent)
+                .map(receivedEvent -> waitForEvent(server, receivedEvent))
                 .collect(Collectors.toList());
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
@@ -132,20 +129,6 @@ public abstract class AbstractNegotiateEdrTest {
         assertThat(edr.getJsonString("edc:endpoint").getString()).isNotNull();
         assertThat(edr.getJsonString("edc:id").getString()).isEqualTo(transferProcessId);
 
-    }
-
-
-    private ReceivedEvent waitForEvent(ReceivedEvent event) {
-        try {
-            var request = server.takeRequest(20, TimeUnit.SECONDS);
-            if (request != null) {
-                return mapper.readValue(request.getBody().inputStream(), ReceivedEvent.class);
-            } else {
-                throw new RuntimeException("Timeout exceeded waiting for events");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @AfterEach

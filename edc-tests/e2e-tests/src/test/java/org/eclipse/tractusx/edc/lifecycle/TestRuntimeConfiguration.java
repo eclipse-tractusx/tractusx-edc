@@ -14,9 +14,6 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
-import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,54 +62,6 @@ public class TestRuntimeConfiguration {
     static final String MIW_PLATO_URL = "http://localhost:" + MIW_PLATO_PORT;
 
     static final String OAUTH_TOKEN_URL = "http://localhost:" + OAUTH_PORT;
-
-    public static Map<String, String> sokratesPostgresqlConfiguration() {
-        var baseConfiguration = sokratesConfiguration();
-        var postgresConfiguration = postgresqlConfiguration(SOKRATES_NAME.toLowerCase());
-        baseConfiguration.putAll(postgresConfiguration);
-        return baseConfiguration;
-    }
-
-    public static Map<String, String> platoPostgresqlConfiguration() {
-        var baseConfiguration = platoConfiguration();
-        var postgresConfiguration = postgresqlConfiguration(PLATO_NAME.toLowerCase());
-        baseConfiguration.putAll(postgresConfiguration);
-        return baseConfiguration;
-    }
-
-    public static Map<String, String> postgresqlConfiguration(String name) {
-        var jdbcUrl = jdbcUrl(name);
-        return new HashMap<>() {
-            {
-                put("edc.datasource.asset.name", "asset");
-                put("edc.datasource.asset.url", jdbcUrl);
-                put("edc.datasource.asset.user", PostgresqlLocalInstance.USER);
-                put("edc.datasource.asset.password", PostgresqlLocalInstance.PASSWORD);
-                put("edc.datasource.contractdefinition.name", "contractdefinition");
-                put("edc.datasource.contractdefinition.url", jdbcUrl);
-                put("edc.datasource.contractdefinition.user", PostgresqlLocalInstance.USER);
-                put("edc.datasource.contractdefinition.password", PostgresqlLocalInstance.PASSWORD);
-                put("edc.datasource.contractnegotiation.name", "contractnegotiation");
-                put("edc.datasource.contractnegotiation.url", jdbcUrl);
-                put("edc.datasource.contractnegotiation.user", PostgresqlLocalInstance.USER);
-                put("edc.datasource.contractnegotiation.password", PostgresqlLocalInstance.PASSWORD);
-                put("edc.datasource.policy.name", "policy");
-                put("edc.datasource.policy.url", jdbcUrl);
-                put("edc.datasource.policy.user", PostgresqlLocalInstance.USER);
-                put("edc.datasource.policy.password", PostgresqlLocalInstance.PASSWORD);
-                put("edc.datasource.transferprocess.name", "transferprocess");
-                put("edc.datasource.transferprocess.url", jdbcUrl);
-                put("edc.datasource.transferprocess.user", PostgresqlLocalInstance.USER);
-                put("edc.datasource.transferprocess.password", PostgresqlLocalInstance.PASSWORD);
-                put("edc.datasource.edr.name", "edr");
-                put("edc.datasource.edr.url", jdbcUrl);
-                put("edc.datasource.edr.user", PostgresqlLocalInstance.USER);
-                put("edc.datasource.edr.password", PostgresqlLocalInstance.PASSWORD);
-                // use non-default schema name to test usage of non-default schema
-                put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
-            }
-        };
-    }
 
     public static Map<String, String> sokratesSsiConfiguration() {
         var ssiConfiguration = new HashMap<String, String>() {
@@ -214,8 +163,4 @@ public class TestRuntimeConfiguration {
         return ssiConfiguration;
     }
 
-    @NotNull
-    public static String jdbcUrl(String name) {
-        return PostgresqlLocalInstance.JDBC_URL_PREFIX + name + "?currentSchema=" + DB_SCHEMA_NAME;
-    }
 }

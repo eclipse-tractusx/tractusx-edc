@@ -17,7 +17,7 @@ package org.eclipse.tractusx.edc.edr.core.defaults;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceEntry;
+import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.junit.jupiter.api.Test;
 
 import static java.util.UUID.randomUUID;
@@ -39,6 +39,7 @@ class PersistentCacheEntryTest {
                 .assetId(randomUUID().toString())
                 .agreementId(randomUUID().toString())
                 .transferProcessId(randomUUID().toString())
+                .providerId(randomUUID().toString())
                 .build();
 
         var serialized = mapper.writeValueAsString(new PersistentCacheEntry(edrEntry, edr));

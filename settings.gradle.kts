@@ -20,30 +20,34 @@
 rootProject.name = "tractusx-edc"
 
 // spi modules
-include(":spi:control-plane-adapter-spi")
-include(":spi:edr-cache-spi")
+include(":spi:callback-spi")
+include(":spi:edr-spi")
 include(":spi:core-spi")
 include(":spi:ssi-spi")
 
 
 // core modules
 include(":core:edr-cache-core")
+include(":core:edr-core")
 include(":core:json-ld-core")
 
 
-include(":edc-extensions:business-partner-validation")
+include(":edc-extensions:bpn-validation")
+include(":edc-extensions:bpn-validation:bpn-validation-api")
+include(":edc-extensions:bpn-validation:bpn-validation-spi")
+include(":edc-extensions:bpn-validation:bpn-validation-core")
+include(":edc-extensions:bpn-validation:business-partner-store-sql")
 include(":edc-extensions:cx-oauth2")
 include(":edc-extensions:data-encryption")
 include(":edc-extensions:dataplane-selector-configuration")
-include(":edc-extensions:hashicorp-vault")
 include(":edc-extensions:postgresql-migration")
 include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:transferprocess-sftp-client")
 include(":edc-extensions:transferprocess-sftp-common")
 include(":edc-extensions:transferprocess-sftp-provisioner")
-include(":edc-extensions:control-plane-adapter-api")
-include(":edc-extensions:control-plane-adapter-callback")
-include(":edc-extensions:edr-cache-sql")
+include(":edc-extensions:edr:edr-api")
+include(":edc-extensions:edr:edr-callback")
+include(":edc-extensions:edr:edr-cache-sql")
 include(":edc-extensions:cx-policy")
 include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
@@ -65,7 +69,6 @@ include(":edc-controlplane:edc-runtime-memory")
 include(":edc-controlplane:edc-controlplane-memory-hashicorp-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-azure-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
-include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault-legacy")
 
 // modules for dataplane artifacts
 include(":edc-dataplane")
@@ -77,6 +80,8 @@ include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api")
 include(":edc-tests:edc-dataplane-proxy-e2e")
+
+include(":samples:multi-tenancy")
 
 
 // this is needed to have access to snapshot builds of plugins

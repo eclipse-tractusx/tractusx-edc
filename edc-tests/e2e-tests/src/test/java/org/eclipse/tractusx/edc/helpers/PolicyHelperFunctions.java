@@ -15,14 +15,22 @@
 package org.eclipse.tractusx.edc.helpers;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
+import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.policy.model.AtomicConstraint;
+import org.eclipse.edc.policy.model.Operator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
@@ -34,15 +42,46 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class PolicyHelperFunctions {
 
+    public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
+    private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
+
+    private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
     /**
      * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
      * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
+     *
+     * @deprecated This method creates a policy that is compliant with the old/legacy BPN validation. Please use {@link PolicyHelperFunctions#businessPartnerGroupPolicy(String, Operator, String...)} instead.
      */
+    @Deprecated
     public static JsonObject businessPartnerNumberPolicy(String id, String... bpns) {
         return policyDefinitionBuilder(bnpPolicy(bpns))
                 .add(ID, id)
+                .build();
+    }
+
+    public static JsonObject businessPartnerGroupPolicy(String id, Operator operator, String... allowedGroups) {
+        return policyDefinitionBuilder(bpnGroupPolicy(operator.getOdrlRepresentation(), allowedGroups))
+                .add(ID, id)
+                .build();
+    }
+
+    private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
+
+        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
+
+        var permission = Json.createObjectBuilder()
+                .add("action", "USE")
+                .add("constraint", Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add("or", groupConstraint)
+                        .build())
+                .build();
+
+        return Json.createObjectBuilder()
+                .add(CONTEXT, "http://www.w3.org/ns/odrl.jsonld")
+                .add("permission", permission)
                 .build();
     }
 
@@ -54,6 +93,30 @@ public class PolicyHelperFunctions {
         return policyDefinitionBuilder(frameworkPolicy(permissions))
                 .add(ID, id)
                 .build();
+    }
+
+
+    /**
+     * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
+     * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
+     */
+    public static JsonObject frameworkTemplatePolicy(String id, String frameworkKind) {
+        var template = fetchFrameworkTemplate().replace("${POLICY_ID}", id).replace("${FRAMEWORK_CREDENTIAL}", frameworkKind);
+        try {
+            return MAPPER.readValue(template, JsonObject.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private static String fetchFrameworkTemplate() {
+        try (var stream = PolicyHelperFunctions.class.getClassLoader().getResourceAsStream("framework-policy.json")) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public static JsonObjectBuilder policyDefinitionBuilder() {
@@ -125,11 +188,16 @@ public class PolicyHelperFunctions {
     }
 
     private static JsonObject atomicConstraint(String leftOperand, String operator, Object rightOperand) {
-        return Json.createObjectBuilder()
+        var builder = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
                 .add("leftOperand", leftOperand)
-                .add("operator", operator)
-                .add("rightOperand", rightOperand.toString())
-                .build();
+                .add("operator", operator);
+
+        if (rightOperand instanceof Collection<?>) {
+            builder.add("rightOperand", ((Collection<?>) rightOperand).stream().map(Object::toString).collect(Collectors.joining(",")));
+        } else {
+            builder.add("rightOperand", rightOperand.toString());
+        }
+        return builder.build();
     }
 }

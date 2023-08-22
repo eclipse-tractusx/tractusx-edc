@@ -20,7 +20,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import org.eclipse.edc.connector.contract.spi.ContractId;
 
-import static org.eclipse.edc.catalog.spi.CatalogRequest.EDC_CATALOG_REQUEST_QUERY_SPEC;
+import static org.eclipse.edc.catalog.spi.CatalogRequest.CATALOG_REQUEST_QUERY_SPEC;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIBUTE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
@@ -35,14 +35,14 @@ public class CatalogHelperFunctions {
         jsonBuilder.add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http");
 
         if (query != null) {
-            jsonBuilder.add(EDC_CATALOG_REQUEST_QUERY_SPEC, query);
+            jsonBuilder.add(CATALOG_REQUEST_QUERY_SPEC, query);
         }
         return jsonBuilder.build();
     }
 
     public static ContractId getDatasetContractId(JsonObject dataset) {
         var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parse(id);
+        return ContractId.parseId(id).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
     }
 
     public static String getDatasetAssetId(JsonObject dataset) {

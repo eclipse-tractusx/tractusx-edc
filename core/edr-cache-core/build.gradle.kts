@@ -21,9 +21,9 @@ dependencies {
     implementation(libs.edc.config.filesystem)
     implementation(libs.edc.util)
 
-    implementation(project(":spi:edr-cache-spi"))
+    implementation(project(":spi:edr-spi"))
 
-    testImplementation(testFixtures(project(":spi:edr-cache-spi")))
+    testImplementation(testFixtures(project(":spi:edr-spi")))
 
 }
 

@@ -14,15 +14,42 @@
 
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCache;
-import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheBaseTest;
+import org.eclipse.edc.spi.persistence.Lease;
+import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase;
+import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.junit.jupiter.api.BeforeEach;
 
-class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheBaseTest {
-    private final InMemoryEndpointDataReferenceCache cache = new InMemoryEndpointDataReferenceCache();
+import java.time.Clock;
+import java.time.Duration;
+import java.util.HashMap;
+
+class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheTestBase {
+    private final HashMap<String, Lease> leases = new HashMap<>();
+    private InMemoryEndpointDataReferenceCache cache;
+
+    @BeforeEach
+    void setUp() {
+        cache = new InMemoryEndpointDataReferenceCache(CONNECTOR_NAME, Clock.systemUTC(), leases);
+    }
 
     @Override
     protected EndpointDataReferenceCache getStore() {
         return cache;
     }
 
+    @Override
+    protected void lockEntity(String negotiationId, String owner, Duration duration) {
+        leases.put(negotiationId, new Lease(owner, Clock.systemUTC().millis(), duration.toMillis()));
+    }
+
+    @Override
+    protected boolean isLockedBy(String negotiationId, String owner) {
+        return leases.entrySet().stream().anyMatch(e -> e.getKey().equals(negotiationId) &&
+                e.getValue().getLeasedBy().equals(owner) &&
+                !isExpired(e.getValue()));
+    }
+
+    private boolean isExpired(Lease e) {
+        return e.getLeasedAt() + e.getLeaseDuration() < Clock.systemUTC().millis();
+    }
 }

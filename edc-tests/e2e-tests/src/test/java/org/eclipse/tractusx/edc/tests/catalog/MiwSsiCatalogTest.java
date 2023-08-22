@@ -27,6 +27,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkTemplatePolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.noConstraintPolicyDefinition;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DSP_CALLBACK;
@@ -76,6 +77,38 @@ public class MiwSsiCatalogTest {
         var bpnAccessPolicy = frameworkPolicy("test-ap1", Map.of("BPN", "active"));
         var contractPolicy = noConstraintPolicyDefinition("test-cp1");
         var dismantlerAccessPolicy = frameworkPolicy("test-ap2", Map.of("Dismantler", "active"));
+
+        SOKRATES.createPolicy(bpnAccessPolicy);
+        SOKRATES.createPolicy(contractPolicy);
+        SOKRATES.createPolicy(dismantlerAccessPolicy);
+
+        SOKRATES.createContractDefinition("test-asset", "test-def", "test-ap1", "test-cp1");
+        SOKRATES.createContractDefinition("test-asset-1", "test-def-2", "test-ap2", "test-cp1");
+
+
+        // act
+        var catalog = SOKRATES.getCatalogDatasets(SOKRATES);
+
+        // assert
+        assertThat(catalog).isNotEmpty()
+                .hasSize(1)
+                .allSatisfy(co -> {
+                    assertThat(getDatasetAssetId(co)).isEqualTo("test-asset");
+                });
+
+    }
+
+
+    @Test
+    @DisplayName("Verify that Sokrates receives only the offers he is permitted to using @context")
+    void requestCatalog_fulfillsPolicy_shouldReturnOffer_withContexts() {
+        // arrange
+        SOKRATES.createAsset("test-asset");
+        SOKRATES.createAsset("test-asset-1");
+
+        var bpnAccessPolicy = frameworkTemplatePolicy("test-ap1", "BPN");
+        var contractPolicy = noConstraintPolicyDefinition("test-cp1");
+        var dismantlerAccessPolicy = frameworkTemplatePolicy("test-ap2", "Dismantler");
 
         SOKRATES.createPolicy(bpnAccessPolicy);
         SOKRATES.createPolicy(contractPolicy);

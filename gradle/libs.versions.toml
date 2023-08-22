@@ -2,27 +2,27 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.1.3"
+edc = "0.2.1"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
-azure-identity = "1.9.1"
+azure-identity = "1.10.0"
 slf4j = "2.0.7"
 okhttp = "4.11.0"
 mockwebserver = "5.0.0-alpha.11"
-bouncyCastle-jdk18on = "1.75"
+bouncyCastle-jdk18on = "1.76"
 mockito = "5.2.0"
 restAssured = "5.3.1"
 apache-sshd = "2.10.0"
 testcontainers = "1.18.3"
-aws = "2.20.98"
+aws = "2.20.130"
 rsApi = "3.1.0"
-jupiter = "5.9.3"
+jupiter = "5.10.0"
 assertj = "3.24.2"
 titanium = "1.3.2"
 jackson = "2.15.2"
 jakarta-json = "2.0.1"
-tink = "1.9.0"
+tink = "1.10.0"
 iron-vc = "0.8.1"
 
 [libraries]
@@ -48,12 +48,16 @@ edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", version.ref = "edc" }
 edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.ref = "edc" }
+edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-api = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
+edc-core-validator = { module = "org.eclipse.edc:validator-core", version.ref = "edc" }
+edc-core-transform = { module = "org.eclipse.edc:transform-core", version.ref = "edc" }
+edc-statemachine = { module = "org.eclipse.edc:state-machine", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
@@ -74,6 +78,7 @@ edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
 edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
+edc-ext-jersey-providers = { module = "org.eclipse.edc:jersey-providers", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
@@ -133,6 +138,7 @@ restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssu
 apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache-sshd" }
 apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
