@@ -17,6 +17,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":spi:core-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jsonld)
     testImplementation(testFixtures(libs.edc.junit))

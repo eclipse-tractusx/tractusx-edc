@@ -1,0 +1,47 @@
+{
+  "@context": {
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "schema": "http://schema.org/",
+    "PolicyDefinition": "edc:PolicyDefinition",
+    "AssetEntryNewDto": "edc:AssetEntryNewDto",
+    "DataAddress": "edc:DataAddress",
+    "NegotiationState": "edc:NegotiationState",
+    "TerminateNegotiation": "edc:TerminateNegotiation",
+    "ContractRequest": "edc:ContractRequest",
+    "policy": {
+      "@id": "edc:policy",
+      "@type": "@id",
+      "@context": [
+        "http://www.w3.org/ns/odrl.jsonld"
+      ]
+    },
+    "createdAt": "edc:createdAt",
+    "properties": "edc:properties",
+    "privateProperties": "edc:privateProperties",
+    "dataAddress": "edc:dataAddress",
+    "type": "edc:type",
+    "counterPartyAddress": "edc:counterPartyAddress",
+    "protocol": "edc:protocol",
+    "querySpec": "edc:querySpec",
+    "accessPolicyId": "edc:accessPolicyId",
+    "contractPolicyId": "edc:contractPolicyId",
+    "assetsSelector": "edc:assetsSelector",
+    "state": "edc:state",
+    "reason": "edc:reason",
+    "connectorAddress": "edc:connectorAddress",
+    "offer": "edc:offer",
+    "asset": "edc:asset",
+    "offerId": "edc:offerId",
+    "assetId": "edc:assetId",
+    "contractId": "edc:contractId",
+    "connectorId": "edc:connectorId",
+    "callbackAddresses": "edc:callbackAddresses",
+    "dataDestination": "edc:dataDestination",
+    "baseUrl": "edc:baseUrl",
+    "providerId": "edc:providerId",
+    "uri": "edc:uri",
+    "events": "edc:events",
+    "transactional": "edc:transactional"
+  }
+}
