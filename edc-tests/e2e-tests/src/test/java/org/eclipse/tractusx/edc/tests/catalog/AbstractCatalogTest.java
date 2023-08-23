@@ -20,12 +20,16 @@ import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetPolicies;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.BUSINESS_PARTNER_LEGACY_EVALUATION_KEY;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.noConstraintPolicyDefinition;
 import static org.eclipse.tractusx.edc.helpers.QueryHelperFunctions.createQuery;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
@@ -91,6 +95,34 @@ public abstract class AbstractCatalogTest {
         assertThat(catalog).hasSize(2);
     }
 
+
+    @Test
+    @DisplayName("Verify that Plato receives only the offers he is permitted to (using the legacy BPN validation)")
+    void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
+        var onlyPlatoId = "ap";
+        var onlyDiogenesId = "db";
+
+        var onlyPlatoPolicy = businessPartnerNumberPolicy(onlyPlatoId, "BPN1", "BPN2", PLATO.getBpn());
+        var onlyDiogenesPolicy = frameworkPolicy(onlyDiogenesId, Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"));
+        var noConstraintPolicyId = "no-constraint";
+
+        SOKRATES.createPolicy(onlyPlatoPolicy);
+        SOKRATES.createPolicy(onlyDiogenesPolicy);
+        SOKRATES.createPolicy(noConstraintPolicyDefinition(noConstraintPolicyId));
+
+        SOKRATES.createAsset("test-asset1");
+        SOKRATES.createAsset("test-asset2");
+        SOKRATES.createAsset("test-asset3");
+
+        SOKRATES.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset2", "def2", onlyPlatoId, noConstraintPolicyId);
+        SOKRATES.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
+
+
+        // act
+        var catalog = PLATO.getCatalogDatasets(SOKRATES);
+        assertThat(catalog).hasSize(2);
+    }
 
     @Test
     @DisplayName("Verify that Plato receives only the offers he is permitted to (using the new BPN validation)")
