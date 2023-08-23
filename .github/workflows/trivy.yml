@@ -96,7 +96,7 @@ jobs:
       - name: "Check if image exists"
         id: imageCheck
         run: |
-          docker manifest inspect tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}
+          docker buildx imagetools inspect --format '{{ json . }}' tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}
         continue-on-error: true
 
         ## the next two steps will only execute if the image exists check was successful
