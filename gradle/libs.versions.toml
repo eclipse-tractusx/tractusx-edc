@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.2.1"
+edc = "0.2.2-20230905-SNAPSHOT"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
@@ -81,6 +81,7 @@ edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-ext-jersey-providers = { module = "org.eclipse.edc:jersey-providers", version.ref = "edc" }
 
+
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
 edc-sql-contract-definition = { module = "org.eclipse.edc:contract-definition-store-sql", version.ref = "edc" }
@@ -94,6 +95,12 @@ edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref
 # azure stuff
 edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
+edc-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
+
+# EDC aws s3 stuff
+edc-aws-s3-core = { module = "org.eclipse.edc:aws-s3-core", version.ref = "edc" }
+edc-aws-s3-test = { module = "org.eclipse.edc:aws-s3-test", version.ref = "edc" }
+edc-dpf-awss3 = { module = "org.eclipse.edc:data-plane-aws-s3", version.ref = "edc" }
 
 # Control Plane implementations
 edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
@@ -112,7 +119,8 @@ edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref
 edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
-edc-dpf-awss3 = { module = "org.eclipse.edc:data-plane-aws-s3", version.ref = "edc" }
+
+edc-dpf-azblob = { module = "org.eclipse.edc:data-plane-azure-storage", version.ref = "edc" }
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
 edc-dpf-api = { module = "org.eclipse.edc:data-plane-api", version.ref = "edc" }
@@ -141,6 +149,7 @@ apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
+aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }

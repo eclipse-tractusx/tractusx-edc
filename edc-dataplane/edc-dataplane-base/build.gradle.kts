@@ -31,6 +31,7 @@ dependencies {
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.dpf.awss3)
+    runtimeOnly(libs.edc.dpf.azblob)
     runtimeOnly(libs.edc.dpf.oauth2)
     runtimeOnly(libs.edc.dpf.http)
 

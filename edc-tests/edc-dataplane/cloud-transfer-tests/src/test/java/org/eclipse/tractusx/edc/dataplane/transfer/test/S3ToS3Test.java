@@ -1,0 +1,285 @@
+/*
+ *
+ *   Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft
+ *
+ *   See the NOTICE file(s) distributed with this work for additional
+ *   information regarding copyright ownership.
+ *
+ *   This program and the accompanying materials are made available under the
+ *   terms of the Apache License, Version 2.0 which is available at
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *   License for the specific language governing permissions and limitations
+ *   under the License.
+ *
+ *   SPDX-License-Identifier: Apache-2.0
+ *
+ */
+
+package org.eclipse.tractusx.edc.dataplane.transfer.test;
+
+import io.restassured.http.ContentType;
+import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
+import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
+import org.eclipse.edc.aws.s3.S3BucketSchema;
+import org.eclipse.edc.aws.s3.S3ClientRequest;
+import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
+import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.CompletedUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadRequest;
+
+import java.io.File;
+import java.net.URI;
+import java.time.Duration;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.verify;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+
+/**
+ * This test is intended to verify transfers within the same cloud provider, i.e. S3-to-S3.
+ * It spins up a fully-fledged dataplane and issues the DataFlowRequest via the data plane's Control API
+ */
+@Testcontainers
+@AwsS3IntegrationTest
+public class S3ToS3Test {
+    public static final int MINIO_CONTAINER_PORT = 9000;
+    public static final String REGION = Region.US_WEST_2.id();
+    public static final String PROVIDER_BUCKET_NAME = "provider-bucket";
+    public static final String CONSUMER_BUCKET_NAME = "consumer-bucket";
+    private static final String ACCESS_KEY_ID = "test-access-key"; // user name
+    private static final String SECRET_ACCESS_KEY = UUID.randomUUID().toString(); // password
+    private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
+    @RegisterExtension
+    protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:dataplane-cloud",
+            "AwsS3-Dataplane",
+            RuntimeConfig.S3.createDataplane("/control", PROVIDER_CONTROL_PORT)
+    );
+    private static final String COMPLETION_MARKER = ".complete";
+    private static final String MINIO_DOCKER_IMAGE = "bitnami/minio";
+    private static final String TESTFILE_JSON = "testfile.json";
+    private static final String FILE_NAME = TESTFILE_JSON;
+    @Container
+    private final GenericContainer<?> providerContainer = new GenericContainer<>(MINIO_DOCKER_IMAGE)
+            .withEnv("MINIO_ROOT_USER", ACCESS_KEY_ID)
+            .withEnv("MINIO_ROOT_PASSWORD", SECRET_ACCESS_KEY)
+            .withExposedPorts(MINIO_CONTAINER_PORT);
+
+    @Container
+    private final GenericContainer<?> consumerContainer = new GenericContainer<>(MINIO_DOCKER_IMAGE)
+            .withEnv("MINIO_ROOT_USER", ACCESS_KEY_ID)
+            .withEnv("MINIO_ROOT_PASSWORD", SECRET_ACCESS_KEY)
+            .withExposedPorts(MINIO_CONTAINER_PORT);
+    private S3Client providerClient;
+    private S3Client consumerClient;
+    private String providerEndpointOverride;
+    private String consumerEndpointOverride;
+
+    @BeforeEach
+    void setup() {
+        providerEndpointOverride = "http://localhost:%s/".formatted(providerContainer.getMappedPort(MINIO_CONTAINER_PORT));
+        var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
+                .endpointOverride(URI.create(providerEndpointOverride))
+                .credentialsProvider(() -> AwsBasicCredentials.create(ACCESS_KEY_ID, SECRET_ACCESS_KEY))
+                .build();
+        providerClient = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(REGION, providerEndpointOverride));
+
+        consumerEndpointOverride = "http://localhost:%s".formatted(consumerContainer.getMappedPort(MINIO_CONTAINER_PORT));
+        var consumerConfig = AwsClientProviderConfiguration.Builder.newInstance()
+                .endpointOverride(URI.create(consumerEndpointOverride))
+                .credentialsProvider(() -> AwsBasicCredentials.create(ACCESS_KEY_ID, SECRET_ACCESS_KEY))
+                .build();
+        consumerClient = new AwsClientProviderImpl(consumerConfig).s3Client(S3ClientRequest.from(REGION, consumerEndpointOverride));
+    }
+
+    @Test
+    void transferFile_success() {
+
+        // create bucket in provider
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(PROVIDER_BUCKET_NAME).build());
+        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
+        // upload test file in provider
+        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(PROVIDER_BUCKET_NAME).key(FILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_JSON).toPath());
+        assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
+
+        // create bucket in consumer
+        var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(CONSUMER_BUCKET_NAME).build());
+        assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
+
+        // initiate data flow request
+        var request = createFlowRequest();
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+
+        given()
+                .when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .post()
+                .then()
+                .statusCode(200);
+
+
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(60))
+                .untilAsserted(() -> assertThat(listObjects(consumerClient, CONSUMER_BUCKET_NAME))
+                        .isNotEmpty()
+                        .contains(FILE_NAME)
+                        .anyMatch(c -> c.endsWith(COMPLETION_MARKER)));
+    }
+
+    @Test
+    void transferFile_targetContainerNotExist_shouldFail() {
+        // create bucket in provider
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(PROVIDER_BUCKET_NAME).build());
+        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
+        // upload test file in provider
+        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(PROVIDER_BUCKET_NAME).key(FILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_JSON).toPath());
+        assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
+
+        // do not create bucket in consumer -> will fail!
+
+        // initiate data flow request
+        var request = createFlowRequest();
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+
+        given()
+                .when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .post()
+                .then()
+                .statusCode(200);
+
+
+        // wait until the data plane logs an exception that it cannot transfer the file
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(10))
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Error writing the %s object on the %s bucket: The specified bucket does not exist".formatted(FILE_NAME, CONSUMER_BUCKET_NAME)),
+                        isA(NoSuchBucketException.class)));
+    }
+
+    @ParameterizedTest(name = "File size bytes: {0}")
+    // 1mb, 512mb, 1gb
+    @ValueSource(longs = {1024 * 1024 * 512, 1024L * 1024L * 1024L, 1024L * 1024L * 1024L * 1024})
+    void transferfile_largeFile(long sizeBytes) {
+
+        // create large sparse file
+        var file = createSparseFile(sizeBytes);
+
+        // create bucket in provider
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(PROVIDER_BUCKET_NAME).build());
+        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
+        // upload test file in provider
+        uploadLargeFile(file, PROVIDER_BUCKET_NAME, FILE_NAME).thenAccept(completedUpload -> {
+            // create bucket in consumer
+            var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(CONSUMER_BUCKET_NAME).build());
+            assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
+
+            // initiate data flow request
+            var request = createFlowRequest();
+            var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+
+            given()
+                    .when()
+                    .baseUri(url)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post()
+                    .then()
+                    .statusCode(200);
+
+
+            await().pollInterval(Duration.ofSeconds(2))
+                    .atMost(Duration.ofSeconds(60))
+                    .untilAsserted(() -> assertThat(listObjects(consumerClient, CONSUMER_BUCKET_NAME))
+                            .isNotEmpty()
+                            .contains(FILE_NAME)
+                            .anyMatch(c -> c.endsWith(COMPLETION_MARKER)));
+        });
+
+
+    }
+
+    private CompletableFuture<CompletedUpload> uploadLargeFile(File file, String bucketName, String fileName) {
+
+        var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
+                .endpointOverride(URI.create(providerEndpointOverride))
+                .credentialsProvider(() -> AwsBasicCredentials.create(ACCESS_KEY_ID, SECRET_ACCESS_KEY))
+                .build();
+        var asyncClient = new AwsClientProviderImpl(providerConfig).s3AsyncClient(REGION);
+        var tm = S3TransferManager.builder()
+                .s3Client(asyncClient)
+                .build();
+
+        // TransferManager processes all transfers asynchronously,
+        // so this call returns immediately.
+        var upload = tm.upload(UploadRequest.builder()
+                .putObjectRequest(PutObjectRequest.builder().key(fileName).bucket(bucketName).build())
+                .requestBody(AsyncRequestBody.fromFile(file))
+                .build());
+
+        return upload.completionFuture();
+    }
+
+
+    private DataFlowRequest createFlowRequest() {
+        return DataFlowRequest.Builder.newInstance()
+                .id("test-request")
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .keyName(FILE_NAME)
+                        .property(S3BucketSchema.REGION, REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, PROVIDER_BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
+                        .build()
+                )
+                .destinationDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .keyName(FILE_NAME)
+                        .property(S3BucketSchema.REGION, REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, CONSUMER_BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
+                        .build()
+                )
+                .processId("test-process-id")
+                .trackable(false)
+                .build();
+    }
+
+}

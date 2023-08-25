@@ -10,8 +10,10 @@ maven/mavencentral/com.azure/azure-core/1.42.0, MIT AND Apache-2.0, approved, #1
 maven/mavencentral/com.azure/azure-identity/1.10.0, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-identity/1.9.2, MIT AND Apache-2.0, approved, #9686
 maven/mavencentral/com.azure/azure-json/1.0.1, MIT AND Apache-2.0, approved, #7933
-maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.4, MIT, approved, #7940
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.5, MIT, approved, #7940
+maven/mavencentral/com.azure/azure-storage-blob/12.23.0, MIT, approved, #9632
+maven/mavencentral/com.azure/azure-storage-common/12.22.0, MIT, approved, #9645
+maven/mavencentral/com.azure/azure-storage-internal-avro/12.8.0, MIT, approved, #9630
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.5, Apache-2.0, approved, clearlydefined
@@ -28,6 +30,7 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.1, Apache-2.
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.2, Apache-2.0, approved, #4105
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.2, Apache-2.0, approved, #7934
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.15.2, Apache-2.0, approved, #9160
+maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.5, Apache-2.0, approved, #3768
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.14.2, Apache-2.0, approved, #4300
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.15.2, Apache-2.0, approved, #9237
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.13.3, Apache-2.0, approved, #2566
@@ -213,6 +216,7 @@ maven/mavencentral/org.eclipse.edc/auth-spi/0.2.1, Apache-2.0, approved, technol
 maven/mavencentral/org.eclipse.edc/auth-tokenbased/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/autodoc-processor/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/aws-s3-core/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/azure-blob-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-event-dispatcher/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-http-dispatcher/0.2.1, Apache-2.0, approved, technology.edc
@@ -236,6 +240,7 @@ maven/mavencentral/org.eclipse.edc/control-plane-spi/0.2.1, Apache-2.0, approved
 maven/mavencentral/org.eclipse.edc/core-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-api/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-aws-s3/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-azure-storage/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-client/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-framework/0.2.1, Apache-2.0, approved, technology.edc

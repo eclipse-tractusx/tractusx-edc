@@ -54,13 +54,16 @@ include("edc-extensions:ssi:ssi-miw-credential-client")
 include("edc-extensions:ssi:jws2020-crypto-suite")
 include(":edc-extensions:ssi:ssi-identity-extractor")
 
-
+// test modules
 include(":edc-tests:e2e-tests")
 include(":edc-tests:miw-tests")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
+include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")
+include(":edc-tests:edc-dataplane:cloud-transfer-tests")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
@@ -79,7 +82,6 @@ include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api")
-include(":edc-tests:edc-dataplane-proxy-e2e")
 
 include(":samples:multi-tenancy")
 

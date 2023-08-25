@@ -59,7 +59,7 @@ import static org.hamcrest.Matchers.is;
 public class DpfProxyEndToEndTest {
 
     public static final String KEYSTORE_PASS = "test123";
-    private static final String LAUNCHER_MODULE = ":edc-tests:edc-dataplane-proxy-e2e";
+    private static final String LAUNCHER_MODULE = ":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e";
     private static final int CONSUMER_HTTP_PORT = getFreePort();
     private static final int CONSUMER_PROXY_PORT = getFreePort();
     private static final int PRODUCER_HTTP_PORT = getFreePort();
