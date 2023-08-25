@@ -57,6 +57,9 @@ controlplane:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
 dataplane:
+  endpoints:
+    proxy:
+      authKey: password
   image:
     pullPolicy: Never
     tag: "latest"

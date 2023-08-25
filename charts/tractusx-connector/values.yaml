@@ -352,6 +352,7 @@ dataplane:
     proxy:
       port: 8186
       path: /proxy
+      authKey: ""
     metrics:
       port: 9090
       path: /metrics

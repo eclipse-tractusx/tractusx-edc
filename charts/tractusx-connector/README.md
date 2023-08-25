@@ -178,6 +178,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
 | dataplane.endpoints.metrics.port | int | `9090` |  |
+| dataplane.endpoints.proxy.authKey | string | `""` |  |
 | dataplane.endpoints.proxy.path | string | `"/proxy"` |  |
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
