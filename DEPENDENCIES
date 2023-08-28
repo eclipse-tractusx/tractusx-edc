@@ -422,7 +422,7 @@ maven/mavencentral/org.testcontainers/testcontainers/1.18.3, MIT, approved, #793
 maven/mavencentral/org.testcontainers/testcontainers/1.19.0, , restricted, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/1.33, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.0, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #7275
-maven/mavencentral/org.yaml/snakeyaml/2.1, Apache-2.0, approved, #9847
+maven/mavencentral/org.yaml/snakeyaml/2.2, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/annotations/2.20.123, Apache-2.0, approved, #8598
 maven/mavencentral/software.amazon.awssdk/annotations/2.20.130, Apache-2.0, approved, #8598
 maven/mavencentral/software.amazon.awssdk/apache-client/2.20.123, Apache-2.0, approved, #8609
