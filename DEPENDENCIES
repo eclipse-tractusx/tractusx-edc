@@ -11,6 +11,7 @@ maven/mavencentral/com.azure/azure-identity/1.10.0, MIT AND Apache-2.0, approved
 maven/mavencentral/com.azure/azure-identity/1.9.2, MIT AND Apache-2.0, approved, #9686
 maven/mavencentral/com.azure/azure-json/1.0.1, MIT AND Apache-2.0, approved, #7933
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.4, MIT, approved, #7940
+maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.5, MIT, approved, #7940
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.5, Apache-2.0, approved, clearlydefined
