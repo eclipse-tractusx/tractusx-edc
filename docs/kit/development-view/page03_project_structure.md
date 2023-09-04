@@ -16,6 +16,6 @@ Other branches should follow the naming conventions of `feature/x` or `hotfix/x`
 
 ## Tooling
 
-We use Java 11 with Gradle for dependencies and builds.
-We use [Spotless](https://github.com/diffplug/spotless) for code formatting.
+We use Java 17 with Gradle for dependencies and builds.
+We use [Checkstyle](https://github.com/checkstyle/checkstyle) for code formatting.
 Releases are in the form of Docker containers and Helm charts.
