@@ -46,8 +46,9 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-java
-      - name: Verify proper formatting
-        run: ./gradlew spotlessCheck
+      - name: Run Checkstyle
+        run: |
+          ./gradlew checkstyleMain checkstyleTest
 
   build:
     runs-on: ubuntu-latest
