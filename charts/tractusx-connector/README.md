@@ -13,7 +13,7 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 
 ### Preconditions
 
-- the [Managed Identity Walled (MIW)](https://github.com/catenax-ng/tx-managed-identity-wallets) must be running and reachable via network
+- the [Managed Identity Walled (MIW)](https://github.com/eclipse-tractusx/managed-identity-wallet) must be running and reachable via network
 - the necessary set of VerifiableCredentials for this participant must be pushed to MIW. This is typically done by the
   Portal during participant onboarding
 - KeyCloak must be running and reachable via network
