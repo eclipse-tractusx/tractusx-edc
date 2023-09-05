@@ -33,16 +33,14 @@ plugins {
 val txScmConnection: String by project
 val txWebsiteUrl: String by project
 val txScmUrl: String by project
-val annotationProcessorVersion: String by project
-val metaModelVersion: String by project
+val edcVersion = libs.versions.edc
 
 buildscript {
     repositories {
         mavenLocal()
     }
     dependencies {
-        val edcGradlePluginsVersion: String by project
-        classpath("org.eclipse.edc.edc-build:org.eclipse.edc.edc-build.gradle.plugin:${edcGradlePluginsVersion}")
+        classpath(libs.edc.build.plugin)
     }
 }
 
@@ -78,7 +76,7 @@ allprojects {
 
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
-        processorVersion.set(annotationProcessorVersion)
+        processorVersion.set(edcVersion)
         outputDirectory.set(project.buildDir)
         // uncomment the following lines to enable the Autodoc-2-Markdown converter
         // only available with EDC 0.2.1 SNAPSHOT
@@ -89,7 +87,7 @@ allprojects {
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
         versions {
             // override default dependency versions here
-            metaModel.set(metaModelVersion)
+            metaModel.set(edcVersion)
 
         }
         pom {
