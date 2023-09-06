@@ -36,7 +36,7 @@ Example with base url `http://localhost:8080/test`
 
 The final url will look like `http://localhost:8080/test/sub?foo=bar` composed by the DataPlane manager with the Http request flow,
 
-> Note: the endpoint is not protected with configured `AuthenticationService`, which most likely will be the token based (auth key) one.
+> Note: the endpoint is protected with configured `AuthenticationService`.
 
 ## Configuration
 
