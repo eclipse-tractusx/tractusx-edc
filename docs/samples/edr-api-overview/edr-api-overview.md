@@ -23,9 +23,9 @@ This endpoint will perform the contract negotiation, transfer process and EDR st
 
 > Please note that the `data destination` will always be `HttpProxy`, requiring a request against the provider's `data-plane` to fetch the asset data.
 
-| Path                            | Method | Query Params             |
-|---------------------------------|--------|--------------------------|
-| `<MANAGEMENT_URL>/edrs`         | POST   | none                     |
+| Path                    | Method | Spec                                                                                                                                   |
+|-------------------------|--------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `<MANAGEMENT_URL>/edrs` | POST   | [OpenApi](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1#/Control%20Plane%20EDR%20Api/initiateEdrNegotiation) |
 
 #### Payload
 
@@ -77,8 +77,8 @@ This endpoint will perform the contract negotiation, transfer process and EDR st
 
 The EDR negotiation returns only the id of the negotiation process that has been started.
 
-The EDR negotiation rely on two steps, contract negotiation and transfer process, both of which are asynchronous.
-In order to plug-in and get notified in every state of the two state machines, callbacks can be configured while starting
+The EDR negotiation relies on two steps: contract negotiation and transfer process, both of which are asynchronous.
+In order to get notified in every state transition of the two state machines, callbacks can be configured when starting
 the EDR negotiation:
 
 ```json
@@ -98,21 +98,29 @@ the EDR negotiation:
 
 In this case we are interested only when the transfer process transition to the `STARTED` state.
 
+Available events type in callbacks are:
+
+- Transfer Process [`transfer.process.started`,`transfer.process.initiated`,`transfer.process.terminated`,`transfer.process.completed`]
+- Contract Negotiation [`contract.negotiation.initiated`,`contract.negotiation.agreed`,`contract.negotiation.accepted`, `contract.negotiation.terminated`,`contract.negotiation.finalized`]
+
+For getting all events in transfer process or contract negotiation we can simply use `transfer.process` or `contract.negotiation`
+in order to be notified of all state transition.
+
 Once the EDR has been negotiated with the provider, the EDR itself will be stored in the configured vault and the metadata
 associated to it in the configured datasource for future querying.
 
-Since `tractusx-edc` v0.5.1 the cached EDRs also come with a state machine that will manage the lifecycle of an EDR
-on the consumer side. That means that it will auto-renew itself when the expiration date is approaching by
-firing another transfer process request with the same parameters as the original one. Once renewed the old-one
-will transition to the state `EXPIRED` and it will be removed from the database and the vault according to the [configuration](../../../core/edr-core/README.md).
+Since `tractusx-edc` [v0.5.1](https://github.com/eclipse-tractusx/tractusx-edc/releases/tag/0.5.1) the cached EDRs also come with a state machine that will manage the lifecycle of an EDR
+on the consumer side. That means that it will auto-renew it is nearing its expiration date by
+firing another transfer process request with the same parameters as the original one. Once renewed, the old EDR
+will transition to the `EXPIRED` state, and it will be removed from the database and the vault according to the [configuration](../../../core/edr-core/README.md).
 
 ### EDR Management | Fetch cached EDRs
 
 This endpoint will retrieve all EDR entries by their `assetId` or `agreementId` references, which are passed as `query parameters`.
 
-| Path                                         | Method | Query Params         |
-|----------------------------------------------|--------|----------------------|
-| `<MANAGEMENT_URL>/edrs`                      | GET    | assetId, agreementId |
+| Path                    | Method | Spec                                                                                                                      |
+|-------------------------|--------|---------------------------------------------------------------------------------------------------------------------------|
+| `<MANAGEMENT_URL>/edrs` | GET    | [OpenApi](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1#/Control%20Plane%20EDR%20Api/queryEdrs) |
 
 #### EDR Entry Response
 
@@ -142,9 +150,9 @@ This endpoint will retrieve all EDR entries by their `assetId` or `agreementId` 
 
 This endpoint, through the `transfer-process-id` passed as `path variable`, will retrieve the actual EDR.
 
-| Path                                          | Method | Query Params             |
-|-----------------------------------------------|--------|--------------------------|
-| `<MANAGEMENT_URL>/edrs/{transfer-process-id}` | GET    | none                     |
+| Path                                          | Method | Spec                                                                                                                   |
+|-----------------------------------------------|--------|------------------------------------------------------------------------------------------------------------------------|
+| `<MANAGEMENT_URL>/edrs/{transfer-process-id}` | GET    | [OpenApi](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1#/Control%20Plane%20EDR%20Api/getEdr) |
 
 #### EDR Response
 
@@ -175,15 +183,15 @@ This endpoint, through the `transfer-process-id` passed as `path variable`, will
 This endpoint will delete the EDR entry associated with the `transfer-process-id` and it will remove the EDR itself
 from the vault.
 
-| Path                                          | Method | Query Params             |
-|-----------------------------------------------|--------|--------------------------|
-| `<MANAGEMENT_URL>/edrs/{transfer-process-id}` | DELETE | none                     |
+| Path                                          | Method | Spec                                                                                                                      |
+|-----------------------------------------------|--------|---------------------------------------------------------------------------------------------------------------------------|
+| `<MANAGEMENT_URL>/edrs/{transfer-process-id}` | DELETE | [OpenApi](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1#/Control%20Plane%20EDR%20Api/deleteEdr) |
 
 ### EDR Usage | Fetching data
 
 Once the EDR has been negotiated and stored, the data can be fetched in two ways depending on the use-case:
 
-- Provider data-plane (EDC way)
+- Provider data-plane ("EDC way")
 - Consumer proxy (Tractus-X EDC simplified)
 
 #### Provider data-plane
@@ -215,9 +223,9 @@ the data request on consumer side. The documentation is available [here](../../.
 
 The only API is:
 
-| Path                      | Method | Query Params             |
-|---------------------------|--------|--------------------------|
-| `<PROXY_URL>/aas/request` | POST   | none                     |
+| Path                      | Method | Spec                                                                                                                        |
+|---------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------|
+| `<PROXY_URL>/aas/request` | POST   | [OpenApi](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1#/Data%20Plane%20Proxy%20API/requestAsset) |
 
 which fetches the data according to the input body. The body should contain the `assetId` plus `providerId` or the `transferProcessId`,
 which identifies the EDR to use for fetching data and an `endpointUrl` which is the [provider gateway](../../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-provider-api/README.md)
