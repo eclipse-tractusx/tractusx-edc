@@ -64,7 +64,7 @@ jobs:
       - name: "Gather documentation files"
         run: |
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit
-          rsync -a --prune-empty-dirs --include '*' ./docs/kit/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/
+          rsync -a --prune-empty-dirs --exclude 'build' --include '*' ./docs/kit/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/
           
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/03_deployment_via_helm
           cp ./docs/samples/example-dataspace/README.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Operation\ View/03_deployment_via_helm/00_example_dataspace.md
@@ -84,18 +84,20 @@ jobs:
           cp ./docs/development/Release.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/07_release.md
           
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/03_EDC\ Controlplane
-          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-controlplane/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/03_EDC\ Controlplane
+          rsync -a --prune-empty-dirs --include '*/' --exclude 'build' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-controlplane/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/03_EDC\ Controlplane
           
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/04_EDC\ Dataplane
-          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-dataplane/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/04_EDC\ Dataplane
+          rsync -a --prune-empty-dirs --include '*/' --exclude 'build' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-dataplane/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/04_EDC\ Dataplane
           
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/05_EDC\ Extensions
-          rsync -a --prune-empty-dirs --include '*/' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-extensions/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/05_EDC\ Extensions
+          rsync -a --prune-empty-dirs --include '*/' --exclude 'build' --include '*.md' --include '*.png' --include '*.puml' --exclude '*' ./edc-extensions/* ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Development\ View/05_EDC\ Extensions
 
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation
           cp ./docs/development/coding-principles.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/02_coding_principles.md
           cp ./pr_etiquette.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/03_pr_etiquette.md
           cp ./styleguide.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/04_styleguide.md
+          mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources
+          cp ./resources/tx-checkstyle-config.xml ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources
           cp ./SECURITY.md ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/05_security.md
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources
           cp ./resources/save_actions_scr.png ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources/

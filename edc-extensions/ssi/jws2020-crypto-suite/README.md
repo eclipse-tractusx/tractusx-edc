@@ -65,6 +65,5 @@ a [hard-coded context](https://github.com/filip26/iron-verifiable-credentials/bl
 added to the compacted JSON-LD, which is incorrect. It doesn't negatively impact the resulting JSON-LD, other than
 possibly affecting processing times, but unfortunately it also makes it impossible to add more contexts, such
 as https://w3id.org/security/suites/jws-2020/v1. We mitigated this with
-the [`IssuerCompat.java`](./src/main/java/org/eclipse/edc/security/signature/jws2020/IssuerCompat.java), which should be
-used
-for compaction.
+the [`IssuerCompat.java`](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-extensions/ssi/jws2020-crypto-suite/src/main/java/org/eclipse/edc/security/signature/jws2020/IssuerCompat.java),
+which should be used for compaction.
