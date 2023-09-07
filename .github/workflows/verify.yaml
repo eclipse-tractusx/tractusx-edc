@@ -152,6 +152,17 @@ jobs:
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
 
+  dataplane-tests:
+    runs-on: ubuntu-latest
+    needs: [ verify-formatting, verify-license-headers ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-java
+
+      - name: Run Azure/S3 dataplane tests
+        run: ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="AzureCosmosDbIntegrationTest,AwsS3IntegrationTest"
+
   miw-integration-tests:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
@@ -183,7 +194,7 @@ jobs:
           docker exec docker-environment-postgres-1 /opt/seed.sh
 
       - name: Run MIW Integration tests
-        run: | 
+        run: |
           ./gradlew -p edc-tests/miw-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
       - name: Run SSI E2E tests
         run: |
