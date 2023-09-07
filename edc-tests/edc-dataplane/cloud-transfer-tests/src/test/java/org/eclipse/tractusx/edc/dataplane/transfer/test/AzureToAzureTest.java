@@ -76,7 +76,8 @@ public class AzureToAzureTest {
     );
     private static final String AZURITE = "mcr.microsoft.com/azure-storage/azurite";
     private static final String COMPLETION_MARKER = ".complete";
-
+    private static final String PROVIDER_CONTAINER_NAME = "src-container";
+    private static final String CONSUMER_CONTAINER_NAME = "dest-container";
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
      * two different endpoint templates for provider and consumer. Endpoint templates are configured globally.
@@ -86,8 +87,6 @@ public class AzureToAzureTest {
     private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(AZURITE)
             .withFixedExposedPort(AZURITE_HOST_PORT, 10000)
             .withEnv("AZURITE_ACCOUNTS", PROVIDER_ACCOUNT_NAME + ":" + PROVIDER_ACCOUNT_KEY + ";" + CONSUMER_ACCOUNT_NAME + ":" + CONSUMER_ACCOUNT_KEY); //provider and consumer account in the same instance
-    private final String PROVIDER_CONTAINER_NAME = "src-container";
-    private final String CONSUMER_CONTAINER_NAME = "dest-container";
     private AzureBlobHelper providerBlobHelper;
     private AzureBlobHelper consumerBlobHelper;
 
