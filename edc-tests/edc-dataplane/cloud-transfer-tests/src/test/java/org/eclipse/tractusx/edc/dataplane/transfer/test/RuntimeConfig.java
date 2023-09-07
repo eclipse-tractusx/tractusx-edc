@@ -33,7 +33,7 @@ public class RuntimeConfig {
     /**
      * Configures the data plane token endpoint, and all relevant HTTP contexts
      */
-    public static Map<String, String> baseConfig() {
+    public static Map<String, String> baseConfig(String controlPath, int controlPort) {
         return new HashMap<>() {
             {
                 put("edc.dataplane.token.validation.endpoint", "http://token-validation.com");
@@ -41,11 +41,11 @@ public class RuntimeConfig {
                 put("web.http.port", String.valueOf(getFreePort()));
                 put("web.http.public.path", "/public");
                 put("web.http.public.port", String.valueOf(getFreePort()));
-                put("web.http.control.path", "/control");
-                put("web.http.control.port", String.valueOf(getFreePort()));
                 put("web.http.consumer.api.path", "/api/consumer");
                 put("web.http.consumer.api.port", String.valueOf(getFreePort()));
                 put("tx.dpf.consumer.proxy.port", String.valueOf(getFreePort()));
+                put("web.http.control.path", controlPath);
+                put("web.http.control.port", String.valueOf(controlPort));
             }
         };
     }
@@ -62,12 +62,10 @@ public class RuntimeConfig {
          * @param mappedAzuritePort the host port for the Blob endpoint template.
          */
         public static Map<String, String> createDataplane(String controlPath, int controlPort, Integer mappedAzuritePort) {
-            var base = baseConfig();
+            var base = baseConfig(controlPath, controlPort);
 
             base.putAll(new HashMap<>() {
                 {
-                    put("web.http.control.path", controlPath);
-                    put("web.http.control.port", String.valueOf(controlPort));
                     put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + mappedAzuritePort + "/%s");
                 }
             });
@@ -78,14 +76,7 @@ public class RuntimeConfig {
     public static class S3 {
 
         public static Map<String, String> createDataplane(String controlPath, int controlPort) {
-            var base = baseConfig();
-            base.putAll(new HashMap<>() {
-                {
-                    put("web.http.control.path", controlPath);
-                    put("web.http.control.port", String.valueOf(controlPort));
-                }
-            });
-            return base;
+            return baseConfig(controlPath, controlPort);
         }
     }
 }
