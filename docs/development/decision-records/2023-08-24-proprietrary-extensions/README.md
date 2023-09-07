@@ -11,9 +11,9 @@ The Tractus-X EDC dataplane will support the following proprietary extensions:
 
 ### Requirements
 
-1. In addition to smaller HTTP junks we need to be able to transfer larger files (i.e. Buckets).
-2. Container or Product should not require additional compilation or packaging.
-3. Broader coverage of use-cases with different extensions.
+1. In addition to transfer over HTTP we need to be able to transfer larger files (i.e. Buckets).
+2. The packaged artefact (docker image, helm chart) should not require additional compilation or packaging.
+3. Broad coverage of use-cases with different extensions.
 
 ### Solution
 
@@ -27,18 +27,17 @@ According to this decision, the following protocols will be supported in the fut
 
 ## Approach
 
-To properly incorporate Azure Blob Storage and enable interoperability, there will be a single dataplane which will support HTTP, AWS S3 and Azure Blob Storage.
-This dataplane is then configured based on which extensions, the user wants to use.
-In the case that one or more extensions are not configured, the dataplane is then to exclude these extensions and continue working regardless.
-This makes the use of AWS S3 and Azure Blob Storage entirely optional.
+To properly incorporate Azure Blob Storage and enable interoperability, all required extensions, i.e. HTTP, AWS S3 and Azure Blob Storage, will be bundled into the data plane image.
+This dataplane is then configured based on which extensions the user wants to use.
+Configuring specific features is entirely optional, and omitting to do so will cause that feature to be inactive at runtime.
 
-Going forward, the integration of S3 and Azure Blob Storage will stay at the minimum and only bug fixes will be made after the integration.
+Going forward, the Tractus-X EDC team will limit its efforts to critical bug fixes in the respective upstream repositories.
 As these extensions are proprietary in nature, the Tractus-X EDC Team will add no additional features beyond basic support.
 
 The Sftp Protocol is another contender for integrating a more accessible protocol.
-It is however a low priority at the moment and will move on to be an issue for PI 11.
+It is however a low priority feature at the moment and will be postponed for future iterations.
 
-> Note: Azure Blob Storage will be integrated in tune with Tractus-X EDC version 0.6.0
+> Note: Azure Blob Storage will be integrated with Tractus-X EDC version 0.6.0
 
 An application process for possible additional integrations will follow at a later date.
 
