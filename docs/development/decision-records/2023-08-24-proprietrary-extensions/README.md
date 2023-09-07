@@ -19,7 +19,7 @@ The Tractus-X EDC dataplane will support the following proprietary extensions:
 
 Previously, there was only support for AWS S3 which could be seen as problematic and favouritism.
 As such, the available support was extended with Azure Blob Storage to offer alternatives and cover a wider range of use-cases.
-According to this decision, the following protocols will be supported via extensions in the future:
+According to this decision, the following protocols will be supported in the future:
 
 1. HTTP
 2. AWS S3
@@ -38,7 +38,7 @@ As these extensions are proprietary in nature, the Tractus-X EDC Team will add n
 The Sftp Protocol is another contender for integrating a more accessible protocol.
 It is however a low priority at the moment and will move on to be an issue for PI 11.
 
-> Note: Work on the integration of Azure Blob Storage begins in tune with Tractus-X EDC version 0.6.0
+> Note: Azure Blob Storage will be integrated in tune with Tractus-X EDC version 0.6.0
 
 An application process for possible additional integrations will follow at a later date.
 
