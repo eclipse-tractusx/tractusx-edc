@@ -106,6 +106,9 @@ jobs:
           
           zip -r ${{ runner.temp }}/tractusx-edc-docusaurus.zip ${{ runner.temp }}/tractusx-edc
           
-      - name: todo
-        run: |
-          echo "Todo: publish release file"
+      - name: Publish zip to GitHub Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "${{ runner.temp }}/tractusx-edc-docusaurus.zip"
+          tag: ${{ env.RELEASE_VERSION }}
