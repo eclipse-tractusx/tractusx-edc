@@ -133,7 +133,7 @@ public class EdrController implements EdrApi {
             queryBuilder.filter(fieldFilter(AGREEMENT_ID, agreementId));
         }
         if (providerId != null) {
-            queryBuilder.filter(fieldFilter(PROVIDER_ID, agreementId));
+            queryBuilder.filter(fieldFilter(PROVIDER_ID, providerId));
         }
         return queryBuilder.build();
     }
