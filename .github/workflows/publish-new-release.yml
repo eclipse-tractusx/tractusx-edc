@@ -253,7 +253,8 @@ jobs:
   publish-docusaurus:
     name: Publish docusaurus docs
     permissions:
-      contents: read
+      contents: write
+      packages: write
     needs: [ secret-presence, publish-to-swaggerhub ]
     with:
       downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}

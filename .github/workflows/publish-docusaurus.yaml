@@ -57,9 +57,9 @@ jobs:
         id: extract_version
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
-            echo "::set-output name=DOWNSTREAM_VERSION::$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')"
+            echo "DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')" >> "$GITHUB_OUTPUT"
           else
-            echo "::set-output name=DOWNSTREAM_VERSION::${{ inputs.downstream-version }}"
+            echo "DOWNSTREAM_VERSION=${{ inputs.downstream-version }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: "Gather documentation files"
