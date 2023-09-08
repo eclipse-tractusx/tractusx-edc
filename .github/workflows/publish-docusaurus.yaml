@@ -55,7 +55,8 @@ jobs:
 
       - name: "Extract version"
         run: |
-          if [ -z ${{ inputs.downstream-version }} ]; then
+          downstream_version=${{ inputs.downstream-version }}
+          if [ -z $downstream_version ]; then
             export DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')
           else
             export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
