@@ -111,4 +111,4 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: "${{ runner.temp }}/tractusx-edc-docusaurus.zip"
-          tag: ${{ env.RELEASE_VERSION }}
+          tag: ${{ env.DOWNSTREAM_VERSION }}

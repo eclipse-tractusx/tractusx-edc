@@ -256,6 +256,6 @@ jobs:
       contents: read
     needs: [ secret-presence, publish-to-swaggerhub ]
     with:
-      RELEASE_VERSION: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+      downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
     uses: ./.github/workflows/publish-docusaurus.yaml
     secrets: inherit
