@@ -38,6 +38,9 @@ on:
 
 jobs:
   publish-docusaurus:
+    permissions:
+      contents: write
+      packages: write
     name: "Publish docusaurus documentation as zip file"
     runs-on: ubuntu-latest
     env:
