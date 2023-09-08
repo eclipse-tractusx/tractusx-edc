@@ -54,16 +54,13 @@ jobs:
           npm i -g swaggerhub-cli markdownlint-cli2 @synx-ai/oas3-mdx
 
       - name: "Extract version"
+        id: extract_version
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
-            export DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')
-            echo "true"
+            echo "::set-output name=DOWNSTREAM_VERSION::$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')"
           else
-            export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
-            echo "false"
+            echo "::set-output name=DOWNSTREAM_VERSION::${{ inputs.downstream-version }}"
           fi
-          echo $DOWNSTREAM_VERSION
-          echo ${{ env.DOWNSTREAM_VERSION }}
 
       - name: "Gather documentation files"
         run: |
@@ -115,4 +112,4 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           file: "${{ runner.temp }}/tractusx-edc-docusaurus.zip"
-          tag: "${{ env.DOWNSTREAM_VERSION }}"
+          tag: "${{ steps.extract_version.outputs.DOWNSTREAM_VERSION }}"
