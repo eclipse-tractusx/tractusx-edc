@@ -60,6 +60,7 @@ jobs:
           else
             export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
           fi
+          echo ${{ env.DOWNSTREAM_VERSION }}
 
       - name: "Gather documentation files"
         run: |
