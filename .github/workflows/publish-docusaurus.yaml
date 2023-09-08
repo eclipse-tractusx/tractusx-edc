@@ -22,9 +22,6 @@
 name: "Publish docusaurus documentation"
 
 on:
-  push:
-    branches:
-      - docs/docusaurus-publishing
   workflow_dispatch:
     inputs:
       downstream-version:
