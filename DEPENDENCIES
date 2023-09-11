@@ -135,10 +135,10 @@ maven/mavencentral/io.opentelemetry/opentelemetry-context/1.29.0, Apache-2.0, ap
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.33, Apache-2.0, approved, #9687
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.33, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor/reactor-core/3.4.30, Apache-2.0, approved, #7517
-maven/mavencentral/io.rest-assured/json-path/5.3.1, Apache-2.0, approved, #9261
-maven/mavencentral/io.rest-assured/rest-assured-common/5.3.1, Apache-2.0, approved, #9264
-maven/mavencentral/io.rest-assured/rest-assured/5.3.1, Apache-2.0, approved, #9262
-maven/mavencentral/io.rest-assured/xml-path/5.3.1, Apache-2.0, approved, #9267
+maven/mavencentral/io.rest-assured/json-path/5.3.2, Apache-2.0, approved, #9261
+maven/mavencentral/io.rest-assured/rest-assured-common/5.3.2, Apache-2.0, approved, #9264
+maven/mavencentral/io.rest-assured/rest-assured/5.3.2, Apache-2.0, approved, #9262
+maven/mavencentral/io.rest-assured/xml-path/5.3.2, Apache-2.0, approved, #9267
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.15, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.2, Apache-2.0, approved, #5947
