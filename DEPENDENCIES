@@ -468,5 +468,3 @@ maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.20.144, Apa
 maven/mavencentral/software.amazon.awssdk/utils/2.20.123, Apache-2.0, approved, #8625
 maven/mavencentral/software.amazon.awssdk/utils/2.20.144, Apache-2.0, approved, #8625
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/utils/2.20.140, Apache-2.0, approved, #8625
-maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, clearlydefined
