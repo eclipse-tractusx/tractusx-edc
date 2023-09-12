@@ -49,10 +49,6 @@ jobs:
       - name: "Setup node"
         uses: actions/setup-node@v3
 
-      - name: "Install tools"
-        run: |
-          npm i -g swaggerhub-cli markdownlint-cli2 @synx-ai/oas3-mdx
-
       - name: "Extract version"
         id: extract_version
         run: |
@@ -103,7 +99,7 @@ jobs:
           mkdir -p ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources
           cp ./resources/save_actions_scr.png ${{ runner.temp }}/tractusx-edc/Connector\ Kit/Documentation/resources/
           
-          swaggerhub api:get ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} > ${{ runner.temp }}/tractusx-edc/tractusx-edc-${{ env.DOWNSTREAM_VERSION }}.yaml
+          curl https://api.swaggerhub.com/apis/tractusx-edc/${{ env.DOWNSTREAM_VERSION }}/swagger.yaml > ${{ runner.temp }}/tractusx-edc/tractusx-edc-${{ env.DOWNSTREAM_VERSION }}.yaml
           
           zip -r ${{ runner.temp }}/tractusx-edc-docusaurus.zip ${{ runner.temp }}/tractusx-edc
           
