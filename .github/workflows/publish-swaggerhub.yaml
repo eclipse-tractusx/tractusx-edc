@@ -50,7 +50,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
 
-      - name: Install tools
+      - name: Install Swagger CLI
         run: |
           npm i -g swaggerhub-cli
 

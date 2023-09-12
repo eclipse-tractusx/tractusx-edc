@@ -255,7 +255,7 @@ jobs:
     permissions:
       contents: write
       packages: write
-    needs: [ secret-presence, publish-to-swaggerhub ]
+    needs: [ secret-presence, publish-to-swaggerhub, github-release ]
     with:
       downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
     uses: ./.github/workflows/publish-docusaurus.yaml
