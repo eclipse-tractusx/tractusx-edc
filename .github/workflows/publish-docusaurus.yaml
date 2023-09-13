@@ -46,9 +46,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: "Setup node"
-        uses: actions/setup-node@v3
-
       - name: "Extract version"
         id: extract_version
         run: |
