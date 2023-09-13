@@ -31,6 +31,17 @@ on:
         required: false
         type: string
 
+  workflow_dispatch:
+    inputs:
+      downstream-version:
+        required: false
+        description: "Version of the Tractus-X EDC API to be should be published"
+        type: string
+      upstream-version:
+        required: false
+        description: "Version of upstream EDC which is to be used"
+        type: string
+
 jobs:
   swagger-api:
     runs-on: ubuntu-latest
@@ -57,31 +68,32 @@ jobs:
       - name: Extract versions
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
-            export DOWNSTREAM_VERSION=$(sed -nr "{ :l /^version[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle.properties | tr -d ' ' | tr -d '"')
+            export DOWNSTREAM_VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           else
             export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
           fi
           
           if [ -z ${{ inputs.upstream-version }} ]; then
-            export UPSTREAM_VERSION=$(sed -nr "/^\[versions\]/ { :l /^edc[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./gradle/libs.versions.toml | tr -d ' ' | tr -d '"')-SNAPSHOT
+            export UPSTREAM_VERSION=$(grep "edc = " gradle/libs.versions.toml  | awk -F= '{print $2}' | jq -r)
           else
             export UPSTREAM_VERSION=${{ inputs.upstream-version }}
           fi
+          echo "DOWNSTREAM_VERSION=$DOWNSTREAM_VERSION" >> "$GITHUB_ENV"
+          echo "UPSTREAM_VERSION=$UPSTREAM_VERSION" >> "$GITHUB_ENV"
 
       - name: Resolve TX EDC API Spec
         shell: bash
         run: |
-          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api:resolve
-          ./gradlew :edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api:resolve
+          ./gradlew resolve
 
       - name: Download upstream API specs
         run: |
-          swaggerhub api:get eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-management-api.yaml
-          swaggerhub api:get eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }} > resources/openapi/yaml/upstream-control-api.yaml
+          curl -X GET https://api.swaggerhub.com/apis/eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }}/swagger.yaml > resources/openapi/yaml/upstream-management-api.yaml
+          curl -X GET https://api.swaggerhub.com/apis/eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }}/swagger.yaml > resources/openapi/yaml/upstream-control-api.yaml
 
       - name: Merge API specs
         run: |
-          ./gradlew -PapiTitle="tractusx-edc-api" -PapiDescription="Tractus EDC API Doc" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
+          ./gradlew -PapiTitle="Tractus-X EDC REST API" -PapiDescription="Tractus-X EDC API Documentation" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
 
       # create API, will fail if exists
       - name: Create API
@@ -92,4 +104,10 @@ jobs:
       # Post the API to SwaggerHub as "unpublished", because published APIs cannot be overwritten
       - name: Publish API Specs to SwaggerHub
         run: |
-          swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
+          if [[ ${{ env.DOWNSTREAM_VERSION }} != *-SNAPSHOT ]]; then
+            echo "no snapshot, will set the API to 'published'";
+            swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=publish
+          else
+            echo "snapshot, will set the API to 'unpublished'";
+            swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
+          fi
