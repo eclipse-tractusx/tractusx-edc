@@ -508,7 +508,7 @@ postgresql:
     password: "password"
 vault:
   azure:
-    name: ""
+    name: "<AZURE_NAME>"
     client: "<AZURE_CLIENT_ID>"
     tenant: "<AZURE_TENANT_ID>"
     secret:
