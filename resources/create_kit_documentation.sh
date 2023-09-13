@@ -49,4 +49,5 @@ cp ./resources/save_actions_scr.png ${output_dir}/tractusx-edc/Connector\ Kit/Do
 
 curl https://api.swaggerhub.com/apis/tractusx-edc/${release_version}/swagger.yaml > ${output_dir}/tractusx-edc/tractusx-edc-${release_version}.yaml
 
-zip -r ${output_dir}/tractusx-edc-docusaurus-${release_version}.zip ${output_dir}/tractusx-edc
+cd ${output_dir}/tractusx-edc
+zip -r ../tractusx-edc-docusaurus-${release_version}.zip ./*

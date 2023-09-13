@@ -54,22 +54,19 @@ jobs:
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
             echo "DOWNSTREAM_VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')" >> "$GITHUB_OUTPUT"
-            echo "evaluates to true"
           else
             echo "DOWNSTREAM_VERSION=${{ inputs.downstream-version }}" >> "$GITHUB_OUTPUT"
-            echo "evaluates to false"
           fi
 
       - name: "Gather documentation files"
         run: |
           chmod +x ./resources/create_kit_documentation.sh
-          echo ${{ runner.temp }} $(pwd) ${{ env.DOWNSTREAM_VERSION }}
-          ./resources/create_kit_documentation.sh ${{ runner.temp }} $(pwd) ${{ env.DOWNSTREAM_VERSION }}
+          ./resources/create_kit_documentation.sh ${{ runner.temp }} $(pwd) ${{ steps.extract_version.outputs.DOWNSTREAM_VERSION }}
           
       - name: Publish zip to GitHub Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ runner.temp }}/tractusx-edc-docusaurus-${{ env.DOWNSTREAM_VERSION }}.zip
+          file: ${{ runner.temp }}/tractusx-edc-docusaurus-${{ steps.extract_version.outputs.DOWNSTREAM_VERSION }}.zip
           tag: ${{ steps.extract_version.outputs.DOWNSTREAM_VERSION }}
           overwrite: true
