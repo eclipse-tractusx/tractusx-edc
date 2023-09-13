@@ -61,6 +61,7 @@ jobs:
       - name: "Gather documentation files"
         run: |
           chmod +x ./resources/create_kit_documentation.sh
+          echo ${{ runner.temp }} $(pwd) ${{ env.DOWNSTREAM_VERSION }}
           ./resources/create_kit_documentation.sh ${{ runner.temp }} $(pwd) ${{ env.DOWNSTREAM_VERSION }}
           
       - name: Publish zip to GitHub Release

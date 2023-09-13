@@ -4,6 +4,8 @@ output_dir=$1
 repo_root=$2
 release_version=$3
 
+echo $1 $2 $3
+
 cd ${repo_root}
 
 mkdir -p ${output_dir}/tractusx-edc/Connector\ Kit/
