@@ -32,9 +32,6 @@ on:
       downstream-version:
         required: false
         type: string
-  push:
-    branches:
-      - docs/docusaurus-publishing
 
 jobs:
   publish-docusaurus:
@@ -69,4 +66,3 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ runner.temp }}/tractusx-edc-docusaurus-${{ steps.extract_version.outputs.DOWNSTREAM_VERSION }}.zip
           tag: ${{ steps.extract_version.outputs.DOWNSTREAM_VERSION }}
-          overwrite: true
