@@ -52,7 +52,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.1 \
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `"http://backend:8080"` |  |
+| backendService.httpProxyTokenReceiverUrl | string | `"https://example.com"` | Specifies a backend service which will receive the EDR |
 | customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | To add some custom labels |
 | fullnameOverride | string | `""` |  |

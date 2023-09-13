@@ -525,8 +525,8 @@ vault:
     transferProxyTokenSignerPublicKey:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
 backendService:
-  # Specifies a backend service which will receive the EDR
-  httpProxyTokenReceiverUrl: "http://backend:8080"
+  # -- Specifies a backend service which will receive the EDR
+  httpProxyTokenReceiverUrl: "https://example.com"
 
 networkPolicy:
   # -- If `true` network policy will be created to restrict access to control- and dataplane

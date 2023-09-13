@@ -299,8 +299,8 @@ vault:
   server:
     postStart: |-
 backendService:
-  # Specifies a backend service which will receive the EDR
-  httpProxyTokenReceiverUrl: "http://backend:8080"
+  # -- Specifies a backend service which will receive the EDR
+  httpProxyTokenReceiverUrl: "https://example.com"
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
