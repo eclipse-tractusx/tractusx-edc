@@ -38,7 +38,7 @@ customLabels: {}
 
 participant:
   # -- BPN Number
-  id: "BPNL00DATAP00001"
+  id: "BPNLCHANGEME"
 
 controlplane:
   image:
@@ -509,8 +509,8 @@ postgresql:
 vault:
   azure:
     name: ""
-    client: "53ba6f2b-6d52-4f5c-8ae0-7adc20808854"
-    tenant: "11e55098-68xd-4992-aaf9-7adx20808854"
+    client: "<AZURE_CLIENT_ID>"
+    tenant: "<AZURE_TENANT_ID>"
     secret:
     certificate:
 

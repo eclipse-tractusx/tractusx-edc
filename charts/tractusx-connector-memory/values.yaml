@@ -32,7 +32,7 @@ customLabels: {}
 
 participant:
   # -- BPN Number
-  id: "BPNL00DATAP00001"
+  id: "BPNLCHANGEME"
 
 # -- Add custom ca certificates to the truststore
 customCaCerts: {}

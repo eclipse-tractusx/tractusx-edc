@@ -247,7 +247,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 | networkPolicy.dataplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the dataplane component |
 | networkPolicy.dataplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for dp (defaults to all namespaces) |
 | networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
-| participant.id | string | `"BPNL00DATAP00001"` | BPN Number |
+| participant.id | string | `"BPNLCHANGEME"` | BPN Number |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |

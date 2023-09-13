@@ -38,7 +38,7 @@ customLabels: {}
 
 participant:
   # -- BPN Number
-  id: "BPNL00DATAP00001"
+  id: "BPNLCHANGEME"
 
 controlplane:
   image:

@@ -58,7 +58,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.1 \
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
-| participant.id | string | `"BPNL00DATAP00001"` | BPN Number |
+| participant.id | string | `"BPNLCHANGEME"` | BPN Number |
 | runtime.affinity | object | `{}` |  |
 | runtime.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | runtime.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |

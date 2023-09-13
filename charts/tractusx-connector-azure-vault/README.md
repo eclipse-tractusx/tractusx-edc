@@ -247,7 +247,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | install.postgresql | bool | `true` |  |
 | nameOverride | string | `""` |  |
-| participant.id | string | `"BPNL00DATAP00001"` | BPN Number |
+| participant.id | string | `"BPNLCHANGEME"` | BPN Number |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
@@ -262,10 +262,10 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
 | tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.azure.certificate | string | `nil` |  |
-| vault.azure.client | string | `"53ba6f2b-6d52-4f5c-8ae0-7adc20808854"` |  |
+| vault.azure.client | string | `"<AZURE_CLIENT_ID>"` |  |
 | vault.azure.name | string | `""` |  |
 | vault.azure.secret | string | `nil` |  |
-| vault.azure.tenant | string | `"11e55098-68xd-4992-aaf9-7adx20808854"` |  |
+| vault.azure.tenant | string | `"<AZURE_TENANT_ID>"` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
 | vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
 | vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |
