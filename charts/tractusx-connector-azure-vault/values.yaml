@@ -520,8 +520,8 @@ vault:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
 
 backendService:
-  # Specifies a backend service which will receive the EDR
-  httpProxyTokenReceiverUrl: "httpProxyTokenReceiverUrl"
+  # -- Specifies a backend service which will receive the EDR
+  httpProxyTokenReceiverUrl: "https://example.com"
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
