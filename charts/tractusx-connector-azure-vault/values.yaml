@@ -38,7 +38,7 @@ customLabels: {}
 
 participant:
   # -- BPN Number
-  id: ""
+  id: "BPNL00DATAP00001"
 
 controlplane:
   image:
@@ -94,7 +94,7 @@ controlplane:
       # -- path for incoming api calls
       path: /management
       # -- authentication key, must be attached to each 'X-Api-Key' request header
-      authKey: ""
+      authKey: "password"
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls
@@ -354,7 +354,7 @@ dataplane:
     proxy:
       port: 8186
       path: /proxy
-      authKey: ""
+      authKey: "password"
     metrics:
       port: 9090
       path: /metrics
@@ -509,8 +509,8 @@ postgresql:
 vault:
   azure:
     name: ""
-    client: ""
-    tenant: ""
+    client: "53ba6f2b-6d52-4f5c-8ae0-7adc20808854"
+    tenant: "11e55098-68xd-4992-aaf9-7adx20808854"
     secret:
     certificate:
 
@@ -520,7 +520,8 @@ vault:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
 
 backendService:
-  httpProxyTokenReceiverUrl: ""
+  # Specifies a backend service which will receive the EDR
+  httpProxyTokenReceiverUrl: "httpProxyTokenReceiverUrl"
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

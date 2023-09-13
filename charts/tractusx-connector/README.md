@@ -61,7 +61,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `""` |  |
+| backendService.httpProxyTokenReceiverUrl | string | `"http://backend:8080"` |  |
 | controlplane.affinity | object | `{}` |  |
 | controlplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | controlplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -72,15 +72,15 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | controlplane.endpoints.control.port | int | `8083` | port for incoming api calls |
 | controlplane.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | controlplane.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | controlplane.endpoints.default.port | int | `8080` | port for incoming api calls |
-| controlplane.endpoints.management | object | `{"authKey":"","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
-| controlplane.endpoints.management.authKey | string | `""` | authentication key, must be attached to each 'X-Api-Key' request header |
+| controlplane.endpoints.management | object | `{"authKey":"password","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| controlplane.endpoints.management.authKey | string | `"password"` | authentication key, must be attached to each 'X-Api-Key' request header |
 | controlplane.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | controlplane.endpoints.management.port | int | `8081` | port for incoming api calls |
 | controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
@@ -178,7 +178,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
 | dataplane.endpoints.metrics.port | int | `9090` |  |
-| dataplane.endpoints.proxy.authKey | string | `""` |  |
+| dataplane.endpoints.proxy.authKey | string | `"password"` |  |
 | dataplane.endpoints.proxy.path | string | `"/proxy"` |  |
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
@@ -247,7 +247,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 | networkPolicy.dataplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the dataplane component |
 | networkPolicy.dataplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for dp (defaults to all namespaces) |
 | networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
-| participant.id | string | `""` | BPN Number |
+| participant.id | string | `"BPNL00DATAP00001"` | BPN Number |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
@@ -265,7 +265,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 | vault.hashicorp.paths.health | string | `"/v1/sys/health"` |  |
 | vault.hashicorp.paths.secret | string | `"/v1/secret"` |  |
 | vault.hashicorp.timeout | int | `30` |  |
-| vault.hashicorp.token | string | `""` |  |
+| vault.hashicorp.token | string | `"root"` |  |
 | vault.hashicorp.url | string | `"http://{{ .Release.Name }}-vault:8200"` |  |
 | vault.injector.enabled | bool | `false` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |

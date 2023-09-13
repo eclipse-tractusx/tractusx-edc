@@ -38,7 +38,7 @@ customLabels: {}
 
 participant:
   # -- BPN Number
-  id: ""
+  id: "BPNL00DATAP00001"
 
 controlplane:
   image:
@@ -94,7 +94,7 @@ controlplane:
       # -- path for incoming api calls
       path: /management
       # -- authentication key, must be attached to each 'X-Api-Key' request header
-      authKey: ""
+      authKey: "password"
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls
@@ -352,7 +352,7 @@ dataplane:
     proxy:
       port: 8186
       path: /proxy
-      authKey: ""
+      authKey: "password"
     metrics:
       port: 9090
       path: /metrics
@@ -512,7 +512,7 @@ vault:
     postStart:    # must be set externally!
   hashicorp:
     url: "http://{{ .Release.Name }}-vault:8200"
-    token: ""
+    token: "root"
     timeout: 30
     healthCheck:
       enabled: true
@@ -525,7 +525,8 @@ vault:
     transferProxyTokenSignerPublicKey:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
 backendService:
-  httpProxyTokenReceiverUrl: ""
+  # Specifies a backend service which will receive the EDR
+  httpProxyTokenReceiverUrl: "http://backend:8080"
 
 networkPolicy:
   # -- If `true` network policy will be created to restrict access to control- and dataplane

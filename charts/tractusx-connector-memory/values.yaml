@@ -32,7 +32,7 @@ customLabels: {}
 
 participant:
   # -- BPN Number
-  id: ""
+  id: "BPNL00DATAP00001"
 
 # -- Add custom ca certificates to the truststore
 customCaCerts: {}
@@ -90,7 +90,7 @@ runtime:
       # -- path for incoming api calls
       path: /management
       # -- authentication key, must be attached to each 'X-Api-Key' request header
-      authKey: ""
+      authKey: "password"
     # -- validation api, only used by the data plane and should not be added to any ingress
     validation:
       # -- port for incoming api calls
@@ -298,21 +298,9 @@ vault:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
   server:
     postStart: |-
-daps:
-  url: "http://{{ .Release.Name }}-daps:4567"
-  clientId: ""
-  paths:
-    jwks: /jwks.json
-    token: /token
-  connectors:
-    - id: E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65
-      name: sokrates
-      attributes:
-        referringConnector: http://sokrates-controlplane/BPNSOKRATES
-      # Must be the same certificate that is stores in section 'sokrates-vault'
-      certificate: ""     # must be set externally!
 backendService:
-  httpProxyTokenReceiverUrl: ""
+  # Specifies a backend service which will receive the EDR
+  httpProxyTokenReceiverUrl: "http://backend:8080"
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
