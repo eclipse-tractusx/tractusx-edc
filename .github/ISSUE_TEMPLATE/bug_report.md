@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: ["bug", "triage"]
 assignees: ''
 
 ---
@@ -28,9 +28,9 @@ _A clear and concise description of what you expected to happen._
 
 _If applicable, add screenshots and/or error messages to help explain your problem._
 
-## Context Informations
+## Context Information
 
-_Add any other context about the probleme here._
+_Add any other context or information about the problem here._
 
 - Used version: [e.g. Commit Hash]
 - OS: [e.g. Mac OS (M1), Windows, Linux]
