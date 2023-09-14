@@ -67,7 +67,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `""` |  |
+| backendService.httpProxyTokenReceiverUrl | string | `"https://example.com"` | Specifies a backend service which will receive the EDR |
 | controlplane.affinity | object | `{}` |  |
 | controlplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | controlplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -78,15 +78,15 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | controlplane.endpoints.control.port | int | `8083` | port for incoming api calls |
 | controlplane.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | controlplane.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | controlplane.endpoints.default.port | int | `8080` | port for incoming api calls |
-| controlplane.endpoints.management | object | `{"authKey":"","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
-| controlplane.endpoints.management.authKey | string | `""` | authentication key, must be attached to each 'X-Api-Key' request header |
+| controlplane.endpoints.management | object | `{"authKey":"password","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| controlplane.endpoints.management.authKey | string | `"password"` | authentication key, must be attached to each 'X-Api-Key' request header |
 | controlplane.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | controlplane.endpoints.management.port | int | `8081` | port for incoming api calls |
 | controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
@@ -184,7 +184,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
 | dataplane.endpoints.metrics.port | int | `9090` |  |
-| dataplane.endpoints.proxy.authKey | string | `""` |  |
+| dataplane.endpoints.proxy.authKey | string | `"password"` |  |
 | dataplane.endpoints.proxy.path | string | `"/proxy"` |  |
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
@@ -247,7 +247,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | install.postgresql | bool | `true` |  |
 | nameOverride | string | `""` |  |
-| participant.id | string | `""` | BPN Number |
+| participant.id | string | `"BPNLCHANGEME"` | BPN Number |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
@@ -262,10 +262,10 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
 | tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.azure.certificate | string | `nil` |  |
-| vault.azure.client | string | `""` |  |
-| vault.azure.name | string | `""` |  |
+| vault.azure.client | string | `"<AZURE_CLIENT_ID>"` |  |
+| vault.azure.name | string | `"<AZURE_NAME>"` |  |
 | vault.azure.secret | string | `nil` |  |
-| vault.azure.tenant | string | `""` |  |
+| vault.azure.tenant | string | `"<AZURE_TENANT_ID>"` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
 | vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
 | vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |

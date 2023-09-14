@@ -52,21 +52,13 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.1 \
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `""` |  |
+| backendService.httpProxyTokenReceiverUrl | string | `"https://example.com"` | Specifies a backend service which will receive the EDR |
 | customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | To add some custom labels |
-| daps.clientId | string | `""` |  |
-| daps.connectors[0].attributes.referringConnector | string | `"http://sokrates-controlplane/BPNSOKRATES"` |  |
-| daps.connectors[0].certificate | string | `""` |  |
-| daps.connectors[0].id | string | `"E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65:keyid:E7:07:2D:74:56:66:31:F0:7B:10:EA:B6:03:06:4C:23:7F:ED:A6:65"` |  |
-| daps.connectors[0].name | string | `"sokrates"` |  |
-| daps.paths.jwks | string | `"/jwks.json"` |  |
-| daps.paths.token | string | `"/token"` |  |
-| daps.url | string | `"http://{{ .Release.Name }}-daps:4567"` |  |
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
-| participant.id | string | `""` | BPN Number |
+| participant.id | string | `"BPNLCHANGEME"` | BPN Number |
 | runtime.affinity | object | `{}` |  |
 | runtime.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | runtime.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
@@ -77,15 +69,15 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.1 \
 | runtime.debug.enabled | bool | `false` |  |
 | runtime.debug.port | int | `1044` |  |
 | runtime.debug.suspendOnStart | bool | `false` |  |
-| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
+| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | runtime.endpoints.control.port | int | `8083` | port for incoming api calls |
 | runtime.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | runtime.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | runtime.endpoints.default.port | int | `8080` | port for incoming api calls |
-| runtime.endpoints.management | object | `{"authKey":"","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
-| runtime.endpoints.management.authKey | string | `""` | authentication key, must be attached to each 'X-Api-Key' request header |
+| runtime.endpoints.management | object | `{"authKey":"password","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| runtime.endpoints.management.authKey | string | `"password"` | authentication key, must be attached to each 'X-Api-Key' request header |
 | runtime.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | runtime.endpoints.management.port | int | `8081` | port for incoming api calls |
 | runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
