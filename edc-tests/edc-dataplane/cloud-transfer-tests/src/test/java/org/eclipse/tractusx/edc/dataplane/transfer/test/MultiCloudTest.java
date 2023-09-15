@@ -51,6 +51,17 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_KEY;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_CONTAINER_NAME;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_KEY_ALIAS;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.COMPLETION_MARKER;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
@@ -59,19 +70,17 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @AwsS3IntegrationTest
 public class MultiCloudTest {
     // S3 test constants
-    public static final int MINIO_CONTAINER_PORT = 9000;
     public static final String REGION = Region.US_WEST_2.id();
-    public static final String BUCKET_NAME = "test-bucket";
-    public static final String BLOB_KEY_ALIAS = "test-key1";
-    private static final String ACCESS_KEY_ID = "test-access-key"; // user name
+    public static final String BUCKET_NAME = S3_CONSUMER_BUCKET_NAME;
+    public static final String BLOB_KEY_ALIAS = AZBLOB_CONSUMER_KEY_ALIAS;
+    private static final String ACCESS_KEY_ID = S3_ACCESS_KEY_ID; // user name
     private static final String SECRET_ACCESS_KEY = UUID.randomUUID().toString(); // password
-    private static final String MINIO_DOCKER_IMAGE = "bitnami/minio";
+    
     // Azure Blob test constants
-    private static final String BLOB_ACCOUNT_NAME = "testblobaccount";
-    private static final String BLOB_ACCOUNT_KEY = "testblobkey";
+    private static final String BLOB_ACCOUNT_NAME = AZBLOB_CONSUMER_ACCOUNT_NAME;
+    private static final String BLOB_ACCOUNT_KEY = AZBLOB_CONSUMER_ACCOUNT_KEY;
     private static final int AZURITE_HOST_PORT = getFreePort();
-    private static final String AZURITE_DOCKER_IMAGE = "mcr.microsoft.com/azure-storage/azurite";
-    private static final String BLOB_CONTAINER_NAME = "src-container";
+    private static final String BLOB_CONTAINER_NAME = AZBLOB_CONSUMER_CONTAINER_NAME;
 
     // General constants, containers etc.
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
@@ -82,8 +91,6 @@ public class MultiCloudTest {
             RuntimeConfig.Azure.createDataplane("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
     );
 
-    private static final String COMPLETION_MARKER = ".complete";
-    private static final String TESTFILE_NAME = "testfile.json";
     @Container
     private final GenericContainer<?> s3Container = new GenericContainer<>(MINIO_DOCKER_IMAGE)
             .withEnv("MINIO_ROOT_USER", ACCESS_KEY_ID)
@@ -91,7 +98,7 @@ public class MultiCloudTest {
             .withExposedPorts(MINIO_CONTAINER_PORT);
 
     @Container
-    private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(AZURITE_DOCKER_IMAGE)
+    private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(TestConstants.AZURITE_DOCKER_IMAGE)
             .withFixedExposedPort(AZURITE_HOST_PORT, 10000)
             .withEnv("AZURITE_ACCOUNTS", BLOB_ACCOUNT_NAME + ":" + BLOB_ACCOUNT_KEY);
 
@@ -147,8 +154,7 @@ public class MultiCloudTest {
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(dfr)
@@ -193,21 +199,13 @@ public class MultiCloudTest {
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
                         .build()
                 )
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage")
-                        .property("container", BLOB_CONTAINER_NAME)
-                        .property("account", BLOB_ACCOUNT_NAME)
-                        .property("blobname", TESTFILE_NAME)
-                        .property("keyName", BLOB_KEY_ALIAS)
-                        .build()
-                )
+                .destinationDataAddress(blobDestinationAddress(TESTFILE_NAME))
                 .processId("test-process-id")
                 .trackable(false)
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(dfr)
