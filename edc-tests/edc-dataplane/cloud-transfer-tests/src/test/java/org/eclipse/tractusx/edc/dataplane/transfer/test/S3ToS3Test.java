@@ -140,8 +140,7 @@ public class S3ToS3Test {
         var request = createFlowRequest();
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
 
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -173,8 +172,7 @@ public class S3ToS3Test {
         var request = createFlowRequest();
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
 
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -211,8 +209,7 @@ public class S3ToS3Test {
             var request = createFlowRequest();
             var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
 
-            given()
-                    .when()
+            given().when()
                     .baseUri(url)
                     .contentType(ContentType.JSON)
                     .body(request)

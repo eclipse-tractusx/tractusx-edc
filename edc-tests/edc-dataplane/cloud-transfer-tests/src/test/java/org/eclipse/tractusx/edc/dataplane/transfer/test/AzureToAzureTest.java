@@ -114,8 +114,7 @@ public class AzureToAzureTest {
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
 
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -167,8 +166,7 @@ public class AzureToAzureTest {
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
 
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -202,8 +200,7 @@ public class AzureToAzureTest {
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
 
-        given()
-                .when()
+        given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -214,7 +211,9 @@ public class AzureToAzureTest {
         // wait until the data plane logs an exception that it cannot transfer the blob
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(eq("Error creating blob for %s on account %s".formatted(TESTFILE_NAME, CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor())
+                        .severe(eq("Error creating blob for %s on account %s".formatted(TESTFILE_NAME, CONSUMER_ACCOUNT_NAME)),
+                                isA(IOException.class)));
     }
 
     private DataFlowRequest createFlowRequest(String blobName) {

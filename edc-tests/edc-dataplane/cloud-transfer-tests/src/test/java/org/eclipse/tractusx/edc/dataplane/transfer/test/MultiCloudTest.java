@@ -173,7 +173,6 @@ public class MultiCloudTest {
         assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
 
 
-        //create container in Azure
         // create container in consumer's blob store
         blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
         DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, """
