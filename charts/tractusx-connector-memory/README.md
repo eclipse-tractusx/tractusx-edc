@@ -25,7 +25,6 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please 
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
-
 - `runtime.ssi.miw.url`: the URL
 - `runtime.ssi.miw.authorityId`: the BPN of the issuer authority
 - `runtime.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
@@ -47,7 +46,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.1 \
 
 ## Source Code
 
-<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory>
 
 ## Values
 

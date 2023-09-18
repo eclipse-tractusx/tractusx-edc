@@ -28,7 +28,6 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
-
 - `controlplane.ssi.miw.url`: the URL
 - `controlplane.ssi.miw.authorityId`: the BPN of the issuer authority
 - `controlplane.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
@@ -49,7 +48,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 
 ## Source Code
 
-<https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
+* <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector>
 
 ## Requirements
 
