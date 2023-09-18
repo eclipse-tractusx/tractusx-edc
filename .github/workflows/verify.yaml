@@ -157,7 +157,7 @@ jobs:
     needs: [ verify-formatting, verify-license-headers ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
 
       - name: Run Azure/S3 dataplane tests
