@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.2.2-20230905-SNAPSHOT"
+edc = "0.3.0"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.34"
@@ -37,6 +37,7 @@ edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasou
 edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-spi-aggregateservices = { module = "org.eclipse.edc:aggregate-service-spi", version.ref = "edc" }
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
+edc-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-client", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
@@ -116,7 +117,6 @@ edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
-edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 

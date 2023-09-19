@@ -73,7 +73,7 @@ public abstract class EndpointDataReferenceCacheTestBase {
         var entry = edrEntry("assetId", "agreementId", "tpId");
         getStore().save(entry, edr("edrId"));
 
-        assertThat(getStore().findByCorrelationIdAndLease(entry.getTransferProcessId())).isNotNull();
+        assertThat(getStore().findByIdAndLease(entry.getTransferProcessId())).isNotNull();
     }
 
     @Test

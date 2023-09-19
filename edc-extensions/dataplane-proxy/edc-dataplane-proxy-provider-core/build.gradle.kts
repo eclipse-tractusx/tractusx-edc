@@ -19,7 +19,6 @@ plugins {
 dependencies {
 
     implementation(libs.edc.util)
-    implementation(libs.edc.dpf.framework)
     implementation(libs.edc.dpf.util)
     implementation(libs.edc.jwt.core)
     implementation(libs.edc.ext.http)

@@ -106,11 +106,6 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     }
 
     @Override
-    public StoreResult<EndpointDataReferenceEntry> findByCorrelationIdAndLease(String correlationId) {
-        return findByIdAndLease(correlationId);
-    }
-
-    @Override
     public void save(EndpointDataReferenceEntry entity) {
         throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
     }
@@ -194,6 +189,17 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                     return StoreResult.notFound(format("EDR with id %s not found", id));
                 }
             } catch (SQLException exception) {
+                throw new EdcPersistenceException(exception);
+            }
+        });
+    }
+
+    @Override
+    public @Nullable EndpointDataReferenceEntry findById(String id) {
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                return findById(connection, id, this::mapResultSet);
+            } catch (Exception exception) {
                 throw new EdcPersistenceException(exception);
             }
         });

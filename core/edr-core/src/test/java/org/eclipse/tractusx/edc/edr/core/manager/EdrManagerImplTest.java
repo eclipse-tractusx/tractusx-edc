@@ -118,7 +118,7 @@ public class EdrManagerImplTest {
         var edrEntry = edrEntryBuilder().state(NEGOTIATED.code()).build();
         var transferProcess = createTransferProcessBuilder().build();
         when(edrCache.nextNotLeased(anyInt(), stateIs(NEGOTIATED.code()))).thenReturn(List.of(edrEntry)).thenReturn(emptyList());
-        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
+        when(edrCache.findByIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(transferProcess);
         when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(transferProcess));
 
@@ -138,7 +138,7 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry))
                 .thenReturn(emptyList());
 
-        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
+        when(edrCache.findByIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(transferProcess);
         when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(transferProcess));
 
@@ -159,7 +159,7 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry))
                 .thenReturn(emptyList());
 
-        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
+        when(edrCache.findByIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(null);
 
         edrManager.start();
@@ -179,7 +179,7 @@ public class EdrManagerImplTest {
                 .thenReturn(List.of(edrEntry.copy()))
                 .thenReturn(emptyList());
 
-        when(edrCache.findByCorrelationIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
+        when(edrCache.findByIdAndLease(edrEntry.getTransferProcessId())).thenReturn(StoreResult.success(edrEntry));
         when(transferProcessService.findById(edrEntry.getTransferProcessId())).thenReturn(transferProcess);
         when(transferProcessService.initiateTransfer(any()))
                 .thenReturn(ServiceResult.badRequest("bad"))
