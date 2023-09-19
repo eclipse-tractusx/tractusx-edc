@@ -54,7 +54,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.5.1 \
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 15.4.0 |
+| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.11.2 |
 | https://helm.releases.hashicorp.com | vault(vault) | 0.20.0 |
 
 ## Values

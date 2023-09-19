@@ -61,7 +61,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 15.4.0 |
+| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.11.2 |
 
 ## Values
 
