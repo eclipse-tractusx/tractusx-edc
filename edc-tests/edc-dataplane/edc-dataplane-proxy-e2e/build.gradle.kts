@@ -25,6 +25,8 @@ dependencies {
     testImplementation(libs.edc.config.filesystem)
     testImplementation(libs.edc.dpf.http)
     testImplementation(libs.edc.auth.tokenbased)
+    testRuntimeOnly(libs.edc.dpf.core)
+    testRuntimeOnly(libs.edc.controlplane.apiclient)
     testImplementation(project(":spi:edr-spi"))
     testImplementation(project(":core:edr-cache-core"))
     testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
