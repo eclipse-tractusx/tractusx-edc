@@ -35,6 +35,9 @@ dependencies {
     runtimeOnly(libs.edc.dpf.oauth2)
     runtimeOnly(libs.edc.dpf.http)
 
+    runtimeOnly(libs.edc.dpf.core)
+    runtimeOnly(libs.edc.controlplane.apiclient)
+
     runtimeOnly(libs.edc.dpf.api)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
