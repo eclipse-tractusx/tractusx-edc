@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.2.2-20230905-SNAPSHOT"
+edc = "0.3.0"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.34"
@@ -116,7 +116,6 @@ edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
-edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 

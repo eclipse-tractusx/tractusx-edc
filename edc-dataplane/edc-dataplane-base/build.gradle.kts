@@ -35,7 +35,6 @@ dependencies {
     runtimeOnly(libs.edc.dpf.oauth2)
     runtimeOnly(libs.edc.dpf.http)
 
-    runtimeOnly(libs.edc.dpf.framework)
     runtimeOnly(libs.edc.dpf.api)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
