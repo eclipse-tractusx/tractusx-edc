@@ -67,7 +67,7 @@ public class SsiMiwOauth2ClientExtension implements ServiceExtension {
         var clientId = context.getConfig().getString(CLIENT_ID);
         var clientSecretAlias = context.getConfig().getString(CLIENT_SECRET_ALIAS);
         var clientSecret = vault.resolveSecret(clientSecretAlias);
-        Objects.requireNonNull(clientSecret, "Client secret not found in the vault");
+        Objects.requireNonNull(clientSecret, "Client secret could not be retrieved");
 
         return MiwOauth2ClientConfiguration.Builder.newInstance()
                 .tokenUrl(tokenUrl)
