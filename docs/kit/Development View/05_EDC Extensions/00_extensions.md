@@ -1,4 +1,4 @@
-# EDC Extensions
+# EDC Extensions Overview
 
 The following extensions provide additional functionality to the core EDC.
 They are currently only available in Tractus-X EDC.

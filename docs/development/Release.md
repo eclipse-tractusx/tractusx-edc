@@ -38,11 +38,5 @@ The Eclipse Bot is able to approve dependencies automatically, if the license ca
    from maven central.
 2. Create the Eclipse IP Issues or ask an Eclipse Commiter to do this for you.
 
-## 4. Update OpenAPI docs
-
-As part of the [kits documentation provided for docusaurus](../kit/development-view/page00_development_view.md) we provide an OpenAPI reference.
-This refers to the [EDC API](https://github.com/eclipse-edc/Connector/tree/main/resources/openapi) and needs to be updated to the current release.
-The yaml files found there are then converted with the [docusaurus openapi plugin](https://www.npmjs.com/package/docusaurus-plugin-openapi-docs).
-
 [maven-shield]: https://img.shields.io/badge/Apache%20Maven-URL-blue
 [maven-url]: https://maven.apache.org

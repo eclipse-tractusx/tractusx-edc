@@ -23,7 +23,5 @@ The postman collection contains the most common API calls. Please note that the
 - Policy & Negotiation calls come in pairs for the different kinds of policies
 - the 'Data' call only works when using the All-In-One Deployment of this repository
 
-![screenshot](./images/screenshot.png)
-
 [postman-shield]: https://img.shields.io/badge/Postman-URL-orange
 [postman-url]: https://www.postman.com

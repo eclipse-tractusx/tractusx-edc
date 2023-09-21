@@ -27,7 +27,7 @@ This module also contains two additional validation rules of VP/VC on the provid
 | tx.ssi.oauth.client.id           | X        |                | Client id                         |
 | tx.ssi.oauth.client.secret.alias | X        |                | Vault alias for the client secret |
 
-By default, the `tx.ssi.miw.authority.issuer` is composed with `did:web:<tx.ssi.miw.url>:<tx.ssi.miw.authority.id>
+By default, the `tx.ssi.miw.authority.issuer` is composed with `did:web:<tx.ssi.miw.url>:<tx.ssi.miw.authority.id>`
 
 Another mandatory settings is `tx.ssi.endpoint.audience` which is described [here](../ssi-identity-core/README.md)
 

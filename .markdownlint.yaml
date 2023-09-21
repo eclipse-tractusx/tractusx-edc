@@ -1,4 +1,6 @@
 # Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+# Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+# Copyright (c) 2023 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -19,7 +21,14 @@
 "default": true
 # Do not restrict line length: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD013
 "MD013": false
-"MD034":
+# Do not restrict inline HTML: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD033
+"MD033": false
 # Allow same content on headlines on siblings: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD024
 "MD024":
   "siblings_only": true
+"MD032": false
+# Allow lists without empty lines around them: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD032
+# Necessary for Helm docs
+"MD004": false
+# Allow for more unordered lists: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#MD004
+# Necessary for Helm docs

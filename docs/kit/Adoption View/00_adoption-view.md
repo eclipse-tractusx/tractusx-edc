@@ -1,9 +1,4 @@
----
-id: Adoption View
-title: Adoption View
-description: 'Connector Kit'
-sidebar_position: 1
----
+# Adoption View
 
 The ConnectorKit provides a connector framework, based on the [Eclipse Dataspace Connector][edc-url] for sovereign, cross-enterprise data exchange.
 

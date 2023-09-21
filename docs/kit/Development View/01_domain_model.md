@@ -1,9 +1,4 @@
----
-id: Domain Model
-title: Domain Model
-description: 'Connector Kit'
-sidebar_position: 2
----
+# Domain Model
 
 ![domain-model](images/domain-model.png)
 

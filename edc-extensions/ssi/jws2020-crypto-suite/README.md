@@ -64,7 +64,6 @@ acceptable to you, please add a dependency exclusion to your build script.
 a [hard-coded context](https://github.com/filip26/iron-verifiable-credentials/blob/82d13326c5f64a0f38c75d417ffc263febfd970d/src/main/java/com/apicatalog/vc/processor/Issuer.java#L122)
 added to the compacted JSON-LD, which is incorrect. It doesn't negatively impact the resulting JSON-LD, other than
 possibly affecting processing times, but unfortunately it also makes it impossible to add more contexts, such
-as https://w3id.org/security/suites/jws-2020/v1. We mitigated this with
-the [`IssuerCompat.java`](./src/main/java/org/eclipse/edc/security/signature/jws2020/IssuerCompat.java), which should be
-used
-for compaction.
+as <https://w3id.org/security/suites/jws-2020/v1>. We mitigated this with
+the [`IssuerCompat.java`](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-extensions/ssi/jws2020-crypto-suite/src/main/java/org/eclipse/edc/security/signature/jws2020/IssuerCompat.java),
+which should be used for compaction.

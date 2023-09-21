@@ -249,3 +249,14 @@ jobs:
     with:
       downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
     secrets: inherit
+
+  publish-docusaurus:
+    name: Publish docusaurus docs
+    permissions:
+      contents: write
+      packages: write
+    needs: [ secret-presence, publish-to-swaggerhub, github-release ]
+    with:
+      downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+    uses: ./.github/workflows/publish-docusaurus.yaml
+    secrets: inherit
