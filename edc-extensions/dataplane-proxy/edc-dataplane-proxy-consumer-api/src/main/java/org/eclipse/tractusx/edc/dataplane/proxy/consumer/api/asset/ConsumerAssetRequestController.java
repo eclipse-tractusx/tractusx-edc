@@ -17,8 +17,10 @@ package org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
@@ -51,6 +53,7 @@ import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSche
  * Implements the HTTP proxy API.
  */
 @Path("/aas")
+@Produces(MediaType.APPLICATION_JSON)
 public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     public static final String BASE_URL = "baseUrl";
     private static final String HTTP_DATA = "HttpData";
