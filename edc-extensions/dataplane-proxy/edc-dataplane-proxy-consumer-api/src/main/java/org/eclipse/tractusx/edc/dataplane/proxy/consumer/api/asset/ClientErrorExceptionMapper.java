@@ -18,6 +18,7 @@ import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import org.eclipse.edc.web.spi.ApiErrorDetail;
 
 /**
  * Maps client errors to return the associated status.
@@ -30,7 +31,8 @@ public class ClientErrorExceptionMapper implements ExceptionMapper<ClientErrorEx
 
     @Override
     public Response toResponse(ClientErrorException exception) {
-        return Response.status(exception.getResponse().getStatus()).build();
+        var detail = ApiErrorDetail.Builder.newInstance().message(exception.getMessage()).build();
+        return Response.status(exception.getResponse().getStatus()).entity(detail).build();
     }
 }
 

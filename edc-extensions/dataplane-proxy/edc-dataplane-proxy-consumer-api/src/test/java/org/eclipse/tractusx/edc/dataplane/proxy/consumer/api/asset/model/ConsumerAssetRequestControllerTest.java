@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
+import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ClientErrorExceptionMapper;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
 import static org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController.BASE_URL;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -159,7 +161,8 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .body(request)
                 .post(ASSET_REQUEST_PATH)
                 .then()
-                .statusCode(400);
+                .statusCode(400)
+                .body("message", notNullValue());
 
     }
 
@@ -184,7 +187,8 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .body(request)
                 .post(ASSET_REQUEST_PATH)
                 .then()
-                .statusCode(428);
+                .statusCode(428)
+                .body("message", notNullValue());
 
     }
 
@@ -245,7 +249,8 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .body(request)
                 .post(ASSET_REQUEST_PATH)
                 .then()
-                .statusCode(400);
+                .statusCode(400)
+                .body("message", notNullValue());
 
     }
 
@@ -307,6 +312,11 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
     @Override
     protected Object controller() {
         return new ConsumerAssetRequestController(cache, dataPlaneManager, Executors.newSingleThreadExecutor(), mock(Monitor.class));
+    }
+
+    @Override
+    protected Object additionalResource() {
+        return new ClientErrorExceptionMapper();
     }
 
     private RequestSpecification baseRequest() {
