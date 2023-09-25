@@ -136,6 +136,13 @@ Validation URL
 {{- end }}
 
 {{/*
+Control Plane URL
+*/}}
+{{- define "txdc.controlplane.url.control" -}}
+{{- printf "http://%s-controlplane:%v%s" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.control.port $.Values.controlplane.endpoints.control.path -}}
+{{- end }}
+
+{{/*
 Data Control URL
 */}}
 {{- define "txdc.dataplane.url.control" -}}

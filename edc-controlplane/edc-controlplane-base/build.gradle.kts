@@ -47,6 +47,7 @@ dependencies {
     runtimeOnly(libs.edc.auth.tokenbased)
 
     runtimeOnly(libs.edc.api.management)
+    runtimeOnly(libs.edc.api.controlplane)
     runtimeOnly(libs.edc.api.management.config)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.dsp)

@@ -184,6 +184,8 @@ spec:
               value: {{ .Values.controlplane.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_PROTOCOL_PATH"
               value: {{ .Values.controlplane.endpoints.protocol.path | quote }}
+            - name: "EDC_CONTROL_ENDPOINT"
+              value: {{ include "txdc.controlplane.url.control" .}}
 
             #########
             ## DSP ##

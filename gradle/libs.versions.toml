@@ -68,6 +68,7 @@ edc-api-observability = { module = "org.eclipse.edc:api-observability", version.
 edc-api-contractnegotiation = { module = "org.eclipse.edc:contract-negotiation-api", version.ref = "edc" }
 edc-api-dataplane = { module = "org.eclipse.edc:dataplane-api", version.ref = "edc" }
 edc-api-transferprocess = { module = "org.eclipse.edc:transfer-process-api", version.ref = "edc" }
+edc-api-controlplane = { module = "org.eclipse.edc:control-plane-api", version.ref = "edc" }
 edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-policy-engine = { module = "org.eclipse.edc:policy-engine", version.ref = "edc" }

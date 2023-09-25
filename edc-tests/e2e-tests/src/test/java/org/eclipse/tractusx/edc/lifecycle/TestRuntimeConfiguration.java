@@ -97,6 +97,8 @@ public class TestRuntimeConfiguration {
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", SOKRATES_PUBLIC_API_PORT);
 
+                put("edc.transfer.send.retry.limit", "1");
+                put("edc.transfer.send.retry.base-delay.ms", "100");
                 // embedded dataplane config
                 put("web.http.control.path", "/api/dataplane/control");
                 put("web.http.control.port", SOKRATES_DATAPLANE_CONTROL_PORT);
@@ -128,6 +130,8 @@ public class TestRuntimeConfiguration {
                 put("edc.api.auth.key", "testkey");
                 put("web.http.public.port", PLATO_PUBLIC_API_PORT);
                 put("web.http.public.path", "/api/public");
+                put("edc.transfer.send.retry.limit", "1");
+                put("edc.transfer.send.retry.base-delay.ms", "100");
                 // embedded dataplane config
                 put("web.http.control.path", "/api/dataplane/control");
                 put("web.http.control.port", PLATO_DATAPLANE_CONTROL_PORT);
