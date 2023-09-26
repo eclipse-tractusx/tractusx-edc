@@ -42,8 +42,13 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
     static final String NAME = "Data Plane Proxy Provider API";
     @Setting(value = "Thread pool size for the provider data plane proxy gateway", type = "int")
     private static final String THREAD_POOL_SIZE = "tx.dpf.provider.proxy.thread.pool";
+
+    @Setting(value = "Context to register the ProviderGatewayController into", type = "String")
+    private static final String WEB_HTTP_GATEWAY_CONTEXT = "web.http.gateway.context";
+
     @Setting
     private static final String CONTROL_PLANE_VALIDATION_ENDPOINT = "edc.dataplane.token.validation.endpoint";
+
     @Inject
     private WebService webService;
 
@@ -87,7 +92,13 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
                 executorService,
                 monitor);
 
-        webService.registerResource(controller);
+        var webHttpGateWayContext = context.getConfig().getString(WEB_HTTP_GATEWAY_CONTEXT);
+
+        if (webHttpGateWayContext == null) {
+            webService.registerResource(controller);
+        } else {
+            webService.registerResource(webHttpGateWayContext, controller);
+        }
     }
 
 
