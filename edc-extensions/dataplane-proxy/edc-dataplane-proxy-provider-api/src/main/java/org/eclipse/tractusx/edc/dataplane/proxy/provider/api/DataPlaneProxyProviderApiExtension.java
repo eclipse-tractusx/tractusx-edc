@@ -92,12 +92,10 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
                 executorService,
                 monitor);
 
-        var webHttpGateWayContext = context.getConfig().getString(WEB_HTTP_GATEWAY_CONTEXT);
-
-        if (webHttpGateWayContext == null) {
-            webService.registerResource(controller);
+        if (context.getConfig().hasKey(WEB_HTTP_GATEWAY_CONTEXT)) {
+            webService.registerResource(context.getConfig().getString(WEB_HTTP_GATEWAY_CONTEXT), controller);
         } else {
-            webService.registerResource(webHttpGateWayContext, controller);
+            webService.registerResource(controller);
         }
     }
 
