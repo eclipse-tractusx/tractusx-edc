@@ -70,7 +70,7 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
         when(vault.storeSecret(any(), any())).thenReturn(Result.success());
         when(vault.resolveSecret(any())).then(a -> edrJson(a.getArgument(0)));
 
-        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock, queryExecutor, CONNECTOR_NAME);
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, "", clock, queryExecutor, CONNECTOR_NAME);
         var schema = Files.readString(Paths.get("./docs/schema.sql"));
         extension.runQuery(schema);
         leaseUtil = new LeaseUtil(extension.getTransactionContext(), extension::getConnection, statements, clock);

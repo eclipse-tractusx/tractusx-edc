@@ -53,6 +53,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     public static final String SEPARATOR = "--";
     public static final String VAULT_PREFIX = "edr" + SEPARATOR;
     private final EdrStatements statements;
+    private final String vaultPath;
     private final Clock clock;
     private final Vault vault;
 
@@ -63,10 +64,11 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
 
     public SqlEndpointDataReferenceCache(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                          TransactionContext transactionContext, EdrStatements statements,
-                                         ObjectMapper objectMapper, Vault vault, Clock clock,
+                                         ObjectMapper objectMapper, Vault vault, String vaultPath, Clock clock,
                                          QueryExecutor queryExecutor, String connectorId) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = statements;
+        this.vaultPath = vaultPath;
         this.clock = clock;
         this.vault = vault;
         this.leaseHolder = connectorId;
@@ -103,11 +105,6 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                 throw new EdcPersistenceException(exception);
             }
         });
-    }
-
-    @Override
-    public void save(EndpointDataReferenceEntry entity) {
-        throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
     }
 
     @Override
@@ -148,7 +145,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                         entry.getErrorDetail(),
                         entry.getCreatedAt(),
                         entry.getUpdatedAt());
-                vault.storeSecret(VAULT_PREFIX + edr.getId(), toJson(edr)).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
+                vault.storeSecret(vaultPath + VAULT_PREFIX + edr.getId(), toJson(edr)).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
             } catch (Exception exception) {
                 throw new EdcPersistenceException(exception);
             }
@@ -183,7 +180,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                     leaseContext.withConnection(connection).acquireLease(id);
                     queryExecutor.execute(connection, statements.getDeleteByIdTemplate(), id);
                     leaseContext.withConnection(connection).breakLease(id);
-                    vault.deleteSecret(VAULT_PREFIX + entryWrapper.getEdrId()).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
+                    vault.deleteSecret(vaultPath + VAULT_PREFIX + entryWrapper.getEdrId()).orElseThrow((failure) -> new EdcPersistenceException(failure.getFailureDetail()));
                     return StoreResult.success(entryWrapper.getEntry());
                 } else {
                     return StoreResult.notFound(format("EDR with id %s not found", id));
@@ -225,6 +222,11 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                 throw new EdcPersistenceException(e);
             }
         });
+    }
+
+    @Override
+    public void save(EndpointDataReferenceEntry entity) {
+        throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
     }
 
     private <T> T findById(Connection connection, String id, ResultSetMapper<T> resultSetMapper) {
@@ -274,7 +276,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
     }
 
     private EndpointDataReference referenceFromEntry(String edrId) {
-        var edr = vault.resolveSecret(VAULT_PREFIX + edrId);
+        var edr = vault.resolveSecret(vaultPath + VAULT_PREFIX + edrId);
         if (edr != null) {
             return fromJson(edr, EndpointDataReference.class);
         }

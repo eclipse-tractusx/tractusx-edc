@@ -38,6 +38,9 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
 
     @Setting(required = true, defaultValue = SqlEndpointDataReferenceCacheExtension.DEFAULT_DATASOURCE_NAME)
     public static final String DATASOURCE_SETTING_NAME = "edc.datasource.edr.name";
+
+    @Setting(required = true, defaultValue = "")
+    public static final String EDC_EDR_VAULT_PATH = "edc.edr.vault.path";
     public static final String DEFAULT_DATASOURCE_NAME = "edr";
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -63,7 +66,8 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
     @Provider
     public EndpointDataReferenceCache edrCache(ServiceExtensionContext context) {
         var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
-        return new SqlEndpointDataReferenceCache(dataSourceRegistry, dataSourceName, transactionContext, getStatementImpl(), typeManager.getMapper(), vault, clock, queryExecutor, context.getConnectorId());
+        var vaultDirectory = context.getConfig().getString(EDC_EDR_VAULT_PATH, "");
+        return new SqlEndpointDataReferenceCache(dataSourceRegistry, dataSourceName, transactionContext, getStatementImpl(), typeManager.getMapper(), vault, vaultDirectory, clock, queryExecutor, context.getConnectorId());
     }
 
     private EdrStatements getStatementImpl() {
