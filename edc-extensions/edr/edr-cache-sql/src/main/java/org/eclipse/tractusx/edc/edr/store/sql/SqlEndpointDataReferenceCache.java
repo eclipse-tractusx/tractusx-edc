@@ -59,8 +59,6 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
 
     private final SqlLeaseContextBuilder leaseContext;
 
-    private final String leaseHolder;
-
 
     public SqlEndpointDataReferenceCache(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                          TransactionContext transactionContext, EdrStatements statements,
@@ -71,7 +69,6 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
         this.vaultPath = vaultPath;
         this.clock = clock;
         this.vault = vault;
-        this.leaseHolder = connectorId;
         leaseContext = SqlLeaseContextBuilder.with(transactionContext, connectorId, statements, clock, queryExecutor);
     }
 

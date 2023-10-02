@@ -39,7 +39,7 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
     @Setting(required = true, defaultValue = SqlEndpointDataReferenceCacheExtension.DEFAULT_DATASOURCE_NAME)
     public static final String DATASOURCE_SETTING_NAME = "edc.datasource.edr.name";
 
-    @Setting(required = true, defaultValue = "")
+    @Setting(value = "Directory/Path where to store EDRs in the vault for vaults that supports hierarchical structuring.", required = false, defaultValue = "")
     public static final String EDC_EDR_VAULT_PATH = "edc.edr.vault.path";
     public static final String DEFAULT_DATASOURCE_NAME = "edr";
     @Inject

@@ -96,6 +96,24 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
         verify(vault).storeSecret(argThat(s -> s.startsWith("edr--")), anyString());
     }
 
+    @Test
+    void verify_custom_vaultPath(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) {
+
+        var path = "testPath/";
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, path, clock, queryExecutor, CONNECTOR_NAME);
+
+        var tpId = "tp1";
+        var assetId = "asset1";
+        var edrId = "edr1";
+
+        var edr = edr(edrId);
+        var entry = edrEntry(assetId, randomUUID().toString(), tpId);
+
+        cache.save(entry, edr);
+
+        verify(vault).storeSecret(argThat(s -> s.startsWith(path + "edr--")), anyString());
+    }
+
     @Override
     protected EndpointDataReferenceCache getStore() {
         return cache;

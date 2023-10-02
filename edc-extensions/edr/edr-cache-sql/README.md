@@ -11,7 +11,7 @@ It will store in the database this fields:
 
 It represents a single EDR negotiation done with the new Control Plane EDR APIs.
 
-The EDR itself it is stored in the participant vault with a prefixed key `edr__<edrId>`.
+The EDR itself it is stored in the participant vault with a prefixed key `edr--<edrId>`.
 
 **_Note that the SQL statements (DDL) are specific to and only tested with PostgreSQL. Using it with other RDBMS may
 work but might have unexpected side effects!_**
@@ -22,6 +22,7 @@ see [schema.sql](docs/schema.sql).
 
 ## 2. Configuration
 
-| Key                                    | Description                       | Mandatory | Default |
-|:---------------------------------------|:----------------------------------|-----------|---------|
-| edc.datasource.edr.name                | Datasource used by this extension |           | edr     |
+| Key                     | Description                                                                                       | Mandatory | Default |
+|:------------------------|:--------------------------------------------------------------------------------------------------|-----------|---------|
+| edc.datasource.edr.name | Datasource used by this extension                                                                 |           | edr     |
+| edc.edr.vault.path      | Directory/Path where to store EDRs in the vault for vaults that supports hierarchical structuring |           |         |
