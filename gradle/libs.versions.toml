@@ -149,6 +149,7 @@ apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache
 apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }

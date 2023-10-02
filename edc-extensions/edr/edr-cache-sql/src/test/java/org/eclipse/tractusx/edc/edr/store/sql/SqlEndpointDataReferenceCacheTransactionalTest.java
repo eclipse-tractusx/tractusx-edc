@@ -70,7 +70,7 @@ public class SqlEndpointDataReferenceCacheTransactionalTest {
         when(vault.deleteSecret(any())).thenReturn(Result.success());
         when(vault.storeSecret(any(), any())).thenReturn(Result.success());
 
-        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock, queryExecutor, CONNECTOR_NAME);
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, "", clock, queryExecutor, CONNECTOR_NAME);
         var schema = Files.readString(Paths.get("./docs/schema.sql"));
         extension.runQuery(schema);
 

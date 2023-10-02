@@ -62,6 +62,7 @@ include(":edc-tests:runtime:runtime-memory")
 include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
+include(":edc-tests:runtime:runtime-postgresql-hashicorp")
 include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
 
