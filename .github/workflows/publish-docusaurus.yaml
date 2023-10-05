@@ -46,6 +46,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/setup-java
+
       - name: "Extract version"
         id: extract_version
         run: |
@@ -54,6 +56,12 @@ jobs:
           else
             echo "DOWNSTREAM_VERSION=${{ inputs.downstream-version }}" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: "Run autodoc"
+        run: |
+          ./gradlew autodoc
+          ./gradlew mergeManifests
+          ./gradlew doc2md
 
       - name: "Gather documentation files"
         run: |
