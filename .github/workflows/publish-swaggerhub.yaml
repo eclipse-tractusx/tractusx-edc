@@ -102,6 +102,7 @@ jobs:
           if [[ ${{ env.DOWNSTREAM_VERSION }} != *-SNAPSHOT ]]; then
             echo "no snapshot, will set the API to 'published'";
             swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=publish
+            swaggerhub api:setdefault ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }}
           else
             echo "snapshot, will set the API to 'unpublished'";
             swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/tractusx-edc/${{ env.DOWNSTREAM_VERSION }} -f ./resources/openapi/yaml/tractusx-edc-api.yaml --visibility=public --published=unpublish
