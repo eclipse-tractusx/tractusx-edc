@@ -56,11 +56,11 @@ jobs:
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] && 
-          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] && 
-          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] && 
+          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] &&
+          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] &&
+          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] &&
           [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  && 
+          [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  &&
           [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
           exit 0
 
@@ -137,6 +137,7 @@ jobs:
     needs: [ secret-presence ]
     if: needs.secret-presence.outputs.HAS_SWAGGER
     uses: ./.github/workflows/publish-swaggerhub.yaml
+    secrets: inherit
 
   publish-docusaurus:
     name: Publish docusaurus docs
