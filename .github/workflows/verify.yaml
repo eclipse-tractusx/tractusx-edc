@@ -31,7 +31,7 @@ jobs:
   verify-license-headers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
       - name: "Check for files without a license header"
         run: |-
           # checks all java, yaml, kts and sql files for an Apache 2.0 license header
@@ -46,7 +46,7 @@ jobs:
   verify-helm-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: addnab/docker-run-action@v3
         with:
@@ -69,12 +69,9 @@ jobs:
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-java
-      - name: Verify proper formatting
-        run: ./gradlew spotlessCheck
-
       - name: Run Checkstyle
         run: |
           ./gradlew checkstyleMain checkstyleTest
@@ -82,7 +79,7 @@ jobs:
   markdown-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       - name: Install mardkdownlint
         run: npm install -g markdownlint-cli2
@@ -95,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-java
 
@@ -106,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-java
 
@@ -117,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-java
 
@@ -128,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-java
 
@@ -149,21 +146,32 @@ jobs:
           POSTGRES_PASSWORD: password
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
+
+  dataplane-tests:
+    runs-on: ubuntu-latest
+    needs: [ verify-formatting, verify-license-headers ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-java
+
+      - name: Run Azure/S3 dataplane tests
+        run: ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="AzureCosmosDbIntegrationTest,AwsS3IntegrationTest"
 
   miw-integration-tests:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Starting MIW, Keycloak and Postgres Servers
         run: |
           cd edc-tests/miw-tests/src/test/resources/docker-environment
@@ -186,7 +194,7 @@ jobs:
           docker exec docker-environment-postgres-1 /opt/seed.sh
 
       - name: Run MIW Integration tests
-        run: | 
+        run: |
           ./gradlew -p edc-tests/miw-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
       - name: Run SSI E2E tests
         run: |

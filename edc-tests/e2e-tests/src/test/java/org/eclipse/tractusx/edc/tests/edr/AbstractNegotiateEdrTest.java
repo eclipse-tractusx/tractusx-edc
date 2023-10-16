@@ -22,7 +22,6 @@ import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.Contract
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
@@ -35,11 +34,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
@@ -57,6 +59,9 @@ public abstract class AbstractNegotiateEdrTest {
 
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+
+    private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
+    private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
 
     MockWebServer server;
 
@@ -78,8 +83,7 @@ public abstract class AbstractNegotiateEdrTest {
                 createEvent(TransferProcessInitiated.class),
                 createEvent(TransferProcessProvisioned.class),
                 createEvent(TransferProcessRequested.class),
-                createEvent(TransferProcessStarted.class),
-                createEvent(TransferProcessCompleted.class));
+                createEvent(TransferProcessStarted.class));
 
         var assetId = "api-asset-1";
         var url = server.url("/mock/api");
@@ -112,6 +116,14 @@ public abstract class AbstractNegotiateEdrTest {
         var events = expectedEvents.stream()
                 .map(receivedEvent -> waitForEvent(server, receivedEvent))
                 .collect(Collectors.toList());
+
+
+        await().pollInterval(ASYNC_POLL_INTERVAL)
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    assertThat(edrCaches).hasSize(1);
+                });
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 

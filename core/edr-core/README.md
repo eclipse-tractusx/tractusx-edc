@@ -1,4 +1,4 @@
-# EDR core extension
+# EDR Core Extension
 
 This extension provide a base implementation of `EdrManager` and `EdrService` both
 required for interacting with the EDR APIs and state machine

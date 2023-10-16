@@ -37,6 +37,7 @@ import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.Busi
 import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 /**
  * Business partner number evaluation function.
@@ -61,6 +62,9 @@ public class LegacyBusinessPartnerValidationExtension implements ServiceExtensio
      * </pre>
      */
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
+
+    public static final String TX_BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + BUSINESS_PARTNER_CONSTRAINT_KEY;
+
 
     public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";
 
@@ -107,10 +111,14 @@ public class LegacyBusinessPartnerValidationExtension implements ServiceExtensio
     private void bindToScope(BusinessPartnerDutyFunction dutyFunction, BusinessPartnerPermissionFunction permissionFunction, BusinessPartnerProhibitionFunction prohibitionFunction, String scope) {
         ruleBindingRegistry.bind("USE", scope);
         ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
+        ruleBindingRegistry.bind(TX_BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
+
 
         policyEngine.registerFunction(scope, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
         policyEngine.registerFunction(scope, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
         policyEngine.registerFunction(scope, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
+
+        policyEngine.registerFunction(scope, Permission.class, TX_BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
     }
 
     private boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {

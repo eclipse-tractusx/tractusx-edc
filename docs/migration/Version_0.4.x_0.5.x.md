@@ -59,13 +59,13 @@ out [this documentation](https://github.com/eclipse-tractusx/tractusx-edc/blob/m
 
 If you are using the MIW and KeyCloak instances deployed to `INT`, the following values apply:
 
-- MIW Url: https://managed-identity-wallets-new.int.demo.catena-x.net
-- KeyCloak Token URL: https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token
+- MIW Url: <https://managed-identity-wallets-new.int.demo.catena-x.net>
+- KeyCloak Token URL: <https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token>
 - Authority BPN: `BPNL00000003CRHK`
 
 > Please be aware that the above values are *only* valid for the Catena-X INT environment and *will* change on other
 > environments! For instructions on how to set up a local MIW + KeyCloak, please take a look
-> at [this documentation](https://github.com/catenax-ng/tx-managed-identity-wallets/blob/features/java-did-web/README.md).
+> at [this documentation](https://github.com/eclipse-tractusx/managed-identity-wallet/blob/features/java-did-web/README.md).
 
 ### Further documentation on SSI
 

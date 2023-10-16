@@ -1,4 +1,6 @@
-# EDC Data-Plane with [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview)
+# EDC Data-Plane with Azure Key Vault
+
+This build of the EDC Data-Plane utilizes [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview) for secret storage.
 
 ## Building
 

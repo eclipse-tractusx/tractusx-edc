@@ -148,6 +148,8 @@ spec:
             #######
             # API #
             #######
+            - name: "EDC_API_AUTH_KEY"
+              value: {{ .Values.dataplane.endpoints.proxy.authKey | required ".Values.proxy.endpoints.proxy.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.dataplane.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"

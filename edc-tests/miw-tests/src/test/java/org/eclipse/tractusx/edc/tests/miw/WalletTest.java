@@ -186,7 +186,7 @@ public class WalletTest {
         var jo = Json.createObjectBuilder(payloadJson).build();
 
         // replace JWS inside the VC's proof object
-        var jws = jo.getJsonObject("vp").getJsonObject("verifiableCredential").getJsonObject("proof").getString("jws");
+        var jws = jo.getJsonObject("vp").getJsonArray("verifiableCredential").getJsonObject(0).getJsonObject("proof").getString("jws");
         var invalidJws = jws.replace("a", "X");
         var tamperedJson = jo.toString().replace(jws, invalidJws);
         var tamperedJsonObject = OBJECT_MAPPER.readValue(tamperedJson, mapRef);

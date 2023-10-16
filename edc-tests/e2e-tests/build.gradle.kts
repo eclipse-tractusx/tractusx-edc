@@ -48,6 +48,7 @@ dependencies {
     testImplementation(libs.edc.auth.oauth2.client)
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgres)
+    testImplementation(libs.testcontainers.vault)
 
 }
 

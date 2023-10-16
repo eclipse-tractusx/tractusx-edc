@@ -35,6 +35,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.restassured.RestAssured.given;
@@ -42,6 +43,7 @@ import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATASET_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.helpers.AssetHelperFunctions.createDataAddressBuilder;
@@ -341,6 +343,36 @@ public class Participant {
 
         return datasetReference.get();
     }
+
+    /**
+     * Request a provider asset:
+     * - retrieves the contract definition associated with the asset,
+     * - handles the contract negotiation,
+     * - initiate the data transfer.
+     *
+     * @param provider    data provider
+     * @param assetId     asset id
+     * @param destination data destination
+     * @return transfer process id.
+     */
+    public String requestAsset(Participant provider, String assetId, JsonObject destination) {
+        var negotiationId = negotiateContract(provider, assetId);
+        var contractAgreementId = waitForAgreementId(negotiationId);
+        var transferProcessId = requestTransfer(UUID.randomUUID().toString(), contractAgreementId, assetId, provider, destination);
+        assertThat(transferProcessId).isNotNull();
+        return transferProcessId;
+    }
+
+
+    public String waitForAgreementId(String negotiationId) {
+        await().atMost(timeout).untilAsserted(() -> {
+            var state = getContractNegotiationField(negotiationId, "state");
+            assertThat(state).isEqualTo(FINALIZED.name());
+        });
+
+        return getContractAgreementId(negotiationId);
+    }
+
 
     public String pullProxyDataByAssetId(Participant provider, String assetId) {
         var body = Map.of("assetId", assetId, "endpointUrl", format("%s/aas/test", provider.gatewayEndpoint));

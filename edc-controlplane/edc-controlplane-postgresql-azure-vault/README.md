@@ -1,4 +1,6 @@
-# EDC Control-Plane backed by [Postgresql](https://www.postgresql.org/)
+# EDC Control-Plane PostgreSQL & Azure Key Vault
+
+This verison of the EDC Control-Plane is backed by [PostgreSQL](https://www.postgresql.org/) and [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview).
 
 ## Building
 

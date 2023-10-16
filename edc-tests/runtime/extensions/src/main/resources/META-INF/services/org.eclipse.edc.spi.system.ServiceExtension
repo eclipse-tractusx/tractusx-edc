@@ -14,5 +14,3 @@
 
 org.eclipse.tractusx.edc.lifecycle.ConsumerServicesExtension
 org.eclipse.tractusx.edc.lifecycle.VaultSeedExtension
-org.eclipse.tractusx.edc.lifecycle.TestServiceExtension
-

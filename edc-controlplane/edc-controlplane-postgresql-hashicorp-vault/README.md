@@ -1,4 +1,6 @@
-# EDC Control-Plane backed by [Postgresql](https://www.postgresql.org/) and [HashiCorp vault](https://www.vaultproject.io/docs)
+# EDC Control-Plane PostgreSQL & Hashicorp Vault
+
+This version of the EDC Control-Plane is backed by [PostgreSQL](https://www.postgresql.org/) and [HashiCorp Vault](https://www.vaultproject.io/docs).
 
 ## Building
 

@@ -1,4 +1,6 @@
-# EDC Data-Plane [Hashicorp Vault](https://www.vaultproject.io/)
+# EDC Data-Plane with Hashicorp Vault
+
+This build of the EDC Data-Plane utilizes [Hashicorp Vault](https://www.vaultproject.io/) for secret storage.
 
 ## Building
 

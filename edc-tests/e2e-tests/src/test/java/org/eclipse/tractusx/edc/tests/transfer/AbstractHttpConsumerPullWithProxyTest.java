@@ -110,7 +110,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
                     var tpState = SOKRATES.getTransferProcessState(transferProcessId.get());
-                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.COMPLETED.toString());
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
                 });
 
         // wait until EDC is available on the consumer side

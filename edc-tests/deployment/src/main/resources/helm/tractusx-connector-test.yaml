@@ -44,6 +44,9 @@ controlplane:
       client:
         secretAlias: "client-secret"
 dataplane:
+  endpoints:
+    proxy:
+      authKey: password
   image:
     pullPolicy: Never
     tag: "latest"

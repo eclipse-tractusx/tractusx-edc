@@ -48,6 +48,9 @@ controlplane:
           id: ""
           secretAlias: "client-secret"
 dataplane:
+  endpoints:
+    management:
+      authKey: password
   image:
     pullPolicy: Never
     tag: "latest"

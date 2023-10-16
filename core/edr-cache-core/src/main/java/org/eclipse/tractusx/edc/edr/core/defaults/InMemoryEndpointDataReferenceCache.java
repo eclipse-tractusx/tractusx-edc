@@ -87,7 +87,7 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
     @Override
-    public @Nullable StoreResult<EndpointDataReferenceEntry> findByIdAndLease(String transferProcessId) {
+    public StoreResult<EndpointDataReferenceEntry> findByIdAndLease(String transferProcessId) {
         return lockManager.readLock(() -> {
             var edr = edrsByTransferProcessId.get(transferProcessId);
             var edrEntry = entriesByEdrId.get(edr.getId());
@@ -97,8 +97,8 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
     @Override
-    public StoreResult<EndpointDataReferenceEntry> findByCorrelationIdAndLease(String correlationId) {
-        return findByIdAndLease(correlationId);
+    public EndpointDataReferenceEntry findById(String correlationId) {
+        return findByIdAndLease(correlationId).orElse(storeFailure -> null);
     }
 
     @Override

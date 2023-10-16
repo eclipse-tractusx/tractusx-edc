@@ -229,10 +229,10 @@ public class EdrControllerTest extends RestControllerTestBase {
 
     @Test
     void queryEdrs_shouldReturnCachedEntries_whenAgreementIdIsProvided() {
-        var assetId = "id";
-        var transferProcessId = "id";
-        var agreementId = "id";
-        var providerId = "id";
+        var assetId = "assetId";
+        var transferProcessId = "transferProcessId";
+        var agreementId = "agreementId";
+        var providerId = "providerId";
 
         var entry = EndpointDataReferenceEntry.Builder.newInstance()
                 .transferProcessId(transferProcessId)

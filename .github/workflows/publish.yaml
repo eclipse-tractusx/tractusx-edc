@@ -56,11 +56,11 @@ jobs:
         id: secret-presence
         run: |
           [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] && 
-          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] && 
-          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] && 
+          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] &&
+          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] &&
+          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] &&
           [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  && 
+          [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  &&
           [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
           exit 0
 
@@ -82,7 +82,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
@@ -106,7 +106,7 @@ jobs:
       needs.secret-presence.outputs.HAS_OSSRH && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
     steps:
       # Set-Up
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
 
       # Import GPG Key
       - uses: ./.github/actions/import-gpg-key
@@ -138,3 +138,12 @@ jobs:
     if: needs.secret-presence.outputs.HAS_SWAGGER
     uses: ./.github/workflows/publish-swaggerhub.yaml
     secrets: inherit
+
+  publish-docusaurus:
+    name: Publish docusaurus docs
+    permissions:
+      contents: write
+      packages: write
+    needs: [ secret-presence, publish-to-swaggerhub ]
+    if: needs.secret-presence.outputs.HAS_SWAGGER
+    uses: ./.github/workflows/publish-docusaurus.yaml

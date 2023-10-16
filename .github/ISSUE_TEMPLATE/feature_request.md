@@ -1,23 +1,28 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Feature Request
+about: Request a new feature
 title: ''
-labels: enhancement
+labels: ['triage', 'enhancement']
 assignees: ''
 
 ---
 
-_If you are missing a feature or have an idea how to improve this project that should first be
-discussed, please feel free to open up a [discussion](https://github.com/eclipse-tractusx/tractusx-edc/discussions/categories/ideas)._
+## WHAT
 
-**Is your feature request related to a problem? Please describe.**
-_A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]_
+// describes the desired functionality and how the feature should behave. This should include clear requirements, and a "definition-of-done", i.e. what the result of the issue should be. This is important for concept, documentation or ideation issues
 
-**Describe the solution you'd like**
-_A clear and concise description of what you want to happen._
+## WHY
+// outlines the motivation, why the feature is desired, and possibly what the impact is if the feature is _not_
+implemented. "Because we need it" is not a sufficient reason!
 
-**Describe alternatives you've considered**
-_A clear and concise description of any alternative solutions or features you've considered._
+## HOW
 
-**Additional context**
-_Add any other context or screenshots about the feature request here._
+// if possible, outlines a solution proposal
+
+## FURTHER NOTES
+
+// anything else you want to outline
+
+_Please be sure to take a look at
+our [contribution guidelines](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/CONTRIBUTING.md) and
+our [PR etiquette](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/pr_etiquette.md)._

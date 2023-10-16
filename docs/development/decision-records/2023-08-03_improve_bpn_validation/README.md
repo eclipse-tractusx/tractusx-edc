@@ -1,4 +1,4 @@
-# Removal of manually curated CHANGELOG.md
+# Improve BPN validation
 
 ## Decision
 

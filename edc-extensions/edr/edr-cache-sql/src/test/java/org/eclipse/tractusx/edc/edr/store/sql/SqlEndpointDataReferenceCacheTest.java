@@ -70,7 +70,7 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
         when(vault.storeSecret(any(), any())).thenReturn(Result.success());
         when(vault.resolveSecret(any())).then(a -> edrJson(a.getArgument(0)));
 
-        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, clock, queryExecutor, CONNECTOR_NAME);
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, "", clock, queryExecutor, CONNECTOR_NAME);
         var schema = Files.readString(Paths.get("./docs/schema.sql"));
         extension.runQuery(schema);
         leaseUtil = new LeaseUtil(extension.getTransactionContext(), extension::getConnection, statements, clock);
@@ -94,6 +94,24 @@ public class SqlEndpointDataReferenceCacheTest extends EndpointDataReferenceCach
         getStore().save(entry, edr);
 
         verify(vault).storeSecret(argThat(s -> s.startsWith("edr--")), anyString());
+    }
+
+    @Test
+    void verify_custom_vaultPath(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) {
+
+        var path = "testPath/";
+        cache = new SqlEndpointDataReferenceCache(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), statements, typeManager.getMapper(), vault, path, clock, queryExecutor, CONNECTOR_NAME);
+
+        var tpId = "tp1";
+        var assetId = "asset1";
+        var edrId = "edr1";
+
+        var edr = edr(edrId);
+        var entry = edrEntry(assetId, randomUUID().toString(), tpId);
+
+        cache.save(entry, edr);
+
+        verify(vault).storeSecret(argThat(s -> s.startsWith(path + "edr--")), anyString());
     }
 
     @Override

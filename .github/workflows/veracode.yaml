@@ -42,12 +42,13 @@ jobs:
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-java
-      - name: Verify proper formatting
-        run: ./gradlew spotlessCheck
+      - name: Run Checkstyle
+        run: |
+          ./gradlew checkstyleMain checkstyleTest
 
   build:
     runs-on: ubuntu-latest
@@ -65,7 +66,7 @@ jobs:
                    { dir: edc-dataplane,    name: edc-dataplane-hashicorp-vault } ]
     steps:
       # Set-Up
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
       # Build
       - name: Build ${{ matrix.variant.name }}

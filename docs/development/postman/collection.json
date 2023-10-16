@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e124b384-9b3c-4f5f-b752-f7aa43ffbebd",
+		"_postman_id": "e35463fb-d1be-4794-b35b-2d40d46c4655",
 		"name": "tractusx-edc_dsp",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "27652630"
+		"_exporter_id": "28118277"
 	},
 	"item": [
 		{
@@ -26,7 +26,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"@context\": {},\n    \"asset\": {\n        \"@type\": \"Asset\",\n        \"@id\": \"{{ASSET_ID}}\", \n        \"properties\": {\n            \"description\": \"Product EDC Demo Asset\"\n        }\n    },\n    \"dataAddress\": {\n        \"@type\": \"DataAddress\",\n        \"type\": \"HttpData\",\n        \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos\"\n    }\n}",
+					"raw": "{\n  \"@context\": {\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"{{ASSET_ID}}\",\n  \"properties\": {\n    \"key\": \"value\"\n  },\n  \"privateProperties\": {\n    \"privateKey\": \"privateValue\"\n  },\n  \"dataAddress\": {\n        \"@type\": \"DataAddress\",\n        \"proxyPath\": \"true\",\n        \"type\": \"HttpData\",\n        \"proxyQueryParams\": \"true\",\n        \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos\"\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -34,9 +34,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets",
+					"raw": "{{PROVIDER_MANAGEMENT_URL_V3}}/assets",
 					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL_V3}}"
 					],
 					"path": [
 						"assets"
@@ -50,10 +50,19 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"@context\": {\r\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\r\n  },\r\n  \"@type\": \"QuerySpec\",\r\n  \"offset\": 0,\r\n  \"limit\": 10,\r\n  \"sortOrder\": \"DESC\",\r\n  \"sortField\": \"fieldName\",\r\n  \"filterExpression\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/request",
+					"raw": "{{PROVIDER_MANAGEMENT_URL_V3}}/assets/request",
 					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL_V3}}"
 					],
 					"path": [
 						"assets",
@@ -69,9 +78,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/{{ASSET_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL_V3}}/assets/{{ASSET_ID}}",
 					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL_V3}}"
 					],
 					"path": [
 						"assets",
@@ -87,9 +96,9 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{PROVIDER_MANAGEMENT_URL}}/assets/{{ASSET_ID}}",
+					"raw": "{{PROVIDER_MANAGEMENT_URL_V3}}/assets/{{ASSET_ID}}",
 					"host": [
-						"{{PROVIDER_MANAGEMENT_URL}}"
+						"{{PROVIDER_MANAGEMENT_URL_V3}}"
 					],
 					"path": [
 						"assets",
@@ -821,12 +830,22 @@
 			"value": "http://localhost:31364/management/v2"
 		},
 		{
+			"key": "CONSUMER_MANAGEMENT_URL_V3",
+			"value": "http://localhost:31364/management/v3",
+			"type": "string"
+		},
+		{
 			"key": "PROVIDER_PROTOCOL_URL",
 			"value": "http://plato-controlplane:8084/api/v1/dsp"
 		},
 		{
 			"key": "PROVIDER_MANAGEMENT_URL",
 			"value": "http://localhost:30279/management/v2"
+		},
+		{
+			"key": "PROVIDER_MANAGEMENT_URL_V3",
+			"value": "http://localhost:30279/management/v3",
+			"type": "string"
 		},
 		{
 			"key": "ASSET_ID",
