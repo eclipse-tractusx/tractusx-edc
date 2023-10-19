@@ -20,7 +20,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 
-FROM eclipse-temurin:17.0.8_7-jre-alpine
+FROM eclipse-temurin:17.0.8.1_1-jre-alpine
 ARG JAR
 
 ARG APP_USER=docker
