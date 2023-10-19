@@ -34,7 +34,7 @@ services:
       - "5005:5005"
     networks:
       - miw-net
-
+    entrypoint: "java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar miw-latest.jar"
     depends_on:
       postgres:
         condition: service_started
