@@ -111,6 +111,7 @@ public class TestRuntimeConfiguration {
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + SOKRATES_CONNECTOR_PORT + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
+                put("edc.data.encryption.keys.alias", "test-alias");
             }
         };
     }
@@ -145,6 +146,7 @@ public class TestRuntimeConfiguration {
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT + PROXIED_PATH);
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
+                put("edc.data.encryption.keys.alias", "test-alias");
             }
         };
     }
