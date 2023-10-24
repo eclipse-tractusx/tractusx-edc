@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
+import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -63,6 +64,9 @@ public class LocalCallbackExtension implements ServiceExtension {
     private EndpointDataReferenceCache endpointDataReferenceCache;
 
     @Inject
+    private ContractAgreementService agreementService;
+
+    @Inject
     private TypeTransformerRegistry transformerRegistry;
 
     @Override
@@ -74,7 +78,7 @@ public class LocalCallbackExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
 
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor));
-        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, transformerRegistry, transactionContext, monitor));
+        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, agreementService, transformerRegistry, transactionContext, monitor));
 
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));

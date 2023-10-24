@@ -37,12 +37,21 @@ public class TestFunctions {
         return edrEntry(assetId, agreementId, transferProcessId, NEGOTIATED);
     }
 
+    public static EndpointDataReferenceEntry edrEntry(String assetId, String agreementId, String transferProcessId, String contractNegotiationId) {
+        return edrEntry(assetId, agreementId, transferProcessId, NEGOTIATED, contractNegotiationId);
+    }
+
     public static EndpointDataReferenceEntry edrEntry(String assetId, String agreementId, String transferProcessId, EndpointDataReferenceEntryStates state) {
+        return edrEntry(assetId, agreementId, transferProcessId, state, null);
+    }
+
+    public static EndpointDataReferenceEntry edrEntry(String assetId, String agreementId, String transferProcessId, EndpointDataReferenceEntryStates state, String contractNegotiationId) {
         return EndpointDataReferenceEntry.Builder.newInstance()
                 .assetId(assetId)
                 .agreementId(agreementId)
                 .transferProcessId(transferProcessId)
                 .providerId(UUID.randomUUID().toString())
+                .contractNegotiationId(contractNegotiationId)
                 .state(state.code())
                 .build();
     }

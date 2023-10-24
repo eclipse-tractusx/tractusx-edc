@@ -49,6 +49,11 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
     public static final String EDR_ENTRY_ASSET_ID = EDC_NAMESPACE + ASSET_ID;
     public static final String AGREEMENT_ID = "agreementId";
     public static final String EDR_ENTRY_AGREEMENT_ID = EDC_NAMESPACE + AGREEMENT_ID;
+
+    public static final String CONTRACT_NEGOTIATION_ID = "contractNegotiationId";
+
+    public static final String EDR_ENTRY_CONTRACT_NEGOTIATION_ID = EDC_NAMESPACE + CONTRACT_NEGOTIATION_ID;
+
     public static final String TRANSFER_PROCESS_ID = "transferProcessId";
     public static final String EDR_ENTRY_TRANSFER_PROCESS_ID = EDC_NAMESPACE + TRANSFER_PROCESS_ID;
     public static final String PROVIDER_ID = "providerId";
@@ -56,6 +61,8 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
     private String assetId;
     private String agreementId;
     private String transferProcessId;
+
+    private String contractNegotiationId;
 
     private String providerId;
 
@@ -78,6 +85,7 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
                 .agreementId(agreementId)
                 .assetId(assetId)
                 .providerId(providerId)
+                .contractNegotiationId(contractNegotiationId)
                 .expirationTimestamp(expirationTimestamp);
         return copy(builder);
     }
@@ -106,6 +114,10 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public String getContractNegotiationId() {
+        return contractNegotiationId;
     }
 
     public Long getExpirationTimestamp() {
@@ -189,6 +201,11 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
 
         public Builder providerId(String providerId) {
             entity.providerId = providerId;
+            return this;
+        }
+
+        public Builder contractNegotiationId(String contractNegotiationId) {
+            entity.contractNegotiationId = contractNegotiationId;
             return this;
         }
 

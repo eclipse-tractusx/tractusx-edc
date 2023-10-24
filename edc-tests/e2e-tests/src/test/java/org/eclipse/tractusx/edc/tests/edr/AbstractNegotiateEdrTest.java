@@ -111,7 +111,7 @@ public abstract class AbstractNegotiateEdrTest {
                 .add(createCallback(url.toString(), true, Set.of("contract.negotiation", "transfer.process")))
                 .build();
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        var contractNegotiationId = SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
 
         var events = expectedEvents.stream()
                 .map(receivedEvent -> waitForEvent(server, receivedEvent))
@@ -131,7 +131,17 @@ public abstract class AbstractNegotiateEdrTest {
 
         assertThat(edrCaches).hasSize(1);
 
+        assertThat(SOKRATES.getEdrEntriesByContractNegotiationId(contractNegotiationId)).hasSize(1);
+
+        assertThat(edrCaches).hasSize(1);
+
         var transferProcessId = edrCaches.get(0).asJsonObject().getString("edc:transferProcessId");
+        var cnId = edrCaches.get(0).asJsonObject().getString("edc:contractNegotiationId");
+        var agreementId = edrCaches.get(0).asJsonObject().getString("edc:agreementId");
+
+        assertThat(cnId).isEqualTo(contractNegotiationId);
+        assertThat(SOKRATES.getEdrEntriesByAgreementId(agreementId)).hasSize(1);
+
 
         var edr = SOKRATES.getEdr(transferProcessId);
 

@@ -25,6 +25,7 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_CONTRACT_NEGOTIATION_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_EXPIRATION_DATE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_PROVIDER_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_STATE;
@@ -49,6 +50,7 @@ class JsonObjectFromEndpointDataReferenceEntryTransformerTest {
                 .transferProcessId("tpId")
                 .agreementId("aId")
                 .providerId("providerId")
+                .contractNegotiationId("contractNegotiationId")
                 .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                 .expirationTimestamp(Instant.now().toEpochMilli())
                 .build();
@@ -57,6 +59,7 @@ class JsonObjectFromEndpointDataReferenceEntryTransformerTest {
 
         assertThat(jsonObject).isNotNull();
         assertThat(jsonObject.getJsonString(EDR_ENTRY_AGREEMENT_ID).getString()).isNotNull().isEqualTo(dto.getAgreementId());
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_CONTRACT_NEGOTIATION_ID).getString()).isNotNull().isEqualTo(dto.getContractNegotiationId());
         assertThat(jsonObject.getJsonString(EDR_ENTRY_ASSET_ID).getString()).isNotNull().isEqualTo(dto.getAssetId());
         assertThat(jsonObject.getJsonString(EDR_ENTRY_TRANSFER_PROCESS_ID).getString()).isNotNull().isEqualTo(dto.getTransferProcessId());
         assertThat(jsonObject.getJsonString(EDR_ENTRY_PROVIDER_ID).getString()).isNotNull().isEqualTo(dto.getProviderId());

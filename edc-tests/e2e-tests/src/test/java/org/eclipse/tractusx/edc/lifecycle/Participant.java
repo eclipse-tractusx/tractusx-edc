@@ -242,6 +242,17 @@ public class Participant {
                 .as(JsonArray.class);
     }
 
+    public JsonArray getEdrEntriesByContractNegotiationId(String contractNegotiationId) {
+        return baseRequest()
+                .when()
+                .get("/edrs?contractNegotiationId={contractNegotiationId}", contractNegotiationId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+    }
+
     public JsonArray getEdrEntriesByAgreementId(String agreementId) {
         return baseRequest()
                 .when()

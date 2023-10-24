@@ -47,6 +47,7 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.CONTRACT_NEGOTIATION_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.PROVIDER_ID;
 
 @Consumes({ MediaType.APPLICATION_JSON })
@@ -89,11 +90,14 @@ public class EdrController implements EdrApi {
 
     @GET
     @Override
-    public JsonArray queryEdrs(@QueryParam("assetId") String assetId, @QueryParam("agreementId") String agreementId, @QueryParam("providerId") String providerId) {
-        if (assetId == null && agreementId == null) {
-            throw new InvalidRequestException("At least one of this query parameter is required [assetId,agreementId]");
+    public JsonArray queryEdrs(@QueryParam("assetId") String assetId,
+                               @QueryParam("agreementId") String agreementId,
+                               @QueryParam("contractNegotiationId") String contractNegotiationId,
+                               @QueryParam("providerId") String providerId) {
+        if (assetId == null && agreementId == null && contractNegotiationId == null) {
+            throw new InvalidRequestException("At least one of this query parameter is required [assetId, agreementId, contractNegotiationId]");
         }
-        return edrService.findBy(querySpec(assetId, agreementId, providerId))
+        return edrService.findBy(querySpec(assetId, agreementId, contractNegotiationId, providerId))
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class))
                 .stream()
                 .map(edrCached -> transformerRegistry.transform(edrCached, JsonObject.class))
@@ -124,13 +128,16 @@ public class EdrController implements EdrApi {
         result.onFailure(f -> monitor.warning(f.getFailureDetail()));
     }
 
-    private QuerySpec querySpec(String assetId, String agreementId, String providerId) {
+    private QuerySpec querySpec(String assetId, String agreementId, String contractNegotiationId, String providerId) {
         var queryBuilder = QuerySpec.Builder.newInstance();
         if (assetId != null) {
             queryBuilder.filter(fieldFilter(ASSET_ID, assetId));
         }
         if (agreementId != null) {
             queryBuilder.filter(fieldFilter(AGREEMENT_ID, agreementId));
+        }
+        if (contractNegotiationId != null) {
+            queryBuilder.filter(fieldFilter(CONTRACT_NEGOTIATION_ID, contractNegotiationId));
         }
         if (providerId != null) {
             queryBuilder.filter(fieldFilter(PROVIDER_ID, providerId));

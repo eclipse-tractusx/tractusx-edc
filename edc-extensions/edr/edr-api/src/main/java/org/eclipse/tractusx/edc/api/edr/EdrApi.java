@@ -49,7 +49,7 @@ public interface EdrApi {
                     @ApiResponse(responseCode = "400", description = "Request was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))) }
     )
-    JsonArray queryEdrs(String assetId, String agreementId, String providerId);
+    JsonArray queryEdrs(String assetId, String agreementId, String contractNegotiationId, String providerId);
 
     @Operation(description = "Gets an EDR with the given transfer process ID",
             responses = {

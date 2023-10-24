@@ -58,8 +58,10 @@ import static org.eclipse.tractusx.edc.api.edr.TestFunctions.openRequest;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.CONTRACT_NEGOTIATION_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_CONTRACT_NEGOTIATION_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_PROVIDER_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_STATE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
@@ -265,6 +267,53 @@ public class EdrControllerTest extends RestControllerTestBase {
                 .statusCode(200)
                 .body("[0].'edc:transferProcessId'", is(entry.getTransferProcessId()))
                 .body("[0].'edc:agreementId'", is(entry.getAgreementId()))
+                .body("[0].'edc:assetId'", is(entry.getAssetId()))
+                .body("[0].'edc:providerId'", is(entry.getProviderId()));
+    }
+
+    @Test
+    void queryEdrs_shouldReturnCachedEntries_whenContractNegotiationIdIsProvided() {
+        var assetId = "assetId";
+        var transferProcessId = "transferProcessId";
+        var agreementId = "agreementId";
+        var providerId = "providerId";
+        var contractNegotiationId = "contractNegotiationId";
+
+        var entry = EndpointDataReferenceEntry.Builder.newInstance()
+                .transferProcessId(transferProcessId)
+                .agreementId(agreementId)
+                .assetId(assetId)
+                .providerId(providerId)
+                .contractNegotiationId(contractNegotiationId)
+                .build();
+
+
+        var response = Json.createObjectBuilder()
+                .add(TYPE, EDR_ENTRY_TYPE)
+                .add(EDR_ENTRY_ASSET_ID, entry.getAssetId())
+                .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
+                .add(EDR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
+                .add(EDR_ENTRY_CONTRACT_NEGOTIATION_ID, entry.getContractNegotiationId())
+                .add(EDR_ENTRY_PROVIDER_ID, entry.getProviderId())
+                .build();
+
+        var filter = QuerySpec.Builder.newInstance()
+                .filter(fieldFilter(CONTRACT_NEGOTIATION_ID, contractNegotiationId))
+                .filter(fieldFilter(PROVIDER_ID, entry.getProviderId()))
+                .build();
+
+        when(edrService.findBy(eq(filter))).thenReturn(ServiceResult.success(List.of(entry)));
+        when(transformerRegistry.transform(any(EndpointDataReferenceEntry.class), eq(JsonObject.class))).thenReturn(Result.success(response));
+
+        baseRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .get(EDR_PATH + format("?=contractNegotiationId=%s&providerId=%s", entry.getContractNegotiationId(), entry.getProviderId()))
+                .then()
+                .log().all(true)
+                .statusCode(200)
+                .body("[0].'edc:transferProcessId'", is(entry.getTransferProcessId()))
+                .body("[0].'edc:agreementId'", is(entry.getAgreementId()))
+                .body("[0].'edc:contractNegotiationId'", is(entry.getContractNegotiationId()))
                 .body("[0].'edc:assetId'", is(entry.getAssetId()))
                 .body("[0].'edc:providerId'", is(entry.getProviderId()));
     }

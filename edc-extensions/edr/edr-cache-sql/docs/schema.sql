@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS edc_edr_cache
     agreement_id                  VARCHAR NOT NULL,
     asset_id                      VARCHAR NOT NULL,
     edr_id                        VARCHAR NOT NULL,
+    contract_negotiation_id       VARCHAR,
     provider_id                   VARCHAR,
     expiration_timestamp          BIGINT,
     state                         INTEGER DEFAULT 0                                  NOT NULL,
