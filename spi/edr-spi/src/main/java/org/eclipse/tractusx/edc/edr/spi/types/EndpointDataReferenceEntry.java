@@ -49,9 +49,7 @@ public class EndpointDataReferenceEntry extends StatefulEntity<EndpointDataRefer
     public static final String EDR_ENTRY_ASSET_ID = EDC_NAMESPACE + ASSET_ID;
     public static final String AGREEMENT_ID = "agreementId";
     public static final String EDR_ENTRY_AGREEMENT_ID = EDC_NAMESPACE + AGREEMENT_ID;
-
     public static final String CONTRACT_NEGOTIATION_ID = "contractNegotiationId";
-
     public static final String EDR_ENTRY_CONTRACT_NEGOTIATION_ID = EDC_NAMESPACE + CONTRACT_NEGOTIATION_ID;
 
     public static final String TRANSFER_PROCESS_ID = "transferProcessId";
