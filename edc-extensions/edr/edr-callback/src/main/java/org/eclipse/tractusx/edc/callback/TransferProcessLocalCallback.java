@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.callback;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
+import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.spi.event.Event;
@@ -41,14 +42,16 @@ public class TransferProcessLocalCallback implements InProcessCallback {
     private final EndpointDataReferenceCache edrCache;
     private final TransferProcessStore transferProcessStore;
     private final TypeTransformerRegistry transformerRegistry;
-
     private final TransactionContext transactionContext;
-
     private final Monitor monitor;
+    private final ContractAgreementService agreementService;
 
-    public TransferProcessLocalCallback(EndpointDataReferenceCache edrCache, TransferProcessStore transferProcessStore, TypeTransformerRegistry transformerRegistry, TransactionContext transactionContext, Monitor monitor) {
+    public TransferProcessLocalCallback(EndpointDataReferenceCache edrCache, TransferProcessStore transferProcessStore,
+                                        ContractAgreementService agreementService, TypeTransformerRegistry transformerRegistry,
+                                        TransactionContext transactionContext, Monitor monitor) {
         this.edrCache = edrCache;
         this.transferProcessStore = transferProcessStore;
+        this.agreementService = agreementService;
         this.transformerRegistry = transformerRegistry;
         this.transactionContext = transactionContext;
         this.monitor = monitor;
@@ -69,7 +72,15 @@ public class TransferProcessLocalCallback implements InProcessCallback {
     private Result<Void> storeEdr(EndpointDataReference edr) {
         return transactionContext.execute(() -> {
             var transferProcess = transferProcessStore.findForCorrelationId(edr.getId());
+
             if (transferProcess != null) {
+                String contractNegotiationId = null;
+                var contractNegotiation = agreementService.findNegotiation(transferProcess.getContractId());
+                if (contractNegotiation != null) {
+                    contractNegotiationId = contractNegotiation.getId();
+                } else {
+                    monitor.warning(format("Contract negotiation for agreement with id: %s is missing.", transferProcess.getContractId()));
+                }
                 var expirationTime = extractExpirationTime(edr);
 
                 if (expirationTime.failed()) {
@@ -82,6 +93,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                         .providerId(transferProcess.getDataRequest().getConnectorId())
                         .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                         .expirationTimestamp(expirationTime.getContent())
+                        .contractNegotiationId(contractNegotiationId)
                         .build();
 
                 cleanOldEdr(transferProcess.getDataRequest().getAssetId(), transferProcess.getDataRequest().getContractId());
