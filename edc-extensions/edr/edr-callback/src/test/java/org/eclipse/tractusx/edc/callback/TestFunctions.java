@@ -26,6 +26,7 @@ import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.Contract
 import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessTerminated;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
@@ -77,6 +78,18 @@ public class TestFunctions {
                         .build()))
                 .dataAddress(dataAddress)
                 .transferProcessId(UUID.randomUUID().toString())
+                .build();
+    }
+
+    public static TransferProcessTerminated getTransferTerminatedEvent(String transferProcessId, String reason) {
+        return TransferProcessTerminated.Builder.newInstance()
+                .callbackAddresses(List.of(CallbackAddress.Builder.newInstance()
+                        .uri("local://test")
+                        .events(Set.of("test"))
+                        .transactional(true)
+                        .build()))
+                .reason(reason)
+                .transferProcessId(transferProcessId)
                 .build();
     }
 
