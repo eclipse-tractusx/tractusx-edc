@@ -187,7 +187,7 @@ subprojects {
                 if (System.getProperty("platform") != null)
                     platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
-                buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
+                buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path.replace("\\", "/"))
                 inputDir.set(file(dockerContextDir))
             }
             // make sure  always runs after "dockerize" and after "copyOtel"
