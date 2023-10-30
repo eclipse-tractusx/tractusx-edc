@@ -81,13 +81,13 @@ maven/mavencentral/com.squareup.okhttp3/mockwebserver3/5.0.0-alpha.11, Apache-2.
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.11.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-jvm/5.0.0-alpha.11, Apache-2.0, approved, #9263
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.11.0, Apache-2.0, approved, #9240
-maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, , restricted, clearlydefined
+maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #11156
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
 maven/mavencentral/com.squareup.okhttp3/okhttp/5.0.0-alpha.11, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okio/okio-jvm/3.2.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.squareup.okio/okio-jvm/3.6.0, , restricted, clearlydefined
+maven/mavencentral/com.squareup.okio/okio-jvm/3.6.0, Apache-2.0, approved, #11158
 maven/mavencentral/com.squareup.okio/okio/3.2.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.squareup.okio/okio/3.6.0, , restricted, clearlydefined
+maven/mavencentral/com.squareup.okio/okio/3.6.0, Apache-2.0, approved, #11155
 maven/mavencentral/com.sun.activation/jakarta.activation/2.0.0, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/commons-beanutils/commons-beanutils/1.9.4, Apache-2.0, approved, CQ12654
 maven/mavencentral/commons-codec/commons-codec/1.11, Apache-2.0 AND BSD-3-Clause, approved, CQ15971
