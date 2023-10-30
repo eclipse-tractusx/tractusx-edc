@@ -54,7 +54,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
 
       - name: Install Swagger CLI
         run: |
