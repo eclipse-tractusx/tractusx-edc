@@ -19,5 +19,8 @@ When the proxy receive a request, it must contain the EDR, which will be decoded
 ## Configuration
 
 | Key                                        | Required | Default       | Description                                                 |
-|---------------------------------|----------|----------------------------------------------------------------------------------------|
+|--------------------------------------------|----------------------------------------------------------------------------------------|
 | tx.dpf.provider.proxy.thread.pool          |          | 10            | Thread pool size for the provider data plane proxy gateway  |
+| edc.dataplane.token.validation.endpoint    | x        |               | URL of the token validation endpoint                        |
+| web.http.gateway.context.path              |          |               | Path to register the ProviderGatewayController to           |
+| web.http.gateway.context.port              |          |               | Port to register the ProviderGatewayController to           |

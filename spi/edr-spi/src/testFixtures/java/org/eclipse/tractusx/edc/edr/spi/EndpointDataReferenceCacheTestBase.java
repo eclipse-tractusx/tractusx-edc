@@ -123,6 +123,24 @@ public abstract class EndpointDataReferenceCacheTestBase {
     }
 
     @Test
+    void queryEntries_contractNegotiationIdSpec() {
+        IntStream.range(0, 10)
+                .mapToObj(i -> edrEntry("assetId" + i, "agreementId" + i, "tpId" + i, "contractNegotiationId" + i))
+                .forEach(entry -> getStore().save(entry, edr(entry.getTransferProcessId())));
+
+        var entry = edrEntry("assetId", "agreementId", "tpId", "contractNegotiationId");
+        getStore().save(entry, edr("edrId"));
+
+        var filter = Criterion.Builder.newInstance()
+                .operandLeft("contractNegotiationId")
+                .operator("=")
+                .operandRight(entry.getContractNegotiationId())
+                .build();
+
+        assertThat(getStore().queryForEntries(QuerySpec.Builder.newInstance().filter(filter).build())).containsOnly(entry);
+    }
+
+    @Test
     void queryEntries_providerIdQuerySpec() {
         IntStream.range(0, 10)
                 .mapToObj(i -> edrEntry("assetId" + i, "agreementId" + i, "tpId" + i))

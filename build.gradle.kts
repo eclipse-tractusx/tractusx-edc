@@ -26,7 +26,7 @@ plugins {
     `maven-publish`
     `jacoco-report-aggregation`
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.bmuschko.docker-remote-api") version "9.3.3"
+    id("com.bmuschko.docker-remote-api") version "9.3.6"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 

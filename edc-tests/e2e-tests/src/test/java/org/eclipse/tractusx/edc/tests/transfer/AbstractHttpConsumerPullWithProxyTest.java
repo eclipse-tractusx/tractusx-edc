@@ -58,6 +58,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
     @BeforeEach
     void setup() throws IOException {
         server = new MockWebServer();
+
     }
 
     @Test

@@ -135,6 +135,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                         entry.getAgreementId(),
                         edr.getId(),
                         entry.getProviderId(),
+                        entry.getContractNegotiationId(),
                         entry.getExpirationTimestamp(),
                         entry.getState(),
                         entry.getStateCount(),
@@ -253,6 +254,7 @@ public class SqlEndpointDataReferenceCache extends AbstractSqlStore implements E
                 .transferProcessId(resultSet.getString(statements.getTransferProcessIdColumn()))
                 .assetId(resultSet.getString(statements.getAssetIdColumn()))
                 .agreementId(resultSet.getString(statements.getAgreementIdColumn()))
+                .contractNegotiationId(resultSet.getString(statements.getContractNegotiationIdColumn()))
                 .providerId(resultSet.getString(statements.getProviderIdColumn()))
                 .state(resultSet.getInt(statements.getStateColumn()))
                 .stateTimestamp(resultSet.getLong(statements.getStateTimestampColumn()))
