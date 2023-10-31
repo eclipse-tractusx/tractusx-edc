@@ -28,7 +28,6 @@ dependencies {
     implementation(project(":spi:edr-spi"))
     implementation(project(":spi:core-spi"))
 
-
     testImplementation(libs.edc.junit)
     testImplementation(libs.awaitility)
     testImplementation(testFixtures(project(":spi:edr-spi")))
