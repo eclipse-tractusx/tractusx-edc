@@ -7,26 +7,11 @@ sidebar_position: 1
 
 ## Introduction
 
-The ConnectorKit provides a connector framework, based on the [Eclipse Dataspace Components Connector][edc-url] for sovereign, cross-enterprise data exchange.
-
-## Vision & Mission
-
-### Vision
-
-Sharing data along the automotive supply chain adds great value for every participant. The key to such collaboration is trust in the involved partners and assurance that the shared data is not being misused. Within a few years, companies along the automotive value chain will share and exchange data with each other as a matter of course, without anyone fearing that their data will be misused while unlocking significant values for every party.
-
-### Mission
-
-Collaboration needs trust. Within Catena-X trust is built on an open-source architecture and components designed to support full sovereignity.
-The Connector KIT provides the single source of information and technology to perform trustful data exchange within Catena-X. The Connector KIT bundles the interaction patterns, relevant standards, APIs, and reference implementations for developers.
-
-## Concept
-
-Trust, interoperability, and data sovereignty are the objectives and values for secure and sustainable peer-to-peer data exchange between organizations and companies. The claim is data sovereignty: Whoever provides data to the Data Space retains control and decides individually who is involved in the data exchange, how, when, where and under what conditions. A corresponding concept was developed in the context of [Gaia-X][gaiax-url] and the [International Data Space Association][idsa-url]. __The essential software component is the EDC Connector.__
+The ConnectorKit provides a connector framework, based on the [Eclipse Dataspace Connector][edc-url] for sovereign, cross-enterprise data exchange.
 
 ![EDC Overview](images/edc_overview.png)
 
-With the [EDC Connector][edc-url], a new communication component was introduced, which implements the following architectural principles:
+With the [EDC][edc-url], a new communication component was introduced, which implements the following architectural principles:
 
 - Simple. Maintaining a small and efficient core with as few external dependencies as possible.
 - Interoperable. Independent of platforms and ecosystems.
@@ -39,7 +24,7 @@ With the [EDC Connector][edc-url], a new communication component was introduced,
 
 ## Use Case
 
-The EDC Connector is the enabling component for all use cases within Catena-X and the only component to execute the exchange of operational data to Data Space participants. The base use case is therfore the exchange of data between to partners. Value creation along the automotive value chain is tied to processing data in specific contexts. Within Catena-X exist 10 use cases companies can participate in. Active participation in given use cases always requires the use of an [EDC Connector][edc-url]. Depending on the use case a participant chooses to participate in, further components will be required.
+The EDC is the enabling component for all use cases within Catena-X and the only component to execute the exchange of operational data to Data Space participants. The base use case is therfore the exchange of data between to partners. Value creation along the automotive value chain is tied to processing data in specific contexts. Within Catena-X exist 10 use cases companies can participate in. Active participation in given use cases always requires the use of an [EDC][edc-url]. Depending on the use case a participant chooses to participate in, further components will be required.
 
 - [Sustainability][sustainability-url]
 - [Traceability][traceability-url]
@@ -72,7 +57,7 @@ The architecture of the EDC combines various services that are necessary for the
 
 ### Catena-X Standards
 
-The Connector KIT builds on the [Catena-X Standards][Catena-X-Standards-url]. Every data consumer and provider in Catena-X is required to comply with these standards. The [EDC Connector][edc-url] builds on the following standards:
+The Connector KIT builds on the [Catena-X Standards][Catena-X-Standards-url]. Every data consumer and provider in Catena-X is required to comply with these standards. The [EDC][edc-url] builds on the following standards:
 
 - [CX - 0002 Digital Twins in Catena - X][CX0002]
 - [CX - 0003 BAMM Aspect Meta Model][CX0003]
@@ -118,7 +103,7 @@ By combining [`Assets`](#data asset) and Policies, Contracts for data offerings 
 
 #### Contract offer
 
-The contract offer is a representation of the [`ContractDefinition`](#contract-definition) for a specific consumer and serves as protocol for a data transfer object (DTO) for a particular contract negotiation. If a data consumer wants to conclude a binding data exchange contract based on the terms of a Data Offer, the data consumer can communicate such desire to the data provider by referencing to a specific Data Offer. Under German law, this constitutes a binding offer by the data consumer. For now, the dtaa consumer only has the option to accept all terms of a Data Offer (or not). The Data Exchange Process does not yet provide for the data consumer to make an offer that deviates from the terms of a Data Offer as set by the data provider.
+The contract offer is a representation of the [`ContractDefinition`](#contract-definition) for a specific consumer and serves as protocol for a data transfer object (DTO) for a particular contract negotiation. If a data consumer wants to conclude a binding data exchange contract based on the terms of a Data Offer, the data consumer can communicate such desire to the data provider by referencing to a specific Data Offer. This constitutes a binding offer by the data consumer. For now, the data consumer only has the option to accept all terms of a Data Offer (or not). The Data Exchange Process does not yet provide for the data consumer to make an offer that deviates from the terms of a Data Offer as set by the data provider.
 
 #### Contract negotiation
 
