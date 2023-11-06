@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwFallbackFactories.retryWhenStatusIsNotIn;
 
 public class MiwApiClientImpl implements MiwApiClient {
 
@@ -144,8 +145,14 @@ public class MiwApiClientImpl implements MiwApiClient {
     }
 
     private <R> Result<R> executeRequest(Request request, TypeReference<R> typeReference) {
-        try (var response = httpClient.execute(request)) {
+        try (var response = httpClient.execute(request, List.of(retryWhenStatusIsNotIn(200, 201)))) {
             return handleResponse(response, typeReference);
+        } catch (MiwClientException e) {
+            if (e.getResponse() != null) {
+                return handleError(e.getResponse());
+            } else {
+                return Result.failure(e.getMessage());
+            }
         } catch (IOException e) {
             return Result.failure(e.getMessage());
         }
