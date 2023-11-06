@@ -30,5 +30,5 @@ dependencies {
     implementation(libs.edc.sql.core)
     runtimeOnly(libs.postgres)
 
-    implementation("org.flywaydb:flyway-core:9.22.3")
+    implementation("org.flywaydb:flyway-core:10.0.0")
 }
