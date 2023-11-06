@@ -110,7 +110,7 @@ public abstract class AbstractRenewalEdrTest {
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 
-        JsonArrayBuilder edrCachesBuilder = Json.createArrayBuilder();
+        var edrCachesBuilder = Json.createArrayBuilder();
 
         await().atMost(ASYNC_TIMEOUT)
                 .pollInterval(ASYNC_POLL_INTERVAL)
