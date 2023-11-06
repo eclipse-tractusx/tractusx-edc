@@ -15,7 +15,6 @@
 package org.eclipse.tractusx.edc.tests.edr;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Condition;
