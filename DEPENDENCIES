@@ -46,7 +46,7 @@ maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-a
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.14.2, Apache-2.0, approved, #7931
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.15.2, Apache-2.0, approved, #7929
 maven/mavencentral/com.fasterxml.woodstox/woodstox-core/6.5.1, Apache-2.0, approved, #7950
-maven/mavencentral/com.github.docker-java/docker-java-api/3.3.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.github.docker-java/docker-java-api/3.3.0, Apache-2.0, approved, #10346
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.0, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.0, Apache-2.0, approved, #7942
 maven/mavencentral/com.github.stephenc.jcip/jcip-annotations/1.0-1, Apache-2.0, approved, CQ21949
@@ -139,24 +139,24 @@ maven/mavencentral/io.rest-assured/xml-path/5.3.1, Apache-2.0, approved, #9267
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.15, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.2, Apache-2.0, approved, #5947
-maven/mavencentral/io.swagger.core.v3/swagger-annotations/2.2.10, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-annotations/2.2.10, Apache-2.0, approved, #11362
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.2, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-core/2.2.10, Apache-2.0, approved, #9265
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.swagger.core.v3/swagger-integration/2.2.10, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-integration/2.2.10, Apache-2.0, approved, #10352
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2/2.2.10, Apache-2.0, approved, #9814
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.2, Apache-2.0, approved, #5919
-maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.10, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.10, Apache-2.0, approved, #10353
 maven/mavencentral/jakarta.activation/jakarta.activation-api/1.2.1, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.activation/jakarta.activation-api/2.1.0, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/2.1.1, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
 maven/mavencentral/jakarta.inject/jakarta.inject-api/2.0.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/jakarta.json/jakarta.json-api/2.1.1, EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, #7907
 maven/mavencentral/jakarta.transaction/jakarta.transaction-api/2.0.0, EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, #7697
-maven/mavencentral/jakarta.validation/jakarta.validation-api/2.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/jakarta.validation/jakarta.validation-api/3.0.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/jakarta.validation/jakarta.validation-api/3.0.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/jakarta.validation/jakarta.validation-api/2.0.2, Apache-2.0, approved, ee4j.validation
+maven/mavencentral/jakarta.validation/jakarta.validation-api/3.0.0, Apache-2.0, approved, ee4j.validation
+maven/mavencentral/jakarta.validation/jakarta.validation-api/3.0.2, Apache-2.0, approved, ee4j.validation
 maven/mavencentral/jakarta.ws.rs/jakarta.ws.rs-api/3.1.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.rest
 maven/mavencentral/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2, BSD-3-Clause, approved, ee4j.jaxb
 maven/mavencentral/jakarta.xml.bind/jakarta.xml.bind-api/3.0.0, BSD-3-Clause, approved, ee4j.jaxb
@@ -182,7 +182,7 @@ maven/mavencentral/org.apache.commons/commons-lang3/3.12.0, Apache-2.0, approved
 maven/mavencentral/org.apache.commons/commons-pool2/2.11.1, Apache-2.0, approved, CQ23795
 maven/mavencentral/org.apache.groovy/groovy-bom/4.0.11, Apache-2.0, approved, #9266
 maven/mavencentral/org.apache.groovy/groovy-json/4.0.11, Apache-2.0, approved, #7411
-maven/mavencentral/org.apache.groovy/groovy-xml/4.0.11, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.groovy/groovy-xml/4.0.11, Apache-2.0, approved, #10179
 maven/mavencentral/org.apache.groovy/groovy/4.0.11, Apache-2.0 AND BSD-3-Clause AND MIT, approved, #1742
 maven/mavencentral/org.apache.httpcomponents/httpclient/4.5.13, Apache-2.0 AND LicenseRef-Public-Domain, approved, CQ23527
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.13, Apache-2.0, approved, CQ23528
@@ -231,6 +231,7 @@ maven/mavencentral/org.eclipse.edc/control-plane-api-client-spi/0.2.1, Apache-2.
 maven/mavencentral/org.eclipse.edc/control-plane-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/core-spi/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/core-spi/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-api/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-aws-s3/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-client/0.2.1, Apache-2.0, approved, technology.edc
@@ -286,15 +287,20 @@ maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.2.1, Apache-2.0, approved
 maven/mavencentral/org.eclipse.edc/policy-engine/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-evaluator/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-model/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sql-core/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/sql-core/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sql-lease/0.2.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/sql-pool-apache-commons/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/sql-pool-apache-commons/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/state-machine/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-datasource-spi/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/transaction-datasource-spi/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-local/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-spi/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/transaction-spi/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-data-plane-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-data-plane/0.2.1, Apache-2.0, approved, technology.edc
@@ -305,6 +311,7 @@ maven/mavencentral/org.eclipse.edc/transfer-spi/0.2.1, Apache-2.0, approved, tec
 maven/mavencentral/org.eclipse.edc/transform-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util/0.2.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/util/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-azure/0.2.1, Apache-2.0, approved, technology.edc
