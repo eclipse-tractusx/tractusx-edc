@@ -3,6 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.2.1"
+edcNext = "0.3.1"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
@@ -88,7 +89,7 @@ edc-sql-transferprocess = { module = "org.eclipse.edc:transfer-process-store-sql
 edc-sql-policydef = { module = "org.eclipse.edc:policy-definition-store-sql", version.ref = "edc" }
 edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
-edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref = "edc" }
+edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref = "edcNext" }
 
 # azure stuff
 edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }

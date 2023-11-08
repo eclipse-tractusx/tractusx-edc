@@ -23,7 +23,7 @@ version: '3'
 
 services:
   miw:
-    image: ghcr.io/catenax-ng/tx-managed-identity-wallets_miw_service:latest-java-did-web
+    image: tractusx/managed-identity-wallet:main
     platform: linux/amd64
     container_name: miw
     env_file:
