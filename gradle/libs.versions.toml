@@ -3,7 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.2.1"
-edcNext = "0.3.1"
+apacheCommonsPool2 = "2.12.0"
 postgres = "42.6.0"
 awaitility = "4.2.0"
 nimbus = "9.31"
@@ -89,7 +89,6 @@ edc-sql-transferprocess = { module = "org.eclipse.edc:transfer-process-store-sql
 edc-sql-policydef = { module = "org.eclipse.edc:policy-definition-store-sql", version.ref = "edc" }
 edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
-edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref = "edcNext" }
 
 # azure stuff
 edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
@@ -149,6 +148,7 @@ junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.re
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 tink = { module = "com.google.crypto.tink:tink", version.ref = "tink" }
 apicatalog-iron-vc = { module = "com.apicatalog:iron-verifiable-credentials", version.ref = "iron-vc" }
+apache-commons-pool = { module = "org.apache.commons:commons-pool2", version.ref = "apacheCommonsPool2" }
 
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
