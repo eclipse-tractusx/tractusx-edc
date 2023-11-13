@@ -8,7 +8,7 @@ maven/mavencentral/com.azure/azure-core-http-netty/1.13.7, MIT AND Apache-2.0, a
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.9, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core/1.42.0, MIT AND Apache-2.0, approved, #10089
 maven/mavencentral/com.azure/azure-core/1.43.0, MIT AND Apache-2.0, approved, #10548
-maven/mavencentral/com.azure/azure-core/1.44.1, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-core/1.44.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.10.1, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-identity/1.10.4, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
@@ -138,7 +138,7 @@ maven/mavencentral/io.netty/netty-resolver/4.1.94.Final, Apache-2.0 AND BSD-3-Cl
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.61.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.62.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-classes/2.0.61.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.netty/netty-tcnative-classes/2.0.62.Final, , restricted, clearlydefined
+maven/mavencentral/io.netty/netty-tcnative-classes/2.0.62.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.100.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.94.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.100.Final, Apache-2.0, approved, #4107
@@ -169,9 +169,9 @@ maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.15, Apache
 maven/mavencentral/io.swagger.core.v3/swagger-annotations/2.2.15, Apache-2.0, approved, #11362
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.15, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-core/2.2.15, Apache-2.0, approved, #9265
-maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.15, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.15, Apache-2.0, approved, #11475
 maven/mavencentral/io.swagger.core.v3/swagger-integration/2.2.15, Apache-2.0, approved, #10352
-maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.15, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.15, Apache-2.0, approved, #11477
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2/2.2.15, Apache-2.0, approved, #9814
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.15, Apache-2.0, approved, #5919
 maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.15, Apache-2.0, approved, #10353
@@ -498,7 +498,7 @@ maven/mavencentral/software.amazon.awssdk/protocol-core/2.20.146, Apache-2.0, ap
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.21.5, Apache-2.0, approved, #11141
 maven/mavencentral/software.amazon.awssdk/regions/2.20.146, Apache-2.0, approved, #8632
 maven/mavencentral/software.amazon.awssdk/regions/2.21.5, Apache-2.0, approved, #11142
-maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.21.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.21.5, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/s3/2.20.146, Apache-2.0, approved, #8623
 maven/mavencentral/software.amazon.awssdk/s3/2.21.5, Apache-2.0, approved, #11135
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.20.146, Apache-2.0, approved, #8611
