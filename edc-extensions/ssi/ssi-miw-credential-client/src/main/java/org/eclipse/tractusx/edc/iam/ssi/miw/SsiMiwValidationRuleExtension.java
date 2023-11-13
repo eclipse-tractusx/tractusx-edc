@@ -45,6 +45,6 @@ public class SsiMiwValidationRuleExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         registry.addRule(new SsiCredentialSubjectIdValidationRule(monitor));
-        registry.addRule(new SsiCredentialIssuerValidationRule(miwConfiguration.getAuthorityIssuer(), monitor));
+        registry.addRule(new SsiCredentialIssuerValidationRule(miwConfiguration.getAuthorityIssuers(), monitor));
     }
 }

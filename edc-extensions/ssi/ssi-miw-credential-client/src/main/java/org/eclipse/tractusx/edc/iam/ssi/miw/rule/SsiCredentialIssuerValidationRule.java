@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -44,7 +45,7 @@ public class SsiCredentialIssuerValidationRule implements TokenValidationRule {
 
     private static final String SUBJECT_ISSUER_FIELD_ALIAS = "issuer";
 
-    private final String credentialIssuer;
+    private final Set<String> credentialIssuers;
 
     private final Monitor monitor;
 
@@ -54,8 +55,8 @@ public class SsiCredentialIssuerValidationRule implements TokenValidationRule {
             .errorPrefix(SUBJECT_ISSUER_EXTRACTOR_PREFIX)
             .build();
 
-    public SsiCredentialIssuerValidationRule(String credentialIssuer, Monitor monitor) {
-        this.credentialIssuer = credentialIssuer;
+    public SsiCredentialIssuerValidationRule(Set<String> credentialIssuers, Monitor monitor) {
+        this.credentialIssuers = credentialIssuers;
         this.monitor = monitor;
     }
 
@@ -76,10 +77,10 @@ public class SsiCredentialIssuerValidationRule implements TokenValidationRule {
     }
 
     private Result<Void> validateCredentialIssuer(String extractedCredentialIssuer) {
-        if (credentialIssuer.equals(extractedCredentialIssuer)) {
+        if (credentialIssuers.contains(extractedCredentialIssuer)) {
             return Result.success();
         } else {
-            return Result.failure(format("Invalid credential issuer: expected %s, found %s", credentialIssuer, extractedCredentialIssuer));
+            return Result.failure(format("Invalid credential issuer: expected %s, found %s", credentialIssuers, extractedCredentialIssuer));
         }
     }
 

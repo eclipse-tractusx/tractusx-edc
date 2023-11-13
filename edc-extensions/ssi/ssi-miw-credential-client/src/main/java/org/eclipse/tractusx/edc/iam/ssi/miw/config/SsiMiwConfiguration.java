@@ -14,13 +14,15 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.miw.config;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class SsiMiwConfiguration {
 
     protected String url;
     protected String authorityId;
-    protected String authorityIssuer;
+    protected Set<String> authorityIssuers = new HashSet<>();
 
     public String getAuthorityId() {
         return authorityId;
@@ -30,8 +32,8 @@ public class SsiMiwConfiguration {
         return url;
     }
 
-    public String getAuthorityIssuer() {
-        return authorityIssuer;
+    public Set<String> getAuthorityIssuers() {
+        return authorityIssuers;
     }
 
     public static class Builder {
@@ -44,7 +46,7 @@ public class SsiMiwConfiguration {
         public static Builder newInstance() {
             return new Builder();
         }
-        
+
         public Builder url(String url) {
             config.url = url;
             return this;
@@ -55,14 +57,14 @@ public class SsiMiwConfiguration {
             return this;
         }
 
-        public Builder authorityIssuer(String authorityIssuer) {
-            config.authorityIssuer = authorityIssuer;
+        public Builder authorityIssuers(Set<String> authorityIssuers) {
+            config.authorityIssuers = authorityIssuers;
             return this;
         }
-
+        
         public SsiMiwConfiguration build() {
             Objects.requireNonNull(config.url);
-            Objects.requireNonNull(config.authorityIssuer);
+            Objects.requireNonNull(config.authorityIssuers);
             Objects.requireNonNull(config.authorityId);
             return config;
         }

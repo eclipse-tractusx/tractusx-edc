@@ -22,14 +22,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Set;
+
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.AUTHORITY_ID_TEMPLATE;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.MIW_AUTHORITY_ID;
-import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.MIW_AUTHORITY_ISSUER;
+import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.MIW_AUTHORITY_ISSUERS;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.MIW_BASE_URL;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -59,17 +61,43 @@ public class SsiMiwConfigurationExtensionTest {
 
         when(cfg.getString(MIW_BASE_URL)).thenReturn(url);
         when(cfg.getString(MIW_AUTHORITY_ID)).thenReturn(authorityId);
-        when(cfg.getString(eq(MIW_AUTHORITY_ISSUER), anyString())).thenReturn(authorityIssuer);
+        when(cfg.getString(eq(MIW_AUTHORITY_ISSUERS), isNull())).thenReturn(authorityIssuer);
 
         var miwConfig = extension.miwConfiguration(context);
 
         verify(cfg).getString(MIW_BASE_URL);
         verify(cfg).getString(MIW_AUTHORITY_ID);
-        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUER), anyString());
+        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUERS), isNull());
 
         assertThat(miwConfig.getUrl()).isEqualTo(url);
         assertThat(miwConfig.getAuthorityId()).isEqualTo(authorityId);
-        assertThat(miwConfig.getAuthorityIssuer()).isEqualTo(authorityIssuer);
+        assertThat(miwConfig.getAuthorityIssuers()).contains(authorityIssuer);
+
+    }
+
+    @Test
+    void initialize_withMultipleIssuers() {
+        var url = "http://localhost:8080";
+        var authorityId = "id";
+
+        var issuers = Set.of("issuer1", "issuer2");
+
+        var cfg = mock(Config.class);
+        when(context.getConfig()).thenReturn(cfg);
+
+        when(cfg.getString(MIW_BASE_URL)).thenReturn(url);
+        when(cfg.getString(MIW_AUTHORITY_ID)).thenReturn(authorityId);
+        when(cfg.getString(eq(MIW_AUTHORITY_ISSUERS), isNull())).thenReturn(String.join(",", issuers));
+
+        var miwConfig = extension.miwConfiguration(context);
+
+        verify(cfg).getString(MIW_BASE_URL);
+        verify(cfg).getString(MIW_AUTHORITY_ID);
+        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUERS), isNull());
+
+        assertThat(miwConfig.getUrl()).isEqualTo(url);
+        assertThat(miwConfig.getAuthorityId()).isEqualTo(authorityId);
+        assertThat(miwConfig.getAuthorityIssuers()).containsAll(issuers);
 
     }
 
@@ -83,17 +111,17 @@ public class SsiMiwConfigurationExtensionTest {
 
         when(cfg.getString(MIW_BASE_URL)).thenReturn(url);
         when(cfg.getString(MIW_AUTHORITY_ID)).thenReturn(authorityId);
-        when(cfg.getString(eq(MIW_AUTHORITY_ISSUER), anyString())).thenAnswer(answer -> answer.getArgument(1));
+        when(cfg.getString(eq(MIW_AUTHORITY_ISSUERS), isNull())).thenAnswer(answer -> answer.getArgument(1));
 
         var miwConfig = extension.miwConfiguration(context);
 
         verify(cfg).getString(MIW_BASE_URL);
         verify(cfg).getString(MIW_AUTHORITY_ID);
-        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUER), anyString());
+        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUERS), isNull());
 
         assertThat(miwConfig.getUrl()).isEqualTo(url);
         assertThat(miwConfig.getAuthorityId()).isEqualTo(authorityId);
-        assertThat(miwConfig.getAuthorityIssuer()).isEqualTo(format(AUTHORITY_ID_TEMPLATE, "localhost%3A8080", authorityId));
+        assertThat(miwConfig.getAuthorityIssuers()).contains(format(AUTHORITY_ID_TEMPLATE, "localhost%3A8080", authorityId));
 
     }
 
@@ -107,17 +135,17 @@ public class SsiMiwConfigurationExtensionTest {
 
         when(cfg.getString(MIW_BASE_URL)).thenReturn(url);
         when(cfg.getString(MIW_AUTHORITY_ID)).thenReturn(authorityId);
-        when(cfg.getString(eq(MIW_AUTHORITY_ISSUER), anyString())).thenAnswer(answer -> answer.getArgument(1));
+        when(cfg.getString(eq(MIW_AUTHORITY_ISSUERS), isNull())).thenAnswer(answer -> answer.getArgument(1));
 
         var miwConfig = extension.miwConfiguration(context);
 
         verify(cfg).getString(MIW_BASE_URL);
         verify(cfg).getString(MIW_AUTHORITY_ID);
-        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUER), anyString());
+        verify(cfg).getString(eq(MIW_AUTHORITY_ISSUERS), isNull());
 
         assertThat(miwConfig.getUrl()).isEqualTo("http://localhost:8080");
         assertThat(miwConfig.getAuthorityId()).isEqualTo(authorityId);
-        assertThat(miwConfig.getAuthorityIssuer()).isEqualTo(format(AUTHORITY_ID_TEMPLATE, "localhost%3A8080", authorityId));
+        assertThat(miwConfig.getAuthorityIssuers()).contains(format(AUTHORITY_ID_TEMPLATE, "localhost%3A8080", authorityId));
 
     }
 

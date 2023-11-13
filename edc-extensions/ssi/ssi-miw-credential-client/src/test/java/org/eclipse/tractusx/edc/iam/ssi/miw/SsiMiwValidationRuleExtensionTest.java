@@ -25,6 +25,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Set;
+
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -46,13 +48,13 @@ public class SsiMiwValidationRuleExtensionTest {
 
     @Test
     void initialize(ServiceExtensionContext context) {
-        when(cfg.getAuthorityIssuer()).thenReturn("issuer");
+        when(cfg.getAuthorityIssuers()).thenReturn(Set.of("issuer"));
 
         extension.initialize(context);
         verify(registry).addRule(isA(SsiCredentialSubjectIdValidationRule.class));
         verify(registry).addRule(isA(SsiCredentialIssuerValidationRule.class));
 
-        verify(cfg).getAuthorityIssuer();
+        verify(cfg).getAuthorityIssuers();
     }
 
 }

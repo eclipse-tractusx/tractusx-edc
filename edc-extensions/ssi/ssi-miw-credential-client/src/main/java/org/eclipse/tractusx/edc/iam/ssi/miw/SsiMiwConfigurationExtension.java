@@ -24,6 +24,10 @@ import org.eclipse.tractusx.edc.iam.ssi.miw.config.SsiMiwConfiguration;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.utils.PathUtils.removeTrailingSlash;
@@ -37,8 +41,8 @@ public class SsiMiwConfigurationExtension implements ServiceExtension {
     public static final String MIW_BASE_URL = "tx.ssi.miw.url";
     @Setting(value = "MIW Authority ID")
     public static final String MIW_AUTHORITY_ID = "tx.ssi.miw.authority.id";
-    @Setting(value = "MIW Authority Issuer")
-    public static final String MIW_AUTHORITY_ISSUER = "tx.ssi.miw.authority.issuer";
+    @Setting(value = "Comma separated authority Issuers")
+    public static final String MIW_AUTHORITY_ISSUERS = "tx.ssi.miw.authority.issuer";
     public static final String AUTHORITY_ID_TEMPLATE = "did:web:%s:%s";
     protected static final String EXTENSION_NAME = "SSI Miw configuration extension";
 
@@ -51,14 +55,23 @@ public class SsiMiwConfigurationExtension implements ServiceExtension {
         return SsiMiwConfiguration.Builder.newInstance()
                 .url(baseUrl)
                 .authorityId(authorityId)
-                .authorityIssuer(authorityIssuer)
+                .authorityIssuers(authorityIssuer)
                 .build();
     }
 
 
-    private String authorityIssuer(ServiceExtensionContext context, String baseUrl, String authorityId) {
+    private Set<String> authorityIssuer(ServiceExtensionContext context, String baseUrl, String authorityId) {
         var uri = URI.create(baseUrl);
         var defaultAuthorityIssuer = format(AUTHORITY_ID_TEMPLATE, URLEncoder.encode(uri.getAuthority(), StandardCharsets.UTF_8), authorityId);
-        return context.getConfig().getString(MIW_AUTHORITY_ISSUER, defaultAuthorityIssuer);
+
+        return Optional.ofNullable(context.getConfig().getString(MIW_AUTHORITY_ISSUERS, null))
+                .map(this::configuredIssuer)
+                .orElse(Set.of(defaultAuthorityIssuer));
+    }
+
+    private Set<String> configuredIssuer(String issuerConfig) {
+        return Arrays.stream(issuerConfig.split(","))
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 }

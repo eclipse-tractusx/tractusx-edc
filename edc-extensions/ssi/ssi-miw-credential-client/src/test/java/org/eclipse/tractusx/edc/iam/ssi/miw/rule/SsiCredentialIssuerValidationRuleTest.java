@@ -22,6 +22,7 @@ import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.SummaryContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_SUMMARY_NS_V1;
@@ -39,7 +40,7 @@ public class SsiCredentialIssuerValidationRuleTest {
 
     @Test
     void checkRule() throws JsonProcessingException {
-        validationRule = new SsiCredentialIssuerValidationRule("did:web:issuer-a016-203-129-213-99.ngrok-free.app:BPNL000000000000", mock(Monitor.class));
+        validationRule = new SsiCredentialIssuerValidationRule(Set.of("did:web:issuer-a016-203-129-213-99.ngrok-free.app:BPNL000000000000"), mock(Monitor.class));
         var vp = expand(createObjectMapper().readValue(SUMMARY_VP, JsonObject.class), CONTEXT_CACHE);
         var claimToken = ClaimToken.Builder.newInstance().claim(VP_PROPERTY, vp).build();
         var result = validationRule.checkRule(claimToken, Map.of());
@@ -50,7 +51,7 @@ public class SsiCredentialIssuerValidationRuleTest {
 
     @Test
     void checkRule_shouldFail_whenIssuerIsWrong() throws JsonProcessingException {
-        validationRule = new SsiCredentialIssuerValidationRule("issuer", mock(Monitor.class));
+        validationRule = new SsiCredentialIssuerValidationRule(Set.of("issuer"), mock(Monitor.class));
         var vp = expand(createObjectMapper().readValue(SUMMARY_VP, JsonObject.class), CONTEXT_CACHE);
         var claimToken = ClaimToken.Builder.newInstance().claim(VP_PROPERTY, vp).build();
         var result = validationRule.checkRule(claimToken, Map.of());
