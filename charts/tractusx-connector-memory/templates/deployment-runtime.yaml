@@ -196,9 +196,9 @@ spec:
               value: {{ .Values.runtime.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.runtime.endpoints.control.path | quote }}
-            - name: "WEB_HTTP_IDS_PORT"
+            - name: "WEB_HTTP_PROTOCOL_PORT"
               value: {{ .Values.runtime.endpoints.protocol.port | quote }}
-            - name: "WEB_HTTP_IDS_PATH"
+            - name: "WEB_HTTP_PROTOCOL_PATH"
               value: {{ .Values.runtime.endpoints.protocol.path | quote }}
             - name: "WEB_HTTP_PUBLIC_PORT"
               value: {{ .Values.runtime.endpoints.public.port | quote }}
