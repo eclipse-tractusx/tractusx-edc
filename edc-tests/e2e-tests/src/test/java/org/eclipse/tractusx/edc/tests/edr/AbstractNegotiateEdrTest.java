@@ -135,9 +135,9 @@ public abstract class AbstractNegotiateEdrTest {
 
         assertThat(edrCaches).hasSize(1);
 
-        var transferProcessId = edrCaches.get(0).asJsonObject().getString("edc:transferProcessId");
-        var cnId = edrCaches.get(0).asJsonObject().getString("edc:contractNegotiationId");
-        var agreementId = edrCaches.get(0).asJsonObject().getString("edc:agreementId");
+        var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
+        var cnId = edrCaches.get(0).asJsonObject().getString("contractNegotiationId");
+        var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
 
         assertThat(cnId).isEqualTo(contractNegotiationId);
         assertThat(SOKRATES.getEdrEntriesByAgreementId(agreementId)).hasSize(1);
@@ -145,11 +145,11 @@ public abstract class AbstractNegotiateEdrTest {
 
         var edr = SOKRATES.getEdr(transferProcessId);
 
-        assertThat(edr.getJsonString("edc:type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
-        assertThat(edr.getJsonString("edc:authCode").getString()).isNotNull();
-        assertThat(edr.getJsonString("edc:authKey").getString()).isNotNull();
-        assertThat(edr.getJsonString("edc:endpoint").getString()).isNotNull();
-        assertThat(edr.getJsonString("edc:id").getString()).isEqualTo(transferProcessId);
+        assertThat(edr.getJsonString("type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
+        assertThat(edr.getJsonString("authCode").getString()).isNotNull();
+        assertThat(edr.getJsonString("authKey").getString()).isNotNull();
+        assertThat(edr.getJsonString("endpoint").getString()).isNotNull();
+        assertThat(edr.getJsonString("id").getString()).isEqualTo(transferProcessId);
 
     }
 

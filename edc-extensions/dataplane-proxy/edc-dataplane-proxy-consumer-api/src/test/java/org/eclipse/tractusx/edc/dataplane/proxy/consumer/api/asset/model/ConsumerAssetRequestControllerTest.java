@@ -21,7 +21,6 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
-import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
@@ -78,6 +77,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .id(transferProcessId)
                 .authKey("authKey")
                 .authCode("authCode")
+                .contractId("contract-id")
                 .endpoint(url)
                 .build();
 
@@ -92,10 +92,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
 
         when(cache.referencesForAsset(assetId, null)).thenReturn(List.of(edr));
         when(dataPlaneManager.transfer(any()))
-                .thenAnswer(a -> {
-                    AsyncStreamingDataSink sink = a.getArgument(0);
-                    return sink.transfer(datasource);
-                });
+                .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
 
         var proxyResponseBytes = baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -124,6 +121,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .authKey("authKey")
                 .authCode("authCode")
                 .endpoint(url)
+                .contractId("contract-id")
                 .build();
 
         when(cache.referencesForAsset(assetId, null)).thenReturn(List.of(edr));
@@ -169,6 +167,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .id(UUID.randomUUID().toString())
                 .authKey("authKey")
                 .authCode("authCode")
+                .contractId("contract-id")
                 .endpoint(url)
                 .build();
 
@@ -194,6 +193,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .id(transferProcessId)
                 .authKey("authKey")
                 .authCode("authCode")
+                .contractId("contract-id")
                 .endpoint(url)
                 .build();
 
@@ -208,10 +208,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
 
         when(cache.resolveReference(transferProcessId)).thenReturn(edr);
         when(dataPlaneManager.transfer(any()))
-                .thenAnswer(a -> {
-                    AsyncStreamingDataSink sink = a.getArgument(0);
-                    return sink.transfer(datasource);
-                });
+                .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
 
         var proxyResponseBytes = baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -256,6 +253,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .id(transferProcessId)
                 .authKey("authKey")
                 .authCode("authCode")
+                .contractId("contract-id")
                 .endpoint(url)
                 .build();
 
@@ -271,8 +269,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         when(cache.resolveReference(transferProcessId)).thenReturn(edr);
         when(dataPlaneManager.transfer(any()))
                 .thenAnswer(a -> {
-                    AsyncStreamingDataSink sink = a.getArgument(0);
-                    return sink.transfer(datasource);
+                    return CompletableFuture.completedFuture(StreamResult.success(response));
                 });
 
         var proxyResponseBytes = baseRequest()

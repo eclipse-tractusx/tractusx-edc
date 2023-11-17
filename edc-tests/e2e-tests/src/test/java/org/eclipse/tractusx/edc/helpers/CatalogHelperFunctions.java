@@ -31,7 +31,7 @@ public class CatalogHelperFunctions {
     public static JsonObject createCatalogRequest(JsonObject query, String dspEndpoint) {
         var jsonBuilder = Json.createObjectBuilder();
         jsonBuilder.add("@type", "CatalogRequest");
-        jsonBuilder.add(EDC_NAMESPACE + "providerUrl", dspEndpoint);
+        jsonBuilder.add(EDC_NAMESPACE + "counterPartyAddress", dspEndpoint);
         jsonBuilder.add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http");
 
         if (query != null) {

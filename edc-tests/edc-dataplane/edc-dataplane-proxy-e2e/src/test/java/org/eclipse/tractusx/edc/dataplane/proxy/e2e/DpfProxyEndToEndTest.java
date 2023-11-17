@@ -120,11 +120,14 @@ public class DpfProxyEndToEndTest {
         var tpSpec = createSpecification(format(REQUEST_TEMPLATE_TP, SINGLE_TRANSFER_ID, PRODUCER_HTTP_PORT));
 
         // verify content successfully proxied using a transfer process id
-        tpSpec.with()
+        var rs = tpSpec.with()
                 .post(PROXY_SUBPATH)
                 .then()
+                .log().ifError()
                 .assertThat().statusCode(200)
-                .assertThat().body(is(MOCK_ENDPOINT_200_BODY));
+                .body(is(MOCK_ENDPOINT_200_BODY));
+
+        var str = rs.extract().body().asString();
 
         // verify content successfully proxied using an asset id for the case where only one active transfer process exists for the asset
         var assetSpec = createSpecification(format(REQUEST_TEMPLATE_ASSET, SINGLE_ASSET_ID, PRODUCER_HTTP_PORT));

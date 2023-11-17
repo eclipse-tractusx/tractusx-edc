@@ -163,7 +163,9 @@ public class EdrControllerTest extends RestControllerTestBase {
     @Test
     void getEdr_shouldReturnDataAddress_whenFound() {
         var transferProcessId = "id";
-        var edr = EndpointDataReference.Builder.newInstance().endpoint("test").id(transferProcessId).build();
+        var edr = EndpointDataReference.Builder.newInstance().endpoint("test")
+                .contractId("test-contract-id")
+                .id(transferProcessId).build();
         var response = Json.createObjectBuilder()
                 .add(DataAddress.EDC_DATA_ADDRESS_TYPE_PROPERTY, EndpointDataReference.EDR_SIMPLE_TYPE)
                 .add(EndpointDataReference.ENDPOINT, edr.getEndpoint())

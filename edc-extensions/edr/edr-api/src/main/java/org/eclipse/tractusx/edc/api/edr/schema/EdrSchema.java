@@ -83,10 +83,10 @@ public class EdrSchema {
         public static final String ENDPOINT_DATA_REFERENCE_ENTRY_EXAMPLE = """
                 {
                     "@type": "tx:EndpointDataReferenceEntry",
-                    "edc:agreementId": "MQ==:MQ==:ZTY3MzQ4YWEtNTdmZC00YzA0LTg2ZmQtMGMxNzk0MWM3OTkw",
-                    "edc:transferProcessId": "78a66945-d638-4c0a-be71-b35a0318a410",
-                    "edc:assetId": "1",
-                    "edc:providerId": "BPNL00DATAP00001",
+                    "agreementId": "MQ==:MQ==:ZTY3MzQ4YWEtNTdmZC00YzA0LTg2ZmQtMGMxNzk0MWM3OTkw",
+                    "transferProcessId": "78a66945-d638-4c0a-be71-b35a0318a410",
+                    "assetId": "1",
+                    "providerId": "BPNL00DATAP00001",
                     "tx:edrState": "NEGOTIATED",
                     "tx:expirationDate": 1690811364000,
                     "@context": {

@@ -222,7 +222,7 @@ public class EdrManagerImpl implements EdrManager {
             return StatusResult.success();
         } else {
             breakLease(entry);
-            return StatusResult.failure(ResponseStatus.FATAL_ERROR);
+            return StatusResult.failure(ResponseStatus.ERROR_RETRY, "Not yet expired.");
         }
     }
 
