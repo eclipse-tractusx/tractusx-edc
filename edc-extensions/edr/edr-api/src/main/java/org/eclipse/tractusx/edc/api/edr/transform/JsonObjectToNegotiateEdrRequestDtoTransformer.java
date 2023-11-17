@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CALLBACK_ADDRESSES;
-import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CONNECTOR_ADDRESS;
-import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CONNECTOR_ID;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ID;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROVIDER_ID;
@@ -51,14 +51,14 @@ public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonL
 
     private void setProperties(String key, JsonValue value, NegotiateEdrRequestDto.Builder builder, TransformerContext context) {
         switch (key) {
-            case EDR_REQUEST_DTO_CONNECTOR_ADDRESS:
+            case EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS:
                 transformString(value, builder::connectorAddress, context);
                 break;
             case EDR_REQUEST_DTO_PROTOCOL:
                 transformString(value, builder::protocol, context);
                 break;
-            case EDR_REQUEST_DTO_CONNECTOR_ID:
-                transformString(value, builder::connectorId, context);
+            case EDR_REQUEST_DTO_COUNTERPARTY_ID:
+                transformString(value, builder::counterPartyId, context);
                 break;
             case EDR_REQUEST_DTO_PROVIDER_ID:
                 transformString(value, builder::providerId, context);
@@ -77,9 +77,9 @@ public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonL
                         .type(EDR_REQUEST_DTO_TYPE)
                         .property(key)
                         .actual(key)
-                        .expected(EDR_REQUEST_DTO_CONNECTOR_ADDRESS)
+                        .expected(EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS)
                         .expected(EDR_REQUEST_DTO_PROTOCOL)
-                        .expected(EDR_REQUEST_DTO_CONNECTOR_ID)
+                        .expected(EDR_REQUEST_DTO_COUNTERPARTY_ID)
                         .expected(EDR_REQUEST_DTO_PROVIDER_ID)
                         .expected(EDR_REQUEST_DTO_CALLBACK_ADDRESSES)
                         .expected(EDR_REQUEST_DTO_OFFER)

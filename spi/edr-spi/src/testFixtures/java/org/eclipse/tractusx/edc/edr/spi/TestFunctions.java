@@ -28,6 +28,7 @@ public class TestFunctions {
     public static EndpointDataReference edr(String id) {
         return EndpointDataReference.Builder.newInstance()
                 .endpoint("http://test.com")
+                .contractId("test-contract-id")
                 .id(id)
                 .authCode("11111")
                 .authKey("authentication").build();

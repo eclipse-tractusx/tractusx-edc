@@ -29,8 +29,8 @@ import org.eclipse.edc.spi.retry.WaitStrategy;
 import org.eclipse.edc.spi.system.ExecutorInstrumentation;
 import org.eclipse.edc.spi.telemetry.Telemetry;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.statemachine.ProcessorImpl;
 import org.eclipse.edc.statemachine.StateMachineManager;
-import org.eclipse.edc.statemachine.StateProcessorImpl;
 import org.eclipse.edc.statemachine.retry.EntityRetryProcessConfiguration;
 import org.eclipse.edc.statemachine.retry.EntityRetryProcessFactory;
 import org.eclipse.tractusx.edc.edr.spi.EdrManager;
@@ -44,9 +44,11 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -148,19 +150,25 @@ public class EdrManagerImpl implements EdrManager {
     }
 
 
-    private StateProcessorImpl<EndpointDataReferenceEntry> processEdrInState(EndpointDataReferenceEntryStates state, Function<EndpointDataReferenceEntry, Boolean> function) {
+    private ProcessorImpl<EndpointDataReferenceEntry> processEdrInState(EndpointDataReferenceEntryStates state, Function<EndpointDataReferenceEntry, Boolean> function) {
         var filter = new Criterion[] {hasState(state.code())};
-        return new StateProcessorImpl<>(() -> edrCache.nextNotLeased(batchSize, filter), telemetry.contextPropagationMiddleware(function));
+        return processor(() -> edrCache.nextNotLeased(batchSize, filter), telemetry.contextPropagationMiddleware(function));
+    }
+
+    private ProcessorImpl<EndpointDataReferenceEntry> processor(Supplier<Collection<EndpointDataReferenceEntry>> o, Function<EndpointDataReferenceEntry, Boolean> telemetryPropagationFunction) {
+        return ProcessorImpl.Builder.newInstance(o)
+                .process(telemetryPropagationFunction)
+                .build();
     }
 
 
-    private StateProcessorImpl<EndpointDataReferenceEntry> processDeletingEdr(Function<EndpointDataReferenceEntry, Boolean> function) {
+    private ProcessorImpl<EndpointDataReferenceEntry> processDeletingEdr(Function<EndpointDataReferenceEntry, Boolean> function) {
         var query = QuerySpec.Builder.newInstance()
                 .filter(hasState(DELETING.code()))
                 .limit(batchSize)
                 .build();
 
-        return new StateProcessorImpl<>(() -> edrCache.queryForEntries(query).collect(Collectors.toList()), telemetry.contextPropagationMiddleware(function));
+        return processor(() -> edrCache.queryForEntries(query).collect(Collectors.toList()), telemetry.contextPropagationMiddleware(function));
     }
 
     private ContractRequest createContractRequest(NegotiateEdrRequest request) {
@@ -190,7 +198,7 @@ public class EdrManagerImpl implements EdrManager {
     }
 
     private boolean processExpired(EndpointDataReferenceEntry edrEntry) {
-        return entityRetryProcessFactory.doSimpleProcess(edrEntry, () -> checkExpiration(edrEntry))
+        return entityRetryProcessFactory.doSyncProcess(edrEntry, () -> checkExpiration(edrEntry))
                 .onDelay(this::breakLease)
                 .execute("Start EDR token deletion check");
 
@@ -208,13 +216,13 @@ public class EdrManagerImpl implements EdrManager {
                 .execute("Start EDR token deletion");
     }
 
-    private boolean checkExpiration(EndpointDataReferenceEntry entry) {
+    private StatusResult<Void> checkExpiration(EndpointDataReferenceEntry entry) {
         if (shouldBeRemoved(entry)) {
             transitionToDeleting(entry);
-            return true;
+            return StatusResult.success();
         } else {
             breakLease(entry);
-            return false;
+            return StatusResult.failure(ResponseStatus.FATAL_ERROR);
         }
     }
 
@@ -242,7 +250,7 @@ public class EdrManagerImpl implements EdrManager {
                 .connectorId(dataRequest.getConnectorId())
                 .contractId(dataRequest.getContractId())
                 .protocol(dataRequest.getProtocol())
-                .connectorAddress(dataRequest.getConnectorAddress())
+                .counterPartyAddress(dataRequest.getConnectorAddress())
                 .dataDestination(dataRequest.getDataDestination())
                 .callbackAddresses(transferProcess.getCallbackAddresses())
                 .build();
@@ -292,10 +300,6 @@ public class EdrManagerImpl implements EdrManager {
 
         private Builder() {
             edrManager = new EdrManagerImpl();
-        }
-
-        public static Builder newInstance() {
-            return new Builder();
         }
 
         public Builder contractNegotiationService(ContractNegotiationService negotiationService) {
@@ -368,6 +372,10 @@ public class EdrManagerImpl implements EdrManager {
             edrManager.entityRetryProcessFactory = new EntityRetryProcessFactory(edrManager.monitor, edrManager.clock, edrManager.entityRetryProcessConfiguration);
 
             return edrManager;
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
     }
 }

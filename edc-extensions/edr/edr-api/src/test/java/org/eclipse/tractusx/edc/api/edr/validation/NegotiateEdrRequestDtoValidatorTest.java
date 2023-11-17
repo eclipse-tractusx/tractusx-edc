@@ -31,7 +31,7 @@ import static org.eclipse.edc.connector.api.management.contractnegotiation.model
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CONNECTOR_ADDRESS;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROVIDER_ID;
@@ -43,7 +43,7 @@ public class NegotiateEdrRequestDtoValidatorTest {
     @Test
     void shouldSuccess_whenObjectIsValid() {
         var input = Json.createObjectBuilder()
-                .add(EDR_REQUEST_DTO_CONNECTOR_ADDRESS, value("http://connector-address"))
+                .add(EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS, value("http://connector-address"))
                 .add(EDR_REQUEST_DTO_PROTOCOL, value("protocol"))
                 .add(EDR_REQUEST_DTO_PROVIDER_ID, value("connector-id"))
                 .add(EDR_REQUEST_DTO_OFFER, createArrayBuilder().add(createObjectBuilder()
@@ -66,7 +66,7 @@ public class NegotiateEdrRequestDtoValidatorTest {
 
         assertThat(result).isFailed().extracting(ValidationFailure::getViolations).asInstanceOf(list(Violation.class))
                 .isNotEmpty()
-                .anySatisfy(violation -> assertThat(violation.path()).isEqualTo(EDR_REQUEST_DTO_CONNECTOR_ADDRESS))
+                .anySatisfy(violation -> assertThat(violation.path()).isEqualTo(EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS))
                 .anySatisfy(violation -> assertThat(violation.path()).isEqualTo(EDR_REQUEST_DTO_PROTOCOL))
                 .anySatisfy(violation -> assertThat(violation.path()).isEqualTo(EDR_REQUEST_DTO_OFFER));
     }
@@ -74,7 +74,7 @@ public class NegotiateEdrRequestDtoValidatorTest {
     @Test
     void shouldFail_whenOfferMandatoryPropertiesAreMissing() {
         var input = Json.createObjectBuilder()
-                .add(EDR_REQUEST_DTO_CONNECTOR_ADDRESS, value("http://connector-address"))
+                .add(EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS, value("http://connector-address"))
                 .add(EDR_REQUEST_DTO_PROTOCOL, value("protocol"))
                 .add(EDR_REQUEST_DTO_PROVIDER_ID, value("connector-id"))
                 .add(EDR_REQUEST_DTO_OFFER, createArrayBuilder().add(createObjectBuilder()))

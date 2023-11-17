@@ -27,16 +27,16 @@ public class NegotiateEdrRequestDto {
 
     public static final String EDR_REQUEST_SIMPLE_DTO_TYPE = "NegotiateEdrRequestDto";
     public static final String EDR_REQUEST_DTO_TYPE = TX_NAMESPACE + EDR_REQUEST_SIMPLE_DTO_TYPE;
-    public static final String EDR_REQUEST_DTO_CONNECTOR_ADDRESS = EDC_NAMESPACE + "connectorAddress";
+    public static final String EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS = EDC_NAMESPACE + "counterPartyAddress";
     public static final String EDR_REQUEST_DTO_PROTOCOL = EDC_NAMESPACE + "protocol";
-    public static final String EDR_REQUEST_DTO_CONNECTOR_ID = EDC_NAMESPACE + "connectorId";
+    public static final String EDR_REQUEST_DTO_COUNTERPARTY_ID = EDC_NAMESPACE + "counterPartyId";
     public static final String EDR_REQUEST_DTO_PROVIDER_ID = EDC_NAMESPACE + "providerId";
     public static final String EDR_REQUEST_DTO_OFFER = EDC_NAMESPACE + "offer";
     public static final String EDR_REQUEST_DTO_CALLBACK_ADDRESSES = EDC_NAMESPACE + "callbackAddresses";
 
-    private String connectorAddress;
+    private String counterPartyAddress;
     private String protocol = "ids-multipart";
-    private String connectorId;
+    private String counterPartyId;
 
     private String providerId;
 
@@ -47,16 +47,16 @@ public class NegotiateEdrRequestDto {
 
     }
 
-    public String getConnectorAddress() {
-        return connectorAddress;
+    public String getCounterPartyAddress() {
+        return counterPartyAddress;
     }
 
     public String getProtocol() {
         return protocol;
     }
 
-    public String getConnectorId() {
-        return connectorId;
+    public String getCounterPartyId() {
+        return counterPartyId;
     }
 
     public String getProviderId() {
@@ -78,12 +78,8 @@ public class NegotiateEdrRequestDto {
             dto = new NegotiateEdrRequestDto();
         }
 
-        public static Builder newInstance() {
-            return new Builder();
-        }
-
         public Builder connectorAddress(String connectorAddress) {
-            dto.connectorAddress = connectorAddress;
+            dto.counterPartyAddress = connectorAddress;
             return this;
         }
 
@@ -92,8 +88,8 @@ public class NegotiateEdrRequestDto {
             return this;
         }
 
-        public Builder connectorId(String connectorId) {
-            dto.connectorId = connectorId;
+        public Builder counterPartyId(String connectorId) {
+            dto.counterPartyId = connectorId;
             return this;
         }
 
@@ -114,6 +110,10 @@ public class NegotiateEdrRequestDto {
 
         public NegotiateEdrRequestDto build() {
             return dto;
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
     }
 }

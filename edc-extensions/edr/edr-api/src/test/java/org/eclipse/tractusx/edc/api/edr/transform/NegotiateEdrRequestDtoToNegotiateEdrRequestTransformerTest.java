@@ -43,7 +43,7 @@ public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
                 .uri("local://test")
                 .build();
         var dto = NegotiateEdrRequestDto.Builder.newInstance()
-                .connectorId("connectorId")
+                .counterPartyId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
                 .providerId("test-provider")
@@ -65,7 +65,7 @@ public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
     @Test
     void verify_transfor_withNoProviderId() {
         var dto = NegotiateEdrRequestDto.Builder.newInstance()
-                .connectorId("connectorId")
+                .counterPartyId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
                 // do not set provider ID
@@ -80,7 +80,7 @@ public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {
     @Test
     void verify_transform_withNoConsumerId() {
         var dto = NegotiateEdrRequestDto.Builder.newInstance()
-                .connectorId("connectorId")
+                .counterPartyId("connectorId")
                 .connectorAddress("address")
                 .protocol("protocol")
                 // do not set consumer ID

@@ -20,6 +20,7 @@ import jakarta.json.JsonValue;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractVpConstraintFunction;
 
@@ -65,7 +66,7 @@ public class SummaryConstraintFunction extends AbstractVpConstraintFunction {
             return false;
         }
 
-        var vp = (JsonObject) context.getParticipantAgent().getClaims().get(VP_PROPERTY);
+        var vp = (JsonObject) context.getContextData(ParticipantAgent.class).getClaims().get(VP_PROPERTY);
         if (!validatePresentation(vp, context)) {
             return false;
         }

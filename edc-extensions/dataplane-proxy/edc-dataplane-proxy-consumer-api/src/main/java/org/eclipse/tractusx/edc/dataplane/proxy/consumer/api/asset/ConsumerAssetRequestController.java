@@ -22,12 +22,12 @@ import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
@@ -111,7 +111,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
 
         try {
-            dataPlaneManager.transfer(sink, flowRequest).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
+            dataPlaneManager.transfer(flowRequest).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
         } catch (Exception e) {
             reportError(response, e);
         }
@@ -162,7 +162,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     /**
      * Handles a request completion, checking for errors. If no errors are present, nothing needs to be done as the response will have already been written to the client.
      */
-    private void handleCompletion(AsyncResponse response, StreamResult<Void> result, Throwable throwable) {
+    private void handleCompletion(AsyncResponse response, StreamResult<Object> result, Throwable throwable) {
         if (result != null && result.failed()) {
             switch (result.reason()) {
                 case NOT_FOUND -> response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());

@@ -44,6 +44,7 @@ public class EndpointDataReferenceToDataAddressTransformerTest {
                 .id("dataRequestId")
                 .authCode("authCode")
                 .authKey("authKey")
+                .contractId("test-contract-id")
                 .endpoint("http://endpoint")
                 .build();
 

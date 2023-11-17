@@ -18,6 +18,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractVpConstraintFunction;
 
 import java.util.Objects;
@@ -70,7 +71,7 @@ public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFu
             return false;
         }
 
-        var vp = (JsonObject) context.getParticipantAgent().getClaims().get(VP_PROPERTY);
+        var vp = (JsonObject) context.getContextData(ParticipantAgent.class).getClaims().get(VP_PROPERTY);
         if (!validatePresentation(vp, context)) {
             return false;
         }
@@ -140,16 +141,6 @@ public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFu
         }
 
         /**
-         * Ctor.
-         *
-         * @param credentialType the framework credential type required by the constraint instance.
-         * @return the builder
-         */
-        public static Builder newInstance(String credentialType) {
-            return new Builder(credentialType);
-        }
-
-        /**
          * Sets the framework agreement type.
          */
         public Builder agreementType(String agreementType) {
@@ -168,6 +159,16 @@ public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFu
         public FrameworkAgreementConstraintFunction build() {
             requireNonNull(constraint.agreementType, "agreementType");
             return constraint;
+        }
+
+        /**
+         * Ctor.
+         *
+         * @param credentialType the framework credential type required by the constraint instance.
+         * @return the builder
+         */
+        public static Builder newInstance(String credentialType) {
+            return new Builder(credentialType);
         }
     }
 

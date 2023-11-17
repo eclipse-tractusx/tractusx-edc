@@ -45,7 +45,7 @@ public class EdrSchema {
                 {
                     "@context": { "edc": "https://w3id.org/edc/v0.0.1/ns/" },
                     "@type": "NegotiateEdrRequestDto",
-                    "connectorAddress": "http://provider-address",
+                    "counterPartyAddress": "http://provider-address",
                     "protocol": "dataspace-protocol-http",
                     "providerId": "provider-id",
                     "offer": {

@@ -15,8 +15,8 @@
 package org.eclipse.tractusx.edc.edr.core.service;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;

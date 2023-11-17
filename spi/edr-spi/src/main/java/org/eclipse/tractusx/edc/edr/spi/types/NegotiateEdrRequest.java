@@ -14,8 +14,8 @@
 
 package org.eclipse.tractusx.edc.edr.spi.types;
 
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,10 +63,6 @@ public class NegotiateEdrRequest {
             entity = new NegotiateEdrRequest();
         }
 
-        public static Builder newInstance() {
-            return new Builder();
-        }
-
         public Builder connectorAddress(String connectorAddress) {
             entity.connectorAddress = connectorAddress;
             return this;
@@ -97,6 +93,10 @@ public class NegotiateEdrRequest {
             Objects.requireNonNull(entity.connectorAddress, "connector address should not be null");
             Objects.requireNonNull(entity.offer, "offer should not be null");
             return entity;
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
     }
 }

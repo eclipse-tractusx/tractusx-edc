@@ -15,15 +15,15 @@
 package org.eclipse.tractusx.edc.edr.core.service;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.service.spi.result.ServiceFailure;
-import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.result.ServiceFailure;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +72,12 @@ public class EdrServiceImplTest {
 
         var transferProcessId = "tpId";
 
-        when(endpointDataReferenceCache.resolveReference(transferProcessId)).thenReturn(EndpointDataReference.Builder.newInstance().endpoint("test").build());
+        when(endpointDataReferenceCache.resolveReference(eq(transferProcessId)))
+                .thenReturn(EndpointDataReference.Builder.newInstance()
+                        .id("test-id")
+                        .contractId("test-contract")
+                        .endpoint("test")
+                        .build());
 
         var result = transferService.findByTransferProcessId(transferProcessId);
 
@@ -115,7 +121,7 @@ public class EdrServiceImplTest {
     void deleteByTransferProcessId_shouldNotFound_whenNotPresentInCache() {
         var transferProcessId = "tpId";
 
-        when(endpointDataReferenceCache.deleteByTransferProcessId(transferProcessId)).thenReturn(StoreResult.notFound(""));
+        when(endpointDataReferenceCache.deleteByTransferProcessId(eq(transferProcessId))).thenReturn(StoreResult.notFound(""));
 
         var result = transferService.deleteByTransferProcessId(transferProcessId);
 
