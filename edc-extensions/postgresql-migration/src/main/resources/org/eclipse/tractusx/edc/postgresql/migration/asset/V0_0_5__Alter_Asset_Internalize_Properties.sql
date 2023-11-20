@@ -1,5 +1,5 @@
 --
---  Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
+--  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft
 --
 --  This program and the accompanying materials are made available under the
 --  terms of the Apache License, Version 2.0 which is available at
@@ -8,7 +8,7 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
 --  Contributors:
---       Mercedes-Benz Tech Innovation GmbH - EDC Snapshot 20220815 Update
+--       Bayerische Motoren Werke Aktiengesellschaft - Migration into one table
 --
 
 -- add columns
@@ -49,6 +49,6 @@ FROM edc_asset as a
 WHERE edc_asset.asset_id = a.asset_id;
 
 
--- do NOT drop edc_asset_dataaddress and edc_asset_property to enable further data migration scripts
-
+DROP TABLE edc_asset_dataaddress;
+DROP TABLE edc_asset_property;
 

@@ -21,9 +21,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
+import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
@@ -46,6 +48,7 @@ import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 /**
  * Implements the HTTP proxy API.
@@ -53,24 +56,24 @@ import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSche
 @Path("/aas")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
-    public static final String BASE_URL = "baseUrl";
+    public static final String BASE_URL = EDC_NAMESPACE + "baseUrl";
     private static final String HTTP_DATA = "HttpData";
     private static final String ASYNC_TYPE = "async";
     private static final String HEADER_AUTHORIZATION = "header:authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final EndpointDataReferenceCache edrCache;
-    private final DataPlaneManager dataPlaneManager;
+    private final TransferService transferService;
     private final Monitor monitor;
 
     private final ExecutorService executorService;
 
     public ConsumerAssetRequestController(EndpointDataReferenceCache edrCache,
-                                          DataPlaneManager dataPlaneManager,
+                                          TransferService transferService,
                                           ExecutorService executorService,
                                           Monitor monitor) {
         this.edrCache = edrCache;
-        this.dataPlaneManager = dataPlaneManager;
+        this.transferService = transferService;
         this.executorService = executorService;
         this.monitor = monitor;
     }
@@ -106,7 +109,10 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                 .build();
 
         try {
-            dataPlaneManager.transfer(flowRequest).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
+            // transfer the data asynchronously
+            var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
+
+            transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
         } catch (Exception e) {
             reportError(response, e);
         }

@@ -18,8 +18,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.specification.RequestSpecification;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -63,7 +63,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
 
     public static final String ASSET_REQUEST_PATH = "/aas/request";
     private final EndpointDataReferenceCache cache = mock(EndpointDataReferenceCache.class);
-    private final DataPlaneManager dataPlaneManager = mock(DataPlaneManager.class);
+    private final PipelineService pipelineService = mock();
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
@@ -91,7 +91,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         when(partStream.openStream()).thenReturn(new ByteArrayInputStream(responseBytes));
 
         when(cache.referencesForAsset(assetId, null)).thenReturn(List.of(edr));
-        when(dataPlaneManager.transfer(any()))
+        when(pipelineService.transfer(any(), any()))
                 .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
 
         var proxyResponseBytes = baseRequest()
@@ -125,7 +125,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
                 .build();
 
         when(cache.referencesForAsset(assetId, null)).thenReturn(List.of(edr));
-        when(dataPlaneManager.transfer(any()))
+        when(pipelineService.transfer(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(result));
 
         baseRequest()
@@ -207,7 +207,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         when(partStream.openStream()).thenReturn(new ByteArrayInputStream(responseBytes));
 
         when(cache.resolveReference(transferProcessId)).thenReturn(edr);
-        when(dataPlaneManager.transfer(any()))
+        when(pipelineService.transfer(any(), any()))
                 .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
 
         var proxyResponseBytes = baseRequest()
@@ -267,10 +267,8 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         when(partStream.openStream()).thenReturn(new ByteArrayInputStream(responseBytes));
 
         when(cache.resolveReference(transferProcessId)).thenReturn(edr);
-        when(dataPlaneManager.transfer(any()))
-                .thenAnswer(a -> {
-                    return CompletableFuture.completedFuture(StreamResult.success(response));
-                });
+        when(pipelineService.transfer(any(), any()))
+                .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
 
         var proxyResponseBytes = baseRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -286,7 +284,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         assertThat(proxyResponse).containsAllEntriesOf(response);
 
         var captor = ArgumentCaptor.forClass(DataFlowRequest.class);
-        verify(dataPlaneManager).transfer(captor.capture());
+        verify(pipelineService).transfer(captor.capture(), any());
 
 
         var flowRequest = captor.getValue();
@@ -300,7 +298,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
 
     @Override
     protected Object controller() {
-        return new ConsumerAssetRequestController(cache, dataPlaneManager, Executors.newSingleThreadExecutor(), mock(Monitor.class));
+        return new ConsumerAssetRequestController(cache, pipelineService, Executors.newSingleThreadExecutor(), mock(Monitor.class));
     }
 
     @Override

@@ -16,7 +16,7 @@ package org.eclipse.tractusx.edc.dataplane.proxy.consumer.api;
 
 import org.eclipse.edc.api.auth.spi.AuthenticationRequestFilter;
 import org.eclipse.edc.api.auth.spi.AuthenticationService;
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -57,7 +57,7 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private WebServer webServer;
 
     @Inject
-    private DataPlaneManager dataPlaneManager;
+    private PipelineService pipelineService;
 
     @Inject
     private EndpointDataReferenceCache edrCache;
@@ -87,7 +87,7 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
         webService.registerResource(CONSUMER_API_ALIAS, new AuthenticationRequestFilter(authenticationService));
         webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());
-        webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrCache, dataPlaneManager, executorService, monitor));
+        webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrCache, pipelineService, executorService, monitor));
     }
 
     @Override
