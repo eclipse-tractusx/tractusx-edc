@@ -48,7 +48,7 @@ public class InProcessCallbackMessageDispatcherTest {
 
         var msg = remoteMessage(getNegotiationFinalizedEvent());
         when(callback.invoke(any())).thenReturn(Result.success());
-        dispatcher.send(Object.class, msg).join();
+        dispatcher.dispatch(Object.class, msg).join();
 
 
         verify(callback).invoke(msg);
@@ -57,7 +57,7 @@ public class InProcessCallbackMessageDispatcherTest {
     @Test
     void send_shouldNotInvokeRegisteredCallback_whenItsNotCallbackRemoteMessage() {
 
-        assertThatThrownBy(() -> dispatcher.send(Object.class, new TestMessage()).join())
+        assertThatThrownBy(() -> dispatcher.dispatch(Object.class, new TestMessage()).join())
                 .hasCauseInstanceOf(EdcException.class);
 
 

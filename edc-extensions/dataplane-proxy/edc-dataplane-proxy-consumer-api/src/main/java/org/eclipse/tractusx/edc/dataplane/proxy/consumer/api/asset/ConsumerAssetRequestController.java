@@ -22,12 +22,12 @@ import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
+import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
@@ -48,6 +48,7 @@ import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 /**
  * Implements the HTTP proxy API.
@@ -55,24 +56,24 @@ import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSche
 @Path("/aas")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
-    public static final String BASE_URL = "baseUrl";
+    public static final String BASE_URL = EDC_NAMESPACE + "baseUrl";
     private static final String HTTP_DATA = "HttpData";
     private static final String ASYNC_TYPE = "async";
     private static final String HEADER_AUTHORIZATION = "header:authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final EndpointDataReferenceCache edrCache;
-    private final DataPlaneManager dataPlaneManager;
+    private final TransferService transferService;
     private final Monitor monitor;
 
     private final ExecutorService executorService;
 
     public ConsumerAssetRequestController(EndpointDataReferenceCache edrCache,
-                                          DataPlaneManager dataPlaneManager,
+                                          TransferService transferService,
                                           ExecutorService executorService,
                                           Monitor monitor) {
         this.edrCache = edrCache;
-        this.dataPlaneManager = dataPlaneManager;
+        this.transferService = transferService;
         this.executorService = executorService;
         this.monitor = monitor;
     }
@@ -107,11 +108,11 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                 .properties(properties)
                 .build();
 
-        // transfer the data asynchronously
-        var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
-
         try {
-            dataPlaneManager.transfer(sink, flowRequest).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
+            // transfer the data asynchronously
+            var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
+
+            transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
         } catch (Exception e) {
             reportError(response, e);
         }
@@ -162,7 +163,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     /**
      * Handles a request completion, checking for errors. If no errors are present, nothing needs to be done as the response will have already been written to the client.
      */
-    private void handleCompletion(AsyncResponse response, StreamResult<Void> result, Throwable throwable) {
+    private void handleCompletion(AsyncResponse response, StreamResult<Object> result, Throwable throwable) {
         if (result != null && result.failed()) {
             switch (result.reason()) {
                 case NOT_FOUND -> response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());
@@ -172,6 +173,9 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
             }
         } else if (throwable != null) {
             reportError(response, throwable);
+        }
+        if (result.succeeded()) {
+            response.resume(result.getContent());
         }
     }
 

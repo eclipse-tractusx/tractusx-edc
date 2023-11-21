@@ -23,7 +23,6 @@ dependencies {
     implementation(project(":spi:edr-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.contract)
-    implementation(libs.edc.spi.aggregateservices)
     implementation(libs.edc.spi.controlplane)
     implementation(libs.edc.spi.controlplane)
 }

@@ -24,6 +24,8 @@ dependencies {
 
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transfer)
+    implementation(libs.edc.spi.transform)
+    implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.spi.controlplane)
     implementation(libs.nimbus.jwt)
 

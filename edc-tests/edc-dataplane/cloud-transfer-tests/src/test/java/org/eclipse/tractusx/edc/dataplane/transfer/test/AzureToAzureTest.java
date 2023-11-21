@@ -50,12 +50,11 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_PROVIDER_KEY_ALIAS;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_DOCKER_IMAGE;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.COMPLETION_MARKER;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobSourceAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
@@ -120,14 +119,15 @@ public class AzureToAzureTest {
                 .body(request)
                 .post()
                 .then()
+                .log().ifValidationFails()
+                .log().ifError()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
                 .untilAsserted(() -> assertThat(consumerBlobHelper.listBlobs(AZBLOB_CONSUMER_CONTAINER_NAME))
                         .isNotEmpty()
-                        .contains(TESTFILE_NAME)
-                        .contains(COMPLETION_MARKER));
+                        .contains(TESTFILE_NAME));
 
     }
 
@@ -172,14 +172,15 @@ public class AzureToAzureTest {
                 .body(request)
                 .post()
                 .then()
+                .log().ifValidationFails()
+                .log().ifError()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(10))
                 .atMost(Duration.ofSeconds(120))
                 .untilAsserted(() -> assertThat(consumerBlobHelper.listBlobs(AZBLOB_CONSUMER_CONTAINER_NAME))
                         .isNotEmpty()
-                        .contains(blobName)
-                        .contains(COMPLETION_MARKER));
+                        .contains(blobName));
 
     }
 
@@ -206,14 +207,15 @@ public class AzureToAzureTest {
                 .body(request)
                 .post()
                 .then()
+                .log().ifValidationFails()
+                .log().ifError()
                 .statusCode(200);
 
         // wait until the data plane logs an exception that it cannot transfer the blob
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor())
-                        .severe(eq("Error creating blob for %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)),
-                                isA(IOException.class)));
+                        .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
     }
 
     private DataFlowRequest createFlowRequest(String blobName) {

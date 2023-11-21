@@ -87,7 +87,7 @@ public abstract class AbstractDeleteEdrTest {
                     var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
                     var localExpired = edrCaches.stream()
                             .filter(json -> json.asJsonObject().getJsonString("tx:edrState").getString().equals(EXPIRED.name()))
-                            .map(json -> json.asJsonObject().getJsonString("edc:transferProcessId").getString())
+                            .map(json -> json.asJsonObject().getJsonString("transferProcessId").getString())
                             .toList();
                     assertThat(localExpired).hasSizeGreaterThan(0);
                     expired.add(localExpired.get(0));

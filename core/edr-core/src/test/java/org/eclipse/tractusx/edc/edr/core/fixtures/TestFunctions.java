@@ -15,9 +15,9 @@
 package org.eclipse.tractusx.edc.edr.core.fixtures;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 
 import java.util.List;

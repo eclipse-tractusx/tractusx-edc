@@ -23,13 +23,13 @@ import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.Contract
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationTerminated;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
-import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.edc.spi.types.domain.agreement.ContractAgreement;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,16 +63,6 @@ public class ContractNegotiationCallbackTest {
 
     ContractNegotiationCallback callback;
 
-    private static <T extends ContractNegotiationEvent, B extends ContractNegotiationEvent.Builder<T, B>> B baseBuilder(B builder) {
-        var callbacks = List.of(CallbackAddress.Builder.newInstance().uri("http://local").events(Set.of("test")).build());
-        return builder
-                .contractNegotiationId("id")
-                .protocol("test")
-                .callbackAddresses(callbacks)
-                .counterPartyAddress("addr")
-                .counterPartyId("provider");
-    }
-
     @BeforeEach
     void setup() {
         callback = new ContractNegotiationCallback(transferProcessService, monitor);
@@ -101,7 +91,7 @@ public class ContractNegotiationCallbackTest {
         assertThat(transferRequest).satisfies(tp -> {
             assertThat(tp.getContractId()).isEqualTo(event.getContractAgreement().getId());
             assertThat(tp.getAssetId()).isEqualTo(event.getContractAgreement().getAssetId());
-            assertThat(tp.getConnectorAddress()).isEqualTo(event.getCounterPartyAddress());
+            assertThat(tp.getCounterPartyAddress()).isEqualTo(event.getCounterPartyAddress());
             assertThat(tp.getConnectorId()).isEqualTo(event.getCounterPartyId());
             assertThat(tp.getProtocol()).isEqualTo(event.getProtocol());
             assertThat(tp.getDataDestination()).usingRecursiveComparison().isEqualTo(DATA_DESTINATION);
@@ -148,6 +138,16 @@ public class ContractNegotiationCallbackTest {
 
         callback.invoke(message);
         verify(transferProcessService).initiateTransfer(any(TransferRequest.class));
+    }
+
+    private static <T extends ContractNegotiationEvent, B extends ContractNegotiationEvent.Builder<T, B>> B baseBuilder(B builder) {
+        var callbacks = List.of(CallbackAddress.Builder.newInstance().uri("http://local").events(Set.of("test")).build());
+        return builder
+                .contractNegotiationId("id")
+                .protocol("test")
+                .callbackAddresses(callbacks)
+                .counterPartyAddress("addr")
+                .counterPartyId("provider");
     }
 
     private static class EventInstances implements ArgumentsProvider {

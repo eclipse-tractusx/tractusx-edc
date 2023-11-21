@@ -33,4 +33,7 @@ public class SftpDataSource implements DataSource {
         return StreamResult.success(Stream.of(sftpPart));
     }
 
+    @Override
+    public void close() throws Exception {
+    }
 }

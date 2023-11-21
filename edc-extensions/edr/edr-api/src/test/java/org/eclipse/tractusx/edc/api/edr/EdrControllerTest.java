@@ -26,10 +26,10 @@ import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
-import org.eclipse.edc.service.spi.result.ServiceResult;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
@@ -163,7 +163,9 @@ public class EdrControllerTest extends RestControllerTestBase {
     @Test
     void getEdr_shouldReturnDataAddress_whenFound() {
         var transferProcessId = "id";
-        var edr = EndpointDataReference.Builder.newInstance().endpoint("test").id(transferProcessId).build();
+        var edr = EndpointDataReference.Builder.newInstance().endpoint("test")
+                .contractId("test-contract-id")
+                .id(transferProcessId).build();
         var response = Json.createObjectBuilder()
                 .add(DataAddress.EDC_DATA_ADDRESS_TYPE_PROPERTY, EndpointDataReference.EDR_SIMPLE_TYPE)
                 .add(EndpointDataReference.ENDPOINT, edr.getEndpoint())
@@ -361,7 +363,7 @@ public class EdrControllerTest extends RestControllerTestBase {
     @Override
     protected Object additionalResource() {
         final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
-        return new JerseyJsonLdInterceptor(this.jsonLdService, objectMapper);
+        return new JerseyJsonLdInterceptor(this.jsonLdService, objectMapper, "edr");
     }
 
     private RequestSpecification baseRequest() {

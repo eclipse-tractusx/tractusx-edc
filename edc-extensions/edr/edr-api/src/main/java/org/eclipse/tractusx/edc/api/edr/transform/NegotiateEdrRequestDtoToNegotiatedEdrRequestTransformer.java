@@ -14,7 +14,7 @@
 
 package org.eclipse.tractusx.edc.api.edr.transform;
 
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.edc.transform.spi.TypeTransformer;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
@@ -43,8 +43,8 @@ public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements 
                 .build();
 
         return NegotiateEdrRequest.Builder.newInstance()
-                .connectorId(object.getConnectorId())
-                .connectorAddress(object.getConnectorAddress())
+                .connectorId(object.getCounterPartyId())
+                .connectorAddress(object.getCounterPartyAddress())
                 .protocol(object.getProtocol())
                 .offer(contractOffer)
                 .callbackAddresses(object.getCallbackAddresses())

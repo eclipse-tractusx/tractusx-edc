@@ -14,7 +14,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.provider.api;
 
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -58,7 +58,7 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
     private WebService webService;
 
     @Inject
-    private DataPlaneManager dataPlaneManager;
+    private PipelineService pipelineService;
 
     @Inject
     private Monitor monitor;
@@ -89,8 +89,8 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
         var validationEndpoint = context.getConfig().getString(CONTROL_PLANE_VALIDATION_ENDPOINT);
 
         var dataAddressResolver = new ProxyProviderDataAddressResolver(httpClient, validationEndpoint, typeManager.getMapper());
-        
-        var controller = new ProviderGatewayController(dataPlaneManager,
+
+        var controller = new ProviderGatewayController(pipelineService,
                 dataAddressResolver,
                 configurationRegistry,
                 authorizationRegistry,

@@ -128,7 +128,7 @@ public abstract class AbstractRenewalEdrTest {
 
         var transferProcessId = edrCaches.stream()
                 .filter(json -> json.asJsonObject().getJsonString("tx:edrState").getString().equals(EXPIRED.name()))
-                .map(json -> json.asJsonObject().getJsonString("edc:transferProcessId").getString())
+                .map(json -> json.asJsonObject().getJsonString("transferProcessId").getString())
                 .findFirst()
                 .orElseThrow();
 

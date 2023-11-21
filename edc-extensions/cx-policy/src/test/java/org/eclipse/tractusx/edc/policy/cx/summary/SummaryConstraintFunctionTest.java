@@ -49,13 +49,13 @@ public class SummaryConstraintFunctionTest {
 
         var function = new SummaryConstraintFunction(CX_QUALITY);
 
-        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(VP_PROPERTY, vp), Map.of()));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(VP_PROPERTY, vp), Map.of()));
 
         var result = function.evaluate(EQ, "active", permission, context);
 
         assertThat(result).isTrue();
 
-        verify(context, atLeastOnce()).getParticipantAgent();
+        verify(context, atLeastOnce()).getContextData(ParticipantAgent.class);
     }
 
     @BeforeEach

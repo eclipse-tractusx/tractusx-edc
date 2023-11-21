@@ -118,7 +118,7 @@ class FrameworkAgreementConstraintFunctionTest {
                 .agreementType("PcfAgreement")
                 .build();
 
-        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(), Map.of()));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of()));
 
         var result = function.evaluate(EQ, "active", permission, context);
 
@@ -135,7 +135,7 @@ class FrameworkAgreementConstraintFunctionTest {
 
     private void setVpInContextVp() throws JsonProcessingException {
         var vp = expand(createObjectMapper().readValue(PCF_VP, JsonObject.class), CONTEXT_CACHE);
-        when(context.getParticipantAgent()).thenReturn(new ParticipantAgent(Map.of(VP_PROPERTY, vp), Map.of()));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(VP_PROPERTY, vp), Map.of()));
     }
 
 

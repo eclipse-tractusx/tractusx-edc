@@ -17,10 +17,10 @@ package org.eclipse.tractusx.edc.dataplane.proxy.e2e;
 import io.restassured.specification.RequestSpecification;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -97,26 +97,6 @@ public class DpfProxyEndToEndTest {
     private static MockWebServer mockValidationEndpoint = new MockWebServer();
     private final TypeManager typeManager = new TypeManager();
 
-    private static Map<String, String> baseConfig(Map<String, String> values) {
-        var map = new HashMap<>(values);
-        map.put("edc.keystore", createKeyStore(KEYSTORE_PASS));
-        map.put("edc.keystore.password", KEYSTORE_PASS);
-        map.put("edc.dataplane.token.validation.endpoint", "http://localhost:" + VALIDATION_ENDPOINT_PORT);
-        return map;
-    }
-
-    @AfterAll
-    static void tearDown() throws IOException {
-        mockEndpoint.shutdown();
-        mockValidationEndpoint.shutdown();
-    }
-
-    @BeforeAll
-    static void setUp() {
-        mockEndpoint = new MockWebServer();
-        mockValidationEndpoint = new MockWebServer();
-    }
-
     @Test
     void verify_end2EndFlows() throws IOException {
 
@@ -140,11 +120,14 @@ public class DpfProxyEndToEndTest {
         var tpSpec = createSpecification(format(REQUEST_TEMPLATE_TP, SINGLE_TRANSFER_ID, PRODUCER_HTTP_PORT));
 
         // verify content successfully proxied using a transfer process id
-        tpSpec.with()
+        var rs = tpSpec.with()
                 .post(PROXY_SUBPATH)
                 .then()
+                .log().ifError()
                 .assertThat().statusCode(200)
-                .assertThat().body(is(MOCK_ENDPOINT_200_BODY));
+                .body(is(MOCK_ENDPOINT_200_BODY));
+
+        var str = rs.extract().body().asString();
 
         // verify content successfully proxied using an asset id for the case where only one active transfer process exists for the asset
         var assetSpec = createSpecification(format(REQUEST_TEMPLATE_ASSET, SINGLE_ASSET_ID, PRODUCER_HTTP_PORT));
@@ -181,6 +164,14 @@ public class DpfProxyEndToEndTest {
                 .assertThat().statusCode(428);
     }
 
+    private static Map<String, String> baseConfig(Map<String, String> values) {
+        var map = new HashMap<>(values);
+        map.put("edc.keystore", createKeyStore(KEYSTORE_PASS));
+        map.put("edc.keystore.password", KEYSTORE_PASS);
+        map.put("edc.dataplane.token.validation.endpoint", "http://localhost:" + VALIDATION_ENDPOINT_PORT);
+        return map;
+    }
+
     private RequestSpecification createSpecification(String body) {
         return given()
                 .baseUri("http://localhost:" + CONSUMER_PROXY_PORT)
@@ -195,6 +186,18 @@ public class DpfProxyEndToEndTest {
     private void seedEdrCache() {
         var edrCache = consumer.getContext().getService(EndpointDataReferenceCache.class);
         createEntries().forEach(e -> edrCache.save(e.getEdrEntry(), e.getEdr()));
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        mockEndpoint.shutdown();
+        mockValidationEndpoint.shutdown();
+    }
+
+    @BeforeAll
+    static void setUp() {
+        mockEndpoint = new MockWebServer();
+        mockValidationEndpoint = new MockWebServer();
     }
 
 

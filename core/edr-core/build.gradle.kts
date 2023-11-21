@@ -20,7 +20,6 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.config.filesystem)
     implementation(libs.edc.util)
-    implementation(libs.edc.spi.aggregateservices)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.controlplane)
     implementation(libs.edc.statemachine)

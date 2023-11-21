@@ -23,7 +23,7 @@ import org.eclipse.edc.validator.spi.Validator;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.ASSET_ID;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.OFFER_ID;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
-import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_CONNECTOR_ADDRESS;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
 
@@ -35,7 +35,7 @@ public class NegotiateEdrRequestDtoValidator {
 
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
-                .verify(EDR_REQUEST_DTO_CONNECTOR_ADDRESS, MandatoryValue::new)
+                .verify(EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS, MandatoryValue::new)
                 .verify(EDR_REQUEST_DTO_PROTOCOL, MandatoryValue::new)
                 .verify(EDR_REQUEST_DTO_OFFER, MandatoryObject::new)
                 .verifyObject(EDR_REQUEST_DTO_OFFER, v -> v

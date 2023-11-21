@@ -21,11 +21,11 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy;
 
-import org.eclipse.edc.connector.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.types.domain.agreement.ContractAgreement;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -63,21 +63,6 @@ public abstract class AbstractBusinessPartnerValidation {
     protected AbstractBusinessPartnerValidation(Monitor monitor, boolean logAgreementEvaluation) {
         this.monitor = Objects.requireNonNull(monitor);
         this.logAgreementEvaluation = logAgreementEvaluation;
-    }
-
-    /**
-     * At the time of writing (11. April 2022) the business partner number is part of the
-     * 'referringConnector' claim, which contains a connector URL. As the CX projects are not further
-     * aligned about the URL formatting, the enforcement can only be done by checking whether the URL
-     * _contains_ the number. As this introduces some insecurities when validation business partner
-     * numbers, this should be addresses in the long term.
-     *
-     * @param referringConnectorClaim describing URL with business partner number
-     * @param businessPartnerNumber   of the constraint
-     * @return true if claim contains the business partner number
-     */
-    private static boolean isCorrectBusinessPartner(String referringConnectorClaim, String businessPartnerNumber) {
-        return referringConnectorClaim.contains(businessPartnerNumber);
     }
 
     public boolean isLogAgreementEvaluation() {
@@ -126,6 +111,21 @@ public abstract class AbstractBusinessPartnerValidation {
             policyContext.reportProblem(message);
             return false;
         }
+    }
+
+    /**
+     * At the time of writing (11. April 2022) the business partner number is part of the
+     * 'referringConnector' claim, which contains a connector URL. As the CX projects are not further
+     * aligned about the URL formatting, the enforcement can only be done by checking whether the URL
+     * _contains_ the number. As this introduces some insecurities when validation business partner
+     * numbers, this should be addresses in the long term.
+     *
+     * @param referringConnectorClaim describing URL with business partner number
+     * @param businessPartnerNumber   of the constraint
+     * @return true if claim contains the business partner number
+     */
+    private static boolean isCorrectBusinessPartner(String referringConnectorClaim, String businessPartnerNumber) {
+        return referringConnectorClaim.contains(businessPartnerNumber);
     }
 
     @Nullable
