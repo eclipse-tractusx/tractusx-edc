@@ -47,7 +47,6 @@ public class TestConstants {
     public static final String S3_ACCESS_KEY_ID = "test-access-key"; // user name
     // GENERIC CONSTANTS
     public static final String TESTFILE_NAME = "testfile.json";
-    public static final String COMPLETION_MARKER = ".complete";
 
     public static DataAddress blobSourceAddress(String blobName) {
         return DataAddress.Builder.newInstance()
@@ -55,7 +54,7 @@ public class TestConstants {
                 .property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
                 .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME)
                 .property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
-                .property("blobname", blobName)
+                .property("blobName", blobName)
                 .build();
     }
 
@@ -64,7 +63,7 @@ public class TestConstants {
                 .type("AzureStorage")
                 .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
                 .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
-                .property("blobname", blobName)
+                .property("blobName", blobName)
                 .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
                 .build();
     }

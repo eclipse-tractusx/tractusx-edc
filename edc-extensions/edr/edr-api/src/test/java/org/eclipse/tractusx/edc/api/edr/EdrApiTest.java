@@ -44,7 +44,6 @@ import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_PROVIDER_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_STATE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
-import static org.mockito.Mockito.mock;
 
 public class EdrApiTest {
 
@@ -56,7 +55,7 @@ public class EdrApiTest {
 
     @BeforeEach
     void setUp() {
-        transformer.register(new JsonObjectToContractRequestTransformer(mock()));
+        transformer.register(new JsonObjectToContractRequestTransformer());
         transformer.register(new JsonObjectToContractOfferDescriptionTransformer());
         transformer.register(new JsonObjectToCallbackAddressTransformer());
         transformer.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());

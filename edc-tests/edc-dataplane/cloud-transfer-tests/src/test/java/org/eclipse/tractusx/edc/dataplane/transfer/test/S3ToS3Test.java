@@ -57,7 +57,6 @@ import java.util.concurrent.CompletableFuture;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.COMPLETION_MARKER;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
@@ -151,8 +150,7 @@ public class S3ToS3Test {
                 .atMost(Duration.ofSeconds(60))
                 .untilAsserted(() -> assertThat(listObjects(consumerClient, S3_CONSUMER_BUCKET_NAME))
                         .isNotEmpty()
-                        .contains(TESTFILE_NAME)
-                        .anyMatch(c -> c.endsWith(COMPLETION_MARKER)));
+                        .contains(TESTFILE_NAME));
     }
 
     @Test
@@ -220,8 +218,7 @@ public class S3ToS3Test {
                     .atMost(Duration.ofSeconds(60))
                     .untilAsserted(() -> assertThat(listObjects(consumerClient, S3_CONSUMER_BUCKET_NAME))
                             .isNotEmpty()
-                            .contains(TESTFILE_NAME)
-                            .anyMatch(c -> c.endsWith(COMPLETION_MARKER)));
+                            .contains(TESTFILE_NAME));
         });
 
 

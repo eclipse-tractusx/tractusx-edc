@@ -55,7 +55,6 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_CONTAINER_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_KEY_ALIAS;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.COMPLETION_MARKER;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
@@ -75,7 +74,7 @@ public class MultiCloudTest {
     public static final String BLOB_KEY_ALIAS = AZBLOB_CONSUMER_KEY_ALIAS;
     private static final String ACCESS_KEY_ID = S3_ACCESS_KEY_ID; // user name
     private static final String SECRET_ACCESS_KEY = UUID.randomUUID().toString(); // password
-    
+
     // Azure Blob test constants
     private static final String BLOB_ACCOUNT_NAME = AZBLOB_CONSUMER_ACCOUNT_NAME;
     private static final String BLOB_ACCOUNT_KEY = AZBLOB_CONSUMER_ACCOUNT_KEY;
@@ -136,7 +135,7 @@ public class MultiCloudTest {
                         .property("container", BLOB_CONTAINER_NAME)
                         .property("account", BLOB_ACCOUNT_NAME)
                         .property("keyName", BLOB_KEY_ALIAS)
-                        .property("blobname", TESTFILE_NAME)
+                        .property("blobName", TESTFILE_NAME)
                         .build()
                 )
                 .destinationDataAddress(DataAddress.Builder.newInstance()
@@ -160,14 +159,15 @@ public class MultiCloudTest {
                 .body(dfr)
                 .post()
                 .then()
+                .log().ifValidationFails()
+                .log().ifError()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
                 .untilAsserted(() -> assertThat(listObjects(s3Client, BUCKET_NAME))
                         .isNotEmpty()
-                        .contains(TESTFILE_NAME)
-                        .anyMatch(c -> c.endsWith(COMPLETION_MARKER)));
+                        .contains(TESTFILE_NAME));
     }
 
     @Test
@@ -217,7 +217,6 @@ public class MultiCloudTest {
                 .atMost(Duration.ofSeconds(60))
                 .untilAsserted(() -> assertThat(blobStoreHelper.listBlobs(BLOB_CONTAINER_NAME))
                         .isNotEmpty()
-                        .contains(TESTFILE_NAME)
-                        .contains(COMPLETION_MARKER));
+                        .contains(TESTFILE_NAME));
     }
 }
