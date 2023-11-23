@@ -114,6 +114,8 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0-r
 | runtime.ingresses[1].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
 | runtime.ingresses[1].tls.secretName | string | `""` | If present overwrites the default secret name |
 | runtime.initContainers | list | `[]` |  |
+| runtime.limits.cpu | float | `1.5` |  |
+| runtime.limits.memory | string | `"512Mi"` |  |
 | runtime.livenessProbe.enabled | bool | `true` | Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | runtime.livenessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | runtime.livenessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first liveness check |
@@ -136,6 +138,8 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0-r
 | runtime.readinessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | runtime.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | runtime.replicaCount | int | `1` |  |
+| runtime.requests.cpu | string | `"500m"` |  |
+| runtime.requests.memory | string | `"128Mi"` |  |
 | runtime.resources | object | `{}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
 | runtime.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
 | runtime.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |
