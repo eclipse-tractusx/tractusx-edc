@@ -99,9 +99,9 @@ maven/mavencentral/dev.failsafe/failsafe/3.3.1, Apache-2.0, approved, #9268
 maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
 maven/mavencentral/info.picocli/picocli/4.6.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.github.classgraph/classgraph/4.8.154, MIT, approved, CQ22530
-maven/mavencentral/io.micrometer/micrometer-commons/1.12.0, , restricted, clearlydefined
-maven/mavencentral/io.micrometer/micrometer-core/1.12.0, , restricted, clearlydefined
-maven/mavencentral/io.micrometer/micrometer-observation/1.12.0, , restricted, clearlydefined
+maven/mavencentral/io.micrometer/micrometer-commons/1.12.0, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #11679
+maven/mavencentral/io.micrometer/micrometer-core/1.12.0, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #11678
+maven/mavencentral/io.micrometer/micrometer-observation/1.12.0, Apache-2.0, approved, #11680
 maven/mavencentral/io.netty/netty-buffer/4.1.100.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.94.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-codec-dns/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
@@ -149,8 +149,8 @@ maven/mavencentral/io.opentelemetry/opentelemetry-api/1.31.0, Apache-2.0, approv
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.31.0, Apache-2.0, approved, #11088
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.34, Apache-2.0, approved, #9687
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.38, Apache-2.0, approved, #9687
-maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.34, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.38, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.34, Apache-2.0, approved, #11661
+maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.38, Apache-2.0, approved, #11661
 maven/mavencentral/io.projectreactor/reactor-core/3.4.31, Apache-2.0, approved, #7517
 maven/mavencentral/io.projectreactor/reactor-core/3.4.33, Apache-2.0, approved, #7517
 maven/mavencentral/io.rest-assured/json-path/5.3.2, Apache-2.0, approved, #9261
