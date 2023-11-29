@@ -74,7 +74,7 @@ maven/mavencentral/com.microsoft.azure/msal4j/1.4.0, MIT, approved, clearlydefin
 maven/mavencentral/com.nimbusds/content-type/2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.30.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37, Apache-2.0, approved, #11086
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37, Apache-2.0, approved, #11701
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/10.7.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.puppycrawl.tools/checkstyle/10.0, LGPL-2.1-or-later, approved, #7936
 maven/mavencentral/com.squareup.okhttp3/mockwebserver/5.0.0-alpha.11, Apache-2.0, approved, clearlydefined
@@ -411,7 +411,6 @@ maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.10.0, EPL-2.0, appro
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.10.1, EPL-2.0, approved, #9708
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.10.0, EPL-2.0, approved, #9715
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.10.1, EPL-2.0, approved, #9715
-maven/mavencentral/org.junit.platform/junit-platform-engine/1.10.0, EPL-2.0, approved, #9709
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.10.1, EPL-2.0, approved, #9709
 maven/mavencentral/org.junit.platform/junit-platform-launcher/1.10.1, EPL-2.0, approved, #9704
 maven/mavencentral/org.junit/junit-bom/5.10.0, EPL-2.0, approved, #9844
