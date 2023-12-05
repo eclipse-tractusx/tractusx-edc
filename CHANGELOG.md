@@ -4,15 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [0.5.3] - 2023-11-10
 
-What's Canged
+What's Changed
 
-- chore: backport autovacuum fix https://github.com/eclipse-edc/Connector/pull/3479 by @wolf4ood  in https://github.com/eclipse-tractusx/tractusx-edc/pull/871
+- chore: backport [autovacuum fix](https://github.com/eclipse-edc/Connector/pull/3479) by @wolf4ood  in[#871]( https://github.com/eclipse-tractusx/tractusx-edc/pull/871)
 
 ## [0.5.2] - 2023-11-08
 
-What's Canged
+What's Changed
 
-- chore: backport autovacuum fix https://github.com/eclipse-edc/Connector/pull/3479 by @wolf4ood  in https://github.com/eclipse-tractusx/tractusx-edc/pull/866
+- chore: backport [autovacuum fix](https://github.com/eclipse-edc/Connector/pull/3479) by @wolf4ood  in [#866](https://github.com/eclipse-tractusx/tractusx-edc/pull/866)
 
 ## [0.5.1] - 2023-08-22
 

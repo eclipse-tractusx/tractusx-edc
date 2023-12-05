@@ -84,7 +84,6 @@ jobs:
       matrix:
         image:
           - edc-runtime-memory
-          - edc-controlplane-memory-hashicorp-vault
           - edc-controlplane-postgresql-azure-vault
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-azure-vault
