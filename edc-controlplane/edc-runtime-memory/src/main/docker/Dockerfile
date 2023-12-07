@@ -25,6 +25,7 @@ ARG JAR
 
 ARG APP_USER=docker
 ARG APP_UID=10100
+ARG ADDITIONAL_FILES
 
 RUN addgroup --system "$APP_USER"
 
@@ -41,6 +42,7 @@ USER "$APP_USER"
 WORKDIR /app
 
 COPY ${JAR} edc-controlplane.jar
+COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
 

@@ -175,6 +175,14 @@ subprojects {
                 }
             }
 
+            // this task copies some legal docs into the build folder, so we can easily copy them into the docker images
+            val copyLegalDocs = tasks.create("copyLegalDocs", Copy::class) {
+                from(project.rootProject.projectDir)
+                into("${project.buildDir}/legal")
+                include("SECURITY.md", "NOTICE.md", "DEPENDENCIES", "LICENSE")
+                dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+            }
+
             //actually apply the plugin to the (sub-)project
             apply(plugin = "com.bmuschko.docker-remote-api")
             // configure the "dockerize" task
@@ -188,11 +196,14 @@ subprojects {
                     platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
+                buildArgs.put("ADDITIONAL_FILES", "build/legal/*")
                 inputDir.set(file(dockerContextDir))
             }
             // make sure  always runs after "dockerize" and after "copyOtel"
-            dockerTask.dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+            dockerTask
+                    .dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
                     .dependsOn(downloadOtel)
+                    .dependsOn(copyLegalDocs)
         }
     }
 }
