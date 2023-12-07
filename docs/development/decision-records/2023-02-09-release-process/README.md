@@ -116,3 +116,11 @@ current date, we can start the nightly. If the EDC nightly doesn't appear within
   which prescribes the use of Jenkins for publishing to MavenCentral and OSSRH.
 - Typically, GitHub Actions should perform all verification tasks, running tests, etc. and Jenkins' only purpose is to
   publish.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

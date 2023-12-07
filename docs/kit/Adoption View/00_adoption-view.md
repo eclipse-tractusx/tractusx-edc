@@ -41,3 +41,11 @@ The architecture of the EDC combines various services that are necessary for the
 [gaiax-url]: https://www.data-infrastructure.eu/GAIAX/Navigation/EN/Home/home.html
 [idsa-url]: https://internationaldataspaces.org/
 [daps-url]: https://www.dataspaces.fraunhofer.de/en/software/identity_provider.html
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

@@ -40,3 +40,11 @@ in the example), or using a vocabulary entry in the JSON-LD context, i.e. `tx:Bu
 will be: `eq, neq, in, isAllOf, isAnyOf, isNoneOf`.
 
 Manipulating the BPN -> group associations can be done through a REST API.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>
