@@ -1,0 +1,31 @@
+name: ZAP URL scan
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.txt"
+  schedule:
+    - cron: "0 0 * * *" # Once a day
+  workflow_dispatch:
+
+jobs:
+  zap_scan1:
+    runs-on: ubuntu-latest
+    name: OWASP ZAP 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: ZAP Scan 1
+        id: step1
+        uses: zaproxy/action-full-scan@v0.8.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          target: 'https://connector-release.edc.aws.bmw.cloud'
