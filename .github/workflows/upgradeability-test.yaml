@@ -44,6 +44,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: "Setup Helm"
+        uses: azure/setup-helm@v3.5
+        with:
+          version: v3.8.1
+
+      - name: "Setup Kubectl"
+        uses: azure/setup-kubectl@v3.2
+        with:
+          version: 'v1.28.2'
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.5.0
+
       - name: "Update helm repo"
         run: |
           helm repo add tractusx https://eclipse-tractusx.github.io/charts/dev
@@ -77,7 +90,20 @@ jobs:
           # wait for the pod to become ready
           kubectl rollout status deployment tx-prod-controlplane
           kubectl rollout status deployment tx-prod-dataplane
-          
+
+      - uses: ./.github/actions/setup-java
+
+      - name: "Build docker images"
+        shell: bash
+        run: |-
+          ./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
+          ./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
+
+      - name: "Load images into KinD"
+        shell: bash
+        run: |
+          kind get clusters | xargs -n1 kind load docker-image edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault --name
+
       - name: "Install new chart"
         run: |
           helm upgrade --install tx-prod charts/tractusx-connector \
@@ -91,3 +117,9 @@ jobs:
           
           # execute the helm test
           helm test tx-prod
+
+      - name: Destroy the kind cluster
+        if: always()
+        shell: bash
+        run: >-
+          kind get clusters | xargs -n1 kind delete cluster --name
