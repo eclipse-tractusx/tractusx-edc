@@ -1,0 +1,93 @@
+#
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#
+
+---
+name: "Upgradeability Tests"
+
+on:
+  workflow_call:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  test-prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache ContainerD Image Layers
+        uses: actions/cache@v3
+        with:
+          path: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+          key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
+
+  test-upgradeability:
+    runs-on: ubuntu-latest
+    needs: [ test-prepare ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: "Update helm repo"
+        run: |
+          helm repo add tractusx https://eclipse-tractusx.github.io/charts/dev
+          helm repo update tractusx
+
+      - name: "Get latest released version"
+        id: get-version
+        run: |
+          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -o json | jq -r '.[0].version')
+          echo "Last official release is $RELEASED_VERSION"
+          echo "RELEASE=$RELEASED_VERSION" >> $GITHUB_ENV
+          exit 0
+
+      - name: "Install latest release"
+        run: |
+          sh -c "edc-tests/deployment/src/main/resources/prepare-test.sh \
+                         edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml"
+          
+          helm upgrade --install tx-prod tractusx/tractusx-connector \
+            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
+            --set "controlplane.image.tag=$RELEASE" \
+            --set "controlplane.image.pullPolicy=Always" \
+            --set "controlplane.image.repository=tractusx/edc-controlplane-postgresql-hashicorp-vault" \
+            --set "dataplane.image.tag=$RELEASE" \
+            --set "dataplane.image.pullPolicy=Always" \
+            --set "dataplane.image.repository=tractusx/edc-dataplane-hashicorp-vault" \
+            --dependency-update \
+            --wait-for-jobs --timeout=120s \
+            --version $RELEASE
+          
+          # wait for the pod to become ready
+          kubectl rollout status deployment tx-prod-controlplane
+          kubectl rollout status deployment tx-prod-dataplane
+          
+      - name: "Install new chart"
+        run: |
+          helm upgrade --install tx-prod charts/tractusx-connector \
+            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
+            --dependency-update \
+            --wait-for-jobs --timeout=120s
+          
+           # wait for the pod to become ready
+          kubectl rollout status deployment tx-prod-controlplane
+          kubectl rollout status deployment tx-prod-dataplane
+          
+          # execute the helm test
+          helm test tx-prod
