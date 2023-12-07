@@ -1,4 +1,4 @@
-## Reporting a Vulnerability
+# Reporting a Vulnerability
 
 Please do **not** report security vulnerabilities through public GitHub issues.
 
@@ -12,6 +12,6 @@ for contributor:
 for committer:
 → advisories → New draft security advisory
 
-In severe cases, you can also report a found vulnerability via mail or eclipse issue here: https://www.eclipse.org/security/
+In severe cases, you can also report a found vulnerability via mail or eclipse issue here: <https://www.eclipse.org/security/>
 
 See [Eclipse Foundation Vulnerability Reporting Policy](https://www.eclipse.org/projects/handbook/#vulnerability)
