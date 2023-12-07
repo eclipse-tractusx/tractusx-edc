@@ -35,7 +35,9 @@ in the GitHub organization <https://github.com/eclipse-tractusx>:
 
 This project leverages the following third party content.
 
-See DEPENDENCIES file.
+- OpenTelemetry Agent v1.32.0: <https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v1.32.0>
+
+For additional dependencies, see [DEPENDENCIES](./DEPENDENCIES) file.
 
 ## Cryptography
 

@@ -21,6 +21,10 @@ Eclipse Tractus-X product(s) installed within the image:
 - Additional information about the Eclipse Temurin
   images: <https://github.com/docker-library/repo-info/tree/master/repos/eclipse-temurin>
 
+## Third-Party Software
+
+- OpenTelemetry Agent v1.32.0: <https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v1.32.0>
+
 As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc
 from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
 
