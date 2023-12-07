@@ -33,3 +33,11 @@ Details at the [official documentation on swaggerhub](https://app.swaggerhub.com
 - packages name changed from `org.eclipse.dataspaceconnector` to `org.eclipse.edc`
 - To specify multiple BPN into Policies the operator `OR` can be used. More details in the [business-partner-validation extension documentation](../../edc-extensions/business-partner-validation)
 - HTTP Dynamic Endpoint Data Reference: The URL for Endpoint Data Reference can be also provided via the call for starting the transfer process. More details [Http Dynamic EDR receiver](https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver)
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

@@ -46,3 +46,11 @@ parallelization resulting in faster and more responsive builds.
 Planned improvements regarding the testing procedure will also greatly benefit from the EDC build tools such
 as JUnit tags and conditional evaluation of the tagged tests. Much of EDC's testing framework is based on Gradle and can
 be seamlessly integrated in tractusx-edc.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

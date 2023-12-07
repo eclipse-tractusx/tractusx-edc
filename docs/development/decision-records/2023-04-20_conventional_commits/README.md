@@ -41,3 +41,11 @@ to (auto-generated) documentation, render visually appealing version information
 number of tooling on top of cc's.
 One key aspect would be to get rid of the manual changelog,
 see [this discussion](https://github.com/eclipse-tractusx/tractusx-edc/discussions/253).
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

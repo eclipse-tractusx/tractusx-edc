@@ -22,3 +22,11 @@ The data plane does the heavy lifting of transferring and receiving data streams
 
 Each of these planes comes in several variants, allowing for example secrets to be stored in Azure Vault or a Hashicorp Vault.
 The setup on the following pages assumes the use of Hashicorp Vault for secrets and PostgreSQL for data storage.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

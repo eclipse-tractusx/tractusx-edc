@@ -84,3 +84,11 @@ This section explains _at which point in time_ we should execute which test. Thi
 | System/End-To-End test | on pull request branches except when marked as `draft`                              |         |
 | Deployment test        | before merging pull requests and on every commit on `main`                       |         |
 | Performance test       | Only on a specific schedule, e.g. once per day or week                              |         |
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>
