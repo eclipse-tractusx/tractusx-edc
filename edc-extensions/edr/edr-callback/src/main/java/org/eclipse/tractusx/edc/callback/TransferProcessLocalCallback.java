@@ -105,6 +105,15 @@ public class TransferProcessLocalCallback implements InProcessCallback {
             monitor.debug(format("Expiring EDR for transfer process %s", entry.getTransferProcessId()));
             entry.transitionToExpired();
             edrCache.update(entry);
+
+            var transferProcess = transferProcessStore.findById(entry.getTransferProcessId());
+
+            if (transferProcess != null && transferProcess.canBeCompleted()) {
+                transferProcess.transitionCompleting();
+                transferProcessStore.save(transferProcess);
+            } else {
+                monitor.info(format("Cannot terminate transfer process with id: %s", entry.getTransferProcessId()));
+            }
         }));
     }
 
