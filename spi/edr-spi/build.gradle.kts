@@ -21,12 +21,11 @@ dependencies {
     implementation(project(":spi:core-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.contract)
-    implementation(libs.edc.spi.aggregateservices)
 
     testFixturesImplementation(libs.edc.junit)
     testFixturesImplementation(libs.junit.jupiter.api)
     testFixturesImplementation(libs.assertj)
     testFixturesImplementation(libs.awaitility)
-    
+
 }
 

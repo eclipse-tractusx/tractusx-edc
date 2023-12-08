@@ -18,9 +18,10 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 #
-FROM eclipse-temurin:17.0.8_7-jre-alpine
+FROM eclipse-temurin:17.0.8.1_1-jre-alpine
 ARG JAR
 ARG OTEL_JAR
+ARG ADDITIONAL_FILES
 
 ARG APP_USER=docker
 ARG APP_UID=10100
@@ -41,6 +42,7 @@ WORKDIR /app
 
 COPY ${JAR} edc-controlplane.jar
 COPY ${OTEL_JAR} opentelemetry-javaagent.jar
+COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
 

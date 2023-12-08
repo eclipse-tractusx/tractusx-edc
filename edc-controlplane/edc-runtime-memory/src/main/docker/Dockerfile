@@ -20,11 +20,12 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 
-FROM eclipse-temurin:17.0.8_7-jre-alpine
+FROM eclipse-temurin:17.0.8.1_1-jre-alpine
 ARG JAR
 
 ARG APP_USER=docker
 ARG APP_UID=10100
+ARG ADDITIONAL_FILES
 
 RUN addgroup --system "$APP_USER"
 
@@ -41,6 +42,7 @@ USER "$APP_USER"
 WORKDIR /app
 
 COPY ${JAR} edc-controlplane.jar
+COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
 

@@ -128,3 +128,11 @@ this will not work with signature check errors, as the EDR is the one signed by 
 
 > Note the custom property `cid` in the EDR, it's not available anymore. The property it's still available inside the
 > JWT `authCode`
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

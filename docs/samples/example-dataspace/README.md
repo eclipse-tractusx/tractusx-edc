@@ -126,3 +126,11 @@ There is several ways of making sure everything worked out well:
 
 - wait for the Kubernetes rollout to be successful, e.g. `kubectl rollout status deployment tx-plato-controlplane`
 - use `helm test` to execute tests: `helm test tx-plato`
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

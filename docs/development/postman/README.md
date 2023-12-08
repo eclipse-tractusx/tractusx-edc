@@ -25,3 +25,11 @@ The postman collection contains the most common API calls. Please note that the
 
 [postman-shield]: https://img.shields.io/badge/Postman-URL-orange
 [postman-url]: https://www.postman.com
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

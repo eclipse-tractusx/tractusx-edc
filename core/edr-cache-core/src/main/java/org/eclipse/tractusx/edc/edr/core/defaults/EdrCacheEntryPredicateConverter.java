@@ -32,6 +32,12 @@ import static java.lang.String.format;
  */
 public class EdrCacheEntryPredicateConverter implements CriterionToPredicateConverter {
 
+    public static final String ASSET_ID = "assetId";
+    public static final String AGREEMENT_ID = "agreementId";
+    public static final String PROVIDER_ID = "providerId";
+    public static final String CONTRACT_NEGOTIATION_ID = "contractNegotiationId";
+    public static final String STATE = "state";
+
     @Override
     public <T> Predicate<T> convert(Criterion criterion) {
         var operator = criterion.getOperator().toLowerCase();
@@ -40,8 +46,23 @@ public class EdrCacheEntryPredicateConverter implements CriterionToPredicateConv
             case "=" -> equalPredicate(criterion);
             case "in" -> inPredicate(criterion);
             case "like" -> likePredicate(criterion);
-            default -> throw new IllegalArgumentException(format("Operator [%s] is not supported by this converter!", criterion.getOperator()));
+            default ->
+                    throw new IllegalArgumentException(format("Operator [%s] is not supported by this converter!", criterion.getOperator()));
         };
+    }
+
+    protected Object property(String key, Object object) {
+        if (object instanceof EndpointDataReferenceEntry entry) {
+            return switch (key) {
+                case ASSET_ID -> entry.getAssetId();
+                case AGREEMENT_ID -> entry.getAgreementId();
+                case PROVIDER_ID -> entry.getProviderId();
+                case CONTRACT_NEGOTIATION_ID -> entry.getContractNegotiationId();
+                case STATE -> entry.getState();
+                default -> null;
+            };
+        }
+        throw new IllegalArgumentException("Can only handle objects of type " + EndpointDataReferenceEntry.class.getSimpleName() + " but received an " + object.getClass().getSimpleName());
     }
 
     @NotNull
@@ -116,18 +137,5 @@ public class EdrCacheEntryPredicateConverter implements CriterionToPredicateConv
 
             return false;
         };
-    }
-
-    protected Object property(String key, Object object) {
-        if (object instanceof EndpointDataReferenceEntry entry) {
-            return switch (key) {
-                case "assetId" -> entry.getAssetId();
-                case "agreementId" -> entry.getAgreementId();
-                case "providerId" -> entry.getProviderId();
-                case "state" -> entry.getState();
-                default -> null;
-            };
-        }
-        throw new IllegalArgumentException("Can only handle objects of type " + EndpointDataReferenceEntry.class.getSimpleName() + " but received an " + object.getClass().getSimpleName());
     }
 }

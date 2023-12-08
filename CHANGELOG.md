@@ -2,9 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.3] - 2023-11-10
+
+What's Changed
+
+- chore: backport [autovacuum fix](https://github.com/eclipse-edc/Connector/pull/3479) by @wolf4ood  in[#871]( https://github.com/eclipse-tractusx/tractusx-edc/pull/871)
+
+## [0.5.2] - 2023-11-08
+
+What's Changed
+
+- chore: backport [autovacuum fix](https://github.com/eclipse-edc/Connector/pull/3479) by @wolf4ood  in [#866](https://github.com/eclipse-tractusx/tractusx-edc/pull/866)
+
 ## [0.5.1] - 2023-08-22
 
-0.5.1 Latest
 What's Changed
 
 - chore: Improve Helm Chart documentation by @tuncaytunc-zf in [#607](https://github.com/eclipse-tractusx/tractusx-edc/pull/607)

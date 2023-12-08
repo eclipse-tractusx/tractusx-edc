@@ -38,9 +38,9 @@ public class EdrNegotiationHelperFunctions {
     public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
                 .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
-                .add(EDC_NAMESPACE + "connectorId", providerId)
+                .add(EDC_NAMESPACE + "counterPartyId", providerId)
                 .add(EDC_NAMESPACE + "providerId", providerId)
-                .add(EDC_NAMESPACE + "connectorAddress", connectorAddress)
+                .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)
                 .add(EDC_NAMESPACE + "protocol", DATASPACE_PROTOCOL_HTTP)
                 .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
                         .add(EDC_NAMESPACE + "offerId", offerId)

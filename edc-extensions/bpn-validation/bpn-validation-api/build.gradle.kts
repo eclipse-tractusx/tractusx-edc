@@ -22,7 +22,6 @@ dependencies {
     implementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     implementation(project(":spi:core-spi"))
     implementation(libs.edc.api.management)
-    implementation(libs.edc.spi.aggregateservices)
     implementation(libs.jakarta.rsApi)
 
     testImplementation(testFixtures(libs.edc.core.jersey))

@@ -205,7 +205,7 @@ public class Participant {
                 .get("/v2/contractnegotiations/{id}/state", negotiationId)
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getString("'edc:state'");
+                .extract().body().jsonPath().getString("'state'");
     }
 
     public String getContractAgreementId(String negotiationId) {
@@ -235,6 +235,17 @@ public class Participant {
         return baseRequest()
                 .when()
                 .get("/edrs?assetId={assetId}", assetId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+    }
+
+    public JsonArray getEdrEntriesByContractNegotiationId(String contractNegotiationId) {
+        return baseRequest()
+                .when()
+                .get("/edrs?contractNegotiationId={contractNegotiationId}", contractNegotiationId)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -282,7 +293,7 @@ public class Participant {
                 .get("/v2/transferprocesses/{id}/state", id)
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getString("'edc:state'");
+                .extract().body().jsonPath().getString("'state'");
     }
 
     public EndpointDataReference getDataReference(String dataRequestId) {
@@ -426,7 +437,7 @@ public class Participant {
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath()
-                .getString(format("'edc:%s'", fieldName));
+                .getString(format("'%s'", fieldName));
     }
 
     private String getProxyData(Map<String, String> body) {

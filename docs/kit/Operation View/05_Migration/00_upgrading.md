@@ -18,3 +18,11 @@ The easy part of the upgrade process is to simply switch the outdated EDC contai
 
 Check the newest [Migration Documents](https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/docs/migration)
 for any changes to the settings structure and apply them to your settings.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

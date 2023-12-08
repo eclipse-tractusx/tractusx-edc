@@ -35,8 +35,6 @@ import static org.eclipse.edc.connector.api.management.contractnegotiation.model
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.OFFER_ID;
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CALLBACK_ADDRESSES;
-import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CONNECTOR_ADDRESS;
-import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CONNECTOR_ID;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.CONTRACT_REQUEST_TYPE;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.OFFER;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest.PROTOCOL;
@@ -50,6 +48,8 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.callback.CallbackAddress.EVENTS;
 import static org.eclipse.edc.spi.types.domain.callback.CallbackAddress.IS_TRANSACTIONAL;
 import static org.eclipse.edc.spi.types.domain.callback.CallbackAddress.URI;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -73,9 +73,9 @@ class JsonObjectToNegotiateEdrRequestDtoTransformerTest {
     void transform() {
         var jsonObject = Json.createObjectBuilder()
                 .add(TYPE, CONTRACT_REQUEST_TYPE)
-                .add(CONNECTOR_ADDRESS, "test-address")
+                .add(EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS, "test-address")
+                .add(EDR_REQUEST_DTO_COUNTERPARTY_ID, "test-conn-id")
                 .add(PROTOCOL, "test-protocol")
-                .add(CONNECTOR_ID, "test-conn-id")
                 .add(PROVIDER_ID, "test-provider-id")
                 .add(CALLBACK_ADDRESSES, createCallbackAddress())
                 .add(OFFER, Json.createObjectBuilder()
@@ -102,8 +102,8 @@ class JsonObjectToNegotiateEdrRequestDtoTransformerTest {
         assertThat(dto).isNotNull();
         assertThat(dto.getCallbackAddresses()).isNotEmpty();
         assertThat(dto.getProtocol()).isEqualTo("test-protocol");
-        assertThat(dto.getConnectorAddress()).isEqualTo("test-address");
-        assertThat(dto.getConnectorId()).isEqualTo("test-conn-id");
+        assertThat(dto.getCounterPartyAddress()).isEqualTo("test-address");
+        assertThat(dto.getCounterPartyId()).isEqualTo("test-conn-id");
         assertThat(dto.getProviderId()).isEqualTo("test-provider-id");
         assertThat(dto.getOffer()).isNotNull();
 

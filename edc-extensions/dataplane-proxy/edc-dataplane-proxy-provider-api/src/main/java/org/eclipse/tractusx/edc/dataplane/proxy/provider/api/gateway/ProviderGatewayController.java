@@ -23,14 +23,14 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.PathSegment;
 import jakarta.ws.rs.core.StreamingOutput;
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
+import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
 import org.eclipse.edc.connector.dataplane.spi.resolver.DataAddressResolver;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.HttpDataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationHandlerRegistry;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfiguration;
@@ -49,6 +49,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.joining;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.dataplane.proxy.provider.api.response.ResponseHelper.createMessageResponse;
 
 /**
@@ -57,13 +58,13 @@ import static org.eclipse.tractusx.edc.dataplane.proxy.provider.api.response.Res
 @Path("/" + ProviderGatewayController.GATEWAY_PATH)
 public class ProviderGatewayController implements ProviderGatewayApi {
     protected static final String GATEWAY_PATH = "gateway";
-    private static final String BASE_URL = "baseUrl";
+    private static final String BASE_URL = EDC_NAMESPACE + "baseUrl";
     private static final String ASYNC = "async";
 
     private static final int ALIAS_SEGMENT = 1;
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final DataPlaneManager dataPlaneManager;
+    private final TransferService transferService;
     private final GatewayConfigurationRegistry configurationRegistry;
     private final AuthorizationHandlerRegistry authorizationRegistry;
 
@@ -73,13 +74,13 @@ public class ProviderGatewayController implements ProviderGatewayApi {
 
     private final ExecutorService executorService;
 
-    public ProviderGatewayController(DataPlaneManager dataPlaneManager,
+    public ProviderGatewayController(TransferService transferService,
                                      DataAddressResolver dataAddressResolver,
                                      GatewayConfigurationRegistry configurationRegistry,
                                      AuthorizationHandlerRegistry authorizationRegistry,
                                      ExecutorService executorService,
                                      Monitor monitor) {
-        this.dataPlaneManager = dataPlaneManager;
+        this.transferService = transferService;
         this.dataAddressResolver = dataAddressResolver;
         this.configurationRegistry = configurationRegistry;
         this.authorizationRegistry = authorizationRegistry;
@@ -149,7 +150,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
 
         try {
-            dataPlaneManager.transfer(sink, flowRequest).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
+            transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
         } catch (Exception e) {
             reportError(response, e);
         }
@@ -196,7 +197,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
     /**
      * Handles a request completion, checking for errors. If no errors are present, nothing needs to be done as the response will have already been written to the client.
      */
-    private void handleCompletion(AsyncResponse response, StreamResult<Void> result, Throwable throwable) {
+    private void handleCompletion(AsyncResponse response, StreamResult<Object> result, Throwable throwable) {
         if (result != null && result.failed()) {
             switch (result.reason()) {
                 case NOT_FOUND:

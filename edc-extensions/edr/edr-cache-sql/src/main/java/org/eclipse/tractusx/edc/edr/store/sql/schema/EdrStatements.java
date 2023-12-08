@@ -39,6 +39,10 @@ public interface EdrStatements extends LeaseStatements {
         return "provider_id";
     }
 
+    default String getContractNegotiationIdColumn() {
+        return "contract_negotiation_id";
+    }
+
     default String getAssetIdColumn() {
         return "asset_id";
     }

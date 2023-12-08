@@ -1,6 +1,6 @@
 # tractusx-connector-azure-vault
 
-![Version: 0.6.0-rc1](https://img.shields.io/badge/Version-0.6.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.6.0-rc1](https://img.shields.io/badge/AppVersion-0.6.0--rc1-informational?style=flat-square)
+![Version: 0.6.0-rc2](https://img.shields.io/badge/Version-0.6.0--rc2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.6.0-rc2](https://img.shields.io/badge/AppVersion-0.6.0--rc2-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
@@ -45,7 +45,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.6.0-rc1 \
+helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.6.0-rc2 \
      -f <path-to>/tractusx-connector-azure-vault-test.yaml \
      --set vault.azure.name=$AZURE_VAULT_NAME \
      --set vault.azure.client=$AZURE_CLIENT_ID \
@@ -123,6 +123,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.ingresses[1].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
 | controlplane.ingresses[1].tls.secretName | string | `""` | If present overwrites the default secret name |
 | controlplane.initContainers | list | `[]` |  |
+| controlplane.limits.cpu | float | `1.5` |  |
+| controlplane.limits.memory | string | `"512Mi"` |  |
 | controlplane.livenessProbe.enabled | bool | `true` | Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | controlplane.livenessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | controlplane.livenessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first liveness check |
@@ -146,6 +148,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.readinessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | controlplane.replicaCount | int | `1` |  |
+| controlplane.requests.cpu | string | `"500m"` |  |
+| controlplane.requests.memory | string | `"128Mi"` |  |
 | controlplane.resources | object | `{}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
 | controlplane.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
 | controlplane.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |
@@ -207,6 +211,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.ingresses[0].tls.enabled | bool | `false` | Enables TLS on the ingress resource |
 | dataplane.ingresses[0].tls.secretName | string | `""` | If present overwrites the default secret name |
 | dataplane.initContainers | list | `[]` |  |
+| dataplane.limits.cpu | float | `1.5` |  |
+| dataplane.limits.memory | string | `"1024Mi"` |  |
 | dataplane.livenessProbe.enabled | bool | `true` | Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | dataplane.livenessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | dataplane.livenessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first liveness check |
@@ -230,6 +236,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.readinessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | dataplane.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | dataplane.replicaCount | int | `1` |  |
+| dataplane.requests.cpu | string | `"500m"` |  |
+| dataplane.requests.memory | string | `"128Mi"` |  |
 | dataplane.resources | object | `{}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
 | dataplane.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
 | dataplane.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |

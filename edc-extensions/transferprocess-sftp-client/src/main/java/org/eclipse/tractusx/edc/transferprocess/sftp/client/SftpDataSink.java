@@ -30,7 +30,7 @@ public class SftpDataSink extends ParallelSink {
 
 
     @Override
-    protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
+    protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
             try {
                 sftpClientWrapper.uploadFile(part.openStream());

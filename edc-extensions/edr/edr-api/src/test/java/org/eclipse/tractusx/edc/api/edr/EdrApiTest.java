@@ -95,16 +95,16 @@ public class EdrApiTest {
                     .isEqualTo(jsonObject.getString("tx:edrState"));
 
             assertThat(first(content, EDR_ENTRY_ASSET_ID).getJsonString(VALUE).getString())
-                    .isEqualTo(jsonObject.getString("edc:assetId"));
+                    .isEqualTo(jsonObject.getString("assetId"));
 
             assertThat(first(content, EDR_ENTRY_AGREEMENT_ID).getJsonString(VALUE).getString())
-                    .isEqualTo(jsonObject.getString("edc:agreementId"));
+                    .isEqualTo(jsonObject.getString("agreementId"));
 
             assertThat(first(content, EDR_ENTRY_TRANSFER_PROCESS_ID).getJsonString(VALUE).getString())
-                    .isEqualTo(jsonObject.getString("edc:transferProcessId"));
+                    .isEqualTo(jsonObject.getString("transferProcessId"));
 
             assertThat(first(content, EDR_ENTRY_PROVIDER_ID).getJsonString(VALUE).getString())
-                    .isEqualTo(jsonObject.getString("edc:providerId"));
+                    .isEqualTo(jsonObject.getString("providerId"));
 
             assertThat(first(content, EDR_ENTRY_EXPIRATION_DATE).getJsonNumber(VALUE).longValue())
                     .isEqualTo(jsonObject.getJsonNumber("tx:expirationDate").longValue());

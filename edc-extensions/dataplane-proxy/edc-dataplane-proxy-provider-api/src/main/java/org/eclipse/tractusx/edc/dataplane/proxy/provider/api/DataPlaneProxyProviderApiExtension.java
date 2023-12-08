@@ -14,7 +14,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.provider.api;
 
-import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -42,13 +42,23 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
     static final String NAME = "Data Plane Proxy Provider API";
     @Setting(value = "Thread pool size for the provider data plane proxy gateway", type = "int")
     private static final String THREAD_POOL_SIZE = "tx.dpf.provider.proxy.thread.pool";
+
+    @Setting(value = "Path to register the ProviderGatewayController to", type = "String")
+    private static final String WEB_HTTP_GATEWAY_PATH_SETTING = "web.http.gateway.path";
+
+    @Setting(value = "Port to register the ProviderGatewayController to", type = "int")
+    private static final String WEB_HTTP_GATEWAY_PORT_SETTING = "web.http.gateway.port";
+
+    private static final String GATEWAY_CONTEXT = "gateway";
+
     @Setting
     private static final String CONTROL_PLANE_VALIDATION_ENDPOINT = "edc.dataplane.token.validation.endpoint";
+
     @Inject
     private WebService webService;
 
     @Inject
-    private DataPlaneManager dataPlaneManager;
+    private PipelineService pipelineService;
 
     @Inject
     private Monitor monitor;
@@ -74,20 +84,26 @@ public class DataPlaneProxyProviderApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        executorService = newFixedThreadPool(context.getSetting(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL));
+        executorService = newFixedThreadPool(context.getConfig().getInteger(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL));
 
         var validationEndpoint = context.getConfig().getString(CONTROL_PLANE_VALIDATION_ENDPOINT);
 
         var dataAddressResolver = new ProxyProviderDataAddressResolver(httpClient, validationEndpoint, typeManager.getMapper());
-        
-        var controller = new ProviderGatewayController(dataPlaneManager,
+
+        var controller = new ProviderGatewayController(pipelineService,
                 dataAddressResolver,
                 configurationRegistry,
                 authorizationRegistry,
                 executorService,
                 monitor);
 
-        webService.registerResource(controller);
+        // If a setting for the port mapping for a separate gateway context exists, we assume the context also exists and register into that
+        // Otherwise we use the default context
+        if (context.getConfig().hasKey(WEB_HTTP_GATEWAY_PATH_SETTING) && context.getConfig().hasKey(WEB_HTTP_GATEWAY_PORT_SETTING)) {
+            webService.registerResource(GATEWAY_CONTEXT, controller);
+        } else {
+            webService.registerResource(controller);
+        }
     }
 
 

@@ -59,7 +59,6 @@ jobs:
       fail-fast: false
       matrix:
         variant: [ { dir: edc-controlplane, name: edc-runtime-memory },
-                   { dir: edc-controlplane, name: edc-controlplane-memory-hashicorp-vault },
                    { dir: edc-controlplane, name: edc-controlplane-postgresql-hashicorp-vault },
                    { dir: edc-controlplane, name: edc-controlplane-postgresql-azure-vault },
                    { dir: edc-dataplane,    name: edc-dataplane-azure-vault },

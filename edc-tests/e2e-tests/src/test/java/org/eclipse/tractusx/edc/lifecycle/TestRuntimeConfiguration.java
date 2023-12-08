@@ -46,8 +46,10 @@ public class TestRuntimeConfiguration {
     public static final String PLATO_DSP_CALLBACK = "http://localhost:" + PLATO_DSP_API_PORT + DSP_PATH;
     static final int SOKRATES_CONNECTOR_PORT = getFreePort();
     static final int SOKRATES_MANAGEMENT_PORT = getFreePort();
+    static final int SOKRATES_GATEWAY_PORT = getFreePort();
     static final String SOKRATES_CONNECTOR_PATH = "/api";
     static final String SOKRATES_MANAGEMENT_PATH = "/api/v1/management";
+    static final String SOKRATES_GATEWAY_PATH = "/api/v1/gateway";
     static final int SOKRATES_DSP_API_PORT = getFreePort();
     public static final String SOKRATES_DSP_CALLBACK = "http://localhost:" + SOKRATES_DSP_API_PORT + DSP_PATH;
     static final String SOKRATES_PUBLIC_API_PORT = String.valueOf(getFreePort());
@@ -96,6 +98,8 @@ public class TestRuntimeConfiguration {
                 put("edc.api.auth.key", "testkey");
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", SOKRATES_PUBLIC_API_PORT);
+                put("web.http.gateway.path", SOKRATES_GATEWAY_PATH);
+                put("web.http.gateway.port", String.valueOf(SOKRATES_GATEWAY_PORT));
 
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
@@ -111,6 +115,7 @@ public class TestRuntimeConfiguration {
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + SOKRATES_CONNECTOR_PORT + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
+                put("edc.data.encryption.keys.alias", "test-alias");
             }
         };
     }
@@ -145,6 +150,7 @@ public class TestRuntimeConfiguration {
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", "http://localhost:" + PLATO_PROXIED_AAS_BACKEND_PORT + PROXIED_PATH);
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
+                put("edc.data.encryption.keys.alias", "test-alias");
             }
         };
     }

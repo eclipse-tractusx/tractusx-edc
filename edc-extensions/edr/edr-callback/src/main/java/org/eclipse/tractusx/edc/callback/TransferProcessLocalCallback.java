@@ -16,7 +16,9 @@ package org.eclipse.tractusx.edc.callback;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
+import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessTerminated;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -35,20 +37,23 @@ import java.text.ParseException;
 import java.time.ZoneOffset;
 
 import static java.lang.String.format;
+import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
 
 public class TransferProcessLocalCallback implements InProcessCallback {
 
     private final EndpointDataReferenceCache edrCache;
     private final TransferProcessStore transferProcessStore;
     private final TypeTransformerRegistry transformerRegistry;
-
     private final TransactionContext transactionContext;
-
     private final Monitor monitor;
+    private final ContractAgreementService agreementService;
 
-    public TransferProcessLocalCallback(EndpointDataReferenceCache edrCache, TransferProcessStore transferProcessStore, TypeTransformerRegistry transformerRegistry, TransactionContext transactionContext, Monitor monitor) {
+    public TransferProcessLocalCallback(EndpointDataReferenceCache edrCache, TransferProcessStore transferProcessStore,
+                                        ContractAgreementService agreementService, TypeTransformerRegistry transformerRegistry,
+                                        TransactionContext transactionContext, Monitor monitor) {
         this.edrCache = edrCache;
         this.transferProcessStore = transferProcessStore;
+        this.agreementService = agreementService;
         this.transformerRegistry = transformerRegistry;
         this.transactionContext = transactionContext;
         this.monitor = monitor;
@@ -56,20 +61,42 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
     @Override
     public <T extends Event> Result<Void> invoke(CallbackEventRemoteMessage<T> message) {
-        if (message.getEventEnvelope().getPayload() instanceof TransferProcessStarted transferProcessStarted) {
-            if (transferProcessStarted.getDataAddress() != null) {
-                return transformerRegistry.transform(transferProcessStarted.getDataAddress(), EndpointDataReference.class)
-                        .compose(this::storeEdr)
-                        .mapTo();
-            }
+        if (message.getEventEnvelope().getPayload() instanceof TransferProcessStarted transferProcessStarted && transferProcessStarted.getDataAddress() != null) {
+            return transformerRegistry.transform(transferProcessStarted.getDataAddress(), EndpointDataReference.class)
+                    .compose(this::storeEdr)
+                    .mapTo();
+        } else if (message.getEventEnvelope().getPayload() instanceof TransferProcessTerminated terminated && terminated.getReason() != null) {
+            return handleTransferProcessTermination(terminated);
+        } else {
+            return Result.success();
         }
-        return Result.success();
+    }
+
+    private Result<Void> handleTransferProcessTermination(TransferProcessTerminated terminated) {
+        return transactionContext.execute(() -> {
+            var transferProcess = transferProcessStore.findById(terminated.getTransferProcessId());
+            if (transferProcess != null) {
+                stopEdrNegotiation(transferProcess.getDataRequest().getAssetId(), transferProcess.getDataRequest().getContractId(), terminated.getReason());
+                return Result.success();
+            } else {
+                return Result.failure(format("Failed to find a transfer process with  ID %s", terminated.getTransferProcessId()));
+            }
+        });
+
     }
 
     private Result<Void> storeEdr(EndpointDataReference edr) {
         return transactionContext.execute(() -> {
             var transferProcess = transferProcessStore.findForCorrelationId(edr.getId());
+
             if (transferProcess != null) {
+                String contractNegotiationId = null;
+                var contractNegotiation = agreementService.findNegotiation(transferProcess.getContractId());
+                if (contractNegotiation != null) {
+                    contractNegotiationId = contractNegotiation.getId();
+                } else {
+                    monitor.warning(format("Contract negotiation for agreement with id: %s is missing.", transferProcess.getContractId()));
+                }
                 var expirationTime = extractExpirationTime(edr);
 
                 if (expirationTime.failed()) {
@@ -82,6 +109,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                         .providerId(transferProcess.getDataRequest().getConnectorId())
                         .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                         .expirationTimestamp(expirationTime.getContent())
+                        .contractNegotiationId(contractNegotiationId)
                         .build();
 
                 cleanOldEdr(transferProcess.getDataRequest().getAssetId(), transferProcess.getDataRequest().getContractId());
@@ -95,6 +123,21 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
     }
 
+    private void stopEdrNegotiation(String assetId, String agreementId, String errorDetail) {
+        var querySpec = QuerySpec.Builder.newInstance()
+                .filter(fieldFilter("agreementId", agreementId))
+                .filter(fieldFilter("assetId", assetId))
+                .filter(fieldFilter("state", REFRESHING.code()))
+                .build();
+
+        edrCache.queryForEntries(querySpec).forEach((entry -> {
+            monitor.debug(format("Transitioning EDR to Error Refreshing for transfer process %s", entry.getTransferProcessId()));
+            entry.setErrorDetail(errorDetail);
+            entry.transitionError();
+            edrCache.update(entry);
+        }));
+    }
+
     private void cleanOldEdr(String assetId, String agreementId) {
         var querySpec = QuerySpec.Builder.newInstance()
                 .filter(fieldFilter("agreementId", agreementId))
@@ -105,6 +148,16 @@ public class TransferProcessLocalCallback implements InProcessCallback {
             monitor.debug(format("Expiring EDR for transfer process %s", entry.getTransferProcessId()));
             entry.transitionToExpired();
             edrCache.update(entry);
+
+            var transferProcess = transferProcessStore.findById(entry.getTransferProcessId());
+
+            if (transferProcess != null && transferProcess.canBeCompleted()) {
+                transferProcess.transitionCompleting();
+                transferProcessStore.save(transferProcess);
+            } else {
+                monitor.info(format("Cannot terminate transfer process with id: %s", entry.getTransferProcessId()));
+            }
+
         }));
     }
 
@@ -126,7 +179,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
         return Result.success(0L);
     }
 
-    private Criterion fieldFilter(String field, String value) {
+    private Criterion fieldFilter(String field, Object value) {
         return Criterion.Builder.newInstance()
                 .operandLeft(field)
                 .operator("=")

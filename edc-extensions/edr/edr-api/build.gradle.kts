@@ -24,7 +24,6 @@ dependencies {
     implementation(project(":spi:core-spi"))
 
     implementation(libs.edc.api.management)
-    implementation(libs.edc.spi.aggregateservices)
     implementation(libs.edc.core.validator)
     implementation(libs.jakarta.rsApi)
 

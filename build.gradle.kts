@@ -26,7 +26,7 @@ plugins {
     `maven-publish`
     `jacoco-report-aggregation`
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.bmuschko.docker-remote-api") version "9.3.3"
+    id("com.bmuschko.docker-remote-api") version "9.3.6"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -62,7 +62,7 @@ allprojects {
         implementation("org.slf4j:slf4j-api:2.0.9")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.10.0"))
+        testImplementation(platform("org.junit:junit-bom:5.10.1"))
 
         constraints {
             implementation("org.yaml:snakeyaml:2.2") {
@@ -102,8 +102,8 @@ allprojects {
         swagger {
             title.set((project.findProperty("apiTitle") ?: "Tractus-X REST API") as String)
             description =
-                (project.findProperty("apiDescription")
-                    ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
+                    (project.findProperty("apiDescription")
+                            ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
             resourcePackages = setOf("org.eclipse.tractusx.edc")
@@ -147,12 +147,12 @@ allprojects {
 subprojects {
     afterEvaluate {
         if (project.plugins.hasPlugin("com.github.johnrengelman.shadow") &&
-            file("${project.projectDir}/src/main/docker/Dockerfile").exists()
+                file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
 
             val agentFile = project.buildDir.resolve("opentelemetry-javaagent.jar")
             // create task to download the opentelemetry agent
-            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.27.0/opentelemetry-javaagent.jar"
+            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
             val downloadOtel = tasks.create("downloadOtel") {
                 // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
                 onlyIf {
@@ -166,13 +166,21 @@ subprojects {
                 doLast {
                     val download = { url: String, destFile: File ->
                         ant.invokeMethod(
-                            "get",
-                            mapOf("src" to url, "dest" to destFile)
+                                "get",
+                                mapOf("src" to url, "dest" to destFile)
                         )
                     }
                     logger.lifecycle("Downloading OpenTelemetry Agent")
                     download(openTelemetryAgentUrl, agentFile)
                 }
+            }
+
+            // this task copies some legal docs into the build folder, so we can easily copy them into the docker images
+            val copyLegalDocs = tasks.create("copyLegalDocs", Copy::class) {
+                from(project.rootProject.projectDir)
+                into("${project.buildDir}/legal")
+                include("SECURITY.md", "NOTICE.md", "DEPENDENCIES", "LICENSE")
+                dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
             }
 
             //actually apply the plugin to the (sub-)project
@@ -188,11 +196,14 @@ subprojects {
                     platform.set(System.getProperty("platform"))
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
+                buildArgs.put("ADDITIONAL_FILES", "build/legal/*")
                 inputDir.set(file(dockerContextDir))
             }
             // make sure  always runs after "dockerize" and after "copyOtel"
-            dockerTask.dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
-                .dependsOn(downloadOtel)
+            dockerTask
+                    .dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+                    .dependsOn(downloadOtel)
+                    .dependsOn(copyLegalDocs)
         }
     }
 }

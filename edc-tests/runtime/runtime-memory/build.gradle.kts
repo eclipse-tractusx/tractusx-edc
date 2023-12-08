@@ -25,7 +25,7 @@ dependencies {
         exclude("org.eclipse.edc", "oauth2-core")
         exclude("org.eclipse.edc", "oauth2-daps")
 
-        exclude(module = "data-encryption")
+//        exclude(module = "data-encryption")
         exclude(module = "json-ld-core")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")

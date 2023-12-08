@@ -23,3 +23,11 @@ catalog pagination. [GitHub issue](https://github.com/eclipse-edc/Connector/issu
 
 The encryption of the `EndpointDataReference` took up to 3 minutes unter certain circumstances.
 This was fixed by using a not blocking algorithm and setting the Java CMD flag `java.security.egd` correctly.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

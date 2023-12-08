@@ -111,7 +111,7 @@ public abstract class AbstractNegotiateEdrTest {
                 .add(createCallback(url.toString(), true, Set.of("contract.negotiation", "transfer.process")))
                 .build();
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        var contractNegotiationId = SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
 
         var events = expectedEvents.stream()
                 .map(receivedEvent -> waitForEvent(server, receivedEvent))
@@ -131,15 +131,25 @@ public abstract class AbstractNegotiateEdrTest {
 
         assertThat(edrCaches).hasSize(1);
 
-        var transferProcessId = edrCaches.get(0).asJsonObject().getString("edc:transferProcessId");
+        assertThat(SOKRATES.getEdrEntriesByContractNegotiationId(contractNegotiationId)).hasSize(1);
+
+        assertThat(edrCaches).hasSize(1);
+
+        var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
+        var cnId = edrCaches.get(0).asJsonObject().getString("contractNegotiationId");
+        var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
+
+        assertThat(cnId).isEqualTo(contractNegotiationId);
+        assertThat(SOKRATES.getEdrEntriesByAgreementId(agreementId)).hasSize(1);
+
 
         var edr = SOKRATES.getEdr(transferProcessId);
 
-        assertThat(edr.getJsonString("edc:type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
-        assertThat(edr.getJsonString("edc:authCode").getString()).isNotNull();
-        assertThat(edr.getJsonString("edc:authKey").getString()).isNotNull();
-        assertThat(edr.getJsonString("edc:endpoint").getString()).isNotNull();
-        assertThat(edr.getJsonString("edc:id").getString()).isEqualTo(transferProcessId);
+        assertThat(edr.getJsonString("type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
+        assertThat(edr.getJsonString("authCode").getString()).isNotNull();
+        assertThat(edr.getJsonString("authKey").getString()).isNotNull();
+        assertThat(edr.getJsonString("endpoint").getString()).isNotNull();
+        assertThat(edr.getJsonString("id").getString()).isEqualTo(transferProcessId);
 
     }
 

@@ -33,6 +33,7 @@ class PersistentCacheEntryTest {
                 .endpoint("http://test.com")
                 .id(randomUUID().toString())
                 .authCode("11111")
+                .contractId("test-contract-id")
                 .authKey("authentication").build();
 
         var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()

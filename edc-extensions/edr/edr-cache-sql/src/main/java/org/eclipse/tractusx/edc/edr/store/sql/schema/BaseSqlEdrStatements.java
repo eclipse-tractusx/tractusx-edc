@@ -34,13 +34,14 @@ public class BaseSqlEdrStatements implements EdrStatements {
 
     @Override
     public String getInsertTemplate() {
-        return format("INSERT INTO %s (%s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        return format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 getEdrTable(),
                 getTransferProcessIdColumn(),
                 getAssetIdColumn(),
                 getAgreementIdColumn(),
                 getEdrId(),
                 getProviderIdColumn(),
+                getContractNegotiationIdColumn(),
                 getExpirationTimestampColumn(),
                 getStateColumn(),
                 getStateCountColumn(),

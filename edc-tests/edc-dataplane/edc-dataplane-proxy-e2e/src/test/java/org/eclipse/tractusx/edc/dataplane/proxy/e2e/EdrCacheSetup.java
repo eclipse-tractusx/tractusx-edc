@@ -29,52 +29,6 @@ public class EdrCacheSetup {
     public static final String AUTHENTICATION = "authentication";
     public static final String ENDPOINT = "http://test.com";
 
-    public static List<PersistentCacheEntry> createEntries() {
-        var list = new ArrayList<PersistentCacheEntry>();
-
-        var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()
-                .assetId("79f13b89-59a6-4278-8c8e-8540849dbab8")
-                .agreementId("a62d02a3-eea5-4852-86d4-5482db4dffe8")
-                .transferProcessId("5355d524-2616-43df-9096-558afffff659")
-                .build();
-        var edr = EndpointDataReference.Builder.newInstance()
-                .id("c470e649-5454-4e4d-b065-782752e5d759")
-                .endpoint(ENDPOINT)
-                .authKey(AUTHENTICATION)
-                .authCode(generateAuthCode())
-                .build();
-        list.add(new PersistentCacheEntry(edrEntry, edr));
-
-        var edrEntry2 = EndpointDataReferenceEntry.Builder.newInstance()
-                .assetId("9260f395-3d94-4b8b-bdaa-941ead596ce5")
-                .agreementId("d6f73f25-b0aa-4b62-843f-7cfaba532b5b8")
-                .transferProcessId("b2859c0a-1a4f-4d10-a3fd-9652d7b3469a")
-                .build();
-        var edr2 = EndpointDataReference.Builder.newInstance()
-                .id("514a4142-3d2a-4936-97c3-7892961c6a58")
-                .endpoint(ENDPOINT)
-                .authKey(AUTHENTICATION)
-                .authCode(generateAuthCode())
-                .build();
-        list.add(new PersistentCacheEntry(edrEntry2, edr2));
-
-        var edrEntry3 = EndpointDataReferenceEntry.Builder.newInstance()
-                .assetId("9260f395-3d94-4b8b-bdaa-941ead596ce5")
-                .agreementId("7a23333b-03b5-4547-822b-595a54ad6d38")
-                .transferProcessId("7a23333b-03b5-4547-822b-595a54ad6d38")
-                .build();
-        var edr3 = EndpointDataReference.Builder.newInstance()
-                .id("3563c5a1-685d-40e5-a380-0b5761523d2d")
-                .endpoint(ENDPOINT)
-                .authKey(AUTHENTICATION)
-                .authCode(generateAuthCode())
-                .build();
-        list.add(new PersistentCacheEntry(edrEntry3, edr3));
-
-
-        return list;
-    }
-
     private static String generateAuthCode() {
         //noinspection StringBufferReplaceableByString
         return new StringBuilder()
@@ -96,6 +50,56 @@ public class EdrCacheSetup {
                 .append("hqbEQZ9d8WKzcgoqQ3DBd4ijzkd3Fz7ADD2gy_Hxn8Hi2LcItuB514TjCxYA")
                 .append("ncTNqZC_JSFEyuxwcGFVz3LdSXgw")
                 .toString();
+    }
+
+    public static List<PersistentCacheEntry> createEntries() {
+        var list = new ArrayList<PersistentCacheEntry>();
+
+        var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()
+                .assetId("79f13b89-59a6-4278-8c8e-8540849dbab8")
+                .agreementId("a62d02a3-eea5-4852-86d4-5482db4dffe8")
+                .transferProcessId("5355d524-2616-43df-9096-558afffff659")
+                .build();
+        var edr = EndpointDataReference.Builder.newInstance()
+                .id("c470e649-5454-4e4d-b065-782752e5d759")
+                .endpoint(ENDPOINT)
+                .authKey(AUTHENTICATION)
+                .authCode(generateAuthCode())
+                .contractId("test-contract-id")
+                .build();
+        list.add(new PersistentCacheEntry(edrEntry, edr));
+
+        var edrEntry2 = EndpointDataReferenceEntry.Builder.newInstance()
+                .assetId("9260f395-3d94-4b8b-bdaa-941ead596ce5")
+                .agreementId("d6f73f25-b0aa-4b62-843f-7cfaba532b5b8")
+                .transferProcessId("b2859c0a-1a4f-4d10-a3fd-9652d7b3469a")
+                .build();
+        var edr2 = EndpointDataReference.Builder.newInstance()
+                .id("514a4142-3d2a-4936-97c3-7892961c6a58")
+                .endpoint(ENDPOINT)
+                .authKey(AUTHENTICATION)
+                .authCode(generateAuthCode())
+                .contractId("test-contract-id")
+                .build();
+        list.add(new PersistentCacheEntry(edrEntry2, edr2));
+
+        var edrEntry3 = EndpointDataReferenceEntry.Builder.newInstance()
+                .assetId("9260f395-3d94-4b8b-bdaa-941ead596ce5")
+                .agreementId("7a23333b-03b5-4547-822b-595a54ad6d38")
+                .transferProcessId("7a23333b-03b5-4547-822b-595a54ad6d38")
+                .build();
+        var edr3 = EndpointDataReference.Builder.newInstance()
+                .id("3563c5a1-685d-40e5-a380-0b5761523d2d")
+                .endpoint(ENDPOINT)
+                .contractId("test-contract-id")
+                .authKey(AUTHENTICATION)
+                .authCode(generateAuthCode())
+                .build();
+
+        list.add(new PersistentCacheEntry(edrEntry3, edr3));
+
+
+        return list;
     }
 }
 

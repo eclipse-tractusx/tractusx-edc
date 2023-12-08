@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.edc.ext.http)
     implementation(libs.edc.spi.jwt)
     implementation(libs.edc.jwt.core)
+    implementation(libs.edc.spi.dataplane.http)
 
     implementation(libs.jakarta.rsApi)
     implementation(libs.nimbus.jwt)

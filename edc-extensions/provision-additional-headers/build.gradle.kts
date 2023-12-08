@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.edc.spi.controlplane)
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transfer)
+    implementation(libs.edc.spi.dataplane.http)
 
     testImplementation(libs.edc.junit)
 }

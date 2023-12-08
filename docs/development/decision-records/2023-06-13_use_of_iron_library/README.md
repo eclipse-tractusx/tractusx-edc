@@ -20,3 +20,11 @@ support for `JsonWebKey2020` which was mandated by the Catena-X consortium.
 ## Approach
 
 - add support for `JsonWebKey2020` to Tractus-X EDC using `iron-verifiable-credentials`.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

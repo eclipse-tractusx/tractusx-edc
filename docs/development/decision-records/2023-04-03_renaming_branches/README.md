@@ -59,3 +59,11 @@ like force-pushing. Write access to `upstream` is required!_
 The new `releases` branch (note the plural) will serve the same purpose that `main` did up until now, which is to track
 all releases (via merge commits and tags) in chronological order. We will continue to have separate `release/x.y.z`
 branches for every release.
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>

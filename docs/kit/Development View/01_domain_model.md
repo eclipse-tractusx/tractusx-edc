@@ -57,3 +57,11 @@ as well as information about the [data destination](#data-address).
 
 Similar to the `ContractNegotiation`, this object captures the current state of a data transfer. This process is
 inherently asynchronous, so the `TransferProcess` objects are stored in a backing data store (`TransferProcessStore`).
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2021,2022,2023 Contributors to the Eclipse Foundation
+- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>
