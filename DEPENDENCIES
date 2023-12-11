@@ -8,7 +8,7 @@ maven/mavencentral/com.azure/azure-core-http-netty/1.13.7, MIT AND Apache-2.0, a
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.9, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core/1.43.0, MIT AND Apache-2.0, approved, #10548
 maven/mavencentral/com.azure/azure-core/1.44.1, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core/1.45.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-core/1.45.0, MIT AND Apache-2.0, approved, #11845
 maven/mavencentral/com.azure/azure-identity/1.10.1, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-identity/1.10.4, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
@@ -430,7 +430,7 @@ maven/mavencentral/org.ow2.asm/asm/9.2, BSD-3-Clause, approved, CQ23635
 maven/mavencentral/org.ow2.asm/asm/9.3, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
 maven/mavencentral/org.postgresql/postgresql/42.6.0, BSD-2-Clause AND Apache-2.0, approved, #9159
-maven/mavencentral/org.postgresql/postgresql/42.7.0, BSD-2-Clause AND LicenseRef-scancode-free-unknown AND Apache-2.0, restricted, #11681
+maven/mavencentral/org.postgresql/postgresql/42.7.0, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.reflections/reflections/0.10.2, Apache-2.0 AND WTFPL, approved, clearlydefined
 maven/mavencentral/org.rnorth.duct-tape/duct-tape/1.0.8, MIT, approved, clearlydefined
