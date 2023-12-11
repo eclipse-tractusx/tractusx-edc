@@ -298,6 +298,8 @@ spec:
             - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
             {{- end }}
+            - name: "EDC_TRANSFER_PROXY_TOKEN_VALIDITY_SECONDS"
+              value: {{ .Values.controlplane.edr.transferProxyTokenValidity | required ".Values.controlplane.edr.transferProxyTokenValidity is required" | quote }}
 
             # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver
 
