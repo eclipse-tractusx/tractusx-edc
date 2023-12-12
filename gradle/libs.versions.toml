@@ -3,7 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.4.1"
-postgres = "42.7.0"
+postgres = "42.7.1"
 awaitility = "4.2.0"
 nimbus = "9.37.2"
 azure-identity = "1.10.4"
