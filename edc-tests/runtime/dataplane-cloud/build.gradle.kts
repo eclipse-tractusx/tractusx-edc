@@ -24,8 +24,6 @@ dependencies {
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "api-observability")
     }
-
-//    implementation(project(":edc-tests:runtime:extensions"))
 }
 
 application {

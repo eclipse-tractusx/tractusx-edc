@@ -113,6 +113,7 @@ public class Participant {
                 .when()
                 .post("/v3/assets")
                 .then()
+                .log().ifError()
                 .statusCode(200)
                 .contentType(JSON);
     }
@@ -133,15 +134,18 @@ public class Participant {
                 .contentType(JSON);
     }
 
-    public void createPolicy(JsonObject policyDefinition) {
-        baseRequest()
+    public String createPolicy(JsonObject policyDefinition) {
+        return baseRequest()
                 .contentType(JSON)
                 .body(policyDefinition)
                 .when()
                 .post("/v2/policydefinitions")
                 .then()
+                .log().ifError()
                 .statusCode(200)
-                .contentType(JSON);
+                .contentType(JSON)
+                .extract()
+                .path("@id");
     }
 
     public void storeBusinessPartner(String bpn, String... groups) {
@@ -339,11 +343,11 @@ public class Participant {
                     .body(requestBody)
                     .post("/v2/catalog/request")
                     .then()
+                    .log().ifError()
                     .statusCode(200)
                     .extract().body().asString();
 
             var responseBody = objectMapper.readValue(response, JsonObject.class);
-
             var catalog = jsonLd.expand(responseBody).orElseThrow(f -> new EdcException(f.getFailureDetail()));
 
             var datasets = catalog.getJsonArray(DCAT_DATASET_ATTRIBUTE);
