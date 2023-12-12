@@ -218,6 +218,7 @@ maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.76, MIT, approved, #9828
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.12.0, MIT, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.31.0, MIT, approved, clearlydefined
+maven/mavencentral/org.checkerframework/checker-qual/3.41.0, , restricted, clearlydefined
 maven/mavencentral/org.codehaus.woodstox/stax2-api/4.2.1, BSD-2-Clause, approved, #2670
 maven/mavencentral/org.eclipse.edc/api-core/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/api-observability/0.4.1, Apache-2.0, approved, technology.edc
@@ -430,7 +431,7 @@ maven/mavencentral/org.ow2.asm/asm/9.2, BSD-3-Clause, approved, CQ23635
 maven/mavencentral/org.ow2.asm/asm/9.3, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
 maven/mavencentral/org.postgresql/postgresql/42.6.0, BSD-2-Clause AND Apache-2.0, approved, #9159
-maven/mavencentral/org.postgresql/postgresql/42.7.0, BSD-2-Clause AND Apache-2.0, approved, #11681
+maven/mavencentral/org.postgresql/postgresql/42.7.1, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.reflections/reflections/0.10.2, Apache-2.0 AND WTFPL, approved, clearlydefined
 maven/mavencentral/org.rnorth.duct-tape/duct-tape/1.0.8, MIT, approved, clearlydefined
