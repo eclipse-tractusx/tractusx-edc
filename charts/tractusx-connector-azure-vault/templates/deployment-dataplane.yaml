@@ -242,6 +242,9 @@ spec:
           {{- end }}
           {{- end }}
           volumeMounts:
+           {{- if .Values.dataplane.volumeMounts }}
+           {{- toYaml .Values.dataplane.volumeMounts | nindent 12 }}
+           {{- end}}
             - name: "configuration"
               mountPath: "/app/opentelemetry.properties"
               subPath: "opentelemetry.properties"
@@ -256,6 +259,9 @@ spec:
             - name: "tmp"
               mountPath: "/tmp"
       volumes:
+       {{- if .Values.dataplane.volumes }}
+       {{- toYaml .Values.dataplane.volumes | nindent 8 }}
+       {{- end}}
         - name: "configuration"
           configMap:
             name: {{ include "txdc.fullname" . }}-dataplane

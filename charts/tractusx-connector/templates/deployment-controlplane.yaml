@@ -376,6 +376,9 @@ spec:
           {{- end }}
           {{- end }}
           volumeMounts:
+           {{- if .Values.controlplane.volumeMounts }}
+           {{- toYaml .Values.controlplane.volumeMounts | nindent 12 }}
+           {{- end}}
             - name: "configuration"
               mountPath: "/app/opentelemetry.properties"
               subPath: "opentelemetry.properties"
@@ -390,6 +393,9 @@ spec:
             - name: "tmp"
               mountPath: "/tmp"
       volumes:
+       {{- if .Values.controlplane.volumeMounts }}
+       {{- toYaml .Values.controlplane.volumes | nindent 8 }}
+       {{- end}}
         - name: "configuration"
           configMap:
             name: {{ include "txdc.fullname" . }}-controlplane

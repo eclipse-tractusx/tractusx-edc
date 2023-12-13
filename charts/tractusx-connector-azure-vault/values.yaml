@@ -245,9 +245,9 @@ controlplane:
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
-  volumeMounts: []
+  volumeMounts:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
-  volumes: []
+  volumes:
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -445,9 +445,9 @@ dataplane:
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
-  volumeMounts: []
+  volumeMounts:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
-  volumes: []
+  volumes:
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -499,7 +499,7 @@ postgresql:
   jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
-  enabled: false
+      enabled: false
   readReplicas:
     persistence:
       enabled: false
