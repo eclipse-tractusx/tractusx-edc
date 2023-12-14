@@ -73,8 +73,6 @@ edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-policy-engine = { module = "org.eclipse.edc:policy-engine", version.ref = "edc" }
 edc-auth-tokenbased = { module = "org.eclipse.edc:auth-tokenbased", version.ref = "edc" }
-edc-auth-oauth2-core = { module = "org.eclipse.edc:oauth2-core", version.ref = "edc" }
-edc-auth-oauth2-daps = { module = "org.eclipse.edc:oauth2-daps", version.ref = "edc" }
 edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }
 edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }

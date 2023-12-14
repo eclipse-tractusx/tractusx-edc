@@ -22,10 +22,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude("org.eclipse.edc", "oauth2-core")
-        exclude("org.eclipse.edc", "oauth2-daps")
-
-//        exclude(module = "data-encryption")
         exclude(module = "json-ld-core")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
@@ -40,7 +36,6 @@ dependencies {
         exclude("org.eclipse.edc", "api-observability")
     }
 
-
     implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)
@@ -50,7 +45,6 @@ application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
 
-// do not publish
 edcBuild {
     publish.set(false)
 }

@@ -48,10 +48,6 @@ the [documentary section of the EDC](https://github.com/eclipse-edc/Connector/tr
 | edc.ids.catalog.id                               |          | urn:catalog:default                 |                            |
 | ids.webhook.address                              |          | <http://localhost:8282/api/v1/ids>  |                            |
 | edc.hostname                                     |          | localhost                           |                            |
-| edc.oauth.token.url                              | X        | <https://daps.example.net>          |                            |
-| edc.oauth.public.key.alias                       | X        | key-to-daps-certificate-in-keyvault |                            |
-| edc.oauth.private.key.alias                      | X        | key-to-private-key-in-keyvault      |                            |
-| edc.oauth.client.id                              | X        | daps-oauth-client-id                |                            |
 | edc.transfer.proxy.endpoint                      | X        |                                     |                            |
 | edc.transfer.proxy.token.signer.privatekey.alias | X        |                                     |                            |
 
@@ -91,12 +87,6 @@ ids.webhook.address=http://localhost:8282/api/v1/ids
 edc.hostname=localhost
 
 edc.api.auth.key=password
-
-# OAuth / DAPS related configuration
-edc.oauth.token.url=https://daps.example.net
-edc.oauth.public.key.alias=key-to-daps-certificate-in-keyvault
-edc.oauth.private.key.alias=key-to-private-key-in-keyvault
-edc.oauth.client.id=daps-oauth-client-id
 
 # Control- / Data- Plane configuration
 edc.transfer.proxy.endpoint=http://dataplane-public-endpoint/public

@@ -23,7 +23,6 @@ Details regarding each configuration property can be found at the [documentary s
 | web.http.control.path                   | X        | /api/controlplane/control                   |             |
 | edc.receiver.http.endpoint              | X        | <http://backend-service>                    |             |
 | edc.hostname                            |          | localhost                                   |             |
-| edc.oauth.client.id                     | X        | daps-oauth-client-id                        |             |
 | edc.vault.clientid                      | X        | 00000000-1111-2222-3333-444444444444        |             |
 | edc.vault.tenantid                      | X        | 55555555-6666-7777-8888-999999999999        |             |
 | edc.vault.name                          | X        | my-vault-name                               |             |

@@ -62,12 +62,6 @@ edc.hostname=localhost
 
 edc.api.auth.key=password
 
-# OAuth / DAPS related configuration
-edc.oauth.token.url=https://daps.example.net
-edc.oauth.certificate.alias=key-to-daps-certificate-in-keyvault
-edc.oauth.private.key.alias=key-to-private-key-in-keyvault
-edc.oauth.client.id=daps-oauth-client-id
-
 # HashiCorp vault related configuration
 edc.vault.hashicorp.url=http://vault
 edc.vault.hashicorp.token=55555555-6666-7777-8888-999999999999

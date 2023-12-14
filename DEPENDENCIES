@@ -10,7 +10,7 @@ maven/mavencentral/com.azure/azure-core/1.43.0, MIT AND Apache-2.0, approved, #1
 maven/mavencentral/com.azure/azure-core/1.44.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.45.1, MIT AND Apache-2.0, approved, #11845
 maven/mavencentral/com.azure/azure-identity/1.10.1, MIT AND Apache-2.0, approved, #10086
-maven/mavencentral/com.azure/azure-identity/1.11.1, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-identity/1.11.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.7.0, MIT, approved, #10868
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.7.3, MIT, approved, #10868
@@ -244,7 +244,7 @@ maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.77, MIT, approved, #11596
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.12.0, MIT, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.31.0, MIT, approved, clearlydefined
-maven/mavencentral/org.checkerframework/checker-qual/3.41.0, , restricted, clearlydefined
+maven/mavencentral/org.checkerframework/checker-qual/3.41.0, MIT, approved, #12032
 maven/mavencentral/org.codehaus.woodstox/stax2-api/4.2.1, BSD-2-Clause, approved, #2670
 maven/mavencentral/org.eclipse.edc/api-core/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/api-observability/0.4.1, Apache-2.0, approved, technology.edc

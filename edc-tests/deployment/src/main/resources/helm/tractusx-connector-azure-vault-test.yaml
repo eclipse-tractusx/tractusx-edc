@@ -17,21 +17,6 @@
 #  SPDX-License-Identifier: Apache-2.0
 #
 
-## This file can be used to verify that the chart is working properly. It provides an exemplary configuration
-## that is intended to be used with the supporting infrastructure.
-## 1. install DAPS:
-##  helm install infrastructure edc-tests/deployment/src/main/resources/helm/test-infrastructure --wait-for-jobs
-##
-## 2. set Azure KevVault secrets, either through the Azure Portal or through az cli:
-##  az keyvault secret set --vault-name <VAULTNAME> --name daps-crt --value <DAPSCRT>
-##  az keyvault secret set --vault-name <VAULTNAME> --name daps-key --value <DAPSPRIVATEKEY>
-##  az keyvault secret set --vault-name <VAULTNAME> --name aes-keys --value <AES_PRIVATE_KEY>
-##
-## 3. install the connector plus its third-party dependencies (Postgres):
-##  helm install tx-prod charts/tractusx-connector-azure-vault-app -f charts/tractusx-connector-azure-vault-app/example.yaml --dependency-update \
-##    --set vault.azure.client=<CLIENTID> \
-##    --set vault.azure.tenant=<TENANTID> \
-##    --set vault.azure.secret=<CLIENTSECRET>
 
 fullnameOverride: tx-prod
 ################################
