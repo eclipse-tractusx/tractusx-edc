@@ -37,10 +37,6 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.ids.catalog.id                               |          | urn:catalog:default                                                          |                            |
 | ids.webhook.address                              |          | <http://localhost:8282/api/v1/ids>                                           |                            |
 | edc.hostname                                     |          | localhost                                                                    |                            |
-| edc.oauth.token.url                              | X        | <https://daps.example.net>                                                   |                            |
-| edc.oauth.public.key.alias                       | X        | key-to-daps-certificate-in-keyvault                                          |                            |
-| edc.oauth.private.key.alias                      | X        | key-to-private-key-in-keyvault                                               |                            |
-| edc.oauth.client.id                              | X        | daps-oauth-client-id                                                         |                            |
 | edc.vault.hashicorp.url                          | X        | <http://vault>                                                               |                            |
 | edc.vault.hashicorp.token                        | X        | 55555555-6666-7777-8888-999999999999                                         |                            |
 | edc.vault.hashicorp.timeout.seconds              |          | 30                                                                           |                            |
@@ -102,12 +98,6 @@ ids.webhook.address=http://localhost:8282/api/v1/ids
 edc.hostname=localhost
 
 edc.api.auth.key=password
-
-# OAuth / DAPS related configuration
-edc.oauth.token.url=https://daps.example.net
-edc.oauth.public.key.alias=key-to-daps-certificate-in-keyvault
-edc.oauth.private.key.alias=key-to-private-key-in-keyvault
-edc.oauth.client.id=daps-oauth-client-id
 
 # HashiCorp vault related configuration
 edc.vault.hashicorp.url=http://vault

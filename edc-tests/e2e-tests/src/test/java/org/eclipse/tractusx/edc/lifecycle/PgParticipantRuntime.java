@@ -15,7 +15,6 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import org.eclipse.edc.connector.core.vault.InMemoryVault;
-import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
@@ -23,7 +22,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
-import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -46,7 +44,6 @@ public class PgParticipantRuntime extends ParticipantRuntime {
     public PgParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, bpn, properties);
         this.dbName = runtimeName.toLowerCase();
-        this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
         mockVault();
 
         postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)

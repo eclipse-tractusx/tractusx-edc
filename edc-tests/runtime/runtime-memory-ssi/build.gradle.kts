@@ -22,8 +22,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude("org.eclipse.edc", "oauth2-core")
-        exclude("org.eclipse.edc", "oauth2-daps")
         exclude(module = "data-encryption")
     }
     implementation(project(":core:json-ld-core"))
@@ -51,7 +49,6 @@ application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
 
-// do not publish
 edcBuild {
     publish.set(false)
 }

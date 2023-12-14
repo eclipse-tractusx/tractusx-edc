@@ -31,7 +31,7 @@ The main difference between the EDC and the previous connectors of the [IDSA][id
 
 The architecture of the EDC combines various services that are necessary for the above principles:
 
-- An interface to the Identity Provider service, currently [IDSA][idsa-url]'s [Dynamic Attribute Provisioning System][daps-url]. This central service provides the identity and the corresponding authentication of the participants in the data exchange. (There is no authorization at this point). Decentralized solutions will also be supported in the future.
+- An interface to the Identity Provider service, currently [IDSA][idsa-url]'s [Identity And Trust Protocol][iatp-url]. This central service provides the identity and the corresponding authentication of the participants in the data exchange. (There is no authorization at this point). Decentralized solutions will also be supported in the future.
 - The provision of possible offers (contract offering) which, on the one hand, stipulates the data offered and the associated terms of use (policies) in corresponding contracts.
 - An interface for manual selection of data and associated contract offers.
 - The actual data transfer via the data plane extension
@@ -40,7 +40,7 @@ The architecture of the EDC combines various services that are necessary for the
 [edc-url]: https://github.com/eclipse-edc/Connector
 [gaiax-url]: https://www.data-infrastructure.eu/GAIAX/Navigation/EN/Home/home.html
 [idsa-url]: https://internationaldataspaces.org/
-[daps-url]: https://www.dataspaces.fraunhofer.de/en/software/identity_provider.html
+[iatp-url]: https://github.com/eclipse-tractusx/ssi-docu
 
 ## NOTICE
 

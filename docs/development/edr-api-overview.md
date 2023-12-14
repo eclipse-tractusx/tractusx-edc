@@ -112,7 +112,7 @@ associated to it in the configured datasource for future querying.
 Since `tractusx-edc` [v0.5.1](https://github.com/eclipse-tractusx/tractusx-edc/releases/tag/0.5.1) the cached EDRs also come with a state machine that will manage the lifecycle of an EDR
 on the consumer side. That means that it will auto-renew it is nearing its expiration date by
 firing another transfer process request with the same parameters as the original one. Once renewed, the old EDR
-will transition to the `EXPIRED` state, and it will be removed from the database and the vault according to the [configuration](../../../core/edr-core/README.md).
+will transition to the `EXPIRED` state, and it will be removed from the database and the vault according to the [configuration](../../core/edr-core/README.md).
 
 ### EDR Management | Fetch cached EDRs
 
@@ -219,7 +219,7 @@ curl --request GET \
 #### Consumer data-plane (proxy)
 
 The Consumer data-plane proxy is an extension available in `tractusx-edc` that will use the EDR store to simplify
-the data request on consumer side. The documentation is available [here](../../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-consumer-api/README.md).
+the data request on consumer side. The documentation is available [here](../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-consumer-api/README.md).
 
 The only API is:
 
@@ -228,7 +228,7 @@ The only API is:
 | `<PROXY_URL>/aas/request` | POST   | [OpenApi](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1#/Data%20Plane%20Proxy%20API/requestAsset) |
 
 which fetches the data according to the input body. The body should contain the `assetId` plus `providerId` or the `transferProcessId`,
-which identifies the EDR to use for fetching data and an `endpointUrl` which is the [provider gateway](../../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-provider-api/README.md)
+which identifies the EDR to use for fetching data and an `endpointUrl` which is the [provider gateway](../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-provider-api/README.md)
 on which the data is available.
 
 Example:

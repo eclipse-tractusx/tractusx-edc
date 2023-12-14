@@ -19,7 +19,7 @@ import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
-import org.eclipse.tractusx.edc.token.MockDapsService;
+import org.eclipse.tractusx.edc.token.MockBpnIdentityService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -35,7 +35,7 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
         if (!properties.containsKey("tx.ssi.miw.url")) {
-            this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
+            this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
         }
     }
 

@@ -26,17 +26,16 @@ import java.util.Map;
 import static java.lang.String.format;
 
 /**
- * An {@link IdentityService} that will mimic the behaviour of DAPS by inserting the "referringConnector" claim into any token.
+ * An {@link IdentityService} that will inject the BPN claim in every token.
  * Please only use in testing scenarios!
  */
-public class MockDapsService implements IdentityService {
+public class MockBpnIdentityService implements IdentityService {
 
     private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";
-    private static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     private final String businessPartnerNumber;
-    private TypeManager typeManager = new TypeManager();
+    private final TypeManager typeManager = new TypeManager();
 
-    public MockDapsService(String businessPartnerNumber) {
+    public MockBpnIdentityService(String businessPartnerNumber) {
         this.businessPartnerNumber = businessPartnerNumber;
     }
 
@@ -44,7 +43,7 @@ public class MockDapsService implements IdentityService {
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
         var token = Map.of(BUSINESS_PARTNER_NUMBER_CLAIM, businessPartnerNumber);
 
-        TokenRepresentation tokenRepresentation = TokenRepresentation.Builder.newInstance()
+        var tokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(typeManager.writeValueAsString(token))
                 .build();
         return Result.success(tokenRepresentation);
@@ -57,9 +56,9 @@ public class MockDapsService implements IdentityService {
         if (token.containsKey(BUSINESS_PARTNER_NUMBER_CLAIM)) {
             return Result.success(ClaimToken.Builder.newInstance()
                     .claim(BUSINESS_PARTNER_NUMBER_CLAIM, token.get(BUSINESS_PARTNER_NUMBER_CLAIM))
-                    .claim(REFERRING_CONNECTOR_CLAIM, token.get(BUSINESS_PARTNER_NUMBER_CLAIM)).build());
+                    .build());
         }
-        return Result.failure(format("Expected %s and %s claims, but token did not contain them", BUSINESS_PARTNER_NUMBER_CLAIM, REFERRING_CONNECTOR_CLAIM));
+        return Result.failure(format("Expected %s claim, but token did not contain them", BUSINESS_PARTNER_NUMBER_CLAIM));
     }
 
 }
