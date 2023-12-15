@@ -15,6 +15,7 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
@@ -38,6 +39,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
@@ -337,7 +339,12 @@ public class Participant {
         var requestBody = createCatalogRequest(querySpec, provider.dspEndpoint);
 
         await().atMost(timeout).untilAsserted(() -> {
+            var config1 = config()
+                    .httpClient(HttpClientConfig.httpClientConfig()
+                            .setParam("http.socket.timeout", 20000)
+                            .setParam("http.connection.timeout", 20000));
             var response = baseRequest()
+                    .config(config1)
                     .contentType(JSON)
                     .when()
                     .body(requestBody)
