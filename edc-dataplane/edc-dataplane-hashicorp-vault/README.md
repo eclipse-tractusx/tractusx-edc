@@ -26,7 +26,7 @@ Details regarding each configuration property can be found at the [documentary s
 | edc.vault.hashicorp.url                 | X        | <http://vault>                              |             |
 | edc.vault.hashicorp.token               | X        | 55555555-6666-7777-8888-999999999999        |             |
 | edc.vault.hashicorp.timeout.seconds     |          | 30                                          |             |
-| edc.dataplane.token.validation.endpoint | X        | <http://controlplane:8182/validation/token> |             |
+| edc.dataplane.token.validation.endpoint | X        | <http://controlplane:9999/control/token> |             |
 
 ### Example configuration.properties
 
@@ -45,7 +45,7 @@ web.http.control.port=9999
 web.http.control.path=/api/dataplane/control
 
 # Validation endpoint of controlplane
-edc.dataplane.token.validation.endpoint=http://controlplane:8182/validation/token
+edc.dataplane.token.validation.endpoint=http://controlplane:9999/control/token
 
 # EDC hostname
 edc.hostname=localhost

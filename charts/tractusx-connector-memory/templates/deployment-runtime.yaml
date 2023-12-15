@@ -188,10 +188,6 @@ spec:
             - name: "WEB_HTTP_MANAGEMENT_PATH"
               value: {{ .Values.runtime.endpoints.management.path | quote }}
             {{- end }}
-            - name: "WEB_HTTP_VALIDATION_PORT"
-              value: {{ .Values.runtime.endpoints.validation.port | quote }}
-            - name: "WEB_HTTP_VALIDATION_PATH"
-              value: {{ .Values.runtime.endpoints.validation.path | quote }}
             - name: "WEB_HTTP_CONTROL_PORT"
               value: {{ .Values.runtime.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"

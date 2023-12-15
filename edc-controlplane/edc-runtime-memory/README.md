@@ -31,8 +31,6 @@ the [documentary section of the EDC](https://github.com/eclipse-edc/Connector/tr
 | web.http.default.path                            | X        | /api                                |                            |
 | web.http.data.port                               | X        | 8181                                |                            |
 | web.http.data.path                               | X        | /data                               |                            |
-| web.http.validation.port                         | X        | 8182                                |                            |
-| web.http.validation.path                         | X        | /validation                         |                            |
 | web.http.control.port                            | X        | 9999                                |                            |
 | web.http.control.path                            | X        | /api/controlplane/control           |                            |
 | web.http.ids.port                                | X        | 8282                                |                            |
@@ -65,8 +63,6 @@ web.http.default.port=8080
 web.http.default.path=/api
 web.http.data.port=8181
 web.http.data.path=/data
-web.http.validation.port=8182
-web.http.validation.path=/validation
 web.http.control.port=9999
 web.http.control.path=/api/controlplane/control
 web.http.ids.port=8282
@@ -114,7 +110,7 @@ EOF
 ```shell
 docker run \
     -e SECRETS="key1:secret1,key2:secret2" \
-    -p 8080:8080 -p 8181:8181 -p 8182:8182 -p 8282:8282 -p 9090:9090 -p 9999:9999 \
+    -p 8080:8080 -p 8181:8181 -p 8282:8282 -p 9090:9090 -p 9999:9999 \
     -v ${CONFIGURATION_PROPERTIES_FILE:-/dev/null}:/app/configuration.properties \
     -v ${LOGGING_PROPERTIES_FILE:-/dev/null}:/app/logging.properties \
     -i edc-runtime-memory:latest

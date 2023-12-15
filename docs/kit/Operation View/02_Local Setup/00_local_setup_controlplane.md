@@ -127,7 +127,7 @@ Once the configuration is created, the container can be run directly via docker.
 
 ```shell
 docker run \
-  -p 8080:8080 -p 8181:8181 -p 8182:8182 -p 8282:8282 -p 9090:9090 -p 9999:9999 \
+  -p 8080:8080 -p 8181:8181 -p 8282:8282 -p 9090:9090 -p 9999:9999 \
   -v ${CONFIGURATION_PROPERTIES_FILE:-/dev/null}:/app/configuration.properties \
   -v ${LOGGING_PROPERTIES_FILE:-/dev/null}:/app/logging.properties \
   -v ${OPENTELEMETRY_PROPERTIES_FILE:-/dev/null}:/app/opentelemetry.properties \

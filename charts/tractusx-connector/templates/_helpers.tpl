@@ -132,7 +132,7 @@ Control DSP URL
 Validation URL
 */}}
 {{- define "txdc.controlplane.url.validation" -}}
-{{- printf "http://%s-controlplane:%v%s/token" ( include "txdc.fullname" $ ) $.Values.controlplane.endpoints.control.port $.Values.controlplane.endpoints.control.path -}}
+{{- printf "%s/token" ( include "txdc.controlplane.url.control" $ ) -}}
 {{- end }}
 
 {{/*
