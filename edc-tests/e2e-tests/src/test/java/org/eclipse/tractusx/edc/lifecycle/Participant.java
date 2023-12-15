@@ -338,6 +338,7 @@ public class Participant {
 
         var requestBody = createCatalogRequest(querySpec, provider.dspEndpoint);
 
+        //        await().pollDelay(5, SECONDS).atMost(timeout).untilAsserted(() -> {
         await().atMost(timeout).untilAsserted(() -> {
             var config1 = config()
                     .httpClient(HttpClientConfig.httpClientConfig()
