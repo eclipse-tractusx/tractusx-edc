@@ -18,10 +18,8 @@ import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -35,12 +33,10 @@ public class MockBpnIdentityService implements IdentityService {
 
     private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";
     private final String businessPartnerNumber;
-    private final Monitor monitor;
     private final TypeManager typeManager = new TypeManager();
 
-    public MockBpnIdentityService(String businessPartnerNumber, @NotNull Monitor monitor) {
+    public MockBpnIdentityService(String businessPartnerNumber) {
         this.businessPartnerNumber = businessPartnerNumber;
-        this.monitor = monitor;
     }
 
     @Override
@@ -50,7 +46,6 @@ public class MockBpnIdentityService implements IdentityService {
         var tokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(typeManager.writeValueAsString(token))
                 .build();
-        monitor.debug("BPNIDENTITYSERVICE: OBTAIN CLIENT CREDENTIALS");
         return Result.success(tokenRepresentation);
     }
 
@@ -58,7 +53,6 @@ public class MockBpnIdentityService implements IdentityService {
     public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, String audience) {
 
         var token = typeManager.readValue(tokenRepresentation.getToken(), Map.class);
-        monitor.debug("BPNIDENTITYSERVICE: VERIFY JTW TOKEN");
         if (token.containsKey(BUSINESS_PARTNER_NUMBER_CLAIM)) {
             return Result.success(ClaimToken.Builder.newInstance()
                     .claim(BUSINESS_PARTNER_NUMBER_CLAIM, token.get(BUSINESS_PARTNER_NUMBER_CLAIM))

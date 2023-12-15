@@ -27,12 +27,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
@@ -45,14 +43,14 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRAT
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 
 public abstract class AbstractHttpConsumerPullWithProxyTest {
 
     protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
 
-    private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
-    private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
     private MockWebServer server;
 
     @BeforeEach

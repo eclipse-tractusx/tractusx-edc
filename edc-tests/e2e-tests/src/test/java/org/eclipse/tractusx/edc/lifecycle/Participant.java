@@ -32,7 +32,6 @@ import org.eclipse.tractusx.edc.helpers.AssetHelperFunctions;
 import org.eclipse.tractusx.edc.helpers.ContractDefinitionHelperFunctions;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -41,8 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
@@ -57,6 +54,8 @@ import static org.eclipse.tractusx.edc.helpers.ContractNegotiationHelperFunction
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createTransferRequest;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 import static org.mockito.Mockito.mock;
 
 public class Participant {
@@ -73,7 +72,6 @@ public class Participant {
     private final String bpn;
     private final String backend;
     private final JsonLd jsonLd;
-    private final Duration timeout = Duration.ofSeconds(30);
 
     private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
     private final String proxyUrl;
@@ -338,7 +336,8 @@ public class Participant {
 
         var requestBody = createCatalogRequest(querySpec, provider.dspEndpoint);
 
-        await().pollDelay(1, MILLISECONDS).pollInterval(5, SECONDS).atMost(timeout).untilAsserted(() -> {
+        await().pollInterval(ASYNC_POLL_INTERVAL).atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            System.out.println("REQUEST CATALOG");
             var response = baseRequest()
                     .contentType(JSON)
                     .when()
@@ -382,7 +381,7 @@ public class Participant {
 
 
     public String waitForAgreementId(String negotiationId) {
-        await().atMost(timeout).untilAsserted(() -> {
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = getContractNegotiationField(negotiationId, "state");
             assertThat(state).isEqualTo(FINALIZED.name());
         });
