@@ -14,6 +14,7 @@
 
 plugins {
     `java-library`
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -38,18 +39,26 @@ dependencies {
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
     testImplementation(testFixtures(libs.edc.sql.core))
+    testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(libs.awaitility)
-
-    testCompileOnly(project(":edc-tests:runtime:extensions"))
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
-    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
     testImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     testImplementation(libs.edc.auth.oauth2.client)
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgres)
     testImplementation(libs.testcontainers.vault)
 
+    testCompileOnly(project(":edc-tests:runtime:extensions"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
+
+    testFixturesImplementation(libs.junit.jupiter.api)
+    testFixturesImplementation(libs.edc.spi.core)
+    testFixturesImplementation(libs.edc.junit)
+    testFixturesImplementation(libs.edc.spi.policy)
+    testFixturesImplementation(libs.edc.spi.contract)
+    testFixturesImplementation(project(":spi:edr-spi"))
+    testFixturesImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
 }
 
 // do not publish

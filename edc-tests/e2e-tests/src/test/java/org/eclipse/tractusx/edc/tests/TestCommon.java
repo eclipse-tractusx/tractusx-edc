@@ -12,25 +12,13 @@
  *
  */
 
-plugins {
-    `java-library`
-    id("application")
-}
+package org.eclipse.tractusx.edc.tests;
 
+import java.time.Duration;
 
-dependencies {
+import static java.time.Duration.ofSeconds;
 
-    // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "api-observability")
-    }
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-// do not publish
-edcBuild {
-    publish.set(false)
+public interface TestCommon {
+    Duration ASYNC_TIMEOUT = ofSeconds(60);
+    Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
 }

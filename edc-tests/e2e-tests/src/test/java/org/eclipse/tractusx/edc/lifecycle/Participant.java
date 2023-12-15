@@ -32,7 +32,6 @@ import org.eclipse.tractusx.edc.helpers.AssetHelperFunctions;
 import org.eclipse.tractusx.edc.helpers.ContractDefinitionHelperFunctions;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -55,6 +54,8 @@ import static org.eclipse.tractusx.edc.helpers.ContractNegotiationHelperFunction
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createTransferRequest;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 import static org.mockito.Mockito.mock;
 
 public class Participant {
@@ -71,7 +72,6 @@ public class Participant {
     private final String bpn;
     private final String backend;
     private final JsonLd jsonLd;
-    private final Duration timeout = Duration.ofSeconds(30);
 
     private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
     private final String proxyUrl;
@@ -113,6 +113,7 @@ public class Participant {
                 .when()
                 .post("/v3/assets")
                 .then()
+                .log().ifError()
                 .statusCode(200)
                 .contentType(JSON);
     }
@@ -133,15 +134,18 @@ public class Participant {
                 .contentType(JSON);
     }
 
-    public void createPolicy(JsonObject policyDefinition) {
-        baseRequest()
+    public String createPolicy(JsonObject policyDefinition) {
+        return baseRequest()
                 .contentType(JSON)
                 .body(policyDefinition)
                 .when()
                 .post("/v2/policydefinitions")
                 .then()
+                .log().ifError()
                 .statusCode(200)
-                .contentType(JSON);
+                .contentType(JSON)
+                .extract()
+                .path("@id");
     }
 
     public void storeBusinessPartner(String bpn, String... groups) {
@@ -163,8 +167,7 @@ public class Participant {
         assertThat(dataset).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
 
         var policy = getDatasetFirstPolicy(dataset);
-        var contractId = getDatasetContractId(dataset);
-        var requestBody = createNegotiationRequest(other.dspEndpoint, other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy);
+        var requestBody = createNegotiationRequest(other.dspEndpoint, other.getBpn(), policy);
         var response = baseRequest()
                 .when()
                 .body(requestBody)
@@ -332,18 +335,19 @@ public class Participant {
 
         var requestBody = createCatalogRequest(querySpec, provider.dspEndpoint);
 
-        await().atMost(timeout).untilAsserted(() -> {
+        await().pollInterval(ASYNC_POLL_INTERVAL).atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            System.out.println("REQUEST CATALOG");
             var response = baseRequest()
                     .contentType(JSON)
                     .when()
                     .body(requestBody)
                     .post("/v2/catalog/request")
                     .then()
+                    .log().ifError()
                     .statusCode(200)
                     .extract().body().asString();
 
             var responseBody = objectMapper.readValue(response, JsonObject.class);
-
             var catalog = jsonLd.expand(responseBody).orElseThrow(f -> new EdcException(f.getFailureDetail()));
 
             var datasets = catalog.getJsonArray(DCAT_DATASET_ATTRIBUTE);
@@ -376,7 +380,7 @@ public class Participant {
 
 
     public String waitForAgreementId(String negotiationId) {
-        await().atMost(timeout).untilAsserted(() -> {
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = getContractNegotiationField(negotiationId, "state");
             assertThat(state).isEqualTo(FINALIZED.name());
         });

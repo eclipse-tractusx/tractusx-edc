@@ -32,12 +32,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
@@ -51,6 +49,8 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRAT
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 
 public abstract class AbstractDataPlaneProxyTest {
 
@@ -58,12 +58,7 @@ public abstract class AbstractDataPlaneProxyTest {
     protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
     private static final String CUSTOM_BASE_PATH = "/custom";
     private static final String CUSTOM_SUB_PATH = "/sub";
-
     private static final String CUSTOM_QUERY_PARAMS = "foo=bar";
-
-    private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
-    private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
-
     private static final String CUSTOM_FULL_PATH = CUSTOM_BASE_PATH + CUSTOM_SUB_PATH + "?" + CUSTOM_QUERY_PARAMS;
     private final ObjectMapper mapper = new ObjectMapper();
     private MockWebServer server;

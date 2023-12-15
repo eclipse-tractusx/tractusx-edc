@@ -327,6 +327,7 @@ maven/mavencentral/org.eclipse.edc/junit/0.4.1, Apache-2.0, approved, technology
 maven/mavencentral/org.eclipse.edc/jwt-core/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jwt-spi/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/management-api-configuration/0.4.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/management-api-test-fixtures/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/management-api/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/micrometer-core/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/oauth2-client/0.4.1, Apache-2.0, approved, technology.edc
@@ -337,6 +338,9 @@ maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.4.1, Apache-2.0, approved
 maven/mavencentral/org.eclipse.edc/policy-engine/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-evaluator/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.4.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-monitor-core/0.4.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-monitor-spi/0.4.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-monitor-store-sql/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sql-core/0.4.1, Apache-2.0, approved, technology.edc
@@ -357,6 +361,7 @@ maven/mavencentral/org.eclipse.edc/transform-core/0.4.1, Apache-2.0, approved, t
 maven/mavencentral/org.eclipse.edc/transform-spi/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-core/0.4.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/validator-data-address-http-data/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-azure/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-hashicorp/0.4.1, Apache-2.0, approved, technology.edc
