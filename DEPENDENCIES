@@ -361,6 +361,7 @@ maven/mavencentral/org.eclipse.edc/transform-core/0.4.1, Apache-2.0, approved, t
 maven/mavencentral/org.eclipse.edc/transform-spi/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-core/0.4.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/validator-data-address-http-data/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-azure/0.4.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-hashicorp/0.4.1, Apache-2.0, approved, technology.edc

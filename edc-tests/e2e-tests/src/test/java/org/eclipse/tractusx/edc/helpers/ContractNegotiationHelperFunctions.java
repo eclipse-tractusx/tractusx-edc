@@ -29,18 +29,13 @@ public class ContractNegotiationHelperFunctions {
 
     private static final JsonLd JSON_LD = new TitaniumJsonLd(mock(Monitor.class));
 
-    public static JsonObject createNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy) {
+    public static JsonObject createNegotiationRequest(String counterPartyAddress, String providerId, JsonObject policy) {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "NegotiationInitiateRequestDto")
-                .add(EDC_NAMESPACE + "connectorId", providerId)
                 .add(EDC_NAMESPACE + "providerId", providerId)
-                .add(EDC_NAMESPACE + "connectorAddress", connectorAddress)
+                .add(EDC_NAMESPACE + "counterPartyAddress", counterPartyAddress)
                 .add(EDC_NAMESPACE + "protocol", DATASPACE_PROTOCOL_HTTP)
-                .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
-                        .add(EDC_NAMESPACE + "offerId", offerId)
-                        .add(EDC_NAMESPACE + "assetId", assetId)
-                        .add(EDC_NAMESPACE + "policy", JSON_LD.compact(policy).getContent())
-                )
+                .add(EDC_NAMESPACE + "policy", JSON_LD.compact(policy).getContent())
                 .build();
     }
 

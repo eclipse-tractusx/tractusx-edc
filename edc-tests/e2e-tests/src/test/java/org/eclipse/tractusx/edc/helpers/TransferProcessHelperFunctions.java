@@ -24,7 +24,7 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class TransferProcessHelperFunctions {
 
-    public static JsonObject createTransferRequest(String dataRequestId, String connectorAddress, String contractId, String assetId, boolean managedResources, JsonObject destination) {
+    public static JsonObject createTransferRequest(String dataRequestId, String counterPartyAddress, String contractId, String assetId, boolean managedResources, JsonObject destination) {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "TransferRequestDto")
                 .add(ID, dataRequestId)
@@ -33,9 +33,8 @@ public class TransferProcessHelperFunctions {
                 .add(EDC_NAMESPACE + "protocol", DATASPACE_PROTOCOL_HTTP)
                 .add(EDC_NAMESPACE + "assetId", assetId)
                 .add(EDC_NAMESPACE + "contractId", contractId)
-                .add(EDC_NAMESPACE + "connectorAddress", connectorAddress)
+                .add(EDC_NAMESPACE + "counterPartyAddress", counterPartyAddress)
                 .add(EDC_NAMESPACE + "managedResources", managedResources)
-
                 .build();
 
     }

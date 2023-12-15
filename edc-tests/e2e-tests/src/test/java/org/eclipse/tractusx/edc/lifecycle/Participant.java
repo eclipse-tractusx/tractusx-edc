@@ -167,8 +167,7 @@ public class Participant {
         assertThat(dataset).withFailMessage("Catalog received from " + other.runtimeName + " was empty!").isNotEmpty();
 
         var policy = getDatasetFirstPolicy(dataset);
-        var contractId = getDatasetContractId(dataset);
-        var requestBody = createNegotiationRequest(other.dspEndpoint, other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy);
+        var requestBody = createNegotiationRequest(other.dspEndpoint, other.getBpn(), policy);
         var response = baseRequest()
                 .when()
                 .body(requestBody)
