@@ -283,6 +283,17 @@ public class Participant {
                 .extract().body().jsonPath().getString("'edc:state'");
     }
 
+    public JsonArray getAllTransferProcess() {
+        return baseRequest()
+                .when()
+                .post("/v2/transferprocesses/request")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+    }
+
     public EndpointDataReference getDataReference(String dataRequestId) {
         var dataReference = new AtomicReference<EndpointDataReference>();
 

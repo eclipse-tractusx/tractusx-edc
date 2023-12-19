@@ -19,7 +19,8 @@ import jakarta.json.JsonArrayBuilder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Condition;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +39,7 @@ import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
@@ -70,8 +72,8 @@ public abstract class AbstractRenewalEdrTest {
     void negotiateEdr_shouldRenewTheEdr() throws IOException {
 
         var expectedEvents = List.of(
-                createEvent(TransferProcessCompleted.class),
-                createEvent(TransferProcessCompleted.class));
+                createEvent(TransferProcessStarted.class),
+                createEvent(TransferProcessStarted.class));
 
         var assetId = UUID.randomUUID().toString();
         var url = server.url("/mock/api");
@@ -93,7 +95,7 @@ public abstract class AbstractRenewalEdrTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(url.toString(), true, Set.of("transfer.process.completed")))
+                .add(createCallback(url.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
         expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
@@ -106,20 +108,48 @@ public abstract class AbstractRenewalEdrTest {
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 
-        JsonArrayBuilder edrCaches = Json.createArrayBuilder();
+        JsonArrayBuilder edrCachesBuilder = Json.createArrayBuilder();
 
         await().atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
                     var localEdrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
                     assertThat(localEdrCaches).hasSizeGreaterThan(1);
-                    localEdrCaches.forEach(edrCaches::add);
+                    localEdrCaches.forEach(edrCachesBuilder::add);
                 });
 
+        var edrCaches = edrCachesBuilder.build();
 
-        assertThat(edrCaches.build())
+        assertThat(edrCaches)
                 .extracting(json -> json.asJsonObject().getJsonString("tx:edrState").getString())
                 .areAtMost(1, anyOf(stateCondition(NEGOTIATED.name(), "Negotiated"), stateCondition(REFRESHING.name(), "Refreshing")))
                 .areAtLeast(1, stateCondition(EXPIRED.name(), "Expired"));
+
+        var transferProcessId = edrCaches.stream()
+                .filter(json -> json.asJsonObject().getJsonString("tx:edrState").getString().equals(EXPIRED.name()))
+                .map(json -> json.asJsonObject().getJsonString("edc:transferProcessId").getString())
+                .findFirst()
+                .orElseThrow();
+
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var tpState = SOKRATES.getTransferProcessState(transferProcessId);
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.TERMINATED.toString());
+                });
+
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var tpState = PLATO.getAllTransferProcess()
+                            .stream()
+                            .filter(json -> json.asJsonObject().getJsonString("edc:correlationId").getString().equals(transferProcessId))
+                            .map(json -> json.asJsonObject().getJsonString("edc:state").getString())
+                            .findFirst();
+
+                    assertThat(tpState)
+                            .isPresent()
+                            .hasValue(TransferProcessStates.TERMINATED.toString());
+                });
     }
 
 
