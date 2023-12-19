@@ -19,7 +19,7 @@ import jakarta.json.JsonArrayBuilder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Condition;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
@@ -72,8 +72,8 @@ public abstract class AbstractRenewalEdrTest {
     void negotiateEdr_shouldRenewTheEdr() throws IOException {
 
         var expectedEvents = List.of(
-                createEvent(TransferProcessCompleted.class),
-                createEvent(TransferProcessCompleted.class));
+                createEvent(TransferProcessStarted.class),
+                createEvent(TransferProcessStarted.class));
 
         var assetId = UUID.randomUUID().toString();
         var url = server.url("/mock/api");
@@ -95,7 +95,7 @@ public abstract class AbstractRenewalEdrTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(url.toString(), true, Set.of("transfer.process.completed")))
+                .add(createCallback(url.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
         expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
@@ -134,7 +134,7 @@ public abstract class AbstractRenewalEdrTest {
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
                     var tpState = SOKRATES.getTransferProcessState(transferProcessId);
-                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.COMPLETED.toString());
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.TERMINATED.toString());
                 });
 
         await().pollInterval(fibonacci())
@@ -148,7 +148,7 @@ public abstract class AbstractRenewalEdrTest {
 
                     assertThat(tpState)
                             .isPresent()
-                            .hasValue(TransferProcessStates.COMPLETED.toString());
+                            .hasValue(TransferProcessStates.TERMINATED.toString());
                 });
     }
 

@@ -108,8 +108,8 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
             var transferProcess = transferProcessStore.findById(entry.getTransferProcessId());
 
-            if (transferProcess != null && transferProcess.canBeCompleted()) {
-                transferProcess.transitionCompleting();
+            if (transferProcess != null && transferProcess.canBeTerminated()) {
+                transferProcess.transitionTerminating();
                 transferProcessStore.save(transferProcess);
             } else {
                 monitor.info(format("Cannot terminate transfer process with id: %s", entry.getTransferProcessId()));
