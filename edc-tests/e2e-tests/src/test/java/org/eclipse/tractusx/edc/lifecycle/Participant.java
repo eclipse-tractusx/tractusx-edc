@@ -290,6 +290,17 @@ public class Participant {
 
     }
 
+    public JsonArray getAllTransferProcess() {
+        return baseRequest()
+                .when()
+                .post("/v2/transferprocesses/request")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+    }
+
     public String getTransferProcessState(String id) {
         return baseRequest()
                 .when()

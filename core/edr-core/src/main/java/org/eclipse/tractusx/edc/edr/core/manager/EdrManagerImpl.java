@@ -151,7 +151,7 @@ public class EdrManagerImpl implements EdrManager {
 
 
     private ProcessorImpl<EndpointDataReferenceEntry> processEdrInState(EndpointDataReferenceEntryStates state, Function<EndpointDataReferenceEntry, Boolean> function) {
-        var filter = new Criterion[] {hasState(state.code())};
+        var filter = new Criterion[]{ hasState(state.code()) };
         return processor(() -> edrCache.nextNotLeased(batchSize, filter), telemetry.contextPropagationMiddleware(function));
     }
 
@@ -222,7 +222,7 @@ public class EdrManagerImpl implements EdrManager {
             return StatusResult.success();
         } else {
             breakLease(entry);
-            return StatusResult.failure(ResponseStatus.ERROR_RETRY, "Not yet expired.");
+            return StatusResult.success();
         }
     }
 
@@ -302,6 +302,10 @@ public class EdrManagerImpl implements EdrManager {
             edrManager = new EdrManagerImpl();
         }
 
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
         public Builder contractNegotiationService(ContractNegotiationService negotiationService) {
             edrManager.contractNegotiationService = negotiationService;
             return this;
@@ -372,10 +376,6 @@ public class EdrManagerImpl implements EdrManager {
             edrManager.entityRetryProcessFactory = new EntityRetryProcessFactory(edrManager.monitor, edrManager.clock, edrManager.entityRetryProcessConfiguration);
 
             return edrManager;
-        }
-
-        public static Builder newInstance() {
-            return new Builder();
         }
     }
 }

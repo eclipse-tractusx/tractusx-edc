@@ -130,11 +130,28 @@ public abstract class AbstractRenewalEdrTest {
                 .findFirst()
                 .orElseThrow();
 
+        // Check Termination on Sokrates
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
                     var tpState = SOKRATES.getTransferProcessState(transferProcessId);
-                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.COMPLETED.toString());
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.TERMINATED.toString());
+                });
+
+
+        // Check Termination on Plato
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var tpState = PLATO.getAllTransferProcess()
+                            .stream()
+                            .filter(json -> json.asJsonObject().getJsonString("correlationId").getString().equals(transferProcessId))
+                            .map(json -> json.asJsonObject().getJsonString("state").getString())
+                            .findFirst();
+
+                    assertThat(tpState)
+                            .isPresent()
+                            .hasValue(TransferProcessStates.TERMINATED.toString());
                 });
     }
 
