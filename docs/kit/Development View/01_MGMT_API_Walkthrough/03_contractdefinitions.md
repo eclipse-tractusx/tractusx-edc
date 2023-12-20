@@ -1,7 +1,7 @@
 # Creating a Contract Definition
 
-A Contract Definition is the connection between a set of [Assets](2-assets.md) with one Access Policy and one Contract
-Policy. The two policies are both policies as explained [previously](3-policy-definitions.md) but checked in different
+A Contract Definition is the connection between a set of [Assets](01_assets.md) with one Access Policy and one Contract
+Policy. The two policies are both policies as explained [previously](02_policies.md) but checked in different
 stages of communication between Data Provider and Data Consumer. The creation request looks like this:
 
 ```http
@@ -29,9 +29,9 @@ Content-Type: application/json
   
 }
 ```
-`accessPolicyId` and `contractPolicyId` are the identifiers of the [policies](3-policy-definitions.md) used in the contract
+`accessPolicyId` and `contractPolicyId` are the identifiers of the [policies](02_policies.md) used in the contract
 definition. On creation, the EDC does not automatically check if a policy with the corresponding `@id` exists - the call
-sequence will fail later when the Data Consumer attempts to find the offer in the [catalog-request](5-catalog.md).
+sequence will fail later when the Data Consumer attempts to find the offer in the [catalog-request](04_catalog.md).
 
 ## assetsSelector
 
