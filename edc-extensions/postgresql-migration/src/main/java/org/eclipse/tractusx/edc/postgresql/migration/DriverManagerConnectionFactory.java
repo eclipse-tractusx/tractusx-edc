@@ -28,6 +28,13 @@ import java.sql.DriverManager;
 import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * From the EDC version after 0.4.1 this connection factory will be provided as injectable service, so this duplicate
+ * can be removed on the next version update.
+ *
+ * @deprecated will be removed on the next version
+ */
+@Deprecated(since = "0.6.0")
 class DriverManagerConnectionFactory implements ConnectionFactory {
     private final String jdbcUrl;
     private final Properties properties;
