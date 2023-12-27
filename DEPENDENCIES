@@ -60,14 +60,14 @@ maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.4, Apache-2.
 maven/mavencentral/com.github.stephenc.jcip/jcip-annotations/1.0-1, Apache-2.0, approved, CQ21949
 maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0, approved, #20
 maven/mavencentral/com.google.code.gson/gson/2.10.1, Apache-2.0, approved, #6159
-maven/mavencentral/com.google.crypto.tink/tink/1.11.0, Apache-2.0, approved, #10719
-maven/mavencentral/com.google.errorprone/error_prone_annotations/2.18.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.google.crypto.tink/tink/1.12.0, Apache-2.0, approved, #12041
+maven/mavencentral/com.google.errorprone/error_prone_annotations/2.22.0, Apache-2.0, approved, #10661
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.7.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.google.guava/failureaccess/1.0.1, Apache-2.0, approved, CQ22654
 maven/mavencentral/com.google.guava/guava/31.0.1-jre, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava, Apache-2.0, approved, CQ22657
 maven/mavencentral/com.google.j2objc/j2objc-annotations/1.3, Apache-2.0, approved, CQ21195
-maven/mavencentral/com.google.protobuf/protobuf-java/3.19.6, BSD-3-Clause, approved, clearlydefined
+maven/mavencentral/com.google.protobuf/protobuf-java/3.24.3, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.microsoft.azure/msal4j-persistence-extension/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.microsoft.azure/msal4j/1.13.9, MIT, approved, clearlydefined
 maven/mavencentral/com.microsoft.azure/msal4j/1.14.0, MIT, approved, clearlydefined
