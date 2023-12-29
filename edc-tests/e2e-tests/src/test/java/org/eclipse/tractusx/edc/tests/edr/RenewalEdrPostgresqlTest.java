@@ -18,30 +18,22 @@ import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
 import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
-import static org.eclipse.tractusx.edc.tests.edr.TestFunctions.renewalConfiguration;
-
 @PostgresqlDbIntegrationTest
 public class RenewalEdrPostgresqlTest extends AbstractRenewalEdrTest {
 
     @RegisterExtension
     protected static final PgParticipantRuntime SOKRATES_RUNTIME = new PgParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
-            renewalConfiguration(sokratesConfiguration())
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.renewalConfiguration()
     );
     @RegisterExtension
     protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql",
-            PLATO_NAME,
-            PLATO_BPN,
-            renewalConfiguration(platoConfiguration())
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.renewalConfiguration()
     );
 
 }

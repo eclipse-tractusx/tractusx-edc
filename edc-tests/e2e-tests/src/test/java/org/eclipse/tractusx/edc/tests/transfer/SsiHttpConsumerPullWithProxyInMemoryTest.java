@@ -28,18 +28,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_PLATO_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_SOKRATES_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.OAUTH_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_DSP_CALLBACK;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DSP_CALLBACK;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoSsiConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesSsiConfiguration;
 
 @EndToEndTest
 public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
@@ -48,19 +40,20 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
-            sokratesSsiConfiguration()
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.ssiConfiguration()
     );
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
-            PLATO_NAME,
-            PLATO_BPN,
-            platoSsiConfiguration()
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.ssiConfiguration()
     );
 
-    private static MockWebServer oauthServer;
+    private static MockWebServer sokratesOauthServer;
+    private static MockWebServer platoOauthServer;
     private static MockWebServer miwPlatoServer;
     private static MockWebServer miwSokratesServer;
 
@@ -68,25 +61,30 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     static void prepare() throws IOException {
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
-        oauthServer = new MockWebServer();
+        sokratesOauthServer = new MockWebServer();
+        platoOauthServer = new MockWebServer();
 
         var credentialSubjectId = "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000";
 
-        miwSokratesServer.start(MIW_SOKRATES_PORT);
-        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO_DSP_CALLBACK));
+        miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
+        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.protocolEndpoint().toString()));
 
-        miwPlatoServer.start(MIW_PLATO_PORT);
-        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES_DSP_CALLBACK));
+        miwPlatoServer.start(PLATO.miwEndpoint().getPort());
+        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.protocolEndpoint().toString()));
 
-        oauthServer.start(OAUTH_PORT);
-        oauthServer.setDispatcher(new KeycloakDispatcher());
+        sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
+        sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
+
+        platoOauthServer.start(PLATO.authTokenEndpoint().getPort());
+        platoOauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
     @AfterAll
     static void unwind() throws IOException {
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
-        oauthServer.shutdown();
+        sokratesOauthServer.shutdown();
+        platoOauthServer.shutdown();
     }
 
     @BeforeEach
@@ -96,7 +94,7 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     }
 
     @Override
-    protected JsonObject createTestPolicy(String policyId, String bpn) {
-        return frameworkPolicy(policyId, Map.of("Dismantler", "active"));
+    protected JsonObject createTestPolicy(String bpn) {
+        return frameworkPolicy(Map.of(TX_NAMESPACE + "Dismantler", "active"));
     }
 }

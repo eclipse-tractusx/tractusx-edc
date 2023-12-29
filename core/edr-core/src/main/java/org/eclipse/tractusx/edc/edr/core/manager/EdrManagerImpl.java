@@ -247,7 +247,6 @@ public class EdrManagerImpl implements EdrManager {
 
         var transferRequest = TransferRequest.Builder.newInstance()
                 .assetId(dataRequest.getAssetId())
-                .connectorId(dataRequest.getConnectorId())
                 .contractId(dataRequest.getContractId())
                 .protocol(dataRequest.getProtocol())
                 .counterPartyAddress(dataRequest.getConnectorAddress())

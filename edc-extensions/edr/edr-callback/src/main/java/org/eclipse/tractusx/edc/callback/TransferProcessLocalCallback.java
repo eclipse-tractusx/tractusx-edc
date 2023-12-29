@@ -95,7 +95,9 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                 if (contractNegotiation != null) {
                     contractNegotiationId = contractNegotiation.getId();
                 } else {
-                    monitor.warning(format("Contract negotiation for agreement with id: %s is missing.", transferProcess.getContractId()));
+                    var msg = format("Contract negotiation for agreement with id: %s is missing.", transferProcess.getContractId());
+                    monitor.warning(msg);
+                    return Result.failure(msg);
                 }
                 var expirationTime = extractExpirationTime(edr);
 
@@ -106,7 +108,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                         .transferProcessId(transferProcess.getId())
                         .assetId(transferProcess.getDataRequest().getAssetId())
                         .agreementId(transferProcess.getDataRequest().getContractId())
-                        .providerId(transferProcess.getDataRequest().getConnectorId())
+                        .providerId(contractNegotiation.getCounterPartyId())
                         .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                         .expirationTimestamp(expirationTime.getContent())
                         .contractNegotiationId(contractNegotiationId)

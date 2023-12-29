@@ -38,7 +38,8 @@ dependencies {
     runtimeOnly(libs.edc.dpf.core)
     runtimeOnly(libs.edc.controlplane.apiclient)
 
-    runtimeOnly(libs.edc.dpf.api)
+    runtimeOnly(libs.edc.dpf.api.control)
+    runtimeOnly(libs.edc.dpf.api.public)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
 

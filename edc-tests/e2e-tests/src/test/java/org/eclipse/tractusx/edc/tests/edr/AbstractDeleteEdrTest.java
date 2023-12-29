@@ -18,7 +18,7 @@ import jakarta.json.Json;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Condition;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,25 +26,30 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 
 public abstract class AbstractDeleteEdrTest {
 
-    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+            .name(SOKRATES_NAME)
+            .id(SOKRATES_BPN)
+            .build();
+
+    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+            .name(PLATO_NAME)
+            .id(PLATO_BPN)
+            .build();
     MockWebServer server;
 
     @BeforeEach
@@ -60,29 +65,32 @@ public abstract class AbstractDeleteEdrTest {
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", "http://test:8080")
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", "http://test:8080",
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", authCodeHeaderName,
+                "authCode", authCode
+        );
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.NEQ, "forbidden-policy"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.EQ, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.NEQ, "forbidden-policy"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.EQ, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
         var callbacks = Json.createArrayBuilder()
                 .build();
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         var expired = new ArrayList<String>();
 
         await().atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     var localExpired = edrCaches.stream()
                             .filter(json -> json.asJsonObject().getJsonString("tx:edrState").getString().equals(EXPIRED.name()))
                             .map(json -> json.asJsonObject().getJsonString("transferProcessId").getString())
@@ -92,7 +100,7 @@ public abstract class AbstractDeleteEdrTest {
                 });
 
         await().atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> expired.forEach((id) -> SOKRATES.getEdrRequest(id).statusCode(404)));
+                .untilAsserted(() -> expired.forEach((id) -> SOKRATES.edrs().getEdrRequest(id).statusCode(404)));
 
     }
 

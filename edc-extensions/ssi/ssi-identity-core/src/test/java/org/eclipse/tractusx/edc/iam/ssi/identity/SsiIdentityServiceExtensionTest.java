@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.ssi.identity.SsiIdentityServiceExtension.ENDPOINT_AUDIENCE;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +40,7 @@ public class SsiIdentityServiceExtensionTest {
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = spy(context);
+        this.context = context;
         context.registerService(SsiCredentialClient.class, mock(SsiCredentialClient.class));
         extension = factory.constructInstance(SsiIdentityServiceExtension.class);
     }

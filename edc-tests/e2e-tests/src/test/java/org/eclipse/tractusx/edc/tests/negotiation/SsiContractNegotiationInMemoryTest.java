@@ -25,17 +25,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_PLATO_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_SOKRATES_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.OAUTH_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_DSP_CALLBACK;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DSP_CALLBACK;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoSsiConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesSsiConfiguration;
 
 @EndToEndTest
 public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiateTest {
@@ -44,45 +35,53 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
-            PLATO_NAME,
-            PLATO_BPN,
-            platoSsiConfiguration()
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.ssiConfiguration()
     );
 
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
-            sokratesSsiConfiguration()
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.ssiConfiguration()
     );
     private static MockWebServer miwSokratesServer;
     private static MockWebServer miwPlatoServer;
-    private static MockWebServer oauthServer;
+    private static MockWebServer sokratesOauthServer;
+    private static MockWebServer platoOauthServer;
 
 
     @BeforeAll
     static void setup() throws IOException {
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
-        oauthServer = new MockWebServer();
+        sokratesOauthServer = new MockWebServer();
+        platoOauthServer = new MockWebServer();
+
 
         var credentialSubjectId = "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000";
 
-        miwSokratesServer.start(MIW_SOKRATES_PORT);
-        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO_DSP_CALLBACK));
+        miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
+        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.protocolEndpoint().toString()));
 
-        miwPlatoServer.start(MIW_PLATO_PORT);
-        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES_DSP_CALLBACK));
+        miwPlatoServer.start(PLATO.miwEndpoint().getPort());
+        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.protocolEndpoint().toString()));
 
-        oauthServer.start(OAUTH_PORT);
-        oauthServer.setDispatcher(new KeycloakDispatcher());
+        sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
+        sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
+
+        platoOauthServer.start(PLATO.authTokenEndpoint().getPort());
+        platoOauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
     @AfterAll
     static void teardown() throws IOException {
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
-        oauthServer.shutdown();
+        sokratesOauthServer.shutdown();
+        platoOauthServer.shutdown();
+
     }
 }

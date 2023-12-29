@@ -73,7 +73,7 @@ public class PgParticipantRuntime extends ParticipantRuntime {
     @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
         PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
-        helper.createDatabase(dbName);
+        helper.createDatabase();
         super.bootExtensions(context, serviceExtensions);
     }
 

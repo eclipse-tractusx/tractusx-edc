@@ -23,30 +23,23 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.security.SecureRandom;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
-
 @EndToEndTest
 public class DataPlaneProxyInMemoryTest extends AbstractDataPlaneProxyTest {
 
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
-            sokratesConfiguration()
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.getConfiguration()
     );
 
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
-            PLATO_NAME,
-            PLATO_BPN,
-            platoConfiguration()
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.getConfiguration()
     );
 
     @BeforeAll

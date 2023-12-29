@@ -24,7 +24,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.event.EventEnvelope;
-import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,30 +32,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_PROXIED_AAS_BACKEND_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PROXIED_PATH;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 
 public abstract class AbstractDataPlaneProxyTest {
 
-    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+            .name(SOKRATES_NAME)
+            .id(SOKRATES_BPN)
+            .build();
+
+    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+            .name(PLATO_NAME)
+            .id(PLATO_BPN)
+            .build();
     private static final String CUSTOM_BASE_PATH = "/custom";
     private static final String CUSTOM_SUB_PATH = "/sub";
     private static final String CUSTOM_QUERY_PARAMS = "foo=bar";
@@ -63,28 +66,35 @@ public abstract class AbstractDataPlaneProxyTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private MockWebServer server;
 
+    @NotNull
+    private static Map<String, Object> dataAddress(String url) {
+        return Map.of(
+                "baseUrl", url,
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", "test-authkey",
+                "authCode", "test-authcode",
+                "proxyPath", "true",
+                "proxyQueryParams", "true"
+        );
+    }
 
     @Test
     @DisplayName("Verify E2E flow with Data Plane proxies and EDR")
     void httpPullDataTransfer_withEdrAndProxy() {
 
-        var eventsUrl = server.url(PROXIED_PATH);
+        var eventsUrl = server.url(PLATO.backendProviderProxy().getPath());
 
         var assetId = UUID.randomUUID().toString();
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+
+        var dataAddress = dataAddress(eventsUrl.url().toString());
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.IS_ANY_OF, "test-group1"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ALL_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
         var callbacks = Json.createArrayBuilder()
                 .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
@@ -93,25 +103,25 @@ public abstract class AbstractDataPlaneProxyTest {
         // response to callback
         server.enqueue(new MockResponse());
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         var transferEvent = waitForTransferCompletion();
 
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     assertThat(edrCaches).hasSize(1);
                 });
-        
+
         var body = "{\"response\": \"ok\"}";
 
         server.enqueue(new MockResponse().setBody(body));
-        var data = SOKRATES.pullProxyDataByAssetId(PLATO, assetId);
+        var data = SOKRATES.data().pullProxyDataByAssetId(PLATO, assetId);
         assertThat(data).isEqualTo(body);
 
         server.enqueue(new MockResponse().setBody(body));
-        data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
+        data = SOKRATES.data().pullProxyDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
         assertThat(data).isEqualTo(body);
     }
 
@@ -119,26 +129,19 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane proxies fails when EDR is not found")
     void httpPullDataTransfer_withoutEdr() throws IOException {
 
-        var eventsUrl = server.url(PROXIED_PATH);
-
+        var eventsUrl = server.url(PLATO.backendProviderProxy().getPath());
         var assetId = UUID.randomUUID().toString();
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress(eventsUrl.url().toString()));
+
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.NEQ, "forbidden-policy"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.EQ, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.NEQ, "forbidden-policy"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.EQ, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
 
-        SOKRATES.pullProxyDataResponseByAssetId(PLATO, assetId)
+        SOKRATES.data().pullProxyDataResponseByAssetId(PLATO, assetId)
                 .then()
                 .assertThat().statusCode(400);
 
@@ -148,23 +151,16 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane proxies and Two EDR")
     void httpPullDataTransfer_shouldFailForAsset_withTwoEdrAndProxy() throws IOException {
 
-        var eventsUrl = server.url(PROXIED_PATH);
+        var eventsUrl = server.url(PLATO.backendProviderProxy().getPath());
 
         var assetId = UUID.randomUUID().toString();
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress(eventsUrl.url().toString()));
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.IS_NONE_OF, "forbidden-policy"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ALL_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_NONE_OF, "forbidden-policy"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
         var callbacks = Json.createArrayBuilder()
                 .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
@@ -174,8 +170,8 @@ public abstract class AbstractDataPlaneProxyTest {
         server.enqueue(new MockResponse());
         server.enqueue(new MockResponse());
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         var transferEvent1 = waitForTransferCompletion();
         var transferEvent2 = waitForTransferCompletion();
@@ -183,7 +179,7 @@ public abstract class AbstractDataPlaneProxyTest {
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     assertThat(edrCaches).hasSize(2);
                 });
 
@@ -191,15 +187,15 @@ public abstract class AbstractDataPlaneProxyTest {
         var body = "{\"response\": \"ok\"}";
 
         server.enqueue(new MockResponse().setBody(body));
-        SOKRATES.pullProxyDataResponseByAssetId(PLATO, assetId).then()
+        SOKRATES.data().pullProxyDataResponseByAssetId(PLATO, assetId).then()
                 .assertThat().statusCode(428);
 
         server.enqueue(new MockResponse().setBody(body));
-        var data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent1.getPayload().getTransferProcessId());
+        var data = SOKRATES.data().pullProxyDataByTransferProcessId(PLATO, transferEvent1.getPayload().getTransferProcessId());
         assertThat(data).isEqualTo(body);
 
         server.enqueue(new MockResponse().setBody(body));
-        data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent2.getPayload().getTransferProcessId());
+        data = SOKRATES.data().pullProxyDataByTransferProcessId(PLATO, transferEvent2.getPayload().getTransferProcessId());
         assertThat(data).isEqualTo(body);
     }
 
@@ -207,23 +203,14 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane provider and EDR")
     void httpPullDataTransfer_withEdrAndProviderDataPlaneProxy() throws IOException {
 
-        var eventsUrl = server.url(PROXIED_PATH);
-
+        var eventsUrl = server.url(PLATO.backendProviderProxy().getPath());
         var assetId = UUID.randomUUID().toString();
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", eventsUrl.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+        PLATO.createAsset(assetId, Map.of(), dataAddress(eventsUrl.url().toString()));
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.IS_ANY_OF, "test-group1"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ALL_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
         var callbacks = Json.createArrayBuilder()
                 .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
@@ -232,25 +219,25 @@ public abstract class AbstractDataPlaneProxyTest {
         // response to callback
         server.enqueue(new MockResponse());
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         var transferEvent = waitForTransferCompletion();
 
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     assertThat(edrCaches).hasSize(1);
                 });
 
         var body = "{\"response\": \"ok\"}";
 
         server.enqueue(new MockResponse().setBody(body));
-        var data = SOKRATES.pullProviderDataPlaneDataByAssetId(PLATO, assetId);
+        var data = SOKRATES.data().pullProviderDataPlaneDataByAssetId(PLATO, assetId);
         assertThat(data).isEqualTo(body);
 
         server.enqueue(new MockResponse().setBody(body));
-        data = SOKRATES.pullProviderDataPlaneDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
+        data = SOKRATES.data().pullProviderDataPlaneDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
         assertThat(data).isEqualTo(body);
     }
 
@@ -258,7 +245,8 @@ public abstract class AbstractDataPlaneProxyTest {
     @DisplayName("Verify E2E flow with Data Plane provider and EDR")
     void httpPullDataTransfer_withEdrAndProviderDataPlaneProxyAndCustomProperties() throws IOException {
 
-        var eventsUrl = server.url(PROXIED_PATH);
+        var eventsPath = PLATO.backendProviderProxy().getPath();
+        var eventsUrl = server.url(eventsPath);
 
         var customUrl = server.url(CUSTOM_BASE_PATH);
 
@@ -268,48 +256,41 @@ public abstract class AbstractDataPlaneProxyTest {
             @NotNull
             @Override
             public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
-                return switch (recordedRequest.getPath()) {
-                    case PROXIED_PATH -> new MockResponse();
-                    case CUSTOM_FULL_PATH -> new MockResponse().setBody(body);
-                    default -> new MockResponse().setResponseCode(404);
-                };
+                var path = recordedRequest.getPath();
+                if (PLATO.backendProviderProxy().getPath().equals(path)) {
+                    return new MockResponse();
+                } else if (CUSTOM_FULL_PATH.equals(path)) {
+                    return new MockResponse().setBody(body);
+                } else {
+                    return new MockResponse().setResponseCode(404);
+                }
             }
         });
 
         var assetId = UUID.randomUUID().toString();
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", customUrl.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .add(EDC_NAMESPACE + "proxyPath", "true")
-                .add(EDC_NAMESPACE + "proxyQueryParams", "true")
-                .build());
+        PLATO.createAsset(assetId, Map.of(), dataAddress(customUrl.url().toString()));
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.NEQ, "forbidden-policy"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.EQ, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.NEQ, "forbidden-policy"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.EQ, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
         var callbacks = Json.createArrayBuilder()
                 .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         waitForTransferCompletion();
 
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     assertThat(edrCaches).hasSize(1);
                 });
 
-        var data = SOKRATES.pullProviderDataPlaneDataByAssetIdAndCustomProperties(PLATO, assetId, CUSTOM_SUB_PATH, CUSTOM_QUERY_PARAMS);
+        var data = SOKRATES.data().pullProviderDataPlaneDataByAssetIdAndCustomProperties(PLATO, assetId, CUSTOM_SUB_PATH, CUSTOM_QUERY_PARAMS);
         assertThat(data).isEqualTo(body);
 
     }
@@ -317,7 +298,7 @@ public abstract class AbstractDataPlaneProxyTest {
     @BeforeEach
     void setup() throws IOException {
         server = new MockWebServer();
-        server.start(PLATO_PROXIED_AAS_BACKEND_PORT);
+        server.start(PLATO.backendProviderProxy().getPort());
     }
 
     @AfterEach

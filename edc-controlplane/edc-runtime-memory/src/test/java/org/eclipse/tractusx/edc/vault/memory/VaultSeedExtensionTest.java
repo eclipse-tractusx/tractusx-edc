@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,7 +42,7 @@ class VaultSeedExtensionTest {
 
     @BeforeEach
     void setup(ServiceExtensionContext context, ObjectFactory factory) {
-        this.context = spy(context);
+        this.context = context;
         monitor = mock(Monitor.class);
         context.registerService(Monitor.class, monitor);
         context.registerService(Vault.class, new InMemoryVault(monitor));
@@ -56,7 +55,7 @@ class VaultSeedExtensionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"key1:", "key1:value1", "key1:value1;", ";key1:value1", ";sdf;key1:value1"})
+    @ValueSource(strings = { "key1:", "key1:value1", "key1:value1;", ";key1:value1", ";sdf;key1:value1" })
     void createInMemVault_validString(String secret) {
         when(context.getSetting(eq(VaultSeedExtension.VAULT_MEMORY_SECRETS_PROPERTY), eq(null))).thenReturn(secret);
         extension.createInMemVault(context);
