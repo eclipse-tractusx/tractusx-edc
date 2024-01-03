@@ -73,7 +73,7 @@ public class TxParticipant extends Participant {
                 .then()
                 .statusCode(204);
     }
-    
+
     /**
      * The BPN/ID of the participant
      *
