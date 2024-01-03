@@ -61,7 +61,7 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
         platoOauthServer = new MockWebServer();
 
 
-        var credentialSubjectId = "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000";
+        var credentialSubjectId = "did:web:example.com";
 
         miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
         miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.protocolEndpoint().toString()));
