@@ -31,15 +31,12 @@ import static org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant.PROXY_SUBPATH;
  */
 public class ParticipantDataApi {
 
-
     private final TxParticipant participant;
-
 
     public ParticipantDataApi(TxParticipant participant) {
         this.participant = participant;
     }
-
-
+    
     /**
      * Pull the data using the Consumer DataPlane and the provider's gateway with an asset id
      *
@@ -61,7 +58,6 @@ public class ParticipantDataApi {
         return getProxyData(body);
 
     }
-
 
     /**
      * Pull the data using the Consumer DataPlane and the provider's gateway with an asset id

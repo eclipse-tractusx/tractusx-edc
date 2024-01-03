@@ -57,6 +57,9 @@ public class TxParticipant extends Participant {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
     }
 
+    /**
+     * Stores BPN groups
+     */
     public void storeBusinessPartner(String bpn, String... groups) {
         var body = Json.createObjectBuilder()
                 .add(ID, bpn)
@@ -70,8 +73,7 @@ public class TxParticipant extends Participant {
                 .then()
                 .statusCode(204);
     }
-
-
+    
     /**
      * The BPN/ID of the participant
      *
@@ -83,15 +85,23 @@ public class TxParticipant extends Participant {
     }
 
 
+    /**
+     * Returns the client API for interacting with EDRs
+     */
     public ParticipantEdrApi edrs() {
         return edrs;
     }
 
+    /**
+     * Returns the client API for fetching data
+     */
     public ParticipantDataApi data() {
         return data;
     }
 
-
+    /**
+     * Creates a policy definition
+     */
     public String createPolicy(JsonObject policyDefinition) {
         return managementRequest()
                 .contentType(JSON)
@@ -106,7 +116,6 @@ public class TxParticipant extends Participant {
                 .path("@id");
     }
 
-
     /**
      * Get current error if any of a contract negotiation.
      *
@@ -117,6 +126,9 @@ public class TxParticipant extends Participant {
         return getContractNegotiationField(negotiationId, "errorDetail");
     }
 
+    /**
+     * Returns the base configuration
+     */
     public Map<String, String> getConfiguration() {
         return new HashMap<>() {
             {
@@ -155,6 +167,9 @@ public class TxParticipant extends Participant {
         };
     }
 
+    /**
+     * Returns the SSI configuration
+     */
     public Map<String, String> ssiConfiguration() {
         var ssiConfiguration = new HashMap<String, String>() {
             {
@@ -173,10 +188,16 @@ public class TxParticipant extends Participant {
         return ssiConfiguration;
     }
 
+    /**
+     * Returns the renewal configuration
+     */
     public Map<String, String> renewalConfiguration() {
         return renewalConfiguration("10");
     }
 
+    /**
+     * Returns the renewal configuration
+     */
     public Map<String, String> renewalConfiguration(String retention) {
         var renewalConfig = new HashMap<String, String>() {
             {
@@ -191,26 +212,37 @@ public class TxParticipant extends Participant {
         return renewalConfig;
     }
 
+    /**
+     * Returns the MIW endpoint
+     */
     public URI miwEndpoint() {
         return miwUri;
     }
 
-    public URI protocolEndpoint() {
-        return protocolEndpoint.getUrl();
-    }
-
+    /**
+     * Returns the OAuth2 token endpoint
+     */
     public URI authTokenEndpoint() {
         return oauthTokenUri;
     }
 
+    /**
+     * Returns the Gateway endpoint
+     */
     public URI gatewayEndpoint() {
         return gateway;
     }
 
+    /**
+     * Returns the Consumer data plane proxy endpoint
+     */
     public URI dataPlaneProxy() {
         return dataPlaneProxy;
     }
 
+    /**
+     * Returns the provider gateway backend endpoint
+     */
     public URI backendProviderProxy() {
         return backendProviderProxy;
     }

@@ -37,20 +37,20 @@ import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.cre
  */
 public class ParticipantEdrApi {
 
-
     private final TxParticipant participant;
-
-    private final Participant.Endpoint managementEndpoint;
-
     private final URI edrBackend;
 
     public ParticipantEdrApi(TxParticipant participant, Participant.Endpoint managementEndpoint, URI edrBackend) {
         this.participant = participant;
-        this.managementEndpoint = managementEndpoint;
         this.edrBackend = edrBackend;
     }
 
-
+    /**
+     * Get the cached EDR for a transfer process
+     *
+     * @param transferProcessId The transfer process id
+     * @return The EDR
+     */
     public JsonObject getEdr(String transferProcessId) {
         return getEdrRequest(transferProcessId)
                 .statusCode(200)
@@ -59,12 +59,18 @@ public class ParticipantEdrApi {
                 .as(JsonObject.class);
     }
 
-    public EndpointDataReference getDataReferenceFromBackend(String dataRequestId) {
+    /**
+     * Get the cached EDR for a transfer process cached in a backend
+     *
+     * @param transferProcessId The transfer process id
+     * @return The EDR
+     */
+    public EndpointDataReference getDataReferenceFromBackend(String transferProcessId) {
         var dataReference = new AtomicReference<EndpointDataReference>();
 
         var result = given()
                 .when()
-                .get(edrBackend + "/{id}", dataRequestId)
+                .get(edrBackend + "/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -75,6 +81,12 @@ public class ParticipantEdrApi {
         return dataReference.get();
     }
 
+    /**
+     * Get the cached EDR for a transfer process as {@link ValidatableResponse}
+     *
+     * @param transferProcessId The transfer process id
+     * @return The {@link ValidatableResponse}
+     */
     public ValidatableResponse getEdrRequest(String transferProcessId) {
         return baseEdrRequest()
                 .when()
@@ -82,6 +94,14 @@ public class ParticipantEdrApi {
                 .then();
     }
 
+    /**
+     * Start an EDR negotiation using the EDRs API.
+     *
+     * @param other     The provider
+     * @param assetId   The asset ID
+     * @param callbacks The callbacks
+     * @return The contract negotiation id
+     */
     public String negotiateEdr(TxParticipant other, String assetId, JsonArray callbacks) {
         var dataset = participant.getDatasetForAsset(other, assetId);
         assertThat(dataset).withFailMessage("Catalog received from " + other.getName() + " was empty!").isNotEmpty();
@@ -89,7 +109,7 @@ public class ParticipantEdrApi {
         var policy = getDatasetFirstPolicy(dataset);
         var contractId = getDatasetContractId(dataset);
 
-        var requestBody = createEdrNegotiationRequest(other.protocolEndpoint().toString(), other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy, callbacks);
+        var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy, callbacks);
 
 
         var response = baseEdrRequest()
@@ -104,6 +124,12 @@ public class ParticipantEdrApi {
         return response.extract().jsonPath().getString(ID);
     }
 
+    /**
+     * Get the cached EDRs for a contract negotiation
+     *
+     * @param contractNegotiationId The contract negotiation id
+     * @return The EDRs
+     */
     public JsonArray getEdrEntriesByContractNegotiationId(String contractNegotiationId) {
         return baseEdrRequest()
                 .when()
@@ -115,6 +141,12 @@ public class ParticipantEdrApi {
                 .as(JsonArray.class);
     }
 
+    /**
+     * Get the cached EDRs for a contract agreement
+     *
+     * @param agreementId The contract agreement id
+     * @return The EDRs
+     */
     public JsonArray getEdrEntriesByAgreementId(String agreementId) {
         return baseEdrRequest()
                 .when()
@@ -126,6 +158,12 @@ public class ParticipantEdrApi {
                 .as(JsonArray.class);
     }
 
+    /**
+     * Get the cached EDRs for an asset
+     *
+     * @param assetId The asset id
+     * @return The EDRs
+     */
     public JsonArray getEdrEntriesByAssetId(String assetId) {
         return baseEdrRequest()
                 .when()
@@ -138,6 +176,6 @@ public class ParticipantEdrApi {
     }
 
     private RequestSpecification baseEdrRequest() {
-        return managementEndpoint.baseRequest().contentType(JSON);
+        return participant.getManagementEndpoint().baseRequest().contentType(JSON);
     }
 }

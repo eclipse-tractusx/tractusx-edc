@@ -61,7 +61,7 @@ public class MiwSsiCatalogTest {
                 put("tx.ssi.miw.authority.id", "BPNL000000000000");
                 put("tx.ssi.miw.authority.issuer", "did:web:localhost%3A8000:BPNL000000000000");
                 put("tx.vault.seed.secrets", "client_secret_alias:miw_private_client");
-                put("tx.ssi.endpoint.audience", SOKRATES.protocolEndpoint().toString());
+                put("tx.ssi.endpoint.audience", SOKRATES.getProtocolEndpoint().getUrl().toString());
             }
         };
         var baseConfiguration = SOKRATES.getConfiguration();
@@ -117,7 +117,7 @@ public class MiwSsiCatalogTest {
 
         SOKRATES.createContractDefinition("test-asset", "test-def", "test-ap1", contractPolicyId);
         SOKRATES.createContractDefinition("test-asset-1", "test-def-2", "test-ap2", contractPolicyId);
-        
+
         // act
         var catalog = SOKRATES.getCatalogDatasets(SOKRATES);
 

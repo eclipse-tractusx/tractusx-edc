@@ -64,10 +64,10 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
         var credentialSubjectId = "did:web:example.com";
 
         miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
-        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.protocolEndpoint().toString()));
+        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.getProtocolEndpoint().getUrl().toString()));
 
         miwPlatoServer.start(PLATO.miwEndpoint().getPort());
-        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.protocolEndpoint().toString()));
+        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.getProtocolEndpoint().getUrl().toString()));
 
         sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
         sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
