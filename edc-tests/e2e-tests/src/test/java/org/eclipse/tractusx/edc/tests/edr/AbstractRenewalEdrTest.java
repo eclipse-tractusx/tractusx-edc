@@ -21,7 +21,7 @@ import org.assertj.core.api.Condition;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,27 +38,31 @@ import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.EXPIRED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.NEGOTIATED;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEvent;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
 import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.edr.TestFunctions.waitForEvent;
 
 public abstract class AbstractRenewalEdrTest {
 
-    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+            .name(SOKRATES_NAME)
+            .id(SOKRATES_BPN)
+            .build();
+
+    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+            .name(PLATO_NAME)
+            .id(PLATO_BPN)
+            .build();
 
     MockWebServer server;
 
@@ -80,18 +85,22 @@ public abstract class AbstractRenewalEdrTest {
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", url.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", url.toString(),
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", authCodeHeaderName,
+                "authCode", authCode
+        );
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.IS_NONE_OF, "forbidden-policy"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ANY_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_NONE_OF, "forbidden-policy"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
         var callbacks = Json.createArrayBuilder()
                 .add(createCallback(url.toString(), true, Set.of("transfer.process.started")))
@@ -99,10 +108,10 @@ public abstract class AbstractRenewalEdrTest {
 
         expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
 
-        SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         var events = expectedEvents.stream()
-                .map(receivedEvent -> waitForEvent(server, receivedEvent))
+                .map(receivedEvent -> waitForEvent(server))
                 .collect(Collectors.toList());
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
@@ -112,7 +121,7 @@ public abstract class AbstractRenewalEdrTest {
         await().atMost(ASYNC_TIMEOUT)
                 .pollInterval(ASYNC_POLL_INTERVAL)
                 .untilAsserted(() -> {
-                    var localEdrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var localEdrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     assertThat(localEdrCaches).hasSizeGreaterThan(1);
                     localEdrCaches.forEach(edrCachesBuilder::add);
                 });
@@ -143,7 +152,7 @@ public abstract class AbstractRenewalEdrTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tpState = PLATO.getAllTransferProcess()
+                    var tpState = PLATO.getTransferProcesses()
                             .stream()
                             .filter(json -> json.asJsonObject().getJsonString("correlationId").getString().equals(transferProcessId))
                             .map(json -> json.asJsonObject().getJsonString("state").getString())

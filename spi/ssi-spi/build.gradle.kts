@@ -24,4 +24,5 @@ dependencies {
 
     testFixturesImplementation(libs.jacksonJsonP)
     testFixturesImplementation(libs.titaniumJsonLd)
+    testFixturesImplementation(libs.jackson.datatypeJsr310)
 }

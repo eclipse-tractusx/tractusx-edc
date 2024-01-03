@@ -35,7 +35,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +48,7 @@ class TxEncryptorExtensionTest {
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext c) {
         c.registerService(Monitor.class, monitor);
-        context = spy(c);
+        context = c;
         when(context.getSetting(ENCRYPTION_KEY_ALIAS, null)).thenReturn("test-key");
         extension = factory.constructInstance(TxEncryptorExtension.class);
     }
@@ -76,7 +75,7 @@ class TxEncryptorExtensionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {CACHING_ENABLED, CACHING_SECONDS})
+    @ValueSource(strings = { CACHING_ENABLED, CACHING_SECONDS })
     void verifyDeprecationWarnings(String deprecatedSetting) {
         when(context.getSetting(eq(deprecatedSetting), any())).thenReturn("doesn't matter");
         extension.createEncryptor(context);

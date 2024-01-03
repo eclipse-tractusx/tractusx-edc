@@ -8,11 +8,11 @@
     "VerifiableCredential",
     "SummaryCredential"
   ],
-  "issuer": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+  "issuer": "did:web:example.com",
   "issuanceDate": "2023-06-02T12:00:00Z",
   "expirationDate": "2022-06-16T18:56:59Z",
   "credentialSubject": {
-    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+    "id": "did:web:example.com",
     "holderIdentifier": "%s",
     "type": "Summary-List",
     "name": "CX-Credentials",

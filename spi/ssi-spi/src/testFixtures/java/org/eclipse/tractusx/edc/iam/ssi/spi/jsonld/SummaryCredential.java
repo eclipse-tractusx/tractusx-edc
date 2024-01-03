@@ -35,11 +35,11 @@ public interface SummaryCredential {
                     "VerifiableCredential",
                     "SummaryCredential"
                   ],
-                  "issuer": "did:web:issuer-a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:issuer-example.com",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z",
                   "credentialSubject": {
-                    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                    "id": "did:web:example.com",
                     "holderIdentifier": "BPN of holder",
                     "type": "Summary-List",
                     "name": "CX-Credentials",
@@ -82,11 +82,11 @@ public interface SummaryCredential {
                   "type": [
                     "VerifiableCredential"
                   ],
-                  "issuer": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:example.com",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z",
                   "credentialSubject": {
-                    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000"     
+                    "id": "did:web:example.com"     
                   }
                 }
               ]
@@ -110,11 +110,11 @@ public interface SummaryCredential {
                     "VerifiableCredential",
                     "SummaryCredential"
                   ],
-                  "issuer": "did:web:no-holder.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:no-holder.example.com:BPNL000000000000",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z",
                   "credentialSubject": {
-                    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000"     
+                    "id": "did:web:example.com"     
                   }
                 }
               ]
@@ -138,7 +138,7 @@ public interface SummaryCredential {
                     "VerifiableCredential",
                     "SummaryCredential"
                   ],
-                  "issuer": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:example.com",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z"
                 }

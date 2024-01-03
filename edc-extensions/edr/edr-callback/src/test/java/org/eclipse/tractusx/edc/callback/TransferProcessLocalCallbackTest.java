@@ -14,6 +14,7 @@
 
 package org.eclipse.tractusx.edc.callback;
 
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessDeprovisioned;
@@ -108,11 +109,20 @@ public class TransferProcessLocalCallbackTest {
         var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()
                 .agreementId(contractId)
                 .transferProcessId(transferProcessId)
-                .assetId(assetId).build();
+                .assetId(assetId)
+                .build();
+
+        var negotiation = ContractNegotiation.Builder.newInstance()
+                .id(contractId)
+                .counterPartyId("providerId")
+                .counterPartyAddress("http://test")
+                .protocol("protocol")
+                .build();
 
         when(transformerRegistry.transform(any(DataAddress.class), eq(EndpointDataReference.class))).thenReturn(Result.success(edr));
         when(transferProcessStore.findForCorrelationId(edr.getId())).thenReturn(transferProcess);
         when(transferProcessStore.findById(transferProcessId)).thenReturn(transferProcess);
+        when(agreementService.findNegotiation(contractId)).thenReturn(negotiation);
         when(edrCache.queryForEntries(any())).thenReturn(Stream.of(edrEntry));
 
 

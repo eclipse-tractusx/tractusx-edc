@@ -43,6 +43,7 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 public class PolicyHelperFunctions {
 
     public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
+    private static final String ODRL_JSONLD = "http://www.w3.org/ns/odrl.jsonld";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
     public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY;
@@ -51,23 +52,9 @@ public class PolicyHelperFunctions {
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
-    /**
-     * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
-     * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
-     *
-     * @deprecated This method creates a policy that is compliant with the old/legacy BPN validation. Please use {@link PolicyHelperFunctions#businessPartnerGroupPolicy(String, Operator, String...)} instead.
-     */
-    @Deprecated
-    public static JsonObject businessPartnerNumberPolicy(String id, String... bpns) {
-        return policyDefinitionBuilder(bnpPolicy(bpns))
-                .add(ID, id)
-                .build();
-    }
 
-    public static JsonObject businessPartnerGroupPolicy(String id, Operator operator, String... allowedGroups) {
-        return policyDefinitionBuilder(bpnGroupPolicy(operator.getOdrlRepresentation(), allowedGroups))
-                .add(ID, id)
-                .build();
+    public static JsonObject bpnGroupPolicy(Operator operator, String... allowedGroups) {
+        return bpnGroupPolicy(operator.getOdrlRepresentation(), allowedGroups);
     }
 
     private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
@@ -75,7 +62,7 @@ public class PolicyHelperFunctions {
         var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
 
         var permission = Json.createObjectBuilder()
-                .add("action", "USE")
+                .add("action", "use")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("or", groupConstraint)
@@ -83,7 +70,7 @@ public class PolicyHelperFunctions {
                 .build();
 
         return Json.createObjectBuilder()
-                .add(CONTEXT, "http://www.w3.org/ns/odrl.jsonld")
+                .add(CONTEXT, ODRL_JSONLD)
                 .add("permission", permission)
                 .build();
     }
@@ -132,21 +119,9 @@ public class PolicyHelperFunctions {
                 .add(EDC_NAMESPACE + "policy", policy);
     }
 
-    public static JsonObject noConstraintPolicyDefinition(String id) {
-        return policyDefinitionBuilder(noConstraintPolicy())
-                .add(ID, id)
-                .build();
-    }
-
-    private static JsonObject noConstraintPolicy() {
+    public static JsonObject bnpPolicy(String... bnps) {
         return Json.createObjectBuilder()
-                .add(TYPE, "use")
-                .build();
-    }
-
-    private static JsonObject bnpPolicy(String... bnps) {
-        return Json.createObjectBuilder()
-                .add(CONTEXT, "http://www.w3.org/ns/odrl.jsonld")
+                .add(CONTEXT, ODRL_JSONLD)
                 .add("permission", Json.createArrayBuilder()
                         .add(permission(bnps)))
                 .build();
@@ -155,11 +130,11 @@ public class PolicyHelperFunctions {
     private static JsonObject permission(String... bpns) {
 
         var bpnConstraints = Stream.of(bpns)
-                .map(bpn -> atomicConstraint(BUSINESS_PARTNER_EVALUATION_KEY, "eq", bpn))
+                .map(bpn -> atomicConstraint(TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY, "eq", bpn))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "USE")
+                .add("action", "use")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("or", bpnConstraints)
@@ -167,9 +142,9 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    private static JsonObject frameworkPolicy(Map<String, String> permissions) {
+    public static JsonObject frameworkPolicy(Map<String, String> permissions) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, "http://www.w3.org/ns/odrl.jsonld")
+                .add(CONTEXT, ODRL_JSONLD)
                 .add("permission", Json.createArrayBuilder()
                         .add(frameworkPermission(permissions)))
                 .build();
@@ -182,7 +157,7 @@ public class PolicyHelperFunctions {
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "USE")
+                .add("action", "use")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("or", constraints)

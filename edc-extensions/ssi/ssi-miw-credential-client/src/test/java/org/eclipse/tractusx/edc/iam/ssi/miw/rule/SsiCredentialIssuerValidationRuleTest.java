@@ -39,7 +39,7 @@ public class SsiCredentialIssuerValidationRuleTest {
 
     @Test
     void checkRule() throws JsonProcessingException {
-        validationRule = new SsiCredentialIssuerValidationRule("did:web:issuer-a016-203-129-213-99.ngrok-free.app:BPNL000000000000", mock(Monitor.class));
+        validationRule = new SsiCredentialIssuerValidationRule("did:web:issuer-example.com", mock(Monitor.class));
         var vp = expand(createObjectMapper().readValue(SUMMARY_VP, JsonObject.class), CONTEXT_CACHE);
         var claimToken = ClaimToken.Builder.newInstance().claim(VP_PROPERTY, vp).build();
         var result = validationRule.checkRule(claimToken, Map.of());

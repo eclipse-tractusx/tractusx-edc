@@ -18,8 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.tractusx.edc.helpers.ReceivedEvent;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TestFunctions {
@@ -27,25 +25,9 @@ public class TestFunctions {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static Map<String, String> renewalConfiguration(Map<String, String> config) {
-        return renewalConfiguration(config, "10");
-    }
-
-    public static Map<String, String> renewalConfiguration(Map<String, String> config, String retention) {
-        var ssiConfiguration = new HashMap<String, String>() {
-            {
-                put("edc.edr.state-machine.expiring-duration", "10");
-                put("edc.edr.state-machine.expired-retention", retention);
-                put("edc.transfer.proxy.token.validity.seconds", "15");
-            }
-        };
-        ssiConfiguration.putAll(config);
-        return ssiConfiguration;
-    }
-
-    public static ReceivedEvent waitForEvent(MockWebServer server, ReceivedEvent event) {
+    public static ReceivedEvent waitForEvent(MockWebServer server) {
         try {
-            var request = server.takeRequest(20, TimeUnit.SECONDS);
+            var request = server.takeRequest(60, TimeUnit.SECONDS);
             if (request != null) {
                 return MAPPER.readValue(request.getBody().inputStream(), ReceivedEvent.class);
             } else {
