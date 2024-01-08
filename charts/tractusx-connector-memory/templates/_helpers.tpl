@@ -111,7 +111,7 @@ Validation URL
 {{- end }}
 
 {{/*
-Runtime URL
+Control URL
 */}}
 {{- define "txdc.runtime.url.control" -}}
 {{- printf "http://%s-runtime:%v%s" ( include "txdc.fullname" $ ) $.Values.runtime.endpoints.control.port $.Values.runtime.endpoints.control.path -}}
