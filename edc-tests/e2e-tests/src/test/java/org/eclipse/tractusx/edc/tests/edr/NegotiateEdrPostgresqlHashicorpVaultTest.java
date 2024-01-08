@@ -19,32 +19,25 @@ import org.eclipse.tractusx.edc.lifecycle.PgHashicorpParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
-
 @PostgresqlDbIntegrationTest
 public class NegotiateEdrPostgresqlHashicorpVaultTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
     protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql",
-            PLATO_NAME,
-            PLATO_BPN,
-            platoConfiguration()
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.getConfiguration()
     );
     private static final String VAULT_DIRECTORY = "testDir/";
 
     @RegisterExtension
     protected static final PgHashicorpParticipantRuntime SOKRATES_RUNTIME = new PgHashicorpParticipantRuntime(
             ":edc-tests:runtime:runtime-postgresql-hashicorp",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
             VAULT_DIRECTORY,
-            sokratesConfiguration()
+            SOKRATES.getConfiguration()
     );
 
 }

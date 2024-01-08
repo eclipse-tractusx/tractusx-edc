@@ -33,7 +33,6 @@ import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension.C
 import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension.CLIENT_SECRET_ALIAS;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwOauth2ClientExtension.TOKEN_URL;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +47,7 @@ public class SsiMiwOauth2ClientExtensionTest {
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = spy(context);
+        this.context = context;
         context.registerService(MiwApiClient.class, mock(MiwApiClient.class));
         context.registerService(TypeManager.class, new TypeManager());
         context.registerService(Vault.class, vault);
@@ -85,7 +84,7 @@ public class SsiMiwOauth2ClientExtensionTest {
                 .extracting(MiwOauth2ClientImpl::getConfiguration)
                 .extracting(MiwOauth2ClientConfiguration::getTokenUrl)
                 .isEqualTo("http://localhost:8080");
-        
+
         verify(config).getString(TOKEN_URL);
         verify(config).getString(CLIENT_ID);
         verify(config).getString(CLIENT_SECRET_ALIAS);

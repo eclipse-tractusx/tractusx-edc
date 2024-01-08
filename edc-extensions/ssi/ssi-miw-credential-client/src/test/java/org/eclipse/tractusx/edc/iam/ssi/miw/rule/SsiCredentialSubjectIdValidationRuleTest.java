@@ -43,7 +43,7 @@ public class SsiCredentialSubjectIdValidationRuleTest {
         var vp = expand(createObjectMapper().readValue(SUMMARY_VP, JsonObject.class), CONTEXT_CACHE);
         var claimToken = ClaimToken.Builder.newInstance()
                 .claim(VP_PROPERTY, vp)
-                .claim(ISSUER, "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000").build();
+                .claim(ISSUER, "did:web:example.com").build();
 
         var result = validationRule.checkRule(claimToken, Map.of());
 

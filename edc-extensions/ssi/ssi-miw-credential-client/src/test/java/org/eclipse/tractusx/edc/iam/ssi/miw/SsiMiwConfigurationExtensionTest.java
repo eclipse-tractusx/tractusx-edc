@@ -31,7 +31,6 @@ import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +43,7 @@ public class SsiMiwConfigurationExtensionTest {
 
     @BeforeEach
     void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = spy(context);
+        this.context = context;
         extension = factory.constructInstance(SsiMiwConfigurationExtension.class);
     }
 

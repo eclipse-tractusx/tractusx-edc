@@ -20,73 +20,78 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.sql.DriverManagerConnectionFactory;
 import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.flywaydb.core.api.output.MigrateResult;
 
 import java.util.Objects;
 import java.util.Properties;
 
 abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
+
     private static final String EDC_DATASOURCE_PREFIX = "edc.datasource";
     private static final String MIGRATION_LOCATION_BASE =
             String.format("classpath:%s", AbstractPostgresqlMigrationExtension.class.getPackageName().replace(".", "/"));
 
-    protected abstract String getDataSourceNameConfigurationKey();
+    private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
+    @Setting(value = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
+    private static final String MIGRATION_ENABLED_TEMPLATE = "org.eclipse.tractusx.edc.postgresql.migration.%s.enabled";
 
-    protected abstract String getSubsystemName();
+    private static final String DEFAULT_MIGRATION_SCHEMA = "public";
+    @Setting(value = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
+    private static final String MIGRATION_SCHEMA = "org.eclipse.tractusx.edc.postgresql.migration.schema";
+
+    @Override
+    public String name() {
+        return "Postgresql schema migration for subsystem " + getSubsystemName();
+    }
 
     @Override
     public void initialize(final ServiceExtensionContext context) {
-        final String subSystemName = Objects.requireNonNull(getSubsystemName());
+        var config = context.getConfig();
 
-        final String dataSourceName =
-                context.getConfig().getString(getDataSourceNameConfigurationKey(), null);
-        if (dataSourceName == null) {
-            return;
-        }
-
-        boolean enabled = context.getConfig()
-                .getBoolean(String.format("org.eclipse.tractusx.edc.postgresql.migration.%s.enabled", subSystemName), true);
-        String schema = context.getConfig()
-                .getString("org.eclipse.tractusx.edc.postgresql.migration.schema", "public");
+        var subSystemName = Objects.requireNonNull(getSubsystemName());
+        var enabled = config.getBoolean(MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
 
         if (!enabled) {
             return;
         }
 
-        Config datasourceConfiguration = context.getConfig(String.join(".", EDC_DATASOURCE_PREFIX, dataSourceName));
+        var configGroup = "%s.%s".formatted(EDC_DATASOURCE_PREFIX, subSystemName);
+        var datasourceConfig = config.getConfig(configGroup);
 
-        final String jdbcUrl = Objects.requireNonNull(datasourceConfiguration.getString("url"));
-        final Properties jdbcProperties = new Properties();
-        jdbcProperties.putAll(datasourceConfiguration.getRelativeEntries());
+        var dataSourceName = datasourceConfig.getString("name", null);
+        if (dataSourceName == null) {
+            context.getMonitor().warning("No 'name' setting in group %s found, no schema migrations will run for subsystem %s"
+                    .formatted(configGroup, subSystemName));
+            return;
+        }
 
-        final DriverManagerConnectionFactory driverManagerConnectionFactory =
-                new DriverManagerConnectionFactory(jdbcUrl, jdbcProperties);
-        final ConnectionFactoryDataSource dataSource =
-                new ConnectionFactoryDataSource(driverManagerConnectionFactory);
+        var jdbcUrl = datasourceConfig.getString("url");
+        var jdbcProperties = new Properties();
+        jdbcProperties.putAll(datasourceConfig.getRelativeEntries());
 
-        final String schemaHistoryTableName = getSchemaHistoryTableName(subSystemName);
-        final String migrationsLocation = getMigrationsLocation();
+        var driverManagerConnectionFactory = new DriverManagerConnectionFactory();
+        var dataSource = new ConnectionFactoryDataSource(driverManagerConnectionFactory, jdbcUrl, jdbcProperties);
 
-        final Flyway flyway =
+        var flyway =
                 Flyway.configure()
                         .baselineVersion(MigrationVersion.fromVersion("0.0.0"))
                         .failOnMissingLocations(true)
                         .dataSource(dataSource)
-                        .table(schemaHistoryTableName)
-                        .locations(migrationsLocation)
-                        .defaultSchema(schema)
+                        .table("flyway_schema_history_%s".formatted(subSystemName))
+                        .locations("%s/%s".formatted(MIGRATION_LOCATION_BASE, subSystemName))
+                        .defaultSchema(config.getString(MIGRATION_SCHEMA, DEFAULT_MIGRATION_SCHEMA))
                         .load();
 
         flyway.baseline();
 
-        final MigrateResult migrateResult = flyway.migrate();
+        var migrateResult = flyway.migrate();
 
         if (!migrateResult.success) {
             throw new EdcPersistenceException(
@@ -96,11 +101,6 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
         }
     }
 
-    private String getMigrationsLocation() {
-        return String.join("/", MIGRATION_LOCATION_BASE, getSubsystemName());
-    }
+    protected abstract String getSubsystemName();
 
-    private String getSchemaHistoryTableName(final String subSystemName) {
-        return String.format("flyway_schema_history_%s", subSystemName);
-    }
 }

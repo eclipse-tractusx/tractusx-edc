@@ -14,16 +14,8 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
-import org.eclipse.edc.connector.store.sql.assetindex.ConfigurationKeys;
-
 public class BusinessGroupPostgresMigrationExtension extends AbstractPostgresqlMigrationExtension {
-    private static final String NAME = "businessgroup";
-
-
-    @Override
-    protected String getDataSourceNameConfigurationKey() {
-        return ConfigurationKeys.DATASOURCE_SETTING_NAME;
-    }
+    private static final String NAME = "bpn";
 
     @Override
     protected String getSubsystemName() {

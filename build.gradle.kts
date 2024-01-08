@@ -26,7 +26,7 @@ plugins {
     `maven-publish`
     `jacoco-report-aggregation`
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.bmuschko.docker-remote-api") version "9.3.6"
+    id("com.bmuschko.docker-remote-api") version "9.4.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -59,7 +59,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.0.9")
+        implementation("org.slf4j:slf4j-api:2.0.10")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
         testImplementation(platform("org.junit:junit-bom:5.10.1"))

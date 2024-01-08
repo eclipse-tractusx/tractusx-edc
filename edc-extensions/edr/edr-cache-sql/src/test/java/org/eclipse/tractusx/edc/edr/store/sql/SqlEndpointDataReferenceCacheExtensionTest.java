@@ -29,7 +29,6 @@ import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCac
 import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCacheExtension.DEFAULT_DATASOURCE_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +41,7 @@ public class SqlEndpointDataReferenceCacheExtensionTest {
 
     @BeforeEach
     void setUp(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = spy(context);
+        this.context = context;
         context.registerService(TypeManager.class, new TypeManager());
         context.registerService(DataSourceRegistry.class, mock(DataSourceRegistry.class));
         extension = factory.constructInstance(SqlEndpointDataReferenceCacheExtension.class);

@@ -63,6 +63,16 @@ public class ContractNegotiationCallbackTest {
 
     ContractNegotiationCallback callback;
 
+    private static <T extends ContractNegotiationEvent, B extends ContractNegotiationEvent.Builder<T, B>> B baseBuilder(B builder) {
+        var callbacks = List.of(CallbackAddress.Builder.newInstance().uri("http://local").events(Set.of("test")).build());
+        return builder
+                .contractNegotiationId("id")
+                .protocol("test")
+                .callbackAddresses(callbacks)
+                .counterPartyAddress("addr")
+                .counterPartyId("provider");
+    }
+
     @BeforeEach
     void setup() {
         callback = new ContractNegotiationCallback(transferProcessService, monitor);
@@ -92,7 +102,6 @@ public class ContractNegotiationCallbackTest {
             assertThat(tp.getContractId()).isEqualTo(event.getContractAgreement().getId());
             assertThat(tp.getAssetId()).isEqualTo(event.getContractAgreement().getAssetId());
             assertThat(tp.getCounterPartyAddress()).isEqualTo(event.getCounterPartyAddress());
-            assertThat(tp.getConnectorId()).isEqualTo(event.getCounterPartyId());
             assertThat(tp.getProtocol()).isEqualTo(event.getProtocol());
             assertThat(tp.getDataDestination()).usingRecursiveComparison().isEqualTo(DATA_DESTINATION);
         });
@@ -138,16 +147,6 @@ public class ContractNegotiationCallbackTest {
 
         callback.invoke(message);
         verify(transferProcessService).initiateTransfer(any(TransferRequest.class));
-    }
-
-    private static <T extends ContractNegotiationEvent, B extends ContractNegotiationEvent.Builder<T, B>> B baseBuilder(B builder) {
-        var callbacks = List.of(CallbackAddress.Builder.newInstance().uri("http://local").events(Set.of("test")).build());
-        return builder
-                .contractNegotiationId("id")
-                .protocol("test")
-                .callbackAddresses(callbacks)
-                .counterPartyAddress("addr")
-                .counterPartyId("provider");
     }
 
     private static class EventInstances implements ArgumentsProvider {

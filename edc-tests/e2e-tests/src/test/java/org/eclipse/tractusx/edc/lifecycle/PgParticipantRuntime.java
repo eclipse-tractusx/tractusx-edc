@@ -28,6 +28,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.DB_SCHEMA_NAME;
@@ -72,7 +73,7 @@ public class PgParticipantRuntime extends ParticipantRuntime {
     @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
         PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
-        helper.createDatabase(dbName);
+        helper.createDatabase();
         super.bootExtensions(context, serviceExtensions);
     }
 
@@ -80,34 +81,14 @@ public class PgParticipantRuntime extends ParticipantRuntime {
         var jdbcUrl = jdbcUrl(name);
         return new HashMap<>() {
             {
-                put("edc.datasource.asset.name", "asset");
-                put("edc.datasource.asset.url", jdbcUrl);
-                put("edc.datasource.asset.user", USER);
-                put("edc.datasource.asset.password", PASSWORD);
-                put("edc.datasource.contractdefinition.name", "contractdefinition");
-                put("edc.datasource.contractdefinition.url", jdbcUrl);
-                put("edc.datasource.contractdefinition.user", USER);
-                put("edc.datasource.contractdefinition.password", PASSWORD);
-                put("edc.datasource.contractnegotiation.name", "contractnegotiation");
-                put("edc.datasource.contractnegotiation.url", jdbcUrl);
-                put("edc.datasource.contractnegotiation.user", USER);
-                put("edc.datasource.contractnegotiation.password", PASSWORD);
-                put("edc.datasource.policy.name", "policy");
-                put("edc.datasource.policy.url", jdbcUrl);
-                put("edc.datasource.policy.user", USER);
-                put("edc.datasource.policy.password", PASSWORD);
-                put("edc.datasource.transferprocess.name", "transferprocess");
-                put("edc.datasource.transferprocess.url", jdbcUrl);
-                put("edc.datasource.transferprocess.user", USER);
-                put("edc.datasource.transferprocess.password", PASSWORD);
-                put("edc.datasource.edr.name", "edr");
-                put("edc.datasource.edr.url", jdbcUrl);
-                put("edc.datasource.edr.user", USER);
-                put("edc.datasource.edr.password", PASSWORD);
-                put("edc.datasource.bpn.name", "bpn");
-                put("edc.datasource.bpn.url", jdbcUrl);
-                put("edc.datasource.bpn.user", USER);
-                put("edc.datasource.bpn.password", PASSWORD);
+                Stream.of("asset", "contractdefinition", "contractnegotiation", "policy", "transferprocess", "edr", "bpn", "policy-monitor")
+                        .forEach(context -> {
+                            var group = "edc.datasource." + context;
+                            put(group + ".name", context);
+                            put(group + ".url", jdbcUrl);
+                            put(group + ".user", USER);
+                            put(group + ".password", PASSWORD);
+                        });
                 // use non-default schema name to test usage of non-default schema
                 put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }

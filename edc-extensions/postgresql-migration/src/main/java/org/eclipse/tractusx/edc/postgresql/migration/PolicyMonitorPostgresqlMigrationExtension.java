@@ -14,8 +14,8 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
-public class EdrPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
-    private static final String NAME_SUBSYSTEM = "edr";
+public class PolicyMonitorPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
+    private static final String NAME_SUBSYSTEM = "policy-monitor";
 
     protected String getSubsystemName() {
         return NAME_SUBSYSTEM;

@@ -54,7 +54,6 @@ public class ContractNegotiationCallback implements InProcessCallback {
                 .id(UUID.randomUUID().toString())
                 .assetId(negotiationFinalized.getContractAgreement().getAssetId())
                 .contractId(negotiationFinalized.getContractAgreement().getId())
-                .connectorId(negotiationFinalized.getCounterPartyId())
                 .counterPartyAddress(negotiationFinalized.getCounterPartyAddress())
                 .protocol(negotiationFinalized.getProtocol())
                 .dataDestination(DATA_DESTINATION)
