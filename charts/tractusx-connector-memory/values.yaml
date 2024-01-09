@@ -91,12 +91,6 @@ runtime:
       path: /management
       # -- authentication key, must be attached to each 'X-Api-Key' request header
       authKey: "password"
-    # -- validation api, only used by the data plane and should not be added to any ingress
-    validation:
-      # -- port for incoming api calls
-      port: 8082
-      # -- path for incoming api calls
-      path: /validation
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls

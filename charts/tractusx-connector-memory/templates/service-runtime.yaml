@@ -43,10 +43,6 @@ spec:
       targetPort: management
       protocol: TCP
       name: management
-    - port: {{ .Values.runtime.endpoints.validation.port }}
-      targetPort: validation
-      protocol: TCP
-      name: validation
     - port: {{ .Values.runtime.endpoints.protocol.port }}
       targetPort: protocol
       protocol: TCP

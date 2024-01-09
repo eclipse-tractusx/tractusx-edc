@@ -107,7 +107,14 @@ Control DSP URL
 Validation URL
 */}}
 {{- define "txdc.runtime.url.validation" -}}
-{{- printf "http://%s-runtime:%v%s/token" ( include "txdc.fullname" $ ) $.Values.runtime.endpoints.validation.port $.Values.runtime.endpoints.validation.path -}}
+{{- printf "%s/token" ( include "txdc.runtime.url.control" $ ) -}}
+{{- end }}
+
+{{/*
+Control URL
+*/}}
+{{- define "txdc.runtime.url.control" -}}
+{{- printf "http://%s-runtime:%v%s" ( include "txdc.fullname" $ ) $.Values.runtime.endpoints.control.port $.Values.runtime.endpoints.control.path -}}
 {{- end }}
 
 {{/*
