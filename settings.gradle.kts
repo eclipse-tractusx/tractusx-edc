@@ -52,6 +52,7 @@ include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
 include("edc-extensions:ssi:jws2020-crypto-suite")
 include(":edc-extensions:ssi:ssi-identity-extractor")
+include(":edc-extensions:iatp:tx-iatp")
 
 // test modules
 include(":edc-tests:e2e-tests")
@@ -62,6 +63,9 @@ include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:runtime-postgresql-hashicorp")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-sts")
+include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
 

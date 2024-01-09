@@ -109,6 +109,30 @@ edc-dpf-awss3 = { module = "org.eclipse.edc:data-plane-aws-s3", version.ref = "e
 edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
 edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback-http-dispatcher", version.ref = "edc" }
 
+# IATP Modules
+
+edc-identity-core-trust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
+edc-identity-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
+edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", version.ref = "edc" }
+edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
+edc-identity-jws2020 = { module = "org.eclipse.edc:jws2020", version.ref = "edc" }
+edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
+edc-identity-trust-sts-remote = { module = "org.eclipse.edc:identity-trust-sts-remote-core", version.ref = "edc" }
+edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-trust-issuers-configuration", version.ref = "edc" }
+
+
+# IATP for Testing
+
+edc-identity-trust-sts-core = { module = "org.eclipse.edc:identity-trust-sts-core", version.ref = "edc" }
+edc-identity-trust-sts-api = { module = "org.eclipse.edc:identity-trust-sts-api", version.ref = "edc" }
+edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identity-trust-sts-client-configuration", version.ref = "edc" }
+
+## IH for testing
+
+edc-ih-api = { module = "org.eclipse.edc:identity-hub-api", version.ref = "edc" }
+edc-ih-credentials = { module = "org.eclipse.edc:identity-hub-credentials", version.ref = "edc" }
+edc-ih-pkprovider = { module = "org.eclipse.edc:public-key-provider", version.ref = "edc" }
+edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
 
 # DPF modules
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
@@ -169,3 +193,4 @@ edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc
 edc-dpf = ["edc.dpf-transfer", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
 edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor"]
 edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
+edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]

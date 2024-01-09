@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -14,16 +14,13 @@
 
 plugins {
     `java-library`
-    `java-test-fixtures`
+    `maven-publish`
 }
 
 dependencies {
     implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.jwt)
-    implementation(libs.jakartaJson)
+    implementation(libs.edc.spi.policyengine)
+    implementation(libs.edc.identity.core.trust)
 
-    testFixturesImplementation(libs.jacksonJsonP)
-    testFixturesImplementation(libs.jackson.datatypeJsr310)
-    testFixturesImplementation(libs.titaniumJsonLd)
-    testFixturesImplementation(libs.jackson.datatypeJsr310)
+    testImplementation(libs.edc.junit)
 }

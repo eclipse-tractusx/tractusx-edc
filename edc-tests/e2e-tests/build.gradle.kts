@@ -38,6 +38,8 @@ dependencies {
     testImplementation(libs.edc.spi.dataplane.selector)
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
+    testImplementation(libs.edc.identity.core.did)
+    testImplementation(libs.edc.ih.spi.store)
     testImplementation(testFixtures(libs.edc.sql.core))
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(libs.awaitility)
@@ -46,9 +48,12 @@ dependencies {
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgres)
     testImplementation(libs.testcontainers.vault)
+    testImplementation(libs.bouncyCastle.bcpkixJdk18on)
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-sts"))
+    testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-ih"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 
@@ -59,6 +64,7 @@ dependencies {
     testFixturesImplementation(libs.edc.spi.contract)
     testFixturesImplementation(project(":spi:edr-spi"))
     testFixturesImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
+
 }
 
 // do not publish
