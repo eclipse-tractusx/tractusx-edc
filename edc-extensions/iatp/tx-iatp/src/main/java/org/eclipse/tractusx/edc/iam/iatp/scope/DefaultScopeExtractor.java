@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -29,7 +29,7 @@ import static java.lang.String.format;
  * Extract for TX default scopes e.g. MembershipCredential scope
  */
 public class DefaultScopeExtractor implements BiFunction<Policy, PolicyContext, Boolean> {
-    
+
     private final Set<String> defaultScopes;
 
     public DefaultScopeExtractor(Set<String> defaultScopes) {
@@ -49,5 +49,9 @@ public class DefaultScopeExtractor implements BiFunction<Policy, PolicyContext, 
         newScopes.add(existingScope);
         tokenBuilder.scope(String.join(" ", newScopes).trim());
         return true;
+    }
+
+    public Set<String> getDefaultScopes() {
+        return defaultScopes;
     }
 }
