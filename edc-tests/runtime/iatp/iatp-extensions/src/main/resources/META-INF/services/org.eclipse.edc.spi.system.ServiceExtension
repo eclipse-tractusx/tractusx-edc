@@ -14,3 +14,5 @@
 
 org.eclipse.tractusx.edc.iatp.TestAudienceMapperExtension
 org.eclipse.tractusx.edc.iatp.ih.IdentityHubExtension
+org.eclipse.tractusx.edc.iatp.policy.CredentialPolicyEvaluationExtension
+org.eclipse.tractusx.edc.iatp.CredentialsJsonLdExtension

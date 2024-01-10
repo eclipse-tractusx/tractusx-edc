@@ -20,16 +20,11 @@ import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
-import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.net.URI;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.spec.ECGenParameterSpec;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +33,7 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.generateKeyPair;
 import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.toPemEncoded;
 import static org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer.DATASPACE_ISSUER;
 
@@ -145,13 +141,4 @@ public class IatpParticipant {
                 .build();
     }
 
-    private KeyPair generateKeyPair() {
-        try {
-            KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
-            gen.initialize(new ECGenParameterSpec("secp256r1"));
-            return gen.generateKeyPair();
-        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

@@ -18,7 +18,10 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.identityhub.spi.generator.PresentationCreatorRegistry;
+import org.eclipse.edc.identityhub.spi.store.CredentialStore;
+import org.eclipse.edc.identityhub.spi.store.model.VerifiableCredentialResource;
 import org.eclipse.edc.identitytrust.model.CredentialFormat;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.did.DidExampleResolver;
@@ -32,9 +35,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTIAL_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
@@ -97,17 +101,30 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
         vault.storeSecret(participant.verificationId(), participant.privateKey());
         presentationRegistry.addKeyId(participant.verificationId(), CredentialFormat.JSON_LD);
         presentationRegistry.addKeyId(participant.verificationId(), CredentialFormat.JWT);
+
+        storeCredentials(participant, runtime);
+    }
+
+    private static void storeCredentials(IatpParticipant participant, ParticipantRuntime runtime) {
+        var credentialStore = runtime.getContext().getService(CredentialStore.class);
+        var jsonLd = runtime.getContext().getService(JsonLd.class);
+        issueCredentials(participant, jsonLd).forEach(credentialStore::create);
+    }
+
+    private static List<VerifiableCredentialResource> issueCredentials(IatpParticipant participant, JsonLd jsonLd) {
+        return List.of(
+                DATASPACE_ISSUER_PARTICIPANT.issueMembershipCredential(participant, jsonLd),
+                DATASPACE_ISSUER_PARTICIPANT.issueFrameworkCredential(participant, jsonLd, "PcfCredential"));
     }
 
     @BeforeEach
     void setup() throws IOException {
         super.setup();
-
     }
 
     @Override
-    protected JsonObject createTestPolicy(String bpn) {
-        return frameworkPolicy(Map.of(TX_NAMESPACE + "Membership", "active"));
+    protected JsonObject createContractPolicy(String bpn) {
+        return frameworkPolicy(Map.of(TX_CREDENTIAL_NAMESPACE + "Membership", "active"));
     }
 
 }

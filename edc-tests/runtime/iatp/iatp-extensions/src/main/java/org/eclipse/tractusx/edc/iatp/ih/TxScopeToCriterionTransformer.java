@@ -28,11 +28,17 @@ import static org.eclipse.edc.spi.result.Result.success;
  * to {@link Criterion} for querying the credentials (Just for testing)
  */
 public class TxScopeToCriterionTransformer implements ScopeToCriterionTransformer {
+
     public static final String TYPE_OPERAND = "verifiableCredential.credential.types";
     public static final String ALIAS_LITERAL = "org.eclipse.tractusx.vc.type";
     public static final String CONTAINS_OPERATOR = "contains";
     private static final String SCOPE_SEPARATOR = ":";
+    private final List<String> knownCredentialTypes;
     private final List<String> allowedOperations = List.of("read", "*", "all");
+
+    public TxScopeToCriterionTransformer(List<String> knownCredentialTypes) {
+        this.knownCredentialTypes = knownCredentialTypes;
+    }
 
     @Override
     public Result<Criterion> transform(String scope) {
@@ -41,7 +47,14 @@ public class TxScopeToCriterionTransformer implements ScopeToCriterionTransforme
             return failure("Scope string cannot be converted: %s".formatted(tokens.getFailureDetail()));
         }
         var credentialType = tokens.getContent()[1];
-        return success(new Criterion(TYPE_OPERAND, CONTAINS_OPERATOR, credentialType));
+
+        if (!knownCredentialTypes.contains(credentialType)) {
+            //select based on the credentialSubject.useCaseType property
+            // even though "claims" is a Map, we need to access it using the dot notation. See ReflectionUtil.java
+            return success(new Criterion("verifiableCredential.credential.credentialSubject.useCaseType", "=", credentialType));
+        } else {
+            return success(new Criterion(TYPE_OPERAND, CONTAINS_OPERATOR, credentialType));
+        }
     }
 
     protected Result<String[]> tokenize(String scope) {

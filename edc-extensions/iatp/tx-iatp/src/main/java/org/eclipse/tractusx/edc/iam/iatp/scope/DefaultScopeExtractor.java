@@ -28,13 +28,7 @@ import static java.lang.String.format;
 /**
  * Extract for TX default scopes e.g. MembershipCredential scope
  */
-public class DefaultScopeExtractor implements BiFunction<Policy, PolicyContext, Boolean> {
-
-    private final Set<String> defaultScopes;
-
-    public DefaultScopeExtractor(Set<String> defaultScopes) {
-        this.defaultScopes = defaultScopes;
-    }
+public record DefaultScopeExtractor(Set<String> defaultScopes) implements BiFunction<Policy, PolicyContext, Boolean> {
 
     @Override
     public Boolean apply(Policy policy, PolicyContext policyContext) {
@@ -49,9 +43,5 @@ public class DefaultScopeExtractor implements BiFunction<Policy, PolicyContext, 
         newScopes.add(existingScope);
         tokenBuilder.scope(String.join(" ", newScopes).trim());
         return true;
-    }
-
-    public Set<String> getDefaultScopes() {
-        return defaultScopes;
     }
 }

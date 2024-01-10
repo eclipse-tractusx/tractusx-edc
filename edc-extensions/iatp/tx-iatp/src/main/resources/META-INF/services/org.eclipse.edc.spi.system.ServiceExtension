@@ -11,5 +11,6 @@
 #       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
 #
 #
-org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtension
+org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension
+org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtractorExtension
 

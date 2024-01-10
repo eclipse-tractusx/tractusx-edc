@@ -31,10 +31,11 @@ import static java.lang.String.format;
 import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.CATALOG_REQUEST_SCOPE;
 import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.NEGOTIATION_REQUEST_SCOPE;
 import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.TRANSFER_PROCESS_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtension.NAME;
+import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
+import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.DEFAULT_SCOPES;
 
 @Extension(NAME)
-public class IatpScopeExtension implements ServiceExtension {
+public class IatpDefaultScopeExtension implements ServiceExtension {
 
     public static final String TX_IATP_DEFAULT_SCOPE_PREFIX = "edc.iam.iatp.default-scopes";
 
@@ -49,10 +50,8 @@ public class IatpScopeExtension implements ServiceExtension {
     @Setting(context = TX_IATP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, value = "The alias of the scope e.g. read", required = true)
     public static final String OPERATION = "operation";
 
-    public static final Set<String> DEFAULT_SCOPES = Set.of("org.eclipse.tractusx.vc.type:MembershipCredential:read");
+    static final String NAME = "Tractusx default scope extension";
 
-    static final String NAME = "Tractusx scope mapping extension";
-    
     @Inject
     private PolicyEngine policyEngine;
 
