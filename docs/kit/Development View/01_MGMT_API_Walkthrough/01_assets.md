@@ -102,6 +102,12 @@ have proven to enable an integration that's quite complete from a functional vie
 | `oauth2:clientId`        | This is the clientId of the (technical) user that the credential was created for by the backend application.                                                                                                                                                                                                                                                                                                       | no        | null    |
 | `oauth2:clientSecretKey` | The Data Provider must store his backend-issued client-secret in a Vault. The key under which the Data Plane can retrieve the secret's value is configured in this field.                                                                                                                                                                                                                                          | no        | null    |
 
+For all URLs that are registered (like the `tokenUrl` and the `baseUrl`) it is advisable to set them to a domain 
+controlled by the Data Provider himself. If the service is hosted by a Business Application Provider (like in a SaaS
+scenario), that service should be redirected to through a proxy. That way, in a migration scenario, the existing Assets 
+can be preserved by reconfiguring the proxy to pointing to the new service.
+
+
 ## Notice
 
 This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
