@@ -57,7 +57,6 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
     @BeforeEach
     void setup() throws IOException {
         server = new MockWebServer();
-
     }
 
     @Test
@@ -79,8 +78,8 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
 
         PLATO.createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PLATO.createPolicyDefinition(createTestPolicy(SOKRATES.getBpn()));
-        var contractPolicyId = PLATO.createPolicyDefinition(createTestPolicy(SOKRATES.getBpn()));
+        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
+        var contractPolicyId = PLATO.createPolicyDefinition(createContractPolicy(SOKRATES.getBpn()));
         PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest());
 
@@ -119,7 +118,11 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
         server.shutdown();
     }
 
-    protected JsonObject createTestPolicy(String bpn) {
+    protected JsonObject createAccessPolicy(String bpn) {
+        return bnpPolicy(bpn);
+    }
+
+    protected JsonObject createContractPolicy(String bpn) {
         return bnpPolicy(bpn);
     }
 }

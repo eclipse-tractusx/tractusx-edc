@@ -32,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.CATALOG_REQUEST_SCOPE;
 import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.NEGOTIATION_REQUEST_SCOPE;
 import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.TRANSFER_PROCESS_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtension.DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
+import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
+import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.DEFAULT_SCOPES;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class IatpScopeExtensionTest {
+public class IatpDefaultScopeExtensionTest {
 
     private final PolicyEngine policyEngine = mock();
 
@@ -51,7 +51,7 @@ public class IatpScopeExtensionTest {
     }
 
     @Test
-    void initialize(ServiceExtensionContext context, IatpScopeExtension extension) {
+    void initialize(ServiceExtensionContext context, IatpDefaultScopeExtension extension) {
         extension.initialize(context);
 
         verify(policyEngine).registerPostValidator(eq(CATALOG_REQUEST_SCOPE), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
@@ -60,7 +60,7 @@ public class IatpScopeExtensionTest {
     }
 
     @Test
-    void initialize_withConfiguredScopes(ServiceExtensionContext context, IatpScopeExtension extension) {
+    void initialize_withConfiguredScopes(ServiceExtensionContext context, IatpDefaultScopeExtension extension) {
         var cfg = ConfigFactory.fromMap(Map.of(
                 "foo.alias", "org.test.alias.foo",
                 "foo.type", "FooCredential",
@@ -80,7 +80,7 @@ public class IatpScopeExtensionTest {
     }
 
     @Test
-    void initialize_fails_withBadConfiguredScopes(ServiceExtensionContext context, IatpScopeExtension extension) {
+    void initialize_fails_withBadConfiguredScopes(ServiceExtensionContext context, IatpDefaultScopeExtension extension) {
         var cfg = ConfigFactory.fromMap(Map.of(
                 "foo.alias", "org.test.alias.foo"
         ));
@@ -93,7 +93,7 @@ public class IatpScopeExtensionTest {
 
         @Override
         public boolean matches(DefaultScopeExtractor defaultScopeExtractor) {
-            return defaultScopeExtractor.getDefaultScopes().containsAll(scopes);
+            return defaultScopeExtractor.defaultScopes().containsAll(scopes);
         }
     }
 }

@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.policyengine)
     implementation(libs.edc.identity.core.trust)
+    implementation(project(":spi:core-spi"))
 
     testImplementation(libs.edc.junit)
 }

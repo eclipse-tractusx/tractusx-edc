@@ -43,7 +43,6 @@ public class JsonLdExtension implements ServiceExtension {
     public static final String SECURITY_JWS_V1 = "https://w3id.org/security/suites/jws-2020/v1";
     public static final String SECURITY_ED25519_V1 = "https://w3id.org/security/suites/ed25519-2020/v1";
 
-    public static final String BUSINESS_PARTNER_DATA = "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json";
     private static final String PREFIX = "document" + File.separator;
     private static final Map<String, String> FILES = Map.of(
             CREDENTIALS_V_1, PREFIX + "credential-v1.jsonld",
@@ -52,8 +51,7 @@ public class JsonLdExtension implements ServiceExtension {
             SECURITY_JWS_V1, PREFIX + "security-jws-2020.jsonld",
             SECURITY_ED25519_V1, PREFIX + "security-ed25519-2020.jsonld",
             TX_CONTEXT, PREFIX + "tx-v1.jsonld",
-            EDC_CONTEXT, PREFIX + "edc-v1.jsonld",
-            BUSINESS_PARTNER_DATA, PREFIX + "businessPartnerData.json");
+            EDC_CONTEXT, PREFIX + "edc-v1.jsonld");
     @Inject
     private JsonLd jsonLdService;
 

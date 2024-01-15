@@ -94,7 +94,7 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     }
 
     @Override
-    protected JsonObject createTestPolicy(String bpn) {
+    protected JsonObject createAccessPolicy(String bpn) {
         return frameworkPolicy(Map.of(TX_NAMESPACE + "Dismantler", "active"));
     }
 }
