@@ -31,6 +31,8 @@ import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.CREDENTIAL_TYPE_
  */
 public class CredentialScopeExtractor implements ScopeExtractor {
     public static final String FRAMEWORK_CREDENTIAL_PREFIX = "FrameworkAgreement.";
+    public static final String SCOPE_FORMAT = "%s:%s:read";
+    public static final String CREDENTIAL_FORMAT = "%sCredential";
 
     public CredentialScopeExtractor() {
     }
@@ -43,8 +45,8 @@ public class CredentialScopeExtractor implements ScopeExtractor {
             if (credential.startsWith(FRAMEWORK_CREDENTIAL_PREFIX)) {
                 credential = credential.replace(FRAMEWORK_CREDENTIAL_PREFIX, "");
             }
-            scopes = Set.of("%s:%s:read".formatted(CREDENTIAL_TYPE_NAMESPACE, "%sCredential".formatted(capitalize(credential))));
-            
+            scopes = Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credential))));
+
         }
         return scopes;
     }
