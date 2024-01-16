@@ -137,12 +137,3 @@ jobs:
     if: needs.secret-presence.outputs.HAS_SWAGGER
     uses: ./.github/workflows/publish-swaggerhub.yaml
     secrets: inherit
-
-  publish-docusaurus:
-    name: Publish docusaurus docs
-    permissions:
-      contents: write
-      packages: write
-    needs: [ secret-presence, publish-to-swaggerhub ]
-    if: needs.secret-presence.outputs.HAS_SWAGGER
-    uses: ./.github/workflows/publish-docusaurus.yaml
