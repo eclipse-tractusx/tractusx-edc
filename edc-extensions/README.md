@@ -13,11 +13,6 @@ The goal of this extension is to simplify the process of retrieving data out of 
 It returns `EndpointDataReference` object, hiding all the communication details for contract offers,
 contract negotiation, transfer process and retrieving the underlying data through the data-planes.
 
-## CX OAuth2
-
-This extension enables OAuth2 authentication between EDC connectors,
-instead of the more complex authentication flow used by core EDC.
-
 ## Data Encryption
 
 The EDC encrypts sensitive information inside a token it sends to other applications (potentially cross-company).
