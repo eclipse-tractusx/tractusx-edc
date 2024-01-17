@@ -8,8 +8,7 @@ Please note that improper usage of the Management-API can lead to accidental exp
 and trade secrets. The assumption is that the systems integrator has two tractusx-edc deployments of version 0.5.1 or
 higher available (one acting as provider, one acting as consumer).
 
-The EDC
-implements the [Dataspace Protocol (DSP)](https://docs.internationaldataspaces.org/dataspace-protocol/overview/readme),
+The EDCimplements the [Dataspace Protocol (DSP)](https://docs.internationaldataspaces.org/dataspace-protocol/overview/readme),
 as specified by the IDSA. As the DSP uses JSON-LD for all payloads, the EDC Management API reflects this as well, even
 though it is not a part of the DSP.
 
@@ -29,6 +28,11 @@ endpoints are currently versioned independently of each other.
 | [Transfer Process](06_transferprocesses.md)        | `<MANAGEMENT_URL>/v2/transferprocesses`    | Consumer App, Consumer EDC & Provider EDC |
 | [EDR](07_edrs.md)                                  | `<MANAGEMENT_URL>/edrs`                    | Consumer App, Consumer EDC & Provider EDC |
 | Data Plane                                         | `<DATAPLANE_URL>`                          | Consumer App & Provider EDC               |
+
+## OpenAPI
+
+The most recent OpenApi documentation can be found on SwaggerHub.
+https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/
 
 ## Brief JSON-LD Introduction
 

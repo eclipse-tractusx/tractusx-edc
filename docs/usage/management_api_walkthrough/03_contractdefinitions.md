@@ -86,7 +86,7 @@ part of the `edc:QuerySpec` objects that also allow pagination:
 
 ## Side-Effects
 
-The [Adoption View](../01_domain_model.md) shows the basic connection between the core concepts of
+The [Adoption View](../README) shows the basic connection between the core concepts of
 the EDC. Contract Offers for a particular Data Consumer are created dynamically from the Contract Definitions created
 by a Data Provider. The mechanics are explained in the section on the [catalog-API](04_catalog.md). But already at this
 stage, Data Providers must be aware that creating a Contract Definition is sufficient to expose a Backend System
