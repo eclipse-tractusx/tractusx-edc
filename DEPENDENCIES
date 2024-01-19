@@ -518,7 +518,7 @@ maven/mavencentral/software.amazon.awssdk/http-auth/2.22.6, Apache-2.0, approved
 maven/mavencentral/software.amazon.awssdk/http-auth/2.23.3, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.22.6, Apache-2.0, approved, #12627
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.23.3, , restricted, clearlydefined
-maven/mavencentral/software.amazon.awssdk/iam/2.22.6, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/iam/2.22.6, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.22.6, Apache-2.0, approved, #12636
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.23.3, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/json-utils/2.22.6, Apache-2.0, approved, #12646
