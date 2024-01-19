@@ -32,13 +32,13 @@ class SummaryTokenPolicyFunctionTest {
         var function = new SummaryTokenPolicyFunction();
 
         var context = mock(PolicyContext.class);
-        var builder = TokenParameters.Builder.newInstance().audience("aud");
+        var builder = TokenParameters.Builder.newInstance().claims("aud", "aud");
         when(context.getContextData(eq(TokenParameters.Builder.class))).thenReturn(builder);
 
         var policy = Policy.Builder.newInstance().build();
 
         function.apply(policy, context);
 
-        assertThat(builder.build().getAdditional().containsKey(CX_SUMMARY_CREDENTIAL)).isTrue();
+        assertThat(builder.build().getStringClaim("scope").contains(CX_SUMMARY_CREDENTIAL)).isTrue();
     }
 }

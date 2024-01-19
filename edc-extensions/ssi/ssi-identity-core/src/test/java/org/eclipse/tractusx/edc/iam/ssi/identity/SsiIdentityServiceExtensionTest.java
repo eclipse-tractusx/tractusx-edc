@@ -20,7 +20,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
-import org.eclipse.tractusx.edc.iam.ssi.spi.SsiValidationRuleRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +53,6 @@ public class SsiIdentityServiceExtensionTest {
         extension.initialize(context);
 
         assertThat(context.getService(IdentityService.class)).isNotNull().isInstanceOf(SsiIdentityService.class);
-        assertThat(context.getService(SsiValidationRuleRegistry.class)).isNotNull().isInstanceOf(SsiValidationRulesRegistryImpl.class);
 
         verify(cfg).getString(ENDPOINT_AUDIENCE);
 

@@ -148,7 +148,8 @@ public class TxParticipant extends Participant {
                 put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
                 put("web.http.gateway.path", gateway.getPath());
                 put("web.http.gateway.port", String.valueOf(gateway.getPort()));
-
+                put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key");
+                put("edc.transfer.proxy.token.verifier.publickey.alias", "public-key");
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
                 put("tx.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));

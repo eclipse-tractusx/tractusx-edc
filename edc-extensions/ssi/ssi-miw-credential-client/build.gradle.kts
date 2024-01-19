@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.edc.spi.jsonld)
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.spi.jwt)
+    implementation(libs.edc.spi.token)
     implementation(libs.jakartaJson)
     implementation(libs.nimbus.jwt)
 

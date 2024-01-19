@@ -38,10 +38,10 @@ public record DefaultScopeExtractor(Set<String> defaultScopes) implements BiFunc
         }
 
         var tokenParam = tokenBuilder.build();
-        var existingScope = tokenParam.getScope();
+        var existingScope = tokenParam.getStringClaim("scope");
         var newScopes = new HashSet<>(defaultScopes);
         newScopes.add(existingScope);
-        tokenBuilder.scope(String.join(" ", newScopes).trim());
+        tokenBuilder.claims("scope", String.join(" ", newScopes).trim());
         return true;
     }
 }

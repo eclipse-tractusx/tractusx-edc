@@ -42,7 +42,7 @@ public class DefaultScopeExtractorTest {
         var ctx = PolicyContextImpl.Builder.newInstance().additional(TokenParameters.Builder.class, builder).build();
         extractor.apply(Policy.Builder.newInstance().build(), ctx);
 
-        assertThat(builder.build().getScope().split(" ")).contains("scope1", "scope2");
+        assertThat(builder.build().getStringClaim("scope").split(" ")).contains("scope1", "scope2");
     }
 
     @Test

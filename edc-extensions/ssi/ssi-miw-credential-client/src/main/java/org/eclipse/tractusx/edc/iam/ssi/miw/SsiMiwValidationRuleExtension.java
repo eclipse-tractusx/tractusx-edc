@@ -19,17 +19,19 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.token.spi.TokenValidationRulesRegistry;
 import org.eclipse.tractusx.edc.iam.ssi.miw.config.SsiMiwConfiguration;
 import org.eclipse.tractusx.edc.iam.ssi.miw.rule.SsiCredentialIssuerValidationRule;
 import org.eclipse.tractusx.edc.iam.ssi.miw.rule.SsiCredentialSubjectIdValidationRule;
-import org.eclipse.tractusx.edc.iam.ssi.spi.SsiValidationRuleRegistry;
+
+import static org.eclipse.tractusx.edc.iam.ssi.spi.SsiConstants.SSI_TOKEN_CONTEXT;
 
 @Extension(SsiMiwValidationRuleExtension.EXTENSION_NAME)
 public class SsiMiwValidationRuleExtension implements ServiceExtension {
 
     protected static final String EXTENSION_NAME = "SSI MIW validation rules extension";
     @Inject
-    private SsiValidationRuleRegistry registry;
+    private TokenValidationRulesRegistry registry;
 
     @Inject
     private Monitor monitor;
@@ -44,7 +46,7 @@ public class SsiMiwValidationRuleExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        registry.addRule(new SsiCredentialSubjectIdValidationRule(monitor));
-        registry.addRule(new SsiCredentialIssuerValidationRule(miwConfiguration.getAuthorityIssuer(), monitor));
+        registry.addRule(SSI_TOKEN_CONTEXT, new SsiCredentialSubjectIdValidationRule(monitor));
+        registry.addRule(SSI_TOKEN_CONTEXT, new SsiCredentialIssuerValidationRule(miwConfiguration.getAuthorityIssuer(), monitor));
     }
 }

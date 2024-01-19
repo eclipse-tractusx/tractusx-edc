@@ -26,10 +26,13 @@ import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SCOPE;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient.VP;
 
 public class SsiMiwCredentialClient implements SsiCredentialClient {
@@ -47,7 +50,12 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
 
     @Override
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        return apiClient.getCredentials(parameters.getAdditional().keySet())
+        var scopes = Arrays.stream(parameters.getStringClaim(SCOPE).split(" "))
+                .map(String::trim)
+                .filter((s) -> !s.isEmpty())
+                .collect(Collectors.toSet());
+
+        return apiClient.getCredentials(scopes)
                 .compose(credentials -> createPresentation(credentials, parameters))
                 .compose(this::createToken);
     }
@@ -69,7 +77,7 @@ public class SsiMiwCredentialClient implements SsiCredentialClient {
 
     private Result<Map<String, Object>> createPresentation(List<Map<String, Object>> credentials, TokenParameters tokenParameters) {
         if (!credentials.isEmpty()) {
-            return apiClient.createPresentation(credentials, tokenParameters.getAudience());
+            return apiClient.createPresentation(credentials, tokenParameters.getStringClaim(AUDIENCE));
         } else {
             return Result.failure("Cannot create a presentation from an empty credentials list");
         }
