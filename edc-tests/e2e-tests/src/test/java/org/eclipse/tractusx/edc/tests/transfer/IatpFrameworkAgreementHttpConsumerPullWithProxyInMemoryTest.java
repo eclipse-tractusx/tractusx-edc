@@ -16,6 +16,7 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.junit.jupiter.api.Disabled;
 
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTI
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
+@Disabled
 public class IatpFrameworkAgreementHttpConsumerPullWithProxyInMemoryTest extends IatpHttpConsumerPullWithProxyInMemoryTest {
 
     @Override

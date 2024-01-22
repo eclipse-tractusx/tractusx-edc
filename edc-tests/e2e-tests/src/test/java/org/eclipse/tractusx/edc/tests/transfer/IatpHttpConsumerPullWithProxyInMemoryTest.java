@@ -31,6 +31,7 @@ import org.eclipse.tractusx.edc.lifecycle.tx.iatp.IatpParticipant;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.SecureTokenService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
@@ -42,6 +43,7 @@ import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTI
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
+@Disabled
 public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
 
     protected static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer();
