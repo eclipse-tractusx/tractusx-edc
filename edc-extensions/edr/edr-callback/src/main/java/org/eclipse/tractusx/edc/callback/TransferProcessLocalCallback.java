@@ -35,6 +35,7 @@ import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
 
 import java.text.ParseException;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
@@ -87,10 +88,11 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
     private Result<Void> storeEdr(EndpointDataReference edr) {
         return transactionContext.execute(() -> {
-            var transferProcess = transferProcessStore.findForCorrelationId(edr.getId());
+            var transferProcess = Optional.ofNullable(transferProcessStore.findById(edr.getId()))
+                    .orElseGet(() -> transferProcessStore.findForCorrelationId(edr.getId()));
 
             if (transferProcess != null) {
-                String contractNegotiationId = null;
+                String contractNegotiationId;
                 var contractNegotiation = agreementService.findNegotiation(transferProcess.getContractId());
                 if (contractNegotiation != null) {
                     contractNegotiationId = contractNegotiation.getId();
