@@ -14,23 +14,30 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.identity;
 
-import org.eclipse.edc.jwt.spi.TokenValidationService;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.iam.VerificationContext;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.token.spi.TokenValidationRulesRegistry;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
+import org.eclipse.tractusx.edc.iam.ssi.spi.SsiTokenValidationService;
+
+import static org.eclipse.tractusx.edc.iam.ssi.spi.SsiConstants.SSI_TOKEN_CONTEXT;
 
 public class SsiIdentityService implements IdentityService {
 
-    private final TokenValidationService tokenValidationService;
+    private final SsiTokenValidationService tokenValidationService;
+
+    private final TokenValidationRulesRegistry rulesRegistry;
 
     private final SsiCredentialClient client;
 
-    public SsiIdentityService(TokenValidationService tokenValidationService, SsiCredentialClient client) {
+    public SsiIdentityService(SsiTokenValidationService tokenValidationService, TokenValidationRulesRegistry rulesRegistry,
+                              SsiCredentialClient client) {
         this.tokenValidationService = tokenValidationService;
+        this.rulesRegistry = rulesRegistry;
         this.client = client;
     }
 
@@ -41,6 +48,6 @@ public class SsiIdentityService implements IdentityService {
 
     @Override
     public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext verificationContext) {
-        return tokenValidationService.validate(tokenRepresentation);
+        return tokenValidationService.validate(tokenRepresentation, rulesRegistry.getRules(SSI_TOKEN_CONTEXT));
     }
 }

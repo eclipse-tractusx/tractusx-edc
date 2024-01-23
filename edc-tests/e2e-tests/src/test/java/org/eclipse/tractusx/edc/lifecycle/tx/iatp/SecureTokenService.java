@@ -53,6 +53,7 @@ public class SecureTokenService {
             stsConfiguration.put(prefix + ".client_id", participant.getBpn());
             stsConfiguration.put(prefix + ".secret.alias", "client_secret_alias");
             stsConfiguration.put(prefix + ".private-key.alias", participant.verificationId());
+            stsConfiguration.put(prefix + ".public-key.reference", participant.verificationId());
         });
 
         var baseConfiguration = stsParticipant.getConfiguration();

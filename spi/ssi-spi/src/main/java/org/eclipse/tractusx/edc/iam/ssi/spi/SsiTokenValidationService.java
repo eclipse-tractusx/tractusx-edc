@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -14,9 +14,20 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.spi;
 
-import org.eclipse.edc.jwt.spi.TokenValidationRulesRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
+import org.eclipse.edc.spi.iam.ClaimToken;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.token.spi.TokenValidationRule;
+
+import java.util.List;
+
+/**
+ * Validates SSI tokens
+ */
 
 @ExtensionPoint
-public interface SsiValidationRuleRegistry extends TokenValidationRulesRegistry {
+public interface SsiTokenValidationService {
+
+    Result<ClaimToken> validate(TokenRepresentation tokenRepresentation, List<TokenValidationRule> rules);
 }

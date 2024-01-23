@@ -42,6 +42,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SCOPE;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient.VP;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -111,7 +113,7 @@ public class SsiMiwCredentialClientTest {
 
         when(apiClient.getCredentials(Set.of())).thenReturn(Result.success(credentials));
         when(apiClient.createPresentation(credentials, audience)).thenReturn(Result.success(presentation));
-        var result = credentialClient.obtainClientCredentials(TokenParameters.Builder.newInstance().audience(audience).build());
+        var result = credentialClient.obtainClientCredentials(TokenParameters.Builder.newInstance().claims(AUDIENCE, audience).claims(SCOPE, "").build());
 
         assertThat(result).isNotNull()
                 .extracting(Result::getContent)

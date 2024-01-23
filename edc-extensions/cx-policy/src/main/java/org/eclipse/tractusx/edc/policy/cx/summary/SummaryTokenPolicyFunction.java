@@ -19,6 +19,7 @@ import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.TokenParameters;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import static java.lang.String.format;
@@ -35,7 +36,14 @@ public class SummaryTokenPolicyFunction implements BiFunction<Policy, PolicyCont
         if (params == null) {
             throw new EdcException(format("%s not set in policy context", TokenParameters.Builder.class.getName()));
         }
-        params.additional(CX_SUMMARY_CREDENTIAL, CX_SUMMARY_CREDENTIAL);
+
+        var scope = params.build().getStringClaim("scope");
+
+        var newScope = Optional.ofNullable(scope)
+                .map(s -> s + " " + CX_SUMMARY_CREDENTIAL)
+                .orElse(CX_SUMMARY_CREDENTIAL);
+
+        params.claims("scope", newScope);
         return true;
     }
 }

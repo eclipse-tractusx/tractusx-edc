@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -14,36 +14,35 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.identity;
 
-import org.eclipse.edc.jwt.spi.TokenValidationRulesRegistry;
-import org.eclipse.edc.jwt.spi.TokenValidationService;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
+import org.eclipse.tractusx.edc.iam.ssi.spi.SsiTokenValidationService;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SsiTokenValidationService implements TokenValidationService {
+public class SsiTokenValidationServiceImpl implements SsiTokenValidationService {
 
-    private final TokenValidationRulesRegistry rulesRegistry;
     private final SsiCredentialClient credentialClient;
 
-    public SsiTokenValidationService(TokenValidationRulesRegistry rulesRegistry, SsiCredentialClient credentialClient) {
-        this.rulesRegistry = rulesRegistry;
+    public SsiTokenValidationServiceImpl(SsiCredentialClient credentialClient) {
         this.credentialClient = credentialClient;
     }
 
     @Override
-    public Result<ClaimToken> validate(TokenRepresentation tokenRepresentation) {
+    public Result<ClaimToken> validate(TokenRepresentation tokenRepresentation, List<TokenValidationRule> rules) {
         return credentialClient.validate(tokenRepresentation)
-                .compose(claimToken -> checkRules(claimToken, tokenRepresentation.getAdditional()));
+                .compose(claimToken -> checkRules(claimToken, tokenRepresentation.getAdditional(), rules));
     }
 
-    private Result<ClaimToken> checkRules(ClaimToken claimToken, @Nullable Map<String, Object> additional) {
-        var errors = rulesRegistry.getRules().stream()
+    private Result<ClaimToken> checkRules(ClaimToken claimToken, @Nullable Map<String, Object> additional, List<TokenValidationRule> rules) {
+        var errors = rules.stream()
                 .map(r -> r.checkRule(claimToken, additional))
                 .filter(Result::failed)
                 .map(Result::getFailureMessages)

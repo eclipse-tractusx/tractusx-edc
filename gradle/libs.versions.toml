@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.4.2-20240103-SNAPSHOT"
+edc = "0.5.0"
 postgres = "42.7.1"
 awaitility = "4.2.0"
 nimbus = "9.37.3"
@@ -41,8 +41,9 @@ edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
+edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
-edc-jwt-core = { module = "org.eclipse.edc:jwt-core", version.ref = "edc" }
+edc-token-core = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
@@ -113,6 +114,7 @@ edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback
 
 edc-identity-core-trust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
 edc-identity-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
+edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", version.ref = "edc" }
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
 edc-identity-jws2020 = { module = "org.eclipse.edc:jws2020", version.ref = "edc" }
@@ -131,7 +133,6 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 
 edc-ih-api = { module = "org.eclipse.edc:identity-hub-api", version.ref = "edc" }
 edc-ih-credentials = { module = "org.eclipse.edc:identity-hub-credentials", version.ref = "edc" }
-edc-ih-pkprovider = { module = "org.eclipse.edc:public-key-provider", version.ref = "edc" }
 edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
 
 # DPF modules
@@ -157,7 +158,7 @@ edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref 
 edc-micrometer-jersey = { module = "org.eclipse.edc:jersey-micrometer", version.ref = "edc" }
 edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.ref = "edc" }
 edc-monitor-jdklogger = { module = "org.eclipse.edc:monitor-jdk-logger", version.ref = "edc" }
-edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }
+edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version = "0.5.1-20240122-SNAPSHOT" }
 edc-transfer-receiver = { module = "org.eclipse.edc:transfer-pull-http-receiver", version.ref = "edc" }
 
 # other deps

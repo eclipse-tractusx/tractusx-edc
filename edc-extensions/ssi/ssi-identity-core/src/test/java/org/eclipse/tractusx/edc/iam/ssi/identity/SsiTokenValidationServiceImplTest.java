@@ -14,12 +14,12 @@
 
 package org.eclipse.tractusx.edc.iam.ssi.identity;
 
-import org.eclipse.edc.jwt.spi.TokenValidationRule;
-import org.eclipse.edc.jwt.spi.TokenValidationRulesRegistry;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
+import org.eclipse.tractusx.edc.iam.ssi.spi.SsiTokenValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,29 +33,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public class SsiTokenValidationServiceTest {
+public class SsiTokenValidationServiceImplTest {
 
     SsiCredentialClient credentialClient = mock(SsiCredentialClient.class);
-    TokenValidationRulesRegistry validationRulesRegistry = mock(TokenValidationRulesRegistry.class);
 
     SsiTokenValidationService validationService;
 
     @BeforeEach
     void setup() {
-        validationService = new SsiTokenValidationService(validationRulesRegistry, credentialClient);
+        validationService = new SsiTokenValidationServiceImpl(credentialClient);
     }
-    
+
     @Test
     void validate_success() {
         var token = TokenRepresentation.Builder.newInstance().token("test").build();
         var rule = mock(TokenValidationRule.class);
         var claim = ClaimToken.Builder.newInstance().build();
 
-        when(validationRulesRegistry.getRules()).thenReturn(List.of(rule));
         when(credentialClient.validate(token)).thenReturn(Result.success(claim));
         when(rule.checkRule(any(), any())).thenReturn(Result.success());
 
-        var result = validationService.validate(token);
+        var result = validationService.validate(token, List.of(rule));
 
         assertThat(result).isNotNull().extracting(Result::getContent).isEqualTo(claim);
 
@@ -68,11 +66,10 @@ public class SsiTokenValidationServiceTest {
         var token = TokenRepresentation.Builder.newInstance().token("test").build();
         var rule = mock(TokenValidationRule.class);
 
-        when(validationRulesRegistry.getRules()).thenReturn(List.of(rule));
         when(credentialClient.validate(token)).thenReturn(Result.failure("failure"));
         when(rule.checkRule(any(), any())).thenReturn(Result.success());
 
-        var result = validationService.validate(token);
+        var result = validationService.validate(token, List.of(rule));
 
         assertThat(result).isNotNull().matches(Result::failed);
 
@@ -87,11 +84,10 @@ public class SsiTokenValidationServiceTest {
         var claim = ClaimToken.Builder.newInstance().build();
 
 
-        when(validationRulesRegistry.getRules()).thenReturn(List.of(rule));
         when(credentialClient.validate(token)).thenReturn(Result.success(claim));
         when(rule.checkRule(any(), any())).thenReturn(Result.failure("failure"));
 
-        var result = validationService.validate(token);
+        var result = validationService.validate(token, List.of(rule));
 
         assertThat(result).isNotNull().matches(Result::failed);
 

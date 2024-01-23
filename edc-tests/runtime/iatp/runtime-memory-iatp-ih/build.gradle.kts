@@ -47,7 +47,6 @@ dependencies {
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.ih.api)
     implementation(libs.edc.ih.credentials)
-    implementation(libs.edc.ih.pkprovider)
 
     // for the controller
     implementation(libs.jakarta.rsApi)

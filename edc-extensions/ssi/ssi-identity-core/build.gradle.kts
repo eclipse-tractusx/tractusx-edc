@@ -21,7 +21,8 @@ dependencies {
     implementation(project(":spi:ssi-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jwt)
-    implementation(libs.edc.jwt.core)
+    implementation(libs.edc.spi.token)
+    implementation(libs.edc.token.core)
     implementation(libs.nimbus.jwt)
     testImplementation(testFixtures(libs.edc.junit))
 }
