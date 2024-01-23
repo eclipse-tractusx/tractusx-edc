@@ -1,10 +1,3 @@
----
-id: Contract Negotiation
-title: Contract Negotiation
-description: 'Connector Kit'
-sidebar_position: 6
----
-
 # Initiating a Contract Negotiation
 
 Contract Negotiation is the second check a Data Consumer has to pass before getting access rights to a backend resource.

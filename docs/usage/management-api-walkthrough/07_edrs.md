@@ -2,7 +2,7 @@
 
 EDR is short for Endpoint Data Reference. It describes a more ergonomic process for the Data Consumer
 to negotiate access to a Data Offer and receive the corresponding token for the HTTP Data Plane. Unlike the process via
-[Contract-Negotiation](6-contract-negotiation.md)- and [Transfer-Process](06_transferprocesses.md)-APIs, the EDR-process does not require a Consumer to operate a
+[Contract-Negotiation](05_contractnegotiations.md)- and [Transfer-Process](06_transferprocesses.md)-APIs, the EDR-process does not require a Consumer to operate a
 separate service that receives the Tokens from the Provider Control Plane. Instead, the Consumer Control Plane receives
 and stores the Data Plane Tokens. Consumer Applications query it for valid tokens and use these for Data Plane calls.
 As a consumer-side abstraction, the checks of the Contract Negotiation and Transfer Process phases are still executed
