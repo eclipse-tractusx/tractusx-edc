@@ -36,7 +36,7 @@ sequence will fail later when the Data Consumer attempts to find the offer in th
 ## assetsSelector
 
 The `assetsSelector` is a EDC-Criterion. This class specifies filters over a set of objects, Assets in this case. The
-concept is functionally similar to the `odrl:Constraint` in a [Policy](3-policy-definitions.md) but syntactically different.
+concept is functionally similar to the `odrl:Constraint` in a [Policy](02_policies.md) but syntactically different.
 - `operandLeft` is a property in the Entity (`edc:Asset` in this case) that is assigned a value. If the property is nested,
   traversion can be achieved by chaining the properties like `"'https://w3id.org/edc/v0.0.1/ns/nested'.'https://w3id.org/edc/v0.0.1/ns/key'"`
   Note that this function is namespace-aware so the `operandLeft` must either be written in extended form (see above)
@@ -86,7 +86,7 @@ part of the `edc:QuerySpec` objects that also allow pagination:
 
 ## Side-Effects
 
-The [Adoption View](../01_domain_model.md) shows the basic connection between the core concepts of
+The [Domain Model](../README) shows the basic connection between the core concepts of
 the EDC. Contract Offers for a particular Data Consumer are created dynamically from the Contract Definitions created
 by a Data Provider. The mechanics are explained in the section on the [catalog-API](04_catalog.md). But already at this
 stage, Data Providers must be aware that creating a Contract Definition is sufficient to expose a Backend System

@@ -34,7 +34,7 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.3, Apache-2.
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.0, Apache-2.0, approved, #11605
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.1, Apache-2.0, approved, #11605
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.15.2, Apache-2.0, approved, #9160
-maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.16.1, , restricted, clearlydefined
+maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.16.1, Apache-2.0, restricted, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.5, Apache-2.0, approved, #3768
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.16.1, Apache-2.0, approved, #12438
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15.1, Apache-2.0, approved, #8802
