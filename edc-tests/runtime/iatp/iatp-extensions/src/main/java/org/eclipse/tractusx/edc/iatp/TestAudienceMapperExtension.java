@@ -14,10 +14,10 @@
 
 package org.eclipse.tractusx.edc.iatp;
 
-import org.eclipse.edc.identitytrust.AudienceResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 @Extension("Audience mapper extension")
 public class TestAudienceMapperExtension implements ServiceExtension {
-    
+
     @Setting
     private static final String TX_IATP_AUDIENCES = "tx.iam.iatp.audiences";
 

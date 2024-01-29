@@ -20,6 +20,7 @@ import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.agent.ParticipantAgentService;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
@@ -41,6 +42,9 @@ public class CredentialPolicyEvaluationExtension implements ServiceExtension {
     private RuleBindingRegistry ruleBindingRegistry;
 
 
+    @Inject
+    private ParticipantAgentService participantAgentService;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
 
@@ -55,6 +59,8 @@ public class CredentialPolicyEvaluationExtension implements ServiceExtension {
         registerUseCase("sustainability");
         registerUseCase("quality");
         registerUseCase("resiliency");
+
+        participantAgentService.register(new IdentityExtractor());
     }
 
     private void bindPermissionFunction(AtomicConstraintFunction<Permission> function, String scope, String constraintType) {

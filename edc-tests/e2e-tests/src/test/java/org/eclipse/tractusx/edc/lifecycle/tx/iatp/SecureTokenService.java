@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
@@ -49,8 +50,9 @@ public class SecureTokenService {
         Arrays.stream(participants).forEach(participant -> {
             var prefix = format("edc.iam.sts.clients.%s", participant.getName().toLowerCase());
             stsConfiguration.put(prefix + ".name", participant.getName());
-            stsConfiguration.put(prefix + ".id", participant.didUrl());
+            stsConfiguration.put(prefix + ".id", UUID.randomUUID().toString());
             stsConfiguration.put(prefix + ".client_id", participant.getBpn());
+            stsConfiguration.put(prefix + ".did", participant.didUrl());
             stsConfiguration.put(prefix + ".secret.alias", "client_secret_alias");
             stsConfiguration.put(prefix + ".private-key.alias", participant.verificationId());
             stsConfiguration.put(prefix + ".public-key.reference", participant.verificationId());

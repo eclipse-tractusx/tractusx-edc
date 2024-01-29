@@ -75,5 +75,10 @@ public class InProcessCallbackMessageDispatcherTest {
         public String getCounterPartyAddress() {
             return "test";
         }
+
+        @Override
+        public String getCounterPartyId() {
+            return "id";
+        }
     }
 }

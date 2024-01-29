@@ -15,11 +15,18 @@
 package org.eclipse.tractusx.edc.edr.store.sql.schema;
 
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.sql.translation.SqlOperatorTranslator;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
 
 import static java.lang.String.format;
 
 public class BaseSqlEdrStatements implements EdrStatements {
+
+    private final SqlOperatorTranslator sqlOperatorTranslator;
+
+    public BaseSqlEdrStatements(SqlOperatorTranslator sqlOperatorTranslator) {
+        this.sqlOperatorTranslator = sqlOperatorTranslator;
+    }
 
     @Override
     public String getFindByTransferProcessIdTemplate() {
@@ -29,7 +36,7 @@ public class BaseSqlEdrStatements implements EdrStatements {
     @Override
     public SqlQueryStatement createQuery(QuerySpec querySpec) {
         var select = format("SELECT * FROM %s", getEdrTable());
-        return new SqlQueryStatement(select, querySpec, new EdrMapping(this));
+        return new SqlQueryStatement(select, querySpec, new EdrMapping(this), sqlOperatorTranslator);
     }
 
     @Override
