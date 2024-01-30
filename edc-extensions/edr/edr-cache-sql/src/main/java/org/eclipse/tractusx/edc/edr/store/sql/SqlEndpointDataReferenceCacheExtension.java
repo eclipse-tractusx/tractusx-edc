@@ -36,12 +36,13 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
 
     public static final String NAME = "SQL EDR cache store";
 
-    @Setting(required = true, defaultValue = SqlEndpointDataReferenceCacheExtension.DEFAULT_DATASOURCE_NAME)
+    @Setting(required = true, value = "Datasource name for EDR Cache SQL store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     public static final String DATASOURCE_SETTING_NAME = "edc.datasource.edr.name";
 
-    @Setting(value = "Directory/Path where to store EDRs in the vault for vaults that supports hierarchical structuring.", required = false, defaultValue = "")
+    private static final String DEFAULT_EDR_VAULT_PATH = "";
+    @Setting(value = "Directory/Path where to store EDRs in the vault for vaults that supports hierarchical structuring.", defaultValue = DEFAULT_EDR_VAULT_PATH)
     public static final String EDC_EDR_VAULT_PATH = "edc.edr.vault.path";
-    public static final String DEFAULT_DATASOURCE_NAME = "edr";
+
     @Inject
     private DataSourceRegistry dataSourceRegistry;
     @Inject
@@ -65,9 +66,10 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
 
     @Provider
     public EndpointDataReferenceCache edrCache(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
-        var vaultDirectory = context.getConfig().getString(EDC_EDR_VAULT_PATH, "");
-        return new SqlEndpointDataReferenceCache(dataSourceRegistry, dataSourceName, transactionContext, getStatementImpl(), typeManager.getMapper(), vault, vaultDirectory, clock, queryExecutor, context.getConnectorId());
+        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
+        var vaultDirectory = context.getConfig().getString(EDC_EDR_VAULT_PATH, DEFAULT_EDR_VAULT_PATH);
+        return new SqlEndpointDataReferenceCache(dataSourceRegistry, dataSourceName, transactionContext, getStatementImpl(),
+                typeManager.getMapper(), vault, vaultDirectory, clock, queryExecutor, context.getConnectorId());
     }
 
     private EdrStatements getStatementImpl() {

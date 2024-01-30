@@ -17,7 +17,6 @@ package org.eclipse.tractusx.edc.edr.store.sql;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry.DEFAULT_DATASOURCE;
 import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCacheExtension.DATASOURCE_SETTING_NAME;
-import static org.eclipse.tractusx.edc.edr.store.sql.SqlEndpointDataReferenceCacheExtension.DEFAULT_DATASOURCE_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,26 +34,21 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SqlEndpointDataReferenceCacheExtensionTest {
 
-    SqlEndpointDataReferenceCacheExtension extension;
-    ServiceExtensionContext context;
-
-
     @BeforeEach
-    void setUp(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = context;
+    void setUp(ServiceExtensionContext context) {
         context.registerService(TypeManager.class, new TypeManager());
-        context.registerService(DataSourceRegistry.class, mock(DataSourceRegistry.class));
-        extension = factory.constructInstance(SqlEndpointDataReferenceCacheExtension.class);
+        context.registerService(DataSourceRegistry.class, mock());
     }
 
     @Test
-    void shouldInitializeTheStore() {
+    void shouldInitializeTheStore(ServiceExtensionContext context, SqlEndpointDataReferenceCacheExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
-        when(config.getString(any(), any())).thenReturn(DEFAULT_DATASOURCE_NAME);
+        when(config.getString(any(), any())).thenReturn(DEFAULT_DATASOURCE);
 
-        assertThat(extension.edrCache(context)).isInstanceOf(SqlEndpointDataReferenceCache.class);
+        var cache = extension.edrCache(context);
 
-        verify(config).getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
+        assertThat(cache).isInstanceOf(SqlEndpointDataReferenceCache.class);
+        verify(config).getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE);
     }
 }
