@@ -21,7 +21,7 @@ Content-Type: application/json
     "@type": "Policy",
     "odrl:permission": [
       {
-        "odrl:action": "USE",
+        "odrl:action": "use",
         "odrl:constraint": {
           "@type": "Constraint",
           "odrl:leftOperand": "BusinessPartnerNumber",
@@ -62,7 +62,7 @@ the EDC interprets policies it can't evaluate as true by default. A couple of ex
     "@type": "Policy",
     "odrl:permission": [
       {
-        "odrl:action": "USE"
+        "odrl:action": "use"
       }
     ]
   }
