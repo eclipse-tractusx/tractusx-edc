@@ -18,9 +18,11 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.edc.token.spi.TokenValidationRulesRegistry;
 import org.eclipse.tractusx.edc.iam.ssi.identity.rule.SsiAudienceValidationRule;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
@@ -28,7 +30,7 @@ import org.eclipse.tractusx.edc.iam.ssi.spi.SsiTokenValidationService;
 
 import static org.eclipse.tractusx.edc.iam.ssi.spi.SsiConstants.SSI_TOKEN_CONTEXT;
 
-@Provides({ IdentityService.class, SsiTokenValidationService.class })
+@Provides({ IdentityService.class, SsiTokenValidationService.class, AudienceResolver.class })
 @Extension(SsiIdentityServiceExtension.EXTENSION_NAME)
 public class SsiIdentityServiceExtension implements ServiceExtension {
 
@@ -58,6 +60,7 @@ public class SsiIdentityServiceExtension implements ServiceExtension {
 
         context.registerService(IdentityService.class, identityService);
         context.registerService(SsiTokenValidationService.class, tokenValidationService);
+        context.registerService(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
     }
 
     private void configureRules(ServiceExtensionContext context, TokenValidationRulesRegistry registry) {
