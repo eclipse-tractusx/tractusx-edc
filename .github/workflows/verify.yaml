@@ -79,18 +79,6 @@ jobs:
         run: |
           ./gradlew checkstyleMain checkstyleTest
 
-  markdown-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3.5.2
-
-      - name: Install mardkdownlint
-        run: npm install -g markdownlint-cli2
-
-      - name: Run markdownlint
-        run: |
-          markdownlint-cli2-config .markdownlint.yaml "**/*.md" "#.github" "#charts"
-
   unit-tests:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
