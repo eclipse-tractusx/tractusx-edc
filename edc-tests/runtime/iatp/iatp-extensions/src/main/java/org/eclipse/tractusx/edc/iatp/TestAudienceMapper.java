@@ -14,7 +14,8 @@
 
 package org.eclipse.tractusx.edc.iatp;
 
-import org.eclipse.edc.identitytrust.AudienceResolver;
+import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,8 +32,7 @@ public class TestAudienceMapper implements AudienceResolver {
     }
 
     @Override
-    public String resolve(String s) {
-        return Optional.ofNullable(audienceMapping.get(s)).orElse(s);
+    public String resolve(RemoteMessage remoteMessage) {
+        return Optional.ofNullable(audienceMapping.get(remoteMessage.getCounterPartyId())).orElse(remoteMessage.getCounterPartyId());
     }
-
 }

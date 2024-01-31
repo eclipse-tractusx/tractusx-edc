@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.5.0"
+edc = "0.5.1-20240131-SNAPSHOT"
 postgres = "42.7.1"
 awaitility = "4.2.0"
 nimbus = "9.37.3"
@@ -158,7 +158,7 @@ edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref 
 edc-micrometer-jersey = { module = "org.eclipse.edc:jersey-micrometer", version.ref = "edc" }
 edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.ref = "edc" }
 edc-monitor-jdklogger = { module = "org.eclipse.edc:monitor-jdk-logger", version.ref = "edc" }
-edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version = "0.5.1-20240122-SNAPSHOT" }
+edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }
 edc-transfer-receiver = { module = "org.eclipse.edc:transfer-pull-http-receiver", version.ref = "edc" }
 
 # other deps

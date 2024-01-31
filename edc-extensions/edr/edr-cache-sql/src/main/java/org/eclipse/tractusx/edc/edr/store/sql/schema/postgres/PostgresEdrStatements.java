@@ -14,9 +14,13 @@
 
 package org.eclipse.tractusx.edc.edr.store.sql.schema.postgres;
 
+import org.eclipse.edc.sql.translation.PostgresqlOperatorTranslator;
 import org.eclipse.tractusx.edc.edr.store.sql.schema.BaseSqlEdrStatements;
 
 public class PostgresEdrStatements extends BaseSqlEdrStatements {
 
 
+    public PostgresEdrStatements() {
+        super(new PostgresqlOperatorTranslator());
+    }
 }

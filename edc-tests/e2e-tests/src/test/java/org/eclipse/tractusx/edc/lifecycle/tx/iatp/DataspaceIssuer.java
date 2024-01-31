@@ -22,7 +22,7 @@ import com.nimbusds.jose.jwk.JWK;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
-import org.eclipse.edc.identityhub.spi.store.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
 import org.eclipse.edc.identitytrust.model.CredentialFormat;
 import org.eclipse.edc.identitytrust.model.CredentialSubject;
 import org.eclipse.edc.identitytrust.model.Issuer;

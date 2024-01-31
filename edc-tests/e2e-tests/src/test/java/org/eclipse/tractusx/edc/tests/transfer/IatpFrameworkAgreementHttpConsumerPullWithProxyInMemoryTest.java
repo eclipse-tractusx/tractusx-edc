@@ -16,7 +16,6 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.junit.jupiter.api.Disabled;
 
 import java.util.Map;
 
@@ -24,10 +23,8 @@ import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTI
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
-// waiting for https://github.com/eclipse-edc/Connector/issues/3796
-@Disabled
 public class IatpFrameworkAgreementHttpConsumerPullWithProxyInMemoryTest extends IatpHttpConsumerPullWithProxyInMemoryTest {
-
+    
     @Override
     protected JsonObject createContractPolicy(String bpn) {
         return frameworkPolicy(Map.of(TX_CREDENTIAL_NAMESPACE + "FrameworkAgreement.pcf", "active"));

@@ -75,7 +75,7 @@ public class IatpParticipant {
             {
 
                 put("edc.iam.sts.oauth.token.url", stsUri + "/token");
-                put("edc.iam.sts.oauth.client.id", did);
+                put("edc.iam.sts.oauth.client.id", getBpn());
                 put("edc.iam.sts.oauth.client.secret.alias", "client_secret_alias");
                 put("edc.iam.issuer.id", did);
                 put("edc.ih.iam.id", participant.getBpn());
@@ -90,8 +90,11 @@ public class IatpParticipant {
 
         Stream.concat(Stream.of(participant), Arrays.stream(others)).forEach(p -> {
             var prefix = format("tx.iam.iatp.audiences.%s", p.getName().toLowerCase());
-            iatpConfiguration.put(prefix + ".from", p.getProtocolEndpoint().getUrl().toString());
-            iatpConfiguration.put(prefix + ".to", p.getBpn());
+            var participantDid = DID_EXAMPLE + p.getName().toLowerCase();
+            iatpConfiguration.put(prefix + "_endpoint" + ".from", p.getProtocolEndpoint().getUrl().toString());
+            iatpConfiguration.put(prefix + "_endpoint" + ".to", participantDid);
+            iatpConfiguration.put(prefix + "_id" + ".from", p.getBpn());
+            iatpConfiguration.put(prefix + "_id" + ".to", participantDid);
         });
         return iatpConfiguration;
     }

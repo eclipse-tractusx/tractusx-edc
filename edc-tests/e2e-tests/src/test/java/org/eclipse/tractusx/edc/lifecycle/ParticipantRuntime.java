@@ -15,11 +15,13 @@
 package org.eclipse.tractusx.edc.lifecycle;
 
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
+import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.tractusx.edc.token.MockBpnIdentityService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -42,6 +44,7 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
         this.properties = properties;
         if (!properties.containsKey("tx.ssi.miw.url") && !properties.containsKey("edc.iam.issuer.id")) {
             this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
+            this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
         }
     }
 
