@@ -38,7 +38,7 @@ Content-Type: application/json
       "odrl:permission": {
         "odrl:target": "<ASSET_ID>",
         "odrl:action": {
-          "odrl:type": "USE"
+          "odrl:type": "use"
         },
         "odrl:constraint": {
           "odrl:and": {
