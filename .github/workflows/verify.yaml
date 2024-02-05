@@ -165,7 +165,7 @@ jobs:
           cd edc-tests/miw-tests/src/test/resources/docker-environment
           docker compose up --wait
 
-      - uses: nick-fields/retry@v2
+      - uses: nick-fields/retry@v3
         name: Wait for MIW
         with:
           timeout_minutes: 5
