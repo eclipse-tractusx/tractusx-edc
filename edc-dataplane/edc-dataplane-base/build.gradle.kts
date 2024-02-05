@@ -1,5 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2021,2022,2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,6 +28,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core"))
+    runtimeOnly(project(":edc-extensions:dataplane-dtr-http-access-control"))
 
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)

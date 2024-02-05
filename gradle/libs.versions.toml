@@ -9,6 +9,7 @@ awaitility = "4.2.0"
 aws = "2.24.5"
 azure-identity = "1.11.2"
 bouncyCastle-jdk18on = "1.77"
+caffeine = "3.1.8"
 flyway = "10.8.1"
 iron-vc = "0.11.0"
 jackson = "2.16.1"
@@ -176,6 +177,7 @@ awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" 
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 jackson-datatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }

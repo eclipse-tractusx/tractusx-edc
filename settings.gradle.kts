@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -87,7 +88,7 @@ include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core")
 include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api")
-
+include(":edc-extensions:dataplane-dtr-http-access-control")
 include(":samples:multi-tenancy")
 
 
