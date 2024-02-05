@@ -26,17 +26,15 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.sql.DriverManagerConnectionFactory;
 import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationVersion;
 
 import java.util.Objects;
 import java.util.Properties;
 
+import static org.flywaydb.core.api.MigrationVersion.LATEST;
+
 abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
 
     private static final String EDC_DATASOURCE_PREFIX = "edc.datasource";
-    private static final String MIGRATION_LOCATION_BASE =
-            String.format("classpath:%s", AbstractPostgresqlMigrationExtension.class.getPackageName().replace(".", "/"));
 
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     @Setting(value = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
@@ -79,19 +77,8 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
         var driverManagerConnectionFactory = new DriverManagerConnectionFactory();
         var dataSource = new ConnectionFactoryDataSource(driverManagerConnectionFactory, jdbcUrl, jdbcProperties);
 
-        var flyway =
-                Flyway.configure()
-                        .baselineVersion(MigrationVersion.fromVersion("0.0.0"))
-                        .failOnMissingLocations(true)
-                        .dataSource(dataSource)
-                        .table("flyway_schema_history_%s".formatted(subSystemName))
-                        .locations("%s/%s".formatted(MIGRATION_LOCATION_BASE, subSystemName))
-                        .defaultSchema(config.getString(MIGRATION_SCHEMA, DEFAULT_MIGRATION_SCHEMA))
-                        .load();
-
-        flyway.baseline();
-
-        var migrateResult = flyway.migrate();
+        var defaultSchema = config.getString(MIGRATION_SCHEMA, DEFAULT_MIGRATION_SCHEMA);
+        var migrateResult = FlywayManager.migrate(dataSource, subSystemName, defaultSchema, LATEST);
 
         if (!migrateResult.success) {
             throw new EdcPersistenceException(

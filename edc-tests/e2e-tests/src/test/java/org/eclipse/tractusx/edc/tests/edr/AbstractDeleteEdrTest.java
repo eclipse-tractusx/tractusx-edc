@@ -15,12 +15,8 @@
 package org.eclipse.tractusx.edc.tests.edr;
 
 import jakarta.json.Json;
-import okhttp3.mockwebserver.MockWebServer;
-import org.assertj.core.api.Condition;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -50,12 +46,6 @@ public abstract class AbstractDeleteEdrTest {
             .name(PLATO_NAME)
             .id(PLATO_BPN)
             .build();
-    MockWebServer server;
-
-    @BeforeEach
-    void setup() {
-        server = new MockWebServer();
-    }
 
     @Test
     @DisplayName("Verify that expired EDR are deleted")
@@ -102,16 +92,6 @@ public abstract class AbstractDeleteEdrTest {
         await().atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> expired.forEach((id) -> SOKRATES.edrs().getEdrRequest(id).statusCode(404)));
 
-    }
-
-    @AfterEach
-    void teardown() throws IOException {
-        server.shutdown();
-    }
-
-
-    private Condition<String> stateCondition(String value, String description) {
-        return new Condition<>(m -> m.equals(value), description);
     }
 
 }
