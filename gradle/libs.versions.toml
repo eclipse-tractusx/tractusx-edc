@@ -11,7 +11,6 @@ slf4j = "2.0.11"
 okhttp = "4.12.0"
 mockwebserver = "5.0.0-alpha.12"
 bouncyCastle-jdk18on = "1.77"
-mockito = "5.2.0"
 restAssured = "5.4.0"
 apache-sshd = "2.12.0"
 testcontainers = "1.19.4"
@@ -170,7 +169,6 @@ nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache-sshd" }
 apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
