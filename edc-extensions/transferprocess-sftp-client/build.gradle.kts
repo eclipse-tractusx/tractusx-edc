@@ -39,6 +39,5 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.edc.junit)
 
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.testcontainers.junit)
 }
