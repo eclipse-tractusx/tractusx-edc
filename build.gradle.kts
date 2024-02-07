@@ -19,7 +19,6 @@
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
-import org.gradle.kotlin.dsl.provider.inClassPathMode
 import java.time.Duration
 
 plugins {
@@ -111,12 +110,13 @@ allprojects {
         configFile = rootProject.file("resources/tx-checkstyle-config.xml")
         configDirectory.set(rootProject.file("resources"))
 
+        // gradle checkstyle plugin only includes java src, so we add allSource and .github folder
         tasks.checkstyleMain {
-            this.source = project.sourceSets.getByName("main").allSource
+            this.source = project.sourceSets.main.get().allSource.srcDir(".github")
         }
 
         tasks.checkstyleTest {
-            this.source = project.sourceSets.getByName("test").allSource
+            this.source = project.sourceSets.test.get().allSource
         }
 
         //checkstyle violations are reported at the WARN level
