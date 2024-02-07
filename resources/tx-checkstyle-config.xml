@@ -49,6 +49,12 @@
         <property name="multiLines" value="2"/>
     </module>
 
+    <module name="RegexpHeader">
+        <property name="fileExtensions" value="ServiceExtension"/>
+        <property name="headerFile" value="${config_loc}/serviceextension.header"/>
+        <property name="multiLines" value="2"/>
+    </module>
+
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
