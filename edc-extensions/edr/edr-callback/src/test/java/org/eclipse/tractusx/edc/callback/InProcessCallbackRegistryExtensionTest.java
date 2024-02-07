@@ -21,8 +21,6 @@ package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -31,16 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(DependencyInjectionExtension.class)
 public class InProcessCallbackRegistryExtensionTest {
 
-    InProcessCallbackRegistryExtension extension;
-
-
-    @BeforeEach
-    void setUp(ObjectFactory factory, ServiceExtensionContext context) {
-        extension = factory.constructInstance(InProcessCallbackRegistryExtension.class);
-    }
-
     @Test
-    void shouldInitializeTheExtension(ServiceExtensionContext context) {
+    void shouldInitializeTheExtension(ServiceExtensionContext context, InProcessCallbackRegistryExtension extension) {
         assertThat(extension.callbackRegistry()).isInstanceOf(InProcessCallbackRegistryImpl.class);
     }
 }

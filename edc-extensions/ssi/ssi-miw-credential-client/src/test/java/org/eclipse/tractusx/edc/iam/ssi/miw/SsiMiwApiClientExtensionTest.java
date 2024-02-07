@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.iam.ssi.miw;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl;
@@ -39,18 +38,16 @@ import static org.mockito.Mockito.when;
 public class SsiMiwApiClientExtensionTest {
 
     private final SsiMiwConfiguration cfg = mock(SsiMiwConfiguration.class);
-    private SsiMiwApiClientExtension extension;
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
+    void setup(ServiceExtensionContext context) {
         context.registerService(SsiMiwConfiguration.class, cfg);
         context.registerService(MiwApiClient.class, mock(MiwApiClient.class));
         context.registerService(TypeManager.class, new TypeManager());
-        extension = factory.constructInstance(SsiMiwApiClientExtension.class);
     }
 
     @Test
-    void initialize(ServiceExtensionContext context) {
+    void initialize(ServiceExtensionContext context, SsiMiwApiClientExtension extension) {
         when(cfg.getUrl()).thenReturn("http://localhost");
         when(cfg.getAuthorityId()).thenReturn("id");
 

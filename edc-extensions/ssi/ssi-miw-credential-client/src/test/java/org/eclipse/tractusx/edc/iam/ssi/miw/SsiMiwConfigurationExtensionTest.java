@@ -22,8 +22,6 @@ package org.eclipse.tractusx.edc.iam.ssi.miw;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -42,18 +40,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiMiwConfigurationExtensionTest {
 
-    private SsiMiwConfigurationExtension extension;
-
-    private ServiceExtensionContext context;
-
-    @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = context;
-        extension = factory.constructInstance(SsiMiwConfigurationExtension.class);
-    }
-
     @Test
-    void initialize() {
+    void initialize(ServiceExtensionContext context, SsiMiwConfigurationExtension extension) {
         var url = "http://localhost:8080";
         var authorityId = "id";
         var authorityIssuer = "issuer";
@@ -78,7 +66,7 @@ public class SsiMiwConfigurationExtensionTest {
     }
 
     @Test
-    void initialize_withDefaultIssuer() {
+    void initialize_withDefaultIssuer(ServiceExtensionContext context, SsiMiwConfigurationExtension extension) {
         var url = "http://localhost:8080";
         var authorityId = "id";
 
@@ -102,7 +90,7 @@ public class SsiMiwConfigurationExtensionTest {
     }
 
     @Test
-    void initialize_withTrailingUrl() {
+    void initialize_withTrailingUrl(ServiceExtensionContext context, SsiMiwConfigurationExtension extension) {
         var url = "http://localhost:8080/";
         var authorityId = "id";
 

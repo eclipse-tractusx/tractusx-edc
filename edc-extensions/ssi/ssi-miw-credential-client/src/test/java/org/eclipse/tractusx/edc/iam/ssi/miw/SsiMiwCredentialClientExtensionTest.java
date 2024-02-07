@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.iam.ssi.miw;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.miw.credentials.SsiMiwCredentialClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,13 +36,12 @@ public class SsiMiwCredentialClientExtensionTest {
     SsiMiwCredentialClientExtension extension;
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
+    void setup(ServiceExtensionContext context) {
         context.registerService(MiwApiClient.class, mock(MiwApiClient.class));
-        extension = factory.constructInstance(SsiMiwCredentialClientExtension.class);
     }
 
     @Test
-    void initialize() {
+    void initialize(SsiMiwCredentialClientExtension extension) {
         assertThat(extension.credentialVerifier()).isInstanceOf(SsiMiwCredentialClient.class);
     }
 

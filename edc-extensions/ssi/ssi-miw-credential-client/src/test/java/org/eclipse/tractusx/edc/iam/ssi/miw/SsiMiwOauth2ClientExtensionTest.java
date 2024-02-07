@@ -24,7 +24,6 @@ import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient;
 import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2ClientConfiguration;
@@ -44,23 +43,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiMiwOauth2ClientExtensionTest {
 
-    SsiMiwOauth2ClientExtension extension;
-
-    ServiceExtensionContext context;
-
     Vault vault = mock(Vault.class);
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = context;
+    void setup(ServiceExtensionContext context) {
         context.registerService(MiwApiClient.class, mock(MiwApiClient.class));
         context.registerService(TypeManager.class, new TypeManager());
         context.registerService(Vault.class, vault);
-        extension = factory.constructInstance(SsiMiwOauth2ClientExtension.class);
     }
 
     @Test
-    void initialize() {
+    void initialize(ServiceExtensionContext context, SsiMiwOauth2ClientExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
         when(config.getString(TOKEN_URL)).thenReturn("url");
@@ -76,7 +69,7 @@ public class SsiMiwOauth2ClientExtensionTest {
     }
 
     @Test
-    void initialize_withTrailingUrl() {
+    void initialize_withTrailingUrl(ServiceExtensionContext context, SsiMiwOauth2ClientExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
         when(config.getString(TOKEN_URL)).thenReturn("http://localhost:8080/");

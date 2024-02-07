@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.jsonld;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,18 +39,15 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(DependencyInjectionExtension.class)
 public class JsonLdExtensionTest {
 
-    JsonLdExtension extension;
-
     JsonLd jsonLdService = mock(JsonLd.class);
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
+    void setup(ServiceExtensionContext context) {
         context.registerService(JsonLd.class, jsonLdService);
-        extension = factory.constructInstance(JsonLdExtension.class);
     }
 
     @Test
-    void initialize(ServiceExtensionContext context) {
+    void initialize(ServiceExtensionContext context, JsonLdExtension extension) {
         extension.initialize(context);
         jsonLdService.registerCachedDocument(eq(CREDENTIALS_V_1), any(URI.class));
         jsonLdService.registerCachedDocument(eq(CREDENTIALS_SUMMARY_V_1), any(URI.class));
