@@ -60,7 +60,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.0.11")
+        implementation("org.slf4j:slf4j-api:2.0.12")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
         testImplementation(platform("org.junit:junit-bom:5.10.2"))
