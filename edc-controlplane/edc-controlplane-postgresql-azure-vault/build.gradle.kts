@@ -16,7 +16,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
