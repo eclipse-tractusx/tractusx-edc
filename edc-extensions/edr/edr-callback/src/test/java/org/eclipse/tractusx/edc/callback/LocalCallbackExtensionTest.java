@@ -24,7 +24,6 @@ import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,8 +40,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(DependencyInjectionExtension.class)
 public class LocalCallbackExtensionTest {
 
-    LocalCallbackExtension extension;
-
     RemoteMessageDispatcherRegistry dispatcherRegistry = mock(RemoteMessageDispatcherRegistry.class);
 
     CallbackProtocolResolverRegistry resolverRegistry = mock(CallbackProtocolResolverRegistry.class);
@@ -50,16 +47,15 @@ public class LocalCallbackExtensionTest {
     InProcessCallbackRegistry inProcessCallbackRegistry = mock(InProcessCallbackRegistry.class);
 
     @BeforeEach
-    void setUp(ObjectFactory factory, ServiceExtensionContext context) {
+    void setUp(ServiceExtensionContext context) {
 
         context.registerService(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
         context.registerService(CallbackProtocolResolverRegistry.class, resolverRegistry);
         context.registerService(InProcessCallbackRegistry.class, inProcessCallbackRegistry);
-        extension = factory.constructInstance(LocalCallbackExtension.class);
     }
 
     @Test
-    void shouldInitializeTheExtension(ServiceExtensionContext context) {
+    void shouldInitializeTheExtension(ServiceExtensionContext context, LocalCallbackExtension extension) {
         extension.initialize(context);
 
         var captor = ArgumentCaptor.forClass(CallbackProtocolResolver.class);

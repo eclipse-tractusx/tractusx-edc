@@ -44,18 +44,16 @@ public class EdrApiExtensionTest {
     private final ManagementApiTypeTransformerRegistry transformerRegistry = mock();
     private final WebService webService = mock(WebService.class);
     private final ManagementApiConfiguration configuration = mock(ManagementApiConfiguration.class);
-    private EdrApiExtension extension;
 
     @BeforeEach
     void setUp(ObjectFactory factory, ServiceExtensionContext context) {
         context.registerService(WebService.class, webService);
         context.registerService(ManagementApiTypeTransformerRegistry.class, transformerRegistry);
         context.registerService(ManagementApiConfiguration.class, configuration);
-        extension = factory.constructInstance(EdrApiExtension.class);
     }
 
     @Test
-    void initialize_ShouldConfigureTheController(ServiceExtensionContext context) {
+    void initialize_ShouldConfigureTheController(ServiceExtensionContext context, EdrApiExtension extension) {
         var alias = "context";
 
         when(configuration.getContextAlias()).thenReturn(alias);

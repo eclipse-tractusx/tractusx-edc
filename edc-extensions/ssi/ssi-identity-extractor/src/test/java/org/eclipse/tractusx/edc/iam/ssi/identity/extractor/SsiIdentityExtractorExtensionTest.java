@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.iam.ssi.identity.extractor;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.agent.ParticipantAgentService;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,18 +33,15 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiIdentityExtractorExtensionTest {
 
-    SsiIdentityExtractorExtension extension;
-
     ParticipantAgentService participantAgentService = mock(ParticipantAgentService.class);
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
+    void setup(ServiceExtensionContext context) {
         context.registerService(ParticipantAgentService.class, participantAgentService);
-        extension = factory.constructInstance(SsiIdentityExtractorExtension.class);
     }
 
     @Test
-    void initialize(ServiceExtensionContext context) {
+    void initialize(ServiceExtensionContext context, SsiIdentityExtractorExtension extension) {
         extension.initialize(context);
         verify(participantAgentService).register(isA(CredentialIdentityExtractor.class));
     }

@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.iam.ssi.miw;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.edc.token.spi.TokenValidationRulesRegistry;
 import org.eclipse.tractusx.edc.iam.ssi.miw.config.SsiMiwConfiguration;
 import org.eclipse.tractusx.edc.iam.ssi.miw.rule.SsiCredentialIssuerValidationRule;
@@ -42,17 +41,15 @@ public class SsiMiwValidationRuleExtensionTest {
 
     private final TokenValidationRulesRegistry registry = mock(TokenValidationRulesRegistry.class);
     private final SsiMiwConfiguration cfg = mock(SsiMiwConfiguration.class);
-    private SsiMiwValidationRuleExtension extension;
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
+    void setup(ServiceExtensionContext context) {
         context.registerService(SsiMiwConfiguration.class, cfg);
         context.registerService(TokenValidationRulesRegistry.class, registry);
-        extension = factory.constructInstance(SsiMiwValidationRuleExtension.class);
     }
 
     @Test
-    void initialize(ServiceExtensionContext context) {
+    void initialize(ServiceExtensionContext context, SsiMiwValidationRuleExtension extension) {
         when(cfg.getAuthorityIssuer()).thenReturn("issuer");
 
         extension.initialize(context);

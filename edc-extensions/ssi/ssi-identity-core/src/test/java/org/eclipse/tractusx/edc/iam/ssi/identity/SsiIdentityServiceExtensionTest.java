@@ -23,7 +23,6 @@ import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.iam.ssi.spi.SsiCredentialClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,17 +39,13 @@ public class SsiIdentityServiceExtensionTest {
 
     SsiIdentityServiceExtension extension;
 
-    ServiceExtensionContext context;
-
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = context;
+    void setup(ServiceExtensionContext context) {
         context.registerService(SsiCredentialClient.class, mock(SsiCredentialClient.class));
-        extension = factory.constructInstance(SsiIdentityServiceExtension.class);
     }
 
     @Test
-    void initialize() {
+    void initialize(ServiceExtensionContext context, SsiIdentityServiceExtension extension) {
         var cfg = mock(Config.class);
         when(context.getConfig()).thenReturn(cfg);
         when(cfg.getString(ENDPOINT_AUDIENCE)).thenReturn("test");

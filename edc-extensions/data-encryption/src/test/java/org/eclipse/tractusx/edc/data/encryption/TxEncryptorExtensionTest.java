@@ -23,7 +23,6 @@ import org.eclipse.edc.connector.transfer.dataplane.security.NoopDataEncrypter;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.eclipse.tractusx.edc.data.encryption.aes.AesEncryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,25 +46,21 @@ import static org.mockito.Mockito.when;
 class TxEncryptorExtensionTest {
 
     private final Monitor monitor = mock();
-    private TxEncryptorExtension extension;
-    private ServiceExtensionContext context;
 
     @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext c) {
-        c.registerService(Monitor.class, monitor);
-        context = c;
+    void setup(ServiceExtensionContext context) {
+        context.registerService(Monitor.class, monitor);
         when(context.getSetting(ENCRYPTION_KEY_ALIAS, null)).thenReturn("test-key");
-        extension = factory.constructInstance(TxEncryptorExtension.class);
     }
 
     @Test
-    void createEncryptor_noConfig_createsDefault() {
+    void createEncryptor_noConfig_createsDefault(ServiceExtensionContext context, TxEncryptorExtension extension) {
         var encryptor = extension.createEncryptor(context);
         assertThat(encryptor).isInstanceOf(AesEncryptor.class);
     }
 
     @Test
-    void createEncryptor_otherAlgorithm_createsNoop() {
+    void createEncryptor_otherAlgorithm_createsNoop(ServiceExtensionContext context, TxEncryptorExtension extension) {
         when(context.getSetting(eq(ENCRYPTION_ALGORITHM), any())).thenReturn("some-algorithm");
         var encryptor = extension.createEncryptor(context);
         assertThat(encryptor).isInstanceOf(NoopDataEncrypter.class);
@@ -73,7 +68,7 @@ class TxEncryptorExtensionTest {
     }
 
     @Test
-    void createEncryptor_withPropertyEqualsAes() {
+    void createEncryptor_withPropertyEqualsAes(ServiceExtensionContext context, TxEncryptorExtension extension) {
         when(context.getSetting(eq(ENCRYPTION_ALGORITHM), any())).thenReturn("AES");
         var encryptor = extension.createEncryptor(context);
         assertThat(encryptor).isInstanceOf(AesEncryptor.class);
@@ -81,7 +76,7 @@ class TxEncryptorExtensionTest {
 
     @ParameterizedTest
     @ValueSource(strings = { CACHING_ENABLED, CACHING_SECONDS })
-    void verifyDeprecationWarnings(String deprecatedSetting) {
+    void verifyDeprecationWarnings(String deprecatedSetting, ServiceExtensionContext context, TxEncryptorExtension extension) {
         when(context.getSetting(eq(deprecatedSetting), any())).thenReturn("doesn't matter");
         extension.createEncryptor(context);
         verify(monitor).warning(startsWith("Caching the secret keys was deprecated because it is unsafe"));
