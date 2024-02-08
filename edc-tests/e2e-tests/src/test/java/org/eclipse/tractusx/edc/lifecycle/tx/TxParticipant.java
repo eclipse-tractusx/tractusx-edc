@@ -66,7 +66,6 @@ public class TxParticipant extends Participant {
      * Stores BPN groups
      */
     public void storeBusinessPartner(String bpn, String... groups) {
-        var culo = "ciao";
         var body = Json.createObjectBuilder()
                 .add(ID, bpn)
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
