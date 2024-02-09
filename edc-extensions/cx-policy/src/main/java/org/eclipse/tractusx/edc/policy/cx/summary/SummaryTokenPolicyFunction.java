@@ -22,9 +22,8 @@ package org.eclipse.tractusx.edc.policy.cx.summary;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.TokenParameters;
+import org.eclipse.edc.spi.iam.RequestScope;
 
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 import static java.lang.String.format;
@@ -37,18 +36,12 @@ public class SummaryTokenPolicyFunction implements BiFunction<Policy, PolicyCont
 
     @Override
     public Boolean apply(Policy policy, PolicyContext context) {
-        var params = context.getContextData(TokenParameters.Builder.class);
-        if (params == null) {
-            throw new EdcException(format("%s not set in policy context", TokenParameters.Builder.class.getName()));
+        var scopes = context.getContextData(RequestScope.Builder.class);
+        if (scopes == null) {
+            throw new EdcException(format("%s not set in policy context", RequestScope.Builder.class.getName()));
         }
 
-        var scope = params.build().getStringClaim("scope");
-
-        var newScope = Optional.ofNullable(scope)
-                .map(s -> s + " " + CX_SUMMARY_CREDENTIAL)
-                .orElse(CX_SUMMARY_CREDENTIAL);
-
-        params.claims("scope", newScope);
+        scopes.scope(CX_SUMMARY_CREDENTIAL);
         return true;
     }
 }

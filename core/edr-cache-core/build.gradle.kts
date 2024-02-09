@@ -29,6 +29,7 @@ dependencies {
     implementation(project(":spi:edr-spi"))
 
     testImplementation(testFixtures(project(":spi:edr-spi")))
+    testImplementation(libs.edc.core.connector)
 
 }
 

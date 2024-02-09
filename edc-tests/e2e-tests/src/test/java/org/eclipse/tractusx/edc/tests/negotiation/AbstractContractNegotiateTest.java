@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
@@ -86,7 +85,7 @@ public abstract class AbstractContractNegotiateTest {
                     var error = SOKRATES.getContractNegotiationError(negotiationId);
 
                     assertThat(error).isNotNull();
-                    assertThat(error).contains(format("Contract offer is not valid: Policy %s not fulfilled", contractPolicyId));
+                    assertThat(error).contains("Contract offer is not valid: Policy in scope contract.negotiation not fulfilled");
                 });
     }
 

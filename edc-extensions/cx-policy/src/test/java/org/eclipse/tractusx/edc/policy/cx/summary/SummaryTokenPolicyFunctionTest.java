@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.summary;
 
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.iam.TokenParameters;
+import org.eclipse.edc.spi.iam.RequestScope;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,13 +37,13 @@ class SummaryTokenPolicyFunctionTest {
         var function = new SummaryTokenPolicyFunction();
 
         var context = mock(PolicyContext.class);
-        var builder = TokenParameters.Builder.newInstance().claims("aud", "aud");
-        when(context.getContextData(eq(TokenParameters.Builder.class))).thenReturn(builder);
+        var builder = RequestScope.Builder.newInstance();
+        when(context.getContextData(eq(RequestScope.Builder.class))).thenReturn(builder);
 
         var policy = Policy.Builder.newInstance().build();
 
         function.apply(policy, context);
 
-        assertThat(builder.build().getStringClaim("scope").contains(CX_SUMMARY_CREDENTIAL)).isTrue();
+        assertThat(builder.build().getScopes().contains(CX_SUMMARY_CREDENTIAL)).isTrue();
     }
 }

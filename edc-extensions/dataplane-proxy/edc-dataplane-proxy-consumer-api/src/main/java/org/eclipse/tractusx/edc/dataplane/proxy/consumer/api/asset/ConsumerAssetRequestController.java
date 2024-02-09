@@ -26,6 +26,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
@@ -115,7 +116,13 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
 
         try {
             // transfer the data asynchronously
-            var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
+
+            AsyncStreamingDataSink.AsyncResponseContext asyncResponseContext = callback -> {
+                StreamingOutput output = t -> callback.outputStreamConsumer().accept(t);
+                var resp = Response.ok(output).type(callback.mediaType()).build();
+                return response.resume(resp);
+            };
+            var sink = new AsyncStreamingDataSink(asyncResponseContext, executorService);
 
             transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
         } catch (Exception e) {

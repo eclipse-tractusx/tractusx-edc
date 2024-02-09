@@ -27,6 +27,7 @@ import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
@@ -152,7 +153,13 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         var flowRequest = createRequest(requestPath, configuration, httpDataAddress);
 
         // transfer the data asynchronously
-        var sink = new AsyncStreamingDataSink(consumer -> response.resume((StreamingOutput) consumer::accept), executorService, monitor);
+
+        AsyncStreamingDataSink.AsyncResponseContext asyncResponseContext = callback -> {
+            StreamingOutput output = t -> callback.outputStreamConsumer().accept(t);
+            var resp = Response.ok(output).type(callback.mediaType()).build();
+            return response.resume(resp);
+        };
+        var sink = new AsyncStreamingDataSink(asyncResponseContext, executorService);
 
         try {
             transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
