@@ -1,19 +1,25 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
+import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.spi.persistence.Lease;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
@@ -29,7 +35,9 @@ class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheT
 
     @BeforeEach
     void setUp() {
-        cache = new InMemoryEndpointDataReferenceCache(CONNECTOR_NAME, Clock.systemUTC(), leases);
+        var criterionOperatorRegistry = CriterionOperatorRegistryImpl.ofDefaults();
+        criterionOperatorRegistry.registerPropertyLookup(new EdrCacheEntryPropertyLookup());
+        cache = new InMemoryEndpointDataReferenceCache(criterionOperatorRegistry, CONNECTOR_NAME, Clock.systemUTC(), leases);
     }
 
     @Override

@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.edr;
 
@@ -18,8 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.tractusx.edc.helpers.ReceivedEvent;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TestFunctions {
@@ -27,25 +30,9 @@ public class TestFunctions {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static Map<String, String> renewalConfiguration(Map<String, String> config) {
-        return renewalConfiguration(config, "10");
-    }
-
-    public static Map<String, String> renewalConfiguration(Map<String, String> config, String retention) {
-        var ssiConfiguration = new HashMap<String, String>() {
-            {
-                put("edc.edr.state-machine.expiring-duration", "10");
-                put("edc.edr.state-machine.expired-retention", retention);
-                put("edc.transfer.proxy.token.validity.seconds", "15");
-            }
-        };
-        ssiConfiguration.putAll(config);
-        return ssiConfiguration;
-    }
-
-    public static ReceivedEvent waitForEvent(MockWebServer server, ReceivedEvent event) {
+    public static ReceivedEvent waitForEvent(MockWebServer server) {
         try {
-            var request = server.takeRequest(20, TimeUnit.SECONDS);
+            var request = server.takeRequest(60, TimeUnit.SECONDS);
             if (request != null) {
                 return MAPPER.readValue(request.getBody().inputStream(), ReceivedEvent.class);
             } else {

@@ -1,4 +1,4 @@
-/*
+/********************************************************************************
  * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -6,7 +6,7 @@
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -15,18 +15,19 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
 import java.time.Duration
 
 plugins {
+    checkstyle
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.bmuschko.docker-remote-api") version "9.3.6"
+    id("com.bmuschko.docker-remote-api") version "9.4.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -59,10 +60,10 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.0.9")
+        implementation("org.slf4j:slf4j-api:2.0.12")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.10.1"))
+        testImplementation(platform("org.junit:junit-bom:5.10.2"))
 
         constraints {
             implementation("org.yaml:snakeyaml:2.2") {
@@ -77,7 +78,7 @@ allprojects {
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(edcVersion)
-        outputDirectory.set(project.buildDir)
+        outputDirectory.set(project.layout.buildDirectory.asFile.get())
         // uncomment the following lines to enable the Autodoc-2-Markdown converter
         // only available with EDC 0.2.1 SNAPSHOT
         // additionalInputDirectory.set(downloadDir.asFile)
@@ -85,11 +86,6 @@ allprojects {
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
-        versions {
-            // override default dependency versions here
-            metaModel.set(edcVersion)
-
-        }
         pom {
             // this is actually important, so we can publish under the correct GID
             groupId = project.group.toString()
@@ -114,10 +110,18 @@ allprojects {
         configFile = rootProject.file("resources/tx-checkstyle-config.xml")
         configDirectory.set(rootProject.file("resources"))
 
+        // gradle checkstyle plugin only includes java src, so we add allSource and .github folder
+        tasks.checkstyleMain {
+            this.source = project.sourceSets.main.get().allSource.srcDir(".github")
+        }
+
+        tasks.checkstyleTest {
+            this.source = project.sourceSets.test.get().allSource
+        }
+
         //checkstyle violations are reported at the WARN level
         this.isShowViolations = System.getProperty("checkstyle.verbose", "true").toBoolean()
     }
-
 
     // publishing to OSSRH is handled by the build plugin, but publishing to GH packages
     // must be configured separately
@@ -149,8 +153,9 @@ subprojects {
         if (project.plugins.hasPlugin("com.github.johnrengelman.shadow") &&
                 file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
+            val buildDir = project.layout.buildDirectory.get().asFile
 
-            val agentFile = project.buildDir.resolve("opentelemetry-javaagent.jar")
+            val agentFile = buildDir.resolve("opentelemetry-javaagent.jar")
             // create task to download the opentelemetry agent
             val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
             val downloadOtel = tasks.create("downloadOtel") {
@@ -160,7 +165,7 @@ subprojects {
                 }
                 // this task could be the first in the graph, so "build/" may not yet exist. Let's be defensive
                 doFirst {
-                    project.buildDir.mkdirs()
+                    buildDir.mkdirs()
                 }
                 // download the jar file
                 doLast {
@@ -178,7 +183,7 @@ subprojects {
             // this task copies some legal docs into the build folder, so we can easily copy them into the docker images
             val copyLegalDocs = tasks.create("copyLegalDocs", Copy::class) {
                 from(project.rootProject.projectDir)
-                into("${project.buildDir}/legal")
+                into("${buildDir}/legal")
                 include("SECURITY.md", "NOTICE.md", "DEPENDENCIES", "LICENSE")
                 dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
             }

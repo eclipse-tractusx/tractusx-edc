@@ -1,24 +1,27 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.iam.ssi.miw;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -31,25 +34,14 @@ import static org.eclipse.tractusx.edc.iam.ssi.miw.SsiMiwConfigurationExtension.
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class SsiMiwConfigurationExtensionTest {
 
-    private SsiMiwConfigurationExtension extension;
-
-    private ServiceExtensionContext context;
-
-    @BeforeEach
-    void setup(ObjectFactory factory, ServiceExtensionContext context) {
-        this.context = spy(context);
-        extension = factory.constructInstance(SsiMiwConfigurationExtension.class);
-    }
-
     @Test
-    void initialize() {
+    void initialize(ServiceExtensionContext context, SsiMiwConfigurationExtension extension) {
         var url = "http://localhost:8080";
         var authorityId = "id";
         var authorityIssuer = "issuer";
@@ -74,7 +66,7 @@ public class SsiMiwConfigurationExtensionTest {
     }
 
     @Test
-    void initialize_withDefaultIssuer() {
+    void initialize_withDefaultIssuer(ServiceExtensionContext context, SsiMiwConfigurationExtension extension) {
         var url = "http://localhost:8080";
         var authorityId = "id";
 
@@ -98,7 +90,7 @@ public class SsiMiwConfigurationExtensionTest {
     }
 
     @Test
-    void initialize_withTrailingUrl() {
+    void initialize_withTrailingUrl(ServiceExtensionContext context, SsiMiwConfigurationExtension extension) {
         var url = "http://localhost:8080/";
         var authorityId = "id";
 

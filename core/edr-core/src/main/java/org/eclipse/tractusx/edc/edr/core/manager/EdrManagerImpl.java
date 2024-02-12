@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.edr.core.manager;
 
@@ -151,7 +156,7 @@ public class EdrManagerImpl implements EdrManager {
 
 
     private ProcessorImpl<EndpointDataReferenceEntry> processEdrInState(EndpointDataReferenceEntryStates state, Function<EndpointDataReferenceEntry, Boolean> function) {
-        var filter = new Criterion[] {hasState(state.code())};
+        var filter = new Criterion[]{ hasState(state.code()) };
         return processor(() -> edrCache.nextNotLeased(batchSize, filter), telemetry.contextPropagationMiddleware(function));
     }
 
@@ -222,7 +227,7 @@ public class EdrManagerImpl implements EdrManager {
             return StatusResult.success();
         } else {
             breakLease(entry);
-            return StatusResult.failure(ResponseStatus.ERROR_RETRY, "Not yet expired.");
+            return StatusResult.success();
         }
     }
 
@@ -247,7 +252,6 @@ public class EdrManagerImpl implements EdrManager {
 
         var transferRequest = TransferRequest.Builder.newInstance()
                 .assetId(dataRequest.getAssetId())
-                .connectorId(dataRequest.getConnectorId())
                 .contractId(dataRequest.getContractId())
                 .protocol(dataRequest.getProtocol())
                 .counterPartyAddress(dataRequest.getConnectorAddress())
@@ -300,6 +304,10 @@ public class EdrManagerImpl implements EdrManager {
 
         private Builder() {
             edrManager = new EdrManagerImpl();
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
 
         public Builder contractNegotiationService(ContractNegotiationService negotiationService) {
@@ -372,10 +380,6 @@ public class EdrManagerImpl implements EdrManager {
             edrManager.entityRetryProcessFactory = new EntityRetryProcessFactory(edrManager.monitor, edrManager.clock, edrManager.entityRetryProcessConfiguration);
 
             return edrManager;
-        }
-
-        public static Builder newInstance() {
-            return new Builder();
         }
     }
 }

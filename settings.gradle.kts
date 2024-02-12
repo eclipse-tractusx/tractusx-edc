@@ -6,7 +6,7 @@
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 rootProject.name = "tractusx-edc"
 
@@ -37,7 +37,6 @@ include(":edc-extensions:bpn-validation:bpn-validation-api")
 include(":edc-extensions:bpn-validation:bpn-validation-spi")
 include(":edc-extensions:bpn-validation:bpn-validation-core")
 include(":edc-extensions:bpn-validation:business-partner-store-sql")
-include(":edc-extensions:cx-oauth2")
 include(":edc-extensions:data-encryption")
 include(":edc-extensions:dataplane-selector-configuration")
 include(":edc-extensions:postgresql-migration")
@@ -51,8 +50,8 @@ include(":edc-extensions:edr:edr-cache-sql")
 include(":edc-extensions:cx-policy")
 include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
-include("edc-extensions:ssi:jws2020-crypto-suite")
 include(":edc-extensions:ssi:ssi-identity-extractor")
+include(":edc-extensions:iatp:tx-iatp")
 
 // test modules
 include(":edc-tests:e2e-tests")
@@ -63,6 +62,9 @@ include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:runtime-postgresql-hashicorp")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-sts")
+include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
 

@@ -1,57 +1,64 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.util.Map;
 import java.util.UUID;
 
 import static jakarta.json.Json.createObjectBuilder;
-import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerNumberPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 
 public abstract class AbstractHttpProviderPushTest {
 
-    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+            .name(SOKRATES_NAME)
+            .id(SOKRATES_BPN)
+            .build();
 
-    private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
-    private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+            .name(PLATO_NAME)
+            .id(PLATO_BPN)
+            .build();
+
     private MockWebServer server;
 
     @BeforeEach
@@ -80,13 +87,20 @@ public abstract class AbstractHttpProviderPushTest {
 
         server.start();
 
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), httpDataAddress(providerUrl.toString()));
-        PLATO.createPolicy(createTestPolicy("policy-1", SOKRATES.getBpn()));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-1");
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", providerUrl.toString(),
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
+        var policyId = PLATO.createPolicyDefinition(bnpPolicy(SOKRATES.getBpn()));
+        PLATO.createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destination = httpDataAddress(consumerUrl.toString());
 
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, destination);
+        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, createObjectBuilder().build(), destination);
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = SOKRATES.getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
@@ -96,10 +110,6 @@ public abstract class AbstractHttpProviderPushTest {
     @AfterEach
     void teardown() throws IOException {
         server.shutdown();
-    }
-
-    protected JsonObject createTestPolicy(String policyId, String bpn) {
-        return businessPartnerNumberPolicy(policyId, bpn);
     }
 
     private JsonObject httpDataAddress(String baseUrl) {

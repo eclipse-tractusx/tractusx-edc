@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.iam.ssi.spi.jsonld;
 
@@ -35,11 +40,11 @@ public interface SummaryCredential {
                     "VerifiableCredential",
                     "SummaryCredential"
                   ],
-                  "issuer": "did:web:issuer-a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:issuer-example.com",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z",
                   "credentialSubject": {
-                    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                    "id": "did:web:example.com",
                     "holderIdentifier": "BPN of holder",
                     "type": "Summary-List",
                     "name": "CX-Credentials",
@@ -82,11 +87,11 @@ public interface SummaryCredential {
                   "type": [
                     "VerifiableCredential"
                   ],
-                  "issuer": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:example.com",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z",
                   "credentialSubject": {
-                    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000"     
+                    "id": "did:web:example.com"     
                   }
                 }
               ]
@@ -110,11 +115,11 @@ public interface SummaryCredential {
                     "VerifiableCredential",
                     "SummaryCredential"
                   ],
-                  "issuer": "did:web:no-holder.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:no-holder.example.com:BPNL000000000000",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z",
                   "credentialSubject": {
-                    "id": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000"     
+                    "id": "did:web:example.com"     
                   }
                 }
               ]
@@ -138,7 +143,7 @@ public interface SummaryCredential {
                     "VerifiableCredential",
                     "SummaryCredential"
                   ],
-                  "issuer": "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000",
+                  "issuer": "did:web:example.com",
                   "issuanceDate": "2023-06-02T12:00:00Z",
                   "expirationDate": "2022-06-16T18:56:59Z"
                 }

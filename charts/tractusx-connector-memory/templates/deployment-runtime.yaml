@@ -2,7 +2,7 @@
   #  Copyright (c) 2023 ZF Friedrichshafen AG
   #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
   #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-  #  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+  #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
   #
   #  See the NOTICE file(s) distributed with this work for additional
   #  information regarding copyright ownership.
@@ -188,10 +188,6 @@ spec:
             - name: "WEB_HTTP_MANAGEMENT_PATH"
               value: {{ .Values.runtime.endpoints.management.path | quote }}
             {{- end }}
-            - name: "WEB_HTTP_VALIDATION_PORT"
-              value: {{ .Values.runtime.endpoints.validation.port | quote }}
-            - name: "WEB_HTTP_VALIDATION_PATH"
-              value: {{ .Values.runtime.endpoints.validation.path | quote }}
             - name: "WEB_HTTP_CONTROL_PORT"
               value: {{ .Values.runtime.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
@@ -244,6 +240,8 @@ spec:
             - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
               value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
             {{- end }}
+            - name: "EDC_TRANSFER_PROXY_TOKEN_VALIDITY_SECONDS"
+              value: {{ .Values.runtime.edr.transferProxyTokenValidity | required ".Values.runtime.edr.transferProxyTokenValidity is required" | quote }}
 
             # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/http-receiver
             - name: "EDC_RECEIVER_HTTP_ENDPOINT"

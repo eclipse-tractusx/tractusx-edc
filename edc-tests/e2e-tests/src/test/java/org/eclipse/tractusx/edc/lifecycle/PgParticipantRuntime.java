@@ -1,21 +1,25 @@
-/*
+/********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- *
- * Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
- *
- */
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.lifecycle;
 
 import org.eclipse.edc.connector.core.vault.InMemoryVault;
-import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
@@ -23,13 +27,13 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
-import org.eclipse.tractusx.edc.token.MockDapsService;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.DB_SCHEMA_NAME;
@@ -46,7 +50,6 @@ public class PgParticipantRuntime extends ParticipantRuntime {
     public PgParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, bpn, properties);
         this.dbName = runtimeName.toLowerCase();
-        this.registerServiceMock(IdentityService.class, new MockDapsService(bpn));
         mockVault();
 
         postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
@@ -75,7 +78,7 @@ public class PgParticipantRuntime extends ParticipantRuntime {
     @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
         PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
-        helper.createDatabase(dbName);
+        helper.createDatabase();
         super.bootExtensions(context, serviceExtensions);
     }
 
@@ -83,34 +86,14 @@ public class PgParticipantRuntime extends ParticipantRuntime {
         var jdbcUrl = jdbcUrl(name);
         return new HashMap<>() {
             {
-                put("edc.datasource.asset.name", "asset");
-                put("edc.datasource.asset.url", jdbcUrl);
-                put("edc.datasource.asset.user", USER);
-                put("edc.datasource.asset.password", PASSWORD);
-                put("edc.datasource.contractdefinition.name", "contractdefinition");
-                put("edc.datasource.contractdefinition.url", jdbcUrl);
-                put("edc.datasource.contractdefinition.user", USER);
-                put("edc.datasource.contractdefinition.password", PASSWORD);
-                put("edc.datasource.contractnegotiation.name", "contractnegotiation");
-                put("edc.datasource.contractnegotiation.url", jdbcUrl);
-                put("edc.datasource.contractnegotiation.user", USER);
-                put("edc.datasource.contractnegotiation.password", PASSWORD);
-                put("edc.datasource.policy.name", "policy");
-                put("edc.datasource.policy.url", jdbcUrl);
-                put("edc.datasource.policy.user", USER);
-                put("edc.datasource.policy.password", PASSWORD);
-                put("edc.datasource.transferprocess.name", "transferprocess");
-                put("edc.datasource.transferprocess.url", jdbcUrl);
-                put("edc.datasource.transferprocess.user", USER);
-                put("edc.datasource.transferprocess.password", PASSWORD);
-                put("edc.datasource.edr.name", "edr");
-                put("edc.datasource.edr.url", jdbcUrl);
-                put("edc.datasource.edr.user", USER);
-                put("edc.datasource.edr.password", PASSWORD);
-                put("edc.datasource.bpn.name", "bpn");
-                put("edc.datasource.bpn.url", jdbcUrl);
-                put("edc.datasource.bpn.user", USER);
-                put("edc.datasource.bpn.password", PASSWORD);
+                Stream.of("asset", "contractdefinition", "contractnegotiation", "policy", "transferprocess", "edr", "bpn", "policy-monitor")
+                        .forEach(context -> {
+                            var group = "edc.datasource." + context;
+                            put(group + ".name", context);
+                            put(group + ".url", jdbcUrl);
+                            put(group + ".user", USER);
+                            put(group + ".password", PASSWORD);
+                        });
                 // use non-default schema name to test usage of non-default schema
                 put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }

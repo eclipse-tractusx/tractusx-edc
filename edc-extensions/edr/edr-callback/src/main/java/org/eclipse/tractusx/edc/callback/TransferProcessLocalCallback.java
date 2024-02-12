@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.callback;
 
@@ -35,6 +40,7 @@ import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
 
 import java.text.ParseException;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntryStates.REFRESHING;
@@ -87,15 +93,18 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
     private Result<Void> storeEdr(EndpointDataReference edr) {
         return transactionContext.execute(() -> {
-            var transferProcess = transferProcessStore.findForCorrelationId(edr.getId());
+            var transferProcess = Optional.ofNullable(transferProcessStore.findById(edr.getId()))
+                    .orElseGet(() -> transferProcessStore.findForCorrelationId(edr.getId()));
 
             if (transferProcess != null) {
-                String contractNegotiationId = null;
+                String contractNegotiationId;
                 var contractNegotiation = agreementService.findNegotiation(transferProcess.getContractId());
                 if (contractNegotiation != null) {
                     contractNegotiationId = contractNegotiation.getId();
                 } else {
-                    monitor.warning(format("Contract negotiation for agreement with id: %s is missing.", transferProcess.getContractId()));
+                    var msg = format("Contract negotiation for agreement with id: %s is missing.", transferProcess.getContractId());
+                    monitor.warning(msg);
+                    return Result.failure(msg);
                 }
                 var expirationTime = extractExpirationTime(edr);
 
@@ -106,7 +115,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                         .transferProcessId(transferProcess.getId())
                         .assetId(transferProcess.getDataRequest().getAssetId())
                         .agreementId(transferProcess.getDataRequest().getContractId())
-                        .providerId(transferProcess.getDataRequest().getConnectorId())
+                        .providerId(contractNegotiation.getCounterPartyId())
                         .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                         .expirationTimestamp(expirationTime.getContent())
                         .contractNegotiationId(contractNegotiationId)
@@ -151,8 +160,8 @@ public class TransferProcessLocalCallback implements InProcessCallback {
 
             var transferProcess = transferProcessStore.findById(entry.getTransferProcessId());
 
-            if (transferProcess != null && transferProcess.canBeCompleted()) {
-                transferProcess.transitionCompleting();
+            if (transferProcess != null && transferProcess.canBeTerminated()) {
+                transferProcess.transitionTerminating();
                 transferProcessStore.save(transferProcess);
             } else {
                 monitor.info(format("Cannot terminate transfer process with id: %s", entry.getTransferProcessId()));

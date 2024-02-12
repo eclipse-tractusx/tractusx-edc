@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.iam.ssi.miw.credentials;
 
@@ -42,6 +47,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SCOPE;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClient.VP;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -111,7 +118,7 @@ public class SsiMiwCredentialClientTest {
 
         when(apiClient.getCredentials(Set.of())).thenReturn(Result.success(credentials));
         when(apiClient.createPresentation(credentials, audience)).thenReturn(Result.success(presentation));
-        var result = credentialClient.obtainClientCredentials(TokenParameters.Builder.newInstance().audience(audience).build());
+        var result = credentialClient.obtainClientCredentials(TokenParameters.Builder.newInstance().claims(AUDIENCE, audience).claims(SCOPE, "").build());
 
         assertThat(result).isNotNull()
                 .extracting(Result::getContent)

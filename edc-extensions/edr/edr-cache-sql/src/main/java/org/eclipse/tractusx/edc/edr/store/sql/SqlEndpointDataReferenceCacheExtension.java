@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.edr.store.sql;
 
@@ -36,12 +41,13 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
 
     public static final String NAME = "SQL EDR cache store";
 
-    @Setting(required = true, defaultValue = SqlEndpointDataReferenceCacheExtension.DEFAULT_DATASOURCE_NAME)
+    @Setting(required = true, value = "Datasource name for EDR Cache SQL store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     public static final String DATASOURCE_SETTING_NAME = "edc.datasource.edr.name";
 
-    @Setting(value = "Directory/Path where to store EDRs in the vault for vaults that supports hierarchical structuring.", required = false, defaultValue = "")
+    private static final String DEFAULT_EDR_VAULT_PATH = "";
+    @Setting(value = "Directory/Path where to store EDRs in the vault for vaults that supports hierarchical structuring.", defaultValue = DEFAULT_EDR_VAULT_PATH)
     public static final String EDC_EDR_VAULT_PATH = "edc.edr.vault.path";
-    public static final String DEFAULT_DATASOURCE_NAME = "edr";
+
     @Inject
     private DataSourceRegistry dataSourceRegistry;
     @Inject
@@ -65,9 +71,10 @@ public class SqlEndpointDataReferenceCacheExtension implements ServiceExtension 
 
     @Provider
     public EndpointDataReferenceCache edrCache(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
-        var vaultDirectory = context.getConfig().getString(EDC_EDR_VAULT_PATH, "");
-        return new SqlEndpointDataReferenceCache(dataSourceRegistry, dataSourceName, transactionContext, getStatementImpl(), typeManager.getMapper(), vault, vaultDirectory, clock, queryExecutor, context.getConnectorId());
+        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
+        var vaultDirectory = context.getConfig().getString(EDC_EDR_VAULT_PATH, DEFAULT_EDR_VAULT_PATH);
+        return new SqlEndpointDataReferenceCache(dataSourceRegistry, dataSourceName, transactionContext, getStatementImpl(),
+                typeManager.getMapper(), vault, vaultDirectory, clock, queryExecutor, context.getConnectorId());
     }
 
     private EdrStatements getStatementImpl() {

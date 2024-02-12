@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
@@ -28,18 +33,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_PLATO_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.MIW_SOKRATES_PORT;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.OAUTH_PORT;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_DSP_CALLBACK;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_DSP_CALLBACK;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoSsiConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesSsiConfiguration;
 
 @EndToEndTest
 public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
@@ -48,19 +45,20 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
-            SOKRATES_NAME,
-            SOKRATES_BPN,
-            sokratesSsiConfiguration()
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.ssiConfiguration()
     );
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
-            PLATO_NAME,
-            PLATO_BPN,
-            platoSsiConfiguration()
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.ssiConfiguration()
     );
 
-    private static MockWebServer oauthServer;
+    private static MockWebServer sokratesOauthServer;
+    private static MockWebServer platoOauthServer;
     private static MockWebServer miwPlatoServer;
     private static MockWebServer miwSokratesServer;
 
@@ -68,25 +66,30 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     static void prepare() throws IOException {
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
-        oauthServer = new MockWebServer();
+        sokratesOauthServer = new MockWebServer();
+        platoOauthServer = new MockWebServer();
 
-        var credentialSubjectId = "did:web:a016-203-129-213-99.ngrok-free.app:BPNL000000000000";
+        var credentialSubjectId = "did:web:example.com";
 
-        miwSokratesServer.start(MIW_SOKRATES_PORT);
-        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO_DSP_CALLBACK));
+        miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
+        miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.getProtocolEndpoint().getUrl().toString()));
 
-        miwPlatoServer.start(MIW_PLATO_PORT);
-        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES_DSP_CALLBACK));
+        miwPlatoServer.start(PLATO.miwEndpoint().getPort());
+        miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.getProtocolEndpoint().getUrl().toString()));
 
-        oauthServer.start(OAUTH_PORT);
-        oauthServer.setDispatcher(new KeycloakDispatcher());
+        sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
+        sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
+
+        platoOauthServer.start(PLATO.authTokenEndpoint().getPort());
+        platoOauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
     @AfterAll
     static void unwind() throws IOException {
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
-        oauthServer.shutdown();
+        sokratesOauthServer.shutdown();
+        platoOauthServer.shutdown();
     }
 
     @BeforeEach
@@ -96,7 +99,7 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     }
 
     @Override
-    protected JsonObject createTestPolicy(String policyId, String bpn) {
-        return frameworkPolicy(policyId, Map.of("Dismantler", "active"));
+    protected JsonObject createAccessPolicy(String bpn) {
+        return frameworkPolicy(Map.of(TX_NAMESPACE + "Dismantler", "active"));
     }
 }

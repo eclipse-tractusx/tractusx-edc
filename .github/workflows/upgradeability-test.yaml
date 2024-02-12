@@ -1,13 +1,13 @@
-#
+#################################################################################
 #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-#  Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
 #
 #  This program and the accompanying materials are made available under the
 #  terms of the Apache License, Version 2.0 which is available at
-#  https://www.apache.org/licenses/LICENSE-2.0
+#  https://www.apache.org/licenses/LICENSE-2.0.
 #
 #  Unless required by applicable law or agreed to in writing, software
 #  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -16,7 +16,8 @@
 #  under the License.
 #
 #  SPDX-License-Identifier: Apache-2.0
-#
+#################################################################################
+
 
 ---
 name: "Upgradeability Tests"
@@ -32,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache ContainerD Image Layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
           key: ${{ runner.os }}-io.containerd.snapshotter.v1.overlayfs
@@ -55,7 +56,7 @@ jobs:
           version: 'v1.28.2'
 
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.5.0
+        uses: helm/kind-action@v1.8.0
 
       - name: "Update helm repo"
         run: |

@@ -1,16 +1,21 @@
-/*
- *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  *
- */
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.edr;
 
@@ -27,41 +32,43 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.lifecycle.Participant;
+import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEvent;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
+import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.platoConfiguration;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.sokratesConfiguration;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.edr.TestFunctions.waitForEvent;
 
 public abstract class AbstractNegotiateEdrTest {
 
-    protected static final Participant SOKRATES = new Participant(SOKRATES_NAME, SOKRATES_BPN, sokratesConfiguration());
-    protected static final Participant PLATO = new Participant(PLATO_NAME, PLATO_BPN, platoConfiguration());
+    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+            .name(SOKRATES_NAME)
+            .id(SOKRATES_BPN)
+            .build();
 
-    private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
-    private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+            .name(PLATO_NAME)
+            .id(PLATO_BPN)
+            .build();
 
     MockWebServer server;
 
@@ -91,18 +98,21 @@ public abstract class AbstractNegotiateEdrTest {
 
         var authCodeHeaderName = "test-authkey";
         var authCode = "test-authcode";
-        PLATO.createAsset(assetId, Json.createObjectBuilder().build(), Json.createObjectBuilder()
-                .add(EDC_NAMESPACE + "type", "HttpData")
-                .add(EDC_NAMESPACE + "contentType", "application/json")
-                .add(EDC_NAMESPACE + "baseUrl", url.toString())
-                .add(EDC_NAMESPACE + "authKey", authCodeHeaderName)
-                .add(EDC_NAMESPACE + "authCode", authCode)
-                .build());
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", url.toString(),
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", authCodeHeaderName,
+                "authCode", authCode
+        );
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
 
         PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-1", Operator.IS_NONE_OF, "forbidden-policy"));
-        PLATO.createPolicy(businessPartnerGroupPolicy("policy-2", Operator.IS_ALL_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
+        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_NONE_OF, "forbidden-policy"));
+        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
 
         expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
@@ -111,27 +121,27 @@ public abstract class AbstractNegotiateEdrTest {
                 .add(createCallback(url.toString(), true, Set.of("contract.negotiation", "transfer.process")))
                 .build();
 
-        var contractNegotiationId = SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
+        var contractNegotiationId = SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
         var events = expectedEvents.stream()
-                .map(receivedEvent -> waitForEvent(server, receivedEvent))
+                .map(receivedEvent -> waitForEvent(server))
                 .collect(Collectors.toList());
 
 
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                     assertThat(edrCaches).hasSize(1);
                 });
 
         assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 
-        var edrCaches = SOKRATES.getEdrEntriesByAssetId(assetId);
+        var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
 
         assertThat(edrCaches).hasSize(1);
 
-        assertThat(SOKRATES.getEdrEntriesByContractNegotiationId(contractNegotiationId)).hasSize(1);
+        assertThat(SOKRATES.edrs().getEdrEntriesByContractNegotiationId(contractNegotiationId)).hasSize(1);
 
         assertThat(edrCaches).hasSize(1);
 
@@ -140,10 +150,10 @@ public abstract class AbstractNegotiateEdrTest {
         var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
 
         assertThat(cnId).isEqualTo(contractNegotiationId);
-        assertThat(SOKRATES.getEdrEntriesByAgreementId(agreementId)).hasSize(1);
+        assertThat(SOKRATES.edrs().getEdrEntriesByAgreementId(agreementId)).hasSize(1);
 
 
-        var edr = SOKRATES.getEdr(transferProcessId);
+        var edr = SOKRATES.edrs().getEdr(transferProcessId);
 
         assertThat(edr.getJsonString("type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
         assertThat(edr.getJsonString("authCode").getString()).isNotNull();

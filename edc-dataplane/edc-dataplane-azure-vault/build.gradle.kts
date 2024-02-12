@@ -1,4 +1,4 @@
-/*
+/********************************************************************************
  * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -6,7 +6,7 @@
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 plugins {
     `java-library`
@@ -32,7 +32,7 @@ dependencies {
         }
     }
     implementation(libs.edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.7.2")
+    implementation("com.azure:azure-security-keyvault-secrets:4.7.3")
     runtimeOnly(project(":edc-extensions:edr:edr-cache-sql"))
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
