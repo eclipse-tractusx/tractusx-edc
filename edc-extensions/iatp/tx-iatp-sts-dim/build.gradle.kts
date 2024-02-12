@@ -26,7 +26,9 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.policyengine)
     implementation(libs.edc.identity.trust.spi)
+    implementation(libs.edc.auth.oauth2.client)
     implementation(project(":spi:core-spi"))
+    implementation(project(":core:core-utils"))
 
     testImplementation(libs.edc.junit)
 }

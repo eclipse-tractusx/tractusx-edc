@@ -17,16 +17,29 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.lifecycle.tx.iatp;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.policyengine)
-    implementation(libs.edc.identity.trust.spi)
-    implementation(project(":spi:core-spi"))
+import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 
-    testImplementation(libs.edc.junit)
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Extension of {@link IatpParticipant} with DIM specific configuration
+ */
+public class IatpDimParticipant extends IatpParticipant {
+    private final URI dimUri;
+
+    public IatpDimParticipant(TxParticipant participant, URI stsUri, URI dimUri) {
+        super(participant, stsUri);
+        this.dimUri = dimUri;
+    }
+
+    @Override
+    public Map<String, String> iatpConfiguration(TxParticipant... others) {
+        var config = new HashMap<>(super.iatpConfiguration(others));
+        config.put("edc.iam.sts.dim.url", dimUri.toString());
+        return config;
+    }
 }

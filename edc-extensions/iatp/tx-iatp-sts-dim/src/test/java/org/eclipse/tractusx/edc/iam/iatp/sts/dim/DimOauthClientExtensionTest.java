@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,18 +17,29 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.ssi.miw.utils;
+package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
-public class PathUtils {
+import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauthClientImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-    private PathUtils() {
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(DependencyInjectionExtension.class)
+public class DimOauthClientExtensionTest {
+
+    @BeforeEach
+    void setup(ServiceExtensionContext context) {
+
     }
 
-    public static String removeTrailingSlash(String path) {
-        var fixedPath = path;
-        if (fixedPath.endsWith("/")) {
-            fixedPath = fixedPath.substring(0, fixedPath.length() - 1);
-        }
-        return fixedPath;
+    @Test
+    void initialize(DimOauthClientExtension extension) {
+        assertThat(extension.oauth2Client()).isInstanceOf(DimOauthClientImpl.class);
     }
+
+
 }

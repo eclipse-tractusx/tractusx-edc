@@ -30,6 +30,7 @@ include(":spi:ssi-spi")
 include(":core:edr-cache-core")
 include(":core:edr-core")
 include(":core:json-ld-core")
+include(":core:core-utils")
 
 
 include(":edc-extensions:bpn-validation")
@@ -52,6 +53,7 @@ include("edc-extensions:ssi:ssi-identity-core")
 include("edc-extensions:ssi:ssi-miw-credential-client")
 include(":edc-extensions:ssi:ssi-identity-extractor")
 include(":edc-extensions:iatp:tx-iatp")
+include(":edc-extensions:iatp:tx-iatp-sts-dim")
 
 // test modules
 include(":edc-tests:e2e-tests")
@@ -63,6 +65,7 @@ include(":edc-tests:runtime:runtime-memory-ssi")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:runtime-postgresql-hashicorp")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")

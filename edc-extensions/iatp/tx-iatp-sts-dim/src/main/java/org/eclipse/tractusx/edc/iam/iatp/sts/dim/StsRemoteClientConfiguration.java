@@ -17,16 +17,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.policyengine)
-    implementation(libs.edc.identity.trust.spi)
-    implementation(project(":spi:core-spi"))
+/**
+ * Configuration of the OAuth2 client
+ */
+public record StsRemoteClientConfiguration(String tokenUrl, String clientId, String clientSecretAlias) {
 
-    testImplementation(libs.edc.junit)
 }

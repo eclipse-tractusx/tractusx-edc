@@ -112,7 +112,7 @@ edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callbac
 edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback-http-dispatcher", version.ref = "edc" }
 
 # IATP Modules
-
+edc-identity-trust-spi = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-identity-core-trust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
 edc-identity-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
 edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
@@ -120,12 +120,13 @@ edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", v
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
 edc-identity-jws2020 = { module = "org.eclipse.edc:jws2020", version.ref = "edc" }
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
-edc-identity-trust-sts-remote = { module = "org.eclipse.edc:identity-trust-sts-remote-core", version.ref = "edc" }
 edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-trust-issuers-configuration", version.ref = "edc" }
 
 
 # IATP for Testing
 
+edc-identity-trust-sts-remote = { module = "org.eclipse.edc:identity-trust-sts-remote-core", version.ref = "edc" }
+edc-identity-trust-sts-embedded = { module = "org.eclipse.edc:identity-trust-sts-embedded", version.ref = "edc" }
 edc-identity-trust-sts-core = { module = "org.eclipse.edc:identity-trust-sts-core", version.ref = "edc" }
 edc-identity-trust-sts-api = { module = "org.eclipse.edc:identity-trust-sts-api", version.ref = "edc" }
 edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identity-trust-sts-client-configuration", version.ref = "edc" }

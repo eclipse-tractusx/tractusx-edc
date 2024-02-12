@@ -17,16 +17,22 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.policyengine)
-    implementation(libs.edc.identity.trust.spi)
-    implementation(project(":spi:core-spi"))
+import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.result.Result;
 
-    testImplementation(libs.edc.junit)
+/**
+ * OAuth2 client for fetching an access token to be added when using the DIM APIs
+ */
+@ExtensionPoint
+public interface DimOauth2Client {
+
+    /**
+     * Request a token from the Auth server
+     *
+     * @return The {@link TokenRepresentation}
+     */
+    Result<TokenRepresentation> obtainRequestToken();
 }

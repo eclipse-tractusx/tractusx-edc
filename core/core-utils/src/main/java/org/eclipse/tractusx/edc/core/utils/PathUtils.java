@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,16 +17,18 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.core.utils;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.policyengine)
-    implementation(libs.edc.identity.trust.spi)
-    implementation(project(":spi:core-spi"))
+public class PathUtils {
 
-    testImplementation(libs.edc.junit)
+    private PathUtils() {
+    }
+
+    public static String removeTrailingSlash(String path) {
+        var fixedPath = path;
+        if (fixedPath.endsWith("/")) {
+            fixedPath = fixedPath.substring(0, fixedPath.length() - 1);
+        }
+        return fixedPath;
+    }
 }

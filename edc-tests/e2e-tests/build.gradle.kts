@@ -46,6 +46,8 @@ dependencies {
     testImplementation(libs.edc.identity.jws2020)
     testImplementation(libs.edc.identity.vc.ldp)
     testImplementation(libs.edc.ih.spi.store)
+    testImplementation(libs.edc.identity.trust.sts.embedded)
+    testImplementation(libs.edc.token.core)
     testImplementation(testFixtures(libs.edc.sql.core))
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(libs.awaitility)
