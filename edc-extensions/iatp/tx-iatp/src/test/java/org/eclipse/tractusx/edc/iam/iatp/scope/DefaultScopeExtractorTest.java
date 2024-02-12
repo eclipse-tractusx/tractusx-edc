@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.iam.iatp.scope;
 import org.eclipse.edc.policy.engine.spi.PolicyContextImpl;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.TokenParameters;
+import org.eclipse.edc.spi.iam.RequestScope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,11 +43,11 @@ public class DefaultScopeExtractorTest {
 
     @Test
     void verify_applyExtractor() {
-        var builder = TokenParameters.Builder.newInstance();
-        var ctx = PolicyContextImpl.Builder.newInstance().additional(TokenParameters.Builder.class, builder).build();
+        var builder = RequestScope.Builder.newInstance();
+        var ctx = PolicyContextImpl.Builder.newInstance().additional(RequestScope.Builder.class, builder).build();
         extractor.apply(Policy.Builder.newInstance().build(), ctx);
 
-        assertThat(builder.build().getStringClaim("scope").split(" ")).contains("scope1", "scope2");
+        assertThat(builder.build().getScopes()).contains("scope1", "scope2");
     }
 
     @Test

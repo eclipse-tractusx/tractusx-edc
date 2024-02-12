@@ -59,7 +59,7 @@ public class SsiIdentityServiceTest {
 
         when(tokenValidationService.validate(eq(token), eq(List.of()))).thenReturn(Result.success(claim));
 
-        var result = identityService.verifyJwtToken(token, "audience");
+        var result = identityService.verifyJwtToken(token, mock());
 
         assertThat(result).isNotNull().extracting(Result::getContent).isEqualTo(claim);
     }
@@ -70,7 +70,7 @@ public class SsiIdentityServiceTest {
 
         when(tokenValidationService.validate(eq(token), eq(List.of()))).thenReturn(Result.failure("fail"));
 
-        var result = identityService.verifyJwtToken(token, "audience");
+        var result = identityService.verifyJwtToken(token, mock());
 
         assertThat(result).isNotNull().matches(Result::failed);
     }

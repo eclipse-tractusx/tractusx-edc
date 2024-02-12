@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.edr.core.defaults;
 import org.eclipse.edc.spi.entity.StatefulEntity;
 import org.eclipse.edc.spi.persistence.Lease;
 import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
@@ -57,10 +58,8 @@ import static org.eclipse.edc.spi.result.StoreResult.success;
  */
 public class InMemoryEndpointDataReferenceCache implements EndpointDataReferenceCache {
     private static final long DEFAULT_LEASE_TIME_MILLIS = 60_000;
+    protected final CriterionOperatorRegistry criterionOperatorRegistry;
     private final LockManager lockManager;
-    private final EdrCacheEntryPredicateConverter predicateConverter = new EdrCacheEntryPredicateConverter();
-
-
     private final Map<String, List<EndpointDataReferenceEntry>> entriesByAssetId;
 
     private final Map<String, EndpointDataReferenceEntry> entriesByEdrId;
@@ -72,11 +71,13 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
 
     private final Clock clock;
 
-    public InMemoryEndpointDataReferenceCache() {
-        this(UUID.randomUUID().toString(), Clock.systemUTC(), new ConcurrentHashMap<>());
+
+    public InMemoryEndpointDataReferenceCache(CriterionOperatorRegistry criterionOperatorRegistry) {
+        this(criterionOperatorRegistry, UUID.randomUUID().toString(), Clock.systemUTC(), new ConcurrentHashMap<>());
     }
 
-    public InMemoryEndpointDataReferenceCache(String lockId, Clock clock, Map<String, Lease> leases) {
+    public InMemoryEndpointDataReferenceCache(CriterionOperatorRegistry criterionOperatorRegistry, String lockId, Clock clock, Map<String, Lease> leases) {
+        this.criterionOperatorRegistry = criterionOperatorRegistry;
         this.lockId = lockId;
         lockManager = new LockManager(new ReentrantReadWriteLock());
         entriesByAssetId = new HashMap<>();
@@ -99,16 +100,6 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
             return edrEntry == null ? StoreResult.notFound(format("EndpointDataReferenceEntry %s not found", transferProcessId)) :
                     StoreResult.success(edrEntry);
         });
-    }
-
-    @Override
-    public EndpointDataReferenceEntry findById(String correlationId) {
-        return findByIdAndLease(correlationId).orElse(storeFailure -> null);
-    }
-
-    @Override
-    public void save(EndpointDataReferenceEntry entity) {
-        throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
     }
 
     @Override
@@ -188,14 +179,23 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     }
 
     @Override
+    public EndpointDataReferenceEntry findById(String correlationId) {
+        return findByIdAndLease(correlationId).orElse(storeFailure -> null);
+    }
+
+    @Override
     public @NotNull List<EndpointDataReferenceEntry> nextNotLeased(int max, Criterion... criteria) {
         return leaseAndGet(max, criteria);
     }
 
+    @Override
+    public void save(EndpointDataReferenceEntry entity) {
+        throw new UnsupportedOperationException("Please use save(EndpointDataReferenceEntry, EndpointDataReference) instead!");
+    }
 
     private @NotNull List<EndpointDataReferenceEntry> leaseAndGet(int max, Criterion... criteria) {
         return lockManager.writeLock(() -> {
-            var filterPredicate = Arrays.stream(criteria).map(predicateConverter::convert).reduce(x -> true, Predicate::and);
+            var filterPredicate = Arrays.stream(criteria).map(criterionOperatorRegistry::toPredicate).reduce(x -> true, Predicate::and);
             var entities = entriesByEdrId.values().stream()
                     .filter(filterPredicate)
                     .filter(e -> !isLeased(e.getId()))
@@ -210,7 +210,7 @@ public class InMemoryEndpointDataReferenceCache implements EndpointDataReference
     private Stream<EndpointDataReferenceEntry> filterBy(List<Criterion> criteria) {
         return lockManager.readLock(() -> {
             var predicate = criteria.stream()
-                    .map(predicateConverter::convert)
+                    .map(criterionOperatorRegistry::toPredicate)
                     .reduce(x -> true, Predicate::and);
 
             return entriesByEdrId.values().stream()

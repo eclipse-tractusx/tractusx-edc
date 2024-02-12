@@ -22,9 +22,8 @@ package org.eclipse.tractusx.edc.iam.iatp.scope;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.TokenParameters;
+import org.eclipse.edc.spi.iam.RequestScope;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -37,16 +36,11 @@ public record DefaultScopeExtractor(Set<String> defaultScopes) implements BiFunc
 
     @Override
     public Boolean apply(Policy policy, PolicyContext policyContext) {
-        var tokenBuilder = policyContext.getContextData(TokenParameters.Builder.class);
-        if (tokenBuilder == null) {
-            throw new EdcException(format("%s not set in policy context", TokenParameters.Builder.class.getName()));
+        var scopes = policyContext.getContextData(RequestScope.Builder.class);
+        if (scopes == null) {
+            throw new EdcException(format("%s not set in policy context", RequestScope.Builder.class.getName()));
         }
-
-        var tokenParam = tokenBuilder.build();
-        var existingScope = tokenParam.getStringClaim("scope");
-        var newScopes = new HashSet<>(defaultScopes);
-        newScopes.add(existingScope);
-        tokenBuilder.claims("scope", String.join(" ", newScopes).trim());
+        defaultScopes.forEach(scopes::scope);
         return true;
     }
 }

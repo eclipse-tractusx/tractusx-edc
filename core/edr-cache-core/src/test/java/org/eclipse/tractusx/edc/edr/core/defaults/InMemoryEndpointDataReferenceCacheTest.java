@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.edr.core.defaults;
 
+import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.spi.persistence.Lease;
 import org.eclipse.tractusx.edc.edr.spi.EndpointDataReferenceCacheTestBase;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
@@ -34,7 +35,9 @@ class InMemoryEndpointDataReferenceCacheTest extends EndpointDataReferenceCacheT
 
     @BeforeEach
     void setUp() {
-        cache = new InMemoryEndpointDataReferenceCache(CONNECTOR_NAME, Clock.systemUTC(), leases);
+        var criterionOperatorRegistry = CriterionOperatorRegistryImpl.ofDefaults();
+        criterionOperatorRegistry.registerPropertyLookup(new EdrCacheEntryPropertyLookup());
+        cache = new InMemoryEndpointDataReferenceCache(criterionOperatorRegistry, CONNECTOR_NAME, Clock.systemUTC(), leases);
     }
 
     @Override

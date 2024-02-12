@@ -128,7 +128,7 @@ public class IatpParticipant {
         var service = new Service();
         service.setId("#credential-service");
         service.setType("CredentialService");
-        service.setServiceEndpoint(csService.toString());
+        service.setServiceEndpoint(csService + "/participants/" + getBpn());
 
         var ecKey = new ECKey.Builder(Curve.P_256, (ECPublicKey) keyPair.getPublic())
                 .privateKey((ECPrivateKey) keyPair.getPrivate())
