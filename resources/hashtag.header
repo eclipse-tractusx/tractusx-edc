@@ -1,5 +1,5 @@
 ^#!
-^##{80}$
+^##+$
 ^#  Copyright \(c\) 20\d\d((,| -)20\d{2})? [A-Za-z].+\S$
 ^#$
 ^#  See the NOTICE file\(s\) distributed with this work for additional$
@@ -16,5 +16,5 @@
 ^#  under the License\.$
 ^#$
 ^#  SPDX-License-Identifier: Apache\-2\.0$
-^##{80}$
+^##+$
 ^$
