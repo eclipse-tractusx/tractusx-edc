@@ -33,6 +33,7 @@ include(":core:json-ld-core")
 
 
 include(":edc-extensions:bpn-validation")
+include(":edc-extensions:auth-tokenbased")
 include(":edc-extensions:bpn-validation:bpn-validation-api")
 include(":edc-extensions:bpn-validation:bpn-validation-spi")
 include(":edc-extensions:bpn-validation:bpn-validation-core")

@@ -23,13 +23,13 @@ plugins {
 }
 
 dependencies {
+    runtimeOnly(project(":edc-extensions:auth-tokenbased"))
     runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api"))
     runtimeOnly(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core"))
 
     runtimeOnly(libs.edc.config.filesystem)
-    runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.dpf.awss3)
     runtimeOnly(libs.edc.dpf.oauth2)
     runtimeOnly(libs.edc.dpf.http)
