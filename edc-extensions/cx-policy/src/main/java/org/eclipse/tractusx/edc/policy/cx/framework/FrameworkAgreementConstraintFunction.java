@@ -19,24 +19,18 @@
 
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
-import jakarta.json.JsonObject;
+import org.eclipse.edc.identitytrust.model.VerifiableCredential;
+import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractVpConstraintFunction;
 
-import java.util.Objects;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Pattern;
 
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
-import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.edc.policy.model.Operator.GEQ;
-import static org.eclipse.edc.policy.model.Operator.GT;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_USE_CASE_NS;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.extractStringValue;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_NS_1_0;
 
 
 /**
@@ -56,126 +50,106 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.e
  * <p>
  * NB: This function will be enabled in the 3.2 release.
  */
-public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFunction {
-    public static final String CONTRACT_VERSION_PROPERTY = CX_USE_CASE_NS + "/contractVersion";
+public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstraintFunction<Permission> {
+    public static final String CONTRACT_VERSION_PROPERTY = CX_NS_1_0 + "contractVersion";
+    private static final String VC_CLAIM = "vc";
     private static final String ACTIVE = "active";
-    private String agreementType;
-    private String agreementVersion;
+    /**
+     * this regex matches legacy left-hand operands, where the use case type is directly encoded, e.g. FrameworkAgreement.pcf
+     */
+    private static final Pattern OLD_LEFT_OPERAND_REGEX = Pattern.compile("^(?i)(FrameworkAgreement\\.)(?<usecase>.+)$");
+    /**
+     * this regex matches new-style right-operands, which contain the use case type and an optional version, e.g. traceability:0.4.2
+     */
+    private static final Pattern RIGHT_OPERAND_REGEX = Pattern.compile("^(?<rightop>[a-zA-Z0-9]+)(:(?<version>.+))?$");
+    private static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
+    private static final String CREDENTIAL_LITERAL = "Credential";
 
-    private FrameworkAgreementConstraintFunction(String credentialType) {
-        super(credentialType);
+    public FrameworkAgreementConstraintFunction() {
     }
 
     @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission permission, PolicyContext context) {
-        if (!validateOperator(operator, context, EQ, GT, GEQ)) {
+    public boolean evaluate(Object leftValue, Operator operator, Object rightValue, Permission rule, PolicyContext context) {
+        if (!leftValue.toString().startsWith(FRAMEWORK_AGREEMENT_LITERAL)) {
+            context.reportProblem("Constraint left-operand must start with '%s' but was '%s'.".formatted(FRAMEWORK_AGREEMENT_LITERAL, leftValue));
             return false;
         }
 
-        if (!validateRightOperand(ACTIVE, rightValue, context)) {
+        if (!Operator.EQ.equals(operator)) {
+            context.reportProblem("Invalid operator: expected '%s', got '%s'.".formatted(Operator.EQ, operator));
             return false;
         }
 
-        var vp = (JsonObject) context.getContextData(ParticipantAgent.class).getClaims().get(VP_PROPERTY);
-        if (!validatePresentation(vp, context)) {
+        var participantAgent = context.getContextData(ParticipantAgent.class);
+        if (participantAgent == null) {
+            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
             return false;
         }
 
-        return extractObjectsOfType(credentialType, vp)
-                .map(credential -> extractCredentialSubject(credential, context))
-                .filter(Objects::nonNull)
-                .anyMatch(credentialSubject -> validateUseCase(credentialSubject, operator, context));
-    }
 
-    private boolean validateUseCase(JsonObject credentialSubject, Operator operator, PolicyContext context) {
-        var usecaseAgreement = extractObjectsOfType(agreementType, credentialSubject).findFirst().orElse(null);
-        if (usecaseAgreement == null) {
-            context.reportProblem(format("%s is missing the usecase type: %s", credentialType, agreementType));
+        var vcListClaim = participantAgent.getClaims().get(VC_CLAIM);
+        if (vcListClaim == null) {
+            context.reportProblem("ParticipantAgent did not contain a '%s' claim.".formatted(VC_CLAIM));
+            return false;
+        }
+        if (!(vcListClaim instanceof List)) {
+            context.reportProblem("ParticipantAgent contains a '%s' claim, but the type is incorrect. Expected %s, got %s."
+                    .formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName()));
+            return false;
+        }
+        var vcList = (List<VerifiableCredential>) vcListClaim;
+        if (vcList.isEmpty()) {
+            context.reportProblem("ParticipantAgent contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM));
             return false;
         }
 
-        return validateVersion(context, operator, usecaseAgreement);
-    }
+        var rightOpMatcher = RIGHT_OPERAND_REGEX.matcher(rightValue.toString());
+        var legacyMatcher = OLD_LEFT_OPERAND_REGEX.matcher(leftValue.toString());
+        String subType; //this is the "usecase type", e.g. pcf, sustainability, etc.
 
-    private boolean validateVersion(PolicyContext context, Operator operator, JsonObject usecaseAgreement) {
-        if (agreementVersion == null) {
-            return true;
-        }
-        var version = extractStringValue(usecaseAgreement.get(CONTRACT_VERSION_PROPERTY));
-        if (version == null || version.trim().length() == 0) {
-            context.reportProblem(format("%s is missing a %s property", credentialType, CONTRACT_VERSION_PROPERTY));
+        if (!rightOpMatcher.matches()) {
+            context.reportProblem("Right-operand expected to contain (\"active\"|<subtype>)[:semver].");
             return false;
         }
+        var version = rightOpMatcher.group("version"); // optional: a version string, may be null.
 
-        switch (operator) {
-            case EQ -> {
-                if (!version.equals(agreementVersion)) {
-                    context.reportProblem(format("%s version %s does not match required version: %s", credentialType, version, agreementVersion));
-                    return false;
-                }
-                return true;
-            }
-            case GT -> {
-                if (version.compareTo(agreementVersion) <= 0) {
-                    context.reportProblem(format("%s version %s must be at greater than the required version: %s", credentialType, version, agreementVersion));
-                    return false;
-                }
-                return true;
-            }
-            case GEQ -> {
-                if (version.compareTo(agreementVersion) < 0) {
-                    context.reportProblem(format("%s version %s must be at least the required version: %s", credentialType, version, agreementVersion));
-                    return false;
-                }
-                return true;
-            }
-            default -> {
+        if (legacyMatcher.matches()) { // "old" framework agreement statement format: "FrameworkAgreement.XYZ eq active:version"
+            subType = legacyMatcher.group("usecase");
+            var rightOp = rightOpMatcher.group("rightop");
+            if (!ACTIVE.equals(rightOp)) {
+                context.reportProblem("When the sub-type is encoded in the left-operand (here: %s), the right-operand must start with the 'active' keyword.".formatted(subType));
                 return false;
             }
+        } else if (FRAMEWORK_AGREEMENT_LITERAL.equals(leftValue.toString())) { // "new" framework agreement statement format: FrameworkAgreement eq xyz:version
+            subType = rightOpMatcher.group("rightop");
+        } else {
+            context.reportProblem("Invalid left-operand: expected either FrameworkAgreement.<subtype> or FrameworkAgreement, found '%s'".formatted(leftValue));
+            return false;
         }
+
+        var credentials = filterCredential(vcList, subType, version);
+        if (credentials.isEmpty()) {
+            context.reportProblem("No credentials found that match the give Policy constraint: [%s %s %s]".formatted(leftValue.toString(), operator.toString(), rightValue.toString()));
+            return false;
+        }
+        return true;
+
     }
 
-    /**
-     * Configures a new constraint instance.
-     */
-    public static class Builder {
-        private final FrameworkAgreementConstraintFunction constraint;
-
-        private Builder(String credentialType) {
-            constraint = new FrameworkAgreementConstraintFunction(credentialType);
-        }
-
-        /**
-         * Sets the framework agreement type.
-         */
-        public Builder agreementType(String agreementType) {
-            constraint.agreementType = agreementType;
-            return this;
-        }
-
-        /**
-         * Sets the optional required agreement version. Equals, greater than, and greater than or equals operations are supported.
-         */
-        public Builder agreementVersion(String version) {
-            constraint.agreementVersion = version;
-            return this;
-        }
-
-        public FrameworkAgreementConstraintFunction build() {
-            requireNonNull(constraint.agreementType, "agreementType");
-            return constraint;
-        }
-
-        /**
-         * Ctor.
-         *
-         * @param credentialType the framework credential type required by the constraint instance.
-         * @return the builder
-         */
-        public static Builder newInstance(String credentialType) {
-            return new Builder(credentialType);
-        }
+    @Override
+    public boolean canHandle(Object leftValue) {
+        return leftValue instanceof String && leftValue.toString().startsWith(FRAMEWORK_AGREEMENT_LITERAL);
     }
 
+    private Collection<VerifiableCredential> filterCredential(List<VerifiableCredential> vcList, String subType, String version) {
+        return vcList.stream()
+                .filter(vc -> vc.getTypes().contains(capitalize(subType) + CREDENTIAL_LITERAL))
+                .filter(vc -> version == null || vc.getCredentialSubject().stream().anyMatch(cs -> cs.getClaims().get(CONTRACT_VERSION_PROPERTY).equals(version)))
+                .toList();
+    }
+
+    private String capitalize(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 
 }
