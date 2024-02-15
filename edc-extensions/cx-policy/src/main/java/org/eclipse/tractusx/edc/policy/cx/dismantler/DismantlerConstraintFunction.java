@@ -40,13 +40,20 @@ import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
 import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_NS_1_0;
 
+/**
+ * Enforces a Dismantler constraint. This function can check for these properties:
+ * <ul>
+ *     <li>presence: whether a Dismantler credential is present or not</li>
+ *     <li>activityType: whether an existing DismantlerCredential permits the activity types required by the constraint</li>
+ *     <li>allowedBrands: whether an existing DismantlerCredential permits the vehicle brands required by the constraint</li>
+ * </ul>
+ */
 public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunction {
 
     public static final String ALLOWED_VEHICLE_BRANDS = CX_NS_1_0 + "allowedVehicleBrands";
     private static final String DISMANTLER_LITERAL = "Dismantler";
     private static final String ALLOWED_ACTIVITIES = CX_NS_1_0 + "activityType";
 
-    @SuppressWarnings({ "SuspiciousMethodCalls" })
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
         Predicate<VerifiableCredential> predicate = c -> false;
@@ -88,7 +95,6 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
             return false;
         }
 
-
         return !vcListResult.getContent().stream().filter(predicate)
                 .toList().isEmpty();
     }
@@ -98,6 +104,16 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
         return leftOperand instanceof String && ((String) leftOperand).startsWith(DISMANTLER_LITERAL);
     }
 
+    /**
+     * Creates a {@link Predicate} based on the {@code rightOperand} that tests whether whatever property is extracted from the {@link VerifiableCredential}
+     * is valid, according to the operator. For example {@link Operator#IS_ALL_OF} would check that the list from the constraint (= rightOperand) intersects with the list
+     * stored in the claim identified by {@code credentialSubjectProperty} in the {@link VerifiableCredential#getCredentialSubject()}.
+     *
+     * @param credentialSubjectProperty The name of the claim to be extracted from the {@link VerifiableCredential#getCredentialSubject()}
+     * @param operator                  the operator
+     * @param rightOperand              The constraint value (i.e. policy expression right-operand)
+     * @return A predicate that tests a {@link VerifiableCredential} for the constraint
+     */
     @NotNull
     private Predicate<VerifiableCredential> getCredentialPredicate(String credentialSubjectProperty, Operator operator, Object rightOperand) {
         Predicate<VerifiableCredential> predicate;
@@ -118,6 +134,10 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
         return predicate;
     }
 
+    /**
+     * Checks whether {@code operator} is valid in the context of {@code rightOperand}. In practice, this means that if {@code rightOperand} is a String, it checks for {@link AbstractDynamicConstraintFunction#EQUALITY_OPERATORS},
+     * and if its list type, it checks for {@code List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF)}
+     */
     private boolean hasInvalidOperand(Operator operator, Object rightOperand, PolicyContext context) {
         if (rightOperand instanceof String) {
             return !checkOperator(operator, context, EQUALITY_OPERATORS);
@@ -129,6 +149,10 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
         }
     }
 
+    /**
+     * Checks whether two lists "intersect", i.e. that at least one element is found in both lists.
+     * Caution: {@code list1} may be modified!
+     */
     private List<?> intersect(List<?> list1, List<?> list2) {
         list1.retainAll(list2);
         return list1;
