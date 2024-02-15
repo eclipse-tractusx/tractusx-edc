@@ -19,8 +19,6 @@
 
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
-import org.eclipse.edc.identitytrust.model.CredentialSubject;
-import org.eclipse.edc.identitytrust.model.Issuer;
 import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -30,14 +28,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createCredential;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
@@ -67,7 +64,7 @@ class FrameworkAgreementConstraintFunctionTest {
     @Test
     void evaluate_invalidOperator() {
         assertThat(function.evaluate("FrameworkAgreement.foobar", Operator.HAS_PART, "irrelevant", permission, context)).isFalse();
-        verify(context).reportProblem(eq("Invalid operator: allowed operators are [EQ, NEQ], got 'HAS_PART'."));
+        verify(context).reportProblem(eq("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but got 'HAS_PART'."));
         verifyNoMoreInteractions(context);
     }
 
@@ -189,7 +186,7 @@ class FrameworkAgreementConstraintFunctionTest {
         ));
         assertThat(function.evaluate("FrameworkAgreement", Operator.NEQ, "sustainability", permission, context)).isFalse();
     }
-    
+
     @Test
     void evaluate_neq_requiredCredentialFound_withCorrectVersion() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
@@ -201,25 +198,6 @@ class FrameworkAgreementConstraintFunctionTest {
         assertThat(function.evaluate("FrameworkAgreement", Operator.NEQ, "sustainability:1.3.0", permission, context)).isTrue();
     }
 
-
-    private VerifiableCredential.Builder createCredential(String type, String version) {
-        return VerifiableCredential.Builder.newInstance()
-                .types(List.of("VerifiableCredential", type))
-                .id(UUID.randomUUID().toString())
-                .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
-                .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
-                .issuanceDate(Instant.now())
-                .credentialSubject(CredentialSubject.Builder.newInstance()
-                        .id("subject-id")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/holderIdentifier", "did:web:holder")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/contractVersion", version)
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/contractTemplate", "https://public.catena-x.org/contracts/pcf.v1.pdf")
-                        .build());
-    }
-
-    private VerifiableCredential.Builder createPcfCredential() {
-        return createCredential("PcfCredential", "1.0.0");
-    }
 
     @Nested
     class LegacyLeftOperand {
