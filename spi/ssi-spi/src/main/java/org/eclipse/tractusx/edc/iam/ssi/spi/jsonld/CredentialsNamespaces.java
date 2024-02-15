@@ -27,13 +27,21 @@ public interface CredentialsNamespaces {
     String W3C_VC_PREFIX = "https://www.w3.org/2018/credentials";
     String W3C_VC_NS = W3C_VC_PREFIX + "/v1";
     String VP_PROPERTY = "vp";
+    @Deprecated
     String CX_NS = "https://w3id.org/2023/catenax/credentials/";
+    @Deprecated
     String CX_SUMMARY_NS = CX_NS + "summary";
+    @Deprecated
     String CX_SUMMARY_NS_V1 = CX_SUMMARY_NS + "/v1";
+    @Deprecated
     String SUMMARY_CREDENTIAL_TYPE = CX_SUMMARY_NS + "/SummaryCredential";
+    @Deprecated
     String HOLDER_IDENTIFIER = CX_SUMMARY_NS + "/holderIdentifier";
+    @Deprecated
     String CX_USE_CASE_NS = CX_NS + "usecase";
+    @Deprecated
     String CX_USE_CASE_NS_V1 = CX_USE_CASE_NS + "/v1";
+    String CX_NS_1_0 = "https://w3id.org/catenax/credentials/v1.0.0/";
     String CX_SUMMARY_CREDENTIAL = "SummaryCredential";
     String CREDENTIAL_SUBJECT = W3C_VC_PREFIX + "#credentialSubject";
     String CREDENTIAL_ISSUER = W3C_VC_PREFIX + "#issuer";

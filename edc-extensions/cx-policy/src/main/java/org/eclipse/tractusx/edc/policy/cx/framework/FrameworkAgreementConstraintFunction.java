@@ -19,163 +19,200 @@
 
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
-import jakarta.json.JsonObject;
+import org.eclipse.edc.identitytrust.model.VerifiableCredential;
+import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractVpConstraintFunction;
+import org.eclipse.edc.spi.result.Result;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
 
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
-import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.edc.policy.model.Operator.GEQ;
-import static org.eclipse.edc.policy.model.Operator.GT;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_USE_CASE_NS;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.VP_PROPERTY;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdTypeFunctions.extractObjectsOfType;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.JsonLdValueFunctions.extractStringValue;
+import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_NS_1_0;
 
 
 /**
  * Enforces a Framework Agreement constraint.
  * <p>
- * A policy constraints requiring a usecase framework credential take a left operand in the form:
- * <pre>FrameworkAgreement.[type]</pre>
- * <p>
- * The following example requires a client to present a sustainability credential:
+ * This function can parse "FrameworkAgreement" constraints as defined in this <a href="https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/cx/policy/specs/policy.definitions.md#4-framework-agreement-constraints">documentation</a>:
  * <pre>
- * "constraint": {
- *     "leftOperand": "FrameworkAgreement.sustainability",
- *     "operator": "eq",
- *     "rightOperand": "active"
- * }
+ *     FrameworkAgreement EQ subtype[:version]
  * </pre>
- * <p>
- * NB: This function will be enabled in the 3.2 release.
+ * In addition, it will support the "legacy" notation, where the subtype is encoded in the left-operand:
+ * <pre>
+ *     FrameworkAgreement.subtype EQ active[:version]
+ * </pre>
+ * Either notation is converted into a set of predicates which are applied to the list of credentials. If the resulting filtered list is empty, the
+ * policy is considered <strong>not fulfilled</strong>. Note that if the {@code version} is specified, it <strong>must</strong> be satisfied by the <strong>same</strong>
+ * credential that satisfies the {@code subtype} requirement.
  */
-public class FrameworkAgreementConstraintFunction extends AbstractVpConstraintFunction {
-    public static final String CONTRACT_VERSION_PROPERTY = CX_USE_CASE_NS + "/contractVersion";
+public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstraintFunction<Permission> {
+    public static final String CONTRACT_VERSION_PROPERTY = CX_NS_1_0 + "contractVersion";
+    private static final String VC_CLAIM = "vc";
     private static final String ACTIVE = "active";
-    private String agreementType;
-    private String agreementVersion;
+    private static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
+    private static final String CREDENTIAL_LITERAL = "Credential";
+    private static final Collection<Operator> ALLOWED_OPERATORS = List.of(Operator.EQ, Operator.NEQ);
 
-    private FrameworkAgreementConstraintFunction(String credentialType) {
-        super(credentialType);
-    }
-
-    @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission permission, PolicyContext context) {
-        if (!validateOperator(operator, context, EQ, GT, GEQ)) {
-            return false;
-        }
-
-        if (!validateRightOperand(ACTIVE, rightValue, context)) {
-            return false;
-        }
-
-        var vp = (JsonObject) context.getContextData(ParticipantAgent.class).getClaims().get(VP_PROPERTY);
-        if (!validatePresentation(vp, context)) {
-            return false;
-        }
-
-        return extractObjectsOfType(credentialType, vp)
-                .map(credential -> extractCredentialSubject(credential, context))
-                .filter(Objects::nonNull)
-                .anyMatch(credentialSubject -> validateUseCase(credentialSubject, operator, context));
-    }
-
-    private boolean validateUseCase(JsonObject credentialSubject, Operator operator, PolicyContext context) {
-        var usecaseAgreement = extractObjectsOfType(agreementType, credentialSubject).findFirst().orElse(null);
-        if (usecaseAgreement == null) {
-            context.reportProblem(format("%s is missing the usecase type: %s", credentialType, agreementType));
-            return false;
-        }
-
-        return validateVersion(context, operator, usecaseAgreement);
-    }
-
-    private boolean validateVersion(PolicyContext context, Operator operator, JsonObject usecaseAgreement) {
-        if (agreementVersion == null) {
-            return true;
-        }
-        var version = extractStringValue(usecaseAgreement.get(CONTRACT_VERSION_PROPERTY));
-        if (version == null || version.trim().length() == 0) {
-            context.reportProblem(format("%s is missing a %s property", credentialType, CONTRACT_VERSION_PROPERTY));
-            return false;
-        }
-
-        switch (operator) {
-            case EQ -> {
-                if (!version.equals(agreementVersion)) {
-                    context.reportProblem(format("%s version %s does not match required version: %s", credentialType, version, agreementVersion));
-                    return false;
-                }
-                return true;
-            }
-            case GT -> {
-                if (version.compareTo(agreementVersion) <= 0) {
-                    context.reportProblem(format("%s version %s must be at greater than the required version: %s", credentialType, version, agreementVersion));
-                    return false;
-                }
-                return true;
-            }
-            case GEQ -> {
-                if (version.compareTo(agreementVersion) < 0) {
-                    context.reportProblem(format("%s version %s must be at least the required version: %s", credentialType, version, agreementVersion));
-                    return false;
-                }
-                return true;
-            }
-            default -> {
-                return false;
-            }
-        }
+    public FrameworkAgreementConstraintFunction() {
     }
 
     /**
-     * Configures a new constraint instance.
+     * Evaluates the constraint's left-operand and right-operand against a list of {@link VerifiableCredential} objects.
+     *
+     * @param leftValue  the left-side expression for the constraint. Must be either {@code FrameworkAgreement} or {@code FrameworkAgreement.subtype}.
+     * @param operator   the operation Must be {@link Operator#EQ} or {@link Operator#NEQ}
+     * @param rightValue the right-side expression for the constraint. Must be a string that is either {@code "active":[version]} or {@code subtype[:version]}.
+     * @param rule       the rule associated with the constraint. Ignored by this function.
+     * @param context    the policy context. Must contain the {@link ParticipantAgent}, which in turn must contain a list of {@link VerifiableCredential} stored
+     *                   in its claims using the {@code "vc"} key.
+     * @return true if at least one credential satisfied the requirement imposed by the constraint.
      */
-    public static class Builder {
-        private final FrameworkAgreementConstraintFunction constraint;
+    @Override
+    public boolean evaluate(Object leftValue, Operator operator, Object rightValue, Permission rule, PolicyContext context) {
 
-        private Builder(String credentialType) {
-            constraint = new FrameworkAgreementConstraintFunction(credentialType);
+        if (!ALLOWED_OPERATORS.contains(operator)) {
+            context.reportProblem("Invalid operator: allowed operators are %s, got '%s'.".formatted(ALLOWED_OPERATORS, operator));
+            return false;
         }
 
-        /**
-         * Sets the framework agreement type.
-         */
-        public Builder agreementType(String agreementType) {
-            constraint.agreementType = agreementType;
-            return this;
+        // we do not support list-type right-operands
+        if (!(leftValue instanceof String) || !(rightValue instanceof String)) {
+            context.reportProblem("Both the right- and left-operand must be of type String but were '%s' and '%s', respectively.".formatted(leftValue.getClass(), rightValue.getClass()));
+            return false;
         }
 
-        /**
-         * Sets the optional required agreement version. Equals, greater than, and greater than or equals operations are supported.
-         */
-        public Builder agreementVersion(String version) {
-            constraint.agreementVersion = version;
-            return this;
+        // make sure the ParticipantAgent is there
+        var participantAgent = context.getContextData(ParticipantAgent.class);
+        if (participantAgent == null) {
+            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+            return false;
         }
 
-        public FrameworkAgreementConstraintFunction build() {
-            requireNonNull(constraint.agreementType, "agreementType");
-            return constraint;
+        var leftOperand = leftValue.toString();
+        var rightOperand = rightValue.toString();
+        Result<List<Predicate<VerifiableCredential>>> predicateResult;
+
+        if (leftOperand.startsWith(FRAMEWORK_AGREEMENT_LITERAL + ".")) { // legacy notation
+            predicateResult = getFilterPredicateLegacy(leftOperand, rightOperand);
+
+        } else if (leftOperand.startsWith(FRAMEWORK_AGREEMENT_LITERAL)) { // new notation
+            predicateResult = getFilterPredicate(rightOperand);
+        } else { //invalid notation
+            context.reportProblem("Constraint left-operand must start with '%s' but was '%s'.".formatted(FRAMEWORK_AGREEMENT_LITERAL, leftValue));
+            return false;
         }
 
-        /**
-         * Ctor.
-         *
-         * @param credentialType the framework credential type required by the constraint instance.
-         * @return the builder
-         */
-        public static Builder newInstance(String credentialType) {
-            return new Builder(credentialType);
+        if (predicateResult.failed()) { // couldn't extract subtype/version predicate from constraint
+            context.reportProblem(predicateResult.getFailureDetail());
+            return false;
         }
+
+        var vcListResult = getCredentialList(participantAgent);
+        if (vcListResult.failed()) { // couldn't extract credential list from agent
+            context.reportProblem(vcListResult.getFailureDetail());
+            return false;
+        }
+        var rootPredicate = reducePredicates(predicateResult.getContent(), operator);
+        var credentials = vcListResult.getContent().stream().filter(rootPredicate).toList();
+
+        if (credentials.isEmpty()) {
+            context.reportProblem("No credentials found that match the give Policy constraint: [%s %s %s]".formatted(leftValue.toString(), operator.toString(), rightValue.toString()));
+            return false;
+        }
+        return true;
+
     }
 
+    /**
+     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@link false} otherwise.
+     */
+    @Override
+    public boolean canHandle(Object leftValue) {
+        return leftValue instanceof String && leftValue.toString().startsWith(FRAMEWORK_AGREEMENT_LITERAL);
+    }
+
+    @NotNull
+    private Predicate<VerifiableCredential> reducePredicates(List<Predicate<VerifiableCredential>> predicates, Operator operator) {
+        return Operator.EQ.equals(operator) ?
+                predicates.stream().reduce(Predicate::and).orElse(x -> true) :
+                predicates.stream().map(Predicate::negate).reduce(Predicate::and).orElse(x -> true);
+    }
+
+    /**
+     * Extracts a {@link List} of {@link VerifiableCredential} objects from the {@link ParticipantAgent}. Credentials must be
+     * stored in the agent's claims map using the "vc" key.
+     */
+    private Result<List<VerifiableCredential>> getCredentialList(ParticipantAgent agent) {
+        var vcListClaim = agent.getClaims().get(VC_CLAIM);
+
+        if (vcListClaim == null) {
+            return Result.failure("ParticipantAgent did not contain a '%s' claim.".formatted(VC_CLAIM));
+        }
+        if (!(vcListClaim instanceof List)) {
+            return Result.failure("ParticipantAgent contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName()));
+        }
+        var vcList = (List<VerifiableCredential>) vcListClaim;
+        if (vcList.isEmpty()) {
+            return Result.failure("ParticipantAgent contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM));
+        }
+        return Result.success(vcList);
+    }
+
+    /**
+     * Converts the right-operand (new notation) into either 1 or 2 predicates, depending on whether the version was encoded or not.
+     */
+    private Result<List<Predicate<VerifiableCredential>>> getFilterPredicate(String rightOperand) {
+        var tokens = rightOperand.split(":");
+        if (tokens.length > 2 || tokens.length == 0 || tokens[0] == null || tokens[0].isEmpty()) {
+            return Result.failure("Right-operand must contain the sub-type followed by an optional version string: <subtype>[:version], but was '%s'.".formatted(rightOperand));
+        }
+        var subtype = tokens[0];
+        var version = tokens.length == 2 ? tokens[1] : null;
+
+        return Result.success(createPredicates(subtype, version));
+    }
+
+    /**
+     * Converts the left- and right-operand (legacy notation) into either 1 or 2 predicates, depending on whether the version was encoded or not.
+     */
+    private Result<List<Predicate<VerifiableCredential>>> getFilterPredicateLegacy(String leftOperand, String rightOperand) {
+        var subType = leftOperand.replace(FRAMEWORK_AGREEMENT_LITERAL + ".", "");
+        if (subType.isEmpty()) {
+            return Result.failure("Left-operand must contain the sub-type 'FrameworkAgreement.<subtype>'.");
+        }
+        if (!rightOperand.startsWith(ACTIVE)) {
+            return Result.failure("Right-operand must contain the keyword 'active' followed by an optional version string: 'active'[:version], but was '%s'.".formatted(rightOperand));
+        }
+        var version = rightOperand.replace(ACTIVE, "").replace(":", "");
+        if (version.isEmpty()) {
+            version = null;
+        }
+
+        return Result.success(createPredicates(subType, version));
+    }
+
+    @NotNull
+    private List<Predicate<VerifiableCredential>> createPredicates(String subtype, @Nullable String version) {
+        var list = new ArrayList<Predicate<VerifiableCredential>>();
+        list.add(credential -> credential.getTypes().contains(capitalize(subtype) + CREDENTIAL_LITERAL));
+        if (version != null) {
+            list.add(credential -> credential.getCredentialSubject().stream().anyMatch(cs -> cs.getClaims().get(CONTRACT_VERSION_PROPERTY).equals(version)));
+        }
+        return list;
+    }
+
+    /**
+     * Capitalizes (makes uppercase) the first character of a non-null input string.
+     */
+    private String capitalize(@NotNull String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 
 }

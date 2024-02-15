@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.5.1"
+edc = "0.5.2-SNAPSHOT"
 apache-sshd = "2.12.0"
 assertj = "3.25.3"
 awaitility = "4.2.0"
@@ -39,6 +39,7 @@ edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.r
 edc-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-client", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
+edc-spi-identitytrust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
