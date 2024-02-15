@@ -32,6 +32,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:edr:edr-api"))
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
 
+    runtimeOnly(project(":edc-extensions:auth-tokenbased"))
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))
 
@@ -44,7 +45,6 @@ dependencies {
 
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.config.filesystem)
-    runtimeOnly(libs.edc.auth.tokenbased)
 
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.api.management.config)
