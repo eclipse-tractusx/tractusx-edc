@@ -19,8 +19,14 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
+import org.eclipse.edc.spi.security.Vault;
+
 /**
- * Configuration of the OAuth2 client
+ * Configuration of the OAuth2 client for the OAuth2 Client credentials flow
+ *
+ * @param tokenUrl          The token endpoint
+ * @param clientId          The identifier of the client
+ * @param clientSecretAlias The client secret alias to be used with the {@link Vault} for fetching the secret
  */
 public record StsRemoteClientConfiguration(String tokenUrl, String clientId, String clientSecretAlias) {
 

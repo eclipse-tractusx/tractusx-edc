@@ -28,6 +28,10 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauthClientImpl;
 
+/**
+ * Extension that provides an implementation if {@link DimOauth2Client} using {@link Oauth2Client}
+ * and the {@link StsRemoteClientConfiguration} configuration for fetching an OAuth token
+ */
 @Extension(DimOauthClientExtension.NAME)
 public class DimOauthClientExtension implements ServiceExtension {
 

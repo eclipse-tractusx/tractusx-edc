@@ -53,6 +53,14 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
 import static org.eclipse.edc.spi.http.FallbackFactories.retryWhenStatusIsNotIn;
 
+/**
+ * Implementation of {@link SecureTokenService} that talks with DIM wallet. It supports two APIs for fetching the
+ * SI Token:
+ * <ul>
+ *     <li>grantAccess: request the SI token to DIM by providing the credential types required</li>
+ *     <li>signToken: request the SI token to DIM by providing the extracted `access_token` from the received SI token</li>
+ * </ul>
+ */
 public class DimSecureTokenService implements SecureTokenService {
 
     public static final MediaType TYPE_JSON = MediaType.parse("application/json");

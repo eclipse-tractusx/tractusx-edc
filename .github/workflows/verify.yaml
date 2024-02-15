@@ -119,9 +119,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests
-        run: |
-          ./gradlew compileJava compileTestJava
-          ./gradlew test -DincludeTags="EndToEndTest" -PverboseTest=true
+        run: ./gradlew test -DincludeTags="EndToEndTest" -PverboseTest=true
 
   postgres-tests:
     runs-on: ubuntu-latest
