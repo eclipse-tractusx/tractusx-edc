@@ -26,6 +26,7 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -77,63 +78,11 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
                 predicate = predicate.negate();
             }
         } else if (leftOperand.equals(DISMANTLER_LITERAL + ".activityType")) {
-            if (rightOperand instanceof String) {
-                if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
-                    return false;
-                }
-            } else if (rightOperand instanceof Iterable<?>) {
-                if (!checkOperator(operator, context, List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF))) {
-                    return false;
-                }
-            } else {
-                context.reportProblem("Invalid right-operand type: expected String or List, but got: %s".formatted(rightOperand.getClass().getName()));
-                return false;
-            }
-
-            var allowedActivities = getList(rightOperand);
-            // the filter predicate is determined by the operator
-            predicate = credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
-                var activitiesFromCredential = getList(subject.getClaims().getOrDefault(ALLOWED_ACTIVITIES, List.of()));
-                return switch (operator) {
-                    case EQ -> activitiesFromCredential.equals(allowedActivities);
-                    case NEQ -> !activitiesFromCredential.equals(allowedActivities);
-                    case IN ->
-                            new HashSet<>(allowedActivities).containsAll(activitiesFromCredential); //IntelliJ says Hashset has better performance
-                    case IS_ANY_OF -> !intersect(allowedActivities, activitiesFromCredential).isEmpty();
-                    case IS_NONE_OF -> intersect(allowedActivities, activitiesFromCredential).isEmpty();
-                    default -> false;
-                };
-            });
-
+            if (hasInvalidOperand(operator, rightOperand, context)) return false;
+            predicate = getCredentialPredicate(ALLOWED_ACTIVITIES, operator, rightOperand);
         } else if (leftOperand.equals(DISMANTLER_LITERAL + ".allowedBrands")) {
-            if (rightOperand instanceof String) {
-                if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
-                    return false;
-                }
-            } else if (rightOperand instanceof Iterable<?>) {
-                if (!checkOperator(operator, context, List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF))) {
-                    return false;
-                }
-            } else {
-                context.reportProblem("Invalid right-operand type: expected String or List, but got: %s".formatted(rightOperand.getClass().getName()));
-                return false;
-            }
-
-            var allowedBrands = getList(rightOperand);
-
-            // the filter predicate is determined by the operator
-            predicate = credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
-                var brandsFromCredential = getList(subject.getClaims().getOrDefault(ALLOWED_VEHICLE_BRANDS, List.of()));
-                return switch (operator) {
-                    case EQ -> brandsFromCredential.equals(allowedBrands);
-                    case NEQ -> !brandsFromCredential.equals(allowedBrands);
-                    case IN ->
-                            new HashSet<>(allowedBrands).containsAll(brandsFromCredential); //IntelliJ says Hashset has better performance
-                    case IS_ANY_OF -> !intersect(allowedBrands, brandsFromCredential).isEmpty();
-                    case IS_NONE_OF -> intersect(allowedBrands, brandsFromCredential).isEmpty();
-                    default -> false;
-                };
-            });
+            if (hasInvalidOperand(operator, rightOperand, context)) return false;
+            predicate = getCredentialPredicate(ALLOWED_VEHICLE_BRANDS, operator, rightOperand);
         } else {
             context.reportProblem("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was '%s'".formatted(leftOperand));
             return false;
@@ -147,6 +96,37 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
     @Override
     public boolean canHandle(Object leftOperand) {
         return leftOperand instanceof String && ((String) leftOperand).startsWith(DISMANTLER_LITERAL);
+    }
+
+    @NotNull
+    private Predicate<VerifiableCredential> getCredentialPredicate(String credentialSubjectProperty, Operator operator, Object rightOperand) {
+        Predicate<VerifiableCredential> predicate;
+        var allowedActivities = getList(rightOperand);
+        // the filter predicate is determined by the operator
+        predicate = credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
+            var activitiesFromCredential = getList(subject.getClaims().getOrDefault(credentialSubjectProperty, List.of()));
+            return switch (operator) {
+                case EQ -> activitiesFromCredential.equals(allowedActivities);
+                case NEQ -> !activitiesFromCredential.equals(allowedActivities);
+                case IN ->
+                        new HashSet<>(allowedActivities).containsAll(activitiesFromCredential); //IntelliJ says Hashset has better performance
+                case IS_ANY_OF -> !intersect(allowedActivities, activitiesFromCredential).isEmpty();
+                case IS_NONE_OF -> intersect(allowedActivities, activitiesFromCredential).isEmpty();
+                default -> false;
+            };
+        });
+        return predicate;
+    }
+
+    private boolean hasInvalidOperand(Operator operator, Object rightOperand, PolicyContext context) {
+        if (rightOperand instanceof String) {
+            return !checkOperator(operator, context, EQUALITY_OPERATORS);
+        } else if (rightOperand instanceof Iterable<?>) {
+            return !checkOperator(operator, context, List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF));
+        } else {
+            context.reportProblem("Invalid right-operand type: expected String or List, but got: %s".formatted(rightOperand.getClass().getName()));
+            return true;
+        }
     }
 
     private List<?> intersect(List<?> list1, List<?> list2) {
