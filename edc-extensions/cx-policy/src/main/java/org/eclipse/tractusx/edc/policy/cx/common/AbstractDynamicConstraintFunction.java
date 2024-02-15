@@ -31,6 +31,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This is a base class for dynamically bound Tractus-X constraint evaluation functions that implements some basic common functionality and defines some
+ * common constants
+ */
 public abstract class AbstractDynamicConstraintFunction implements DynamicAtomicConstraintFunction<Permission> {
     public static final String VC_CLAIM = "vc";
     public static final String ACTIVE = "active";
