@@ -20,17 +20,17 @@
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
 import org.eclipse.edc.identitytrust.model.VerifiableCredential;
-import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -52,13 +52,9 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
  * policy is considered <strong>not fulfilled</strong>. Note that if the {@code version} is specified, it <strong>must</strong> be satisfied by the <strong>same</strong>
  * credential that satisfies the {@code subtype} requirement.
  */
-public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstraintFunction<Permission> {
+public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstraintFunction {
     public static final String CONTRACT_VERSION_PROPERTY = CX_NS_1_0 + "contractVersion";
-    private static final String VC_CLAIM = "vc";
-    private static final String ACTIVE = "active";
     private static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
-    private static final String CREDENTIAL_LITERAL = "Credential";
-    private static final Collection<Operator> ALLOWED_OPERATORS = List.of(Operator.EQ, Operator.NEQ);
 
     public FrameworkAgreementConstraintFunction() {
     }
@@ -77,8 +73,7 @@ public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstr
     @Override
     public boolean evaluate(Object leftValue, Operator operator, Object rightValue, Permission rule, PolicyContext context) {
 
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            context.reportProblem("Invalid operator: allowed operators are %s, got '%s'.".formatted(ALLOWED_OPERATORS, operator));
+        if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
             return false;
         }
 
@@ -131,7 +126,7 @@ public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstr
     }
 
     /**
-     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@link false} otherwise.
+     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@code false} otherwise.
      */
     @Override
     public boolean canHandle(Object leftValue) {
@@ -143,26 +138,6 @@ public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstr
         return Operator.EQ.equals(operator) ?
                 predicates.stream().reduce(Predicate::and).orElse(x -> true) :
                 predicates.stream().map(Predicate::negate).reduce(Predicate::and).orElse(x -> true);
-    }
-
-    /**
-     * Extracts a {@link List} of {@link VerifiableCredential} objects from the {@link ParticipantAgent}. Credentials must be
-     * stored in the agent's claims map using the "vc" key.
-     */
-    private Result<List<VerifiableCredential>> getCredentialList(ParticipantAgent agent) {
-        var vcListClaim = agent.getClaims().get(VC_CLAIM);
-
-        if (vcListClaim == null) {
-            return Result.failure("ParticipantAgent did not contain a '%s' claim.".formatted(VC_CLAIM));
-        }
-        if (!(vcListClaim instanceof List)) {
-            return Result.failure("ParticipantAgent contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName()));
-        }
-        var vcList = (List<VerifiableCredential>) vcListClaim;
-        if (vcList.isEmpty()) {
-            return Result.failure("ParticipantAgent contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM));
-        }
-        return Result.success(vcList);
     }
 
     /**
@@ -201,7 +176,7 @@ public class FrameworkAgreementConstraintFunction implements DynamicAtomicConstr
     @NotNull
     private List<Predicate<VerifiableCredential>> createPredicates(String subtype, @Nullable String version) {
         var list = new ArrayList<Predicate<VerifiableCredential>>();
-        list.add(credential -> credential.getTypes().contains(capitalize(subtype) + CREDENTIAL_LITERAL));
+        list.add(new CredentialTypePredicate(capitalize(subtype) + CREDENTIAL_LITERAL));
         if (version != null) {
             list.add(credential -> credential.getCredentialSubject().stream().anyMatch(cs -> cs.getClaims().get(CONTRACT_VERSION_PROPERTY).equals(version)));
         }
