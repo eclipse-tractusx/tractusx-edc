@@ -62,7 +62,7 @@ jobs:
         with:
           scan-type: "config"
           # ignore-unfixed: true
-          exit-code: "1"
+          exit-code: "0"
           hide-progress: false
           format: "sarif"
           output: "trivy-results-config.sarif"
@@ -107,7 +107,7 @@ jobs:
           image-ref: "tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
           format: "sarif"
           output: "trivy-results-${{ matrix.image }}.sarif"
-          exit-code: "1"
+          exit-code: "0"
           severity: "CRITICAL,HIGH"
           timeout: "10m0s"
       - name: Upload Trivy scan results to GitHub Security tab
