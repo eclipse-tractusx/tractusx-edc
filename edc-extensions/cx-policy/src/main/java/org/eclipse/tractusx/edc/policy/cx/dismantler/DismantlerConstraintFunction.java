@@ -117,17 +117,17 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
     @NotNull
     private Predicate<VerifiableCredential> getCredentialPredicate(String credentialSubjectProperty, Operator operator, Object rightOperand) {
         Predicate<VerifiableCredential> predicate;
-        var allowedActivities = getList(rightOperand);
+        var allowedValues = getList(rightOperand);
         // the filter predicate is determined by the operator
         predicate = credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
-            var activitiesFromCredential = getList(subject.getClaims().getOrDefault(credentialSubjectProperty, List.of()));
+            var claimsFromCredential = getList(subject.getClaims().getOrDefault(credentialSubjectProperty, List.of()));
             return switch (operator) {
-                case EQ -> activitiesFromCredential.equals(allowedActivities);
-                case NEQ -> !activitiesFromCredential.equals(allowedActivities);
+                case EQ -> claimsFromCredential.equals(allowedValues);
+                case NEQ -> !claimsFromCredential.equals(allowedValues);
                 case IN ->
-                        new HashSet<>(allowedActivities).containsAll(activitiesFromCredential); //IntelliJ says Hashset has better performance
-                case IS_ANY_OF -> !intersect(allowedActivities, activitiesFromCredential).isEmpty();
-                case IS_NONE_OF -> intersect(allowedActivities, activitiesFromCredential).isEmpty();
+                        new HashSet<>(allowedValues).containsAll(claimsFromCredential); //IntelliJ says Hashset has better performance
+                case IS_ANY_OF -> !intersect(allowedValues, claimsFromCredential).isEmpty();
+                case IS_NONE_OF -> intersect(allowedValues, claimsFromCredential).isEmpty();
                 default -> false;
             };
         });
@@ -144,7 +144,7 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
         } else if (rightOperand instanceof Iterable<?>) {
             return !checkOperator(operator, context, List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF));
         } else {
-            context.reportProblem("Invalid right-operand type: expected String or List, but got: %s".formatted(rightOperand.getClass().getName()));
+            context.reportProblem("Invalid right-operand type: expected String or List, but received: %s".formatted(rightOperand.getClass().getName()));
             return true;
         }
     }

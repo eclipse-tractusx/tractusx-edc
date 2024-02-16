@@ -64,7 +64,7 @@ class FrameworkAgreementConstraintFunctionTest {
     @Test
     void evaluate_invalidOperator() {
         assertThat(function.evaluate("FrameworkAgreement.foobar", Operator.HAS_PART, "irrelevant", permission, context)).isFalse();
-        verify(context).reportProblem(eq("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but got 'HAS_PART'."));
+        verify(context).reportProblem(eq("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received 'HAS_PART'."));
         verifyNoMoreInteractions(context);
     }
 
@@ -90,7 +90,7 @@ class FrameworkAgreementConstraintFunctionTest {
                 "vc", new Object()
         ));
         assertThat(function.evaluate("FrameworkAgreement.foobar", Operator.EQ, "active:0.0.1", permission, context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, got java.lang.Object."));
+        verify(context).reportProblem(eq("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, received java.lang.Object."));
     }
 
     @Test

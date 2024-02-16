@@ -89,7 +89,7 @@ class DismantlerConstraintFunctionTest {
     void evaluate_vcClaimNotList() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", new Object()));
         assertThat(function.evaluate("Dismantler", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, got java.lang.Object."));
+        verify(context).reportProblem(eq("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, received java.lang.Object."));
     }
 
     @Nested
@@ -259,7 +259,7 @@ class DismantlerConstraintFunctionTest {
 
             assertThat(illegalOp).allSatisfy(op -> {
                 assertThat(function.evaluate("Dismantler.allowedBrands", op, List.of("Gaz", "Moskvich"), null, context)).isFalse();
-                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but got '%s'.".formatted(op));
+                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
             });
         }
 
@@ -274,7 +274,7 @@ class DismantlerConstraintFunctionTest {
 
             assertThat(invalidOperators).allSatisfy(op -> {
                 assertThat(function.evaluate("Dismantler.allowedBrands", op, "Moskvich", null, context)).isFalse();
-                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but got '%s'.".formatted(op));
+                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
             });
         }
 
@@ -283,7 +283,7 @@ class DismantlerConstraintFunctionTest {
         void evaluate_righOpInvalidType() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Gaz", "Yugo").build())));
             assertThat(function.evaluate("Dismantler.allowedBrands", IN, Map.of("foo", "bar"), null, context)).isFalse();
-            verify(context).reportProblem(startsWith("Invalid right-operand type: expected String or List, but got:"));
+            verify(context).reportProblem(startsWith("Invalid right-operand type: expected String or List, but received:"));
         }
     }
 
@@ -425,7 +425,7 @@ class DismantlerConstraintFunctionTest {
 
             assertThat(invalidOperators).allSatisfy(op -> {
                 assertThat(function.evaluate("Dismantler.activityType", op, "vehicleDismantle", null, context)).isFalse();
-                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but got '%s'.".formatted(op));
+                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
             });
         }
 
@@ -434,7 +434,7 @@ class DismantlerConstraintFunctionTest {
         void evaluate_righOpInvalidType() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential(brands, "vehicleDismantle").build())));
             assertThat(function.evaluate("Dismantler.activityType", IN, Map.of("foo", "bar"), null, context)).isFalse();
-            verify(context).reportProblem(startsWith("Invalid right-operand type: expected String or List, but got:"));
+            verify(context).reportProblem(startsWith("Invalid right-operand type: expected String or List, but received:"));
         }
     }
 }
