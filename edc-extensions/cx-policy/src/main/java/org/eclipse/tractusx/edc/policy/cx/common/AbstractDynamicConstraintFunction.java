@@ -47,7 +47,7 @@ public abstract class AbstractDynamicConstraintFunction implements DynamicAtomic
 
     protected boolean checkOperator(Operator actual, PolicyContext context, Collection<Operator> expectedOperators) {
         if (!expectedOperators.contains(actual)) {
-            context.reportProblem("Invalid operator: this constraint only allows the following operators: %s, but got '%s'.".formatted(EQUALITY_OPERATORS, actual));
+            context.reportProblem("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(EQUALITY_OPERATORS, actual));
             return false;
         }
         return true;
@@ -64,7 +64,7 @@ public abstract class AbstractDynamicConstraintFunction implements DynamicAtomic
             return Result.failure("ParticipantAgent did not contain a '%s' claim.".formatted(VC_CLAIM));
         }
         if (!(vcListClaim instanceof List)) {
-            return Result.failure("ParticipantAgent contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName()));
+            return Result.failure("ParticipantAgent contains a '%s' claim, but the type is incorrect. Expected %s, received %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName()));
         }
         var vcList = (List<VerifiableCredential>) vcListClaim;
         if (vcList.isEmpty()) {
