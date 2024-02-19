@@ -23,7 +23,20 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.eclipse.edc.iam.did.spi.document.DidDocument;
+import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
+import org.eclipse.edc.identityhub.spi.ParticipantContextService;
+import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.model.participant.KeyDescriptor;
+import org.eclipse.edc.identityhub.spi.model.participant.ParticipantManifest;
+import org.eclipse.edc.identityhub.spi.store.CredentialStore;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.tractusx.edc.did.DidExampleResolver;
+import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
+import org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer;
+import org.eclipse.tractusx.edc.lifecycle.tx.iatp.IatpParticipant;
 import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.IOException;
@@ -35,6 +48,8 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.ECGenParameterSpec;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class IatpHelperFunctions {
@@ -113,5 +128,47 @@ public class IatpHelperFunctions {
                 .add("https://w3id.org/security/suites/jws-2020/v1")
                 .add("https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json")
                 .build();
+    }
+
+    public static void configureParticipant(DataspaceIssuer issuer, IatpParticipant participant, ParticipantRuntime runtime, Map<String, DidDocument> dids, ParticipantRuntime stsRuntime) {
+
+        if (stsRuntime != null) {
+            stsRuntime.getContext().getService(Vault.class).storeSecret(participant.verificationId(), participant.privateKey());
+        }
+        var participantContextService = runtime.getContext().getService(ParticipantContextService.class);
+        var vault = runtime.getContext().getService(Vault.class);
+        var didResolverRegistry = runtime.getContext().getService(DidResolverRegistry.class);
+        var didResolver = new DidExampleResolver();
+        dids.forEach(didResolver::addCached);
+        didResolverRegistry.register(didResolver);
+
+        var key = KeyDescriptor.Builder.newInstance()
+                .keyId(participant.keyId())
+                .publicKeyPem(participant.publicKey())
+                .build();
+
+        var participantManifest = ParticipantManifest.Builder.newInstance()
+                .participantId(participant.didUrl())
+                .did(participant.didUrl())
+                .key(key)
+                .build();
+
+        participantContextService.createParticipantContext(participantManifest);
+        vault.storeSecret(participant.keyId(), participant.privateKey());
+
+        storeCredentials(issuer, participant, runtime);
+    }
+
+    private static void storeCredentials(DataspaceIssuer issuer, IatpParticipant participant, ParticipantRuntime runtime) {
+        var credentialStore = runtime.getContext().getService(CredentialStore.class);
+        var jsonLd = runtime.getContext().getService(JsonLd.class);
+        issueCredentials(issuer, participant, jsonLd).forEach(credentialStore::create);
+    }
+
+    private static List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer, IatpParticipant participant, JsonLd jsonLd) {
+        return List.of(
+                issuer.issueMembershipCredential(participant, jsonLd),
+                issuer.issueFrameworkCredential(participant, jsonLd, "PcfCredential"));
+
     }
 }

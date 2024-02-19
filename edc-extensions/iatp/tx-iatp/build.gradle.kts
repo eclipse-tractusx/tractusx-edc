@@ -25,7 +25,7 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.policyengine)
-    implementation(libs.edc.identity.core.trust)
+    implementation(libs.edc.identity.trust.spi)
     implementation(project(":spi:core-spi"))
 
     testImplementation(libs.edc.junit)

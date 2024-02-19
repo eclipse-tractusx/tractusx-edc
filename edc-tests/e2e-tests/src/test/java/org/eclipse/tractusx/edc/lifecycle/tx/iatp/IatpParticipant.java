@@ -31,6 +31,7 @@ import java.security.KeyPair;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ import static org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer.DATASPA
  */
 public class IatpParticipant {
 
-    public static final String KEY_ID = "#key1";
+    public static final String KEY_ID = "key1";
     public static final String DID_EXAMPLE = "did:example:";
     protected final URI csService = URI.create("http://localhost:" + getFreePort() + "/api/resolution");
     private final TxParticipant participant;
@@ -109,7 +110,11 @@ public class IatpParticipant {
     }
 
     public String verificationId() {
-        return didUrl() + KEY_ID;
+        return didUrl() + "#" + KEY_ID;
+    }
+
+    public String keyId() {
+        return KEY_ID;
     }
 
     public String privateKey() {
@@ -124,11 +129,16 @@ public class IatpParticipant {
         return didDocument;
     }
 
+
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
+
     private DidDocument generateDidDocument() {
         var service = new Service();
         service.setId("#credential-service");
         service.setType("CredentialService");
-        service.setServiceEndpoint(csService + "/participants/" + getBpn());
+        service.setServiceEndpoint(csService + "/v1/participants/" + toBase64(didUrl()));
 
         var ecKey = new ECKey.Builder(Curve.P_256, (ECPublicKey) keyPair.getPublic())
                 .privateKey((ECPrivateKey) keyPair.getPrivate())
@@ -149,4 +159,7 @@ public class IatpParticipant {
                 .build();
     }
 
+    private String toBase64(String s) {
+        return Base64.getUrlEncoder().encodeToString(s.getBytes());
+    }
 }

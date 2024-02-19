@@ -17,20 +17,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iatp.policy;
+plugins {
+    `java-library`
+    `maven-publish`
+}
 
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
-import org.eclipse.edc.policy.model.Permission;
+dependencies {
+    implementation(libs.edc.identity.trust.spi)
+    implementation(libs.edc.auth.oauth2.client)
+    implementation(project(":spi:core-spi"))
+    implementation(project(":core:core-utils"))
 
-import java.util.Map;
-
-public abstract class BaseCredentialEvaluationFunction implements AtomicConstraintFunction<Permission> {
-
-    protected <T> T getClaim(Class<T> type, String postfix, Map<String, Object> claims) {
-        return claims.entrySet().stream().filter(e -> e.getKey().endsWith(postfix))
-                .findFirst()
-                .map(Map.Entry::getValue)
-                .map(type::cast)
-                .orElse(null);
-    }
+    testImplementation(libs.edc.junit)
 }

@@ -21,36 +21,24 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
-import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
-import org.eclipse.edc.identityhub.spi.ParticipantContextService;
-import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
-import org.eclipse.edc.identityhub.spi.model.participant.KeyDescriptor;
-import org.eclipse.edc.identityhub.spi.model.participant.ParticipantManifest;
-import org.eclipse.edc.identityhub.spi.store.CredentialStore;
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.did.DidExampleResolver;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.IatpParticipant;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.SecureTokenService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTIAL_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
-// temporarily disabled waiting for an upstream fix
-@Disabled
 public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
 
     protected static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer();
@@ -93,55 +81,11 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
         dids.put(SOKRATES_IATP.didUrl(), SOKRATES_IATP.didDocument());
         dids.put(PLATO_IATP.didUrl(), PLATO_IATP.didDocument());
 
-        configureParticipant(SOKRATES_IATP, SOKRATES_RUNTIME, dids);
-        configureParticipant(PLATO_IATP, PLATO_RUNTIME, dids);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, SOKRATES_IATP, SOKRATES_RUNTIME, dids, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PLATO_IATP, PLATO_RUNTIME, dids, STS_RUNTIME);
 
     }
 
-    private static void configureParticipant(IatpParticipant participant, ParticipantRuntime runtime, Map<String, DidDocument> dids) {
-        STS_RUNTIME.getContext().getService(Vault.class).storeSecret(participant.verificationId(), participant.privateKey());
-        var participantContextService = runtime.getContext().getService(ParticipantContextService.class);
-        var vault = runtime.getContext().getService(Vault.class);
-        var didResolverRegistry = runtime.getContext().getService(DidResolverRegistry.class);
-        var didResolver = new DidExampleResolver();
-        dids.forEach(didResolver::addCached);
-        didResolverRegistry.register(didResolver);
-
-        var key = KeyDescriptor.Builder.newInstance()
-                .keyId(participant.verificationId())
-                .publicKeyPem(participant.publicKey())
-                .build();
-
-        var participantManifest = ParticipantManifest.Builder.newInstance()
-                .participantId(participant.getBpn())
-                .did(participant.didUrl())
-                .key(key)
-                .build();
-
-        participantContextService.createParticipantContext(participantManifest);
-        vault.storeSecret(participant.verificationId(), participant.privateKey());
-
-        storeCredentials(participant, runtime);
-    }
-
-    private static void storeCredentials(IatpParticipant participant, ParticipantRuntime runtime) {
-        var credentialStore = runtime.getContext().getService(CredentialStore.class);
-        var jsonLd = runtime.getContext().getService(JsonLd.class);
-        issueCredentials(participant, jsonLd).forEach(credentialStore::create);
-    }
-
-    private static List<VerifiableCredentialResource> issueCredentials(IatpParticipant participant, JsonLd jsonLd) {
-
-        if (participant.getBpn().startsWith("PLATO")) {
-            return List.of(
-                    DATASPACE_ISSUER_PARTICIPANT.issueMembershipCredential(participant, jsonLd));
-        } else {
-            return List.of(
-                    DATASPACE_ISSUER_PARTICIPANT.issueMembershipCredential(participant, jsonLd),
-                    DATASPACE_ISSUER_PARTICIPANT.issueFrameworkCredential(participant, jsonLd, "PcfCredential"));
-        }
-
-    }
 
     @BeforeEach
     void setup() throws IOException {

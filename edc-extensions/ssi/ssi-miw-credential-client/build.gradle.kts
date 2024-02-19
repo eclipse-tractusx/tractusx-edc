@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     implementation(project(":spi:ssi-spi"))
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.http)
     implementation(libs.edc.spi.jsonld)
