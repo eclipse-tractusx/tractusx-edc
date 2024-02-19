@@ -27,7 +27,6 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,10 +39,6 @@ public abstract class AbstractDynamicCredentialConstraintFunction implements Dyn
     public static final String ACTIVE = "active";
     public static final String CREDENTIAL_LITERAL = "Credential";
     protected static final Collection<Operator> EQUALITY_OPERATORS = List.of(Operator.EQ, Operator.NEQ);
-
-    protected boolean checkOperator(Operator actual, PolicyContext context, Operator... expectedOperators) {
-        return checkOperator(actual, context, Arrays.asList(expectedOperators));
-    }
 
     protected boolean checkOperator(Operator actual, PolicyContext context, Collection<Operator> expectedOperators) {
         if (!expectedOperators.contains(actual)) {

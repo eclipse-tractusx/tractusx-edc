@@ -26,6 +26,10 @@ import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 
+/**
+ * This constraint function checks that a MembershipCredential is present in a list of {@link org.eclipse.edc.identitytrust.model.VerifiableCredential}
+ * objects extracted from a {@link ParticipantAgent} which is expected to be present on the {@link PolicyContext}.
+ */
 public class MembershipCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
     private static final String MEMBERSHIP_LITERAL = "Membership";
 
