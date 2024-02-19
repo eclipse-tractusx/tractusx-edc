@@ -77,6 +77,7 @@ public class PolicyHelperFunctions {
 
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
                 .add("permission", permission)
                 .build();
     }
@@ -128,6 +129,7 @@ public class PolicyHelperFunctions {
     public static JsonObject bnpPolicy(String... bnps) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(permission(bnps)))
                 .build();
@@ -151,6 +153,7 @@ public class PolicyHelperFunctions {
     public static JsonObject frameworkPolicy(Map<String, String> permissions) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(frameworkPermission(permissions)))
                 .build();

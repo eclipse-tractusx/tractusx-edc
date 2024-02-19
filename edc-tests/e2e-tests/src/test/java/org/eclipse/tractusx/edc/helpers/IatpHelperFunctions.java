@@ -145,6 +145,7 @@ public class IatpHelperFunctions {
         var key = KeyDescriptor.Builder.newInstance()
                 .keyId(participant.keyId())
                 .publicKeyPem(participant.publicKey())
+                .privateKeyAlias(participant.keyId())
                 .build();
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
