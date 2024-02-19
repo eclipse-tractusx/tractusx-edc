@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class FrameworkAgreementConstraintFunctionTest {
-    private final FrameworkAgreementConstraintFunction function = new FrameworkAgreementConstraintFunction();
+    private final FrameworkAgreementCredentialConstraintFunction function = new FrameworkAgreementCredentialConstraintFunction();
     private final PolicyContext context = mock();
     private Permission permission;
     private ParticipantAgent participantAgent;

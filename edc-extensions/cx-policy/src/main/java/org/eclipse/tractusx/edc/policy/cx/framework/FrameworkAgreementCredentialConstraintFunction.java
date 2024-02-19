@@ -25,7 +25,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,11 +52,11 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
  * policy is considered <strong>not fulfilled</strong>. Note that if the {@code version} is specified, it <strong>must</strong> be satisfied by the <strong>same</strong>
  * credential that satisfies the {@code subtype} requirement.
  */
-public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstraintFunction {
+public class FrameworkAgreementCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
     public static final String CONTRACT_VERSION_PROPERTY = CX_NS_1_0 + "contractVersion";
     private static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
 
-    public FrameworkAgreementConstraintFunction() {
+    public FrameworkAgreementCredentialConstraintFunction() {
     }
 
     /**
@@ -83,10 +83,9 @@ public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstra
             return false;
         }
 
-        // make sure the ParticipantAgent is there
-        var participantAgent = context.getContextData(ParticipantAgent.class);
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+        var participantAgent = extractParticipantAgent(context);
+        if (participantAgent.failed()) {
+            context.reportProblem(participantAgent.getFailureDetail());
             return false;
         }
 
@@ -109,7 +108,7 @@ public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstra
             return false;
         }
 
-        var vcListResult = getCredentialList(participantAgent);
+        var vcListResult = getCredentialList(participantAgent.getContent());
         if (vcListResult.failed()) { // couldn't extract credential list from agent
             context.reportProblem(vcListResult.getFailureDetail());
             return false;
@@ -126,7 +125,7 @@ public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstra
     }
 
     /**
-     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@code false} otherwise.
+     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementCredentialConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@code false} otherwise.
      */
     @Override
     public boolean canHandle(Object leftValue) {

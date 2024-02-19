@@ -23,8 +23,7 @@ import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +47,7 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
  *     <li>allowedBrands: whether an existing DismantlerCredential permits the vehicle brands required by the constraint</li>
  * </ul>
  */
-public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunction {
+public class DismantlerCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
 
     public static final String ALLOWED_VEHICLE_BRANDS = CX_NS_1_0 + "allowedVehicleBrands";
     private static final String DISMANTLER_LITERAL = "Dismantler";
@@ -59,14 +58,14 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
         Predicate<VerifiableCredential> predicate = c -> false;
 
         // make sure the ParticipantAgent is there
-        var participantAgent = context.getContextData(ParticipantAgent.class);
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+        var participantAgent = extractParticipantAgent(context);
+        if (participantAgent.failed()) {
+            context.reportProblem(participantAgent.getFailureDetail());
             return false;
         }
 
         // check if the participant agent contains the correct data
-        var vcListResult = getCredentialList(participantAgent);
+        var vcListResult = getCredentialList(participantAgent.getContent());
         if (vcListResult.failed()) { // couldn't extract credential list from agent
             context.reportProblem(vcListResult.getFailureDetail());
             return false;
@@ -135,7 +134,7 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
     }
 
     /**
-     * Checks whether {@code operator} is valid in the context of {@code rightOperand}. In practice, this means that if {@code rightOperand} is a String, it checks for {@link AbstractDynamicConstraintFunction#EQUALITY_OPERATORS},
+     * Checks whether {@code operator} is valid in the context of {@code rightOperand}. In practice, this means that if {@code rightOperand} is a String, it checks for {@link AbstractDynamicCredentialConstraintFunction#EQUALITY_OPERATORS},
      * and if its list type, it checks for {@code List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF)}
      */
     private boolean hasInvalidOperand(Operator operator, Object rightOperand, PolicyContext context) {

@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 class DismantlerConstraintFunctionTest {
 
-    private final DismantlerConstraintFunction function = new DismantlerConstraintFunction();
+    private final DismantlerCredentialConstraintFunction function = new DismantlerCredentialConstraintFunction();
     private final PolicyContext context = mock();
     private ParticipantAgent participantAgent;
 

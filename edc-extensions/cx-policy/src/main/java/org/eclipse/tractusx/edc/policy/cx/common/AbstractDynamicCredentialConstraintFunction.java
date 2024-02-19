@@ -27,7 +27,6 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,15 +34,11 @@ import java.util.List;
  * This is a base class for dynamically bound Tractus-X constraint evaluation functions that implements some basic common functionality and defines some
  * common constants
  */
-public abstract class AbstractDynamicConstraintFunction implements DynamicAtomicConstraintFunction<Permission> {
+public abstract class AbstractDynamicCredentialConstraintFunction implements DynamicAtomicConstraintFunction<Permission> {
     public static final String VC_CLAIM = "vc";
     public static final String ACTIVE = "active";
     public static final String CREDENTIAL_LITERAL = "Credential";
     protected static final Collection<Operator> EQUALITY_OPERATORS = List.of(Operator.EQ, Operator.NEQ);
-
-    protected boolean checkOperator(Operator actual, PolicyContext context, Operator... expectedOperators) {
-        return checkOperator(actual, context, Arrays.asList(expectedOperators));
-    }
 
     protected boolean checkOperator(Operator actual, PolicyContext context, Collection<Operator> expectedOperators) {
         if (!expectedOperators.contains(actual)) {
@@ -51,6 +46,15 @@ public abstract class AbstractDynamicConstraintFunction implements DynamicAtomic
             return false;
         }
         return true;
+    }
+
+    protected Result<ParticipantAgent> extractParticipantAgent(PolicyContext context) {
+        // make sure the ParticipantAgent is there
+        var participantAgent = context.getContextData(ParticipantAgent.class);
+        if (participantAgent == null) {
+            return Result.failure("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+        }
+        return Result.success(participantAgent);
     }
 
     /**
