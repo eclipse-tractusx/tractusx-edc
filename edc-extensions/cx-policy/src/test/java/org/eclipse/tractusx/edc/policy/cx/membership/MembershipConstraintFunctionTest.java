@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 class MembershipConstraintFunctionTest {
 
-    private final MembershipConstraintFunction function = new MembershipConstraintFunction();
+    private final MembershipCredentialConstraintFunction function = new MembershipCredentialConstraintFunction();
     private final PolicyContext context = mock();
     private ParticipantAgent participantAgent;
 

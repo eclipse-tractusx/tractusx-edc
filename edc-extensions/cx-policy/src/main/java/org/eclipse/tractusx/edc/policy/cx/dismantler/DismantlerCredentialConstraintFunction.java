@@ -23,7 +23,7 @@ import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,7 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
  *     <li>allowedBrands: whether an existing DismantlerCredential permits the vehicle brands required by the constraint</li>
  * </ul>
  */
-public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunction {
+public class DismantlerCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
 
     public static final String ALLOWED_VEHICLE_BRANDS = CX_NS_1_0 + "allowedVehicleBrands";
     private static final String DISMANTLER_LITERAL = "Dismantler";
@@ -134,7 +134,7 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
     }
 
     /**
-     * Checks whether {@code operator} is valid in the context of {@code rightOperand}. In practice, this means that if {@code rightOperand} is a String, it checks for {@link AbstractDynamicConstraintFunction#EQUALITY_OPERATORS},
+     * Checks whether {@code operator} is valid in the context of {@code rightOperand}. In practice, this means that if {@code rightOperand} is a String, it checks for {@link AbstractDynamicCredentialConstraintFunction#EQUALITY_OPERATORS},
      * and if its list type, it checks for {@code List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF)}
      */
     private boolean hasInvalidOperand(Operator operator, Object rightOperand, PolicyContext context) {

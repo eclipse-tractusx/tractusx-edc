@@ -23,10 +23,10 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 
-public class MembershipConstraintFunction extends AbstractDynamicConstraintFunction {
+public class MembershipCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
     private static final String MEMBERSHIP_LITERAL = "Membership";
 
     @Override
