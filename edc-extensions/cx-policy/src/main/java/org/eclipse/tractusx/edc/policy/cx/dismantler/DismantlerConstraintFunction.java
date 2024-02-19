@@ -23,7 +23,6 @@ import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 import org.jetbrains.annotations.NotNull;
@@ -59,14 +58,14 @@ public class DismantlerConstraintFunction extends AbstractDynamicConstraintFunct
         Predicate<VerifiableCredential> predicate = c -> false;
 
         // make sure the ParticipantAgent is there
-        var participantAgent = context.getContextData(ParticipantAgent.class);
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+        var participantAgent = extractParticipantAgent(context);
+        if (participantAgent.failed()) {
+            context.reportProblem(participantAgent.getFailureDetail());
             return false;
         }
 
         // check if the participant agent contains the correct data
-        var vcListResult = getCredentialList(participantAgent);
+        var vcListResult = getCredentialList(participantAgent.getContent());
         if (vcListResult.failed()) { // couldn't extract credential list from agent
             context.reportProblem(vcListResult.getFailureDetail());
             return false;

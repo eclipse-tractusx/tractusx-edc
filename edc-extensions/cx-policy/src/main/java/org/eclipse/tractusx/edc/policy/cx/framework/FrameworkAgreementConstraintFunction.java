@@ -83,10 +83,9 @@ public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstra
             return false;
         }
 
-        // make sure the ParticipantAgent is there
-        var participantAgent = context.getContextData(ParticipantAgent.class);
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+        var participantAgent = extractParticipantAgent(context);
+        if (participantAgent.failed()) {
+            context.reportProblem(participantAgent.getFailureDetail());
             return false;
         }
 
@@ -109,7 +108,7 @@ public class FrameworkAgreementConstraintFunction extends AbstractDynamicConstra
             return false;
         }
 
-        var vcListResult = getCredentialList(participantAgent);
+        var vcListResult = getCredentialList(participantAgent.getContent());
         if (vcListResult.failed()) { // couldn't extract credential list from agent
             context.reportProblem(vcListResult.getFailureDetail());
             return false;

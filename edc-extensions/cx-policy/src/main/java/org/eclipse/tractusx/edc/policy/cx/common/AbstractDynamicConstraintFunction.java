@@ -53,6 +53,15 @@ public abstract class AbstractDynamicConstraintFunction implements DynamicAtomic
         return true;
     }
 
+    protected Result<ParticipantAgent> extractParticipantAgent(PolicyContext context) {
+        // make sure the ParticipantAgent is there
+        var participantAgent = context.getContextData(ParticipantAgent.class);
+        if (participantAgent == null) {
+            return Result.failure("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
+        }
+        return Result.success(participantAgent);
+    }
+
     /**
      * Extracts a {@link List} of {@link VerifiableCredential} objects from the {@link ParticipantAgent}. Credentials must be
      * stored in the agent's claims map using the "vc" key.

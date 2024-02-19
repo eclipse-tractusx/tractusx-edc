@@ -72,4 +72,17 @@ public class CredentialFunctions {
                         .build());
     }
 
+    public static VerifiableCredential.Builder createMembershipCredential() {
+        return VerifiableCredential.Builder.newInstance()
+                .types(List.of("VerifiableCredential", "MembershipCredential"))
+                .id(UUID.randomUUID().toString())
+                .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
+                .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id("subject-id")
+                        .claim("https://w3id.org/catenax/credentials/v1.0.0/holderIdentifier", "did:web:holder")
+                        .build());
+    }
+
 }
