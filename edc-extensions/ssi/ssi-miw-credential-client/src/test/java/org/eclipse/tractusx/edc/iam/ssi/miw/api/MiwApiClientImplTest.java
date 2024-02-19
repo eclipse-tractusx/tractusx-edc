@@ -49,10 +49,8 @@ import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.PRESENTA
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.PRESENTATIONS_VALIDATION_PATH;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.VERIFIABLE_CREDENTIALS;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.VP_FIELD;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MiwApiClientImplTest {
@@ -158,7 +156,6 @@ public class MiwApiClientImplTest {
 
         assertThat(result).isNotNull().matches(Result::failed);
 
-        verify(monitor).severe(contains("Request Failed"));
     }
 
     @Test

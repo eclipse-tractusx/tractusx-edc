@@ -130,7 +130,7 @@ maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentatio
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.29.0, Apache-2.0, approved, #10088
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.29.0, Apache-2.0, approved, #10090
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.33, Apache-2.0, approved, #9687
-maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.33, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.33, Apache-2.0, approved, #11661
 maven/mavencentral/io.projectreactor/reactor-core/3.4.30, Apache-2.0, approved, #7517
 maven/mavencentral/io.rest-assured/json-path/5.3.1, Apache-2.0, approved, #9261
 maven/mavencentral/io.rest-assured/rest-assured-common/5.3.1, Apache-2.0, approved, #9264
@@ -207,7 +207,6 @@ maven/mavencentral/org.eclipse.edc/asset-api/0.2.1, Apache-2.0, approved, techno
 maven/mavencentral/org.eclipse.edc/asset-index-sql/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-spi/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-spi/0.2.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/auth-tokenbased/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/autodoc-processor/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/aws-s3-core/0.2.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot/0.2.1, Apache-2.0, approved, technology.edc

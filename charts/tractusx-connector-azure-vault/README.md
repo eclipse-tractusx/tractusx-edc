@@ -1,6 +1,6 @@
 # tractusx-connector-azure-vault
 
-![Version: 0.5.3](https://img.shields.io/badge/Version-0.5.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.3](https://img.shields.io/badge/AppVersion-0.5.3-informational?style=flat-square)
+![Version: 0.5.4](https://img.shields.io/badge/Version-0.5.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.4](https://img.shields.io/badge/AppVersion-0.5.4-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
@@ -45,7 +45,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.5.3 \
+helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.5.4 \
      -f <path-to>/tractusx-connector-azure-vault-test.yaml \
      --set vault.azure.name=$AZURE_VAULT_NAME \
      --set vault.azure.client=$AZURE_CLIENT_ID \
@@ -78,6 +78,7 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
+| controlplane.edr.transferProxyTokenValidity | string | `"2592000"` |  |
 | controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |

@@ -21,7 +21,7 @@ import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.tractusx.edc.lifecycle.Participant;
@@ -32,11 +32,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createCallback;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.businessPartnerGroupPolicy;
@@ -57,6 +61,8 @@ public abstract class AbstractDataPlaneProxyTest {
     private static final String CUSTOM_SUB_PATH = "/sub";
 
     private static final String CUSTOM_QUERY_PARAMS = "foo=bar";
+
+    private static final Duration ASYNC_TIMEOUT = ofSeconds(45);
 
     private static final String CUSTOM_FULL_PATH = CUSTOM_BASE_PATH + CUSTOM_SUB_PATH + "?" + CUSTOM_QUERY_PARAMS;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -86,7 +92,7 @@ public abstract class AbstractDataPlaneProxyTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
         // response to callback
@@ -159,7 +165,7 @@ public abstract class AbstractDataPlaneProxyTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
         // response to callback
@@ -174,9 +180,14 @@ public abstract class AbstractDataPlaneProxyTest {
 
         var body = "{\"response\": \"ok\"}";
 
-        server.enqueue(new MockResponse().setBody(body));
-        SOKRATES.pullProxyDataResponseByAssetId(PLATO, assetId).then()
-                .assertThat().statusCode(428);
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    server.enqueue(new MockResponse().setBody(body));
+                    SOKRATES.pullProxyDataResponseByAssetId(PLATO, assetId).then()
+                            .assertThat().statusCode(428);
+                });
+
 
         server.enqueue(new MockResponse().setBody(body));
         var data = SOKRATES.pullProxyDataByTransferProcessId(PLATO, transferEvent1.getPayload().getTransferProcessId());
@@ -210,7 +221,7 @@ public abstract class AbstractDataPlaneProxyTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
         // response to callback
@@ -272,7 +283,7 @@ public abstract class AbstractDataPlaneProxyTest {
         PLATO.createContractDefinition(assetId, "def-1", "policy-1", "policy-2");
 
         var callbacks = Json.createArrayBuilder()
-                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.completed")))
+                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
                 .build();
 
         SOKRATES.negotiateEdr(PLATO, assetId, callbacks);
@@ -295,7 +306,7 @@ public abstract class AbstractDataPlaneProxyTest {
         server.shutdown();
     }
 
-    private EventEnvelope<TransferProcessCompleted> waitForTransferCompletion() {
+    private EventEnvelope<TransferProcessStarted> waitForTransferCompletion() {
         try {
             var request = server.takeRequest(60, TimeUnit.SECONDS);
             if (request != null) {

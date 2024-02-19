@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.5.3](https://img.shields.io/badge/Version-0.5.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.3](https://img.shields.io/badge/AppVersion-0.5.3-informational?style=flat-square)
+![Version: 0.5.4](https://img.shields.io/badge/Version-0.5.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.4](https://img.shields.io/badge/AppVersion-0.5.4-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -39,7 +39,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.3 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.4 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
@@ -77,6 +77,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.3 \
 | runtime.debug.enabled | bool | `false` |  |
 | runtime.debug.port | int | `1044` |  |
 | runtime.debug.suspendOnStart | bool | `false` |  |
+| runtime.edr.transferProxyTokenValidity | string | `"2592000"` |  |
 | runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086},"validation":{"path":"/validation","port":8082}}` | endpoints of the control plane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |

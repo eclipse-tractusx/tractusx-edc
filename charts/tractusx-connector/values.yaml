@@ -117,7 +117,8 @@ controlplane:
   businessPartnerValidation:
     log:
       agreementValidation: true
-
+  edr:
+    transferProxyTokenValidity: "2592000"
   # SSI configuration
   ssi:
     miw:

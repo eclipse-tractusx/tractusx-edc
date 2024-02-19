@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.callback.TestFunctions.getEdr;
 import static org.eclipse.tractusx.edc.callback.TestFunctions.getTransferProcessStartedEvent;
+import static org.eclipse.tractusx.edc.callback.TestFunctions.getTransferTerminatedEvent;
 import static org.eclipse.tractusx.edc.callback.TestFunctions.remoteMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -122,7 +123,7 @@ public class TransferProcessLocalCallbackTest {
 
         verify(edrCache).save(cacheEntryCaptor.capture(), edrCaptor.capture());
         verify(edrCache).update(argThat(entry -> entry.getState() == EndpointDataReferenceEntryStates.EXPIRED.code()));
-        
+
         assertThat(edrCaptor.getValue()).usingRecursiveComparison().isEqualTo(edr);
 
     }
@@ -178,6 +179,46 @@ public class TransferProcessLocalCallbackTest {
         verifyNoInteractions(edrCache);
         verifyNoInteractions(transferProcessStore);
     }
+
+    @Test
+    void invoke_shouldStopEdrNegotiation_whenTerminatedMessageReceived() {
+
+        var transferProcessId = "transferProcessId";
+        var assetId = "assetId";
+        var contractId = "contractId";
+        var edr = getEdr();
+
+        var dataRequest = DataRequest.Builder.newInstance().id(edr.getId())
+                .destinationType("HttpProxy")
+                .assetId(assetId)
+                .contractId(contractId)
+                .build();
+
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .id(transferProcessId)
+                .dataRequest(dataRequest)
+                .build();
+
+        var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()
+                .agreementId(contractId)
+                .transferProcessId(transferProcessId)
+                .assetId(assetId)
+                .state(EndpointDataReferenceEntryStates.REFRESHING.code())
+                .build();
+
+        when(transferProcessStore.findById(transferProcessId)).thenReturn(transferProcess);
+        when(edrCache.queryForEntries(any())).thenReturn(Stream.of(edrEntry));
+
+        var event = getTransferTerminatedEvent(transferProcessId, "Failure");
+        var message = remoteMessage(event);
+
+        var result = callback.invoke(message);
+        assertThat(result.succeeded()).isTrue();
+
+        verify(edrCache).update(argThat(entry -> entry.getState() == EndpointDataReferenceEntryStates.ERROR.code()));
+
+    }
+
 
     @ParameterizedTest
     @ArgumentsSource(EventInstances.class)

@@ -22,7 +22,6 @@ import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.Contract
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessCompleted;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
@@ -78,8 +77,7 @@ public abstract class AbstractNegotiateEdrTest {
                 createEvent(TransferProcessInitiated.class),
                 createEvent(TransferProcessProvisioned.class),
                 createEvent(TransferProcessRequested.class),
-                createEvent(TransferProcessStarted.class),
-                createEvent(TransferProcessCompleted.class));
+                createEvent(TransferProcessStarted.class));
 
         var assetId = "api-asset-1";
         var url = server.url("/mock/api");
