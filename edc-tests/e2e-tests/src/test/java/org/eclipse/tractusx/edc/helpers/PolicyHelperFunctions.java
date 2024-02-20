@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
@@ -195,9 +196,7 @@ public class PolicyHelperFunctions {
                 .add("operator", operator);
 
         if (rightOperand instanceof Collection<?> coll) {
-            var arr = Json.createArrayBuilder();
-            coll.forEach(it -> arr.add(it.toString()));
-            builder.add("rightOperand", arr.build());
+            builder.add("rightOperand", coll.stream().map(Object::toString).collect(Collectors.joining(",")));
         } else {
             builder.add("rightOperand", rightOperand.toString());
         }

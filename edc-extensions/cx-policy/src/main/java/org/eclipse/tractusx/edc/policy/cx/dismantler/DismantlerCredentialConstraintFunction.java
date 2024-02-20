@@ -53,6 +53,8 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
 
     public static final String ALLOWED_VEHICLE_BRANDS = CX_CREDENTIAL_NS + "allowedVehicleBrands";
     public static final String DISMANTLER_LITERAL = "Dismantler";
+    // allows to encode multiple values in a single string in the right-operand. Policies don't handle list-type right-operands well.
+    public static final String RIGHT_OPERAND_LIST_SEPARATOR = ",";
     private static final String ALLOWED_ACTIVITIES = CX_CREDENTIAL_NS + "activityType";
 
     @Override
@@ -76,6 +78,10 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
         // always filter for DismantlerCredential type
         predicate = new CredentialTypePredicate(CX_CREDENTIAL_NS + DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
 
+
+        if (rightOperand.toString().contains(RIGHT_OPERAND_LIST_SEPARATOR)) {
+            rightOperand = getList(rightOperand);
+        }
 
         if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL)) { // only checks for presence
             if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
@@ -120,10 +126,9 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
      */
     @NotNull
     private Predicate<VerifiableCredential> getCredentialPredicate(String credentialSubjectProperty, Operator operator, Object rightOperand) {
-        Predicate<VerifiableCredential> predicate;
         var allowedValues = getList(rightOperand);
         // the filter predicate is determined by the operator
-        predicate = credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
+        return credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
             var claimsFromCredential = getList(subject.getClaims().getOrDefault(credentialSubjectProperty, List.of()));
             return switch (operator) {
                 case EQ -> claimsFromCredential.equals(allowedValues);
@@ -135,7 +140,6 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
                 default -> false;
             };
         });
-        return predicate;
     }
 
     /**
@@ -166,7 +170,6 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
         if (object instanceof Iterable<?> iterable) {
             var list = new ArrayList<>();
 
-
             iterable.iterator().forEachRemaining(element -> {
                 if (element instanceof JsonObject jo) { // workaround: lists in policy right-operands are not properly deserialized
                     list.add(jo.getString("@value"));
@@ -176,6 +179,6 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
             });
             return list;
         }
-        return List.of(object);
+        return List.of(object.toString().split(RIGHT_OPERAND_LIST_SEPARATOR)); // in case multiple values are encoded in a single string
     }
 }
