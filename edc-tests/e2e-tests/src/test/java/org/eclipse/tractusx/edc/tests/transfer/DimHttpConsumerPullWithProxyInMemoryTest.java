@@ -46,8 +46,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.configureParticipant;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTIAL_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
@@ -130,7 +130,7 @@ public class DimHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(TX_CREDENTIAL_NAMESPACE + "Membership", "active"));
+        return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
     }
 
 }

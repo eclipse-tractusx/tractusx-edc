@@ -41,7 +41,7 @@ public interface CredentialsNamespaces {
     String CX_USE_CASE_NS = CX_NS + "usecase";
     @Deprecated
     String CX_USE_CASE_NS_V1 = CX_USE_CASE_NS + "/v1";
-    String CX_NS_1_0 = "https://w3id.org/catenax/credentials/v1.0.0/";
+    @Deprecated
     String CX_SUMMARY_CREDENTIAL = "SummaryCredential";
     String CREDENTIAL_SUBJECT = W3C_VC_PREFIX + "#credentialSubject";
     String CREDENTIAL_ISSUER = W3C_VC_PREFIX + "#issuer";

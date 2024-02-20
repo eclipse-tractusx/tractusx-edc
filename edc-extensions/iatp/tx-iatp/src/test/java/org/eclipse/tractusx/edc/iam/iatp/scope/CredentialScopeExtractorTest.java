@@ -42,7 +42,7 @@ public class CredentialScopeExtractorTest {
     void verify_extractScopes() {
         var builder = TokenParameters.Builder.newInstance();
         var ctx = PolicyContextImpl.Builder.newInstance().additional(TokenParameters.Builder.class, builder).build();
-        var scopes = extractor.extractScopes(CoreConstants.TX_CREDENTIAL_NAMESPACE + FRAMEWORK_CREDENTIAL_PREFIX + "pfc", null, null, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_CREDENTIAL_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
         assertThat(scopes).contains(CREDENTIAL_TYPE_NAMESPACE + ":PfcCredential:read");
     }
 

@@ -1,4 +1,4 @@
-/********************************************************************************
+/*
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
@@ -24,7 +24,7 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 
 import java.util.Map;
 
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTIAL_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 @EndToEndTest
@@ -32,7 +32,7 @@ public class IatpFrameworkAgreementHttpConsumerPullWithProxyInMemoryTest extends
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(TX_CREDENTIAL_NAMESPACE + "FrameworkAgreement.pcf", "active"));
+        return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "FrameworkAgreement", "pcf"));
     }
 
 }

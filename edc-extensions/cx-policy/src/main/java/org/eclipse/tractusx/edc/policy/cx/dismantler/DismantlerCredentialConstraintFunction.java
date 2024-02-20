@@ -37,7 +37,8 @@ import static org.eclipse.edc.policy.model.Operator.IN;
 import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_NS_1_0;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 /**
  * Enforces a Dismantler constraint. This function can check for these properties:
@@ -49,9 +50,9 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
  */
 public class DismantlerCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
 
-    public static final String ALLOWED_VEHICLE_BRANDS = CX_NS_1_0 + "allowedVehicleBrands";
-    private static final String DISMANTLER_LITERAL = "Dismantler";
-    private static final String ALLOWED_ACTIVITIES = CX_NS_1_0 + "activityType";
+    public static final String ALLOWED_VEHICLE_BRANDS = CX_CREDENTIAL_NS + "allowedVehicleBrands";
+    public static final String DISMANTLER_LITERAL = "Dismantler";
+    private static final String ALLOWED_ACTIVITIES = CX_CREDENTIAL_NS + "activityType";
 
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
@@ -71,7 +72,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
             return false;
         }
 
-        if (leftOperand.equals(DISMANTLER_LITERAL)) { // only checks for presence
+        if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL)) { // only checks for presence
             if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
                 return false;
             }
@@ -83,10 +84,10 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
             if (operator == NEQ) {
                 predicate = predicate.negate();
             }
-        } else if (leftOperand.equals(DISMANTLER_LITERAL + ".activityType")) {
+        } else if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL + ".activityType")) {
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
             predicate = getCredentialPredicate(ALLOWED_ACTIVITIES, operator, rightOperand);
-        } else if (leftOperand.equals(DISMANTLER_LITERAL + ".allowedBrands")) {
+        } else if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL + ".allowedBrands")) {
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
             predicate = getCredentialPredicate(ALLOWED_VEHICLE_BRANDS, operator, rightOperand);
         } else {
@@ -100,7 +101,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
 
     @Override
     public boolean canHandle(Object leftOperand) {
-        return leftOperand instanceof String && ((String) leftOperand).startsWith(DISMANTLER_LITERAL);
+        return leftOperand instanceof String && ((String) leftOperand).startsWith(CX_CREDENTIAL_NS + DISMANTLER_LITERAL);
     }
 
     /**

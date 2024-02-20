@@ -31,20 +31,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
+
 public class CredentialFunctions {
 
     public static VerifiableCredential.Builder createCredential(String type, String version) {
         return VerifiableCredential.Builder.newInstance()
-                .types(List.of("VerifiableCredential", type))
+                .types(List.of(CX_CREDENTIAL_NS + "VerifiableCredential", CX_CREDENTIAL_NS + type))
                 .id(UUID.randomUUID().toString())
                 .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
                 .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
                 .issuanceDate(Instant.now())
                 .credentialSubject(CredentialSubject.Builder.newInstance()
                         .id("subject-id")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/holderIdentifier", "did:web:holder")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/contractVersion", version)
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/contractTemplate", "https://public.catena-x.org/contracts/pcf.v1.pdf")
+                        .claim(CX_CREDENTIAL_NS + "holderIdentifier", "did:web:holder")
+                        .claim(CX_CREDENTIAL_NS + "contractVersion", version)
+                        .claim(CX_CREDENTIAL_NS + "contractTemplate", "https://public.catena-x.org/contracts/pcf.v1.pdf")
                         .build());
     }
 
@@ -66,22 +68,22 @@ public class CredentialFunctions {
                 .issuanceDate(Instant.now())
                 .credentialSubject(CredentialSubject.Builder.newInstance()
                         .id("subject-id")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/holderIdentifier", "did:web:holder")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/allowedVehicleBrands", brands)
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/activityType", at)
+                        .claim(CX_CREDENTIAL_NS + "holderIdentifier", "did:web:holder")
+                        .claim(CX_CREDENTIAL_NS + "allowedVehicleBrands", brands)
+                        .claim(CX_CREDENTIAL_NS + "activityType", at)
                         .build());
     }
 
     public static VerifiableCredential.Builder createMembershipCredential() {
         return VerifiableCredential.Builder.newInstance()
-                .types(List.of("VerifiableCredential", "MembershipCredential"))
+                .types(List.of(CX_CREDENTIAL_NS + "VerifiableCredential", CX_CREDENTIAL_NS + "MembershipCredential"))
                 .id(UUID.randomUUID().toString())
                 .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
                 .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
                 .issuanceDate(Instant.now())
                 .credentialSubject(CredentialSubject.Builder.newInstance()
                         .id("subject-id")
-                        .claim("https://w3id.org/catenax/credentials/v1.0.0/holderIdentifier", "did:web:holder")
+                        .claim(CX_CREDENTIAL_NS + "holderIdentifier", "did:web:holder")
                         .build());
     }
 

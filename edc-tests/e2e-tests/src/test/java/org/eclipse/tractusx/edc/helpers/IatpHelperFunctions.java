@@ -95,9 +95,6 @@ public class IatpHelperFunctions {
         return Json.createObjectBuilder()
                 .add("type", "MembershipCredential")
                 .add("holderIdentifier", id)
-                .add("status", "Active")
-                .add("memberOf", "Catena-X")
-                .add("startTime", Instant.now().toString())
                 .add("id", did)
                 .build();
 
@@ -107,7 +104,6 @@ public class IatpHelperFunctions {
         return Json.createObjectBuilder()
                 .add("type", type)
                 .add("holderIdentifier", id)
-                .add("useCaseType", type)
                 .add("contractVersion", "1.0.0")
                 .add("contractTemplate", "https://public.catena-x.org/contracts/traceabilty.v1.pdf")
                 .add("id", did)
@@ -126,7 +122,7 @@ public class IatpHelperFunctions {
         return Json.createArrayBuilder()
                 .add("https://www.w3.org/2018/credentials/v1")
                 .add("https://w3id.org/security/suites/jws-2020/v1")
-                .add("https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json")
+                .add("https://w3id.org/catenax/credentials")
                 .build();
     }
 
@@ -169,6 +165,7 @@ public class IatpHelperFunctions {
     private static List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer, IatpParticipant participant, JsonLd jsonLd) {
         return List.of(
                 issuer.issueMembershipCredential(participant, jsonLd),
+                issuer.issueDismantlerCredential(participant, jsonLd),
                 issuer.issueFrameworkCredential(participant, jsonLd, "PcfCredential"));
 
     }

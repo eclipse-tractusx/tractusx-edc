@@ -34,7 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.CX_NS_1_0;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 
 /**
@@ -53,11 +54,8 @@ import static org.eclipse.tractusx.edc.iam.ssi.spi.jsonld.CredentialsNamespaces.
  * credential that satisfies the {@code subtype} requirement.
  */
 public class FrameworkAgreementCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
-    public static final String CONTRACT_VERSION_PROPERTY = CX_NS_1_0 + "contractVersion";
-    private static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
-
-    public FrameworkAgreementCredentialConstraintFunction() {
-    }
+    public static final String CONTRACT_VERSION_PROPERTY = CX_CREDENTIAL_NS + "contractVersion";
+    public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
 
     /**
      * Evaluates the constraint's left-operand and right-operand against a list of {@link VerifiableCredential} objects.
@@ -93,10 +91,10 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
         var rightOperand = rightValue.toString();
         Result<List<Predicate<VerifiableCredential>>> predicateResult;
 
-        if (leftOperand.startsWith(FRAMEWORK_AGREEMENT_LITERAL + ".")) { // legacy notation
+        if (leftOperand.startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL + ".")) { // legacy notation
             predicateResult = getFilterPredicateLegacy(leftOperand, rightOperand);
 
-        } else if (leftOperand.startsWith(FRAMEWORK_AGREEMENT_LITERAL)) { // new notation
+        } else if (leftOperand.startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL)) { // new notation
             predicateResult = getFilterPredicate(rightOperand);
         } else { //invalid notation
             context.reportProblem("Constraint left-operand must start with '%s' but was '%s'.".formatted(FRAMEWORK_AGREEMENT_LITERAL, leftValue));
@@ -129,7 +127,7 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
      */
     @Override
     public boolean canHandle(Object leftValue) {
-        return leftValue instanceof String && leftValue.toString().startsWith(FRAMEWORK_AGREEMENT_LITERAL);
+        return leftValue instanceof String && leftValue.toString().startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL);
     }
 
     @NotNull
@@ -157,7 +155,7 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
      * Converts the left- and right-operand (legacy notation) into either 1 or 2 predicates, depending on whether the version was encoded or not.
      */
     private Result<List<Predicate<VerifiableCredential>>> getFilterPredicateLegacy(String leftOperand, String rightOperand) {
-        var subType = leftOperand.replace(FRAMEWORK_AGREEMENT_LITERAL + ".", "");
+        var subType = leftOperand.replace(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL + ".", "");
         if (subType.isEmpty()) {
             return Result.failure("Left-operand must contain the sub-type 'FrameworkAgreement.<subtype>'.");
         }
@@ -175,9 +173,10 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
     @NotNull
     private List<Predicate<VerifiableCredential>> createPredicates(String subtype, @Nullable String version) {
         var list = new ArrayList<Predicate<VerifiableCredential>>();
-        list.add(new CredentialTypePredicate(capitalize(subtype) + CREDENTIAL_LITERAL));
+        list.add(new CredentialTypePredicate(CX_CREDENTIAL_NS + capitalize(subtype) + CREDENTIAL_LITERAL));
+
         if (version != null) {
-            list.add(credential -> credential.getCredentialSubject().stream().anyMatch(cs -> cs.getClaims().get(CONTRACT_VERSION_PROPERTY).equals(version)));
+            list.add(credential -> credential.getCredentialSubject().stream().anyMatch(cs -> version.equals(cs.getClaims().getOrDefault(CONTRACT_VERSION_PROPERTY, null))));
         }
         return list;
     }

@@ -30,7 +30,7 @@ dependencies {
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy")
+//        exclude(module = "cx-policy")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:iatp:tx-iatp"))

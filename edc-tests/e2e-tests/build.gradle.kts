@@ -57,6 +57,7 @@ dependencies {
     testImplementation(libs.testcontainers.postgres)
     testImplementation(libs.testcontainers.vault)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
+    testImplementation(project(":spi:core-spi"))
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))

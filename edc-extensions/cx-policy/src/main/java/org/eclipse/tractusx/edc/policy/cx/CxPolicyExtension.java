@@ -25,8 +25,9 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider.registerBindings;
-import static org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider.registerFunctions;
+import static org.eclipse.tractusx.edc.policy.cx.CxPolicyRegistration.registerBindings;
+import static org.eclipse.tractusx.edc.policy.cx.CxPolicyRegistration.registerFunctions;
+
 
 /**
  * Provides implementations of standard CX usage policies.
