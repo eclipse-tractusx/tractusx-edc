@@ -76,7 +76,6 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  * @see BusinessPartnerStore
  */
 public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
-    public static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
@@ -122,7 +121,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         }
 
 
-        var bpn = getBpnClaim(participantAgent);
+        var bpn = participantAgent.getIdentity();
         var groups = store.resolveForBpn(bpn);
 
         // BPN not found in database
@@ -160,22 +159,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was " + rightValue.getClass()));
         return null;
     }
-
-    private String getBpnClaim(ParticipantAgent participantAgent) {
-        String bpnClaim = null;
-        var claims = participantAgent.getClaims();
-
-        var bpnClaimObject = claims.get(REFERRING_CONNECTOR_CLAIM);
-
-        if (bpnClaimObject instanceof String) {
-            bpnClaim = (String) bpnClaimObject;
-        }
-        if (bpnClaim == null) {
-            bpnClaim = participantAgent.getIdentity();
-        }
-        return bpnClaim;
-    }
-
+    
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         // checks whether both lists overlap

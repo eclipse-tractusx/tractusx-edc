@@ -21,29 +21,25 @@ package org.eclipse.tractusx.edc.validation.businesspartner;
 
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
-import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.policy.model.Prohibition;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerDutyFunction;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerPermissionFunction;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.legacy.BusinessPartnerProhibitionFunction;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerNumberPermissionFunction;
 
 import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.NAME;
 
 /**
  * Business partner number evaluation function.
- *
- * @deprecated Please use {@code BusinessPartnerEvaluationExtension} instead.
  */
-@Deprecated(forRemoval = true, since = "0.5.0")
-public class LegacyBusinessPartnerValidationExtension implements ServiceExtension {
+@Extension(NAME)
+public class BusinessPartnerNumberValidationExtension implements ServiceExtension {
 
     /**
      * The key for business partner numbers constraints. Must be used as left operand when declaring constraints.
@@ -60,66 +56,37 @@ public class LegacyBusinessPartnerValidationExtension implements ServiceExtensio
      * </pre>
      */
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
-
     public static final String TX_BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + BUSINESS_PARTNER_CONSTRAINT_KEY;
-
-
-    public static final String DEFAULT_LOG_AGREEMENT_EVALUATION = "true";
-
-
-    @Setting(value = "Enable logging when evaluating the business partner constraints in the agreement validation", type = "boolean", defaultValue = DEFAULT_LOG_AGREEMENT_EVALUATION)
-    public static final String BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION = "tractusx.businesspartnervalidation.log.agreement.validation";
+    protected static final String NAME = "Business Partner Validation Extension";
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
     @Inject
     private PolicyEngine policyEngine;
-
-    public LegacyBusinessPartnerValidationExtension() {
-    }
-
-    public LegacyBusinessPartnerValidationExtension(
-            final RuleBindingRegistry ruleBindingRegistry, final PolicyEngine policyEngine) {
-        this.ruleBindingRegistry = ruleBindingRegistry;
-        this.policyEngine = policyEngine;
-    }
-
+    
     @Override
     public String name() {
-        return "Business Partner Validation Extension";
+        return NAME;
     }
 
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        var monitor = context.getMonitor();
+        var permissionFunction = new BusinessPartnerNumberPermissionFunction();
 
-        var logAgreementEvaluation = logAgreementEvaluationSetting(context);
+        bindToScope(permissionFunction, TRANSFER_SCOPE);
+        bindToScope(permissionFunction, NEGOTIATION_SCOPE);
+        bindToScope(permissionFunction, CATALOGING_SCOPE);
 
-        var dutyFunction = new BusinessPartnerDutyFunction(monitor, logAgreementEvaluation);
-        var permissionFunction = new BusinessPartnerPermissionFunction(monitor, logAgreementEvaluation);
-        var prohibitionFunction = new BusinessPartnerProhibitionFunction(monitor, logAgreementEvaluation);
-
-        bindToScope(dutyFunction, permissionFunction, prohibitionFunction, TRANSFER_SCOPE);
-        bindToScope(dutyFunction, permissionFunction, prohibitionFunction, NEGOTIATION_SCOPE);
-        bindToScope(dutyFunction, permissionFunction, prohibitionFunction, CATALOGING_SCOPE);
-
-        monitor.warning("This extension was deprecated and is scheduled for removal in version 0.6.0 of Tractus-X EDC");
     }
 
-    private void bindToScope(BusinessPartnerDutyFunction dutyFunction, BusinessPartnerPermissionFunction permissionFunction, BusinessPartnerProhibitionFunction prohibitionFunction, String scope) {
+    private void bindToScope(BusinessPartnerNumberPermissionFunction permissionFunction, String scope) {
         ruleBindingRegistry.bind("USE", scope);
+        ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
         ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
         ruleBindingRegistry.bind(TX_BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
 
-
-        policyEngine.registerFunction(scope, Duty.class, BUSINESS_PARTNER_CONSTRAINT_KEY, dutyFunction);
         policyEngine.registerFunction(scope, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
-        policyEngine.registerFunction(scope, Prohibition.class, BUSINESS_PARTNER_CONSTRAINT_KEY, prohibitionFunction);
-
         policyEngine.registerFunction(scope, Permission.class, TX_BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
     }
 
-    private boolean logAgreementEvaluationSetting(ServiceExtensionContext context) {
-        return Boolean.parseBoolean(context.getSetting(BUSINESS_PARTNER_VALIDATION_LOG_AGREEMENT_VALIDATION, DEFAULT_LOG_AGREEMENT_EVALUATION));
-    }
 }

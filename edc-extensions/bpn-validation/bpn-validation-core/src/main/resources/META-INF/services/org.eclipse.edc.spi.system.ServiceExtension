@@ -20,4 +20,4 @@
 
 org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerValidationExtension
 org.eclipse.tractusx.edc.validation.businesspartner.defaults.DefaultStoreProviderExtension
-org.eclipse.tractusx.edc.validation.businesspartner.LegacyBusinessPartnerValidationExtension
+org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension
