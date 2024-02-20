@@ -100,11 +100,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
             return false;
         }
 
-        var filtered = vcListResult.getContent()
-                .stream()
-                .filter(predicate)
-                .toList();
-        return !filtered.isEmpty();
+        return vcListResult.getContent().stream().anyMatch(predicate);
     }
 
     @Override

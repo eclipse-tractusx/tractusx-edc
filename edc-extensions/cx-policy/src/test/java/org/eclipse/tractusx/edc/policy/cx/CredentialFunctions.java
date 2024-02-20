@@ -61,7 +61,7 @@ public class CredentialFunctions {
     public static VerifiableCredential.Builder createDismantlerCredential(Collection<String> brands, String... activityType) {
         var at = activityType.length == 1 ? activityType[0] : List.of(activityType);
         return VerifiableCredential.Builder.newInstance()
-                .types(List.of("VerifiableCredential", "DismantlerCredential"))
+                .types(List.of("VerifiableCredential", CX_CREDENTIAL_NS + "DismantlerCredential"))
                 .id(UUID.randomUUID().toString())
                 .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
                 .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
