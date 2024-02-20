@@ -112,7 +112,7 @@ public class DataspaceIssuer {
         return issueCredential(participant, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", participant.didUrl())
                         .claim("activityType", "vehicleDismantle")
-                        .claim("allowedVehicleBrands", List.of("Moskvich", "Tatra"))
+                        .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
                         .build(),
                 () -> Json.createObjectBuilder()
                         .add("type", "MembershipCredential")

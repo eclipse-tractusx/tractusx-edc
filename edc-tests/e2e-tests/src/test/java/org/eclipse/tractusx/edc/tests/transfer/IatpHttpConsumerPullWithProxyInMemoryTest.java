@@ -119,7 +119,7 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
 
     @DisplayName("Contract policy is fulfilled")
     @ParameterizedTest(name = "{1}")
-    @ArgumentsSource(ContractPolicyProvider.class)
+    @ArgumentsSource(ValidContractPolicyProvider.class)
     void transferData_whenContractPolicyFulfilled(JsonObject contractPolicy, String description) throws IOException, InterruptedException {
         var assetId = "api-asset-1";
         var url = server.url("/mock/api");
@@ -143,7 +143,6 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
         PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest());
 
-        var contractAgreementId = new AtomicReference<String>();
         var edr = new AtomicReference<EndpointDataReference>();
 
         // wait until transfer process completes
@@ -173,19 +172,66 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
         assertThat(rq.getMethod()).isEqualToIgnoringCase("GET");
     }
 
-    private static class ContractPolicyProvider implements ArgumentsProvider {
+    @DisplayName("Contract policy is NOT fulfilled")
+    @ParameterizedTest(name = "{1}")
+    @ArgumentsSource(InvalidContractPolicyProvider.class)
+    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) throws IOException, InterruptedException {
+        var assetId = "api-asset-1";
+        var url = server.url("/mock/api");
+        server.start();
+
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", url.toString(),
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", authCodeHeaderName,
+                "authCode", authCode
+        );
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
+        var contractPolicyId = PLATO.createPolicyDefinition(contractPolicy);
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var negotiationId = SOKRATES.initContractNegotiation(PLATO, assetId);
+
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    assertThat(SOKRATES.getContractNegotiationError(negotiationId)).isNotNull();
+                });
+    }
+
+    private static class ValidContractPolicyProvider implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active")), "MembershipCredential"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement.pcf", "active")), "PCF Use Case (legacy notation)"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "pcf")), "PCF Use Case (new notation)"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler", "active")), "Dismantler Credential"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleDismantle")), "Dismantler Cred (activity type)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Lada")), "Dismantler Cred (allowed brands, intersect)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Tatra")), "Dismantler Cred (allowed brands, equal)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Lada")), "Dismantler Cred (allowed brands, no intersect)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler Cred (allowed brands, in)")
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Tatra")), "Dismantler allowedBrands (IS_ANY_OF, one intersects)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (EQ, exact match)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)")
+            );
+        }
+    }
+
+    private static class InvalidContractPolicyProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement.sustainability", "active")), "Sustainability Use Case (legacy notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "traceability")), "Traceability Use Case (new notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleScrap")), "Dismantler activityType does not match"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.NEQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (NEQ, but is equal)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Lada")), "Dismantler allowedBrands (IS_NONE_OF, but is one contains)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo")), "Dismantler allowedBrands (IN, but not subset)")
             );
         }
     }

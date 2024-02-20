@@ -57,7 +57,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
 
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
-        Predicate<VerifiableCredential> predicate = c -> false;
+        Predicate<VerifiableCredential> predicate;
 
         // make sure the ParticipantAgent is there
         var participantAgent = extractParticipantAgent(context);
@@ -73,6 +73,10 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
             return false;
         }
 
+        // always filter for DismantlerCredential type
+        predicate = new CredentialTypePredicate(CX_CREDENTIAL_NS + DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
+
+
         if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL)) { // only checks for presence
             if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
                 return false;
@@ -81,23 +85,26 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
                 context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
                 return false;
             }
-            predicate = new CredentialTypePredicate(CX_CREDENTIAL_NS + DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
             if (operator == NEQ) {
                 predicate = predicate.negate();
             }
+
         } else if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL + ".activityType")) {
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
-            predicate = getCredentialPredicate(ALLOWED_ACTIVITIES, operator, rightOperand);
+            predicate = predicate.and(getCredentialPredicate(ALLOWED_ACTIVITIES, operator, rightOperand));
         } else if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL + ".allowedBrands")) {
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
-            predicate = getCredentialPredicate(ALLOWED_VEHICLE_BRANDS, operator, rightOperand);
+            predicate = predicate.and(getCredentialPredicate(ALLOWED_VEHICLE_BRANDS, operator, rightOperand));
         } else {
             context.reportProblem("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was '%s'".formatted(leftOperand));
             return false;
         }
 
-        return !vcListResult.getContent().stream().filter(predicate)
-                .toList().isEmpty();
+        var filtered = vcListResult.getContent()
+                .stream()
+                .filter(predicate)
+                .toList();
+        return !filtered.isEmpty();
     }
 
     @Override
@@ -165,7 +172,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
 
 
             iterable.iterator().forEachRemaining(element -> {
-                if (element instanceof JsonObject jo) {
+                if (element instanceof JsonObject jo) { // workaround: lists in policy right-operands are not properly deserialized
                     list.add(jo.getString("@value"));
                 } else {
                     list.add(element);
