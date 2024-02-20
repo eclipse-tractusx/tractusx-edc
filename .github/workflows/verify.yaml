@@ -155,11 +155,10 @@ jobs:
   miw-integration-tests:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
-
+    if: false # E2E Tests with MIW are disabled, and will be replaced with other wallet implementations
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
-
       - uses: actions/checkout@v4
       - name: Starting MIW, Keycloak and Postgres Servers
         run: |
