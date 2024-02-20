@@ -28,6 +28,7 @@ import org.eclipse.tractusx.edc.token.MiwDispatcher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_
 import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
 
 @EndToEndTest
+@Disabled("All tests involving MIW Are disabled and will get removed soon")
 public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
 
     public static final String SUMMARY_VC_TEMPLATE = "summary-vc.json";
