@@ -25,6 +25,7 @@ import okhttp3.mockwebserver.MockResponse;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer;
@@ -42,6 +43,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -178,7 +180,12 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active")), "MembershipCredential"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement.pcf", "active")), "PCF Use Case (legacy notation)"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "pcf")), "PCF Use Case (new notation)"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler", "active")), "Must have Dismantler Credential")
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler", "active")), "Dismantler Credential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleDismantle")), "Dismantler Cred (activity type)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Lada")), "Dismantler Cred (allowed brands, intersect)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Tatra")), "Dismantler Cred (allowed brands, equal)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Lada")), "Dismantler Cred (allowed brands, no intersect)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler Cred (allowed brands, in)")
             );
         }
     }

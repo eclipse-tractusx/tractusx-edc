@@ -27,6 +27,7 @@ import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredential
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
@@ -36,7 +37,9 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
 
 public class CxPolicyRegistration {
     private static final Set<String> FUNCTION_SCOPES = Set.of(CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
@@ -44,15 +47,15 @@ public class CxPolicyRegistration {
 
     public static void registerFunctions(PolicyEngine engine) {
         FUNCTION_SCOPES.forEach(scope -> {
-            engine.registerFunction(scope, Permission.class, new MembershipCredentialConstraintFunction());
             engine.registerFunction(scope, Permission.class, new DismantlerCredentialConstraintFunction());
+            engine.registerFunction(scope, Permission.class, new MembershipCredentialConstraintFunction());
             engine.registerFunction(scope, Permission.class, new FrameworkAgreementCredentialConstraintFunction());
         });
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
         registry.dynamicBind(s -> {
-            if (s.startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL)) {
+            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL).anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
                 return RULE_SCOPES;
             }
             return Set.of();

@@ -65,13 +65,17 @@ public class CredentialScopeExtractor implements ScopeExtractor {
      * </ul>
      */
     private String extractCredentialType(String leftOperand, Object rightValue) {
-        if (leftOperand.equals(FRAMEWORK_CREDENTIAL_PREFIX)) {
+        if (leftOperand.equals(FRAMEWORK_CREDENTIAL_PREFIX)) { //this is the "new" notation, where the subtype is encoded in the right operand
             var rightOperand = rightValue.toString();
             var ix = rightOperand.indexOf(":");
             return ix > 0 ? rightOperand.substring(0, ix) : rightOperand;
         }
+        // for FrameworkAgreement.xyz we need the "xyz" part
         if (leftOperand.startsWith(FRAMEWORK_CREDENTIAL_PREFIX + ".")) {
             leftOperand = leftOperand.replace(FRAMEWORK_CREDENTIAL_PREFIX + ".", "");
+        } else { //for all others, e.g. Dismantler.activityType, we only need the "Dismantler" part
+            var ix = leftOperand.indexOf(".");
+            leftOperand = ix > 0 ? leftOperand.substring(0, ix) : leftOperand;
         }
         return leftOperand;
     }

@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.dismantler;
 
+import jakarta.json.JsonObject;
 import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -80,7 +81,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
                 context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
                 return false;
             }
-            predicate = new CredentialTypePredicate(DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
+            predicate = new CredentialTypePredicate(CX_CREDENTIAL_NS + DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
             if (operator == NEQ) {
                 predicate = predicate.negate();
             }
@@ -101,7 +102,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
 
     @Override
     public boolean canHandle(Object leftOperand) {
-        return leftOperand instanceof String && ((String) leftOperand).startsWith(CX_CREDENTIAL_NS + DISMANTLER_LITERAL);
+        return leftOperand instanceof String && ((String) leftOperand).startsWith(CX_POLICY_NS + DISMANTLER_LITERAL);
     }
 
     /**
@@ -161,7 +162,15 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
     private List<?> getList(Object object) {
         if (object instanceof Iterable<?> iterable) {
             var list = new ArrayList<>();
-            iterable.iterator().forEachRemaining(list::add);
+
+
+            iterable.iterator().forEachRemaining(element -> {
+                if (element instanceof JsonObject jo) {
+                    list.add(jo.getString("@value"));
+                } else {
+                    list.add(element);
+                }
+            });
             return list;
         }
         return List.of(object);
