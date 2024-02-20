@@ -54,7 +54,7 @@ public class BusinessPartnerNumberPermissionFunction implements AtomicConstraint
 
         var identity = participantAgent.getIdentity();
         if (identity == null) {
-            context.reportProblem("Identity of the participant agent cannot be null: " + ParticipantAgent.class.getName());
+            context.reportProblem("Identity of the participant agent cannot be null");
             return false;
         }
 
