@@ -178,13 +178,13 @@ public class S3ToS3Test {
         // wait until the data plane logs an exception that it cannot transfer the file
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Error writing the %s object on the %s bucket: The specified bucket does not exist".formatted(TESTFILE_NAME, S3_CONSUMER_BUCKET_NAME)),
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
                         isA(NoSuchBucketException.class)));
     }
 
     @ParameterizedTest(name = "File size bytes: {0}")
     // 1mb, 512mb, 1gb
-    @ValueSource(longs = {1024 * 1024 * 512, 1024L * 1024L * 1024L, 1024L * 1024L * 1024L * 1024})
+    @ValueSource(longs = { 1024 * 1024 * 512, 1024L * 1024L * 1024L, 1024L * 1024L * 1024L * 1024 })
     void transferfile_largeFile(long sizeBytes) {
 
         // create large sparse file
