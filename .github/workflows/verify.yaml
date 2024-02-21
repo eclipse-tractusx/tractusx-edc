@@ -155,11 +155,9 @@ jobs:
   miw-integration-tests:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
-
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
-
       - uses: actions/checkout@v4
       - name: Starting MIW, Keycloak and Postgres Servers
         run: |
@@ -172,7 +170,7 @@ jobs:
           timeout_minutes: 5
           max_attempts: 3
           command: |
-            code=$(curl -IL -sw "%{http_code}" http://localhost:8000/api/actuator/health -o /dev/null)
+            code=$(curl -IL -sw "%{http_code}" http://localhost:8000/api/actuator/health -o /dev/null)  
             if [ "$code" -ne "401" ]; then
               echo "MIW not ready yet, status = $code"
               exit 1;

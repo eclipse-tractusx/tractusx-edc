@@ -26,12 +26,16 @@ import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.common.CredentialTypePredicate;
 
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+
+
 /**
  * This constraint function checks that a MembershipCredential is present in a list of {@link org.eclipse.edc.identitytrust.model.VerifiableCredential}
  * objects extracted from a {@link ParticipantAgent} which is expected to be present on the {@link PolicyContext}.
  */
 public class MembershipCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
-    private static final String MEMBERSHIP_LITERAL = "Membership";
+    public static final String MEMBERSHIP_LITERAL = "Membership";
 
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
@@ -39,7 +43,7 @@ public class MembershipCredentialConstraintFunction extends AbstractDynamicCrede
             context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
             return false;
         }
-        if (!MEMBERSHIP_LITERAL.equalsIgnoreCase(leftOperand.toString())) {
+        if (!(CX_POLICY_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString())) {
             context.reportProblem("Invalid left-operand: must be 'Membership', but was '%s'".formatted(leftOperand));
             return false;
         }
@@ -57,11 +61,11 @@ public class MembershipCredentialConstraintFunction extends AbstractDynamicCrede
         }
         return credentialResult.getContent()
                 .stream()
-                .anyMatch(new CredentialTypePredicate(MEMBERSHIP_LITERAL + CREDENTIAL_LITERAL));
+                .anyMatch(new CredentialTypePredicate(CX_CREDENTIAL_NS + MEMBERSHIP_LITERAL + CREDENTIAL_LITERAL));
     }
 
     @Override
     public boolean canHandle(Object leftOperand) {
-        return leftOperand instanceof String && MEMBERSHIP_LITERAL.equalsIgnoreCase(leftOperand.toString());
+        return leftOperand instanceof String && (CX_POLICY_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString());
     }
 }

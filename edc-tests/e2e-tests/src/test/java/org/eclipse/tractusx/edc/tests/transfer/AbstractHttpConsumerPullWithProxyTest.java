@@ -57,7 +57,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
             .id(PLATO_BPN)
             .build();
 
-    private MockWebServer server;
+    protected MockWebServer server;
 
     @BeforeEach
     void setup() throws IOException {

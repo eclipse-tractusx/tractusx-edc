@@ -19,24 +19,44 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import okhttp3.mockwebserver.MockResponse;
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.IatpParticipant;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.SecureTokenService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.configureParticipant;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTIAL_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createProxyRequest;
+import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
 
 @EndToEndTest
 public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
@@ -94,7 +114,125 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(TX_CREDENTIAL_NAMESPACE + "Membership", "active"));
+        return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
     }
 
+    @DisplayName("Contract policy is fulfilled")
+    @ParameterizedTest(name = "{1}")
+    @ArgumentsSource(ValidContractPolicyProvider.class)
+    void transferData_whenContractPolicyFulfilled(JsonObject contractPolicy, String description) throws IOException, InterruptedException {
+        var assetId = "api-asset-1";
+        var url = server.url("/mock/api");
+        server.start();
+
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", url.toString(),
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", authCodeHeaderName,
+                "authCode", authCode
+        );
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
+        var contractPolicyId = PLATO.createPolicyDefinition(contractPolicy);
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest());
+
+        var edr = new AtomicReference<EndpointDataReference>();
+
+        // wait until transfer process completes
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var tpState = SOKRATES.getTransferProcessState(transferProcessId);
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
+                });
+
+        // wait until EDC is available on the consumer side
+        server.enqueue(new MockResponse().setBody("test response").setResponseCode(200));
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    edr.set(SOKRATES.edrs().getDataReferenceFromBackend(transferProcessId));
+                    assertThat(edr).isNotNull();
+                });
+
+        // pull data out of provider's backend service:
+        // Cons-DP -> Prov-DP -> Prov-backend
+        assertThat(SOKRATES.data().pullData(edr.get(), Map.of())).isEqualTo("test response");
+        var rq = server.takeRequest();
+        assertThat(rq.getHeader(authCodeHeaderName)).isEqualTo(authCode);
+        assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isEqualTo(edr.get().getContractId());
+        assertThat(rq.getHeader("Edc-Bpn")).isEqualTo(SOKRATES.getBpn());
+        assertThat(rq.getMethod()).isEqualToIgnoringCase("GET");
+    }
+
+    @DisplayName("Contract policy is NOT fulfilled")
+    @ParameterizedTest(name = "{1}")
+    @ArgumentsSource(InvalidContractPolicyProvider.class)
+    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) throws IOException, InterruptedException {
+        var assetId = "api-asset-1";
+        var url = server.url("/mock/api");
+        server.start();
+
+        var authCodeHeaderName = "test-authkey";
+        var authCode = "test-authcode";
+
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", url.toString(),
+                "type", "HttpData",
+                "contentType", "application/json",
+                "authKey", authCodeHeaderName,
+                "authCode", authCode
+        );
+
+        PLATO.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
+        var contractPolicyId = PLATO.createPolicyDefinition(contractPolicy);
+        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var negotiationId = SOKRATES.initContractNegotiation(PLATO, assetId);
+
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    assertThat(SOKRATES.getContractNegotiationError(negotiationId)).isNotNull();
+                });
+    }
+
+    private static class ValidContractPolicyProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active")), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement.pcf", "active")), "PCF Use Case (legacy notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "pcf")), "PCF Use Case (new notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler", "active")), "Dismantler Credential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleDismantle")), "Dismantler Cred (activity type)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Tatra")), "Dismantler allowedBrands (IS_ANY_OF, one intersects)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (EQ, exact match)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)")
+            );
+        }
+    }
+
+    private static class InvalidContractPolicyProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement.sustainability", "active")), "Sustainability Use Case (legacy notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "traceability")), "Traceability Use Case (new notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleScrap")), "Dismantler activityType does not match"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.NEQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (NEQ, but is equal)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Lada")), "Dismantler allowedBrands (IS_NONE_OF, but is one contains)"),
+                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo")), "Dismantler allowedBrands (IN, but not subset)")
+            );
+        }
+    }
 }

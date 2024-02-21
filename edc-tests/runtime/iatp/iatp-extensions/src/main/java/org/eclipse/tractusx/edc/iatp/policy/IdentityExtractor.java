@@ -55,7 +55,7 @@ public class IdentityExtractor implements ParticipantAgentServiceExtension {
     }
 
     private boolean isIdentityCredential(VerifiableCredential verifiableCredential) {
-        return verifiableCredential.getTypes().stream().anyMatch(t -> t.endsWith(IDENTITY_CREDENTIAL));
+        return verifiableCredential.getType().stream().anyMatch(t -> t.endsWith(IDENTITY_CREDENTIAL));
     }
 
     private Optional<String> getIdentifier(VerifiableCredential verifiableCredential) {

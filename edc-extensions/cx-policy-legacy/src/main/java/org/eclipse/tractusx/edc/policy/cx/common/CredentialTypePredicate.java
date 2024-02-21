@@ -17,22 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer;
+package org.eclipse.tractusx.edc.policy.cx.common;
 
-import jakarta.json.JsonObject;
-import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 
-import java.util.Map;
+import java.util.function.Predicate;
 
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_CREDENTIAL_NAMESPACE;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
+public class CredentialTypePredicate implements Predicate<VerifiableCredential> {
+    private final String expectedType;
 
-@EndToEndTest
-public class IatpFrameworkAgreementHttpConsumerPullWithProxyInMemoryTest extends IatpHttpConsumerPullWithProxyInMemoryTest {
-
-    @Override
-    protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(TX_CREDENTIAL_NAMESPACE + "FrameworkAgreement.pcf", "active"));
+    public CredentialTypePredicate(String expectedType) {
+        this.expectedType = expectedType;
     }
 
+    @Override
+    public boolean test(VerifiableCredential credential) {
+        return credential.getType().contains(expectedType);
+    }
 }

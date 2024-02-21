@@ -32,6 +32,6 @@ public class CredentialTypePredicate implements Predicate<VerifiableCredential> 
 
     @Override
     public boolean test(VerifiableCredential credential) {
-        return credential.getTypes().contains(expectedType);
+        return credential.getType().contains(expectedType);
     }
 }

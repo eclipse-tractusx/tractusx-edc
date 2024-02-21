@@ -25,17 +25,17 @@ import org.eclipse.edc.policy.model.Operator;
 
 import java.util.Set;
 
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_CREDENTIAL_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
 
 /**
  * Extract credentials from the policy constraints
  * <p>
  * Extract and map from the Credential DSL the required credential type
- * The left operand should be bound to the namespace {@link org.eclipse.tractusx.edc.edr.spi.CoreConstants#TX_CREDENTIAL_NAMESPACE}
+ * The left operand should be bound to the namespace {@link org.eclipse.tractusx.edc.edr.spi.CoreConstants#CX_CREDENTIAL_NS}
  */
 public class CredentialScopeExtractor implements ScopeExtractor {
-    public static final String FRAMEWORK_CREDENTIAL_PREFIX = "FrameworkAgreement.";
+    public static final String FRAMEWORK_CREDENTIAL_PREFIX = "FrameworkAgreement";
     public static final String SCOPE_FORMAT = "%s:%s:read";
     public static final String CREDENTIAL_FORMAT = "%sCredential";
 
@@ -45,15 +45,39 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     @Override
     public Set<String> extractScopes(Object leftValue, Operator operator, Object rightValue, PolicyContext context) {
         Set<String> scopes = Set.of();
-        if (leftValue instanceof String leftOperand && leftOperand.startsWith(TX_CREDENTIAL_NAMESPACE)) {
-            var credential = leftOperand.replace(TX_CREDENTIAL_NAMESPACE, "");
-            if (credential.startsWith(FRAMEWORK_CREDENTIAL_PREFIX)) {
-                credential = credential.replace(FRAMEWORK_CREDENTIAL_PREFIX, "");
-            }
-            scopes = Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credential))));
+        if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_NS)) {
+            leftOperand = leftOperand.replace(CX_POLICY_NS, "");
+            var credentialType = extractCredentialType(leftOperand, rightValue);
+            scopes = Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType))));
 
         }
         return scopes;
+    }
+
+    /**
+     * Possible values for credential:
+     * <ul>
+     *     <li>FrameworkAgreement -> subtype is encoded in rightValue, return subtype from rightOperand</li>
+     *     <li>FrameworkAgreement.[subtype] -> return subtype </li>
+     *     <li>Dismantler -> return "Dismantler"</li>
+     *     <li>Dismantler.[expr] -> return "Dismantler"</li>
+     *     <li>Membership -> return "Membership"</li>
+     * </ul>
+     */
+    private String extractCredentialType(String leftOperand, Object rightValue) {
+        if (leftOperand.equals(FRAMEWORK_CREDENTIAL_PREFIX)) { //this is the "new" notation, where the subtype is encoded in the right operand
+            var rightOperand = rightValue.toString();
+            var ix = rightOperand.indexOf(":");
+            return ix > 0 ? rightOperand.substring(0, ix) : rightOperand;
+        }
+        // for FrameworkAgreement.xyz we need the "xyz" part
+        if (leftOperand.startsWith(FRAMEWORK_CREDENTIAL_PREFIX + ".")) {
+            leftOperand = leftOperand.replace(FRAMEWORK_CREDENTIAL_PREFIX + ".", "");
+        } else { //for all others, e.g. Dismantler.activityType, we only need the "Dismantler" part
+            var ix = leftOperand.indexOf(".");
+            leftOperand = ix > 0 ? leftOperand.substring(0, ix) : leftOperand;
+        }
+        return leftOperand;
     }
 
     private String capitalize(String input) {
