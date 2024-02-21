@@ -24,6 +24,7 @@ import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.policy.cx.summary.SummaryConstraintFunctionsProvider;
 
 import static org.eclipse.tractusx.edc.policy.cx.CxPolicyRegistration.registerBindings;
 import static org.eclipse.tractusx.edc.policy.cx.CxPolicyRegistration.registerFunctions;
@@ -50,5 +51,8 @@ public class CxPolicyExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         registerFunctions(policyEngine);
         registerBindings(bindingRegistry);
+
+        SummaryConstraintFunctionsProvider.registerBindings(bindingRegistry);
+        SummaryConstraintFunctionsProvider.registerFunctions(policyEngine);
     }
 }
