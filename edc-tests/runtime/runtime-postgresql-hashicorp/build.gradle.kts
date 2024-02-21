@@ -32,7 +32,7 @@ dependencies {
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy")
+        exclude(module = "cx-policy-legacy")
     }
 
     implementation(project(":edc-tests:runtime:extensions"))
