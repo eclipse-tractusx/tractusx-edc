@@ -35,7 +35,7 @@ import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 
@@ -105,7 +105,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                 .map((url) -> Map.<String, String>of())
                 .orElseGet(() -> dataPlaneProperties(request));
 
-        var flowRequest = DataFlowRequest.Builder.newInstance()
+        var flowRequest = DataFlowStartMessage.Builder.newInstance()
                 .processId(randomUUID().toString())
                 .trackable(false)
                 .sourceDataAddress(sourceAddress)

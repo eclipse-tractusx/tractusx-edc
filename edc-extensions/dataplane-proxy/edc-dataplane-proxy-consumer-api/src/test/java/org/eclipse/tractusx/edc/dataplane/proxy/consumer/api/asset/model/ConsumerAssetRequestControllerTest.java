@@ -29,7 +29,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ClientErrorExceptionMapper;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController;
@@ -70,6 +70,13 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
     private final EndpointDataReferenceCache cache = mock(EndpointDataReferenceCache.class);
     private final PipelineService pipelineService = mock();
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private static Stream<Arguments> provideServiceResultForProxyCall() {
+        return Stream.of(
+                Arguments.of(StreamResult.notFound(), NOT_FOUND.getStatusCode()),
+                Arguments.of(StreamResult.notAuthorized(), UNAUTHORIZED.getStatusCode()),
+                Arguments.of(StreamResult.error("error"), INTERNAL_SERVER_ERROR.getStatusCode()));
+    }
 
     @Test
     void requestAsset_shouldReturnData_withAssetId() throws IOException {
@@ -288,7 +295,7 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
 
         assertThat(proxyResponse).containsAllEntriesOf(response);
 
-        var captor = ArgumentCaptor.forClass(DataFlowRequest.class);
+        var captor = ArgumentCaptor.forClass(DataFlowStartMessage.class);
         verify(pipelineService).transfer(captor.capture(), any());
 
 
@@ -309,13 +316,6 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
     @Override
     protected Object additionalResource() {
         return new ClientErrorExceptionMapper();
-    }
-
-    private static Stream<Arguments> provideServiceResultForProxyCall() {
-        return Stream.of(
-                Arguments.of(StreamResult.notFound(), NOT_FOUND.getStatusCode()),
-                Arguments.of(StreamResult.notAuthorized(), UNAUTHORIZED.getStatusCode()),
-                Arguments.of(StreamResult.error("error"), INTERNAL_SERVER_ERROR.getStatusCode()));
     }
 
     private RequestSpecification baseRequest() {

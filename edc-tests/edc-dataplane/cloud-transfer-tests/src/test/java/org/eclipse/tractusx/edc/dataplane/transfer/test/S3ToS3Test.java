@@ -27,7 +27,7 @@ import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -71,7 +71,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
  * This test is intended to verify transfers within the same cloud provider, i.e. S3-to-S3.
- * It spins up a fully-fledged dataplane and issues the DataFlowRequest via the data plane's Control API
+ * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
  */
 @Testcontainers
 @AwsS3IntegrationTest
@@ -244,8 +244,8 @@ public class S3ToS3Test {
     }
 
 
-    private DataFlowRequest createFlowRequest() {
-        return DataFlowRequest.Builder.newInstance()
+    private DataFlowStartMessage createFlowRequest() {
+        return DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
