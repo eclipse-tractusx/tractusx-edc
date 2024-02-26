@@ -22,14 +22,14 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.NotNull;
 
 public class SftpDataSourceFactory implements DataSourceFactory {
     @Override
-    public boolean canHandle(DataFlowRequest request) {
+    public boolean canHandle(DataFlowStartMessage request) {
         try {
             SftpDataAddress.fromDataAddress(request.getSourceDataAddress());
             return true;
@@ -39,7 +39,7 @@ public class SftpDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public DataSource createSource(DataFlowRequest request) {
+    public DataSource createSource(DataFlowStartMessage request) {
         if (!canHandle(request)) {
             return null;
         }
@@ -57,9 +57,9 @@ public class SftpDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
+    public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         if (!canHandle(request)) {
-            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+            return Result.failure(String.format("Invalid DataFlowStartMessage: %s", request.getId()));
         }
         return Result.success();
     }

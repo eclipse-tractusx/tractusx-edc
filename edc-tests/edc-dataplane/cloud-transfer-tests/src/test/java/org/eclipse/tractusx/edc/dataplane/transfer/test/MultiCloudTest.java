@@ -28,7 +28,7 @@ import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -126,7 +126,7 @@ public class MultiCloudTest {
         assertThat(r.sdkHttpResponse().isSuccessful()).isTrue();
 
         // create data flow request
-        var dfr = DataFlowRequest.Builder.newInstance()
+        var dfr = DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type("AzureStorage")
@@ -185,7 +185,7 @@ public class MultiCloudTest {
 
 
         // create data flow request
-        var dfr = DataFlowRequest.Builder.newInstance()
+        var dfr = DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
