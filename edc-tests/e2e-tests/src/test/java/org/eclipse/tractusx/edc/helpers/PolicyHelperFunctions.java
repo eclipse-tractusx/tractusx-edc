@@ -48,7 +48,6 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 public class PolicyHelperFunctions {
 
     public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
-    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
     private static final String ODRL_JSONLD = "http://www.w3.org/ns/odrl.jsonld";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
@@ -58,27 +57,8 @@ public class PolicyHelperFunctions {
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
-
     public static JsonObject bpnGroupPolicy(Operator operator, String... allowedGroups) {
         return bpnGroupPolicy(operator.getOdrlRepresentation(), allowedGroups);
-    }
-
-    private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
-
-        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
-
-        var permission = Json.createObjectBuilder()
-                .add("action", "use")
-                .add("constraint", Json.createObjectBuilder()
-                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", groupConstraint)
-                        .build())
-                .build();
-
-        return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
-                .add("permission", permission)
-                .build();
     }
 
     /**
@@ -91,6 +71,32 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject frameworkPolicy(Map<String, String> permissions) {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", Json.createArrayBuilder()
+                        .add(frameworkPermission(permissions)))
+                .build();
+    }
+
+    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand) {
+        var constraint = atomicConstraint(leftOperand, operator.getOdrlRepresentation(), rightOperand);
+
+        var permission = Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add("or", constraint)
+                        .build())
+                .build();
+
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", Json.createArrayBuilder().add(permission))
+                .build();
+    }
 
     /**
      * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
@@ -103,16 +109,6 @@ public class PolicyHelperFunctions {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    private static String fetchFrameworkTemplate() {
-        try (var stream = PolicyHelperFunctions.class.getClassLoader().getResourceAsStream("framework-policy.json")) {
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     public static JsonObjectBuilder policyDefinitionBuilder() {
@@ -128,9 +124,39 @@ public class PolicyHelperFunctions {
     public static JsonObject bnpPolicy(String... bnps) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(permission(bnps)))
                 .build();
+    }
+
+
+    private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
+
+        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
+
+        var permission = Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add("or", groupConstraint)
+                        .build())
+                .build();
+
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", permission)
+                .build();
+    }
+
+    private static String fetchFrameworkTemplate() {
+        try (var stream = PolicyHelperFunctions.class.getClassLoader().getResourceAsStream("framework-policy.json")) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static JsonObject permission(String... bpns) {
@@ -145,14 +171,6 @@ public class PolicyHelperFunctions {
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("or", bpnConstraints)
                         .build())
-                .build();
-    }
-
-    public static JsonObject frameworkPolicy(Map<String, String> permissions) {
-        return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
-                .add("permission", Json.createArrayBuilder()
-                        .add(frameworkPermission(permissions)))
                 .build();
     }
 
@@ -177,8 +195,8 @@ public class PolicyHelperFunctions {
                 .add("leftOperand", leftOperand)
                 .add("operator", operator);
 
-        if (rightOperand instanceof Collection<?>) {
-            builder.add("rightOperand", ((Collection<?>) rightOperand).stream().map(Object::toString).collect(Collectors.joining(",")));
+        if (rightOperand instanceof Collection<?> coll) {
+            builder.add("rightOperand", coll.stream().map(Object::toString).collect(Collectors.joining(",")));
         } else {
             builder.add("rightOperand", rightOperand.toString());
         }

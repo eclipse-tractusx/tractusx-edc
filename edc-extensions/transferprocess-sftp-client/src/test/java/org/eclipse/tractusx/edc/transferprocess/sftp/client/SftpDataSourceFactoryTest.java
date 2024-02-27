@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
@@ -47,7 +47,7 @@ class SftpDataSourceFactoryTest {
 
         var sftpDataAddress =
                 SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        var request = mock(DataFlowRequest.class);
+        var request = mock(DataFlowStartMessage.class);
         when(request.getSourceDataAddress()).thenReturn(sftpDataAddress);
 
         Assertions.assertTrue(dataSourceFactory.validateRequest(request).succeeded());
@@ -57,7 +57,7 @@ class SftpDataSourceFactoryTest {
     void validate_invalidDataAddressType() {
         var dataSourceFactory = new SftpDataSourceFactory();
         var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
-        var request = mock(DataFlowRequest.class);
+        var request = mock(DataFlowStartMessage.class);
         when(request.getSourceDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertTrue(dataSourceFactory.validateRequest(request).failed());
@@ -76,7 +76,7 @@ class SftpDataSourceFactoryTest {
                         "userPassword", "password");
 
         var dataAddress = DataAddress.Builder.newInstance().properties(properties).build();
-        var request = mock(DataFlowRequest.class);
+        var request = mock(DataFlowStartMessage.class);
         when(request.getSourceDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertTrue(dataSourceFactory.validateRequest(request).failed());
@@ -93,7 +93,7 @@ class SftpDataSourceFactoryTest {
 
         var sftpDataAddress =
                 SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        var request = mock(DataFlowRequest.class);
+        var request = mock(DataFlowStartMessage.class);
         when(request.getSourceDataAddress()).thenReturn(sftpDataAddress);
 
         try (var staticWrapper =
@@ -112,7 +112,7 @@ class SftpDataSourceFactoryTest {
     void createSink_invalidDataAddressType() {
         var dataSourceFactory = new SftpDataSourceFactory();
         var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
-        var request = mock(DataFlowRequest.class);
+        var request = mock(DataFlowStartMessage.class);
         when(request.getSourceDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertNull(dataSourceFactory.createSource(request));

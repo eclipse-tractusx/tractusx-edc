@@ -37,7 +37,7 @@ import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.authorization.AuthorizationHandlerRegistry;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfiguration;
 import org.eclipse.tractusx.edc.dataplane.proxy.spi.provider.gateway.configuration.GatewayConfigurationRegistry;
@@ -168,7 +168,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
         }
     }
 
-    private DataFlowRequest createRequest(String subPath, GatewayConfiguration configuration, HttpDataAddress httpDataAddress) {
+    private DataFlowStartMessage createRequest(String subPath, GatewayConfiguration configuration, HttpDataAddress httpDataAddress) {
         var path = configuration.getProxiedPath() + "/" + subPath;
 
         var sourceAddressBuilder = HttpDataAddress.Builder.newInstance()
@@ -180,7 +180,7 @@ public class ProviderGatewayController implements ProviderGatewayApi {
                 .type(ASYNC)
                 .build();
 
-        return DataFlowRequest.Builder.newInstance()
+        return DataFlowStartMessage.Builder.newInstance()
                 .processId(randomUUID().toString())
                 .trackable(false)
                 .sourceDataAddress(sourceAddressBuilder.build())

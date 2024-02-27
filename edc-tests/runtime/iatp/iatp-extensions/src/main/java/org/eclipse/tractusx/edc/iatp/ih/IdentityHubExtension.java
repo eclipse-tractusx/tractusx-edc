@@ -24,14 +24,12 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
 
-import java.util.List;
-
 @Extension("Identity Hub extension for testing")
 public class IdentityHubExtension implements ServiceExtension {
 
     @Provider
     public ScopeToCriterionTransformer scopeToCriterionTransformer() {
-        return new TxScopeToCriterionTransformer(List.of("MembershipCredential", "DismantlerCredential", "BpnCredential"));
+        return new TxScopeToCriterionTransformer();
     }
 
 }

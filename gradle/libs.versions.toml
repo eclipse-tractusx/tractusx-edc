@@ -2,26 +2,26 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.5.1"
-apache-sshd = "2.12.0"
+edc = "0.5.2-SNAPSHOT"
+apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.0"
-aws = "2.23.19"
+aws = "2.24.10"
 azure-identity = "1.11.2"
 bouncyCastle-jdk18on = "1.77"
-flyway = "9.22.3"
-iron-vc = "0.8.1"
+flyway = "10.8.1"
+iron-vc = "0.11.0"
 jackson = "2.16.1"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
 mockwebserver = "5.0.0-alpha.12"
 nimbus = "9.37.3"
 okhttp = "4.12.0"
-postgres = "42.7.1"
+postgres = "42.7.2"
 restAssured = "5.4.0"
 rsApi = "3.1.0"
 slf4j = "2.0.12"
-testcontainers = "1.19.4"
+testcontainers = "1.19.6"
 tink = "1.12.0"
 titanium = "1.3.3"
 
@@ -39,6 +39,7 @@ edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.r
 edc-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-client", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
+edc-spi-identitytrust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
@@ -111,7 +112,7 @@ edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callbac
 edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback-http-dispatcher", version.ref = "edc" }
 
 # IATP Modules
-
+edc-identity-trust-spi = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-identity-core-trust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
 edc-identity-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
 edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
@@ -119,12 +120,13 @@ edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", v
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
 edc-identity-jws2020 = { module = "org.eclipse.edc:jws2020", version.ref = "edc" }
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
-edc-identity-trust-sts-remote = { module = "org.eclipse.edc:identity-trust-sts-remote-core", version.ref = "edc" }
 edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-trust-issuers-configuration", version.ref = "edc" }
 
 
 # IATP for Testing
 
+edc-identity-trust-sts-remote = { module = "org.eclipse.edc:identity-trust-sts-remote-core", version.ref = "edc" }
+edc-identity-trust-sts-embedded = { module = "org.eclipse.edc:identity-trust-sts-embedded", version.ref = "edc" }
 edc-identity-trust-sts-core = { module = "org.eclipse.edc:identity-trust-sts-core", version.ref = "edc" }
 edc-identity-trust-sts-api = { module = "org.eclipse.edc:identity-trust-sts-api", version.ref = "edc" }
 edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identity-trust-sts-client-configuration", version.ref = "edc" }
@@ -175,6 +177,7 @@ aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 jackson-datatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }

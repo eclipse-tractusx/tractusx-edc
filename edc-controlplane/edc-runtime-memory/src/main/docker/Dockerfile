@@ -47,6 +47,5 @@ COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
 
-# need the sh -c syntax so that the SECRETS variable gets expanded
 # use the "exec" syntax so that SIGINT reaches the JVM -> graceful termination
-CMD ["sh", "-c", "exec java -Dedc.fs.config=/app/configuration.properties -Dedc.vault.secrets=\"${SECRETS}\" -Djava.util.logging.config.file=/app/logging.properties -Djava.security.egd=file:/dev/urandom -jar edc-controlplane.jar"]
+CMD ["sh", "-c", "exec java -Dedc.fs.config=/app/configuration.properties -Djava.util.logging.config.file=/app/logging.properties -Djava.security.egd=file:/dev/urandom -jar edc-controlplane.jar"]

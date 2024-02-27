@@ -33,7 +33,7 @@ import org.eclipse.tractusx.edc.iam.ssi.miw.oauth2.MiwOauth2ClientImpl;
 
 import java.util.Objects;
 
-import static org.eclipse.tractusx.edc.iam.ssi.miw.utils.PathUtils.removeTrailingSlash;
+import static org.eclipse.tractusx.edc.core.utils.PathUtils.removeTrailingSlash;
 
 
 @Extension(SsiMiwOauth2ClientExtension.EXTENSION_NAME)

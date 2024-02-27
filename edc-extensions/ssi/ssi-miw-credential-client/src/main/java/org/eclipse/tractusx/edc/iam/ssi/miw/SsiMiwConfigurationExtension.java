@@ -31,7 +31,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import static java.lang.String.format;
-import static org.eclipse.tractusx.edc.iam.ssi.miw.utils.PathUtils.removeTrailingSlash;
+import static org.eclipse.tractusx.edc.core.utils.PathUtils.removeTrailingSlash;
 
 
 @Extension(SsiMiwConfigurationExtension.EXTENSION_NAME)

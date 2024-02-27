@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.client;
 
 import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpLocation;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpUser;
@@ -43,7 +43,7 @@ class SftpDataSinkFactoryTest {
 
         var sftpDataAddress =
                 SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        var request = Mockito.mock(DataFlowRequest.class);
+        var request = Mockito.mock(DataFlowStartMessage.class);
         Mockito.when(request.getDestinationDataAddress()).thenReturn(sftpDataAddress);
 
         Assertions.assertTrue(dataSinkFactory.validateRequest(request).succeeded());
@@ -53,7 +53,7 @@ class SftpDataSinkFactoryTest {
     void validate_invalidDataAddressType() {
         var dataSinkFactory = new SftpDataSinkFactory();
         var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
-        var request = Mockito.mock(DataFlowRequest.class);
+        var request = Mockito.mock(DataFlowStartMessage.class);
         Mockito.when(request.getDestinationDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertTrue(dataSinkFactory.validateRequest(request).failed());
@@ -73,7 +73,7 @@ class SftpDataSinkFactoryTest {
 
         final var dataAddress =
                 DataAddress.Builder.newInstance().properties(properties).build();
-        var request = Mockito.mock(DataFlowRequest.class);
+        var request = Mockito.mock(DataFlowStartMessage.class);
         Mockito.when(request.getDestinationDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertTrue(dataSinkFactory.validateRequest(request).failed());
@@ -94,7 +94,7 @@ class SftpDataSinkFactoryTest {
 
         var sftpDataAddress =
                 SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
-        var request = Mockito.mock(DataFlowRequest.class);
+        var request = Mockito.mock(DataFlowStartMessage.class);
         Mockito.when(request.getDestinationDataAddress()).thenReturn(sftpDataAddress);
 
         try (var staticWrapper =
@@ -113,7 +113,7 @@ class SftpDataSinkFactoryTest {
     void createSink_invalidDataAddressType() {
         var dataSinkFactory = new SftpDataSinkFactory();
         var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
-        var request = Mockito.mock(DataFlowRequest.class);
+        var request = Mockito.mock(DataFlowStartMessage.class);
         Mockito.when(request.getDestinationDataAddress()).thenReturn(dataAddress);
 
         Assertions.assertNull(dataSinkFactory.createSink(request));
