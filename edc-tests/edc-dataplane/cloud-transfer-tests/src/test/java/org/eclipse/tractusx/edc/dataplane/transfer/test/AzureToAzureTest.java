@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -59,7 +59,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
  * This test is intended to verify transfers within the same cloud provider, i.e. AzureBlob-to-AzureBlob.
- * It spins up a fully-fledged dataplane and issues the DataFlowRequest via the data plane's Control API
+ * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
  */
 @SuppressWarnings("resource")
 @Testcontainers
@@ -142,7 +142,7 @@ public class AzureToAzureTest {
      */
     @ParameterizedTest(name = "File size bytes: {0}")
     // 1mb, 512mb, 1gb
-    @ValueSource(longs = {1024 * 1024 * 512, 1024L * 1024L * 1024L, /*1024L * 1024L * 1024L * 1024 takes extremely long!*/})
+    @ValueSource(longs = { 1024 * 1024 * 512, 1024L * 1024L * 1024L, /*1024L * 1024L * 1024L * 1024 takes extremely long!*/ })
     void transferFile_largeFile(long sizeBytes) throws IOException {
         // upload file to provider's blob store
         var bcc = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
@@ -216,8 +216,8 @@ public class AzureToAzureTest {
                         .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
     }
 
-    private DataFlowRequest createFlowRequest(String blobName) {
-        return DataFlowRequest.Builder.newInstance()
+    private DataFlowStartMessage createFlowRequest(String blobName) {
+        return DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(blobSourceAddress(blobName))
                 .destinationDataAddress(blobDestinationAddress(blobName))

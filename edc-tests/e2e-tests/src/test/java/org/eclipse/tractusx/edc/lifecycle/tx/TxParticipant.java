@@ -31,7 +31,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
+import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
@@ -66,7 +69,7 @@ public class TxParticipant extends Participant {
      * Stores BPN groups
      */
     public void storeBusinessPartner(String bpn, String... groups) {
-        var body = Json.createObjectBuilder()
+        var body = createObjectBuilder()
                 .add(ID, bpn)
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
@@ -129,6 +132,16 @@ public class TxParticipant extends Participant {
      */
     public String getContractNegotiationError(String negotiationId) {
         return getContractNegotiationField(negotiationId, "errorDetail");
+    }
+
+    // TODO: temporary override due https://github.com/eclipse-edc/Connector/pull/3868
+    //  remove once fixed in EDC upstream
+    @Override
+    public String initContractNegotiation(Participant provider, String assetId) {
+        var dataset = getDatasetForAsset(provider, assetId);
+        var policy = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject();
+        var policyWithTarget = createObjectBuilder(policy).add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID))).build();
+        return super.initContractNegotiation(provider, policyWithTarget);
     }
 
     /**

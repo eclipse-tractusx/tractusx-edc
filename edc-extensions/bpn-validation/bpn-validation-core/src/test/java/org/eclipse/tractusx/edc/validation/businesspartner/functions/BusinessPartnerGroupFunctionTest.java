@@ -53,8 +53,8 @@ import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
+import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
-import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.REFERRING_CONNECTOR_CLAIM;
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -97,8 +97,8 @@ class BusinessPartnerGroupFunctionTest {
     @Test
     @DisplayName("Right-hand operand is not String or Collection<?>")
     void evaluate_rightOperandNotStringOrCollection() {
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(List.of("test-group")));
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
 
         assertThat(function.evaluate(EQ, 42, createPermission(EQ, List.of("test-group")), context)).isFalse();
         assertThat(function.evaluate(EQ, 42L, createPermission(EQ, List.of("test-group")), context)).isFalse();
@@ -117,7 +117,7 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_validOperator(String ignored, Operator operator, List<String> assignedBpn, boolean expectedOutcome) {
 
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
     }
@@ -126,7 +126,7 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_noEntryForBpn() {
         var operator = NEQ;
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
@@ -136,7 +136,7 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_noGroupsAssignedToBpn() {
         var operator = NEQ;
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, TEST_BPN), Map.of()));
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
 
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();

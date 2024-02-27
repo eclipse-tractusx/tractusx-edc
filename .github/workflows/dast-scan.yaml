@@ -1,0 +1,123 @@
+#################################################################################
+#  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+name: ZAP_ALL
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: OWASP ZAP API Scan
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-memory-runtime
+
+      - name: Fetch MIW VP token
+        run: ./dast/fetch-token.sh
+
+      - name: API Catalog Request Test
+        id: catalog_request
+        run: |
+          dsp_response=$(curl -w "%{http_code}" --request POST \
+            --url http://localhost:8282/api/v1/dsp/catalog/request \
+            --header "Authorization: $VP_TOKEN" \
+            --header 'Content-Type: application/json' \
+              --data '{
+              "@type": "dspace:CatalogRequestMessage",
+              "dspace:filter": {
+                "@type": "QuerySpec",
+                "limit": 50,
+                "offset": 0,
+                "sortOrder": "ASC",
+                "filterExpression": []
+              },
+              "@context": {
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+                "dcat": "http://www.w3.org/ns/dcat#",
+                "dct": "https://purl.org/dc/terms/",
+                "odrl": "http://www.w3.org/ns/odrl/2/",
+                "dspace": "https://w3id.org/dspace/v0.8/"
+              }
+            }')
+          
+          echo "Response: $dsp_response"
+
+      - name: Generating report skeletons
+        if: success() || failure()
+        run: |
+          touch API_report.html
+          chmod a+w API_report.html
+          ls -lrt
+
+      - name: Run ZAP API scan
+        run: |
+          set +e
+          
+          echo "Pulling ZAP image..."
+          docker pull ghcr.io/zaproxy/zaproxy:stable -q
+          echo "Starting ZAP Docker container..."
+          docker run --network miw-net -v ${GITHUB_WORKSPACE}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py -t http://edc-runtime:8282/api/v1/dsp -f openapi -r API_report.html -T 1
+          
+          echo "... done."
+
+      - name: Upload HTML report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZAP_API scan report
+          path: ./API_report.html
+
+  zap_scan2:
+    runs-on: ubuntu-latest
+    name: OWASP ZAP FULL Scan
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-memory-runtime
+
+      - name: Generating report skeletons
+        if: success() || failure()
+        run: |
+          touch fullscan_report.html
+          chmod a+w fullscan_report.html
+          ls -lrt
+
+      - name: Perform ZAP FULL scan
+        run: |
+          set +e
+          
+          echo "Pulling ZAP image..."
+          docker pull ghcr.io/zaproxy/zaproxy:stable -q
+          echo "Starting ZAP Docker container..."
+          docker run --network miw-net -v ${GITHUB_WORKSPACE}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://edc-runtime:8282/api/v1/dsp -r fullscan_report.html -T 1
+          
+          echo "... done."
+
+      - name: Upload HTML report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZAP_FULL scan report
+          path: ./fullscan_report.html

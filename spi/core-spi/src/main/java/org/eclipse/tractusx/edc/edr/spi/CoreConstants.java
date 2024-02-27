@@ -23,10 +23,12 @@ public final class CoreConstants {
 
     public static final String TX_PREFIX = "tx";
     public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
-    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
     public static final String TX_CONTEXT = "https://w3id.org/tractusx/edc/v0.0.1";
     public static final String EDC_CONTEXT = "https://w3id.org/edc/v0.0.1";
-    
+    public static final String CX_CREDENTIAL_NS = "https://w3id.org/catenax/credentials/";
+    public static final String CX_POLICY_NS = "https://w3id.org/catenax/policy/";
+    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
+
     private CoreConstants() {
     }
 }

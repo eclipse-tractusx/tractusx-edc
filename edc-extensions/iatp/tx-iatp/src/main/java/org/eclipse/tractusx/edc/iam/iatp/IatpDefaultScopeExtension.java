@@ -33,9 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.CATALOG_REQUEST_SCOPE;
-import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.NEGOTIATION_REQUEST_SCOPE;
-import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
 import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.DEFAULT_SCOPES;
 
@@ -54,9 +51,10 @@ public class IatpDefaultScopeExtension implements ServiceExtension {
 
     @Setting(context = TX_IATP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, value = "The alias of the scope e.g. read", required = true)
     public static final String OPERATION = "operation";
-
+    public static final String CATALOG_REQUEST_SCOPE = "request.catalog";
+    public static final String NEGOTIATION_REQUEST_SCOPE = "request.contract.negotiation";
+    public static final String TRANSFER_PROCESS_REQUEST_SCOPE = "request.transfer.process";
     static final String NAME = "Tractusx default scope extension";
-
     @Inject
     private PolicyEngine policyEngine;
 

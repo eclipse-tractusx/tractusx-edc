@@ -23,7 +23,7 @@ import org.apache.sshd.sftp.client.SftpClient;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ import java.util.List;
 
 public class SftpDataSinkFactory implements DataSinkFactory {
     @Override
-    public boolean canHandle(DataFlowRequest request) {
+    public boolean canHandle(DataFlowStartMessage request) {
         try {
             SftpDataAddress.fromDataAddress(request.getDestinationDataAddress());
             return true;
@@ -42,7 +42,7 @@ public class SftpDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public DataSink createSink(DataFlowRequest request) {
+    public DataSink createSink(DataFlowStartMessage request) {
         if (!canHandle(request)) {
             return null;
         }
@@ -63,9 +63,9 @@ public class SftpDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
+    public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         if (!canHandle(request)) {
-            return Result.failure(String.format("Invalid DataFlowRequest: %s", request.getId()));
+            return Result.failure(String.format("Invalid DataFlowStartMessage: %s", request.getId()));
         }
 
         return Result.success();

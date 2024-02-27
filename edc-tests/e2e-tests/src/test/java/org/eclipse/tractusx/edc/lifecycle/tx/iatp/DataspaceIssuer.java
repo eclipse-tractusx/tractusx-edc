@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
@@ -107,12 +108,26 @@ public class DataspaceIssuer {
                 () -> membershipSubject(participant.didUrl(), participant.getBpn()));
     }
 
-    public VerifiableCredentialResource issueFrameworkCredential(IatpParticipant participant, JsonLd jsonLd, String type) {
-        return issueCredential(participant, jsonLd, "UseCaseFrameworkCondition", () -> CredentialSubject.Builder.newInstance()
-                        .claim("holderIdentifier", participant.getBpn())
-                        .claim("useCaseType", type)
+    public VerifiableCredentialResource issueDismantlerCredential(IatpParticipant participant, JsonLd jsonLd) {
+        return issueCredential(participant, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
+                        .claim("holderIdentifier", participant.didUrl())
+                        .claim("activityType", "vehicleDismantle")
+                        .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
                         .build(),
-                () -> frameworkAgreementSubject(participant.didUrl(), participant.getBpn(), type));
+                () -> Json.createObjectBuilder()
+                        .add("type", "MembershipCredential")
+                        .add("holderIdentifier", participant.didUrl())
+                        .add("activityType", "vehicleDismantle")
+                        .add("allowedVehicleBrands", Json.createArrayBuilder().add("Moskvich").add("Lada").build())
+                        .add("id", participant.didUrl())
+                        .build());
+    }
+
+    public VerifiableCredentialResource issueFrameworkCredential(IatpParticipant participant, JsonLd jsonLd, String credentialType) {
+        return issueCredential(participant, jsonLd, credentialType, () -> CredentialSubject.Builder.newInstance()
+                        .claim("holderIdentifier", participant.getBpn())
+                        .build(),
+                () -> frameworkAgreementSubject(participant.didUrl(), participant.getBpn(), credentialType));
 
     }
 

@@ -30,15 +30,20 @@ import java.util.Map;
 public class KeycloakDispatcher extends Dispatcher {
 
     private static final TypeManager MAPPER = new TypeManager();
-    
-    public KeycloakDispatcher() {
+    private final String path;
 
+    public KeycloakDispatcher(String path) {
+        this.path = path;
+    }
+
+    public KeycloakDispatcher() {
+        this("/");
     }
 
     @NotNull
     @Override
     public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
-        if (recordedRequest.getPath().split("\\?")[0].equals("/")) {
+        if (recordedRequest.getPath().split("\\?")[0].equals(path)) {
             return createTokenResponse();
         }
         return new MockResponse().setResponseCode(404);

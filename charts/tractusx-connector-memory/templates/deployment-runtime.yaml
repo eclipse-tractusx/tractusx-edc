@@ -252,7 +252,7 @@ spec:
             ###########
 
             # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
-            - name: "SECRETS"
+            - name: "EDC_VAULT_SECRETS"
               value: {{ .Values.vault.secrets | quote}}
 
             #####################

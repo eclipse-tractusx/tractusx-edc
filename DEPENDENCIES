@@ -500,7 +500,7 @@ maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.24.10, Apache-2.0, app
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.24.10, Apache-2.0, approved, #13264
 maven/mavencentral/software.amazon.awssdk/http-auth/2.24.10, Apache-2.0, approved, #13248
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.24.10, Apache-2.0, approved, #13259
-maven/mavencentral/software.amazon.awssdk/iam/2.24.10, Apache-2.0, approved, #13444
+maven/mavencentral/software.amazon.awssdk/iam/2.24.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.24.10, Apache-2.0, approved, #13244
 maven/mavencentral/software.amazon.awssdk/json-utils/2.24.10, Apache-2.0, approved, #13261
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.24.10, Apache-2.0, approved, #13239
