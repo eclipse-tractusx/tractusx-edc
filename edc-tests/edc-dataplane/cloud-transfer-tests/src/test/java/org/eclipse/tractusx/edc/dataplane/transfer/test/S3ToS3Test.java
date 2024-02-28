@@ -268,7 +268,6 @@ public class S3ToS3Test {
                         .build()
                 )
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
     }
 

@@ -222,7 +222,6 @@ public class AzureToAzureTest {
                 .sourceDataAddress(blobSourceAddress(blobName))
                 .destinationDataAddress(blobDestinationAddress(blobName))
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
     }
 

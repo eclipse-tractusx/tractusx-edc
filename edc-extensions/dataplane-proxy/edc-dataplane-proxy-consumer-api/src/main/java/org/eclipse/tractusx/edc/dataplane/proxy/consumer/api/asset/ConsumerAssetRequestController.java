@@ -107,7 +107,6 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
 
         var flowRequest = DataFlowStartMessage.Builder.newInstance()
                 .processId(randomUUID().toString())
-                .trackable(false)
                 .sourceDataAddress(sourceAddress)
                 .destinationDataAddress(destinationAddress)
                 .traceContext(Map.of())

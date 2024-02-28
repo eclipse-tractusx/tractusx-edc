@@ -147,7 +147,6 @@ public class MultiCloudTest {
                         .build()
                 )
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
@@ -199,7 +198,6 @@ public class MultiCloudTest {
                 )
                 .destinationDataAddress(blobDestinationAddress(TESTFILE_NAME))
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);

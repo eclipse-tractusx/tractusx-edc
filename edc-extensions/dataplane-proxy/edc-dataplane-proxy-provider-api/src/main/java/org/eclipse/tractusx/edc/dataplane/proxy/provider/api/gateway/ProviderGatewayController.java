@@ -182,7 +182,6 @@ public class ProviderGatewayController implements ProviderGatewayApi {
 
         return DataFlowStartMessage.Builder.newInstance()
                 .processId(randomUUID().toString())
-                .trackable(false)
                 .sourceDataAddress(sourceAddressBuilder.build())
                 .destinationDataAddress(destinationAddress)
                 .traceContext(Map.of())
