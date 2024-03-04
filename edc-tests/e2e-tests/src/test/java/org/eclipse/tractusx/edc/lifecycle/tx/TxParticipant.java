@@ -136,7 +136,7 @@ public class TxParticipant extends Participant {
         return getContractNegotiationField(negotiationId, "errorDetail");
     }
 
-    // TODO: temporary with workaround override due https://github.com/eclipse-edc/Connector/pull/3868
+    // TODO: temporary with workaround override due https://github.com/eclipse-edc/Connector/pull/3926
     //  remove once fixed in EDC upstream
     @Override
     public String initContractNegotiation(Participant provider, String assetId) {
@@ -152,7 +152,7 @@ public class TxParticipant extends Participant {
 
             return super.initContractNegotiation(provider, offer);
         } else {
-            throw new EdcException("");
+            throw new EdcException("Not a TX participant");
         }
 
     }
