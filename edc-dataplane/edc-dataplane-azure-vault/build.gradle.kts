@@ -32,7 +32,7 @@ dependencies {
         }
     }
     implementation(libs.edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.7.3")
+    implementation("com.azure:azure-security-keyvault-secrets:4.8.0")
     runtimeOnly(project(":edc-extensions:edr:edr-cache-sql"))
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
