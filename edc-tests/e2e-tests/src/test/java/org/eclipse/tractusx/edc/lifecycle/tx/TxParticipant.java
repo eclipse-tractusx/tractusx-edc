@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.test.system.utils.Participant;
 
 import java.net.URI;
@@ -33,6 +34,7 @@ import java.util.Map;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
@@ -134,14 +136,25 @@ public class TxParticipant extends Participant {
         return getContractNegotiationField(negotiationId, "errorDetail");
     }
 
-    // TODO: temporary override due https://github.com/eclipse-edc/Connector/pull/3868
+    // TODO: temporary with workaround override due https://github.com/eclipse-edc/Connector/pull/3868
     //  remove once fixed in EDC upstream
     @Override
     public String initContractNegotiation(Participant provider, String assetId) {
-        var dataset = getDatasetForAsset(provider, assetId);
-        var policy = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject();
-        var policyWithTarget = createObjectBuilder(policy).add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID))).build();
-        return super.initContractNegotiation(provider, policyWithTarget);
+
+        if (provider instanceof TxParticipant txProvider) {
+            var dataset = getDatasetForAsset(provider, assetId);
+            var policy = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject();
+
+            var offer = createObjectBuilder(policy)
+                    .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, txProvider.getBpn()))
+                    .add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID)))
+                    .build();
+
+            return super.initContractNegotiation(provider, offer);
+        } else {
+            throw new EdcException("");
+        }
+
     }
 
     /**
