@@ -95,6 +95,7 @@ public class DataspaceIssuer {
         var rawVc = createLdpVc(jsonLd, type, subjectSupplier);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
+                .participantId(participant.didUrl())
                 .holderId(participant.getBpn())
                 .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JSON_LD, credential))
                 .build();
