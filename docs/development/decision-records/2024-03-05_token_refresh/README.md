@@ -61,6 +61,6 @@ A client will be able to initiate a token refresh request in three ways:
   data plane management API to renew the access token.
 - Request data directly and handle access token renewal using OAuth 2 directly.
 
-To support refresh token renewal, an DIM specific extension will be added that requests the authentication JWT to be
+To support refresh token renewal, a DIM specific extension will be added that requests the authentication JWT to be
 signed using a key managed by DIM. This extension can use the same DIM API as the IATP extension.  
 
