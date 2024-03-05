@@ -34,6 +34,7 @@ import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetContractId;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
@@ -113,7 +114,10 @@ public class ParticipantEdrApi {
         var dataset = participant.getDatasetForAsset(other, assetId);
         assertThat(dataset).withFailMessage("Catalog received from " + other.getName() + " was empty!").isNotEmpty();
 
-        var policy = createObjectBuilder(getDatasetFirstPolicy(dataset)).add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID))).build();
+        var policy = createObjectBuilder(getDatasetFirstPolicy(dataset))
+                .add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID)))
+                .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
+                .build();
         var contractId = getDatasetContractId(dataset);
 
         var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy, callbacks);
