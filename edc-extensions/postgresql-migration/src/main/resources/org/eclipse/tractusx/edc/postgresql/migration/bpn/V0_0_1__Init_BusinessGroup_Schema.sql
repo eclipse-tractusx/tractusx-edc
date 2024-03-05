@@ -12,7 +12,7 @@
 --
 
 
-CREATE TABLE edc_business_partner_group
+CREATE TABLE IF NOT EXISTS edc_business_partner_group
 (
     bpn    VARCHAR                 NOT NULL
         CONSTRAINT edc_business_partner_group_pk
