@@ -2,7 +2,7 @@
 
 ## Decision
 
-Implement token refresh for the Tractus-X EDC Data Plane according to the [Tractus-X Refresh Token Grant Profile.]()
+Implement token refresh for the Tractus-X EDC Data Plane according to the [Tractus-X Refresh Token Grant Profile](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md).
 This enables provider data planes to implement refresh tokens in an interoperable way for client applications using the
 Tractus-X EDC Connector.
 
