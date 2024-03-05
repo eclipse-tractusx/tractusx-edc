@@ -178,7 +178,7 @@ Content-Type: application/json
 ## Consumer Data Plane Proxy
 
 The Consumer Data Plane Proxy is an extension available in `tractusx-edc` that will use the EDR store to simplify
-the data request on Consumer side. The documentation is available [here](../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-consumer-api/README.md).
+the data request on Consumer side. The documentation is available [here](../../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-consumer-api/README.md).
 
 The API fetches the data according to the input body. The body should contain the `assetId` plus `providerId` or the 
 `transferProcessId` which identifies the EDR to use for fetching data and an `endpointUrl` which is the [provider gateway](../../edc-extensions/dataplane-proxy/edc-dataplane-proxy-provider-api/README.md)
