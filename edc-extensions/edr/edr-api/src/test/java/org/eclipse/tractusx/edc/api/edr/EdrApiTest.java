@@ -31,6 +31,7 @@ import org.eclipse.edc.jsonld.JsonLdExtension;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.assertions.AbstractResultAssert;
+import org.eclipse.edc.spi.agent.ParticipantIdMapper;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectToNegotiateEdrRequestDtoTransformer;
@@ -49,6 +50,9 @@ import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_PROVIDER_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_STATE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_TRANSFER_PROCESS_ID;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class EdrApiTest {
 
@@ -64,7 +68,11 @@ public class EdrApiTest {
         transformer.register(new JsonObjectToContractOfferDescriptionTransformer());
         transformer.register(new JsonObjectToCallbackAddressTransformer());
         transformer.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
-        OdrlTransformersFactory.jsonObjectToOdrlTransformers().forEach(transformer::register);
+        var mapper = mock(ParticipantIdMapper.class);
+
+        when(mapper.fromIri(any())).thenAnswer(a -> a.getArgument(0));
+        when(mapper.toIri(any())).thenAnswer(a -> a.getArgument(0));
+        OdrlTransformersFactory.jsonObjectToOdrlTransformers(mapper).forEach(transformer::register);
     }
 
     @Test
