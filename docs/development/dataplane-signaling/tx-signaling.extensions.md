@@ -43,7 +43,7 @@ _TOKEN EXPIRES_
 
 ## Consumer: execute the token refresh
 
-There are three possibilities how the consumer performs the token refresh:
+There are three possibilities for how the consumer performs the token refresh:
 
 ### Automatic refresh using the (consumer) DataPlane
 
