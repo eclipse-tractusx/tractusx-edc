@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.api.bpn;
 
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
-import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -39,8 +38,6 @@ public class BusinessPartnerGroupApiExtension implements ServiceExtension {
     private WebService webService;
     @Inject
     private ManagementApiConfiguration apiConfiguration;
-    @Inject
-    private ManagementApiTypeTransformerRegistry transformerRegistry;
     @Inject
     private JsonLd jsonLdService;
     @Inject

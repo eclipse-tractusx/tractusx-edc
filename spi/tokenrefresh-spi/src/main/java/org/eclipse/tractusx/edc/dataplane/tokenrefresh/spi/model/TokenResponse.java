@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,17 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model;
 
-dependencies {
-    implementation(project(":edc-extensions:bpn-validation"))
-    implementation(project(":edc-extensions:data-encryption"))
-    implementation(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
-    implementation(project(":edc-extensions:postgresql-migration"))
-    implementation(project(":edc-extensions:provision-additional-headers"))
-    implementation(project(":edc-extensions:transferprocess-sftp-client"))
-    implementation(project(":edc-extensions:transferprocess-sftp-common"))
-    implementation(project(":edc-extensions:transferprocess-sftp-provisioner"))
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record TokenResponse(@JsonProperty("access_token") String accessToken,
+                            @JsonProperty("refresh_token") String refreshToken,
+                            @JsonProperty("expires") Long expiresInSeconds,
+                            @JsonProperty("token_type") String tokenType) {
 }

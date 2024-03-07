@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.api.bpn;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
@@ -52,7 +51,6 @@ class BusinessPartnerGroupApiControllerTest extends RestControllerTestBase {
 
     private final JsonLd jsonLdService = new TitaniumJsonLd(mock());
     private final BusinessPartnerStore businessPartnerStore = mock();
-    private final ManagementApiTypeTransformerRegistry transformerRegistry = mock();
 
     @BeforeEach
     void setUp() {

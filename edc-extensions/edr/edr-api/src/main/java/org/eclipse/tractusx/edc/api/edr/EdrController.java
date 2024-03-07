@@ -31,7 +31,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.api.model.IdResponse;
-import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
@@ -39,6 +38,7 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
@@ -61,11 +61,11 @@ import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.
 public class EdrController implements EdrApi {
 
     private final EdrService edrService;
-    private final ManagementApiTypeTransformerRegistry transformerRegistry;
+    private final TypeTransformerRegistry transformerRegistry;
     private final JsonObjectValidatorRegistry validatorRegistry;
     private final Monitor monitor;
 
-    public EdrController(EdrService edrService, ManagementApiTypeTransformerRegistry transformerRegistry,
+    public EdrController(EdrService edrService, TypeTransformerRegistry transformerRegistry,
                          JsonObjectValidatorRegistry validatorRegistry, Monitor monitor) {
         this.edrService = edrService;
         this.transformerRegistry = transformerRegistry;

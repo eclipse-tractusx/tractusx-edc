@@ -23,17 +23,13 @@ plugins {
 
 dependencies {
 
-    implementation(libs.edc.util)
-    implementation(libs.edc.dpf.util)
-    implementation(libs.edc.token.core)
-    implementation(libs.edc.ext.http)
-    implementation(libs.edc.spi.http)
+    testImplementation(project(":edc-tests:e2e-tests"))
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.restAssured)
 
-    implementation(libs.edc.spi.jwt)
+    testImplementation(libs.edc.dpf.http)
 
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.nimbus.jwt)
-
-    implementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi"))
 }
+
+
 

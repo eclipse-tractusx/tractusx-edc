@@ -44,6 +44,7 @@ edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
+edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
 edc-token-core = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
@@ -53,6 +54,7 @@ edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", v
 edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
+edc-common-crypto = { module = "org.eclipse.edc:crypto-common", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
@@ -62,6 +64,7 @@ edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", vers
 edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-core-validator = { module = "org.eclipse.edc:validator-core", version.ref = "edc" }
 edc-core-transform = { module = "org.eclipse.edc:transform-core", version.ref = "edc" }
+edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-statemachine = { module = "org.eclipse.edc:state-machine", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
@@ -115,6 +118,7 @@ edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback
 edc-identity-trust-spi = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-identity-core-trust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
 edc-identity-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
+
 edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", version.ref = "edc" }
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
@@ -157,6 +161,8 @@ edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc"
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
 edc-dpf-api-control = { module = "org.eclipse.edc:data-plane-control-api", version.ref = "edc" }
 edc-dpf-api-public = { module = "org.eclipse.edc:data-plane-public-api", version.ref = "edc" }
+
+edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
 
 # micrometer and other infra stuff
 edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref = "edc" }

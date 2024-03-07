@@ -19,26 +19,25 @@
 
 plugins {
     `java-library`
+    id("io.swagger.core.v3.swagger-gradle-plugin")
 }
 
 dependencies {
+
+    implementation(libs.edc.spi.http)
+    implementation(libs.edc.util)
+    implementation(libs.edc.dpf.util)
+    implementation(libs.edc.ext.http)
+    implementation(libs.edc.spi.jwt)
+    implementation(libs.edc.token.core)
+    implementation(libs.edc.spi.dataplane.http)
+
+    implementation(libs.jakarta.rsApi)
+    implementation(libs.nimbus.jwt)
+
+    implementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-spi"))
+
     testImplementation(libs.edc.junit)
-    testImplementation(libs.restAssured)
     testImplementation(libs.okhttp.mockwebserver)
-
-    // test runtime config
-    testImplementation(libs.edc.config.filesystem)
-    testImplementation(libs.edc.dpf.http)
-    testImplementation(libs.edc.auth.tokenbased)
-    testRuntimeOnly(libs.edc.dpf.core)
-    testRuntimeOnly(libs.edc.controlplane.apiclient)
-    testImplementation(project(":spi:edr-spi"))
-    testImplementation(project(":core:edr-cache-core"))
-    testImplementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
-    testImplementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-api"))
-    testImplementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-core"))
-
 }
-
-
 

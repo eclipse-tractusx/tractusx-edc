@@ -19,25 +19,10 @@
 
 plugins {
     `java-library`
-    id("io.swagger.core.v3.swagger-gradle-plugin")
+    `java-test-fixtures`
 }
 
 dependencies {
-
-    implementation(libs.edc.spi.http)
-    implementation(libs.edc.util)
-    implementation(libs.edc.dpf.util)
-    implementation(libs.edc.ext.http)
+    implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jwt)
-    implementation(libs.edc.token.core)
-    implementation(libs.edc.spi.dataplane.http)
-
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.nimbus.jwt)
-
-    implementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi"))
-
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.okhttp.mockwebserver)
 }
-

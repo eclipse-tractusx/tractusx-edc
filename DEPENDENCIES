@@ -76,7 +76,7 @@ maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefin
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.30.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/10.7.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.14.0, , restricted, clearlydefined
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.14.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #13562
 maven/mavencentral/com.squareup.okhttp3/mockwebserver/5.0.0-alpha.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/mockwebserver3/5.0.0-alpha.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
