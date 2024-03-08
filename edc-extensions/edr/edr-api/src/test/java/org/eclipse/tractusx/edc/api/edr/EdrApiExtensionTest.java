@@ -48,7 +48,9 @@ public class EdrApiExtensionTest {
     @BeforeEach
     void setUp(ObjectFactory factory, ServiceExtensionContext context) {
         context.registerService(WebService.class, webService);
-        context.registerService(TypeTransformerRegistry.class, transformerRegistry);
+        var rootRegistry = mock(TypeTransformerRegistry.class);
+        when(rootRegistry.forContext(eq("management-api"))).thenReturn(transformerRegistry);
+        context.registerService(TypeTransformerRegistry.class, rootRegistry);
         context.registerService(ManagementApiConfiguration.class, configuration);
     }
 

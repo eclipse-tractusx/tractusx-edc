@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
 
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
@@ -70,8 +71,9 @@ class SftpProviderResourceDefinitionGeneratorTest {
         final DataAddress dataAddress = SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
         var policy = Policy.Builder.newInstance().build();
 
+        var transferProcess = TransferProcess.Builder.newInstance().dataRequest(dataRequest).build();
         var resourceDefinition =
-                (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
+                (SftpProviderResourceDefinition) generator.generate(transferProcess, dataAddress, policy);
 
         assertNotNull(resourceDefinition);
         var sftpDataAddress = resourceDefinition.getSftpDataAddress();
@@ -92,8 +94,10 @@ class SftpProviderResourceDefinitionGeneratorTest {
         var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
         var policy = Policy.Builder.newInstance().build();
 
+        var transferProcess = TransferProcess.Builder.newInstance().dataRequest(dataRequest).build();
+
         var resourceDefinition =
-                (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
+                (SftpProviderResourceDefinition) generator.generate(transferProcess, dataAddress, policy);
 
         assertNull(resourceDefinition);
     }
