@@ -125,14 +125,12 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         }
 
         // additional token information will be added to the TokenRepresentation, which will be returned to the caller
-        var accessTokenAdditional = new HashMap<>(existingAccessTokenData.additionalProperties()) {
-            {
-                put(REFRESH_TOKEN_PROPERTY, newRefreshToken.getContent());
-                put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
-                put("refreshEndpoint", refreshEndpoint);
-                put("authType", "bearer");
-            }
-        };
+        // note: can't use DBI (double-bracket initialization) here, because SonarCloud will complain about it
+        var accessTokenAdditional = new HashMap<>(existingAccessTokenData.additionalProperties());
+        accessTokenAdditional.put(REFRESH_TOKEN_PROPERTY, newRefreshToken.getContent());
+        accessTokenAdditional.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
+        accessTokenAdditional.put("refreshEndpoint", refreshEndpoint);
+        accessTokenAdditional.put("authType", "bearer");
 
         // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
         var claimToken = ClaimToken.Builder.newInstance().claims(newTokenParams.getClaims()).build();
@@ -163,14 +161,12 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         }
 
         // additional token information will be added to the TokenRepresentation, which will be returned to the caller
-        var accessTokenAdditional = new HashMap<>(additionalTokenData) {
-            {
-                put("refreshToken", refreshTokenResult.getContent().tokenRepresentation().getToken());
-                put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
-                put("refreshEndpoint", refreshEndpoint);
-                put("authType", "bearer");
-            }
-        };
+        // note: can't use DBI (double-bracket initialization) here, because SonarCloud will complain about it
+        var accessTokenAdditional = new HashMap<>(additionalTokenData);
+        accessTokenAdditional.put("refreshToken", refreshTokenResult.getContent().tokenRepresentation().getToken());
+        accessTokenAdditional.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
+        accessTokenAdditional.put("refreshEndpoint", refreshEndpoint);
+        accessTokenAdditional.put("authType", "bearer");
 
         var accessToken = TokenRepresentation.Builder.newInstance()
                 .token(accessTokenResult.getContent().tokenRepresentation().getToken()) // the access token
