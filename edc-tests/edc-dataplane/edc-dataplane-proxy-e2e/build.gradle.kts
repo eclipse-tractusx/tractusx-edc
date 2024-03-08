@@ -34,9 +34,9 @@ dependencies {
     testRuntimeOnly(libs.edc.controlplane.apiclient)
     testImplementation(project(":spi:edr-spi"))
     testImplementation(project(":core:edr-cache-core"))
-    testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
-    testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api"))
-    testImplementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core"))
+    testImplementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
+    testImplementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-api"))
+    testImplementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-core"))
 
 }
 

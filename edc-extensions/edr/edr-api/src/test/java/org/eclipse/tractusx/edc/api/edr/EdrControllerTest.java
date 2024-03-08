@@ -25,7 +25,6 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.api.model.IdResponse;
-import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -37,6 +36,7 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Violation;
@@ -85,7 +85,7 @@ public class EdrControllerTest extends RestControllerTestBase {
     public static final String EDR_PATH = "/edrs";
     private final JsonLd jsonLdService = new TitaniumJsonLd(monitor);
     EdrService edrService = mock(EdrService.class);
-    ManagementApiTypeTransformerRegistry transformerRegistry = mock();
+    TypeTransformerRegistry transformerRegistry = mock();
     JsonObjectValidatorRegistry validatorRegistry = mock();
 
     @BeforeEach

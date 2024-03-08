@@ -24,6 +24,7 @@ include(":spi:callback-spi")
 include(":spi:edr-spi")
 include(":spi:core-spi")
 include(":spi:ssi-spi")
+include(":spi:tokenrefresh-spi")
 
 
 // core modules
@@ -32,14 +33,13 @@ include(":core:edr-core")
 include(":core:json-ld-core")
 include(":core:core-utils")
 
-
+// extensions - control plane
 include(":edc-extensions:bpn-validation")
 include(":edc-extensions:bpn-validation:bpn-validation-api")
 include(":edc-extensions:bpn-validation:bpn-validation-spi")
 include(":edc-extensions:bpn-validation:bpn-validation-core")
 include(":edc-extensions:bpn-validation:business-partner-store-sql")
 include(":edc-extensions:data-encryption")
-include(":edc-extensions:dataplane-selector-configuration")
 include(":edc-extensions:postgresql-migration")
 include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:transferprocess-sftp-client")
@@ -56,6 +56,14 @@ include(":edc-extensions:ssi:ssi-identity-extractor")
 include(":edc-extensions:iatp:tx-iatp")
 include(":edc-extensions:iatp:tx-iatp-sts-dim")
 
+// extensions - data plane
+include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
+include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-spi")
+include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-core")
+include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-api")
+include(":edc-extensions:dataplane:dataplane-selector-configuration")
+include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
+
 // test modules
 include(":edc-tests:e2e-tests")
 include(":edc-tests:miw-tests")
@@ -70,6 +78,7 @@ include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")
+include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
 
 // modules for controlplane artifacts
@@ -84,10 +93,8 @@ include(":edc-dataplane")
 include(":edc-dataplane:edc-dataplane-azure-vault")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
-include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-consumer-api")
-include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi")
-include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-core")
-include(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-api")
+
+
 
 include(":samples:multi-tenancy")
 

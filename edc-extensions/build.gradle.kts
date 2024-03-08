@@ -24,7 +24,7 @@ plugins {
 dependencies {
     implementation(project(":edc-extensions:bpn-validation"))
     implementation(project(":edc-extensions:data-encryption"))
-    implementation(project(":edc-extensions:dataplane-selector-configuration"))
+    implementation(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
     implementation(project(":edc-extensions:postgresql-migration"))
     implementation(project(":edc-extensions:provision-additional-headers"))
     implementation(project(":edc-extensions:transferprocess-sftp-client"))

@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,25 +15,22 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 plugins {
     `java-library`
 }
 
 dependencies {
+    api(project(":spi:tokenrefresh-spi"))
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.token)
+    implementation(libs.edc.spi.identity.did)
+    implementation(libs.edc.spi.dataplane.dataplane)
+    implementation(libs.edc.core.token)
 
-    implementation(libs.edc.util)
-    implementation(libs.edc.dpf.util)
-    implementation(libs.edc.token.core)
-    implementation(libs.edc.ext.http)
-    implementation(libs.edc.spi.http)
-
-    implementation(libs.edc.spi.jwt)
-
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.nimbus.jwt)
-
-    implementation(project(":edc-extensions:dataplane-proxy:edc-dataplane-proxy-provider-spi"))
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.dpf.core)
+    testImplementation(libs.edc.common.crypto)
 }
 

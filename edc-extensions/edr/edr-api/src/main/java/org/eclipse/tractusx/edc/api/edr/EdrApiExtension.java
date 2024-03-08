@@ -20,12 +20,12 @@
 package org.eclipse.tractusx.edc.api.edr;
 
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
-import org.eclipse.edc.connector.api.management.configuration.transform.ManagementApiTypeTransformerRegistry;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.tractusx.edc.api.edr.transform.EndpointDataReferenceToDataAddressTransformer;
@@ -50,7 +50,7 @@ public class EdrApiExtension implements ServiceExtension {
     private EdrService edrService;
 
     @Inject
-    private ManagementApiTypeTransformerRegistry transformerRegistry;
+    private TypeTransformerRegistry transformerRegistry;
 
     @Inject
     private JsonLd jsonLdService;
@@ -64,11 +64,12 @@ public class EdrApiExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
-        transformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
-        transformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
-        transformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer());
-        transformerRegistry.register(new EndpointDataReferenceToDataAddressTransformer());
+        var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
+        mgmtApiTransformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
+        mgmtApiTransformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
+        mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer());
+        mgmtApiTransformerRegistry.register(new EndpointDataReferenceToDataAddressTransformer());
         validatorRegistry.register(EDR_REQUEST_DTO_TYPE, NegotiateEdrRequestDtoValidator.instance());
-        webService.registerResource(apiConfig.getContextAlias(), new EdrController(edrService, transformerRegistry, validatorRegistry, monitor));
+        webService.registerResource(apiConfig.getContextAlias(), new EdrController(edrService, mgmtApiTransformerRegistry, validatorRegistry, monitor));
     }
 }

@@ -25,7 +25,7 @@ plugins {
 dependencies {
     runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":core:edr-core"))
-    runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
+    runtimeOnly(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
     runtimeOnly(project(":edc-extensions:data-encryption"))
 
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))

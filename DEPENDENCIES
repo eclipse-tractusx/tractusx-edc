@@ -76,7 +76,7 @@ maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefin
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.30.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/10.7.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.14.0, , restricted, clearlydefined
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.14.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #13562
 maven/mavencentral/com.squareup.okhttp3/mockwebserver/5.0.0-alpha.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/mockwebserver3/5.0.0-alpha.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
@@ -280,6 +280,9 @@ maven/mavencentral/org.eclipse.edc/data-plane-http/0.5.2-SNAPSHOT, Apache-2.0, a
 maven/mavencentral/org.eclipse.edc/data-plane-public-api/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-signaling-api-configuration/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-signaling-api/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-signaling-transform/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-util/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-api-configuration/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -372,6 +375,7 @@ maven/mavencentral/org.eclipse.edc/transfer-process-store-sql/0.5.2-SNAPSHOT, Ap
 maven/mavencentral/org.eclipse.edc/transfer-pull-http-dynamic-receiver/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/transform-dspace/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
