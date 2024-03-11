@@ -34,7 +34,7 @@ A complete sequence including `TransferRequestMessage` is shown here:
 
 _TOKEN EXPIRES_
 
-- `(8)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
+- `(8)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#31-client-authentication))
 - `(9)` The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API
 - `(10)` Provider performs authentication checks, creates a new `access_token` and a new `refresh_token`, updates
   internal records and sends the response back.
