@@ -26,7 +26,7 @@ import org.eclipse.edc.api.transformer.JsonObjectToCallbackAddressTransformer;
 import org.eclipse.edc.connector.api.management.contractnegotiation.transform.JsonObjectToContractOfferDescriptionTransformer;
 import org.eclipse.edc.connector.api.management.contractnegotiation.transform.JsonObjectToContractRequestTransformer;
 import org.eclipse.edc.core.transform.TypeTransformerRegistryImpl;
-import org.eclipse.edc.core.transform.transformer.OdrlTransformersFactory;
+import org.eclipse.edc.core.transform.transformer.odrl.OdrlTransformersFactory;
 import org.eclipse.edc.jsonld.JsonLdExtension;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
