@@ -119,7 +119,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests
-        run: ./gradlew test -DincludeTags="EndToEndTest" -PverboseTest=true
+        run: ./gradlew test -DincludeTags="EndToEndTest"
 
   postgres-tests:
     runs-on: ubuntu-latest
@@ -139,7 +139,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
-        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
+        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
 
   dataplane-tests:
     runs-on: ubuntu-latest
@@ -182,9 +182,9 @@ jobs:
 
       - name: Run MIW Integration tests
         run: |
-          ./gradlew -p edc-tests/miw-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
+          ./gradlew -p edc-tests/miw-tests test -DincludeTags="MiwIntegrationTest"
       - name: Run SSI E2E tests
         run: |
           pwd
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/e2e-tests test -DincludeTags="MiwIntegrationTest" -PverboseTest=true
+          ./gradlew -p edc-tests/e2e-tests test -DincludeTags="MiwIntegrationTest"
