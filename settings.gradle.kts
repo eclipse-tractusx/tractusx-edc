@@ -63,6 +63,7 @@ include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-api")
 include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
+include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 
 // test modules
 include(":edc-tests:e2e-tests")

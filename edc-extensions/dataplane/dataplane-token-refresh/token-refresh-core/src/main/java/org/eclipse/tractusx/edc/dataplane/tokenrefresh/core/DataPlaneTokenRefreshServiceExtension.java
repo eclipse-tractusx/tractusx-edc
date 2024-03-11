@@ -30,6 +30,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PrivateKey;
@@ -50,15 +51,31 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
 
     @Inject
     private PrivateKeyResolver privateKeyResolver;
+    private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
 
     @Override
     public String name() {
         return NAME;
     }
 
+    // exposes the service as access token service
     @Provider
-    public DataPlaneAccessTokenService createRefreshAccessTokenService(ServiceExtensionContext context) {
-        return new DataPlaneTokenRefreshServiceImpl(tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), "foo.bar");
+    public DataPlaneAccessTokenService createAccessTokenService(ServiceExtensionContext context) {
+        return getTokenRefreshService(context);
+    }
+
+    // exposes the service as pure refresh service
+    @Provider
+    public DataPlaneTokenRefreshService createRefreshTokenService(ServiceExtensionContext context) {
+        return getTokenRefreshService(context);
+    }
+
+    @NotNull
+    private DataPlaneTokenRefreshServiceImpl getTokenRefreshService(ServiceExtensionContext context) {
+        if (tokenRefreshService == null) {
+            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), "foo.bar");
+        }
+        return tokenRefreshService;
     }
 
     @NotNull

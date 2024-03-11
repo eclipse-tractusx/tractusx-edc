@@ -212,6 +212,29 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .isEqualTo("Required claim 'access_token' not present on token.");
     }
 
+    @DisplayName("Verify that the equality of the 'iss' and the 'sub' claim of the authentication token")
+    @Test
+    void refresh_whenIssNotEqualToSub() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        var accessToken = edr.getToken();
+        var jwsHeader = new JWSHeader.Builder(JWSAlgorithm.ES384).keyID(consumerKey.getKeyID()).build();
+        var claimsSet = getAuthTokenClaims(tokenId, accessToken)
+                .issuer(CONSUMER_DID)
+                .subject("violating-subject")
+                .build();
+
+        var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
+        signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
+        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get("refreshToken").toString(), signedAuthToken.serialize());
+
+        assertThat(tokenResponse).isFailed()
+                .detail()
+                .isEqualTo("The 'iss' and 'sub' claims must be non-null and identical.");
+    }
+
     private JWTClaimsSet.Builder getAuthTokenClaims(String tokenId, String accessToken) {
         return new JWTClaimsSet.Builder()
                 .jwtID(tokenId)

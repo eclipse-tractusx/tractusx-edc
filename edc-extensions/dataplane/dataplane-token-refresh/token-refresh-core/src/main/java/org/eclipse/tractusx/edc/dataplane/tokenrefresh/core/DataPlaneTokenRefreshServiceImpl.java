@@ -50,6 +50,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
+
 /**
  * This implementation of the {@link DataPlaneTokenRefreshService} validates an incoming authentication token.
  */
@@ -58,7 +60,10 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public static final String TOKEN_ID_CLAIM = "jti";
     public static final String REFRESH_TOKEN_PROPERTY = "refreshToken";
     private static final Long DEFAULT_EXPIRY_IN_SECONDS = 60 * 5L;
-    private final List<TokenValidationRule> tokenValidationRules = List.of(new IssuerEqualsSubjectRule(), new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM), new ClaimIsPresentRule(TOKEN_ID_CLAIM));
+    private final List<TokenValidationRule> authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
+            new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
+            new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
+            new ClaimIsPresentRule(TOKEN_ID_CLAIM));
     private final TokenValidationService tokenValidationService;
     private final DidPublicKeyResolver publicKeyResolver;
     private final AccessTokenDataStore accessTokenDataStore;
@@ -71,7 +76,10 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public DataPlaneTokenRefreshServiceImpl(TokenValidationService tokenValidationService,
                                             DidPublicKeyResolver publicKeyResolver,
                                             AccessTokenDataStore accessTokenDataStore,
-                                            TokenGenerationService tokenGenerationService, Supplier<PrivateKey> privateKeySupplier, Monitor monitor, String refreshEndpoint) {
+                                            TokenGenerationService tokenGenerationService,
+                                            Supplier<PrivateKey> privateKeySupplier,
+                                            Monitor monitor,
+                                            String refreshEndpoint) {
         this.tokenValidationService = tokenValidationService;
         this.publicKeyResolver = publicKeyResolver;
         this.accessTokenDataStore = accessTokenDataStore;
@@ -100,8 +108,10 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     @Override
     public Result<TokenResponse> refreshToken(String refreshToken, String authenticationToken) {
 
-        var allRules = new ArrayList<>(tokenValidationRules);
+        var allRules = new ArrayList<>(authenticationTokenValidationRules);
         allRules.add(new RefreshTokenMustExistRule(accessTokenDataStore, refreshToken));
+
+        authenticationToken = authenticationToken.replace("Bearer", "").trim();
 
         var accessTokenDataResult = resolveToken(authenticationToken, allRules);
         if (accessTokenDataResult.failed()) {
@@ -182,7 +192,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
     @Override
     public Result<AccessTokenData> resolve(String token) {
-        return resolveToken(token, tokenValidationRules);
+        return resolveToken(token, authenticationTokenValidationRules);
     }
 
     /**
