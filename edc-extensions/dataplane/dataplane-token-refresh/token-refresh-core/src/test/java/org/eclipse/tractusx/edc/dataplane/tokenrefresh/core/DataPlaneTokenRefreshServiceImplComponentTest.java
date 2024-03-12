@@ -45,6 +45,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -71,23 +72,26 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private InMemoryAccessTokenDataStore tokenDataStore;
     private ECKey consumerKey;
+    private ECKey providerKey;
 
     @BeforeEach
     void setup() throws JOSEException {
 
-        var providerKey = new ECKeyGenerator(Curve.P_384).keyID(PROVIDER_BPN + "#provider-key").keyUse(KeyUse.SIGNATURE).generate();
+        providerKey = new ECKeyGenerator(Curve.P_384).keyID(PROVIDER_BPN + "#provider-key").keyUse(KeyUse.SIGNATURE).generate();
         consumerKey = new ECKeyGenerator(Curve.P_384).keyID(CONSUMER_DID + "#consumer-key").keyUse(KeyUse.SIGNATURE).generate();
 
         var privateKey = providerKey.toPrivateKey();
 
         tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
-        tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(new TokenValidationServiceImpl(),
+        tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
+                new TokenValidationServiceImpl(),
                 didPkResolverMock,
                 tokenDataStore,
                 new JwtGenerationService(),
                 () -> privateKey,
                 mock(),
-                TEST_REFRESH_ENDPOINT);
+                TEST_REFRESH_ENDPOINT,
+                1);
 
         when(didPkResolverMock.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
         when(didPkResolverMock.resolveKey(eq(providerKey.getKeyID()))).thenReturn(Result.success(providerKey.toPublicKey()));
@@ -106,7 +110,8 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .containsKey("agreement_id")
                 .containsEntry("iss", PROVIDER_BPN)
                 .containsEntry("sub", PROVIDER_BPN)
-                .containsEntry("aud", List.of(CONSUMER_BPN));
+                .containsEntry("aud", List.of(CONSUMER_BPN))
+                .containsKey("exp");
 
         // assert additional properties -> refresh token
         assertThat(edr.getContent().getAdditional())
@@ -235,6 +240,52 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .isEqualTo("The 'iss' and 'sub' claims must be non-null and identical.");
     }
 
+    @DisplayName("Verify that resolving an expired token fails")
+    @Test
+    void resolve_whenExpired_shouldFail() {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParamsBuilder(tokenId)
+                                //token was issued 10min ago, and expired 5min ago
+                                .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().minusSeconds(600).getEpochSecond())
+                                .claims(JwtRegisteredClaimNames.EXPIRATION_TIME, Instant.now().minusSeconds(300).getEpochSecond())
+                                .build(),
+                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        assertThat(tokenRefreshService.resolve(edr.getToken())).isFailed()
+                .detail().isEqualTo("Token has expired (exp)");
+
+    }
+
+    @DisplayName("Verify that resolving a valid token succeeds")
+    @Test
+    void resolve_success() {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParamsBuilder(tokenId)
+                                .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().getEpochSecond())
+                                .build(),
+                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        assertThat(tokenRefreshService.resolve(edr.getToken())).isSucceeded();
+    }
+
+    @DisplayName("Verify that attempting to resolve a non-existing token results in a failure")
+    @Test
+    void resolve_notFound() {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParamsBuilder(tokenId)
+                                .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().getEpochSecond())
+                                .build(),
+                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+        tokenDataStore.deleteById(tokenId).orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        assertThat(tokenRefreshService.resolve(edr.getToken()))
+                .isFailed()
+                .detail().isEqualTo("AccessTokenData with ID '%s' does not exist.".formatted(tokenId));
+    }
+
     private JWTClaimsSet.Builder getAuthTokenClaims(String tokenId, String accessToken) {
         return new JWTClaimsSet.Builder()
                 .jwtID(tokenId)
@@ -245,17 +296,23 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     }
 
     private TokenParameters tokenParams(String id) {
+        return tokenParamsBuilder(id).build();
+    }
+
+    private TokenParameters.Builder tokenParamsBuilder(String id) {
         return TokenParameters.Builder.newInstance()
                 .claims(JwtRegisteredClaimNames.JWT_ID, id)
                 .claims(JwtRegisteredClaimNames.AUDIENCE, CONSUMER_BPN)
                 .claims(JwtRegisteredClaimNames.ISSUER, PROVIDER_BPN)
                 .claims(JwtRegisteredClaimNames.SUBJECT, PROVIDER_BPN)
-                .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().toEpochMilli()) // todo: milli or second?
+                .claims(JwtRegisteredClaimNames.EXPIRATION_TIME, Instant.now().plusSeconds(60).getEpochSecond())
+                .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().getEpochSecond())
                 .claims(CLAIM_AGREEMENT_ID, "test-agreement-id")
                 .claims(CLAIM_ASSET_ID, "test-asset-id")
                 .claims(CLAIM_PROCESS_ID, "test-process-id")
                 .claims(CLAIM_FLOW_TYPE, FlowType.PULL.toString())
-                .build();
+                .header("kid", providerKey.getKeyID());
+
     }
 
     private Map<String, Object> asClaims(String serializedJwt) {
