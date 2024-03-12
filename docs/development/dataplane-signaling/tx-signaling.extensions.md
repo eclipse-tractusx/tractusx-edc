@@ -43,35 +43,66 @@ _TOKEN EXPIRES_
 
 ## Consumer: execute the token refresh
 
-There are three possibilities for how the consumer performs the token refresh:
+There are three possibilities for how the consumer performs the token refresh. Which one is suitable for a particular
+customer will largely depend on the participant's deployment setup. These are not mutually excluding, they are merely
+different approaches that are all supported by Tractus-X EDC.
 
-### Automatic refresh using the (consumer) DataPlane
+### 1. Automatic refresh using the (consumer) DataPlane
 
-Data requests are made by the consumer's data plane. Upon receiving
-an HTTP error code indicating an authentication failure (HTTP 401), the consumer data plane refreshes the token using
-the `TokenRefreshHandler` and retries the request. This is called "lazy refresh".
+This is suitable for deployments that elect to use a data plane on the consumer side, effectively acting as HTTP client.
+Data requests are made by the consumer's data plane. Upon receiving an HTTP error code indicating an authentication
+failure (HTTP 4xx), the consumer data plane refreshes the token using the `TokenRefreshHandler` and retries the request.
+This is called "lazy refresh".
 
 ![](./AutomaticRefresh.drawio.png)
 
-    - `(1)`: Consumer data plane receives HTTP 401 indicating an auth failure
-    - `(2)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
-    - `(3)` The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API.
+- `(1)`: Consumer data plane receives HTTP 401 indicating an auth failure
+- `(2)`: The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
+- `(3)`: The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API.
 
-### Trigger the refresh manually
+Note that if the token-refresh call also fails with an HTTP 4xx error code, the token must be regarded as invalid and
+not authorized. An expired contract agreement or an unsatisfied policy could be reasons for that (
+see [decision record](https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-09-07-policy-monitor)
+and [documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/policy-monitor.md)).
 
-When no consumer data plane exists, and HTTP data requests are made by some external
-application, that external application needs to perform the token refresh. For that, Tractus-X EDC offers an endpoint
-in the management API `POST /v1/token/refresh`.
+Alternatively, implementations of the `TokenRefreshHandler` could choose to proactively refresh the token if nearing
+expiry instead of "letting it fail" first. _This is transparent to the client application._
+
+### 2. Automatic refresh using the `/edrs` API
+
+In this scenario it is the client application making the HTTP request against the provider's data plane. To do that, it
+first has to use the `/edrs` API to obtain the access token. The `/edrs` API inspects the token and performs a refresh
+if
+required, then returns back a (possibly refreshed) access token to the client application:
+
+![](./AutomaticRefreshEdrApi.drawio.png)
+
+- `(1)`: client application obtains token from EDR API
+- `(2)`: EDR API (or a related component) checks if the token requires renewal
+- `(3)`: EDR API triggers `TokenRefreshHandler` to make the refresh request
+- `(4)`: `TokenRefreshHandler` calls refresh endpoint of provider data plane
+- `(3)/(5)`: (refreshed) token is returned to client application
+
+### 3. Manual refresh by the client application
+
+Like in the previous section, this scenario outlines a deployment without a consumer data plane. The difference is, that
+in this variant the access token is _not automatically renewed_ by the EDR API. This is suitable for client applications
+that need to maintain control over the refresh process, e.g. due to some backoffice user permission system.
+For those deployments Tractus-X EDC offers an endpoint in the management API `POST /v1/token/refresh` that client
+applications can use to trigger the token renewal.
 
 ![](./ManualRefresh.drawio.png)
 
-    - `(1)`: external application detects an expired token and triggers the token refresh via the management API
-    - `(2)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
-    - `(3)` The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API. Note that
-      the `TokenRefreshHandler` module is the same as before, only that it is contained in the ControlPlane
+- `(1)`: the client application requests the access token using the EDR API
+- `(2)`: the client application makes the data request against the provider's data plane
+- `(3)`: that request is answered with a HTTP 4xx indicating an auth error
+- `(4)`: client application triggers the token refresh via the control plane Management API
+- `(5)` The `TokenRefreshHandler` module creates the `authentication_token` (
+  see [documentation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#31-client-authentication))
+- `(6)` The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API. Note that
+  the `TokenRefreshHandler` module is the same as before, only that it is contained in the ControlPlane
 
-### Token refresh is handled completely out-of-band
+### 4. Token refresh is handled completely out-of-band
 
-Consumer's control plane and data plane are not involved. This is a 6very specific use case, and is only recommended if
-
-1. and 2. are not suitable.
+Consumer's control plane and data plane are not involved. This is a very specific use case, and is only recommended if
+neither of the other scenarios are viable. Note that Tractus-X EDC will provide no support for this scenario.
