@@ -19,27 +19,268 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.e2e;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
+import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import java.net.URI;
+import java.text.ParseException;
+import java.util.Map;
+
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.hamcrest.Matchers.containsString;
 
 
 @EndToEndTest
 public class DataPlaneTokenRefreshEndToEndTest {
-    private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
-
+    public static final String CONSUMER_DID = "did:web:alice";
+    public static final String PROVIDER_DID = "did:web:bob";
+    public static final String PROVIDER_KEY_ID = PROVIDER_DID + "#key-1";
+    public static final String CONSUMER_KEY_ID = CONSUMER_DID + "#cons-1";
+    private static final RuntimeConfig RUNTIME_CONFIG = new RuntimeConfig();
     @RegisterExtension
     protected static final EdcRuntimeExtension DATAPLANE_RUNTIME = new EdcRuntimeExtension(
             ":edc-tests:runtime:dataplane-cloud",
             "Token-Refresh-Dataplane",
-            RuntimeConfig.baseConfig("/signaling", PROVIDER_CONTROL_PORT)
+            with(RUNTIME_CONFIG.baseConfig(), Map.of("edc.transfer.proxy.token.signer.privatekey.alias", PROVIDER_KEY_ID))
     );
+    private ECKey providerKey;
+    private ECKey consumerKey;
+
+    private static Map<String, String> with(Map<String, String> baseConfig, Map<String, String> additionalConfig) {
+        baseConfig.putAll(additionalConfig);
+        return baseConfig;
+    }
+
+
+    @BeforeEach
+    void setup() throws JOSEException {
+        providerKey = new ECKeyGenerator(Curve.P_384).keyID(PROVIDER_KEY_ID).generate();
+        consumerKey = new ECKeyGenerator(Curve.P_256).keyID(CONSUMER_KEY_ID).generate();
+
+        // mock the did resolver, hard-wire it to the provider or consumer DID
+        DATAPLANE_RUNTIME.registerServiceMock(DidPublicKeyResolver.class, s -> {
+            try {
+                if (s.startsWith(CONSUMER_DID)) {
+                    return Result.success(consumerKey.toPublicKey());
+                } else if (s.startsWith(PROVIDER_DID)) {
+                    return Result.success(providerKey.toPublicKey());
+                }
+                throw new IllegalArgumentException("DID '%s' could not be resolved.".formatted(s));
+            } catch (JOSEException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
     @Test
-    void foo() {
-        // will be used once the RefreshAPI is here as well
+    void refresh_success() {
+
+        // register generator and secrets
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty("refreshToken");
+        var accessToken = edr.getStringProperty("authorization");
+        var authToken = createAuthToken(accessToken, consumerKey);
+
+        var tokenResponse = RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "Bearer " + authToken)
+                .post("/token")
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .extract().body().as(TokenResponse.class);
+
+        assertThat(tokenResponse).isNotNull();
+    }
+
+    @DisplayName("The sign key of the authentication token is different from the public key from the DID")
+    @Test
+    void refresh_spoofedAuthToken() throws JOSEException {
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty("refreshToken");
+        var accessToken = edr.getStringProperty("authorization");
+        var spoofedKey = new ECKeyGenerator(Curve.P_256).keyID(CONSUMER_KEY_ID).generate();
+        var authTokenWithSpoofedKey = createAuthToken(accessToken, spoofedKey);
+
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "Bearer " + authTokenWithSpoofedKey)
+                .post("/token")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(401)
+                .body(containsString("Token verification failed"));
+    }
+
+    @DisplayName("The refresh token does not match the stored one")
+    @Test
+    void refresh_withWrongRefreshToken() {
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = "invalid_refresh_token";
+        var accessToken = edr.getStringProperty("authorization");
+
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "Bearer " + createAuthToken(accessToken, consumerKey))
+                .post("/token")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(401)
+                .body(containsString("Provided refresh token does not match the stored refresh token."));
+    }
+
+
+    @DisplayName("The authentication token misses required claims: access_token")
+    @Test
+    void refresh_invalidAuthenticationToken_missingAccessToken() {
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty("refreshToken");
+        var accessToken = edr.getStringProperty("authorization");
+
+        var claims = new JWTClaimsSet.Builder()
+                /* missing: .claim("access_token", accessToken)*/
+                .issuer(CONSUMER_DID)
+                .subject(CONSUMER_DID)
+                .audience("did:web:bob")
+                .jwtID(getJwtId(accessToken))
+                .build();
+        var authToken = createJwt(consumerKey, claims);
+
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "Bearer " + authToken)
+                .post("/token")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(401)
+                .body(containsString("Required claim 'access_token' not present on token."));
+    }
+
+    @DisplayName("The authentication token misses required claims: audience")
+    @Test
+    void refresh_invalidAuthenticationToken_missingAudience() {
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty("refreshToken");
+        var accessToken = edr.getStringProperty("authorization");
+
+        var claims = new JWTClaimsSet.Builder()
+                .claim("access_token", accessToken)
+                .issuer(CONSUMER_DID)
+                .subject(CONSUMER_DID)
+                /* missing: .audience("did:web:bob")*/
+                .jwtID(getJwtId(accessToken))
+                .build();
+        var authToken = createJwt(consumerKey, claims);
+
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "Bearer " + authToken)
+                .post("/token")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(401)
+                .body(containsString("Required claim 'aud' not present on token."));
+    }
+
+    private void prepareDataplaneRuntime() {
+        var vault = DATAPLANE_RUNTIME.getContext().getService(Vault.class);
+        vault.storeSecret(PROVIDER_KEY_ID, providerKey.toJSONString());
+    }
+
+    private String createAuthToken(String accessToken, ECKey signerKey) {
+        var claims = new JWTClaimsSet.Builder()
+                .claim("access_token", accessToken)
+                .issuer(CONSUMER_DID)
+                .subject(CONSUMER_DID)
+                .audience("did:web:bob")
+                .jwtID(getJwtId(accessToken))
+                .build();
+        return createJwt(signerKey, claims);
+    }
+
+    private String createJwt(ECKey signerKey, JWTClaimsSet claims) {
+        var header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(consumerKey.getKeyID()).build();
+        var jwt = new SignedJWT(header, claims);
+        try {
+            jwt.sign(new ECDSASigner(signerKey));
+            return jwt.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getJwtId(String accessToken) {
+        try {
+            return SignedJWT.parse(accessToken).getJWTClaimsSet().getJWTID();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private DataFlowStartMessage createStartMessage(String processId, String audience) {
+        return DataFlowStartMessage.Builder.newInstance()
+                .processId(processId)
+                .sourceDataAddress(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://foo.bar/").build())
+                .destinationDataAddress(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://fizz.buzz").build())
+                .flowType(FlowType.PULL)
+                .participantId("some-participantId")
+                .assetId("test-asset")
+                .callbackAddress(URI.create("https://foo.bar/callback"))
+                .agreementId("test-agreement")
+                .property("audience", audience)
+                .build();
     }
 }

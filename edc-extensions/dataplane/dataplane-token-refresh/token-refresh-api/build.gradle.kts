@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,23 +15,22 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 plugins {
     `java-library`
+    `maven-publish`
+    id("io.swagger.core.v3.swagger-gradle-plugin")
 }
 
 dependencies {
+    api(project(":spi:tokenrefresh-spi"))
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.web)
+    implementation(libs.jakarta.rsApi)
 
-    testImplementation(project(":spi:tokenrefresh-spi"))
-    testImplementation(project(":edc-tests:e2e-tests"))
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
-
-    testImplementation(libs.edc.dpf.http)
-    testImplementation(libs.edc.spi.identity.did)
-    testImplementation(libs.nimbus.jwt)
+    testImplementation(testFixtures(libs.edc.core.jersey))
 }
-
-
 

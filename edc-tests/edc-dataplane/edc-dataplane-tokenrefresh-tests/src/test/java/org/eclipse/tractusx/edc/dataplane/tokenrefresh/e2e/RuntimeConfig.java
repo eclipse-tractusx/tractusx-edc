@@ -19,32 +19,67 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.e2e;
 
+import io.restassured.specification.RequestSpecification;
+
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.restassured.RestAssured.given;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 
 /**
  * Configuration baseline for Data-Plane e2e tests
  */
 public class RuntimeConfig {
+
+    private final Endpoint publicApi = new Endpoint(URI.create("http://localhost:%d/public".formatted(getFreePort())));
+    private final Endpoint signalingApi = new Endpoint(URI.create("http://localhost:%d/signaling".formatted(getFreePort())));
+    private final Endpoint refreshApi = publicApi;
+    private final Endpoint defaultApi = new Endpoint(URI.create("http://localhost:%d/api".formatted(getFreePort())));
+
     /**
      * Configures the data plane token endpoint, and all relevant HTTP contexts
      */
-    public static Map<String, String> baseConfig(String signalingPath, int signalingPort) {
+    public Map<String, String> baseConfig() {
         return new HashMap<>() {
             {
                 put("edc.dataplane.token.validation.endpoint", "http://token-validation.com");
-                put("web.http.path", "/api");
-                put("web.http.port", String.valueOf(getFreePort()));
-                put("web.http.public.path", "/public");
-                put("web.http.public.port", String.valueOf(getFreePort()));
-                put("web.http.consumer.api.path", "/api/consumer");
-                put("web.http.consumer.api.port", String.valueOf(getFreePort()));
-                put("web.http.signaling.path", signalingPath);
-                put("web.http.signaling.port", String.valueOf(signalingPort));
+                put("web.http.path", defaultApi.url().getPath());
+                put("web.http.port", String.valueOf(defaultApi.url().getPort()));
+                put("web.http.public.path", publicApi.url().getPath());
+                put("web.http.public.port", String.valueOf(publicApi.url().getPort()));
+                put("web.http.signaling.path", signalingApi.url().getPath());
+                put("web.http.signaling.port", String.valueOf(signalingApi.url().getPort()));
             }
         };
+    }
+
+    public Endpoint getPublicApi() {
+        return publicApi;
+    }
+
+    public Endpoint getSignalingApi() {
+        return signalingApi;
+    }
+
+    public Endpoint getRefreshApi() {
+        return refreshApi;
+    }
+
+    public Endpoint getDefaultApi() {
+        return defaultApi;
+    }
+
+    public record Endpoint(URI url, Map<String, String> headers) {
+        public Endpoint(URI url) {
+            this(url, Map.of());
+        }
+
+        public RequestSpecification baseRequest() {
+            return given().baseUri(url.toString()).headers(headers);
+        }
+
     }
 
 }

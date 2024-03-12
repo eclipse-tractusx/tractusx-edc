@@ -160,7 +160,8 @@ edc-dpf-azblob = { module = "org.eclipse.edc:data-plane-azure-storage", version.
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
 edc-dpf-api-control = { module = "org.eclipse.edc:data-plane-control-api", version.ref = "edc" }
-edc-dpf-api-public = { module = "org.eclipse.edc:data-plane-public-api", version.ref = "edc" }
+edc-dpf-api-public-v1 = { module = "org.eclipse.edc:data-plane-public-api", version.ref = "edc" }
+edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
 
