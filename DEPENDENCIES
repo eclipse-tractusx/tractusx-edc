@@ -446,10 +446,10 @@ maven/mavencentral/org.hamcrest/hamcrest-core/1.3, BSD-2-Clause, approved, CQ114
 maven/mavencentral/org.hamcrest/hamcrest/2.1, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.hamcrest/hamcrest/2.2, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.hdrhistogram/HdrHistogram/2.1.12, BSD-2-Clause OR LicenseRef-Public-Domain, approved, CQ13192
-maven/mavencentral/org.jacoco/org.jacoco.agent/0.8.11, EPL-2.0, approved, CQ23285
-maven/mavencentral/org.jacoco/org.jacoco.ant/0.8.11, EPL-2.0, approved, #1068
-maven/mavencentral/org.jacoco/org.jacoco.core/0.8.11, EPL-2.0, approved, CQ23283
-maven/mavencentral/org.jacoco/org.jacoco.report/0.8.11, EPL-2.0 AND Apache-2.0, approved, CQ23284
+maven/mavencentral/org.jacoco/org.jacoco.agent/0.8.9, EPL-2.0, approved, CQ23285
+maven/mavencentral/org.jacoco/org.jacoco.ant/0.8.9, EPL-2.0, approved, #1068
+maven/mavencentral/org.jacoco/org.jacoco.core/0.8.9, EPL-2.0, approved, CQ23283
+maven/mavencentral/org.jacoco/org.jacoco.report/0.8.9, EPL-2.0 AND Apache-2.0, approved, CQ23284
 maven/mavencentral/org.javassist/javassist/3.28.0-GA, Apache-2.0 OR LGPL-2.1-or-later OR MPL-1.1, approved, #327
 maven/mavencentral/org.javassist/javassist/3.29.2-GA, Apache-2.0 AND LGPL-2.1-or-later AND MPL-1.1, approved, #6023
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-common/1.9.10, Apache-2.0, approved, clearlydefined
@@ -483,9 +483,12 @@ maven/mavencentral/org.mockito/mockito-core/5.11.0, MIT AND (Apache-2.0 AND MIT)
 maven/mavencentral/org.mockito/mockito-core/5.2.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #7401
 maven/mavencentral/org.objenesis/objenesis/3.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.opentest4j/opentest4j/1.3.0, Apache-2.0, approved, #9713
+maven/mavencentral/org.ow2.asm/asm-commons/9.5, BSD-3-Clause, approved, #7553
 maven/mavencentral/org.ow2.asm/asm-commons/9.6, BSD-3-Clause, approved, #10775
+maven/mavencentral/org.ow2.asm/asm-tree/9.5, BSD-3-Clause, approved, #7555
 maven/mavencentral/org.ow2.asm/asm-tree/9.6, BSD-3-Clause, approved, #10773
 maven/mavencentral/org.ow2.asm/asm/9.3, BSD-3-Clause, approved, clearlydefined
+maven/mavencentral/org.ow2.asm/asm/9.5, BSD-3-Clause, approved, #7554
 maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
 maven/mavencentral/org.postgresql/postgresql/42.7.2, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
