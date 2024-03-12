@@ -23,12 +23,14 @@ import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
+import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.token.rules.ExpirationIssuedAtValidationRule;
 import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationRule;
@@ -40,6 +42,7 @@ import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefresh
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
 
 import java.security.PrivateKey;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.EXPIRATION_TIME;
 
 /**
  * This implementation of the {@link DataPlaneTokenRefreshService} validates an incoming authentication token.
@@ -60,10 +64,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public static final String TOKEN_ID_CLAIM = "jti";
     public static final String REFRESH_TOKEN_PROPERTY = "refreshToken";
     private static final Long DEFAULT_EXPIRY_IN_SECONDS = 60 * 5L;
-    private final List<TokenValidationRule> authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
-            new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
-            new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
-            new ClaimIsPresentRule(TOKEN_ID_CLAIM));
+    private final List<TokenValidationRule> authenticationTokenValidationRules;
+    private final List<TokenValidationRule> accessTokenRules;
     private final TokenValidationService tokenValidationService;
     private final DidPublicKeyResolver publicKeyResolver;
     private final AccessTokenDataStore accessTokenDataStore;
@@ -71,15 +73,16 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final Supplier<PrivateKey> privateKeySupplier;
     private final Monitor monitor;
     private final String refreshEndpoint;
+    private final Clock clock;
 
 
-    public DataPlaneTokenRefreshServiceImpl(TokenValidationService tokenValidationService,
+    public DataPlaneTokenRefreshServiceImpl(Clock clock, TokenValidationService tokenValidationService,
                                             DidPublicKeyResolver publicKeyResolver,
                                             AccessTokenDataStore accessTokenDataStore,
                                             TokenGenerationService tokenGenerationService,
                                             Supplier<PrivateKey> privateKeySupplier,
                                             Monitor monitor,
-                                            String refreshEndpoint) {
+                                            String refreshEndpoint, int tokenExpiryToleranceSeconds) {
         this.tokenValidationService = tokenValidationService;
         this.publicKeyResolver = publicKeyResolver;
         this.accessTokenDataStore = accessTokenDataStore;
@@ -87,6 +90,15 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.privateKeySupplier = privateKeySupplier;
         this.monitor = monitor;
         this.refreshEndpoint = refreshEndpoint;
+        this.clock = clock;
+        authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
+                new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
+                new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
+                new ClaimIsPresentRule(TOKEN_ID_CLAIM));
+        accessTokenRules = List.of(new IssuerEqualsSubjectRule(),
+                new ClaimIsPresentRule(AUDIENCE),
+                new ClaimIsPresentRule(TOKEN_ID_CLAIM),
+                new ExpirationIssuedAtValidationRule(clock, tokenExpiryToleranceSeconds));
     }
 
     /**
@@ -192,7 +204,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
     @Override
     public Result<AccessTokenData> resolve(String token) {
-        return resolveToken(token, authenticationTokenValidationRules);
+        return resolveToken(token, accessTokenRules);
     }
 
     /**
@@ -212,6 +224,12 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             tokenId.set(UUID.randomUUID().toString());
             TokenDecorator tokenIdDecorator = params -> params.claims(TOKEN_ID_CLAIM, tokenId.get());
             allDecorators.add(tokenIdDecorator);
+        }
+        //if there is not "exp" header on the token params, we'll configure one
+        if (!tokenParameters.getClaims().containsKey(JwtRegisteredClaimNames.EXPIRATION_TIME)) {
+            monitor.info("No '%s' claim found on TokenParameters. Will use the default of %d seconds".formatted(EXPIRATION_TIME, DEFAULT_EXPIRY_IN_SECONDS));
+            var exp = clock.instant().plusSeconds(DEFAULT_EXPIRY_IN_SECONDS).getEpochSecond();
+            allDecorators.add(tp -> tp.claims(JwtRegisteredClaimNames.EXPIRATION_TIME, exp));
         }
 
         return tokenGenerationService.generate(privateKeySupplier, allDecorators.toArray(new TokenDecorator[0]))

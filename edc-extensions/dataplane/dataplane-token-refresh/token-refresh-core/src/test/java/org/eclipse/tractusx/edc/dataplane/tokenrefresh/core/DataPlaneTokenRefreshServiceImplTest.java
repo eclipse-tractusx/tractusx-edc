@@ -33,6 +33,7 @@ import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -58,7 +59,7 @@ class DataPlaneTokenRefreshServiceImplTest {
     private final TokenValidationService tokenValidationService = mock();
     private final DidPublicKeyResolver didPublicKeyResolver = mock();
 
-    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(tokenValidationService, didPublicKeyResolver, accessTokenDataStore, tokenGenService, mock(), mock(), "https://example.com");
+    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(), tokenValidationService, didPublicKeyResolver, accessTokenDataStore, tokenGenService, mock(), mock(), "https://example.com", 1);
 
     @Test
     void obtainToken() {

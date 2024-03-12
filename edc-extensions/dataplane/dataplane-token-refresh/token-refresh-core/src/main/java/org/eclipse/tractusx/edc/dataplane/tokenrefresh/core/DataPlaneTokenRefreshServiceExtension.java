@@ -25,6 +25,7 @@ import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.PrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -34,6 +35,7 @@ import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefresh
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PrivateKey;
+import java.time.Clock;
 import java.util.function.Supplier;
 
 import static org.eclipse.edc.connector.dataplane.spi.TransferDataPlaneConfig.TOKEN_SIGNER_PRIVATE_KEY_ALIAS;
@@ -42,15 +44,19 @@ import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneToke
 @Extension(value = NAME)
 public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     public static final String NAME = "DataPlane Token Refresh Service extension";
+    public static final int DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS = 5;
+    @Setting(value = "Token expiry tolerance period in seconds to allow for clock skew", defaultValue = "" + DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS)
+    public static final String TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY = "edc.dataplane.api.token.expiry.tolerance";
     @Inject
     private TokenValidationService tokenValidationService;
     @Inject
     private DidPublicKeyResolver didPkResolver;
     @Inject
     private AccessTokenDataStore accessTokenDataStore;
-
     @Inject
     private PrivateKeyResolver privateKeyResolver;
+    @Inject
+    private Clock clock;
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
 
     @Override
@@ -73,7 +79,8 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     @NotNull
     private DataPlaneTokenRefreshServiceImpl getTokenRefreshService(ServiceExtensionContext context) {
         if (tokenRefreshService == null) {
-            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), "foo.bar");
+            var epsilon = context.getConfig().getInteger(TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS);
+            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), null, epsilon);
         }
         return tokenRefreshService;
     }
