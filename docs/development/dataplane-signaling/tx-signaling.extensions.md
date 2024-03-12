@@ -50,9 +50,9 @@ different approaches that are all supported by Tractus-X EDC.
 ### 1. Automatic refresh using the (consumer) DataPlane
 
 This is suitable for deployments that elect to use a data plane on the consumer side, effectively acting as HTTP client.
-Data requests are made by the consumer's data plane. Upon receiving
-an HTTP error code indicating an authentication failure (HTTP 401), the consumer data plane refreshes the token using
-the `TokenRefreshHandler` and retries the request. This is called "lazy refresh".
+Data requests are made by the consumer's data plane. Upon receiving an HTTP error code indicating an authentication
+failure (HTTP 4xx), the consumer data plane refreshes the token using the `TokenRefreshHandler` and retries the request.
+This is called "lazy refresh".
 
 ![](./AutomaticRefresh.drawio.png)
 
@@ -60,9 +60,13 @@ the `TokenRefreshHandler` and retries the request. This is called "lazy refresh"
 - `(2)`: The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
 - `(3)`: The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API.
 
-Note that if the token-refresh call also fails with a HTTP 4xx error code, the token must be regarded as invalid and not
-authorized. Alternatively, the `TokenRefreshHandler` could choose to proactively refresh the token if nearing expiry. _
-This is transparent to the client application._
+Note that if the token-refresh call also fails with an HTTP 4xx error code, the token must be regarded as invalid and
+not authorized. An expired contract agreement or an unsatisfied policy could be reasons for that (
+see [decision record](https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-09-07-policy-monitor)
+and [documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/policy-monitor.md)).
+
+Alternatively, implementations of the `TokenRefreshHandler` could choose to proactively refresh the token if nearing
+expiry instead of "letting it fail" first. _This is transparent to the client application._
 
 ### 2. Automatic refresh using the `/edrs` API
 
@@ -77,7 +81,7 @@ required, then returns back a (possibly refreshed) access token to the client ap
 - `(2)`: EDR API (or a related component) checks if the token requires renewal
 - `(3)`: EDR API triggers `TokenRefreshHandler` to make the refresh request
 - `(4)`: `TokenRefreshHandler` calls refresh endpoint of provider data plane
-- `(5)`: (refreshed) token is returned to client application
+- `(3)/(5)`: (refreshed) token is returned to client application
 
 ### 3. Manual refresh by the client application
 
