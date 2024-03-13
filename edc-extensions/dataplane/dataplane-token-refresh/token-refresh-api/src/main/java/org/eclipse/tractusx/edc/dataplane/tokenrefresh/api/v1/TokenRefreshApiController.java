@@ -28,8 +28,8 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.web.spi.exception.AuthenticationFailedException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 

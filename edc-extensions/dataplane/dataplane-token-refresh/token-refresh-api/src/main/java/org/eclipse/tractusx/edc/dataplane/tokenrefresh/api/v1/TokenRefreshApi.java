@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
 @SecurityScheme(name = "Authentication",
         description = "Self-Issued ID token containing an access_token",

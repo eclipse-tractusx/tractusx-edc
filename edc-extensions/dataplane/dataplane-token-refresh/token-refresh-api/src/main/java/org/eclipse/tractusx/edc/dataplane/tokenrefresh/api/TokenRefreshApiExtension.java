@@ -25,7 +25,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.api.v1.TokenRefreshApiController;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
 
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.api.TokenRefreshApiExtension.NAME;
 

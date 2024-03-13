@@ -42,8 +42,8 @@ import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.AuthTokenAudie
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.ClaimIsPresentRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.IssuerEqualsSubjectRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.RefreshTokenValidationRule;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
 import java.security.PrivateKey;
 import java.time.Clock;

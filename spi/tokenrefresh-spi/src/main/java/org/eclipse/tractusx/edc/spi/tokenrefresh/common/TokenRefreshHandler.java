@@ -17,12 +17,22 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model;
+package org.eclipse.tractusx.edc.spi.tokenrefresh.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
-public record TokenResponse(@JsonProperty("access_token") String accessToken,
-                            @JsonProperty("refresh_token") String refreshToken,
-                            @JsonProperty("expires") Long expiresInSeconds,
-                            @JsonProperty("token_type") String tokenType) {
+/**
+ * Handles token refreshing against an OAuth2-compliant token refresh endpoint.
+ */
+@FunctionalInterface
+public interface TokenRefreshHandler {
+    /**
+     * Refreshes a token identified by the token ID and returns the updated token. If tokens are kept in persistent storage or
+     * a HSM, implementors must update that entry.
+     *
+     * @param tokenId The ID of the token, e.g. a {@code jti} claim in JWT tokens.
+     * @return An updated access+refresh token pair.
+     */
+    Result<TokenResponse> refreshToken(String tokenId);
 }
