@@ -91,7 +91,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         return getTokenRefreshService(context);
     }
 
-    private Integer getExpiryToleranceConfig(ServiceExtensionContext context) {
+    private int getExpiryToleranceConfig(ServiceExtensionContext context) {
         return context.getConfig().getInteger(TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS);
     }
 
@@ -102,7 +102,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             var expiryTolerance = getExpiryToleranceConfig(context);
             var refreshEndpoint = getRefreshEndpointConfig(context, monitor);
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
-            monitor.debug("Token refresh time tolerance: %ds".formatted(expiryTolerance));
+            monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(),
                     getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance,
                     vault, typeManager.getMapper());
