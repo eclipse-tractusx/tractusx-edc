@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -29,6 +30,7 @@ import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
+import org.eclipse.edc.connector.core.vault.InMemoryVault;
 import org.eclipse.edc.connector.dataplane.framework.store.InMemoryAccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.ComponentTest;
@@ -37,7 +39,6 @@ import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.TokenValidationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,10 +52,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.connector.dataplane.framework.iam.DataPlaneAuthorizationServiceImpl.CLAIM_AGREEMENT_ID;
-import static org.eclipse.edc.connector.dataplane.framework.iam.DataPlaneAuthorizationServiceImpl.CLAIM_ASSET_ID;
-import static org.eclipse.edc.connector.dataplane.framework.iam.DataPlaneAuthorizationServiceImpl.CLAIM_FLOW_TYPE;
-import static org.eclipse.edc.connector.dataplane.framework.iam.DataPlaneAuthorizationServiceImpl.CLAIM_PROCESS_ID;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -91,7 +88,9 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 () -> privateKey,
                 mock(),
                 TEST_REFRESH_ENDPOINT,
-                1);
+                1,
+                new InMemoryVault(mock()),
+                new ObjectMapper());
 
         when(didPkResolverMock.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
         when(didPkResolverMock.resolveKey(eq(providerKey.getKeyID()))).thenReturn(Result.success(providerKey.toPublicKey()));
@@ -105,9 +104,6 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         assertThat(edr).isSucceeded();
         // assert access token contents
         assertThat(asClaims(edr.getContent().getToken()))
-                .containsKey("asset_id")
-                .containsKey("process_id")
-                .containsKey("agreement_id")
                 .containsEntry("iss", PROVIDER_BPN)
                 .containsEntry("sub", PROVIDER_BPN)
                 .containsEntry("aud", List.of(CONSUMER_BPN))
@@ -123,10 +119,8 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         var storedData = tokenDataStore.getById(tokenId);
         assertThat(storedData).isNotNull();
         assertThat(storedData.additionalProperties())
+                .hasSize(2)
                 .containsEntry("audience", CONSUMER_DID)
-                .containsEntry("refreshEndpoint", TEST_REFRESH_ENDPOINT)
-                .containsKey("refreshToken")
-                .containsKey("expiresIn")
                 .containsEntry("authType", "bearer");
 
     }
@@ -150,6 +144,10 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         assertThat(tokenResponse).withFailMessage(tokenResponse::getFailureDetail).isSucceeded()
                 .satisfies(tr -> assertThat(tr.refreshToken()).isNotNull())
                 .satisfies(tr -> assertThat(tr.accessToken()).isNotNull());
+
+        assertThat(tokenDataStore.getById(tokenId).additionalProperties())
+                .hasSize(2)
+                .doesNotContainKey("refreshToken");
     }
 
     @DisplayName("Verify that a refresh token can only be refreshed by the original recipient")
@@ -307,10 +305,6 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .claims(JwtRegisteredClaimNames.SUBJECT, PROVIDER_BPN)
                 .claims(JwtRegisteredClaimNames.EXPIRATION_TIME, Instant.now().plusSeconds(60).getEpochSecond())
                 .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().getEpochSecond())
-                .claims(CLAIM_AGREEMENT_ID, "test-agreement-id")
-                .claims(CLAIM_ASSET_ID, "test-asset-id")
-                .claims(CLAIM_PROCESS_ID, "test-process-id")
-                .claims(CLAIM_FLOW_TYPE, FlowType.PULL.toString())
                 .header("kid", providerKey.getKeyID());
 
     }

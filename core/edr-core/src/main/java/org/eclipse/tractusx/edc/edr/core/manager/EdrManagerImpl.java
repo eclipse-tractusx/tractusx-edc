@@ -183,7 +183,6 @@ public class EdrManagerImpl implements EdrManager {
                 .counterPartyAddress(request.getConnectorAddress())
                 .contractOffer(request.getOffer())
                 .protocol(request.getProtocol())
-                .providerId(request.getConnectorId())
                 .callbackAddresses(callbacks).build();
     }
 

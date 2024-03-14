@@ -27,8 +27,10 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.PrivateKeyResolver;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
@@ -57,6 +59,11 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private PrivateKeyResolver privateKeyResolver;
     @Inject
     private Clock clock;
+    @Inject
+    private Vault vault;
+    @Inject
+    private TypeManager typeManager;
+
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
 
     @Override
@@ -80,7 +87,8 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private DataPlaneTokenRefreshServiceImpl getTokenRefreshService(ServiceExtensionContext context) {
         if (tokenRefreshService == null) {
             var epsilon = context.getConfig().getInteger(TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS);
-            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), null, epsilon);
+            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), null,
+                    epsilon, vault, typeManager.getMapper());
         }
         return tokenRefreshService;
     }
