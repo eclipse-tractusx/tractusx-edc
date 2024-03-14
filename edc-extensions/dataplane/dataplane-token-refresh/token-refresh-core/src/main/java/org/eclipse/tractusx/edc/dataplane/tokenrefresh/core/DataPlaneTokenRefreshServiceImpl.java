@@ -19,6 +19,8 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
@@ -29,15 +31,17 @@ import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.rules.ExpirationIssuedAtValidationRule;
 import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.edc.token.spi.TokenValidationService;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.AuthTokenAudienceRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.ClaimIsPresentRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.IssuerEqualsSubjectRule;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.RefreshTokenMustExistRule;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.RefreshTokenValidationRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
 
@@ -74,15 +78,20 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final Monitor monitor;
     private final String refreshEndpoint;
     private final Clock clock;
+    private final Vault vault;
+    private final ObjectMapper objectMapper;
 
-
-    public DataPlaneTokenRefreshServiceImpl(Clock clock, TokenValidationService tokenValidationService,
+    public DataPlaneTokenRefreshServiceImpl(Clock clock,
+                                            TokenValidationService tokenValidationService,
                                             DidPublicKeyResolver publicKeyResolver,
                                             AccessTokenDataStore accessTokenDataStore,
                                             TokenGenerationService tokenGenerationService,
                                             Supplier<PrivateKey> privateKeySupplier,
                                             Monitor monitor,
-                                            String refreshEndpoint, int tokenExpiryToleranceSeconds) {
+                                            String refreshEndpoint,
+                                            int tokenExpiryToleranceSeconds,
+                                            Vault vault,
+                                            ObjectMapper objectMapper) {
         this.tokenValidationService = tokenValidationService;
         this.publicKeyResolver = publicKeyResolver;
         this.accessTokenDataStore = accessTokenDataStore;
@@ -91,6 +100,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.monitor = monitor;
         this.refreshEndpoint = refreshEndpoint;
         this.clock = clock;
+        this.vault = vault;
+        this.objectMapper = objectMapper;
         authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
                 new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
@@ -121,7 +132,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public Result<TokenResponse> refreshToken(String refreshToken, String authenticationToken) {
 
         var allRules = new ArrayList<>(authenticationTokenValidationRules);
-        allRules.add(new RefreshTokenMustExistRule(accessTokenDataStore, refreshToken));
+        allRules.add(new RefreshTokenValidationRule(vault, refreshToken, objectMapper));
+        allRules.add(new AuthTokenAudienceRule(accessTokenDataStore));
 
         authenticationToken = authenticationToken.replace("Bearer", "").trim();
 
@@ -144,17 +156,11 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.failure("Failed to regenerate access/refresh token pair: %s".formatted(errors));
         }
 
-        // additional token information will be added to the TokenRepresentation, which will be returned to the caller
-        // note: can't use DBI (double-bracket initialization) here, because SonarCloud will complain about it
-        var accessTokenAdditional = new HashMap<>(existingAccessTokenData.additionalProperties());
-        accessTokenAdditional.put(REFRESH_TOKEN_PROPERTY, newRefreshToken.getContent());
-        accessTokenAdditional.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
-        accessTokenAdditional.put("refreshEndpoint", refreshEndpoint);
-        accessTokenAdditional.put("authType", "bearer");
+        storeRefreshToken(existingAccessTokenData.id(), new RefreshToken(newRefreshToken.getContent(), DEFAULT_EXPIRY_IN_SECONDS, refreshEndpoint));
 
         // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
         var claimToken = ClaimToken.Builder.newInstance().claims(newTokenParams.getClaims()).build();
-        var accessTokenData = new AccessTokenData(existingAccessTokenData.id(), claimToken, existingAccessTokenData.dataAddress(), accessTokenAdditional);
+        var accessTokenData = new AccessTokenData(existingAccessTokenData.id(), claimToken, existingAccessTokenData.dataAddress(), existingAccessTokenData.additionalProperties());
 
         var storeResult = accessTokenDataStore.update(accessTokenData);
         return storeResult.succeeded() ?
@@ -180,26 +186,33 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.failure("Could not generate access token: %s".formatted(accessTokenResult.getFailureDetail()));
         }
 
-        // additional token information will be added to the TokenRepresentation, which will be returned to the caller
+        // the edrAdditionalData contains the refresh token, which is NOT supposed to be put in the DB
         // note: can't use DBI (double-bracket initialization) here, because SonarCloud will complain about it
-        var accessTokenAdditional = new HashMap<>(additionalTokenData);
-        accessTokenAdditional.put("refreshToken", refreshTokenResult.getContent().tokenRepresentation().getToken());
-        accessTokenAdditional.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
-        accessTokenAdditional.put("refreshEndpoint", refreshEndpoint);
-        accessTokenAdditional.put("authType", "bearer");
-
-        var accessToken = TokenRepresentation.Builder.newInstance()
-                .token(accessTokenResult.getContent().tokenRepresentation().getToken()) // the access token
-                .additional(accessTokenAdditional) //contains additional properties and the refresh token
-                .expiresIn(DEFAULT_EXPIRY_IN_SECONDS) //todo: needed?
-                .build();
+        var additionalDataForStorage = new HashMap<>(additionalTokenData);
+        additionalDataForStorage.put("authType", "bearer");
 
         // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
         var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
-        var accessTokenData = new AccessTokenData(accessTokenResult.getContent().id(), claimToken, backendDataAddress, accessTokenAdditional);
-
+        var accessTokenData = new AccessTokenData(accessTokenResult.getContent().id(), claimToken, backendDataAddress, additionalDataForStorage);
         var storeResult = accessTokenDataStore.store(accessTokenData);
-        return storeResult.succeeded() ? Result.success(accessToken) : Result.failure(storeResult.getFailureMessages());
+
+        storeRefreshToken(accessTokenResult.getContent().id(), new RefreshToken(refreshTokenResult.getContent().tokenRepresentation().getToken(),
+                DEFAULT_EXPIRY_IN_SECONDS, refreshEndpoint));
+
+        // the refresh token information must be returned in the EDR
+        var edrAdditionalData = new HashMap<>(additionalTokenData);
+        edrAdditionalData.put("refreshToken", refreshTokenResult.getContent().tokenRepresentation().getToken());
+        edrAdditionalData.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
+        edrAdditionalData.put("refreshEndpoint", refreshEndpoint);
+
+        var edrTokenRepresentation = TokenRepresentation.Builder.newInstance()
+                .token(accessTokenResult.getContent().tokenRepresentation().getToken()) // the access token
+                .additional(edrAdditionalData) //contains additional properties and the refresh token
+                .expiresIn(DEFAULT_EXPIRY_IN_SECONDS) //todo: needed?
+                .build();
+
+
+        return storeResult.succeeded() ? Result.success(edrTokenRepresentation) : Result.failure(storeResult.getFailureMessages());
     }
 
     @Override
@@ -254,10 +267,19 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 Result.success(existingAccessToken);
     }
 
+    private Result<Void> storeRefreshToken(String id, RefreshToken refreshToken) {
+        try {
+            return vault.storeSecret(id, objectMapper.writeValueAsString(refreshToken));
+        } catch (JsonProcessingException e) {
+            return Result.failure(e.getMessage());
+        }
+    }
+
     /**
      * container object for a TokenRepresentation and an ID
      */
     private record TokenRepresentationWithId(String id, TokenRepresentation tokenRepresentation) {
 
     }
+
 }
