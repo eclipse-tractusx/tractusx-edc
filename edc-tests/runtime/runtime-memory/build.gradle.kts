@@ -41,6 +41,8 @@ dependencies {
         exclude("org.eclipse.edc", "api-observability")
     }
 
+    runtimeOnly(libs.edc.identity.trust.sts.embedded)
+
     implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)

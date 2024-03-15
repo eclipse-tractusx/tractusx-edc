@@ -53,6 +53,10 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceImpl.PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceImpl.PROPERTY_REFRESH_ENDPOINT;
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceImpl.PROPERTY_REFRESH_TOKEN;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -100,7 +104,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     @Test
     void obtainToken() {
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID));
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(EDC_NAMESPACE + "audience", CONSUMER_DID));
         assertThat(edr).isSucceeded();
         // assert access token contents
         assertThat(asClaims(edr.getContent().getToken()))
@@ -111,17 +115,17 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         // assert additional properties -> refresh token
         assertThat(edr.getContent().getAdditional())
-                .containsEntry("refreshEndpoint", TEST_REFRESH_ENDPOINT)
-                .containsKey("refreshToken")
-                .containsKey("expiresIn");
+                .containsEntry(PROPERTY_REFRESH_ENDPOINT, TEST_REFRESH_ENDPOINT)
+                .containsKey(PROPERTY_REFRESH_TOKEN)
+                .containsKey(PROPERTY_EXPIRES_IN);
 
         // verify that the correct data was stored
         var storedData = tokenDataStore.getById(tokenId);
         assertThat(storedData).isNotNull();
         assertThat(storedData.additionalProperties())
                 .hasSize(2)
-                .containsEntry("audience", CONSUMER_DID)
-                .containsEntry("authType", "bearer");
+                .containsEntry(EDC_NAMESPACE + "audience", CONSUMER_DID)
+                .containsEntry(EDC_NAMESPACE + "authType", "bearer");
 
     }
 
@@ -130,7 +134,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     void refresh_success() throws JOSEException {
 
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(EDC_NAMESPACE + "audience", CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         var accessToken = edr.getToken();
@@ -139,7 +143,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
-        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get("refreshToken").toString(), signedAuthToken.serialize());
+        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
         assertThat(tokenResponse).withFailMessage(tokenResponse::getFailureDetail).isSucceeded()
                 .satisfies(tr -> assertThat(tr.refreshToken()).isNotNull())
@@ -147,7 +151,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         assertThat(tokenDataStore.getById(tokenId).additionalProperties())
                 .hasSize(2)
-                .doesNotContainKey("refreshToken");
+                .doesNotContainKey(PROPERTY_REFRESH_TOKEN);
     }
 
     @DisplayName("Verify that a refresh token can only be refreshed by the original recipient")
@@ -158,7 +162,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
 
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", "did:web:trudy"))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(EDC_NAMESPACE + "audience", "did:web:trudy"))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         // bob attempts to create an auth token with an EDR he stole from trudy
@@ -168,7 +172,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
-        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get("refreshToken").toString(), signedAuthToken.serialize());
+        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
         assertThat(tokenResponse).isFailed().detail().isEqualTo("Principal 'did:web:bob' is not authorized to refresh this token.");
     }
@@ -180,7 +184,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         when(didPkResolverMock.resolveKey(eq(trudyKey.getKeyID()))).thenReturn(Result.success(trudyKey.toPublicKey()));
 
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", "did:web:trudy"))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(EDC_NAMESPACE + "audience", "did:web:trudy"))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         // bob poses as trudy, using her key-ID and DID, but has to use his own private key
@@ -190,36 +194,36 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
-        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get("refreshToken").toString(), signedAuthToken.serialize());
+        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
         assertThat(tokenResponse).isFailed().detail().isEqualTo("Token verification failed");
     }
 
-    @DisplayName("Verify that a refresh attempt fails if no \"access_token\" claim is present")
+    @DisplayName("Verify that a refresh attempt fails if no \"token\" claim is present")
     @Test
     void refresh_whenNoAccessTokenClaim() throws JOSEException {
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(EDC_NAMESPACE + "audience", CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         var accessToken = edr.getToken();
         var jwsHeader = new JWSHeader.Builder(JWSAlgorithm.ES384).keyID(consumerKey.getKeyID()).build();
-        var claimsSet = getAuthTokenClaims(tokenId, accessToken).claim("access_token", null).build();
+        var claimsSet = getAuthTokenClaims(tokenId, accessToken).claim("token", null).build();
 
         var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
-        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get("refreshToken").toString(), signedAuthToken.serialize());
+        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
         assertThat(tokenResponse).isFailed()
                 .detail()
-                .isEqualTo("Required claim 'access_token' not present on token.");
+                .isEqualTo("Required claim 'token' not present on token.");
     }
 
     @DisplayName("Verify that the equality of the 'iss' and the 'sub' claim of the authentication token")
     @Test
     void refresh_whenIssNotEqualToSub() throws JOSEException {
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(EDC_NAMESPACE + "audience", CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         var accessToken = edr.getToken();
@@ -231,7 +235,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
-        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get("refreshToken").toString(), signedAuthToken.serialize());
+        var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
         assertThat(tokenResponse).isFailed()
                 .detail()
@@ -290,7 +294,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .issuer(CONSUMER_DID)
                 .subject(CONSUMER_DID)
                 .audience(PROVIDER_DID)
-                .claim("access_token", accessToken);
+                .claim("token", accessToken);
     }
 
     private TokenParameters tokenParams(String id) {

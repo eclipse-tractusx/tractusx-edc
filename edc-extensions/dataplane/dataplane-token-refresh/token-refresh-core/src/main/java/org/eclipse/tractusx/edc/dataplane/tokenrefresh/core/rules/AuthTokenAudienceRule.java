@@ -29,12 +29,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+
 /**
  * Validates that the {@code iss} claim of a token is equal to the {@code audience} property found on the {@link org.eclipse.edc.connector.dataplane.spi.AccessTokenData}
  * that is associated with that token (using the {@code jti} claim).
  */
 public class AuthTokenAudienceRule implements TokenValidationRule {
-    private static final String AUDIENCE_PROPERTY = "audience";
+    private static final String AUDIENCE_PROPERTY = EDC_NAMESPACE + "audience";
     private final AccessTokenDataStore store;
 
     public AuthTokenAudienceRule(AccessTokenDataStore store) {

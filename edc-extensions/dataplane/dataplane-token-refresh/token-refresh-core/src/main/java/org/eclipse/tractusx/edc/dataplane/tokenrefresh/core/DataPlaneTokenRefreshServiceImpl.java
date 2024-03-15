@@ -59,14 +59,18 @@ import java.util.stream.Stream;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.EXPIRATION_TIME;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 
 /**
  * This implementation of the {@link DataPlaneTokenRefreshService} validates an incoming authentication token.
  */
 public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshService, DataPlaneAccessTokenService {
-    public static final String ACCESS_TOKEN_CLAIM = "access_token";
+    public static final String ACCESS_TOKEN_CLAIM = "token";
     public static final String TOKEN_ID_CLAIM = "jti";
-    public static final String REFRESH_TOKEN_PROPERTY = "refreshToken";
+    public static final String PROPERTY_REFRESH_TOKEN = TX_AUTH_NS + "refreshToken";
+    public static final String PROPERTY_EXPIRES_IN = TX_AUTH_NS + "expiresIn";
+    public static final String PROPERTY_REFRESH_ENDPOINT = TX_AUTH_NS + "refreshEndpoint";
     private static final Long DEFAULT_EXPIRY_IN_SECONDS = 60 * 5L;
     private final List<TokenValidationRule> authenticationTokenValidationRules;
     private final List<TokenValidationRule> accessTokenRules;
@@ -189,7 +193,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         // the edrAdditionalData contains the refresh token, which is NOT supposed to be put in the DB
         // note: can't use DBI (double-bracket initialization) here, because SonarCloud will complain about it
         var additionalDataForStorage = new HashMap<>(additionalTokenData);
-        additionalDataForStorage.put("authType", "bearer");
+        additionalDataForStorage.put(EDC_NAMESPACE + "authType", "bearer");
 
         // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
         var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
@@ -201,9 +205,9 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         // the refresh token information must be returned in the EDR
         var edrAdditionalData = new HashMap<>(additionalTokenData);
-        edrAdditionalData.put("refreshToken", refreshTokenResult.getContent().tokenRepresentation().getToken());
-        edrAdditionalData.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
-        edrAdditionalData.put("refreshEndpoint", refreshEndpoint);
+        edrAdditionalData.put(PROPERTY_REFRESH_TOKEN, refreshTokenResult.getContent().tokenRepresentation().getToken());
+        edrAdditionalData.put(PROPERTY_EXPIRES_IN, DEFAULT_EXPIRY_IN_SECONDS);
+        edrAdditionalData.put(PROPERTY_REFRESH_ENDPOINT, refreshEndpoint);
 
         var edrTokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(accessTokenResult.getContent().tokenRepresentation().getToken()) // the access token

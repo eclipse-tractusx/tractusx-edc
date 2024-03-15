@@ -103,6 +103,21 @@ public class ParticipantEdrApi {
     }
 
     /**
+     * Get the cached EDR for a transfer process as {@link ValidatableResponse}
+     *
+     * @param transferProcessId The transfer process id
+     * @return The {@link ValidatableResponse}
+     */
+    public ValidatableResponse getEdrRequestV1(String transferProcessId, boolean autoRefresh) {
+        return baseEdrRequest()
+                .when()
+                .get("/v2/edrs/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)
+                .then()
+                .log().ifError();
+
+    }
+
+    /**
      * Start an EDR negotiation using the EDRs API.
      *
      * @param other     The provider

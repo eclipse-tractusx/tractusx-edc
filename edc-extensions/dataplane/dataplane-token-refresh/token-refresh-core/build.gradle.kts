@@ -22,6 +22,7 @@ plugins {
 }
 
 dependencies {
+    api(project(":spi:core-spi"))
     api(project(":spi:tokenrefresh-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.token)

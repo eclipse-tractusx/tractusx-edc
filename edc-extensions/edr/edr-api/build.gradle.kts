@@ -27,9 +27,11 @@ dependencies {
     implementation(project(":spi:callback-spi"))
     implementation(project(":spi:edr-spi"))
     implementation(project(":spi:core-spi"))
+    implementation(project(":spi:tokenrefresh-spi"))
 
     implementation(libs.edc.api.management)
     implementation(libs.edc.core.validator)
+    implementation(libs.edc.spi.edrstore)
     implementation(libs.jakarta.rsApi)
 
     testImplementation(testFixtures(libs.edc.core.jersey))

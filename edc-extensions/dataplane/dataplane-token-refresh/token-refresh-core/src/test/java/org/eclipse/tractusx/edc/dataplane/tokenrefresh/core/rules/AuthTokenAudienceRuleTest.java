@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createToken;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,7 +45,7 @@ class AuthTokenAudienceRuleTest {
         when(store.getById(TEST_TOKEN_ID)).thenReturn(new AccessTokenData(TEST_TOKEN_ID,
                 ClaimToken.Builder.newInstance().build(),
                 DataAddress.Builder.newInstance().type("test-type").build(),
-                Map.of("audience", "did:web:alice")));
+                Map.of(EDC_NAMESPACE + "audience", "did:web:alice")));
 
         assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
@@ -62,7 +63,7 @@ class AuthTokenAudienceRuleTest {
         assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
-                .isEqualTo("Property 'audience' was expected to be java.lang.String but was class java.lang.Long.");
+                .isEqualTo("Property 'https://w3id.org/edc/v0.0.1/ns/audience' was expected to be java.lang.String but was null.");
     }
 
     @Test
@@ -75,6 +76,6 @@ class AuthTokenAudienceRuleTest {
         assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
-                .isEqualTo("Property 'audience' was expected to be java.lang.String but was null.");
+                .isEqualTo("Property 'https://w3id.org/edc/v0.0.1/ns/audience' was expected to be java.lang.String but was null.");
     }
 }

@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.common.tokenrefresh;
 
-import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
+import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.identitytrust.SecureTokenService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -39,7 +39,7 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
     // this setting is defined by the IdentityAndTrustExtension
     private static final String PARTICIPANT_DID_PROPERTY = "edc.iam.issuer.id";
     @Inject
-    private EndpointDataReferenceStore edrStore;
+    private EndpointDataReferenceCache edrStore;
     @Inject
     private EdcHttpClient httpClient;
     @Inject

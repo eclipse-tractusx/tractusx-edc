@@ -16,6 +16,7 @@ jakarta-json = "2.0.1"
 jupiter = "5.10.2"
 mockwebserver = "5.0.0-alpha.12"
 nimbus = "9.37.3"
+netty-mockserver = "5.15.0"
 okhttp = "4.12.0"
 postgres = "42.7.2"
 restAssured = "5.4.0"
@@ -66,6 +67,7 @@ edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-core-validator = { module = "org.eclipse.edc:validator-core", version.ref = "edc" }
 edc-core-transform = { module = "org.eclipse.edc:transform-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
+edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-statemachine = { module = "org.eclipse.edc:state-machine", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
@@ -154,6 +156,7 @@ edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client"
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
+edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
@@ -173,6 +176,7 @@ edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.re
 edc-monitor-jdklogger = { module = "org.eclipse.edc:monitor-jdk-logger", version.ref = "edc" }
 edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }
 edc-transfer-receiver = { module = "org.eclipse.edc:transfer-pull-http-receiver", version.ref = "edc" }
+edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", version.ref = "edc" }
 
 # other deps
 
@@ -194,6 +198,7 @@ junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.re
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
+netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }

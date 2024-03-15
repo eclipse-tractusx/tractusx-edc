@@ -195,6 +195,7 @@ public class TxParticipant extends Participant {
                 put("edc.data.encryption.keys.alias", "test-alias");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
+                put("edc.iam.issuer.id", "did:web:" + name);
             }
         };
     }
