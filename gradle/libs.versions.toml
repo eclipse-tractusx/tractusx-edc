@@ -45,6 +45,7 @@ edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
+edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-token-core = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }

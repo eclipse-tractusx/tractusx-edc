@@ -324,6 +324,7 @@ maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform/0.5.2-SNAPSHOT
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-version-api/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/edr-store-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/iam-mock/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc

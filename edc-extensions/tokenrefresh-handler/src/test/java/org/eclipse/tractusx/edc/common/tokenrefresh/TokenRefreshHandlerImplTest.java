@@ -1,0 +1,228 @@
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.tractusx.edc.common.tokenrefresh;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import okhttp3.MediaType;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
+import org.eclipse.edc.identitytrust.SecureTokenService;
+import org.eclipse.edc.spi.http.EdcHttpClient;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.io.IOException;
+import java.security.PrivateKey;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+class TokenRefreshHandlerImplTest {
+    public static final String REFRESH_ENDPOINT = "http://fizz.buzz/quazz";
+    private static final String CONSUMER_DID = "did:web:bob";
+    private static final String PUBLIC_KEY_ID = CONSUMER_DID + "#key-1";
+    private static final String PROVIDER_DID = "did:web:alice";
+    private final EndpointDataReferenceStore edrStore = mock();
+    private final EdcHttpClient mockedHttpClient = mock();
+    private final SecureTokenService mockedTokenService = mock();
+    private TokenRefreshHandlerImpl tokenRefreshHandler;
+    private PrivateKey consumerKey;
+    private ObjectMapper objectMapper;
+
+    private static String createJwt() {
+        try {
+            var providerKey = new ECKeyGenerator(Curve.P_256).generate();
+            var signedJwt = new SignedJWT(new JWSHeader(JWSAlgorithm.ES256), new JWTClaimsSet.Builder().issuer(PROVIDER_DID).build());
+            signedJwt.sign(new ECDSASigner(providerKey));
+            return signedJwt.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @BeforeEach
+    void setup() throws JOSEException {
+        consumerKey = new ECKeyGenerator(Curve.P_256).generate().toPrivateKey();
+        objectMapper = new ObjectMapper();
+        tokenRefreshHandler = new TokenRefreshHandlerImpl(edrStore, mockedHttpClient, CONSUMER_DID, mock(),
+                mockedTokenService, objectMapper);
+    }
+
+    @Test
+    void refresh_validateCorrectRequest() throws IOException {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(createEdr().build()));
+        when(mockedTokenService.createToken(anyMap(), anyString())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        var tokenResponse = new TokenResponse("new-access-token", "new-refresh-token", 60 * 5L, "bearer");
+        var successResponse = createResponse(tokenResponse, 200, "");
+        when(mockedHttpClient.execute(any())).thenReturn(successResponse);
+        var res = tokenRefreshHandler.refreshToken("token-id");
+        assertThat(res).isSucceeded()
+                .satisfies(tr -> {
+                    assertThat(tr.accessToken()).isEqualTo("new-access-token");
+                    assertThat(tr.refreshToken()).isEqualTo("new-refresh-token");
+                    assertThat(tr.expiresInSeconds()).isEqualTo(300L);
+                    assertThat(tr.tokenType()).isEqualTo("bearer");
+                });
+    }
+
+    @Test
+    void refresh_edrNotFound() {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.notFound("foo"));
+
+        assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
+                .detail().isEqualTo("foo");
+
+        verify(edrStore).resolveByTransferProcess(eq("token-id"));
+        verifyNoMoreInteractions(edrStore);
+        verifyNoInteractions(mockedHttpClient, mockedTokenService);
+    }
+
+    @ParameterizedTest(name = "{3}")
+    @ArgumentsSource(InvalidEdrProvider.class)
+    void refresh_edrLacksRequiredProperties(String authorization, String refreshToken, String refreshEndpoint, String desc) {
+        var invalidEdr = DataAddress.Builder.newInstance().type("test-type")
+                .property("authorization", authorization)
+                .property("refreshToken", refreshToken)
+                .property("refreshEndpoint", refreshEndpoint)
+                .build();
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(invalidEdr));
+
+        assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
+                .detail()
+                .matches("^Cannot perform token refresh: required property '(authorization|refreshToken|refreshEndpoint)' not found on EDR.$");
+    }
+
+    @Test
+    void refresh_endpointReturnsFailure() throws IOException {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(createEdr().build()));
+        when(mockedTokenService.createToken(anyMap(), anyString())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        var response401 = createResponse(null, 401, "Not authorized");
+
+        when(mockedHttpClient.execute(any())).thenReturn(response401);
+
+        var res = tokenRefreshHandler.refreshToken("token-id");
+        assertThat(res).isFailed()
+                .detail().isEqualTo("Token refresh not successful: 401, message: Not authorized");
+    }
+
+    @Test
+    void refresh_endpointReturnsEmptyBody() throws IOException {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(createEdr().build()));
+        when(mockedTokenService.createToken(anyMap(), anyString())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        var successResponse = createResponse(null, 200, "");
+        when(mockedHttpClient.execute(any())).thenReturn(successResponse);
+        var res = tokenRefreshHandler.refreshToken("token-id");
+        assertThat(res).isFailed()
+                .detail().isEqualTo("Token refresh successful, but body was empty.");
+    }
+
+    @Test
+    void refresh_ioException() throws IOException {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(createEdr().build()));
+        when(mockedTokenService.createToken(anyMap(), anyString())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        when(mockedHttpClient.execute(any())).thenThrow(new IOException("test exception"));
+
+        assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
+                .detail().isEqualTo("Error executing token refresh request: java.io.IOException: test exception");
+    }
+
+    @Test
+    void refresh_accessTokenIsNotJwt() {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(createEdr().property("authorization", "not-jwt").build()));
+        assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
+                .detail().startsWith("Failed to parse string claim 'iss'");
+    }
+
+    @Test
+    void refresh_tokenGenerationFailed() {
+        when(edrStore.resolveByTransferProcess(anyString())).thenReturn(StoreResult.success(createEdr().build()));
+        when(mockedTokenService.createToken(anyMap(), anyString())).thenReturn(Result.failure("foobar"));
+        assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
+                .detail().isEqualTo("foobar");
+    }
+
+    @NotNull
+    private Response createResponse(Object responseBodyObject, int statusCode, String message) throws JsonProcessingException {
+        var body = responseBodyObject == null ? new byte[0] : objectMapper.writeValueAsBytes(responseBodyObject);
+        return new Response.Builder()
+                .code(statusCode)
+                .protocol(Protocol.HTTP_1_1)
+                .message(message)
+                .request(new Request.Builder().url(REFRESH_ENDPOINT).build())
+                .body(ResponseBody.create(body, MediaType.parse("application/json")))
+                .build();
+    }
+
+    private DataAddress.Builder createEdr() {
+        return DataAddress.Builder.newInstance()
+                .type("HttpData")
+                .property("authorization", createJwt())
+                .property("refreshToken", "foo-refresh-token")
+                .property("refreshEndpoint", REFRESH_ENDPOINT);
+    }
+
+    private static class InvalidEdrProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of(createJwt(), "foo-refresh-token", null, "refresh endpoint is null"),
+                    Arguments.of(createJwt(), "foo-refresh-token", "", "refresh endpoint is empty"),
+                    Arguments.of(createJwt(), "foo-refresh-token", "   ", "refresh endpoint is blank"),
+                    Arguments.of(createJwt(), null, REFRESH_ENDPOINT, "refresh token is null"),
+                    Arguments.of(createJwt(), "", REFRESH_ENDPOINT, "refresh token is empty"),
+                    Arguments.of(createJwt(), "   ", REFRESH_ENDPOINT, "refresh token is blank"),
+                    Arguments.of(null, "foo-refresh-token", REFRESH_ENDPOINT, "access token is null")
+            );
+        }
+    }
+}

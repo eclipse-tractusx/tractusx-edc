@@ -26,14 +26,16 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.PrivateKeyResolver;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.system.Hostname;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.DataPlaneTokenRefreshService;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PrivateKey;
@@ -48,7 +50,11 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     public static final String NAME = "DataPlane Token Refresh Service extension";
     public static final int DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS = 5;
     @Setting(value = "Token expiry tolerance period in seconds to allow for clock skew", defaultValue = "" + DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS)
-    public static final String TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY = "edc.dataplane.api.token.expiry.tolerance";
+    public static final String TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY = "edc.dataplane.token.expiry.tolerance";
+
+    @Setting(value = "The HTTP endpoint where clients can request a renewal of their access token for the public dataplane API")
+    public static final String REFRESH_ENDPOINT_PROPERTY = "edc.dataplane.token.refresh.endpoint";
+
     @Inject
     private TokenValidationService tokenValidationService;
     @Inject
@@ -63,6 +69,8 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private Vault vault;
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private Hostname hostname;
 
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
 
@@ -83,14 +91,34 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         return getTokenRefreshService(context);
     }
 
+    private int getExpiryToleranceConfig(ServiceExtensionContext context) {
+        return context.getConfig().getInteger(TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS);
+    }
+
     @NotNull
     private DataPlaneTokenRefreshServiceImpl getTokenRefreshService(ServiceExtensionContext context) {
         if (tokenRefreshService == null) {
-            var epsilon = context.getConfig().getInteger(TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS);
-            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(), getPrivateKeySupplier(context), context.getMonitor(), null,
-                    epsilon, vault, typeManager.getMapper());
+            var monitor = context.getMonitor().withPrefix("DataPlane Token Refresh");
+            var expiryTolerance = getExpiryToleranceConfig(context);
+            var refreshEndpoint = getRefreshEndpointConfig(context, monitor);
+            monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
+            monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
+            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(),
+                    getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance,
+                    vault, typeManager.getMapper());
         }
         return tokenRefreshService;
+    }
+
+    private String getRefreshEndpointConfig(ServiceExtensionContext context, Monitor monitor) {
+        var refreshEndpoint = context.getConfig().getString(REFRESH_ENDPOINT_PROPERTY, null);
+        if (refreshEndpoint == null) {
+            var port = context.getConfig().getInteger("web.http.public.port", 8185);
+            var path = context.getConfig().getString("web.http.public.path", "/api/v2/public");
+            refreshEndpoint = "http://%s:%d%s".formatted(hostname.get(), port, path);
+            monitor.warning("Config property '%s' was not specified, the default '%s' will be used.".formatted(REFRESH_ENDPOINT_PROPERTY, refreshEndpoint));
+        }
+        return refreshEndpoint;
     }
 
     @NotNull

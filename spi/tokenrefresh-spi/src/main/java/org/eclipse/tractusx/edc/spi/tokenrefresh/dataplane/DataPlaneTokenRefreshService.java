@@ -17,10 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi;
+package org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane;
 
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.tractusx.edc.dataplane.tokenrefresh.spi.model.TokenResponse;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
 /**
  * This service receives an incoming token refresh request, validates it and generates a new token pair (access token + refresh token).
