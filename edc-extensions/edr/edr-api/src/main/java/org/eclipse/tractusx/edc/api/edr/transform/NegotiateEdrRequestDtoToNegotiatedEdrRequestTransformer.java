@@ -41,11 +41,17 @@ public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements 
 
     @Override
     public @Nullable NegotiateEdrRequest transform(@NotNull NegotiateEdrRequestDto object, @NotNull TransformerContext context) {
-        var contractOffer = ContractOffer.Builder.newInstance()
-                .id(object.getOffer().getOfferId())
-                .assetId(object.getOffer().getAssetId())
-                .policy(object.getOffer().getPolicy())
-                .build();
+        ContractOffer contractOffer = null;
+
+        if (object.getContractOffer() != null) {
+            contractOffer = object.getContractOffer();
+        } else if (object.getOffer() != null) {
+            contractOffer = ContractOffer.Builder.newInstance()
+                    .id(object.getOffer().getOfferId())
+                    .assetId(object.getOffer().getAssetId())
+                    .policy(object.getOffer().getPolicy())
+                    .build();
+        }
 
         return NegotiateEdrRequest.Builder.newInstance()
                 .connectorId(object.getCounterPartyId())
@@ -54,10 +60,6 @@ public class NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer implements 
                 .offer(contractOffer)
                 .callbackAddresses(object.getCallbackAddresses())
                 .build();
-    }
-
-    private String getId(String value, String defaultValue) {
-        return value != null ? value : defaultValue;
     }
 
 }

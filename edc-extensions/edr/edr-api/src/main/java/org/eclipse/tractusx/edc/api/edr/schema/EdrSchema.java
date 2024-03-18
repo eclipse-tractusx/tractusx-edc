@@ -43,10 +43,38 @@ public class EdrSchema {
             @Schema(deprecated = true, description = "please use providerId instead")
             String connectorId,
             String providerId,
+            @Deprecated(since = "0.6.1")
+            @Schema(deprecated = true, description = "please use policy instead")
             ContractNegotiationApi.ContractOfferDescriptionSchema offer,
+            ManagementApiSchema.PolicySchema policy,
             List<ManagementApiSchema.CallbackAddressSchema> callbackAddresses) {
 
         public static final String NEGOTIATE_EDR_REQUEST_EXAMPLE = """
+                {
+                    "@context": { "edc": "https://w3id.org/edc/v0.0.1/ns/" },
+                    "@type": "NegotiateEdrRequestDto",
+                    "counterPartyAddress": "http://provider-address",
+                    "protocol": "dataspace-protocol-http",
+                    "providerId": "provider-id",
+                    "policy": {
+                        "@context": "http://www.w3.org/ns/odrl.jsonld",
+                        "@type": "Set",
+                        "@id": "policy-id",
+                        "target": "asset-id",
+                        "permission": [{
+                            "action": "display"
+                        }]
+                    },
+                    "callbackAddresses": [{
+                        "transactional": false,
+                        "uri": "http://callback/url",
+                        "events": ["contract.negotiation", "transfer.process"]
+                    }]
+                }
+                """;
+
+        @Deprecated(since = "0.6.1")
+        public static final String NEGOTIATE_EDR_REQUEST_DEPRECATED_EXAMPLE = """
                 {
                     "@context": { "edc": "https://w3id.org/edc/v0.0.1/ns/" },
                     "@type": "NegotiateEdrRequestDto",

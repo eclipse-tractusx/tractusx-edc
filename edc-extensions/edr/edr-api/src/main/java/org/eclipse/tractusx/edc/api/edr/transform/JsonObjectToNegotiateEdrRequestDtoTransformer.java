@@ -24,6 +24,7 @@ import jakarta.json.JsonValue;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,7 @@ import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_RE
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ID;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
+import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_POLICY;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROVIDER_ID;
 import static org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE;
@@ -76,6 +78,9 @@ public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonL
             case EDR_REQUEST_DTO_OFFER:
                 transformArrayOrObject(value, ContractOfferDescription.class, builder::offer, context);
                 break;
+            case EDR_REQUEST_DTO_POLICY:
+                transformArrayOrObject(value, ContractOffer.class, builder::contractOffer, context);
+                break;
             default:
                 context.problem()
                         .unexpectedType()
@@ -88,6 +93,7 @@ public class JsonObjectToNegotiateEdrRequestDtoTransformer extends AbstractJsonL
                         .expected(EDR_REQUEST_DTO_PROVIDER_ID)
                         .expected(EDR_REQUEST_DTO_CALLBACK_ADDRESSES)
                         .expected(EDR_REQUEST_DTO_OFFER)
+                        .expected(EDR_REQUEST_DTO_POLICY)
                         .report();
                 break;
         }
