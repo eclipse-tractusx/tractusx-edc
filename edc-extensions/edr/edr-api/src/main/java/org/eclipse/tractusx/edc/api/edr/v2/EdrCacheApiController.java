@@ -65,7 +65,13 @@ public class EdrCacheApiController implements EdrCacheApi {
     private final JsonObjectValidatorRegistry validatorRegistry;
     private final TokenRefreshHandler tokenRefreshHandler;
 
-    public EdrCacheApiController(EndpointDataReferenceStore edrStore, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor, EdrService edrService, JsonObjectValidatorRegistry validatorRegistry, TokenRefreshHandler tokenRefreshHandler) {
+    public EdrCacheApiController(EndpointDataReferenceStore edrStore,
+                                 TypeTransformerRegistry transformerRegistry,
+                                 JsonObjectValidatorRegistry validator,
+                                 Monitor monitor,
+                                 EdrService edrService,
+                                 JsonObjectValidatorRegistry validatorRegistry,
+                                 TokenRefreshHandler tokenRefreshHandler) {
         this.edrStore = edrStore;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
@@ -147,7 +153,7 @@ public class EdrCacheApiController implements EdrCacheApi {
     private ServiceResult<DataAddress> refreshAndUpdateToken(DataAddress edr, String id) {
         //todo: only execute if token is expired
 
-        return tokenRefreshHandler.refreshToken(id);
+        return tokenRefreshHandler.refreshToken(id, edr);
     }
 
 }

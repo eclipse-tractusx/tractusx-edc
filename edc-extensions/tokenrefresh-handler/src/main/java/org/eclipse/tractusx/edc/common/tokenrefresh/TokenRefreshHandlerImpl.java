@@ -92,6 +92,11 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
             return ServiceResult.notFound(edrResult.getFailureDetail());
         }
         var edr = edrResult.getContent();
+        return refreshToken(tokenId, edr);
+    }
+
+    @Override
+    public ServiceResult<DataAddress> refreshToken(String tokenId, DataAddress edr) {
         var accessToken = edr.getStringProperty(PROPERTY_AUTHORIZATION);
         var refreshToken = edr.getProperties().get(PROPERTY_REFRESH_TOKEN);
         var refreshEndpoint = edr.getProperties().get(PROPERTY_REFRESH_ENDPOINT);

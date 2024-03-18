@@ -178,7 +178,7 @@ public class EdrCacheApiEndToEndTest {
         }
     }
 
-    private Object storeEdr(String transferProcessId) {
+    private void storeEdr(String transferProcessId) {
         var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
         var store = SOKRATES_RUNTIME.getService(EndpointDataReferenceStore.class);
         var edr = DataAddress.Builder.newInstance()
@@ -197,7 +197,6 @@ public class EdrCacheApiEndToEndTest {
                 .contractNegotiationId("test-negotiation")
                 .build();
         store.save(entry, edr).orElseThrow(f -> new AssertionError(f.getFailureDetail()));
-        return edr;
     }
 
 

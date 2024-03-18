@@ -25,7 +25,6 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 /**
  * Handles token refreshing against an OAuth2-compliant token refresh endpoint.
  */
-@FunctionalInterface
 public interface TokenRefreshHandler {
     /**
      * Refreshes a token identified by the token ID and returns the updated token. If tokens are kept in persistent storage or
@@ -35,4 +34,14 @@ public interface TokenRefreshHandler {
      * @return An updated access+refresh token pair.
      */
     ServiceResult<DataAddress> refreshToken(String tokenId);
+
+    /**
+     * Refreshes a token identified by the token ID and returns the updated token. If tokens are kept in persistent storage or
+     * a HSM, implementors must update that entry.
+     *
+     * @param tokenId The ID of the token, e.g. a {@code jti} claim in JWT tokens.
+     * @param edr     The {@link DataAddress} containing the EDR
+     * @return An updated access+refresh token pair.
+     */
+    ServiceResult<DataAddress> refreshToken(String tokenId, DataAddress edr);
 }
