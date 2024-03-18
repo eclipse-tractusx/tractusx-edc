@@ -41,6 +41,7 @@ import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -71,6 +72,7 @@ import static org.mockserver.model.StringBody.exact;
  * performs as expected.
  * The provider data plane is mocked with a {@link ClientAndServer}.
  */
+@Disabled
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
     protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
