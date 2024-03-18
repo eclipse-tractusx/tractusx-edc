@@ -32,7 +32,6 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.aws.s3)
     testImplementation(libs.edc.spi.core)
-    testImplementation(libs.edc.spi.edrstore)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.spi.policy)
     testImplementation(libs.edc.spi.contract)
@@ -59,13 +58,9 @@ dependencies {
     testImplementation(libs.testcontainers.vault)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
     testImplementation(project(":spi:core-spi"))
-    testImplementation(project(":spi:tokenrefresh-spi"))
-
-    testImplementation(libs.netty.mockserver)
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory-signaling"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-sts"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-ih"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih"))

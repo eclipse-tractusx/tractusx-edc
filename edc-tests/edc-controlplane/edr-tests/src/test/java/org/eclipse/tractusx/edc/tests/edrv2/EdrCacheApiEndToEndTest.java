@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.edrv2;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
@@ -35,13 +36,11 @@ import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
-import org.eclipse.tractusx.edc.lifecycle.SignalingParticipantRuntime;
-import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
+import org.eclipse.tractusx.edc.tests.ParticipantRuntime;
+import org.eclipse.tractusx.edc.tests.TxParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -59,8 +58,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.matchers.Times.exactly;
 import static org.mockserver.model.HttpRequest.request;
@@ -72,18 +69,17 @@ import static org.mockserver.model.StringBody.exact;
  * performs as expected.
  * The provider data plane is mocked with a {@link ClientAndServer}.
  */
-@Disabled
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
     protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
-            .name(SOKRATES_NAME)
-            .id(SOKRATES_BPN)
+            .name("sokrates")
+            .id("BPN00001")
             .build();
     @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = new SignalingParticipantRuntime(
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-signaling",
             SOKRATES.getName(),
-            SOKRATES.getBpn(),
+            SOKRATES.getId(),
             with(SOKRATES.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:sokrates")));
     private final ObjectMapper mapper = new ObjectMapper();
     private String refreshEndpoint;

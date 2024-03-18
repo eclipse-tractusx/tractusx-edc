@@ -69,6 +69,7 @@ include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 
 // test modules
 include(":edc-tests:e2e-tests")
+include(":edc-tests:edc-controlplane:edr-tests")
 include(":edc-tests:miw-tests")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
