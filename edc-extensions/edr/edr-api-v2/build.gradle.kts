@@ -17,19 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.edr.spi;
+plugins {
+    `java-library`
+    `maven-publish`
+    id("io.swagger.core.v3.swagger-gradle-plugin")
+}
 
-public final class CoreConstants {
+dependencies {
+    implementation(project(":spi:callback-spi"))
+    implementation(project(":spi:edr-spi"))
+    implementation(project(":spi:core-spi"))
+    implementation(project(":spi:tokenrefresh-spi"))
 
-    public static final String TX_PREFIX = "tx";
-    public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
-    public static final String TX_CONTEXT = "https://w3id.org/tractusx/edc/v0.0.1";
-    public static final String TX_AUTH_NS = "https://w3id.org/tractusx/auth/";
-    public static final String EDC_CONTEXT = "https://w3id.org/edc/v0.0.1";
-    public static final String CX_CREDENTIAL_NS = "https://w3id.org/catenax/credentials/";
-    public static final String CX_POLICY_NS = "https://w3id.org/catenax/policy/";
-    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
+    implementation(libs.edc.api.management)
+    implementation(libs.edc.core.validator)
+    implementation(libs.edc.spi.edrstore)
+    implementation(libs.jakarta.rsApi)
 
-    private CoreConstants() {
-    }
+    testImplementation(testFixtures(libs.edc.core.jersey))
+    testImplementation(libs.restAssured)
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.ext.jersey.providers)
+    testImplementation(libs.edc.core.transform)
 }

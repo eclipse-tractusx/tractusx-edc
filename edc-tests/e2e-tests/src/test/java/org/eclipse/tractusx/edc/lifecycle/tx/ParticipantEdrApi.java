@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.lifecycle.tx;
 
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
@@ -33,9 +34,13 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetContractId;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
@@ -100,6 +105,32 @@ public class ParticipantEdrApi {
                 .when()
                 .get("/edrs/{id}", transferProcessId)
                 .then();
+    }
+
+    /**
+     * Get the cached EDR for a transfer process as {@link ValidatableResponse}
+     *
+     * @param transferProcessId The transfer process id
+     * @return The {@link ValidatableResponse}
+     */
+    public ValidatableResponse getEdrRequestV2(String transferProcessId, boolean autoRefresh) {
+        return baseEdrRequest()
+                .when()
+                .get("/v2/edrs/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)
+                .then()
+                .log().ifError();
+
+    }
+
+    /**
+     * Triggers the explicit renewal of an EDR identified by {@code transferProcessId}
+     */
+    public ValidatableResponse refreshEdr(String transferProcessId) {
+        return baseEdrRequest()
+                .when()
+                .post("/v2/edrs/{id}/refresh", transferProcessId)
+                .then()
+                .log().ifError();
     }
 
     /**
@@ -184,6 +215,22 @@ public class ParticipantEdrApi {
                 .extract()
                 .body()
                 .as(JsonArray.class);
+    }
+
+    /**
+     * Creates a query spec as JSON object that can be passed into the new EDR-V2 API (/request). Not yet used
+     */
+    private String createQuery(String leftOp, String op, String rightOp) {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, Json.createObjectBuilder().add(VOCAB, EDC_NAMESPACE).build())
+                .add(TYPE, "QuerySpec")
+                .add("filterExpression", Json.createObjectBuilder()
+                        .add("operandLeft", leftOp)
+                        .add("operator", op)
+                        .add("operandRight", rightOp)
+                        .build())
+                .build()
+                .toString();
     }
 
     private RequestSpecification baseEdrRequest() {
