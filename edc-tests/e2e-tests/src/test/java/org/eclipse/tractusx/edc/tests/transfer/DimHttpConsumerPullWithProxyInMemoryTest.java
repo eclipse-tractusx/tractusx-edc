@@ -63,8 +63,8 @@ public class DimHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
             ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
             PLATO.getName(),
             PLATO.getBpn(),
-            PLATO_IATP.iatpConfiguration(SOKRATES)
-    );
+            PLATO_IATP.iatpConfiguration(SOKRATES),
+            true);
     protected static final IatpDimParticipant SOKRATES_IATP = new IatpDimParticipant(SOKRATES, STS_PARTICIPANT.stsUri(), DIM_URI);
 
     @RegisterExtension
@@ -72,8 +72,8 @@ public class DimHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
             ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
-            SOKRATES_IATP.iatpConfiguration(PLATO)
-    );
+            SOKRATES_IATP.iatpConfiguration(PLATO),
+            true);
     private static MockWebServer oauthServer;
     private static MockWebServer dimDispatcher;
 

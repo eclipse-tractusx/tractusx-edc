@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.lifecycle.tx;
 
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
@@ -33,9 +34,13 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetContractId;
 import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
 import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
@@ -45,6 +50,7 @@ import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.cre
  */
 public class ParticipantEdrApi {
 
+    public static final String EDR_API_BASEPATH = "/v2/edrs";
     private final TxParticipant participant;
     private final URI edrBackend;
 
@@ -96,10 +102,7 @@ public class ParticipantEdrApi {
      * @return The {@link ValidatableResponse}
      */
     public ValidatableResponse getEdrRequest(String transferProcessId) {
-        return baseEdrRequest()
-                .when()
-                .get("/edrs/{id}", transferProcessId)
-                .then();
+        return getEdrRequest(transferProcessId, false);
     }
 
     /**
@@ -108,10 +111,10 @@ public class ParticipantEdrApi {
      * @param transferProcessId The transfer process id
      * @return The {@link ValidatableResponse}
      */
-    public ValidatableResponse getEdrRequestV1(String transferProcessId, boolean autoRefresh) {
+    public ValidatableResponse getEdrRequest(String transferProcessId, boolean autoRefresh) {
         return baseEdrRequest()
                 .when()
-                .get("/v2/edrs/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)
+                .get(EDR_API_BASEPATH + "/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)
                 .then()
                 .log().ifError();
 
@@ -141,7 +144,7 @@ public class ParticipantEdrApi {
         var response = baseEdrRequest()
                 .when()
                 .body(requestBody)
-                .post("/edrs")
+                .post(EDR_API_BASEPATH)
                 .then();
 
         var body = response.extract().body().asString();
@@ -159,7 +162,8 @@ public class ParticipantEdrApi {
     public JsonArray getEdrEntriesByContractNegotiationId(String contractNegotiationId) {
         return baseEdrRequest()
                 .when()
-                .get("/edrs?contractNegotiationId={contractNegotiationId}", contractNegotiationId)
+                .body(createQuery("contractNegotiationId", "=", contractNegotiationId))
+                .post(EDR_API_BASEPATH + "/request")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -176,7 +180,8 @@ public class ParticipantEdrApi {
     public JsonArray getEdrEntriesByAgreementId(String agreementId) {
         return baseEdrRequest()
                 .when()
-                .get("/edrs?agreementId={agreementId}", agreementId)
+                .body(createQuery("agreementId", "=", agreementId))
+                .post(EDR_API_BASEPATH + "/request")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -191,14 +196,29 @@ public class ParticipantEdrApi {
      * @return The EDRs
      */
     public JsonArray getEdrEntriesByAssetId(String assetId) {
+        var query = createQuery("assetId", "=", assetId);
         return baseEdrRequest()
                 .when()
-                .get("/edrs?assetId={assetId}", assetId)
+                .body(query)
+                .post(EDR_API_BASEPATH + "/request")
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(JsonArray.class);
+    }
+
+    private String createQuery(String leftOp, String op, String rightOp) {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, Json.createObjectBuilder().add(VOCAB, EDC_NAMESPACE).build())
+                .add(TYPE, "QuerySpec")
+                .add("filterExpression", Json.createObjectBuilder()
+                        .add("operandLeft", leftOp)
+                        .add("operator", op)
+                        .add("operandRight", rightOp)
+                        .build())
+                .build()
+                .toString();
     }
 
     private RequestSpecification baseEdrRequest() {

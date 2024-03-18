@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.legacy.validation;
+package org.eclipse.tractusx.edc.api.edr.v2.validation;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -36,10 +36,10 @@ import static org.eclipse.edc.connector.api.management.contractnegotiation.model
 import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
-import static org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
-import static org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
-import static org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROVIDER_ID;
+import static org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
+import static org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_OFFER;
+import static org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROTOCOL;
+import static org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_PROVIDER_ID;
 
 public class NegotiateEdrRequestDtoValidatorTest {
 

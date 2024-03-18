@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.lifecycle;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.Curve;
-import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.identitytrust.SecureTokenService;
@@ -54,22 +53,25 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     private DataWiper wiper;
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
+        this(moduleName, runtimeName, bpn, properties, false);
+    }
+
+    public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties, boolean isIatpRuntime) {
         super(moduleName, runtimeName, properties);
         this.properties = properties;
-        if (!properties.containsKey("tx.ssi.miw.url") /*&& !properties.containsKey("edc.iam.issuer.id")*/) {
+        if (!isIatpRuntime) {
             this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
             this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
-        }
 
-        var kid = "did:web:" + runtimeName.toLowerCase() + "#key-1";
-        try {
-            ECKey runtimeKeyPair = null;
-            runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
-            var privateKey = runtimeKeyPair.toPrivateKey();
+            var kid = properties.get("edc.iam.issuer.id") + "#key-1";
+            try {
+                var runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
+                var privateKey = runtimeKeyPair.toPrivateKey();
 
-            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(), () -> privateKey, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
-        } catch (JOSEException e) {
-            throw new RuntimeException(e);
+                registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(), () -> privateKey, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
+            } catch (JOSEException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

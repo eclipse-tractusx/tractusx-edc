@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.legacy.transform;
+package org.eclipse.tractusx.edc.api.edr.v2.transform;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -53,8 +53,8 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.callback.CallbackAddress.EVENTS;
 import static org.eclipse.edc.spi.types.domain.callback.CallbackAddress.IS_TRANSACTIONAL;
 import static org.eclipse.edc.spi.types.domain.callback.CallbackAddress.URI;
-import static org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
-import static org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ID;
+import static org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ADDRESS;
+import static org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto.EDR_REQUEST_DTO_COUNTERPARTY_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;

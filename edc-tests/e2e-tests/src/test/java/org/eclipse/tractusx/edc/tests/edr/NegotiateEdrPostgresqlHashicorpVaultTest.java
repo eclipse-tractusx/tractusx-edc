@@ -22,8 +22,10 @@ package org.eclipse.tractusx.edc.tests.edr;
 import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
 import org.eclipse.tractusx.edc.lifecycle.PgHashicorpParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+@Disabled("We don't yet have an SQL implementation for EDR store/cache.")
 @PostgresqlDbIntegrationTest
 public class NegotiateEdrPostgresqlHashicorpVaultTest extends AbstractNegotiateEdrTest {
 

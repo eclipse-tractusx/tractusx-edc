@@ -31,6 +31,8 @@ dependencies {
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "cx-policy-legacy")
+        exclude(module = "tokenrefresh-handler")
+        exclude(module = "edr-api")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-tests:runtime:extensions"))

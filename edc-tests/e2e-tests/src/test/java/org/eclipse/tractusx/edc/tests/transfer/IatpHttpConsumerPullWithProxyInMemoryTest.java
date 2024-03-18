@@ -71,8 +71,8 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
             ":edc-tests:runtime:iatp:runtime-memory-iatp-ih",
             PLATO.getName(),
             PLATO.getBpn(),
-            PLATO_IATP.iatpConfiguration(SOKRATES)
-    );
+            PLATO_IATP.iatpConfiguration(SOKRATES),
+            true);
 
     protected static final IatpParticipant SOKRATES_IATP = new IatpParticipant(SOKRATES, STS_PARTICIPANT.stsUri());
 
@@ -81,16 +81,16 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
             ":edc-tests:runtime:iatp:runtime-memory-iatp-ih",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
-            SOKRATES_IATP.iatpConfiguration(PLATO)
-    );
+            SOKRATES_IATP.iatpConfiguration(PLATO),
+            true);
 
     @RegisterExtension
     protected static final ParticipantRuntime STS_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:iatp:runtime-memory-sts",
             STS_PARTICIPANT.getName(),
             STS_PARTICIPANT.getBpn(),
-            STS_PARTICIPANT.stsConfiguration(SOKRATES_IATP, PLATO_IATP)
-    );
+            STS_PARTICIPANT.stsConfiguration(SOKRATES_IATP, PLATO_IATP),
+            true);
 
     @BeforeAll
     static void prepare() {

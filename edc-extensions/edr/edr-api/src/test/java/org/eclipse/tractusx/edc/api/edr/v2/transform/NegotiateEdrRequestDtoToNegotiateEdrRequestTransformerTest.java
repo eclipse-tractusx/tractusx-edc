@@ -17,17 +17,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.legacy.transform;
+package org.eclipse.tractusx.edc.api.edr.v2.transform;
 
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TransformerContext;
-import org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.api.edr.legacy.TestFunctions.createOffer;
+import static org.eclipse.tractusx.edc.api.edr.v2.TestFunctions.createOffer;
 import static org.mockito.Mockito.mock;
 
 public class NegotiateEdrRequestDtoToNegotiateEdrRequestTransformerTest {

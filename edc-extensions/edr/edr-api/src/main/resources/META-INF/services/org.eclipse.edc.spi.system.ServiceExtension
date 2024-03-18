@@ -17,5 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.api.edr.legacy.EdrApiExtension
 org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiExtension

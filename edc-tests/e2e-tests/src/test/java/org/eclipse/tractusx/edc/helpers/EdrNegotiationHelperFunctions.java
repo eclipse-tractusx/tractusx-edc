@@ -27,13 +27,13 @@ import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto;
 
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.protocol.dsp.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.mockito.Mockito.mock;
 
 public class EdrNegotiationHelperFunctions {
@@ -42,7 +42,7 @@ public class EdrNegotiationHelperFunctions {
 
     public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
-                .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
+                .add(TYPE, TX_NAMESPACE + "NegotiateEdrRequestDto")
                 .add(EDC_NAMESPACE + "counterPartyId", providerId)
                 .add(EDC_NAMESPACE + "providerId", providerId)
                 .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)

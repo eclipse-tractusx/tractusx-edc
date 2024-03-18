@@ -17,14 +17,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.legacy;
+package org.eclipse.tractusx.edc.api.edr.v2;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
-import org.eclipse.tractusx.edc.api.edr.legacy.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 
 import java.util.UUID;

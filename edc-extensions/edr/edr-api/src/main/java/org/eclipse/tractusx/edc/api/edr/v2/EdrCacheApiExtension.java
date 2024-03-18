@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.api.edr.v2;
 
+import jakarta.json.Json;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -37,6 +38,8 @@ import org.eclipse.tractusx.edc.api.edr.v2.transform.NegotiateEdrRequestDtoToNeg
 import org.eclipse.tractusx.edc.api.edr.v2.validation.NegotiateEdrRequestDtoValidator;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
+
+import java.util.Map;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
@@ -73,9 +76,9 @@ public class EdrCacheApiExtension implements ServiceExtension {
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
         mgmtApiTransformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
-        mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer());
+        mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
         mgmtApiTransformerRegistry.register(new EndpointDataReferenceToDataAddressTransformer());
         validatorRegistry.register(NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE, NegotiateEdrRequestDtoValidator.instance());
-        webService.registerResource(apiConfig.getContextAlias(), new EdrCacheApiController(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, validatorRegistry, tokenRefreshHandler));
+        webService.registerResource(apiConfig.getContextAlias(), new EdrCacheApiController(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, tokenRefreshHandler));
     }
 }

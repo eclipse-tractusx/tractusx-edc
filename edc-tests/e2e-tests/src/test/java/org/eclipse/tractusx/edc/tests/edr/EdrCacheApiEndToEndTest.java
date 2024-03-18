@@ -35,7 +35,6 @@ import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiController;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
@@ -67,7 +66,7 @@ import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.model.StringBody.exact;
 
 /**
- * This End-To-End test spins up a consumer control plane and verifies that the EDR Cache API ({@link EdrCacheApiController})
+ * This End-To-End test spins up a consumer control plane and verifies that the EDR Cache API
  * performs as expected.
  * The provider data plane is mocked with a {@link ClientAndServer}.
  */
@@ -125,7 +124,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            var edr = SOKRATES.edrs().getEdrRequestV1("test-id", true)
+            var edr = SOKRATES.edrs().getEdrRequest("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -149,7 +148,7 @@ public class EdrCacheApiEndToEndTest {
             // mock the provider dataplane's refresh endpoint
 
             storeEdr("test-id", false);
-            var edr = SOKRATES.edrs().getEdrRequestV1("test-id", true)
+            var edr = SOKRATES.edrs().getEdrRequest("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -173,7 +172,7 @@ public class EdrCacheApiEndToEndTest {
 
             storeEdr("test-id", true);
             var edr = SOKRATES.edrs()
-                    .getEdrRequestV1("test-id", false)
+                    .getEdrRequest("test-id", false)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -204,7 +203,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            SOKRATES.edrs().getEdrRequestV1("test-id", true)
+            SOKRATES.edrs().getEdrRequest("test-id", true)
                     .statusCode(403);
 
             // assert the correct endpoint was called

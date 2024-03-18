@@ -65,7 +65,6 @@ public class EdrCacheApiController implements EdrCacheApi {
     private final JsonObjectValidatorRegistry validator;
     private final Monitor monitor;
     private final EdrService edrService;
-    private final JsonObjectValidatorRegistry validatorRegistry;
     private final TokenRefreshHandler tokenRefreshHandler;
 
     public EdrCacheApiController(EndpointDataReferenceStore edrStore,
@@ -73,21 +72,19 @@ public class EdrCacheApiController implements EdrCacheApi {
                                  JsonObjectValidatorRegistry validator,
                                  Monitor monitor,
                                  EdrService edrService,
-                                 JsonObjectValidatorRegistry validatorRegistry,
                                  TokenRefreshHandler tokenRefreshHandler) {
         this.edrStore = edrStore;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
         this.monitor = monitor;
         this.edrService = edrService;
-        this.validatorRegistry = validatorRegistry;
         this.tokenRefreshHandler = tokenRefreshHandler;
     }
 
     @POST
     @Override
     public JsonObject initiateEdrNegotiation(JsonObject requestObject) {
-        validatorRegistry.validate(NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE, requestObject).orElseThrow(ValidationFailureException::new);
+        validator.validate(NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE, requestObject).orElseThrow(ValidationFailureException::new);
 
         var edrNegotiationRequest = transformerRegistry.transform(requestObject, NegotiateEdrRequestDto.class)
                 .compose(dto -> transformerRegistry.transform(dto, NegotiateEdrRequest.class))
@@ -162,7 +159,7 @@ public class EdrCacheApiController implements EdrCacheApi {
         }
 
         if (isExpired(edr, edrEntry)) {
-            monitor.info("Token expired, need to refresh.");
+            monitor.debug("Token expired, need to refresh.");
             return tokenRefreshHandler.refreshToken(id, edr);
         }
         return ServiceResult.success(edr);
