@@ -26,15 +26,7 @@ plugins {
 dependencies {
 
     // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "json-ld-core")
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy-legacy")
-    }
-
-    implementation(project(":edc-tests:runtime:extensions"))
+    implementation(project(":edc-tests:runtime:runtime-memory"))
 
     // these extensions are used for DataPlane Signaling + Token Refresh
     runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
@@ -42,14 +34,6 @@ dependencies {
     runtimeOnly(libs.edc.edr.store.receiver)
     runtimeOnly(libs.edc.core.edrstore)
 
-    // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "api-observability")
-    }
-
-    implementation(libs.edc.core.controlplane)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
 }
 
 application {

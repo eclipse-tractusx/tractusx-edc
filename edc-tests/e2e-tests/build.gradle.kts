@@ -65,6 +65,7 @@ dependencies {
 
     testCompileOnly(project(":edc-tests:runtime:extensions"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory-signaling"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-sts"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-ih"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih"))

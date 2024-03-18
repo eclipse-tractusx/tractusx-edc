@@ -83,8 +83,8 @@ public class EdrCacheApiEndToEndTest {
             SOKRATES.getName(),
             SOKRATES.getBpn(),
             with(SOKRATES.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:sokrates")));
-    public static String refreshEndpoint = "http://fizz.buzz.com";
     private final ObjectMapper mapper = new ObjectMapper();
+    private String refreshEndpoint;
     private ClientAndServer mockedRefreshApi;
     private ECKey providerSigningKey;
 

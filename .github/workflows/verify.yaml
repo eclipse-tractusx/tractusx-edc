@@ -119,7 +119,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests
-        run: ./gradlew test -DincludeTags="EndToEndTest"
+        run: ./gradlew test -DincludeTags="EndToEndTest" --refresh-dependencies
 
   postgres-tests:
     runs-on: ubuntu-latest
