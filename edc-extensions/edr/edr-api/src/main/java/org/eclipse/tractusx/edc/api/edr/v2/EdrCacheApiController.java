@@ -48,10 +48,13 @@ import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
+import java.time.Instant;
+
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
 import static org.eclipse.edc.spi.result.ServiceResult.success;
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
@@ -132,7 +135,7 @@ public class EdrCacheApiController implements EdrCacheApi {
 
         var dataAddress = edrStore.resolveByTransferProcess(transferProcessId)
                 .flatMap(ServiceResult::from)
-                .compose(edr -> autoRefresh ? refreshAndUpdateToken(edr, transferProcessId) : success())
+                .compose(edr -> autoRefresh ? refreshAndUpdateToken(edr, transferProcessId) : success(edr))
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
 
         return transformerRegistry.transform(dataAddress, JsonObject.class)
@@ -150,10 +153,34 @@ public class EdrCacheApiController implements EdrCacheApi {
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
     }
 
+    // todo: move this method into a service once the "old" EDR api,service,etc. is removed
     private ServiceResult<DataAddress> refreshAndUpdateToken(DataAddress edr, String id) {
-        //todo: only execute if token is expired
 
-        return tokenRefreshHandler.refreshToken(id, edr);
+        var edrEntry = edrStore.findById(id);
+        if (edrEntry == null) {
+            return ServiceResult.notFound("An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id));
+        }
+
+        if (isExpired(edr, edrEntry)) {
+            monitor.info("Token expired, need to refresh.");
+            return tokenRefreshHandler.refreshToken(id, edr);
+        }
+        return ServiceResult.success(edr);
+    }
+
+    // todo: move this method into a service once the "old" EDR api,service,etc. is removed
+    private boolean isExpired(DataAddress edr, org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry metadata) {
+        var expiresInString = edr.getStringProperty(TX_AUTH_NS + "expiresIn");
+        if (expiresInString == null) {
+            return true;
+        }
+
+        var expiresIn = Long.parseLong(expiresInString);
+        // createdAt is in millis, expires-in is in seconds
+        var expiresAt = metadata.getCreatedAt() / 1000L + expiresIn;
+        var expiresAtInstant = Instant.ofEpochSecond(expiresAt);
+
+        return expiresAtInstant.isBefore(Instant.now());
     }
 
 }

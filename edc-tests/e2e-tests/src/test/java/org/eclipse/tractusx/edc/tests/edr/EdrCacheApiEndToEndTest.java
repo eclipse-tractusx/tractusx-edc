@@ -41,12 +41,16 @@ import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,6 +108,7 @@ public class EdrCacheApiEndToEndTest {
         mockedRefreshApi.stop();
     }
 
+    @DisplayName("Verify HTTP 200 response and body when refreshing succeeds")
     @Test
     void refreshEdr_success() {
 
@@ -119,7 +124,7 @@ public class EdrCacheApiEndToEndTest {
                             .withBody(tokenResponseBody())
                     );
 
-            storeEdr("test-id");
+            storeEdr("test-id", true);
             var edr = SOKRATES.edrs().getEdrRequestV1("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
@@ -136,6 +141,54 @@ public class EdrCacheApiEndToEndTest {
         }
     }
 
+    @DisplayName("Verify the refresh endpoint is not called when token not yet expired")
+    @Test
+    void refreshEdr_notExpired_shouldNotCallEndpoint() {
+
+        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+            // mock the provider dataplane's refresh endpoint
+
+            storeEdr("test-id", false);
+            var edr = SOKRATES.edrs().getEdrRequestV1("test-id", true)
+                    .statusCode(200)
+                    .extract().body().as(JsonObject.class);
+            assertThat(edr).isNotNull();
+
+            // assert the correct endpoint was called
+            client.verify(
+                    request()
+                            .withQueryStringParameter("grant_type", "refresh_token")
+                            .withMethod("POST")
+                            .withPath("/refresh/token"),
+                    VerificationTimes.never());
+        }
+    }
+
+    @DisplayName("Verify the refresh endpoint is not called when auto_refresh=false")
+    @Test
+    void refreshEdr_whenNotAutorefresh_shouldNotCallEndpoint() {
+
+        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+            // mock the provider dataplane's refresh endpoint
+
+            storeEdr("test-id", true);
+            var edr = SOKRATES.edrs()
+                    .getEdrRequestV1("test-id", false)
+                    .statusCode(200)
+                    .extract().body().as(JsonObject.class);
+            assertThat(edr).isNotNull();
+
+            // assert the correct endpoint was called
+            client.verify(
+                    request()
+                            .withQueryStringParameter("grant_type", "refresh_token")
+                            .withMethod("POST")
+                            .withPath("/refresh/token"),
+                    VerificationTimes.never());
+        }
+    }
+
+    @DisplayName("Verify HTTP 403 response when refreshing the token is not allowed")
     @Test
     void refreshEdr_unauthorized() {
         try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
@@ -150,7 +203,7 @@ public class EdrCacheApiEndToEndTest {
                             .withBody("unauthorized")
                     );
 
-            storeEdr("test-id");
+            storeEdr("test-id", true);
             SOKRATES.edrs().getEdrRequestV1("test-id", true)
                     .statusCode(403);
 
@@ -178,7 +231,7 @@ public class EdrCacheApiEndToEndTest {
         }
     }
 
-    private void storeEdr(String transferProcessId) {
+    private void storeEdr(String transferProcessId, boolean isExpired) {
         var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
         var store = SOKRATES_RUNTIME.getService(EndpointDataReferenceStore.class);
         var edr = DataAddress.Builder.newInstance()
@@ -190,6 +243,9 @@ public class EdrCacheApiEndToEndTest {
                 .property(TX_AUTH_NS + "refreshEndpoint", refreshEndpoint)
                 .build();
         var entry = EndpointDataReferenceEntry.Builder.newInstance()
+                .clock(isExpired ? // defaults to an expired token
+                        Clock.fixed(Instant.now().minusSeconds(3600), ZoneId.systemDefault()) :
+                        Clock.systemUTC())
                 .agreementId("test-agreement")
                 .assetId("test-asset")
                 .transferProcessId(transferProcessId)
