@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,19 +17,29 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.edr.spi;
+plugins {
+    `java-library`
+    id("application")
+}
 
-public final class CoreConstants {
 
-    public static final String TX_PREFIX = "tx";
-    public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
-    public static final String TX_CONTEXT = "https://w3id.org/tractusx/edc/v0.0.1";
-    public static final String TX_AUTH_NS = "https://w3id.org/tractusx/auth/";
-    public static final String EDC_CONTEXT = "https://w3id.org/edc/v0.0.1";
-    public static final String CX_CREDENTIAL_NS = "https://w3id.org/catenax/credentials/";
-    public static final String CX_POLICY_NS = "https://w3id.org/catenax/policy/";
-    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
+dependencies {
 
-    private CoreConstants() {
-    }
+    // use basic (all in-mem) control plane
+    implementation(project(":edc-tests:runtime:runtime-memory"))
+
+    // these extensions are used for DataPlane Signaling + Token Refresh
+    runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
+    runtimeOnly(project((":edc-extensions:tokenrefresh-handler")))
+    runtimeOnly(libs.edc.edr.store.receiver)
+    runtimeOnly(libs.edc.core.edrstore)
+
+}
+
+application {
+    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
+}
+
+edcBuild {
+    publish.set(false)
 }

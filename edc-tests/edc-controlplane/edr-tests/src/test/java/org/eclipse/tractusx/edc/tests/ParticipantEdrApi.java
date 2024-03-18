@@ -17,20 +17,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.lifecycle.tx;
+package org.eclipse.tractusx.edc.tests;
 
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.edc.test.system.utils.Participant;
 
-import java.net.URI;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,9 +35,9 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetContractId;
-import static org.eclipse.tractusx.edc.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
-import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
+import static org.eclipse.tractusx.edc.tests.CatalogHelperFunctions.getDatasetContractId;
+import static org.eclipse.tractusx.edc.tests.CatalogHelperFunctions.getDatasetFirstPolicy;
+import static org.eclipse.tractusx.edc.tests.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
 
 /**
  * E2E test helper for the EDR APIs
@@ -51,11 +45,9 @@ import static org.eclipse.tractusx.edc.helpers.EdrNegotiationHelperFunctions.cre
 public class ParticipantEdrApi {
 
     private final TxParticipant participant;
-    private final URI edrBackend;
 
-    public ParticipantEdrApi(TxParticipant participant, Participant.Endpoint managementEndpoint, URI edrBackend) {
+    public ParticipantEdrApi(TxParticipant participant) {
         this.participant = participant;
-        this.edrBackend = edrBackend;
     }
 
     /**
@@ -73,38 +65,13 @@ public class ParticipantEdrApi {
     }
 
     /**
-     * Get the cached EDR for a transfer process cached in a backend
-     *
-     * @param transferProcessId The transfer process id
-     * @return The EDR
-     */
-    public EndpointDataReference getDataReferenceFromBackend(String transferProcessId) {
-        var dataReference = new AtomicReference<EndpointDataReference>();
-
-        var result = given()
-                .when()
-                .get(edrBackend + "/{id}", transferProcessId)
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(EndpointDataReference.class);
-        dataReference.set(result);
-
-        return dataReference.get();
-    }
-
-    /**
      * Get the cached EDR for a transfer process as {@link ValidatableResponse}
      *
      * @param transferProcessId The transfer process id
      * @return The {@link ValidatableResponse}
      */
     public ValidatableResponse getEdrRequest(String transferProcessId) {
-        return baseEdrRequest()
-                .when()
-                .get("/edrs/{id}", transferProcessId)
-                .then();
+        return getEdrRequestV2(transferProcessId, false);
     }
 
     /**

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,23 +18,34 @@
  ********************************************************************************/
 
 plugins {
-    `maven-publish`
     `java-library`
+    `java-test-fixtures`
 }
 
 dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(project(":spi:tokenrefresh-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.edrstore)
-    implementation(libs.edc.spi.http)
-    implementation(libs.edc.spi.token)
-    implementation(libs.edc.spi.jwt)
-    implementation(libs.edc.spi.identitytrust)
-    implementation(libs.edc.util)
-    implementation(libs.nimbus.jwt)
+    testImplementation(project(":spi:edr-spi"))
+    testImplementation(project(":edc-extensions:edr:edr-api"))
+    testImplementation(project(":spi:core-spi"))
+    testImplementation(project(":spi:tokenrefresh-spi"))
 
-
+    testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
+    testImplementation(libs.edc.spi.edrstore)
+    testImplementation(libs.edc.identity.trust.sts.embedded)
+    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
+
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+
+    testFixturesImplementation(libs.junit.jupiter.api)
+    testFixturesImplementation(libs.edc.spi.core)
+    testFixturesImplementation(libs.edc.junit)
+    testFixturesImplementation(libs.edc.spi.policy)
+    testFixturesImplementation(libs.edc.spi.contract)
+}
+
+// do not publish
+edcBuild {
+    publish.set(false)
 }
