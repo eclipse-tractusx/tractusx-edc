@@ -113,13 +113,20 @@ jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
     needs: [ verify-formatting, verify-license-headers ]
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [ { dir: edc-tests/edc-controlplane},
+                   { dir: edc-tests/e2e-tests}
+        ]
     steps:
       - uses: actions/checkout@v4
-
       - uses: ./.github/actions/setup-java
 
-      - name: Run E2E tests
-        run: ./gradlew test -DincludeTags="EndToEndTest"
+      - name: Run E2E tests (${{ matrix.variant.dir }})
+        run: |
+          ./gradlew compileJava compileTestJava
+          ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest"
 
   postgres-tests:
     runs-on: ubuntu-latest
