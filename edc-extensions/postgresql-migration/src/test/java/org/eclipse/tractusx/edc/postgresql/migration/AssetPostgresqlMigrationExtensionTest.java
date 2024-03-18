@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.postgresql.migration;
 
 import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@PostgresqlDbIntegrationTest
+@PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 class AssetPostgresqlMigrationExtensionTest {
 
@@ -48,7 +48,8 @@ class AssetPostgresqlMigrationExtensionTest {
                 queryExecutor);
     }
 
-    @Test // bugfix https://github.com/eclipse-tractusx/tractusx-edc/issues/1003
+    // bugfix https://github.com/eclipse-tractusx/tractusx-edc/issues/1003
+    @Test
     void version006shouldTransformPropertiesListToMap(PostgresqlStoreSetupExtension extension) {
         var dataSource = extension.getDataSourceRegistry().resolve(extension.getDatasourceName());
         FlywayManager.migrate(dataSource, "asset", "public", MigrationVersion.fromVersion("0.0.5"));

@@ -19,11 +19,11 @@
 
 package org.eclipse.tractusx.edc.tests.policy;
 
-import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@PostgresqlDbIntegrationTest
+@PostgresqlIntegrationTest
 public class PolicyMonitorPostgresqlTest extends AbstractPolicyMonitorTest {
 
     @RegisterExtension
