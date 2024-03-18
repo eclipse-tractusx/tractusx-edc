@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.eclipse.edc.identitytrust.SelfIssuedTokenConstants.PRESENTATION_ACCESS_TOKEN_CLAIM;
+import static org.eclipse.edc.identitytrust.SelfIssuedTokenConstants.PRESENTATION_TOKEN_CLAIM;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
@@ -100,7 +100,7 @@ public class DimDispatcher extends Dispatcher {
                 ISSUER, issuer,
                 SUBJECT, subject,
                 AUDIENCE, audience,
-                PRESENTATION_ACCESS_TOKEN_CLAIM, accessToken);
+                PRESENTATION_TOKEN_CLAIM, accessToken);
 
         var sts = secureTokenServices.get(issuer);
         var token = sts.createToken(claims, null)

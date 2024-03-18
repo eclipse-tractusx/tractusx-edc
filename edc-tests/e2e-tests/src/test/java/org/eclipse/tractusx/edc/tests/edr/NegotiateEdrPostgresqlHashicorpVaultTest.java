@@ -19,12 +19,12 @@
 
 package org.eclipse.tractusx.edc.tests.edr;
 
-import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.tractusx.edc.lifecycle.PgHashicorpParticipantRuntime;
 import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@PostgresqlDbIntegrationTest
+@PostgresqlIntegrationTest
 public class NegotiateEdrPostgresqlHashicorpVaultTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension

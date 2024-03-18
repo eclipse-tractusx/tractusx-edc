@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.identitytrust.SelfIssuedTokenConstants.PRESENTATION_ACCESS_TOKEN_CLAIM;
+import static org.eclipse.edc.identitytrust.SelfIssuedTokenConstants.PRESENTATION_TOKEN_CLAIM;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
@@ -84,7 +84,7 @@ public class DimSecureTokenService implements SecureTokenService {
             AUDIENCE, "audience",
             ISSUER, "issuer",
             SUBJECT, "subject",
-            PRESENTATION_ACCESS_TOKEN_CLAIM, "token");
+            PRESENTATION_TOKEN_CLAIM, PRESENTATION_TOKEN_CLAIM);
 
     public DimSecureTokenService(EdcHttpClient httpClient, String dimBaseUrl, DimOauth2Client dimOauth2Client, ObjectMapper mapper, Monitor monitor) {
         this.httpClient = httpClient;

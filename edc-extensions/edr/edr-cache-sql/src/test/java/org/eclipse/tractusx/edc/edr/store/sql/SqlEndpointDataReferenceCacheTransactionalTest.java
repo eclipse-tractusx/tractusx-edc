@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.edr.store.sql;
 
-import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@PostgresqlDbIntegrationTest
+@PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 public class SqlEndpointDataReferenceCacheTransactionalTest {
 

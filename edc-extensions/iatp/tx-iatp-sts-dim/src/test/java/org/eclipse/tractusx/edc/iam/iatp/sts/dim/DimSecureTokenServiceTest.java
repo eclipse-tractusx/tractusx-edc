@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.identitytrust.SelfIssuedTokenConstants.PRESENTATION_ACCESS_TOKEN_CLAIM;
+import static org.eclipse.edc.identitytrust.SelfIssuedTokenConstants.PRESENTATION_TOKEN_CLAIM;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.testHttpClient;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
@@ -130,7 +130,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(200, invocation, requestAcceptor, response));
 
-        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_ACCESS_TOKEN_CLAIM, "accessToken");
+        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "accessToken");
         var result = client.createToken(input, null);
 
         assertThat(result).isSucceeded()
@@ -209,7 +209,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
-        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_ACCESS_TOKEN_CLAIM, "token");
+        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
         var result = client.createToken(input, null);
 
         assertThat(result).isFailed()
@@ -224,7 +224,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(200, invocation, Map.of()));
 
-        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_ACCESS_TOKEN_CLAIM, "token");
+        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
         var result = client.createToken(input, null);
 
         assertThat(result).isFailed()
@@ -247,7 +247,7 @@ public class DimSecureTokenServiceTest {
                 .satisfies(failure -> assertThat(failure.getFailureDetail())
                         .contains("Key iss not found")
                         .contains("Key sub not found")
-                        .contains("Key access_token not found")
+                        .contains("Key token not found")
                         .contains("Key aud not found"));
 
     }
