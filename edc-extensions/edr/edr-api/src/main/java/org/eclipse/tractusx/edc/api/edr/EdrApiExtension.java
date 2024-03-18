@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.api.edr;
 
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.connector.api.management.contractnegotiation.transform.JsonObjectToContractOfferTransformer;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -67,9 +68,10 @@ public class EdrApiExtension implements ServiceExtension {
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
         mgmtApiTransformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
+        mgmtApiTransformerRegistry.register(new JsonObjectToContractOfferTransformer());
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer());
         mgmtApiTransformerRegistry.register(new EndpointDataReferenceToDataAddressTransformer());
-        validatorRegistry.register(EDR_REQUEST_DTO_TYPE, NegotiateEdrRequestDtoValidator.instance());
+        validatorRegistry.register(EDR_REQUEST_DTO_TYPE, NegotiateEdrRequestDtoValidator.instance(context.getMonitor()));
         webService.registerResource(apiConfig.getContextAlias(), new EdrController(edrService, mgmtApiTransformerRegistry, validatorRegistry, monitor));
     }
 }

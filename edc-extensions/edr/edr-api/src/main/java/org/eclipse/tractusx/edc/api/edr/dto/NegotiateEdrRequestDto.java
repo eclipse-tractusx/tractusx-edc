@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.api.edr.dto;
 
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class NegotiateEdrRequestDto {
     public static final String EDR_REQUEST_DTO_COUNTERPARTY_ID = EDC_NAMESPACE + "counterPartyId";
     public static final String EDR_REQUEST_DTO_PROVIDER_ID = EDC_NAMESPACE + "providerId";
     public static final String EDR_REQUEST_DTO_OFFER = EDC_NAMESPACE + "offer";
+    public static final String EDR_REQUEST_DTO_POLICY = EDC_NAMESPACE + "policy";
     public static final String EDR_REQUEST_DTO_CALLBACK_ADDRESSES = EDC_NAMESPACE + "callbackAddresses";
 
     private String counterPartyAddress;
@@ -45,7 +47,9 @@ public class NegotiateEdrRequestDto {
 
     private String providerId;
 
+    @Deprecated(since = "0.6.1")
     private ContractOfferDescription offer;
+    private ContractOffer contractOffer;
     private List<CallbackAddress> callbackAddresses = new ArrayList<>();
 
     private NegotiateEdrRequestDto() {
@@ -72,8 +76,13 @@ public class NegotiateEdrRequestDto {
         return callbackAddresses;
     }
 
+    @Deprecated(since = "0.6.1")
     public ContractOfferDescription getOffer() {
         return offer;
+    }
+
+    public ContractOffer getContractOffer() {
+        return contractOffer;
     }
 
     public static final class Builder {
@@ -98,8 +107,14 @@ public class NegotiateEdrRequestDto {
             return this;
         }
 
+        @Deprecated(since = "0.6.1")
         public Builder offer(ContractOfferDescription offer) {
             dto.offer = offer;
+            return this;
+        }
+
+        public Builder contractOffer(ContractOffer contractOffer) {
+            dto.contractOffer = contractOffer;
             return this;
         }
 

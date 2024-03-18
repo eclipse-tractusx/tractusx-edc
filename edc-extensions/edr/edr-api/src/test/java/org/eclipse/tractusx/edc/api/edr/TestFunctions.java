@@ -58,6 +58,13 @@ public class TestFunctions {
         return createOffer(UUID.randomUUID().toString(), UUID.randomUUID().toString());
     }
 
+    public static ContractOffer createContractOffer() {
+        return ContractOffer.Builder.newInstance()
+                .id("offerId")
+                .assetId("assetId")
+                .policy(Policy.Builder.newInstance().build()).build();
+    }
+
     public static JsonObject negotiationRequest() {
         return Json.createObjectBuilder()
                 .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)

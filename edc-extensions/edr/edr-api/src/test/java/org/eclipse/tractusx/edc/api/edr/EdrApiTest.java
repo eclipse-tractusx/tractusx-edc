@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.transformer.JsonObjectToCallbackAddressTransformer;
 import org.eclipse.edc.connector.api.management.contractnegotiation.transform.JsonObjectToContractOfferDescriptionTransformer;
+import org.eclipse.edc.connector.api.management.contractnegotiation.transform.JsonObjectToContractOfferTransformer;
 import org.eclipse.edc.connector.api.management.contractnegotiation.transform.JsonObjectToContractRequestTransformer;
 import org.eclipse.edc.core.transform.TypeTransformerRegistryImpl;
 import org.eclipse.edc.core.transform.transformer.odrl.OdrlTransformersFactory;
@@ -43,6 +44,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.extensions.TestServiceExtensionContext.testServiceExtensionContext;
 import static org.eclipse.tractusx.edc.api.edr.schema.EdrSchema.EndpointDataReferenceEntrySchema.ENDPOINT_DATA_REFERENCE_ENTRY_EXAMPLE;
+import static org.eclipse.tractusx.edc.api.edr.schema.EdrSchema.NegotiateEdrRequestSchema.NEGOTIATE_EDR_REQUEST_DEPRECATED_EXAMPLE;
 import static org.eclipse.tractusx.edc.api.edr.schema.EdrSchema.NegotiateEdrRequestSchema.NEGOTIATE_EDR_REQUEST_EXAMPLE;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
@@ -66,6 +68,7 @@ public class EdrApiTest {
     void setUp() {
         transformer.register(new JsonObjectToContractRequestTransformer());
         transformer.register(new JsonObjectToContractOfferDescriptionTransformer());
+        transformer.register(new JsonObjectToContractOfferTransformer());
         transformer.register(new JsonObjectToCallbackAddressTransformer());
         transformer.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
         var mapper = mock(ParticipantIdMapper.class);
@@ -77,9 +80,28 @@ public class EdrApiTest {
 
     @Test
     void edrRequestExample() throws JsonProcessingException {
-        var validator = NegotiateEdrRequestDtoValidator.instance();
+        var validator = NegotiateEdrRequestDtoValidator.instance(testServiceExtensionContext().getMonitor());
 
         var jsonObject = objectMapper.readValue(NEGOTIATE_EDR_REQUEST_EXAMPLE, JsonObject.class);
+        assertThat(jsonObject).isNotNull();
+
+        var expanded = jsonLd.expand(jsonObject);
+        AbstractResultAssert.assertThat(expanded).isSucceeded()
+                .satisfies(exp -> AbstractResultAssert.assertThat(validator.validate(exp)).isSucceeded())
+                .extracting(e -> transformer.transform(e, NegotiateEdrRequestDto.class))
+                .satisfies(transformResult -> AbstractResultAssert.assertThat(transformResult).isSucceeded()
+                        .satisfies(transformed -> {
+                            assertThat(transformed.getContractOffer()).isNotNull();
+                            assertThat(transformed.getCallbackAddresses()).asList().hasSize(1);
+                            assertThat(transformed.getProviderId()).isNotBlank();
+                        }));
+    }
+
+    @Test
+    void edrDeprecatedRequestExample() throws JsonProcessingException {
+        var validator = NegotiateEdrRequestDtoValidator.instance(testServiceExtensionContext().getMonitor());
+
+        var jsonObject = objectMapper.readValue(NEGOTIATE_EDR_REQUEST_DEPRECATED_EXAMPLE, JsonObject.class);
         assertThat(jsonObject).isNotNull();
 
         var expanded = jsonLd.expand(jsonObject);
