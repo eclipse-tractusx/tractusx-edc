@@ -180,7 +180,7 @@ public class EdrCacheApiController implements EdrCacheApi {
     private boolean isExpired(DataAddress edr, org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry metadata) {
         var expiresInString = edr.getStringProperty(TX_AUTH_NS + "expiresIn");
         if (expiresInString == null) {
-            return true;
+            return false;
         }
 
         var expiresIn = Long.parseLong(expiresInString);
