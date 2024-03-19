@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,26 +15,20 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.edrv2;
+package org.eclipse.tractusx.edc.tests.catalog;
 
-
-import com.nimbusds.jose.util.Base64;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.security.SecureRandom;
-
 @EndToEndTest
-public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
+public class CatalogInMemoryTest extends AbstractCatalogTest {
 
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-signaling",
+            ":edc-tests:runtime:runtime-memory",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
             SOKRATES.getConfiguration()
@@ -42,22 +36,9 @@ public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-signaling",
+            ":edc-tests:runtime:runtime-memory",
             PLATO.getName(),
             PLATO.getBpn(),
             PLATO.getConfiguration()
     );
-
-    @BeforeAll
-    static void prepare() {
-        var bytes = new byte[32];
-
-        new SecureRandom().nextBytes(bytes);
-        var value = Base64.encode(bytes).toString();
-        var vault = SOKRATES_RUNTIME.getContext().getService(Vault.class);
-        vault.storeSecret("test-alias", value);
-        vault = PLATO_RUNTIME.getContext().getService(Vault.class);
-        vault.storeSecret("test-alias", value);
-
-    }
 }
