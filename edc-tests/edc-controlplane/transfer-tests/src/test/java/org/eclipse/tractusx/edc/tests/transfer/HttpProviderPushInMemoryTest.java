@@ -17,12 +17,28 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.transfer;
 
-dependencies {
-    api(libs.edc.spi.core)
-    implementation(libs.edc.spi.dataplane.transfer)
-    testImplementation(libs.edc.junit)
+import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+@EndToEndTest
+public class HttpProviderPushInMemoryTest extends AbstractHttpProviderPushTest {
+
+    @RegisterExtension
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:runtime-memory",
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.getConfiguration()
+    );
+
+    @RegisterExtension
+    protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:runtime-memory",
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.getConfiguration()
+    );
 }

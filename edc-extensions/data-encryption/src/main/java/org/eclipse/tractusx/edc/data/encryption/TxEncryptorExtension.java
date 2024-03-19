@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.data.encryption;
 
-import org.eclipse.edc.connector.transfer.dataplane.security.NoopDataEncrypter;
 import org.eclipse.edc.connector.transfer.dataplane.spi.security.DataEncrypter;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -73,6 +72,16 @@ public class TxEncryptorExtension implements ServiceExtension {
             return new AesEncryptor(vault, keyAlias);
         }
         context.getMonitor().warning(format("Algorithm %s is not known, will use a NOOP encryptor!", algorithm));
-        return new NoopDataEncrypter();
+        return new DataEncrypter() {
+            @Override
+            public String encrypt(String s) {
+                return s;
+            }
+
+            @Override
+            public String decrypt(String s) {
+                return s;
+            }
+        };
     }
 }

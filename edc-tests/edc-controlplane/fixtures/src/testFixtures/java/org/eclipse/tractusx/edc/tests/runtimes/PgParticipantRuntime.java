@@ -67,12 +67,12 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
         postgreSqlContainer.start();
         var config = postgresqlConfiguration(dbName);
         config.forEach(System::setProperty);
-//        super.beforeAll(context);
+        super.beforeAll(context);
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-//        super.afterAll(context);
+        super.afterAll(context);
         postgreSqlContainer.stop();
         postgreSqlContainer.close();
     }

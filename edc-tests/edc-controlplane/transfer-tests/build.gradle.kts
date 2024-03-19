@@ -19,40 +19,20 @@
 
 plugins {
     `java-library`
-    id("application")
+    `java-test-fixtures`
 }
-
 
 dependencies {
+    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
 
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude(module = "data-encryption")
-        exclude(module = "json-ld-core")
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy-legacy")
-        exclude(module = "tx-iatp-sts-dim")
-        exclude(group = "org.eclipse.edc", "vault-hashicorp")
-    }
-
-    implementation(project(":edc-tests:runtime:extensions"))
-
-    // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "api-observability")
-    }
-
-    implementation(libs.edc.core.controlplane)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
+    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.restAssured)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.okhttp.mockwebserver)
 }
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
+// do not publish
 edcBuild {
     publish.set(false)
 }

@@ -34,6 +34,9 @@ import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -44,10 +47,11 @@ import static org.eclipse.tractusx.edc.tests.helpers.Functions.generateKeyPair;
 import static org.eclipse.tractusx.edc.tests.helpers.Functions.toPemEncoded;
 
 
-public class ParticipantRuntime extends EdcRuntimeExtension {
+public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
 
 
     private final Map<String, String> properties;
+    private DataWiper wiper;
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
@@ -66,8 +70,30 @@ public class ParticipantRuntime extends EdcRuntimeExtension {
     }
 
     @Override
+    public void beforeTestExecution(ExtensionContext extensionContext) {
+        //do nothing - we only want to start the runtime once
+        wiper.clearPersistence();
+    }
+
+    @Override
+    public void afterTestExecution(ExtensionContext context) {
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        //only run this once
+        super.beforeTestExecution(context);
+    }
+
+    @Override
+    public void afterAll(ExtensionContext context) throws Exception {
+        super.afterTestExecution(context);
+    }
+
+    @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
         super.bootExtensions(context, serviceExtensions);
+        wiper = new DataWiper(context);
         registerConsumerPullKeys(properties);
     }
 

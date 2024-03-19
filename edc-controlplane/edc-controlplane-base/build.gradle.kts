@@ -34,6 +34,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)
+    runtimeOnly(libs.edc.dpf.transfer.signaling)
 
     runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
 

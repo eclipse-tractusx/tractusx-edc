@@ -48,6 +48,7 @@ public class TxParticipant extends Participant {
     private final URI dataPlanePublic = URI.create("http://localhost:" + getFreePort() + "/public");
 
     private ParticipantEdrApi edrs;
+    private ParticipantDataApi data;
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
@@ -103,6 +104,13 @@ public class TxParticipant extends Participant {
     }
 
     /**
+     * Returns the client API for fetching data
+     */
+    public ParticipantDataApi data() {
+        return data;
+    }
+
+    /**
      * Stores BPN groups
      */
     public void storeBusinessPartner(String bpn, String... groups) {
@@ -138,6 +146,7 @@ public class TxParticipant extends Participant {
             super.build();
 
             this.participant.edrs = new ParticipantEdrApi(participant);
+            this.participant.data = new ParticipantDataApi();
             return participant;
         }
     }

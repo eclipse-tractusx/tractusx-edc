@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.data.encryption;
 
-import org.eclipse.edc.connector.transfer.dataplane.security.NoopDataEncrypter;
+import org.eclipse.edc.connector.transfer.dataplane.spi.security.DataEncrypter;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -63,7 +63,7 @@ class TxEncryptorExtensionTest {
     void createEncryptor_otherAlgorithm_createsNoop(ServiceExtensionContext context, TxEncryptorExtension extension) {
         when(context.getSetting(eq(ENCRYPTION_ALGORITHM), any())).thenReturn("some-algorithm");
         var encryptor = extension.createEncryptor(context);
-        assertThat(encryptor).isInstanceOf(NoopDataEncrypter.class);
+        assertThat(encryptor).isInstanceOf(DataEncrypter.class);
         verify(monitor).warning(eq("Algorithm some-algorithm is not known, will use a NOOP encryptor!"));
     }
 

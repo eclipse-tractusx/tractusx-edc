@@ -71,7 +71,7 @@ public class ParticipantEdrApi {
      * @return The {@link ValidatableResponse}
      */
     public ValidatableResponse getEdrRequest(String transferProcessId) {
-        return getEdrRequestV2(transferProcessId, false);
+        return getEdrWithRefresh(transferProcessId, false);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ParticipantEdrApi {
      * @param transferProcessId The transfer process id
      * @return The {@link ValidatableResponse}
      */
-    public ValidatableResponse getEdrRequestV2(String transferProcessId, boolean autoRefresh) {
+    public ValidatableResponse getEdrWithRefresh(String transferProcessId, boolean autoRefresh) {
         return baseEdrRequest()
                 .when()
                 .get("/v2/edrs/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)

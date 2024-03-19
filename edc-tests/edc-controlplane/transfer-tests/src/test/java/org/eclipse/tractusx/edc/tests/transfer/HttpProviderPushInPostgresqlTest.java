@@ -17,12 +17,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.transfer;
 
-dependencies {
-    api(libs.edc.spi.core)
-    implementation(libs.edc.spi.dataplane.transfer)
-    testImplementation(libs.edc.junit)
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
+import org.eclipse.tractusx.edc.tests.runtimes.PgParticipantRuntime;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+@PostgresqlIntegrationTest
+public class HttpProviderPushInPostgresqlTest extends AbstractHttpProviderPushTest {
+
+    @RegisterExtension
+    protected static final PgParticipantRuntime SOKRATES_RUNTIME = new PgParticipantRuntime(
+            ":edc-tests:runtime:runtime-postgresql",
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES.getConfiguration()
+    );
+    @RegisterExtension
+    protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
+            ":edc-tests:runtime:runtime-postgresql",
+            PLATO.getName(),
+            PLATO.getBpn(),
+            PLATO.getConfiguration()
+    );
 }

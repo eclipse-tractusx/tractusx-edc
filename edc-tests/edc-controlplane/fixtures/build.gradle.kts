@@ -47,10 +47,11 @@ dependencies {
     testFixturesImplementation(libs.okhttp.mockwebserver)
     testFixturesImplementation(libs.testcontainers.postgres)
 
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory-signaling"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
 
     testFixturesImplementation(libs.assertj)
     testFixturesImplementation(libs.junit.jupiter.api)
+    testFixturesImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
 
 }
 

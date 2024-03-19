@@ -122,7 +122,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            var edr = SOKRATES.edrs().getEdrRequestV2("test-id", true)
+            var edr = SOKRATES.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -146,7 +146,7 @@ public class EdrCacheApiEndToEndTest {
             // mock the provider dataplane's refresh endpoint
 
             storeEdr("test-id", false);
-            var edr = SOKRATES.edrs().getEdrRequestV2("test-id", true)
+            var edr = SOKRATES.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -170,7 +170,7 @@ public class EdrCacheApiEndToEndTest {
 
             storeEdr("test-id", true);
             var edr = SOKRATES.edrs()
-                    .getEdrRequestV2("test-id", false)
+                    .getEdrWithRefresh("test-id", false)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -202,7 +202,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            SOKRATES.edrs().getEdrRequestV2("test-id", true)
+            SOKRATES.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(403);
 
             // assert the correct endpoint was called
