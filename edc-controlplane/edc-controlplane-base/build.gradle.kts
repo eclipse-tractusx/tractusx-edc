@@ -30,8 +30,11 @@ dependencies {
 
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
+    runtimeOnly(project(":edc-extensions:edr:edr-callback"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.edr.store.receiver)
+
     runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
 
     // needed for BPN validation

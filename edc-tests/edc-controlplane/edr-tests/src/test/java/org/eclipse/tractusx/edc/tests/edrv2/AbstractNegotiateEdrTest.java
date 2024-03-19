@@ -22,8 +22,14 @@ package org.eclipse.tractusx.edc.tests.edrv2;
 import jakarta.json.Json;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationAgreed;
 import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationRequested;
+import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationVerified;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessInitiated;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
+import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration;
@@ -46,6 +52,7 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
+import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEvent;
 import static org.eclipse.tractusx.edc.tests.helpers.Functions.waitForEvent;
 
 public abstract class AbstractNegotiateEdrTest {
@@ -72,9 +79,15 @@ public abstract class AbstractNegotiateEdrTest {
     void negotiateEdr_shouldInvokeCallbacks() throws IOException {
 
         var expectedEvents = List.of(
-                EdrNegotiationHelperFunctions.createEvent(ContractNegotiationFinalized.class),
-                EdrNegotiationHelperFunctions.createEvent(TransferProcessInitiated.class),
-                EdrNegotiationHelperFunctions.createEvent(TransferProcessStarted.class));
+                createEvent(ContractNegotiationInitiated.class),
+                createEvent(ContractNegotiationRequested.class),
+                createEvent(ContractNegotiationAgreed.class),
+                createEvent(ContractNegotiationFinalized.class),
+                createEvent(ContractNegotiationVerified.class),
+                createEvent(TransferProcessInitiated.class),
+                createEvent(TransferProcessProvisioned.class),
+                createEvent(TransferProcessRequested.class),
+                createEvent(TransferProcessStarted.class));
 
         var assetId = "api-asset-1";
         var url = server.url("/mock/api");

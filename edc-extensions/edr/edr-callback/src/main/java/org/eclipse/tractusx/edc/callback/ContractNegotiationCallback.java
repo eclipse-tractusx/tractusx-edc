@@ -47,6 +47,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
 
     @Override
     public <T extends Event> Result<Void> invoke(CallbackEventRemoteMessage<T> message) {
+        monitor.info("#### Received: %s".formatted(message.getEventEnvelope().getPayload()));
         if (message.getEventEnvelope().getPayload() instanceof ContractNegotiationFinalized) {
             return initiateTransfer((ContractNegotiationFinalized) message.getEventEnvelope().getPayload());
         }

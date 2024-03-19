@@ -38,7 +38,7 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.okhttp.mockwebserver)
 
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory-signaling"))
 
     testFixturesImplementation(libs.junit.jupiter.api)
     testFixturesImplementation(libs.edc.spi.core)
