@@ -25,8 +25,6 @@ plugins {
 dependencies {
     runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-api"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
 

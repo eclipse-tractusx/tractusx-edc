@@ -84,51 +84,6 @@ public abstract class AbstractDataPlaneProxyTest {
         );
     }
 
-    @Test
-    @DisplayName("Verify E2E flow with Data Plane proxies and EDR")
-    void httpPullDataTransfer_withEdrAndProxy() {
-
-        var eventsUrl = server.url(PLATO.backendProviderProxy().getPath());
-
-        var assetId = UUID.randomUUID().toString();
-
-        var dataAddress = dataAddress(eventsUrl.url().toString());
-
-        PLATO.createAsset(assetId, Map.of(), dataAddress);
-
-        PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1"));
-        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
-
-        var callbacks = Json.createArrayBuilder()
-                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
-                .build();
-
-        // response to callback
-        server.enqueue(new MockResponse());
-
-        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
-
-        var transferEvent = waitForTransferCompletion();
-
-        await().pollInterval(ASYNC_POLL_INTERVAL)
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
-                    assertThat(edrCaches).hasSize(1);
-                });
-
-        var body = "{\"response\": \"ok\"}";
-
-        server.enqueue(new MockResponse().setBody(body));
-        var data = SOKRATES.data().pullProxyDataByAssetId(PLATO, assetId);
-        assertThat(data).isEqualTo(body);
-
-        server.enqueue(new MockResponse().setBody(body));
-        data = SOKRATES.data().pullProxyDataByTransferProcessId(PLATO, transferEvent.getPayload().getTransferProcessId());
-        assertThat(data).isEqualTo(body);
-    }
 
     @Test
     @DisplayName("Verify E2E flow with Data Plane proxies fails when EDR is not found")
@@ -150,58 +105,6 @@ public abstract class AbstractDataPlaneProxyTest {
                 .then()
                 .assertThat().statusCode(400);
 
-    }
-
-    @Test
-    @DisplayName("Verify E2E flow with Data Plane proxies and Two EDR")
-    void httpPullDataTransfer_shouldFailForAsset_withTwoEdrAndProxy() throws IOException {
-
-        var eventsUrl = server.url(PLATO.backendProviderProxy().getPath());
-
-        var assetId = UUID.randomUUID().toString();
-
-        PLATO.createAsset(assetId, Map.of(), dataAddress(eventsUrl.url().toString()));
-
-        PLATO.storeBusinessPartner(SOKRATES.getBpn(), "test-group1", "test-group2");
-        var accessPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_NONE_OF, "forbidden-policy"));
-        var contractPolicy = PLATO.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
-        PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
-
-        var callbacks = Json.createArrayBuilder()
-                .add(createCallback(eventsUrl.toString(), true, Set.of("transfer.process.started")))
-                .build();
-
-        // response to callback
-        server.enqueue(new MockResponse());
-        server.enqueue(new MockResponse());
-
-        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
-        SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
-
-        var transferEvent1 = waitForTransferCompletion();
-        var transferEvent2 = waitForTransferCompletion();
-
-        await().pollInterval(ASYNC_POLL_INTERVAL)
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
-                    assertThat(edrCaches).hasSize(2);
-                });
-
-
-        var body = "{\"response\": \"ok\"}";
-
-        server.enqueue(new MockResponse().setBody(body));
-        SOKRATES.data().pullProxyDataResponseByAssetId(PLATO, assetId).then()
-                .assertThat().statusCode(428);
-
-        server.enqueue(new MockResponse().setBody(body));
-        var data = SOKRATES.data().pullProxyDataByTransferProcessId(PLATO, transferEvent1.getPayload().getTransferProcessId());
-        assertThat(data).isEqualTo(body);
-
-        server.enqueue(new MockResponse().setBody(body));
-        data = SOKRATES.data().pullProxyDataByTransferProcessId(PLATO, transferEvent2.getPayload().getTransferProcessId());
-        assertThat(data).isEqualTo(body);
     }
 
     @Test

@@ -60,9 +60,6 @@ include(":edc-extensions:iatp:tx-iatp-sts-dim")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
-include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-spi")
-include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-core")
-include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-provider-api")
 include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
@@ -82,7 +79,6 @@ include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
-include(":edc-tests:edc-dataplane:edc-dataplane-proxy-e2e")
 include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
 
