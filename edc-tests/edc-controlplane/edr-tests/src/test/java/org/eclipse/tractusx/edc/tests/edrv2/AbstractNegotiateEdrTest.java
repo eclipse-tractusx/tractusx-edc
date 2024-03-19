@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEvent;
@@ -152,11 +151,10 @@ public abstract class AbstractNegotiateEdrTest {
 
         var edr = SOKRATES.edrs().getEdr(transferProcessId);
 
-        assertThat(edr.getJsonString("type").getString()).isEqualTo(EDR_SIMPLE_TYPE);
-        assertThat(edr.getJsonString("authCode").getString()).isNotNull();
-        assertThat(edr.getJsonString("authKey").getString()).isNotNull();
+        assertThat(edr.getJsonString("type").getString()).isEqualTo("https://w3id.org/idsa/v4.1/HTTP");
         assertThat(edr.getJsonString("endpoint").getString()).isNotNull();
-        assertThat(edr.getJsonString("id").getString()).isEqualTo(transferProcessId);
+        assertThat(edr.getJsonString("endpointType").getString()).isEqualTo(edr.getJsonString("type").getString());
+        assertThat(edr.getJsonString("authorization").getString()).isNotNull();
 
     }
 

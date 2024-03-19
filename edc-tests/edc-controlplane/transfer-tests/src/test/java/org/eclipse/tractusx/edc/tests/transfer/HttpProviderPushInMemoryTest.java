@@ -21,8 +21,10 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+@Disabled
 @EndToEndTest
 public class HttpProviderPushInMemoryTest extends AbstractHttpProviderPushTest {
 

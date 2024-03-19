@@ -34,7 +34,7 @@ public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-signaling",
+            ":edc-tests:runtime:runtime-memory",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
             SOKRATES.getConfiguration()
@@ -42,7 +42,7 @@ public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-signaling",
+            ":edc-tests:runtime:runtime-memory",
             PLATO.getName(),
             PLATO.getBpn(),
             PLATO.getConfiguration()

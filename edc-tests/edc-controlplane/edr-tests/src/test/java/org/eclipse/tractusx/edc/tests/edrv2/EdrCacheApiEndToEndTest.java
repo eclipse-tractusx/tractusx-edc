@@ -77,7 +77,7 @@ public class EdrCacheApiEndToEndTest {
             .build();
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-signaling",
+            ":edc-tests:runtime:runtime-memory",
             SOKRATES.getName(),
             SOKRATES.getId(),
             with(SOKRATES.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:sokrates")));
