@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.json.Json;
 import org.eclipse.edc.test.system.utils.Participant;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.time.Duration;
@@ -78,8 +79,8 @@ public class TxParticipant extends Participant {
                 put("edc.api.auth.key", "testkey");
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
-                put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key");
-                put("edc.transfer.proxy.token.verifier.publickey.alias", "public-key");
+                put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-1");
+                put("edc.transfer.proxy.token.verifier.publickey.alias", getDid() + "#key-1");
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
                 put("tx.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));
@@ -87,14 +88,16 @@ public class TxParticipant extends Participant {
                 put("edc.dataplane.selector.httpplane.url", controlPlaneControl.toString());
                 put("edc.dataplane.selector.httpplane.sourcetypes", "HttpData");
                 put("edc.dataplane.selector.httpplane.destinationtypes", "HttpProxy");
-                put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + dataPlanePublic.getPort() + "/api/public\"}");
+                put("edc.dataplane.selector.httpplane.transfertypes", "HttpProxy-PULL");
+                put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + dataPlanePublic.getPort() + "/api/public/v2\"}");
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + controlPlaneDefault.getPort() + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
                 put("edc.data.encryption.keys.alias", "test-alias");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
-                put("edc.iam.issuer.id", "did:web:" + name);
+                put("edc.iam.issuer.id", getDid());
+                put("edc.dataplane.api.public.baseurl", "http://localhost:%d/api/public/v2/data".formatted(dataPlanePublic.getPort()));
             }
         };
     }
@@ -125,6 +128,11 @@ public class TxParticipant extends Participant {
                 .post("/business-partner-groups")
                 .then()
                 .statusCode(204);
+    }
+
+    @NotNull
+    private String getDid() {
+        return "did:web:" + name.toLowerCase();
     }
 
     public static final class Builder extends Participant.Builder<TxParticipant, Builder> {

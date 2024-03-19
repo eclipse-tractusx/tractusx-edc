@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
 import java.util.Map;
@@ -39,10 +40,13 @@ public class ParticipantDataApi {
      * @param queryParams additional params
      * @return the data
      */
-    public String pullData(EndpointDataReference edr, Map<String, String> queryParams) {
+    public String pullData(JsonObject edr, Map<String, String> queryParams) {
+
+        var endpoint = edr.getString("endpoint");
+        var token = edr.getString("authorization");
         var response = given()
-                .baseUri(edr.getEndpoint())
-                .header(edr.getAuthKey(), edr.getAuthCode())
+                .baseUri(endpoint)
+                .header("Authorization", token)
                 .queryParams(queryParams)
                 .when()
                 .get();

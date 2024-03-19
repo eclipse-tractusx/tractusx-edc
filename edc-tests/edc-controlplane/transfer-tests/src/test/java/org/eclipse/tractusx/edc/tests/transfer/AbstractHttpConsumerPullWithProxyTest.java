@@ -104,11 +104,10 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
                 });
 
         // pull data out of provider's backend service:
-        // Cons-DP -> Prov-DP -> Prov-backend
-//        assertThat(SOKRATES.data().pullData(edr.get(), Map.of())).isEqualTo("test response");
+        // Prov-DP -> Prov-backend
+        assertThat(SOKRATES.data().pullData(edr.get(), Map.of())).isEqualTo("test response");
         var rq = server.takeRequest();
-//        assertThat(rq.getHeader(authCodeHeaderName)).isEqualTo(authCode);
-//        assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isEqualTo(edr.get().getContractId());
+        assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isNotNull();
         assertThat(rq.getHeader("Edc-Bpn")).isEqualTo(SOKRATES.getBpn());
         assertThat(rq.getMethod()).isEqualToIgnoringCase("GET");
     }

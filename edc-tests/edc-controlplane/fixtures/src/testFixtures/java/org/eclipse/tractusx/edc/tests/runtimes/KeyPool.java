@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,14 +15,22 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.runtimes;
 
-dependencies {
-    api(libs.edc.spi.core)
-    implementation(libs.edc.spi.dataplane.transfer)
-    testImplementation(libs.edc.junit)
+import java.security.KeyPair;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class KeyPool {
+    private static final Map<String, KeyPair> KEYS = new ConcurrentHashMap<>();
+
+    public static void register(String keyId, KeyPair keypair) {
+        KEYS.put(keyId, keypair);
+    }
+
+    public static KeyPair forId(String keyId) {
+        return KEYS.get(keyId);
+    }
 }

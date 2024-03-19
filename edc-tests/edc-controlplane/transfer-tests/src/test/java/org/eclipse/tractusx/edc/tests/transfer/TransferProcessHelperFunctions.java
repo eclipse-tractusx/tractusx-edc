@@ -47,7 +47,7 @@ public class TransferProcessHelperFunctions {
     public static JsonObject createProxyRequest() {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
-                .add(EDC_NAMESPACE + "type", "HttpProxy")
+                .add(EDC_NAMESPACE + "type", "HttpProxy-PULL")
                 .build();
 
     }

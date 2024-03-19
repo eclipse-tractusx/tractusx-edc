@@ -43,7 +43,6 @@ dependencies {
     runtimeOnly(libs.edc.dpf.api.control)
     runtimeOnly(libs.edc.dpf.api.signaling)
 
-    runtimeOnly(libs.edc.dpf.api.public.v1)
     runtimeOnly(libs.edc.dpf.api.public.v2)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)

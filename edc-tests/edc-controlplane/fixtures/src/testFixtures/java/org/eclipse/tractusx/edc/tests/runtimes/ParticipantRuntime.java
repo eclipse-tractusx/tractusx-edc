@@ -21,12 +21,15 @@ package org.eclipse.tractusx.edc.tests.runtimes;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.identitytrust.SecureTokenService;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -43,14 +46,11 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import static org.eclipse.tractusx.edc.tests.helpers.Functions.generateKeyPair;
-import static org.eclipse.tractusx.edc.tests.helpers.Functions.toPemEncoded;
-
 
 public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
 
-
     private final Map<String, String> properties;
+    private final ECKey runtimeKeyPair;
     private DataWiper wiper;
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
@@ -60,10 +60,13 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
         this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
         var kid = properties.get("edc.iam.issuer.id") + "#key-1";
         try {
-            var runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
+            runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
+            KeyPool.register(kid, runtimeKeyPair.toKeyPair());
             var privateKey = runtimeKeyPair.toPrivateKey();
+            var publicKey = runtimeKeyPair.toPublicKey();
 
             registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(), () -> privateKey, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
+            registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
@@ -94,18 +97,17 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
         super.bootExtensions(context, serviceExtensions);
         wiper = new DataWiper(context);
-        registerConsumerPullKeys(properties);
+        registerConsumerPullKeys(runtimeKeyPair);
     }
 
-    private void registerConsumerPullKeys(Map<String, String> properties) {
+    private void registerConsumerPullKeys(ECKey ecKey) {
         var privateAlias = properties.get("edc.transfer.proxy.token.signer.privatekey.alias");
         var publicAlias = properties.get("edc.transfer.proxy.token.verifier.publickey.alias");
 
         if (privateAlias != null && publicAlias != null) {
-            var keyPair = generateKeyPair();
             var vault = getContext().getService(Vault.class);
-            vault.storeSecret(privateAlias, toPemEncoded(keyPair.getPrivate()));
-            vault.storeSecret(publicAlias, toPemEncoded(keyPair.getPublic()));
+            vault.storeSecret(privateAlias, ecKey.toJSONString());
+            vault.storeSecret(publicAlias, ecKey.toPublicJWK().toJSONString());
         }
     }
 

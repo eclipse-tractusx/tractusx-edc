@@ -42,7 +42,6 @@ import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.function.Supplier;
 
-import static org.eclipse.edc.connector.dataplane.spi.TransferDataPlaneConfig.TOKEN_SIGNER_PRIVATE_KEY_ALIAS;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceExtension.NAME;
 
 @Extension(value = NAME)
@@ -54,6 +53,11 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
 
     @Setting(value = "The HTTP endpoint where clients can request a renewal of their access token for the public dataplane API")
     public static final String REFRESH_ENDPOINT_PROPERTY = "edc.dataplane.token.refresh.endpoint";
+    @Setting(value = "Alias of private key used for signing tokens, retrieved from private key resolver")
+    public static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS = "edc.transfer.proxy.token.signer.privatekey.alias";
+
+    @Setting(value = "Alias of public key used for verifying the tokens, retrieved from the vault")
+    public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "edc.transfer.proxy.token.verifier.publickey.alias";
 
     @Inject
     private TokenValidationService tokenValidationService;
@@ -105,7 +109,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(),
                     getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance,
-                    vault, typeManager.getMapper());
+                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper());
         }
         return tokenRefreshService;
     }
@@ -120,6 +124,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         }
         return refreshEndpoint;
     }
+
 
     @NotNull
     private Supplier<PrivateKey> getPrivateKeySupplier(ServiceExtensionContext context) {
