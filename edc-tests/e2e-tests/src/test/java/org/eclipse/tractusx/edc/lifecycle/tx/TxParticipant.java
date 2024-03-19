@@ -302,8 +302,8 @@ public class TxParticipant extends Participant {
             super.timeout(ASYNC_TIMEOUT);
             super.build();
 
-            this.participant.edrs = new ParticipantEdrApi(participant, participant.managementEndpoint, participant.backend);
-            this.participant.data = new ParticipantDataApi(participant);
+            this.participant.edrs = new ParticipantEdrApi(participant.backend);
+            this.participant.data = new ParticipantDataApi();
             return participant;
         }
     }

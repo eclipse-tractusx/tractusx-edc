@@ -27,7 +27,6 @@ import org.eclipse.tractusx.edc.token.KeycloakDispatcher;
 import org.eclipse.tractusx.edc.token.MiwDispatcher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
@@ -90,12 +89,6 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
         miwPlatoServer.shutdown();
         sokratesOauthServer.shutdown();
         platoOauthServer.shutdown();
-    }
-
-    @BeforeEach
-    void setup() throws IOException {
-        super.setup();
-
     }
 
     @Override

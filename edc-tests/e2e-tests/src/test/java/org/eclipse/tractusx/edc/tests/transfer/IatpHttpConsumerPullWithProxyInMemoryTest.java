@@ -32,7 +32,6 @@ import org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.IatpParticipant;
 import org.eclipse.tractusx.edc.lifecycle.tx.iatp.SecureTokenService;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -106,17 +105,6 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
 
     }
 
-
-    @BeforeEach
-    void setup() throws IOException {
-        super.setup();
-    }
-
-    @Override
-    protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
-    }
-
     @DisplayName("Contract policy is fulfilled")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(ValidContractPolicyProvider.class)
@@ -175,7 +163,7 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
     @DisplayName("Contract policy is NOT fulfilled")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InvalidContractPolicyProvider.class)
-    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) throws IOException, InterruptedException {
+    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) throws IOException {
         var assetId = "api-asset-1";
         var url = server.url("/mock/api");
         server.start();
@@ -203,6 +191,11 @@ public class IatpHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsu
                 .untilAsserted(() -> {
                     assertThat(SOKRATES.getContractNegotiationError(negotiationId)).isNotNull();
                 });
+    }
+
+    @Override
+    protected JsonObject createContractPolicy(String bpn) {
+        return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
     }
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {

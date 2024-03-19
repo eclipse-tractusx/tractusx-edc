@@ -42,7 +42,7 @@ public class KeycloakDispatcher extends Dispatcher {
 
     @NotNull
     @Override
-    public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
+    public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) {
         if (recordedRequest.getPath().split("\\?")[0].equals(path)) {
             return createTokenResponse();
         }

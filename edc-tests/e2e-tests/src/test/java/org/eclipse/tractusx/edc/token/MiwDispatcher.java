@@ -67,7 +67,7 @@ public class MiwDispatcher extends Dispatcher {
 
     @NotNull
     @Override
-    public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
+    public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) {
         return switch (recordedRequest.getPath().split("\\?")[0]) {
             case "/api/credentials" -> credentialResponse();
             case "/api/presentations" -> presentationResponse();

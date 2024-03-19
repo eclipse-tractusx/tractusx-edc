@@ -34,7 +34,6 @@ import org.eclipse.tractusx.edc.token.DimDispatcher;
 import org.eclipse.tractusx.edc.token.KeycloakDispatcher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
@@ -123,10 +122,6 @@ public class DimHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
         return participant::verificationId;
     }
 
-    @BeforeEach
-    void setup() throws IOException {
-        super.setup();
-    }
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {

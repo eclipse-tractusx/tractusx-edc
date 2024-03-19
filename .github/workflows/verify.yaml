@@ -118,6 +118,7 @@ jobs:
       matrix:
         variant: [ { dir: edc-tests/edc-controlplane/catalog-tests},
                    { dir: edc-tests/edc-controlplane/edr-api-tests},
+                   { dir: edc-tests/edc-controlplane/policy-tests},
                    { dir: edc-tests/edc-controlplane/transfer-tests},
                    { dir: edc-tests/e2e-tests}
         ]
