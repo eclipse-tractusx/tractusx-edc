@@ -100,7 +100,7 @@ public abstract class AbstractHttpProviderPushTest {
 
         var destination = httpDataAddress(consumerUrl.toString());
 
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, createObjectBuilder().build(), destination);
+        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = SOKRATES.getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());

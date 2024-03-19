@@ -63,7 +63,6 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
             runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
             KeyPool.register(kid, runtimeKeyPair.toKeyPair());
             var privateKey = runtimeKeyPair.toPrivateKey();
-            var publicKey = runtimeKeyPair.toPublicKey();
 
             registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(), () -> privateKey, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
             registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));

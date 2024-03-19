@@ -54,15 +54,14 @@ public class AdditionalHeadersProvisioner implements Provisioner<AdditionalHeade
                         .addAdditionalHeader("Edc-Bpn", resourceDefinition.getBpn())
                         .build();
 
-        var provisioned =
-                AdditionalHeadersProvisionedResource.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .resourceDefinitionId(resourceDefinition.getId())
-                        .transferProcessId(resourceDefinition.getTransferProcessId())
-                        .dataAddress(address)
-                        .resourceName(UUID.randomUUID().toString())
-                        .hasToken(false)
-                        .build();
+        var provisioned = AdditionalHeadersProvisionedResource.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .resourceDefinitionId(resourceDefinition.getId())
+                .transferProcessId(resourceDefinition.getTransferProcessId())
+                .dataAddress(address)
+                .resourceName(UUID.randomUUID().toString())
+                .hasToken(false)
+                .build();
 
         var response = ProvisionResponse.Builder.newInstance().resource(provisioned).build();
         var result = StatusResult.success(response);

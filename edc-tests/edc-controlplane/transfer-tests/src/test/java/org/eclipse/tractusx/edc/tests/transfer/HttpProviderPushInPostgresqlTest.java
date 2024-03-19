@@ -21,10 +21,8 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.tractusx.edc.tests.runtimes.PgParticipantRuntime;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@Disabled
 @PostgresqlIntegrationTest
 public class HttpProviderPushInPostgresqlTest extends AbstractHttpProviderPushTest {
 

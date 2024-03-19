@@ -21,49 +21,12 @@ package org.eclipse.tractusx.edc.tests.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockWebServer;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
-import org.eclipse.edc.spi.EdcException;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.ECGenParameterSpec;
 import java.util.concurrent.TimeUnit;
 
 public class Functions {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    /**
-     * Returns the Pem representation of a {@link Key}
-     *
-     * @param key The input key
-     * @return The pem encoded key
-     */
-    public static String toPemEncoded(Key key) {
-        var writer = new StringWriter();
-        try (var jcaPEMWriter = new JcaPEMWriter(writer)) {
-            jcaPEMWriter.writeObject(key);
-        } catch (IOException e) {
-            throw new EdcException("Unable to convert private in PEM format ", e);
-        }
-        return writer.toString();
-    }
-
-    public static KeyPair generateKeyPair() {
-        try {
-            KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
-            gen.initialize(new ECGenParameterSpec("secp256r1"));
-            return gen.generateKeyPair();
-        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static ReceivedEvent waitForEvent(MockWebServer server) {
         try {
