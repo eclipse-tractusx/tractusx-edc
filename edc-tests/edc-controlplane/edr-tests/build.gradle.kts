@@ -23,28 +23,13 @@ plugins {
 }
 
 dependencies {
-    testImplementation(project(":spi:edr-spi"))
-    testImplementation(project(":edc-extensions:edr:edr-api-v2"))
-    testImplementation(project(":spi:core-spi"))
-    testImplementation(project(":spi:tokenrefresh-spi"))
+    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
 
-    testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
-    testImplementation(libs.edc.spi.edrstore)
-    testImplementation(libs.edc.identity.trust.sts.embedded)
     testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
     testImplementation(libs.okhttp.mockwebserver)
-
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory-signaling"))
-
-    testFixturesImplementation(libs.junit.jupiter.api)
-    testFixturesImplementation(libs.edc.spi.core)
-    testFixturesImplementation(libs.edc.junit)
-    testFixturesImplementation(libs.edc.spi.policy)
-    testFixturesImplementation(libs.edc.spi.contract)
 }
 
 // do not publish
