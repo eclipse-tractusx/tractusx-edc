@@ -116,7 +116,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [ { dir: edc-tests/edc-controlplane},
+        variant: [ { dir: edc-tests/edc-controlplane/catalog-tests},
+                   { dir: edc-tests/edc-controlplane/edr-tests},
+                   { dir: edc-tests/edc-controlplane/transfer-tests},
                    { dir: edc-tests/e2e-tests}
         ]
     steps:
