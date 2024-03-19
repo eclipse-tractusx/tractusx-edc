@@ -32,7 +32,11 @@ dependencies {
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "cx-policy-legacy")
+        exclude(module = "tx-iatp-sts-dim")
     }
+
+    // use an embedded STS
+    runtimeOnly(libs.edc.identity.trust.sts.embedded)
 
     implementation(project(":edc-tests:runtime:extensions"))
 

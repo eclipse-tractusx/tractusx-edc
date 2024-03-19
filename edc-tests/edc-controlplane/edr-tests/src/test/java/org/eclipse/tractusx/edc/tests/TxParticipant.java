@@ -20,20 +20,26 @@
 package org.eclipse.tractusx.edc.tests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import jakarta.json.Json;
 import org.eclipse.edc.test.system.utils.Participant;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.restassured.http.ContentType.JSON;
+import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public class TxParticipant extends Participant {
     public static final String API_KEY = "testkey";
-    private static final Duration ASYNC_TIMEOUT = ofSeconds(60);
-    private static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
+    public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
 
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
@@ -83,12 +89,30 @@ public class TxParticipant extends Participant {
                 put("edc.data.encryption.keys.alias", "test-alias");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
+                put("edc.iam.issuer.id", "did:web:" + name);
             }
         };
     }
 
     public ParticipantEdrApi edrs() {
         return edrs;
+    }
+
+    /**
+     * Stores BPN groups
+     */
+    public void storeBusinessPartner(String bpn, String... groups) {
+        var body = createObjectBuilder()
+                .add(ID, bpn)
+                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .build();
+        managementEndpoint.baseRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/business-partner-groups")
+                .then()
+                .statusCode(204);
     }
 
     public static final class Builder extends Participant.Builder<TxParticipant, Builder> {

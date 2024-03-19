@@ -27,7 +27,7 @@ import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 
 import java.util.Set;
 

@@ -24,7 +24,7 @@ plugins {
 
 dependencies {
     testImplementation(project(":spi:edr-spi"))
-    testImplementation(project(":edc-extensions:edr:edr-api"))
+    testImplementation(project(":edc-extensions:edr:edr-api-v2"))
     testImplementation(project(":spi:core-spi"))
     testImplementation(project(":spi:tokenrefresh-spi"))
 
@@ -35,6 +35,8 @@ dependencies {
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.okhttp.mockwebserver)
 
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
 

@@ -35,9 +35,9 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.tests.CatalogHelperFunctions.getDatasetContractId;
-import static org.eclipse.tractusx.edc.tests.CatalogHelperFunctions.getDatasetFirstPolicy;
-import static org.eclipse.tractusx.edc.tests.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
+import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetContractId;
+import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
 
 /**
  * E2E test helper for the EDR APIs
@@ -124,7 +124,7 @@ public class ParticipantEdrApi {
         var response = baseEdrRequest()
                 .when()
                 .body(requestBody)
-                .post("/edrs")
+                .post("/v2/edrs")
                 .then();
 
         var body = response.extract().body().asString();
@@ -140,9 +140,11 @@ public class ParticipantEdrApi {
      * @return The EDRs
      */
     public JsonArray getEdrEntriesByContractNegotiationId(String contractNegotiationId) {
+        var query = createQuery("contractNegotiationId", "=", contractNegotiationId);
         return baseEdrRequest()
                 .when()
-                .get("/edrs?contractNegotiationId={contractNegotiationId}", contractNegotiationId)
+                .body(query)
+                .post("/v2/edrs/request")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -157,9 +159,11 @@ public class ParticipantEdrApi {
      * @return The EDRs
      */
     public JsonArray getEdrEntriesByAgreementId(String agreementId) {
+        var query = createQuery("agreementId", "=", agreementId);
         return baseEdrRequest()
                 .when()
-                .get("/edrs?agreementId={agreementId}", agreementId)
+                .body(query)
+                .post("/v2/edrs/request")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -174,9 +178,11 @@ public class ParticipantEdrApi {
      * @return The EDRs
      */
     public JsonArray getEdrEntriesByAssetId(String assetId) {
+        var query = createQuery("assetId", "=", assetId);
         return baseEdrRequest()
                 .when()
-                .get("/edrs?assetId={assetId}", assetId)
+                .body(query)
+                .post("/v2/edrs/request")
                 .then()
                 .statusCode(200)
                 .extract()

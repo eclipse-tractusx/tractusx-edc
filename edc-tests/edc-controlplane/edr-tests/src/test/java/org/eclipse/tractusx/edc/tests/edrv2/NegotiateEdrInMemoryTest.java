@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,29 +15,29 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.tests.edr;
+package org.eclipse.tractusx.edc.tests.edrv2;
 
 
 import com.nimbusds.jose.util.Base64;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
+import org.eclipse.tractusx.edc.tests.ParticipantRuntime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.security.SecureRandom;
 
 @EndToEndTest
-public class DeleteEdrInMemoryTest extends AbstractDeleteEdrTest {
+public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
 
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
-            SOKRATES.renewalConfiguration("5")
+            SOKRATES.getConfiguration()
     );
 
     @RegisterExtension
@@ -45,7 +45,7 @@ public class DeleteEdrInMemoryTest extends AbstractDeleteEdrTest {
             ":edc-tests:runtime:runtime-memory",
             PLATO.getName(),
             PLATO.getBpn(),
-            PLATO.renewalConfiguration()
+            PLATO.getConfiguration()
     );
 
     @BeforeAll

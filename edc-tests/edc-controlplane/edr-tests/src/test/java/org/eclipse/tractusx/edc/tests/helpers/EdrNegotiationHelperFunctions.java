@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.helpers;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -25,8 +25,9 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.api.edr.dto.NegotiateEdrRequestDto;
+import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 
 import java.util.Set;
 
@@ -64,5 +65,10 @@ public class EdrNegotiationHelperFunctions {
                         .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add)
                         .build())
                 .build();
+    }
+
+
+    public static <E extends Event> ReceivedEvent createEvent(Class<E> klass) {
+        return ReceivedEvent.Builder.newInstance().type(klass.getSimpleName()).build();
     }
 }

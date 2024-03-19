@@ -17,29 +17,45 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.edr;
+package org.eclipse.tractusx.edc.tests.helpers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.mockwebserver.MockWebServer;
-import org.eclipse.tractusx.edc.helpers.ReceivedEvent;
-
-import java.util.concurrent.TimeUnit;
-
-public class TestFunctions {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ReceivedEvent {
+    private String type;
 
-    public static ReceivedEvent waitForEvent(MockWebServer server) {
-        try {
-            var request = server.takeRequest(60, TimeUnit.SECONDS);
-            if (request != null) {
-                return MAPPER.readValue(request.getBody().inputStream(), ReceivedEvent.class);
-            } else {
-                throw new RuntimeException("Timeout exceeded waiting for events");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "ReceivedEvent{" +
+                "type='" + type + '\'' +
+                '}';
+    }
+
+    public static class Builder {
+        private final ReceivedEvent event;
+
+        private Builder(ReceivedEvent event) {
+            this.event = event;
+        }
+
+        public static Builder newInstance() {
+            return new Builder(new ReceivedEvent());
+        }
+
+        public Builder type(String type) {
+            this.event.type = type;
+            return this;
+        }
+
+        public ReceivedEvent build() {
+            return event;
         }
     }
 }
+

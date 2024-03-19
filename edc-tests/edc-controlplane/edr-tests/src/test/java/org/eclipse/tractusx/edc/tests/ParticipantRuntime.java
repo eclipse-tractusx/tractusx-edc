@@ -42,8 +42,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import static org.eclipse.tractusx.edc.tests.Functions.generateKeyPair;
-import static org.eclipse.tractusx.edc.tests.Functions.toPemEncoded;
+import static org.eclipse.tractusx.edc.tests.helpers.Functions.generateKeyPair;
+import static org.eclipse.tractusx.edc.tests.helpers.Functions.toPemEncoded;
 
 
 public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {

@@ -17,8 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.helpers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.mockwebserver.MockWebServer;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.eclipse.edc.spi.EdcException;
@@ -31,8 +33,11 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.ECGenParameterSpec;
+import java.util.concurrent.TimeUnit;
 
 public class Functions {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
      * Returns the Pem representation of a {@link Key}
@@ -50,13 +55,25 @@ public class Functions {
         return writer.toString();
     }
 
-
     public static KeyPair generateKeyPair() {
         try {
             KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
             gen.initialize(new ECGenParameterSpec("secp256r1"));
             return gen.generateKeyPair();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ReceivedEvent waitForEvent(MockWebServer server) {
+        try {
+            var request = server.takeRequest(60, TimeUnit.SECONDS);
+            if (request != null) {
+                return MAPPER.readValue(request.getBody().inputStream(), ReceivedEvent.class);
+            } else {
+                throw new RuntimeException("Timeout exceeded waiting for events");
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

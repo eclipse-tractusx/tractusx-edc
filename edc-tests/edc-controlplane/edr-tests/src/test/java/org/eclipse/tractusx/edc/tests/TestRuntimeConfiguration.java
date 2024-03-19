@@ -17,28 +17,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.edr;
+package org.eclipse.tractusx.edc.tests;
 
-import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
-import org.eclipse.tractusx.edc.lifecycle.PgParticipantRuntime;
-import org.junit.jupiter.api.extension.RegisterExtension;
+public class TestRuntimeConfiguration {
 
-@PostgresqlIntegrationTest
-public class DeleteEdrPostgresqlTest extends AbstractDeleteEdrTest {
-
-    @RegisterExtension
-    protected static final PgParticipantRuntime SOKRATES_RUNTIME = new PgParticipantRuntime(
-            ":edc-tests:runtime:runtime-postgresql",
-            SOKRATES.getName(),
-            SOKRATES.getBpn(),
-            SOKRATES.renewalConfiguration("5")
-    );
-    @RegisterExtension
-    protected static final PgParticipantRuntime PLATO_RUNTIME = new PgParticipantRuntime(
-            ":edc-tests:runtime:runtime-postgresql",
-            PLATO.getName(),
-            PLATO.getBpn(),
-            PLATO.renewalConfiguration()
-    );
+    public static final String BPN_SUFFIX = "-BPN";
+    public static final String SOKRATES_NAME = "SOKRATES";
+    public static final String SOKRATES_BPN = SOKRATES_NAME + BPN_SUFFIX;
+    public static final String PLATO_NAME = "PLATO";
+    public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
+    static final String DB_SCHEMA_NAME = "testschema";
 
 }
