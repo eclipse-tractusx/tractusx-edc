@@ -39,9 +39,9 @@ public class DimStsConfigurationExtensionTest {
     void initialize(ServiceExtensionContext context, DimStsConfigurationExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
-        when(config.getString(TOKEN_URL)).thenReturn("url");
-        when(config.getString(CLIENT_ID)).thenReturn("clientId");
-        when(config.getString(CLIENT_SECRET_ALIAS)).thenReturn("clientSecretAlias");
+        when(config.getString(TOKEN_URL, null)).thenReturn("url");
+        when(config.getString(CLIENT_ID, null)).thenReturn("clientId");
+        when(config.getString(CLIENT_SECRET_ALIAS, null)).thenReturn("clientSecretAlias");
 
         assertThat(extension.clientConfiguration(context)).satisfies(stsConfig -> {
             assertThat(stsConfig.clientId()).isEqualTo("clientId");

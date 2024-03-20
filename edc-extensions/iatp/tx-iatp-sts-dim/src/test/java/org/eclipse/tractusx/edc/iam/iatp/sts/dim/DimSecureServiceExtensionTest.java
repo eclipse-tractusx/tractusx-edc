@@ -20,14 +20,13 @@
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.eclipse.tractusx.edc.iam.iatp.sts.dim.DimSecureTokenServiceExtension.DIM_URL;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,13 +38,13 @@ public class DimSecureServiceExtensionTest {
     void initialize(ServiceExtensionContext context, DimSecureTokenServiceExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
-        when(config.getString(DIM_URL)).thenReturn("url");
+        when(config.getString(DIM_URL, null)).thenReturn("url");
         assertThat(extension.secureTokenService(context)).isInstanceOf(DimSecureTokenService.class);
     }
 
     @Test
-    void initialize_shouldThrow_whenUrlIsMissing(ServiceExtensionContext context, DimSecureTokenServiceExtension extension) {
-        assertThatThrownBy(() -> extension.secureTokenService(context)).isInstanceOf(EdcException.class);
+    void initialize_shouldNotThrow_whenUrlIsMissing(ServiceExtensionContext context, DimSecureTokenServiceExtension extension) {
+        assertThatNoException().isThrownBy(() -> extension.secureTokenService(context));
     }
 
 }

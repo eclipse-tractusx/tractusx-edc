@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,12 +15,15 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.core.utils;
 
-dependencies {
-    implementation(libs.edc.spi.core)
+import org.eclipse.edc.spi.monitor.Monitor;
+
+public class RequiredConfigWarnings {
+
+    public static void warningNotPresent(Monitor monitor, String missingConfig) {
+        monitor.severe("Mandatory config value missing: '%s'. This runtime will not be fully operational! Starting with v0.7.x this will be a runtime error.".formatted(missingConfig));
+    }
 }

@@ -29,9 +29,11 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
 
-import static org.eclipse.tractusx.edc.core.utils.PathUtils.removeTrailingSlash;
+import static java.util.Optional.ofNullable;
+import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.warningNotPresent;
 
 @Extension(DimSecureTokenServiceExtension.NAME)
 public class DimSecureTokenServiceExtension implements ServiceExtension {
@@ -55,6 +57,7 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
 
+
     @Override
     public String name() {
         return NAME;
@@ -62,7 +65,14 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
 
     @Provider
     public SecureTokenService secureTokenService(ServiceExtensionContext context) {
-        return new DimSecureTokenService(httpClient, removeTrailingSlash(context.getConfig().getString(DIM_URL)), dimOauth2Client, typeManager.getMapper(), monitor);
-    }
+        var dimUrl = ofNullable(context.getConfig().getString(DIM_URL, null))
+                .map(PathUtils::removeTrailingSlash)
+                .orElse(null);
 
+        if (dimUrl == null) {
+            warningNotPresent(context.getMonitor().withPrefix("STS Client for DIM"), DIM_URL);
+        }
+
+        return new DimSecureTokenService(httpClient, dimUrl, dimOauth2Client, typeManager.getMapper(), monitor);
+    }
 }

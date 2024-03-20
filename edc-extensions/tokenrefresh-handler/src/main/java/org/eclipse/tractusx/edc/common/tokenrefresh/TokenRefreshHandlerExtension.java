@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.http.EdcHttpClient;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 import static org.eclipse.tractusx.edc.common.tokenrefresh.TokenRefreshHandlerExtension.NAME;
@@ -58,6 +59,10 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
     }
 
     private String getOwnDid(ServiceExtensionContext context) {
-        return context.getConfig().getString(PARTICIPANT_DID_PROPERTY);
+        var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
+        if (did == null) {
+            RequiredConfigWarnings.warningNotPresent(context.getMonitor().withPrefix("Token Refresh Handler"), PARTICIPANT_DID_PROPERTY);
+        }
+        return did;
     }
 }

@@ -24,8 +24,10 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.core.utils.PathUtils;
 
-import static org.eclipse.tractusx.edc.core.utils.PathUtils.removeTrailingSlash;
+import static java.util.Optional.ofNullable;
+import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.warningNotPresent;
 
 /**
  * Configuration Extension for the STS OAuth2 client
@@ -44,6 +46,7 @@ public class DimStsConfigurationExtension implements ServiceExtension {
 
     protected static final String NAME = "DIM STS client configuration extension";
 
+
     @Override
     public String name() {
         return NAME;
@@ -52,9 +55,21 @@ public class DimStsConfigurationExtension implements ServiceExtension {
     @Provider
     public StsRemoteClientConfiguration clientConfiguration(ServiceExtensionContext context) {
 
-        var tokenUrl = removeTrailingSlash(context.getConfig().getString(TOKEN_URL));
-        var clientId = context.getConfig().getString(CLIENT_ID);
-        var clientSecretAlias = context.getConfig().getString(CLIENT_SECRET_ALIAS);
+        var tokenUrl = ofNullable(context.getConfig().getString(TOKEN_URL, null))
+                .map(PathUtils::removeTrailingSlash).orElse(null);
+        var clientId = context.getConfig().getString(CLIENT_ID, null);
+        var clientSecretAlias = context.getConfig().getString(CLIENT_SECRET_ALIAS, null);
+
+        var monitor = context.getMonitor().withPrefix("STS Client for DIM");
+        if (tokenUrl == null) {
+            warningNotPresent(monitor, TOKEN_URL);
+        }
+        if (clientId == null) {
+            warningNotPresent(monitor, CLIENT_ID);
+        }
+        if (clientSecretAlias == null) {
+            warningNotPresent(monitor, CLIENT_SECRET_ALIAS);
+        }
 
         return new StsRemoteClientConfiguration(tokenUrl, clientId, clientSecretAlias);
     }
