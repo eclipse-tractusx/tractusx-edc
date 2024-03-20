@@ -26,12 +26,12 @@ import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
-import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.IatpDimParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.KeycloakDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.SecureTokenService;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -58,20 +58,20 @@ public class DimHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
     protected static final IatpDimParticipant PLATO_IATP = new IatpDimParticipant(PLATO, STS_PARTICIPANT.stsUri(), DIM_URI);
 
     @RegisterExtension
-    protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
+    protected static final IatpParticipantRuntime PLATO_RUNTIME = new IatpParticipantRuntime(
             ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
             PLATO.getName(),
-            PLATO.getBpn(),
-            PLATO_IATP.iatpConfiguration(SOKRATES)
+            PLATO_IATP.iatpConfiguration(SOKRATES),
+            PLATO_IATP.getKeyPair()
     );
     protected static final IatpDimParticipant SOKRATES_IATP = new IatpDimParticipant(SOKRATES, STS_PARTICIPANT.stsUri(), DIM_URI);
 
     @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+    protected static final IatpParticipantRuntime SOKRATES_RUNTIME = new IatpParticipantRuntime(
             ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
             SOKRATES.getName(),
-            SOKRATES.getBpn(),
-            SOKRATES_IATP.iatpConfiguration(PLATO)
+            SOKRATES_IATP.iatpConfiguration(PLATO),
+            SOKRATES_IATP.getKeyPair()
     );
     private static MockWebServer oauthServer;
     private static MockWebServer dimDispatcher;

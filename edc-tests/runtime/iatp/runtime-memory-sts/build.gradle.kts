@@ -41,6 +41,8 @@ dependencies {
     implementation(libs.jakarta.rsApi)
     implementation(libs.bundles.edc.sts)
 
+    implementation(libs.edc.identity.trust.sts.embedded)
+    implementation(libs.edc.core.token)
 }
 
 application {

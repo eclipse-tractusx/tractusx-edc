@@ -24,8 +24,6 @@ plugins {
 
 dependencies {
 
-    implementation(libs.edc.identity.trust.sts.embedded)
-    implementation(libs.edc.core.token)
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.util)
     implementation(libs.edc.spi.web)
