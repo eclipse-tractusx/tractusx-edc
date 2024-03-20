@@ -89,6 +89,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 mock(),
                 TEST_REFRESH_ENDPOINT,
                 1,
+                () -> providerKey.getKeyID(),
                 new InMemoryVault(mock()),
                 new ObjectMapper());
 

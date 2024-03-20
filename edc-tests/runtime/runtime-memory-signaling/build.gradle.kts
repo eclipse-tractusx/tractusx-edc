@@ -27,13 +27,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-tests:runtime:runtime-memory"))
-
-    // these extensions are used for DataPlane Signaling + Token Refresh
-    runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
-    runtimeOnly(project((":edc-extensions:tokenrefresh-handler")))
-    runtimeOnly(libs.edc.edr.store.receiver)
-    runtimeOnly(libs.edc.core.edrstore)
-
 }
 
 application {

@@ -42,7 +42,7 @@ class AdditionalHeadersResourceDefinitionGenerator implements ProviderResourceDe
 
     @Override
     public @Nullable ResourceDefinition generate(TransferProcess transferProcess, DataAddress dataAddress, Policy policy) {
-        var bpn = Optional.of(transferProcess.getDataRequest().getContractId())
+        var bpn = Optional.of(transferProcess.getContractId())
                 .map(contractAgreementService::findById)
                 .map(ContractAgreement::getConsumerId)
                 .orElse(null);
@@ -50,7 +50,7 @@ class AdditionalHeadersResourceDefinitionGenerator implements ProviderResourceDe
         return AdditionalHeadersResourceDefinition.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
                 .dataAddress(dataAddress)
-                .contractId(transferProcess.getDataRequest().getContractId())
+                .contractId(transferProcess.getContractId())
                 .bpn(bpn)
                 .build();
     }

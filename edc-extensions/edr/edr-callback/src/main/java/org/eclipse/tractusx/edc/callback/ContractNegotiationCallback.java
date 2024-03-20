@@ -35,7 +35,7 @@ import static java.lang.String.format;
 
 public class ContractNegotiationCallback implements InProcessCallback {
 
-    public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy").build();
+    public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy-PULL").build();
     private final TransferProcessService transferProcessService;
 
     private final Monitor monitor;

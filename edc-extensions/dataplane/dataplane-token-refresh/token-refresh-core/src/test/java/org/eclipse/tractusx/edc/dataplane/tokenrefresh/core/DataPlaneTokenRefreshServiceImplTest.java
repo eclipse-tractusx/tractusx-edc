@@ -61,7 +61,7 @@ class DataPlaneTokenRefreshServiceImplTest {
     private final DidPublicKeyResolver didPublicKeyResolver = mock();
 
     private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(), tokenValidationService, didPublicKeyResolver, accessTokenDataStore, tokenGenService, mock(), mock(), "https://example.com", 1,
-            mock(), new ObjectMapper());
+            () -> "keyid", mock(), new ObjectMapper());
 
 
     @Test

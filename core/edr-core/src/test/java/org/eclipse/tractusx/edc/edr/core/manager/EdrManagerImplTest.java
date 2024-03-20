@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.edr.core.manager;
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResourceSet;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
@@ -31,6 +30,7 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.junit.jupiter.api.BeforeEach;
@@ -254,30 +254,21 @@ public class EdrManagerImplTest {
 
     private TransferProcess.Builder createTransferProcessBuilder() {
         var processId = UUID.randomUUID().toString();
-        var dataRequest = createDataRequestBuilder()
-                .processId(processId)
-                .protocol("protocol")
-                .connectorAddress("http://an/address")
-                .build();
 
         return TransferProcess.Builder.newInstance()
                 .provisionedResourceSet(ProvisionedResourceSet.Builder.newInstance().build())
                 .type(CONSUMER)
                 .id("test-process-" + processId)
                 .state(TransferProcessStates.COMPLETED.code())
-                .dataRequest(dataRequest);
-    }
-
-    private DataRequest.Builder createDataRequestBuilder() {
-        return DataRequest.Builder.newInstance()
-                .id(UUID.randomUUID().toString())
                 .contractId(UUID.randomUUID().toString())
                 .assetId(UUID.randomUUID().toString())
-                .destinationType("test-type");
+                .protocol("protocol")
+                .dataDestination(DataAddress.Builder.newInstance().type("test-type").build())
+                .counterPartyAddress("http://an/address");
     }
 
     private Criterion[] stateIs(int state) {
-        return aryEq(new Criterion[] {hasState(state)});
+        return aryEq(new Criterion[]{ hasState(state) });
     }
 
 }

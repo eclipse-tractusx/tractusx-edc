@@ -31,6 +31,7 @@ dependencies {
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "cx-policy-legacy")
+        exclude(module = "tx-iatp-sts-dim")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-tests:runtime:extensions"))
@@ -40,6 +41,8 @@ dependencies {
     implementation(libs.jakarta.rsApi)
     implementation(libs.bundles.edc.sts)
 
+    implementation(libs.edc.identity.trust.sts.embedded)
+    implementation(libs.edc.core.token)
 }
 
 application {

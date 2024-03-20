@@ -17,5 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.lifecycle.ConsumerServicesExtension
 org.eclipse.tractusx.edc.lifecycle.VaultSeedExtension

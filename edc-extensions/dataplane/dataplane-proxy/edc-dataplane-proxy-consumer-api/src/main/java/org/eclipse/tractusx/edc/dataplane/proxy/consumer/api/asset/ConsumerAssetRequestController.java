@@ -63,7 +63,6 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 @Produces(MediaType.APPLICATION_JSON)
 public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     public static final String BASE_URL = EDC_NAMESPACE + "baseUrl";
-    private static final String HTTP_DATA = "HttpData";
     private static final String ASYNC_TYPE = "async";
     private static final String HEADER_AUTHORIZATION = "header:authorization";
     private static final String BEARER_PREFIX = "Bearer ";

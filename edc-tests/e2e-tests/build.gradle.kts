@@ -24,7 +24,6 @@ plugins {
 
 dependencies {
     testImplementation(project(":spi:edr-spi"))
-    testImplementation(project(":edc-extensions:edr:edr-api"))
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.nimbus.jwt)

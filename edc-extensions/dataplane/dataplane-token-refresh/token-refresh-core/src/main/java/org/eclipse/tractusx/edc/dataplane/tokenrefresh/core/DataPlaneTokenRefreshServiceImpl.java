@@ -30,10 +30,13 @@ import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.rules.ExpirationIssuedAtValidationRule;
+import org.eclipse.edc.token.spi.KeyIdDecorator;
 import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationRule;
@@ -75,6 +78,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final AccessTokenDataStore accessTokenDataStore;
     private final TokenGenerationService tokenGenerationService;
     private final Supplier<PrivateKey> privateKeySupplier;
+    private final Supplier<String> publicKeyIdSupplier;
     private final Monitor monitor;
     private final String refreshEndpoint;
     private final Clock clock;
@@ -90,6 +94,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                                             Monitor monitor,
                                             String refreshEndpoint,
                                             int tokenExpiryToleranceSeconds,
+                                            Supplier<String> publicKeyIdSupplier,
                                             Vault vault,
                                             ObjectMapper objectMapper) {
         this.tokenValidationService = tokenValidationService;
@@ -100,6 +105,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.monitor = monitor;
         this.refreshEndpoint = refreshEndpoint;
         this.clock = clock;
+        this.publicKeyIdSupplier = publicKeyIdSupplier;
         this.vault = vault;
         this.objectMapper = objectMapper;
         authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
@@ -202,7 +208,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         // the refresh token information must be returned in the EDR
         var edrAdditionalData = new HashMap<>(additionalTokenData);
         edrAdditionalData.put("refreshToken", refreshTokenResult.getContent().tokenRepresentation().getToken());
-        edrAdditionalData.put("expiresIn", DEFAULT_EXPIRY_IN_SECONDS);
+        edrAdditionalData.put("expiresIn", String.valueOf(DEFAULT_EXPIRY_IN_SECONDS));
         edrAdditionalData.put("refreshEndpoint", refreshEndpoint);
 
         var edrTokenRepresentation = TokenRepresentation.Builder.newInstance()
@@ -220,16 +226,40 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         return resolveToken(token, accessTokenRules);
     }
 
+    @Override
+    public Result<Void> revoke(String transferProcessId, String reason) {
+        var query = QuerySpec.Builder.newInstance()
+                .filter(new Criterion("additionalProperties.process_id", "=", transferProcessId))
+                .build();
+
+        var tokens = accessTokenDataStore.query(query);
+        return tokens.stream().map(this::deleteTokenData)
+                .reduce(Result::merge)
+                .orElseGet(() -> Result.failure("AccessTokenData associated to the transfer with ID '%s' does not exist.".formatted(transferProcessId)));
+    }
+
+    private Result<Void> deleteTokenData(AccessTokenData tokenData) {
+        var result = accessTokenDataStore.deleteById(tokenData.id());
+        if (result.failed()) {
+            return Result.failure(result.getFailureDetail());
+        } else {
+            return Result.success();
+        }
+    }
+
     /**
      * Creates a token that has an ID based on the given token parameters. If the token parameters don't contain a "jti" claim, one
      * will be generated at random.
      */
     private Result<TokenRepresentationWithId> createToken(TokenParameters tokenParameters) {
-        var claimDecorators = tokenParameters.getClaims().entrySet().stream().map(e -> (TokenDecorator) claimDecorator -> claimDecorator.claims(e.getKey(), e.getValue()));
+        var claims = new HashMap<>(tokenParameters.getClaims());
+        claims.put(JwtRegisteredClaimNames.ISSUED_AT, clock.instant().getEpochSecond()); // iat is millis in upstream -> bug
+        var claimDecorators = claims.entrySet().stream().map(e -> (TokenDecorator) claimDecorator -> claimDecorator.claims(e.getKey(), e.getValue()));
         var headerDecorators = tokenParameters.getHeaders().entrySet().stream().map(e -> (TokenDecorator) headerDecorator -> headerDecorator.header(e.getKey(), e.getValue()));
 
         var tokenId = new AtomicReference<>(tokenParameters.getStringClaim(TOKEN_ID_CLAIM));
         var allDecorators = new ArrayList<>(Stream.concat(claimDecorators, headerDecorators).toList());
+        allDecorators.add(new KeyIdDecorator(publicKeyIdSupplier.get()));
 
         // if there is no "jti" header on the token params, we'll assign a random one, and add it back to the decorators
         if (tokenId.get() == null) {

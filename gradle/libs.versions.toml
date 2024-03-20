@@ -143,6 +143,7 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 edc-ih-api = { module = "org.eclipse.edc:identity-hub-api", version.ref = "edc" }
 edc-ih-credentials = { module = "org.eclipse.edc:identity-hub-credentials", version.ref = "edc" }
 edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
+edc-ih-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-ih-keypairs = { module = "org.eclipse.edc:identity-hub-keypairs", version.ref = "edc" }
 edc-ih-participants = { module = "org.eclipse.edc:identity-hub-participants", version.ref = "edc" }
 edc-ih-did = { module = "org.eclipse.edc:identity-hub-did", version.ref = "edc" }
@@ -155,7 +156,6 @@ edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", versi
 edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
-edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
 edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
@@ -164,7 +164,6 @@ edc-dpf-azblob = { module = "org.eclipse.edc:data-plane-azure-storage", version.
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
 edc-dpf-api-control = { module = "org.eclipse.edc:data-plane-control-api", version.ref = "edc" }
-edc-dpf-api-public-v1 = { module = "org.eclipse.edc:data-plane-public-api", version.ref = "edc" }
 edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
@@ -210,7 +209,7 @@ titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "ti
 
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
-edc-dpf = ["edc.dpf-transfer", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
+edc-dpf = ["edc.dpf-transfer-signaling", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
 edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor"]
 edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]

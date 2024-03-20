@@ -195,6 +195,7 @@ public class TxParticipant extends Participant {
                 put("edc.data.encryption.keys.alias", "test-alias");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
+                put("edc.iam.issuer.id", "did:web:" + name);
             }
         };
     }
@@ -301,8 +302,8 @@ public class TxParticipant extends Participant {
             super.timeout(ASYNC_TIMEOUT);
             super.build();
 
-            this.participant.edrs = new ParticipantEdrApi(participant, participant.managementEndpoint, participant.backend);
-            this.participant.data = new ParticipantDataApi(participant);
+            this.participant.edrs = new ParticipantEdrApi(participant.backend);
+            this.participant.data = new ParticipantDataApi();
             return participant;
         }
     }

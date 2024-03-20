@@ -33,7 +33,7 @@ dependencies {
 
 
     implementation(project(":edc-extensions:ssi:ssi-identity-core"))
-    implementation(project(":edc-extensions:ssi:ssi-miw-credential-client"));
+    implementation(project(":edc-extensions:ssi:ssi-miw-credential-client"))
     implementation(project(":edc-extensions:ssi:ssi-identity-extractor"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
 

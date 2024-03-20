@@ -26,11 +26,16 @@ dependencies {
     runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":core:edr-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
-    runtimeOnly(project(":edc-extensions:data-encryption"))
 
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
-    runtimeOnly(project(":edc-extensions:edr:edr-api"))
+    runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
+    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
+    runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.edr.store.receiver)
+    runtimeOnly(libs.edc.dpf.transfer.signaling)
+
+    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))

@@ -1,0 +1,38 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/2023/catenax/credentials/summary/v1"
+  ],
+  "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+  "type": [
+    "VerifiableCredential",
+    "SummaryCredential"
+  ],
+  "issuer": "did:web:example.com",
+  "issuanceDate": "2023-06-02T12:00:00Z",
+  "expirationDate": "2022-06-16T18:56:59Z",
+  "credentialSubject": {
+    "id": "did:web:example.com",
+    "holderIdentifier": "%s",
+    "type": "Summary-List",
+    "name": "CX-Credentials",
+    "items": [
+      "MembershipCredential",
+      "DismantlerCredential",
+      "PcfCredential",
+      "SustainabilityCredential",
+      "QualityCredential",
+      "TraceabilityCredential",
+      "BehaviorTwinCredential",
+      "BpnCredential"
+    ],
+    "contractTemplates": "https://public.catena-x.org/contracts/"
+  },
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2023-06-02T12:00:00Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:web:example.com#key-1",
+    "jws": "xxxx"
+  }
+}

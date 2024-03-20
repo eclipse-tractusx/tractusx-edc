@@ -29,14 +29,12 @@ plugins {
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-extensions:postgresql-migration"))
-    runtimeOnly(project(":edc-extensions:edr:edr-cache-sql"))
     runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
     runtimeOnly(libs.edc.vault.hashicorp)
     runtimeOnly(libs.bundles.edc.sqlstores)
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
     runtimeOnly(libs.edc.core.controlplane)
-    runtimeOnly(libs.edc.dpf.transfer)
     runtimeOnly(libs.postgres)
 }
 

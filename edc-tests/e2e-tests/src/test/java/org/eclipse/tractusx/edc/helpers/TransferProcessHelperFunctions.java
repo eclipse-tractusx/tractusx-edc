@@ -22,27 +22,10 @@ package org.eclipse.tractusx.edc.helpers;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.protocol.dsp.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class TransferProcessHelperFunctions {
-
-    public static JsonObject createTransferRequest(String dataRequestId, String counterPartyAddress, String contractId, String assetId, boolean managedResources, JsonObject destination) {
-        return Json.createObjectBuilder()
-                .add(TYPE, EDC_NAMESPACE + "TransferRequestDto")
-                .add(ID, dataRequestId)
-                .add(EDC_NAMESPACE + "connectorId", "connectorId")
-                .add(EDC_NAMESPACE + "dataDestination", destination)
-                .add(EDC_NAMESPACE + "protocol", DATASPACE_PROTOCOL_HTTP)
-                .add(EDC_NAMESPACE + "assetId", assetId)
-                .add(EDC_NAMESPACE + "contractId", contractId)
-                .add(EDC_NAMESPACE + "counterPartyAddress", counterPartyAddress)
-                .add(EDC_NAMESPACE + "managedResources", managedResources)
-                .build();
-
-    }
 
 
     public static JsonObject createProxyRequest() {
