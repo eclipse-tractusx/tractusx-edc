@@ -19,42 +19,23 @@
 
 plugins {
     `java-library`
-    id("application")
+    `java-test-fixtures`
 }
-
 
 dependencies {
-
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
-        exclude(module = "tx-iatp-sts-dim")
-    }
-    implementation(project(":core:json-ld-core"))
-
-
-    implementation(project(":edc-extensions:ssi:ssi-identity-core"))
-    implementation(project(":edc-extensions:ssi:ssi-miw-credential-client"))
-    implementation(project(":edc-extensions:ssi:ssi-identity-extractor"))
-    implementation(project(":edc-extensions:cx-policy-legacy"))
-
-    implementation(project(":edc-tests:runtime:extensions"))
-
-    // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "api-observability")
-    }
-
-
-    implementation(libs.edc.core.controlplane)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
+    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
+    testImplementation(libs.edc.ih.spi)
+    testImplementation(libs.edc.ih.spi.store)
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.core.token)
+    // 3rd party libs
+    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.restAssured)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.okhttp.mockwebserver)
 }
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
+// do not publish
 edcBuild {
     publish.set(false)
 }

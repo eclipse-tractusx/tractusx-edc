@@ -56,8 +56,10 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
         this.properties = properties;
-        this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
-        this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
+        if (!properties.containsKey("tx.ssi.miw.url")) {
+            this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
+            this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
+        }
         var kid = properties.get("edc.iam.issuer.id") + "#key-1";
         try {
             runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();

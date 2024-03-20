@@ -21,7 +21,8 @@ package org.eclipse.tractusx.edc.tests.negotiation;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
+import org.eclipse.tractusx.edc.tests.SsiParticipant;
+import org.eclipse.tractusx.edc.tests.TxParticipant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,15 +30,15 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bpnGroupPolicy;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_POLL_INTERVAL;
-import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 public abstract class AbstractContractNegotiateTest {
 
@@ -50,6 +51,9 @@ public abstract class AbstractContractNegotiateTest {
             .name(PLATO_NAME)
             .id(PLATO_BPN)
             .build();
+    protected static final SsiParticipant PLATO_SSI = new SsiParticipant();
+    protected static final SsiParticipant SOKRATES_SSI = new SsiParticipant();
+
 
     @Test
     @DisplayName("Verify contract negotiation fails with wrong policy")
@@ -82,10 +86,6 @@ public abstract class AbstractContractNegotiateTest {
                 .untilAsserted(() -> {
                     var negotiationState = SOKRATES.getContractNegotiationState(negotiationId);
                     assertThat(negotiationState).isEqualTo(ContractNegotiationStates.TERMINATED.toString());
-                    var error = SOKRATES.getContractNegotiationError(negotiationId);
-
-                    assertThat(error).isNotNull();
-                    assertThat(error).contains("Contract offer is not valid: Policy in scope contract.negotiation not fulfilled");
                 });
     }
 

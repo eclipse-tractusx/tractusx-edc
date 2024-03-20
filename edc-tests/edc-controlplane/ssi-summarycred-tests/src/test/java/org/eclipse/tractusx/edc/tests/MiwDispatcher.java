@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.token;
+package org.eclipse.tractusx.edc.tests;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.nimbusds.jose.JOSEException;

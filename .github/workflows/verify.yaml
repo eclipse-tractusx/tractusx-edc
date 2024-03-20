@@ -116,11 +116,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [ { dir: edc-tests/edc-controlplane/catalog-tests},
-                   { dir: edc-tests/edc-controlplane/edr-api-tests},
-                   { dir: edc-tests/edc-controlplane/policy-tests},
-                   { dir: edc-tests/edc-controlplane/transfer-tests},
-                   { dir: edc-tests/e2e-tests}
+        variant: [ { dir: edc-tests/edc-controlplane/catalog-tests },
+                   { dir: edc-tests/edc-controlplane/edr-api-tests },
+                   { dir: edc-tests/edc-controlplane/iatp-tests },
+                   { dir: edc-tests/edc-controlplane/policy-tests },
+                   { dir: edc-tests/edc-controlplane/ssi-summarycred-tests },
+                   { dir: edc-tests/edc-controlplane/transfer-tests }
         ]
     steps:
       - uses: actions/checkout@v4

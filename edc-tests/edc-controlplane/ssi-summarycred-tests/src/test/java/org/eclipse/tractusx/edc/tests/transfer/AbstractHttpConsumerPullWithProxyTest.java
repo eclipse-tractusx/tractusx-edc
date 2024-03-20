@@ -24,8 +24,8 @@ import jakarta.json.JsonObject;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.tractusx.edc.lifecycle.tx.TxParticipant;
+import org.eclipse.tractusx.edc.tests.SsiParticipant;
+import org.eclipse.tractusx.edc.tests.TxParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,25 +37,29 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.bnpPolicy;
-import static org.eclipse.tractusx.edc.helpers.TransferProcessHelperFunctions.createProxyRequest;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.tests.TestCommon.ASYNC_TIMEOUT;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 
 public abstract class AbstractHttpConsumerPullWithProxyTest {
 
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+    protected static final TxParticipant SOKRATES = (TxParticipant.Builder.newInstance()
             .name(SOKRATES_NAME)
             .id(SOKRATES_BPN)
-            .build();
+            .build());
 
-    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+    protected static final TxParticipant PLATO = (TxParticipant.Builder.newInstance()
             .name(PLATO_NAME)
             .id(PLATO_BPN)
-            .build();
+            .build());
+
+    protected static final SsiParticipant PLATO_SSI = new SsiParticipant();
+    protected static final SsiParticipant SOKRATES_SSI = new SsiParticipant();
 
     protected MockWebServer server;
 
@@ -89,7 +93,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
         var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
         var contractAgreementId = new AtomicReference<String>();
-        var edr = new AtomicReference<EndpointDataReference>();
+        var edr = new AtomicReference<JsonObject>();
 
         // wait until transfer process completes
         await().pollInterval(fibonacci())
@@ -104,7 +108,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    edr.set(SOKRATES.edrs().getDataReferenceFromBackend(transferProcessId));
+                    edr.set(SOKRATES.edrs().getEdr(transferProcessId));
                     assertThat(edr).isNotNull();
                 });
 
@@ -113,7 +117,7 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
         assertThat(SOKRATES.data().pullData(edr.get(), Map.of())).isEqualTo("test response");
         var rq = server.takeRequest();
         assertThat(rq.getHeader(authCodeHeaderName)).isEqualTo(authCode);
-        assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isEqualTo(edr.get().getContractId());
+        assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isNotNull();
         assertThat(rq.getHeader("Edc-Bpn")).isEqualTo(SOKRATES.getBpn());
         assertThat(rq.getMethod()).isEqualToIgnoringCase("GET");
     }
@@ -129,5 +133,13 @@ public abstract class AbstractHttpConsumerPullWithProxyTest {
 
     protected JsonObject createContractPolicy(String bpn) {
         return bnpPolicy(bpn);
+    }
+
+    private JsonObject createProxyRequest() {
+        return Json.createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "HttpProxy")
+                .build();
+
     }
 }

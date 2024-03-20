@@ -17,82 +17,77 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer;
+package org.eclipse.tractusx.edc.tests.negotiation;
 
-import jakarta.json.JsonObject;
 import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
-import org.eclipse.tractusx.edc.token.KeycloakDispatcher;
-import org.eclipse.tractusx.edc.token.MiwDispatcher;
+import org.eclipse.tractusx.edc.tests.KeycloakDispatcher;
+import org.eclipse.tractusx.edc.tests.MiwDispatcher;
+import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
-import java.util.Map;
 
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.helpers.PolicyHelperFunctions.frameworkPolicy;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
+
 
 @EndToEndTest
-public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
+public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiateTest {
+    public static final String SUMMARY_VC_TEMPLATE = "summary-vc-no-dismantler.json";
 
-    public static final String SUMMARY_VC_TEMPLATE = "summary-vc.json";
-    @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory-ssi",
-            SOKRATES.getName(),
-            SOKRATES.getBpn(),
-            SOKRATES.ssiConfiguration()
-    );
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
             PLATO.getName(),
             PLATO.getBpn(),
-            PLATO.ssiConfiguration()
+            PLATO_SSI.ssiConfiguration(PLATO)
     );
 
+    @RegisterExtension
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+            ":edc-tests:runtime:runtime-memory-ssi",
+            SOKRATES.getName(),
+            SOKRATES.getBpn(),
+            SOKRATES_SSI.ssiConfiguration(SOKRATES)
+    );
+    private static MockWebServer miwSokratesServer;
+    private static MockWebServer miwPlatoServer;
     private static MockWebServer sokratesOauthServer;
     private static MockWebServer platoOauthServer;
-    private static MockWebServer miwPlatoServer;
-    private static MockWebServer miwSokratesServer;
+
 
     @BeforeAll
-    static void prepare() throws IOException {
+    static void setup() throws IOException {
         miwSokratesServer = new MockWebServer();
         miwPlatoServer = new MockWebServer();
         sokratesOauthServer = new MockWebServer();
         platoOauthServer = new MockWebServer();
 
+
         var credentialSubjectId = "did:web:example.com";
 
-        miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
+        miwSokratesServer.start(SOKRATES_SSI.miwEndpoint().getPort());
         miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.getProtocolEndpoint().getUrl().toString()));
 
-        miwPlatoServer.start(PLATO.miwEndpoint().getPort());
+        miwPlatoServer.start(PLATO_SSI.miwEndpoint().getPort());
         miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.getProtocolEndpoint().getUrl().toString()));
 
-        sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
+        sokratesOauthServer.start(SOKRATES_SSI.authTokenEndpoint().getPort());
         sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
 
-        platoOauthServer.start(PLATO.authTokenEndpoint().getPort());
+        platoOauthServer.start(PLATO_SSI.authTokenEndpoint().getPort());
         platoOauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
     @AfterAll
-    static void unwind() throws IOException {
+    static void teardown() throws IOException {
         miwSokratesServer.shutdown();
         miwPlatoServer.shutdown();
         sokratesOauthServer.shutdown();
         platoOauthServer.shutdown();
-    }
 
-    @Override
-    protected JsonObject createAccessPolicy(String bpn) {
-        return frameworkPolicy(Map.of(TX_NAMESPACE + "Dismantler", "active"));
     }
 }
