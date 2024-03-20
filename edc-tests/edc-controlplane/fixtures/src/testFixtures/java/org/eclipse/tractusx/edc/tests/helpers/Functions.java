@@ -21,7 +21,13 @@ package org.eclipse.tractusx.edc.tests.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockWebServer;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.ECGenParameterSpec;
 import java.util.concurrent.TimeUnit;
 
 public class Functions {
@@ -37,6 +43,16 @@ public class Functions {
                 throw new RuntimeException("Timeout exceeded waiting for events");
             }
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static KeyPair generateKeyPair() {
+        try {
+            KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
+            gen.initialize(new ECGenParameterSpec("secp256r1"));
+            return gen.generateKeyPair();
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
     }

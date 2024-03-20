@@ -37,7 +37,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
-public class TxParticipant extends Participant {
+public class TxParticipant extends IdentityParticipant {
     public static final String API_KEY = "testkey";
     public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
@@ -79,8 +79,8 @@ public class TxParticipant extends Participant {
                 put("edc.api.auth.key", "testkey");
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
-                put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-1");
-                put("edc.transfer.proxy.token.verifier.publickey.alias", getDid() + "#key-1");
+                put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
+                put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
                 put("tx.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));
@@ -128,6 +128,11 @@ public class TxParticipant extends Participant {
                 .post("/business-partner-groups")
                 .then()
                 .statusCode(204);
+    }
+
+    @Override
+    public String getFullKeyId() {
+        return getDid() + "#" + getKeyId();
     }
 
     @NotNull

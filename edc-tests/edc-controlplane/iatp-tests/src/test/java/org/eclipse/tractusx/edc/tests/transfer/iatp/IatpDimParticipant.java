@@ -17,36 +17,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id("application")
-}
+package org.eclipse.tractusx.edc.tests.transfer.iatp;
 
-dependencies {
 
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy-legacy")
-        exclude(module = "tx-iatp-sts-dim")
+import org.eclipse.tractusx.edc.tests.TxParticipant;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Extension of {@link IatpParticipant} with DIM specific configuration
+ */
+public class IatpDimParticipant extends IatpParticipant {
+    private final URI dimUri;
+
+    public IatpDimParticipant(TxParticipant participant, URI stsUri, URI dimUri) {
+        super(participant, stsUri);
+        this.dimUri = dimUri;
     }
-    implementation(project(":core:json-ld-core"))
-    implementation(project(":edc-tests:runtime:extensions"))
 
-    implementation(libs.edc.iam.mock)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.bundles.edc.sts)
-
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-edcBuild {
-    publish.set(false)
+    @Override
+    public Map<String, String> iatpConfiguration(TxParticipant... others) {
+        var config = new HashMap<>(super.iatpConfiguration(others));
+        config.put("edc.iam.sts.dim.url", dimUri.toString());
+        return config;
+    }
 }

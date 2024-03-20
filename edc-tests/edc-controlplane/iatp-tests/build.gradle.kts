@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,34 +19,28 @@
 
 plugins {
     `java-library`
-    id("application")
+    `java-test-fixtures`
 }
 
 dependencies {
-
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy-legacy")
-        exclude(module = "tx-iatp-sts-dim")
-    }
-    implementation(project(":core:json-ld-core"))
-    implementation(project(":edc-tests:runtime:extensions"))
-
-    implementation(libs.edc.iam.mock)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.bundles.edc.sts)
-
+    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
+    testImplementation(libs.edc.identity.trust.sts.embedded)
+    testImplementation(libs.edc.ih.did)
+    testImplementation(libs.edc.ih.spi)
+    testImplementation(libs.edc.ih.spi.store)
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.core.token)
+    testImplementation(libs.edc.identity.vc.ldp)
+    testImplementation(libs.edc.identity.jws2020)
+    // 3rd party libs
+    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.restAssured)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.bouncyCastle.bcpkixJdk18on)
 }
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
+// do not publish
 edcBuild {
     publish.set(false)
 }
