@@ -28,7 +28,6 @@ dependencies {
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "data-encryption")
-        exclude(module = "tx-iatp-sts-dim")
     }
     implementation(project(":core:json-ld-core"))
 
