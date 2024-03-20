@@ -27,7 +27,6 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessEvent;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessProvisioned;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -100,15 +99,11 @@ public class TransferProcessLocalCallbackTest {
         var edr = getEdr();
 
 
-        var dataRequest = DataRequest.Builder.newInstance().id(edr.getId())
-                .destinationType("HttpProxy")
-                .assetId(assetId)
-                .contractId(contractId)
-                .build();
-
         var transferProcess = TransferProcess.Builder.newInstance()
                 .id(transferProcessId)
-                .dataRequest(dataRequest)
+                .assetId(assetId)
+                .contractId(contractId)
+                .dataDestination(DataAddress.Builder.newInstance().type("HttpProxy").build())
                 .build();
 
         var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()
@@ -207,15 +202,11 @@ public class TransferProcessLocalCallbackTest {
         var contractId = "contractId";
         var edr = getEdr();
 
-        var dataRequest = DataRequest.Builder.newInstance().id(edr.getId())
-                .destinationType("HttpProxy")
-                .assetId(assetId)
-                .contractId(contractId)
-                .build();
-
         var transferProcess = TransferProcess.Builder.newInstance()
                 .id(transferProcessId)
-                .dataRequest(dataRequest)
+                .assetId(assetId)
+                .contractId(contractId)
+                .dataDestination(DataAddress.Builder.newInstance().type("HttpProxy").build())
                 .build();
 
         var edrEntry = EndpointDataReferenceEntry.Builder.newInstance()

@@ -82,7 +82,7 @@ public class TransferProcessLocalCallback implements InProcessCallback {
         return transactionContext.execute(() -> {
             var transferProcess = transferProcessStore.findById(terminated.getTransferProcessId());
             if (transferProcess != null) {
-                stopEdrNegotiation(transferProcess.getDataRequest().getAssetId(), transferProcess.getDataRequest().getContractId(), terminated.getReason());
+                stopEdrNegotiation(transferProcess.getAssetId(), transferProcess.getContractId(), terminated.getReason());
                 return Result.success();
             } else {
                 return Result.failure(format("Failed to find a transfer process with  ID %s", terminated.getTransferProcessId()));
@@ -113,15 +113,15 @@ public class TransferProcessLocalCallback implements InProcessCallback {
                 }
                 var cacheEntry = EndpointDataReferenceEntry.Builder.newInstance()
                         .transferProcessId(transferProcess.getId())
-                        .assetId(transferProcess.getDataRequest().getAssetId())
-                        .agreementId(transferProcess.getDataRequest().getContractId())
+                        .assetId(transferProcess.getAssetId())
+                        .agreementId(transferProcess.getContractId())
                         .providerId(contractNegotiation.getCounterPartyId())
                         .state(EndpointDataReferenceEntryStates.NEGOTIATED.code())
                         .expirationTimestamp(expirationTime.getContent())
                         .contractNegotiationId(contractNegotiationId)
                         .build();
 
-                cleanOldEdr(transferProcess.getDataRequest().getAssetId(), transferProcess.getDataRequest().getContractId());
+                cleanOldEdr(transferProcess.getAssetId(), transferProcess.getContractId());
                 edrCache.save(cacheEntry, edr);
 
                 return Result.success();

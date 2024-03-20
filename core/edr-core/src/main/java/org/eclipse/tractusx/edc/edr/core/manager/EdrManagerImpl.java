@@ -247,20 +247,18 @@ public class EdrManagerImpl implements EdrManager {
         if (transferProcess == null) {
             return StatusResult.failure(ResponseStatus.FATAL_ERROR, format("Failed to find transfer process %s", entry.getTransferProcessId()));
         }
-        var dataRequest = transferProcess.getDataRequest();
-
         var transferRequest = TransferRequest.Builder.newInstance()
-                .assetId(dataRequest.getAssetId())
-                .contractId(dataRequest.getContractId())
-                .protocol(dataRequest.getProtocol())
-                .counterPartyAddress(dataRequest.getConnectorAddress())
-                .dataDestination(dataRequest.getDataDestination())
+                .assetId(transferProcess.getAssetId())
+                .contractId(transferProcess.getContractId())
+                .protocol(transferProcess.getProtocol())
+                .counterPartyAddress(transferProcess.getCounterPartyAddress())
+                .dataDestination(transferProcess.getDataDestination())
                 .callbackAddresses(transferProcess.getCallbackAddresses())
                 .build();
 
         var result = transferProcessService.initiateTransfer(transferRequest);
         if (result.failed()) {
-            var msg = format("Failed to initiate a transfer for contract %s and asset %s, error: %s", dataRequest.getContractId(), dataRequest.getAssetId(), result.getFailureDetail());
+            var msg = format("Failed to initiate a transfer for contract %s and asset %s, error: %s", transferProcess.getContractId(), transferProcess.getAssetId(), result.getFailureDetail());
             monitor.severe(msg);
             return StatusResult.failure(ResponseStatus.ERROR_RETRY, result.getFailureDetail());
         }
