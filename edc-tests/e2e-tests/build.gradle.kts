@@ -47,6 +47,7 @@ dependencies {
     testImplementation(libs.edc.ih.spi.store)
     testImplementation(libs.edc.identity.trust.sts.embedded)
     testImplementation(libs.edc.token.core)
+    testImplementation(libs.edc.lib.boot)
     testImplementation(testFixtures(libs.edc.sql.core))
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(libs.awaitility)

@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class SsiParticipant {
 

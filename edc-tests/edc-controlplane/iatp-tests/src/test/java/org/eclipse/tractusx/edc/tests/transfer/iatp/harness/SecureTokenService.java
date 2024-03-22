@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 /**
  * STS configurations

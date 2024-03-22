@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
-import org.eclipse.edc.connector.core.vault.InMemoryVault;
+import org.eclipse.edc.boot.vault.InMemoryVault;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
