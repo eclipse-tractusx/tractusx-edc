@@ -91,7 +91,7 @@ public class DimHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
 
         dimDispatcher = new MockWebServer();
         dimDispatcher.start(DIM_URI.getPort());
-        dimDispatcher.setDispatcher(new DimDispatcher("/iatp", generatorServices));
+        dimDispatcher.setDispatcher(new DimDispatcher(generatorServices));
 
         // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();

@@ -27,8 +27,8 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
 
 /**
  * Helper class to delete all objects from a runtime's data stores.

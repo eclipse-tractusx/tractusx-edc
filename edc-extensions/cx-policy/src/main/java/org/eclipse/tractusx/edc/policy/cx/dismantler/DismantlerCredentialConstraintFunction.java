@@ -76,7 +76,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
         }
 
         // always filter for DismantlerCredential type
-        predicate = new CredentialTypePredicate(CX_CREDENTIAL_NS + DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
+        predicate = new CredentialTypePredicate(CX_CREDENTIAL_NS, DISMANTLER_LITERAL + CREDENTIAL_LITERAL);
 
 
         if (rightOperand.toString().contains(RIGHT_OPERAND_LIST_SEPARATOR)) {

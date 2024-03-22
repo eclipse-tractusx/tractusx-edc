@@ -24,14 +24,16 @@ import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import java.util.function.Predicate;
 
 public class CredentialTypePredicate implements Predicate<VerifiableCredential> {
-    private final String expectedType;
+    private final String credentialNamespace;
+    private final String credentialType;
 
-    public CredentialTypePredicate(String expectedType) {
-        this.expectedType = expectedType;
+    public CredentialTypePredicate(String credentialNamespace, String credentialType) {
+        this.credentialNamespace = credentialNamespace;
+        this.credentialType = credentialType;
     }
 
     @Override
     public boolean test(VerifiableCredential credential) {
-        return credential.getType().contains(expectedType);
+        return credential.getType().contains(credentialType) || credential.getType().contains(credentialNamespace + credentialType);
     }
 }

@@ -423,6 +423,7 @@ maven/mavencentral/org.eclipse.edc/http/0.5.2-SNAPSHOT, Apache-2.0, approved, te
 maven/mavencentral/org.eclipse.edc/iam-mock/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-did-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-did-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/identity-did-web/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-hub-api/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-hub-credentials/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-hub-did-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -613,7 +614,6 @@ maven/mavencentral/org.testcontainers/junit-jupiter/1.19.6, MIT, approved, #1034
 maven/mavencentral/org.testcontainers/junit-jupiter/1.19.7, MIT, approved, #10344
 maven/mavencentral/org.testcontainers/postgresql/1.19.7, MIT, approved, #10350
 maven/mavencentral/org.testcontainers/testcontainers/1.19.7, Apache-2.0 AND MIT, approved, #10347
-maven/mavencentral/org.testcontainers/vault/1.19.7, MIT, approved, #10852
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.xmlunit/xmlunit-placeholders/2.9.1, Apache-2.0, approved, clearlydefined

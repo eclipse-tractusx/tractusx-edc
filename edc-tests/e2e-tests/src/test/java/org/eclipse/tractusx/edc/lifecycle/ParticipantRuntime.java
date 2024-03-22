@@ -19,15 +19,14 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
-import org.eclipse.edc.spi.iam.AudienceResolver;
-import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.InjectionContainer;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
-import org.eclipse.tractusx.edc.token.MockBpnIdentityService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -35,23 +34,22 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.util.List;
 import java.util.Map;
 
-import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.generateKeyPair;
-import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.toPemEncoded;
-
 public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
-
 
     private final Map<String, String> properties;
     private DataWiper wiper;
 
-    public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
+
+    public ParticipantRuntime(String moduleName, String runtimeName, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
         this.properties = properties;
-        if (!properties.containsKey("tx.ssi.miw.url") && !properties.containsKey("edc.iam.issuer.id")) {
-            this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
-            this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
-        }
     }
+
+    public ParticipantRuntime(String runtimeName, Map<String, String> properties, String... modules) {
+        super(runtimeName, properties, modules);
+        this.properties = properties;
+    }
+
 
     @Override
     public void beforeTestExecution(ExtensionContext extensionContext) {
@@ -84,12 +82,16 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     private void registerConsumerPullKeys(Map<String, String> properties) {
         var privateAlias = properties.get("edc.transfer.proxy.token.signer.privatekey.alias");
         var publicAlias = properties.get("edc.transfer.proxy.token.verifier.publickey.alias");
-
         if (privateAlias != null && publicAlias != null) {
-            var keyPair = generateKeyPair();
-            var vault = getContext().getService(Vault.class);
-            vault.storeSecret(privateAlias, toPemEncoded(keyPair.getPrivate()));
-            vault.storeSecret(publicAlias, toPemEncoded(keyPair.getPublic()));
+            try {
+                var ecKey = new ECKeyGenerator(Curve.P_256).keyID(publicAlias).generate();
+                var vault = getContext().getService(Vault.class);
+                vault.storeSecret(privateAlias, ecKey.toJSONString());
+                vault.storeSecret(publicAlias, ecKey.toPublicJWK().toJSONString());
+            } catch (JOSEException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 

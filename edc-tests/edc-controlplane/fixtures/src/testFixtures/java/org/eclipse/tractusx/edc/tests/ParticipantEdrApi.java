@@ -24,6 +24,7 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.test.system.utils.Participant;
 
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
@@ -44,9 +45,9 @@ import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctio
  */
 public class ParticipantEdrApi {
 
-    private final TxParticipant participant;
+    private final Participant participant;
 
-    public ParticipantEdrApi(TxParticipant participant) {
+    public ParticipantEdrApi(Participant participant) {
         this.participant = participant;
     }
 

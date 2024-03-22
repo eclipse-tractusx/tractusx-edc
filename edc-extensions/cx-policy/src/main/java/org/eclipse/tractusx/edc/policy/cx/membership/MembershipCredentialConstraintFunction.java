@@ -61,7 +61,7 @@ public class MembershipCredentialConstraintFunction extends AbstractDynamicCrede
         }
         return credentialResult.getContent()
                 .stream()
-                .anyMatch(new CredentialTypePredicate(CX_CREDENTIAL_NS + MEMBERSHIP_LITERAL + CREDENTIAL_LITERAL));
+                .anyMatch(new CredentialTypePredicate(CX_CREDENTIAL_NS, MEMBERSHIP_LITERAL + CREDENTIAL_LITERAL));
     }
 
     @Override
