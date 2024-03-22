@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.generateKeyPair;
 import static org.eclipse.tractusx.edc.helpers.IatpHelperFunctions.toPemEncoded;
 import static org.eclipse.tractusx.edc.lifecycle.tx.iatp.DataspaceIssuer.DATASPACE_ISSUER;

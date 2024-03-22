@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 /**
  * Configuration baseline for Data-Plane e2e tests

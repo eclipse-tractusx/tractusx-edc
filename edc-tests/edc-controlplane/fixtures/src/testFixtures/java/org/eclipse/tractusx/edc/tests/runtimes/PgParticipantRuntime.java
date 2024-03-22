@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
-import org.eclipse.edc.connector.core.vault.InMemoryVault;
+import org.eclipse.edc.boot.vault.InMemoryVault;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -77,6 +77,13 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
         postgreSqlContainer.close();
     }
 
+    @Override
+    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
+        PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
+        helper.createDatabase();
+        super.bootExtensions(context, serviceExtensions);
+    }
+
     public Map<String, String> postgresqlConfiguration(String name) {
         var jdbcUrl = jdbcUrl(name);
         return new HashMap<>() {
@@ -101,13 +108,6 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
 
     public String baseJdbcUrl() {
         return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
-    }
-
-    @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
-        helper.createDatabase();
-        super.bootExtensions(context, serviceExtensions);
     }
 
     protected void mockVault() {

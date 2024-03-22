@@ -352,6 +352,7 @@ maven/mavencentral/org.eclipse.edc/aws-s3-core/0.5.2-SNAPSHOT, Apache-2.0, appro
 maven/mavencentral/org.eclipse.edc/aws-s3-test/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/azure-blob-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/azure-test/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/boot-lib/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-event-dispatcher/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-http-dispatcher/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -416,6 +417,7 @@ maven/mavencentral/org.eclipse.edc/dsp/0.5.2-SNAPSHOT, Apache-2.0, approved, tec
 maven/mavencentral/org.eclipse.edc/edr-store-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-receiver/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/http-lib/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/iam-mock/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc

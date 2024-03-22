@@ -31,6 +31,8 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.dpf.core)
+    testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.common.crypto)
+    testImplementation(libs.edc.lib.boot)
 }
 

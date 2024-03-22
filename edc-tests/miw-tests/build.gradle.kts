@@ -42,6 +42,7 @@ dependencies {
     testImplementation(libs.edc.spi.dataplane.selector)
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
+    testImplementation(libs.edc.lib.http)
     testImplementation(testFixtures(libs.edc.sql.core))
 
 
