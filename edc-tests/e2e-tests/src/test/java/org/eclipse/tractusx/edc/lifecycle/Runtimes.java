@@ -17,13 +17,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.lifecycle;
 
-import java.time.Duration;
+import java.util.Map;
 
-import static java.time.Duration.ofSeconds;
+public interface Runtimes {
 
-public interface TestCommon {
-    Duration ASYNC_TIMEOUT = ofSeconds(60);
-    Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    static ParticipantRuntime dimRuntime(String name, Map<String, String> configuration) {
+        return new ParticipantRuntime(name, configuration,
+                ":edc-tests:runtime:iatp:runtime-memory-iatp-dim"
+        );
+    }
 }

@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 public class DimSecureTokenServiceTest {
 
-    static final String BASE_URL = "http://localhost:8080";
+    static final String DIM_URL = "http://localhost:8080/iatp";
     private final Monitor monitor = mock(Monitor.class);
     private final DimOauth2Client oauth2Client = mock(DimOauth2Client.class);
     private final ObjectMapper mapper = new ObjectMapper();
@@ -67,7 +67,7 @@ public class DimSecureTokenServiceTest {
 
     @BeforeEach
     void setup() {
-        client = new DimSecureTokenService(testHttpClient(interceptor), BASE_URL, oauth2Client, mapper, monitor);
+        client = new DimSecureTokenService(testHttpClient(interceptor), DIM_URL, oauth2Client, mapper, monitor);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -88,7 +88,7 @@ public class DimSecureTokenServiceTest {
                 assertThat(((Map) payload)).containsAllEntriesOf(expectedBody);
             });
 
-            assertThat(request.url().url().toString()).isEqualTo(BASE_URL + "/iatp");
+            assertThat(request.url().url().toString()).isEqualTo(DIM_URL);
 
         };
 
@@ -122,7 +122,7 @@ public class DimSecureTokenServiceTest {
                 assertThat(((Map) payload)).containsAllEntriesOf(expectedBody);
             });
 
-            assertThat(request.url().url().toString()).isEqualTo(BASE_URL + "/iatp");
+            assertThat(request.url().url().toString()).isEqualTo(DIM_URL);
 
         };
 

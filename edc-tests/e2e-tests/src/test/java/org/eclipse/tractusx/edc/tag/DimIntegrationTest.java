@@ -17,45 +17,20 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.helpers;
+package org.eclipse.tractusx.edc.tag;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.eclipse.edc.junit.annotations.IntegrationTest;
+import org.junit.jupiter.api.Tag;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ReceivedEvent {
-    private String type;
-
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return "ReceivedEvent{" +
-                "type='" + type + '\'' +
-                '}';
-    }
-
-    public static class Builder {
-        private final ReceivedEvent event;
-
-        private Builder(ReceivedEvent event) {
-            this.event = event;
-        }
-
-        public static Builder newInstance() {
-            return new Builder(new ReceivedEvent());
-        }
-
-        public Builder type(String type) {
-            this.event.type = type;
-            return this;
-        }
-
-        public ReceivedEvent build() {
-            return event;
-        }
-    }
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@IntegrationTest
+@Tag("DimIntegrationTest")
+public @interface DimIntegrationTest {
 }
 

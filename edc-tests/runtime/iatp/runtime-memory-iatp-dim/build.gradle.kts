@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,20 +22,23 @@ plugins {
     id("application")
 }
 
-
 dependencies {
 
     // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
+    implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "data-encryption")
-        exclude(module = "json-ld-core")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "cx-policy-legacy")
     }
+    implementation(project(":edc-extensions:cx-policy"))
+    implementation(project(":core:json-ld-core"))
+    implementation(project(":edc-extensions:iatp:tx-iatp"))
+    implementation(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
 
     implementation(project(":edc-tests:runtime:extensions"))
+    implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     // use basic (all in-mem) data plane
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
@@ -43,6 +46,13 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
+    implementation(libs.edc.identity.core.trust)
+    implementation(libs.edc.identity.core.did)
+    implementation(libs.edc.identity.did.web)
+    implementation(libs.edc.identity.trust.transform)
+    implementation(libs.edc.identity.trust.issuers.configuration)
+    implementation(libs.edc.auth.oauth2.client)
+
     // for the controller
     implementation(libs.jakarta.rsApi)
 }
