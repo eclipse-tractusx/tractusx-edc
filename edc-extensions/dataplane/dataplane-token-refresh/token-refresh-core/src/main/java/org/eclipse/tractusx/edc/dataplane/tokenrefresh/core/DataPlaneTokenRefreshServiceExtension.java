@@ -48,17 +48,17 @@ import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneToke
 public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     public static final String NAME = "DataPlane Token Refresh Service extension";
     public static final int DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS = 5;
+    public static final long DEFAULT_TOKEN_EXPIRY_SECONDS = 300L;
     @Setting(value = "Token expiry tolerance period in seconds to allow for clock skew", defaultValue = "" + DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS)
     public static final String TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY = "edc.dataplane.token.expiry.tolerance";
-
     @Setting(value = "The HTTP endpoint where clients can request a renewal of their access token for the public dataplane API")
     public static final String REFRESH_ENDPOINT_PROPERTY = "edc.dataplane.token.refresh.endpoint";
     @Setting(value = "Alias of private key used for signing tokens, retrieved from private key resolver")
     public static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS = "edc.transfer.proxy.token.signer.privatekey.alias";
-
     @Setting(value = "Alias of public key used for verifying the tokens, retrieved from the vault")
     public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "edc.transfer.proxy.token.verifier.publickey.alias";
-
+    @Setting(value = "Expiry time of access token in seconds", defaultValue = DEFAULT_TOKEN_EXPIRY_SECONDS + "")
+    public static final String TOKEN_EXPIRY_SECONDS_PROPERTY = "edc.dataplane.token.expiry";
     @Inject
     private TokenValidationService tokenValidationService;
     @Inject
@@ -105,13 +105,18 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             var monitor = context.getMonitor().withPrefix("DataPlane Token Refresh");
             var expiryTolerance = getExpiryToleranceConfig(context);
             var refreshEndpoint = getRefreshEndpointConfig(context, monitor);
+            var tokenExpiry = getExpiryConfig(context);
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(),
-                    getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance,
+                    getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
                     () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper());
         }
         return tokenRefreshService;
+    }
+
+    private Long getExpiryConfig(ServiceExtensionContext context) {
+        return context.getConfig().getLong(TOKEN_EXPIRY_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_SECONDS);
     }
 
     private String getRefreshEndpointConfig(ServiceExtensionContext context, Monitor monitor) {

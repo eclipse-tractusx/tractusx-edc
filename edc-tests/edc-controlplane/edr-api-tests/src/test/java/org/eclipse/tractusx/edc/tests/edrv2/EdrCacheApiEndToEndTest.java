@@ -57,7 +57,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.matchers.Times.exactly;
 import static org.mockserver.model.HttpRequest.request;
@@ -300,9 +302,9 @@ public class EdrCacheApiEndToEndTest {
                 .type("test-type")
                 .property(EDC_NAMESPACE + "authorization", createJwt(providerSigningKey, claims))
                 .property(EDC_NAMESPACE + "authType", "bearer")
-                .property(TX_AUTH_NS + "refreshToken", createJwt(providerSigningKey, new JWTClaimsSet.Builder().build()))
-                .property(TX_AUTH_NS + "expiresIn", "300")
-                .property(TX_AUTH_NS + "refreshEndpoint", refreshEndpoint)
+                .property(EDR_PROPERTY_REFRESH_TOKEN, createJwt(providerSigningKey, new JWTClaimsSet.Builder().build()))
+                .property(EDR_PROPERTY_EXPIRES_IN, "300")
+                .property(EDR_PROPERTY_REFRESH_ENDPOINT, refreshEndpoint)
                 .build();
         var entry = EndpointDataReferenceEntry.Builder.newInstance()
                 .clock(isExpired ? // defaults to an expired token

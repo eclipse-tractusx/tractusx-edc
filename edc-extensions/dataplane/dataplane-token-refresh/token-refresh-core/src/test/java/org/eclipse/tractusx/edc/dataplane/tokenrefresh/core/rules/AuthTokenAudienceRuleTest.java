@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createToken;
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createAuthenticationToken;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +46,7 @@ class AuthTokenAudienceRuleTest {
                 DataAddress.Builder.newInstance().type("test-type").build(),
                 Map.of("audience", "did:web:alice")));
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("Principal 'did:web:bob' is not authorized to refresh this token.");
@@ -59,7 +59,7 @@ class AuthTokenAudienceRuleTest {
                 DataAddress.Builder.newInstance().type("test-type").build(),
                 Map.of("audience", 42L)));
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("Property 'audience' was expected to be java.lang.String but was class java.lang.Long.");
@@ -72,7 +72,7 @@ class AuthTokenAudienceRuleTest {
                 DataAddress.Builder.newInstance().type("test-type").build(),
                 Map.of()));
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("Property 'audience' was expected to be java.lang.String but was null.");

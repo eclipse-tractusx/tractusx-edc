@@ -45,16 +45,14 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.JWT_ID;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.edc.util.string.StringUtils.isNullOrBlank;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_AUTHORIZATION;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 
 public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
-    public static final String PROPERTY_AUTHORIZATION = EDC_NAMESPACE + "authorization";
-    public static final String PROPERTY_REFRESH_TOKEN = TX_AUTH_NS + "refreshToken";
-    public static final String PROPERTY_REFRESH_ENDPOINT = TX_AUTH_NS + "refreshEndpoint";
-    public static final String PROPERTY_EXPIRES_IN = TX_AUTH_NS + "expiresIn";
     private final EndpointDataReferenceCache edrCache;
     private final EdcHttpClient httpClient;
     private final String ownDid;
@@ -97,9 +95,9 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
 
     @Override
     public ServiceResult<DataAddress> refreshToken(String tokenId, DataAddress edr) {
-        var accessToken = edr.getStringProperty(PROPERTY_AUTHORIZATION);
-        var refreshToken = edr.getProperties().get(PROPERTY_REFRESH_TOKEN);
-        var refreshEndpoint = edr.getProperties().get(PROPERTY_REFRESH_ENDPOINT);
+        var accessToken = edr.getStringProperty(EDR_PROPERTY_AUTHORIZATION);
+        var refreshToken = edr.getProperties().get(EDR_PROPERTY_REFRESH_TOKEN);
+        var refreshEndpoint = edr.getProperties().get(EDR_PROPERTY_REFRESH_ENDPOINT);
 
         if (isNullOrBlank(accessToken)) {
             return ServiceResult.badRequest("Cannot perform token refresh: required property 'authorization' not found on EDR.");
@@ -116,9 +114,10 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
                         JWT_ID, tokenId,
                         ISSUER, ownDid,
                         SUBJECT, ownDid,
-                        AUDIENCE, audience
+                        AUDIENCE, audience,
+                        "token", accessToken
                 ))
-                .compose(claims -> secureTokenService.createToken(claims, accessToken))
+                .compose(claims -> secureTokenService.createToken(claims, null))
                 .compose(authToken -> createTokenRefreshRequest(refreshEndpoint.toString(), refreshToken.toString(), "Bearer %s".formatted(authToken.getToken())));
 
         if (result.failed()) {
@@ -134,9 +133,9 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         var newEdr = DataAddress.Builder.newInstance()
                 .type(oldEdr.getType())
                 .properties(oldEdr.getProperties())
-                .property(PROPERTY_AUTHORIZATION, tokenResponse.accessToken())
-                .property(PROPERTY_REFRESH_TOKEN, tokenResponse.refreshToken())
-                .property(PROPERTY_EXPIRES_IN, String.valueOf(tokenResponse.expiresInSeconds()))
+                .property(EDR_PROPERTY_AUTHORIZATION, tokenResponse.accessToken())
+                .property(EDR_PROPERTY_REFRESH_TOKEN, tokenResponse.refreshToken())
+                .property(EDR_PROPERTY_EXPIRES_IN, String.valueOf(tokenResponse.expiresInSeconds()))
                 .build();
         return ServiceResult.from(edrCache.put(id, newEdr)).map(u -> newEdr);
     }

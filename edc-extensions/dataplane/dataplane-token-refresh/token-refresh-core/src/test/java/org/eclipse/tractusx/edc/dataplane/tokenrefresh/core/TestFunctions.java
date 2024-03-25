@@ -19,14 +19,42 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.spi.iam.ClaimToken;
 
+import java.util.UUID;
+
 public class TestFunctions {
-    public static ClaimToken createToken(String id) {
+    public static ClaimToken createAuthenticationToken(String id) {
         return ClaimToken.Builder.newInstance()
-                .claim("access_token", "test-access-token")
+                .claim("token", createJwt(id))
+                .claim("jti", UUID.randomUUID().toString())
+                .claim("iss", "did:web:bob")
+                .build();
+    }
+
+    public static ClaimToken createAccessToken(String id) {
+        return ClaimToken.Builder.newInstance()
                 .claim("jti", id)
                 .claim("iss", "did:web:bob")
                 .build();
+    }
+
+    public static String createJwt(String id) {
+        try {
+            var key = new ECKeyGenerator(Curve.P_256).generate();
+            var jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.ES256), new JWTClaimsSet.Builder().jwtID(id).build());
+            jwt.sign(new ECDSASigner(key));
+            return jwt.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

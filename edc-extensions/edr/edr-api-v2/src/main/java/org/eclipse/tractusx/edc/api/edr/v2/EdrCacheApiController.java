@@ -54,7 +54,7 @@ import static jakarta.json.stream.JsonCollectors.toJsonArray;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
 import static org.eclipse.edc.spi.result.ServiceResult.success;
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
@@ -178,7 +178,7 @@ public class EdrCacheApiController implements EdrCacheApi {
 
     // todo: move this method into a service once the "old" EDR api,service,etc. is removed
     private boolean isExpired(DataAddress edr, org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry metadata) {
-        var expiresInString = edr.getStringProperty(TX_AUTH_NS + "expiresIn");
+        var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);
         if (expiresInString == null) {
             return false;
         }

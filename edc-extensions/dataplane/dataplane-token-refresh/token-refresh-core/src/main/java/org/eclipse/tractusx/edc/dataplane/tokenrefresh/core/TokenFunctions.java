@@ -17,24 +17,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-plugins {
-    `java-library`
+package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
+
+import com.nimbusds.jwt.SignedJWT;
+import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
+import org.jetbrains.annotations.Nullable;
+
+import java.text.ParseException;
+
+public class TokenFunctions {
+
+    /**
+     * Returns the "jti" claim of a JWT in serialized format. Will throw a {@link RuntimeException} if the token is not in valid
+     * serialized JWT format.
+     */
+    public static @Nullable String getTokenId(String serializedJwt) {
+        try {
+            return SignedJWT.parse(serializedJwt).getJWTClaimsSet().getStringClaim(JwtRegisteredClaimNames.JWT_ID);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
-
-dependencies {
-    api(project(":spi:tokenrefresh-spi"))
-    api(project(":spi:core-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.token)
-    implementation(libs.edc.spi.keys)
-    implementation(libs.edc.spi.identity.did)
-    implementation(libs.edc.spi.dataplane.dataplane)
-    implementation(libs.edc.core.token)
-
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.dpf.core)
-    testImplementation(libs.edc.core.connector)
-    testImplementation(libs.edc.common.crypto)
-    testImplementation(libs.edc.lib.boot)
-}
-

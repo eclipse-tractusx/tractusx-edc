@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createToken;
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createAccessToken;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,7 @@ class RefreshTokenValidationRuleTest {
     void checkRule_noAccessTokenDataEntryFound() {
         when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(null);
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("No refresh token with the ID '%s' was found in the vault.".formatted(TEST_TOKEN_ID));
@@ -51,7 +51,7 @@ class RefreshTokenValidationRuleTest {
     void checkRule_noRefreshTokenStored() {
         when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(null);
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("No refresh token with the ID 'test-jti' was found in the vault.");
@@ -66,7 +66,7 @@ class RefreshTokenValidationRuleTest {
                         }
                         """);
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("Provided refresh token does not match the stored refresh token.");
@@ -81,7 +81,7 @@ class RefreshTokenValidationRuleTest {
                         }
                         """);
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .isEqualTo("Provided refresh token does not match the stored refresh token.");
@@ -96,7 +96,7 @@ class RefreshTokenValidationRuleTest {
                         }
                         """.formatted(TEST_REFRESH_TOKEN));
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isSucceeded();
     }
 
@@ -105,7 +105,7 @@ class RefreshTokenValidationRuleTest {
         when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(
                 "nope-thats-not-json");
 
-        assertThat(rule.checkRule(createToken(TEST_TOKEN_ID), Map.of()))
+        assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
                 .startsWith("Failed to parse stored secret");
