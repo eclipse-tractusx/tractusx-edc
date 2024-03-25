@@ -29,4 +29,5 @@ dependencies {
     implementation(project(":core:core-utils"))
 
     testImplementation(libs.edc.junit)
+    testImplementation(testFixtures(libs.edc.lib.http))
 }

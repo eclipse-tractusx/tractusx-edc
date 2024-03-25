@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":edc-tests:runtime:extensions"))
 
     implementation(libs.edc.iam.mock)
+    implementation(libs.edc.spi.keys)
     // for the controller
     implementation(libs.jakarta.rsApi)
     implementation(libs.bundles.edc.sts)

@@ -36,4 +36,5 @@ dependencies {
 
     testImplementation(testFixtures(project(":spi:ssi-spi")))
     testImplementation(testFixtures(libs.edc.junit))
+    testImplementation(testFixtures(libs.edc.lib.http))
 }

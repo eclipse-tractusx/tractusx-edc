@@ -47,7 +47,7 @@ import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.testfixtures.TestUtils.testHttpClient;
+import static org.eclipse.http.client.testfixtures.HttpTestUtils.testHttpClient;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.CREDENTIAL_PATH;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.HOLDER_IDENTIFIER;
 import static org.eclipse.tractusx.edc.iam.ssi.miw.api.MiwApiClientImpl.PRESENTATIONS_PATH;
