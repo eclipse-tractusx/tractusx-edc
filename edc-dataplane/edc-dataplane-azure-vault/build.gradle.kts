@@ -32,7 +32,7 @@ dependencies {
         }
     }
     implementation(libs.edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.8.0")
+    implementation("com.azure:azure-security-keyvault-secrets:4.8.1")
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
     runtimeOnly(libs.postgres)
