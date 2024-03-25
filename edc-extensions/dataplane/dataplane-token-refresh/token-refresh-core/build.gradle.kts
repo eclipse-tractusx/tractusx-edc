@@ -25,6 +25,7 @@ dependencies {
     api(project(":spi:tokenrefresh-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.token)
+    implementation(libs.edc.spi.keys)
     implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.core.token)

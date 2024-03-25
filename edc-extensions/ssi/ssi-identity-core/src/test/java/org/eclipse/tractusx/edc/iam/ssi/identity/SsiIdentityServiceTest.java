@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.iam.ssi.identity;
 
 import org.eclipse.edc.spi.iam.ClaimToken;
-import org.eclipse.edc.spi.iam.PublicKeyResolver;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
@@ -43,7 +42,6 @@ public class SsiIdentityServiceTest {
     SsiCredentialClient credentialClient = mock(SsiCredentialClient.class);
     SsiTokenValidationService tokenValidationService = mock(SsiTokenValidationService.class);
     TokenValidationRulesRegistry rulesRegistry = mock(TokenValidationRulesRegistry.class);
-    PublicKeyResolver publicKeyResolver = mock(PublicKeyResolver.class);
 
     SsiIdentityService identityService;
 
