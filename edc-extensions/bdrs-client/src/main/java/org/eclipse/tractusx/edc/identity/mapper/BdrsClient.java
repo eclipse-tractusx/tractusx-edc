@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 
-public class BdrsClient implements AudienceResolver {
+class BdrsClient implements AudienceResolver {
     private static final TypeReference<Map<String, String>> MAP_REF = new TypeReference<>() {
     };
     private final String serverUrl;
@@ -47,7 +47,7 @@ public class BdrsClient implements AudienceResolver {
     private Instant lastCacheUpdate;
     private Map<String, String> cache;
 
-    public BdrsClient(String baseUrl, int cacheValidity, EdcHttpClient httpClient, Monitor monitor, ObjectMapper mapper) {
+    BdrsClient(String baseUrl, int cacheValidity, EdcHttpClient httpClient, Monitor monitor, ObjectMapper mapper) {
         this.serverUrl = baseUrl;
         this.cacheValidity = cacheValidity;
         this.httpClient = httpClient;
