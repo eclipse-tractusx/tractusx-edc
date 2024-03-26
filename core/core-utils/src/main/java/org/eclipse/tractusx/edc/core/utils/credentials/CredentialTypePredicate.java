@@ -17,24 +17,23 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iatp.policy;
+package org.eclipse.tractusx.edc.core.utils.credentials;
 
-import org.eclipse.edc.runtime.metamodel.annotation.Extension;
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.agent.ParticipantAgentService;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 
-@Extension("TX credential policy evaluation extension")
-public class CredentialPolicyEvaluationExtension implements ServiceExtension {
-    
-    @Inject
-    private ParticipantAgentService participantAgentService;
+import java.util.function.Predicate;
 
-    @Override
-    public void initialize(ServiceExtensionContext context) {
+public class CredentialTypePredicate implements Predicate<VerifiableCredential> {
+    private final String credentialNamespace;
+    private final String credentialType;
 
-        participantAgentService.register(new IdentityExtractor());
+    public CredentialTypePredicate(String credentialNamespace, String credentialType) {
+        this.credentialNamespace = credentialNamespace;
+        this.credentialType = credentialType;
     }
 
+    @Override
+    public boolean test(VerifiableCredential credential) {
+        return credential.getType().contains(credentialType) || credential.getType().contains(credentialNamespace + credentialType);
+    }
 }

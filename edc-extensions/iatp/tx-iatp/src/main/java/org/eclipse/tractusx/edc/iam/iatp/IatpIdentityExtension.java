@@ -17,23 +17,33 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.iam.iatp;
 
-import org.eclipse.edc.identitytrust.model.VerifiableCredential;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.agent.ParticipantAgentService;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.iam.iatp.identity.IatpIdentityExtractor;
 
-import java.util.function.Predicate;
+import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
 
-public class CredentialTypePredicate implements Predicate<VerifiableCredential> {
-    private final String credentialNamespace;
-    private final String credentialType;
+@Extension(NAME)
+public class IatpIdentityExtension implements ServiceExtension {
 
-    public CredentialTypePredicate(String credentialNamespace, String credentialType) {
-        this.credentialNamespace = credentialNamespace;
-        this.credentialType = credentialType;
+
+    static final String NAME = "Tractusx IATP identity extension";
+    @Inject
+    private ParticipantAgentService participantAgentService;
+
+    @Override
+    public String name() {
+        return NAME;
     }
 
     @Override
-    public boolean test(VerifiableCredential credential) {
-        return credential.getType().contains(credentialType) || credential.getType().contains(credentialNamespace + credentialType);
+    public void initialize(ServiceExtensionContext context) {
+        participantAgentService.register(new IatpIdentityExtractor());
     }
+
 }

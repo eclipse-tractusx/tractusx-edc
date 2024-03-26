@@ -17,13 +17,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iatp.policy;
+package org.eclipse.tractusx.edc.iam.iatp.identity;
 
 import org.eclipse.edc.identitytrust.model.VerifiableCredential;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.agent.ParticipantAgentServiceExtension;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,13 +32,19 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
-// TODO this is just a test identity extractor, the real one can be inspired by this but with final Identity credential
-public class IdentityExtractor implements ParticipantAgentServiceExtension {
+/**
+ * Implementation of {@link ParticipantAgentServiceExtension} which extracts the identity of a participant
+ * from the MembershipCredential
+ */
+public class IatpIdentityExtractor implements ParticipantAgentServiceExtension {
 
     private static final String VC_CLAIM = "vc";
     private static final String IDENTITY_CREDENTIAL = "MembershipCredential";
     private static final String IDENTITY_PROPERTY = "holderIdentifier";
+
+    private final CredentialTypePredicate typePredicate = new CredentialTypePredicate(CX_CREDENTIAL_NS, IDENTITY_CREDENTIAL);
 
     @Override
     public @NotNull Map<String, String> attributesFor(ClaimToken claimToken) {
@@ -45,17 +52,13 @@ public class IdentityExtractor implements ParticipantAgentServiceExtension {
                 .orElseThrow(failure -> new EdcException("Failed to fetch credentials from the claim token: %s".formatted(failure.getFailureDetail())));
 
         return credentials.stream()
-                .filter(this::isIdentityCredential)
+                .filter(typePredicate)
                 .findFirst()
                 .flatMap(this::getIdentifier)
                 .map(identity -> Map.of(PARTICIPANT_IDENTITY, identity))
                 .orElseThrow(() -> new EdcException("Failed to fetch %s property from %s credential".formatted(IDENTITY_PROPERTY, IDENTITY_CREDENTIAL)));
 
 
-    }
-
-    private boolean isIdentityCredential(VerifiableCredential verifiableCredential) {
-        return verifiableCredential.getType().stream().anyMatch(t -> t.endsWith(IDENTITY_CREDENTIAL));
     }
 
     private Optional<String> getIdentifier(VerifiableCredential verifiableCredential) {

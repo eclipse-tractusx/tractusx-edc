@@ -24,6 +24,7 @@ plugins {
 dependencies {
     implementation(project(":spi:core-spi"))
     implementation(project(":spi:ssi-spi"))
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.policyengine)
     implementation(libs.jakartaJson)
     implementation(libs.edc.spi.identitytrust)
