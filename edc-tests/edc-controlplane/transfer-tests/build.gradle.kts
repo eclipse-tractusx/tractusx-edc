@@ -29,7 +29,6 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
-    testImplementation(libs.okhttp.mockwebserver)
 }
 
 // do not publish

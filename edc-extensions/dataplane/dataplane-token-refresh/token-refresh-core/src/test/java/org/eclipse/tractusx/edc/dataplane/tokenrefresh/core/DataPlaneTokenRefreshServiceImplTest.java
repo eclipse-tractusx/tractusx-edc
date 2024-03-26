@@ -31,6 +31,7 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
+import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.edc.token.spi.TokenValidationService;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +42,10 @@ import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createJwt;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -60,7 +65,8 @@ class DataPlaneTokenRefreshServiceImplTest {
     private final TokenValidationService tokenValidationService = mock();
     private final DidPublicKeyResolver didPublicKeyResolver = mock();
 
-    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(), tokenValidationService, didPublicKeyResolver, accessTokenDataStore, tokenGenService, mock(), mock(), "https://example.com", 1,
+    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(), tokenValidationService, didPublicKeyResolver, accessTokenDataStore, tokenGenService, mock(), mock(),
+            "https://example.com", 1, 300L,
             () -> "keyid", mock(), new ObjectMapper());
 
 
@@ -75,8 +81,8 @@ class DataPlaneTokenRefreshServiceImplTest {
         var result = accessTokenService.obtainToken(params, address, Map.of("fizz", "buzz", "refreshToken", "getsOverwritten"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
         assertThat(result.getContent().getAdditional())
-                .containsKeys("fizz", "refreshToken", "expiresIn", "refreshEndpoint")
-                .containsEntry("refreshToken", "foo-token");
+                .containsKeys("fizz", EDR_PROPERTY_REFRESH_TOKEN, EDR_PROPERTY_EXPIRES_IN, EDR_PROPERTY_REFRESH_ENDPOINT)
+                .containsEntry(EDR_PROPERTY_REFRESH_TOKEN, "foo-token");
 
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).store(any(AccessTokenData.class));
@@ -205,7 +211,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         assertThat(accessTokenService.refreshToken(refreshToken, accessToken))
                 .isFailed()
                 .detail()
-                .isEqualTo("test-failure");
+                .isEqualTo("Authentication token validation failed: test-failure");
 
         verify(tokenValidationService).validate(eq(accessToken), any(), anyList());
         verifyNoMoreInteractions(tokenValidationService, tokenGenService, didPublicKeyResolver, accessTokenDataStore);
@@ -213,10 +219,15 @@ class DataPlaneTokenRefreshServiceImplTest {
 
     @Test
     void refresh_whenRegeneratingTokenFails() {
-        var accessToken = "foo-bar";
-        var refreshToken = "fizz-buzz";
+        var accessToken = createJwt("quizz-quazz");
+        var authenticationToken = createJwt("foo-bar");
+        var refreshToken = createJwt("fizz-buzz");
+
         var tokenId = "token-id";
-        when(tokenValidationService.validate(eq(accessToken), any(), anyList()))
+        when(tokenValidationService.validate(eq(authenticationToken), any(), anyList()))
+                .thenReturn(Result.success(ClaimToken.Builder.newInstance().claim("token", accessToken).build()));
+
+        when(tokenValidationService.validate(eq(accessToken), any(), any(TokenValidationRule[].class)))
                 .thenReturn(Result.success(ClaimToken.Builder.newInstance().claim("jti", tokenId).build()));
 
         when(accessTokenDataStore.getById(eq(tokenId))).thenReturn(new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
@@ -225,12 +236,13 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.failure("generator-failure"));
 
 
-        assertThat(accessTokenService.refreshToken(refreshToken, accessToken))
+        assertThat(accessTokenService.refreshToken(refreshToken, authenticationToken))
                 .isFailed()
                 .detail()
                 .startsWith("Failed to regenerate access/refresh token pair: ");
 
-        verify(tokenValidationService).validate(eq(accessToken), any(), anyList());
+        verify(tokenValidationService).validate(eq(accessToken), any(), any(TokenValidationRule[].class));
+        verify(tokenValidationService).validate(eq(authenticationToken), any(), anyList());
         verify(accessTokenDataStore).getById(tokenId);
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
         verifyNoMoreInteractions(tokenValidationService, tokenGenService, didPublicKeyResolver, accessTokenDataStore);
@@ -238,11 +250,17 @@ class DataPlaneTokenRefreshServiceImplTest {
 
     @Test
     void refresh_whenStoreFails() {
-        var accessToken = "foo-bar";
-        var refreshToken = "fizz-buzz";
+        var accessToken = createJwt("quizz-quazz");
+        var authenticationToken = createJwt("foo-bar");
+        var refreshToken = createJwt("fizz-buzz");
+
         var tokenId = "token-id";
-        when(tokenValidationService.validate(eq(accessToken), any(), anyList()))
+        when(tokenValidationService.validate(eq(authenticationToken), any(), anyList()))
+                .thenReturn(Result.success(ClaimToken.Builder.newInstance().claim("token", accessToken).build()));
+
+        when(tokenValidationService.validate(eq(accessToken), any(), any(TokenValidationRule[].class)))
                 .thenReturn(Result.success(ClaimToken.Builder.newInstance().claim("jti", tokenId).build()));
+
 
         when(accessTokenDataStore.getById(eq(tokenId))).thenReturn(new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
                 DataAddress.Builder.newInstance().type("type").build(), Map.of("fizz", "buzz")));
@@ -251,12 +269,13 @@ class DataPlaneTokenRefreshServiceImplTest {
 
         when(accessTokenDataStore.update(any())).thenReturn(StoreResult.alreadyExists("test-failure"));
 
-        assertThat(accessTokenService.refreshToken(refreshToken, accessToken))
+        assertThat(accessTokenService.refreshToken(refreshToken, authenticationToken))
                 .isFailed()
                 .detail()
                 .startsWith("test-failure");
 
-        verify(tokenValidationService).validate(eq(accessToken), any(), anyList());
+        verify(tokenValidationService).validate(eq(authenticationToken), any(), anyList());
+        verify(tokenValidationService).validate(eq(accessToken), any(), any(TokenValidationRule[].class));
         verify(accessTokenDataStore).getById(tokenId);
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).update(any());
@@ -265,10 +284,15 @@ class DataPlaneTokenRefreshServiceImplTest {
 
     @Test
     void refresh_successful() {
-        var accessToken = "foo-bar";
-        var refreshToken = "fizz-buzz";
+        var accessToken = createJwt("quizz-quazz");
+        var authenticationToken = createJwt("foo-bar");
+        var refreshToken = createJwt("fizz-buzz");
+
         var tokenId = "token-id";
-        when(tokenValidationService.validate(eq(accessToken), any(), anyList()))
+        when(tokenValidationService.validate(eq(authenticationToken), any(), anyList()))
+                .thenReturn(Result.success(ClaimToken.Builder.newInstance().claim("token", accessToken).build()));
+
+        when(tokenValidationService.validate(eq(accessToken), any(), any(TokenValidationRule[].class)))
                 .thenReturn(Result.success(ClaimToken.Builder.newInstance().claim("jti", tokenId).build()));
 
         when(accessTokenDataStore.getById(eq(tokenId))).thenReturn(new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
@@ -280,14 +304,15 @@ class DataPlaneTokenRefreshServiceImplTest {
 
         when(accessTokenDataStore.update(any())).thenReturn(StoreResult.success());
 
-        assertThat(accessTokenService.refreshToken(refreshToken, accessToken))
+        assertThat(accessTokenService.refreshToken(refreshToken, authenticationToken))
                 .isSucceeded()
                 .satisfies(tr -> {
                     assertThat(tr.accessToken()).isEqualTo("fizz-token");
                     assertThat(tr.refreshToken()).isEqualTo("buzz-token");
                 });
 
-        verify(tokenValidationService).validate(eq(accessToken), any(), anyList());
+        verify(tokenValidationService).validate(eq(authenticationToken), any(), anyList());
+        verify(tokenValidationService).validate(eq(accessToken), any(), any(TokenValidationRule[].class));
         verify(accessTokenDataStore).getById(tokenId);
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).update(any());

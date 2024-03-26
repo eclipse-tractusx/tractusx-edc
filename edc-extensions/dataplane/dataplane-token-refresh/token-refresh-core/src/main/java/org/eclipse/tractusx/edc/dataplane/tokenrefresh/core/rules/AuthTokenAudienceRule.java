@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TokenFunctions.getTokenId;
+
+
 /**
  * Validates that the {@code iss} claim of a token is equal to the {@code audience} property found on the {@link org.eclipse.edc.connector.dataplane.spi.AccessTokenData}
  * that is associated with that token (using the {@code jti} claim).
@@ -42,9 +45,13 @@ public class AuthTokenAudienceRule implements TokenValidationRule {
     }
 
     @Override
-    public Result<Void> checkRule(@NotNull ClaimToken claimToken, @Nullable Map<String, Object> map) {
-        var issuer = claimToken.getStringClaim(JWTClaimNames.ISSUER);
-        var tokenId = claimToken.getStringClaim(JWTClaimNames.JWT_ID);
+    public Result<Void> checkRule(@NotNull ClaimToken authenticationToken, @Nullable Map<String, Object> map) {
+        var issuer = authenticationToken.getStringClaim(JWTClaimNames.ISSUER);
+        var accessToken = authenticationToken.getStringClaim("token");
+        if (accessToken == null) {
+            return Result.failure("Authentication token must contain a 'token' claim");
+        }
+        var tokenId = getTokenId(accessToken);
 
         var accessTokenData = store.getById(tokenId);
         var expectedAudience = accessTokenData.additionalProperties().getOrDefault(AUDIENCE_PROPERTY, null);

@@ -20,17 +20,13 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
-import okhttp3.mockwebserver.Dispatcher;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
 import org.eclipse.tractusx.edc.tests.TxParticipant;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpResponse;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,15 +36,17 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.mockserver.model.HttpRequest.request;
 
 public abstract class AbstractHttpProviderPushTest {
-
+    public static final String MOCK_BACKEND_REMOTEHOST = "localhost";
     protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
             .name(SOKRATES_NAME)
             .id(SOKRATES_BPN)
@@ -59,37 +57,28 @@ public abstract class AbstractHttpProviderPushTest {
             .id(PLATO_BPN)
             .build();
 
-    private MockWebServer server;
+    private ClientAndServer server;
 
     @BeforeEach
     void setup() {
-        server = new MockWebServer();
+        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTEHOST, getFreePort());
     }
 
     @Test
-    void httpPushDataTransfer() throws IOException {
+    void httpPushDataTransfer() {
         var assetId = UUID.randomUUID().toString();
 
-        var providerUrl = server.url("/mock/api/provider");
-        var consumerUrl = server.url("/mock/api/consumer");
+        var providerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTEHOST, server.getPort(), "/mock/api/provider");
+        var consumerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTEHOST, server.getPort(), "/mock/api/consumer");
 
-        server.setDispatcher(new Dispatcher() {
-            @NotNull
-            @Override
-            public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
-                return switch (recordedRequest.getPath().split("\\?")[0]) {
-                    case "/mock/api/provider" -> new MockResponse().setResponseCode(200);
-                    case "/mock/api/consumer" -> new MockResponse().setResponseCode(200);
-                    default -> new MockResponse().setResponseCode(404);
-                };
-            }
-        });
-
-        server.start();
+        server.when(request().withPath("/mock/api/provider"))
+                .respond(HttpResponse.response().withStatusCode(200));
+        server.when(request().withPath("/mock/api/consumer"))
+                .respond(HttpResponse.response().withStatusCode(200));
 
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",
-                "baseUrl", providerUrl.toString(),
+                "baseUrl", providerUrl,
                 "type", "HttpData",
                 "contentType", "application/json"
         );
@@ -98,7 +87,7 @@ public abstract class AbstractHttpProviderPushTest {
         var policyId = PLATO.createPolicyDefinition(bnpPolicy(SOKRATES.getBpn()));
         PLATO.createContractDefinition(assetId, "def-1", policyId, policyId);
 
-        var destination = httpDataAddress(consumerUrl.toString());
+        var destination = httpDataAddress(consumerUrl);
 
         var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
@@ -108,8 +97,8 @@ public abstract class AbstractHttpProviderPushTest {
     }
 
     @AfterEach
-    void teardown() throws IOException {
-        server.shutdown();
+    void teardown() {
+        server.stop();
     }
 
     private JsonObject httpDataAddress(String baseUrl) {

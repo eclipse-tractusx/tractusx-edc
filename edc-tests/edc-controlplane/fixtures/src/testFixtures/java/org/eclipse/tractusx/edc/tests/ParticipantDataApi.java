@@ -53,4 +53,5 @@ public class ParticipantDataApi {
         assertThat(response.statusCode()).isBetween(200, 300);
         return response.body().asString();
     }
+
 }

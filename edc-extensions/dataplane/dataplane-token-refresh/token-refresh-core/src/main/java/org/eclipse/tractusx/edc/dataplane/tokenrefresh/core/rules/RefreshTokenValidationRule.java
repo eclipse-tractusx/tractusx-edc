@@ -51,9 +51,9 @@ public class RefreshTokenValidationRule implements TokenValidationRule {
     }
 
     @Override
-    public Result<Void> checkRule(@NotNull ClaimToken toVerify, @Nullable Map<String, Object> additional) {
-        var tokenId = toVerify.getStringClaim(JWTClaimNames.JWT_ID);
+    public Result<Void> checkRule(@NotNull ClaimToken accessToken, @Nullable Map<String, Object> additional) {
 
+        var tokenId = accessToken.getStringClaim(JWTClaimNames.JWT_ID);
         var storedRefreshTokenJson = vault.resolveSecret(tokenId);
         if (storedRefreshTokenJson == null) {
             return failure("No refresh token with the ID '%s' was found in the vault.".formatted(tokenId));
