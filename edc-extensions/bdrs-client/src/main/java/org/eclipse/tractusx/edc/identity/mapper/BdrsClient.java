@@ -101,9 +101,11 @@ class BdrsClient implements AudienceResolver {
         try (var response = httpClient.execute(request)) {
             if (response.isSuccessful() && response.body() != null) {
                 var body = response.body().byteStream();
-                var bytes = new GZIPInputStream(body).readAllBytes();
-                cache = mapper.readValue(bytes, MAP_REF);
-                lastCacheUpdate = Instant.now();
+                try (var gz = new GZIPInputStream(body)) {
+                    var bytes = gz.readAllBytes();
+                    cache = mapper.readValue(bytes, MAP_REF);
+                    lastCacheUpdate = Instant.now();
+                }
             } else {
                 var msg = "Could not obtain data from BDRS server: code: %d, message: %s".formatted(response.code(), response.message());
                 throw new EdcException(msg);
