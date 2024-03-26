@@ -31,10 +31,17 @@ import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 
+/**
+ * Holds a local cache of BPN-to-DID mapping entries. An incoming {@link RemoteMessage} is mapped by looking up the {@link RemoteMessage#getCounterPartyId()}
+ * property in that map.
+ * <p>
+ * The local cache expires after a configurable time, at which point {@link BdrsClient#resolve(RemoteMessage)} requests will hit the server again.
+ */
 class BdrsClient implements AudienceResolver {
     private static final TypeReference<Map<String, String>> MAP_REF = new TypeReference<>() {
     };
@@ -44,8 +51,8 @@ class BdrsClient implements AudienceResolver {
     private final Monitor monitor;
     private final ObjectMapper mapper;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private Map<String, String> cache = new HashMap<>();
     private Instant lastCacheUpdate;
-    private Map<String, String> cache;
 
     BdrsClient(String baseUrl, int cacheValidity, EdcHttpClient httpClient, Monitor monitor, ObjectMapper mapper) {
         this.serverUrl = baseUrl;
@@ -81,7 +88,7 @@ class BdrsClient implements AudienceResolver {
     }
 
     private boolean isCacheExpired() {
-        return cache == null || lastCacheUpdate == null || lastCacheUpdate.plus(cacheValidity, ChronoUnit.SECONDS).isBefore(Instant.now());
+        return lastCacheUpdate == null || lastCacheUpdate.plus(cacheValidity, ChronoUnit.SECONDS).isBefore(Instant.now());
     }
 
     private void updateCache() {
