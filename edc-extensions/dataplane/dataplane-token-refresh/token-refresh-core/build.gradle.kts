@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.core.token)
+    implementation(libs.edc.lib.query)
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.dpf.core)

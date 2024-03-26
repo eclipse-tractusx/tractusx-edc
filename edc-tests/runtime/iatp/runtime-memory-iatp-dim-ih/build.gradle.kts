@@ -58,6 +58,9 @@ dependencies {
 
     // for the controller
     implementation(libs.jakarta.rsApi)
+
+    runtimeOnly(libs.edc.lib.store)
+
 }
 
 application {

@@ -25,6 +25,7 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jwt)
+    implementation(libs.edc.spi.token)
     implementation(libs.jakartaJson)
 
     testFixturesImplementation(libs.jacksonJsonP)
