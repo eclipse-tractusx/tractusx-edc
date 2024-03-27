@@ -67,19 +67,20 @@ class BdrsClient implements AudienceResolver {
         var bpn = remoteMessage.getCounterPartyId();
         String value;
         lock.readLock().lock();
-        if (isCacheExpired()) {
-            lock.readLock().unlock(); // unlock read, acquire write -> "upgrade" lock
-            lock.writeLock().lock();
-            try {
-                if (isCacheExpired()) {
-                    updateCache();
-                }
-                lock.readLock().lock(); // downgrade lock
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
         try {
+            if (isCacheExpired()) {
+                lock.readLock().unlock(); // unlock read, acquire write -> "upgrade" lock
+                lock.writeLock().lock();
+                try {
+                    if (isCacheExpired()) {
+                        updateCache();
+                    }
+                } finally {
+                    lock.readLock().lock(); // downgrade lock
+                    lock.writeLock().unlock();
+                }
+            }
+
             value = cache.get(bpn);
         } finally {
             lock.readLock().unlock();
