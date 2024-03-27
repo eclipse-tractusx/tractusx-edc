@@ -34,6 +34,7 @@ import org.eclipse.edc.connector.dataplane.framework.store.InMemoryAccessTokenDa
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
+import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.iam.TokenParameters;
@@ -69,6 +70,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     public static final String CONSUMER_DID = "did:web:bob";
     public static final String PROVIDER_DID = "did:web:alice";
     private final DidPublicKeyResolver didPkResolverMock = mock();
+    private final LocalPublicKeyService localPublicKeyService = mock();
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private InMemoryAccessTokenDataStore tokenDataStore;
     private ECKey consumerKey;
@@ -86,6 +88,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
                 new TokenValidationServiceImpl(),
                 didPkResolverMock,
+                localPublicKeyService,
                 tokenDataStore,
                 new JwtGenerationService(),
                 () -> privateKey,
@@ -96,6 +99,9 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 () -> providerKey.getKeyID(),
                 new InMemoryVault(mock()),
                 new ObjectMapper());
+
+        when(localPublicKeyService.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
+        when(localPublicKeyService.resolveKey(eq(providerKey.getKeyID()))).thenReturn(Result.success(providerKey.toPublicKey()));
 
         when(didPkResolverMock.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
         when(didPkResolverMock.resolveKey(eq(providerKey.getKeyID()))).thenReturn(Result.success(providerKey.toPublicKey()));
