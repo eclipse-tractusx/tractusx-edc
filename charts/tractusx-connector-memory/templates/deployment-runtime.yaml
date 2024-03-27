@@ -255,16 +255,6 @@ spec:
             - name: "EDC_VAULT_SECRETS"
               value: {{ .Values.vault.secrets | quote}}
 
-            #####################
-            ## DATA ENCRYPTION ##
-            #####################
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/data-encryption
-            - name: "EDC_DATA_ENCRYPTION_KEYS_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
-            - name: "EDC_DATA_ENCRYPTION_ALGORITHM"
-              value: "AES"
-
             ###########################
             ## AAS WRAPPER EXTENSION ##
             ###########################

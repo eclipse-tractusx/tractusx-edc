@@ -336,16 +336,6 @@ spec:
             - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
               value: {{ .Values.vault.hashicorp.paths.health | quote }}
 
-            #####################
-            ## DATA ENCRYPTION ##
-            #####################
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/data-encryption
-            - name: "EDC_DATA_ENCRYPTION_KEYS_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
-            - name: "EDC_DATA_ENCRYPTION_ALGORITHM"
-              value: "AES"
-
             ###########################
             ## AAS WRAPPER EXTENSION ##
             ###########################

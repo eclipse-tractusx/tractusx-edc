@@ -26,7 +26,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
@@ -58,6 +57,9 @@ dependencies {
 
     // for the controller
     implementation(libs.jakarta.rsApi)
+
+    runtimeOnly(libs.edc.lib.store)
+
 }
 
 application {

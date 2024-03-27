@@ -43,6 +43,7 @@ dependencies {
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.dsp)
     testImplementation(libs.edc.lib.http)
+    testImplementation(libs.edc.lib.jsonld)
     testImplementation(testFixtures(libs.edc.sql.core))
 
 
