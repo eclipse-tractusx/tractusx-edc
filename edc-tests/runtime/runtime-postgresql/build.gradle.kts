@@ -27,7 +27,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude(module = "data-encryption")
         exclude(module = "json-ld-core")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")

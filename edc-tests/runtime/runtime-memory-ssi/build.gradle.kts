@@ -26,9 +26,7 @@ plugins {
 dependencies {
 
     // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
-    }
+    implementation(project(":edc-controlplane:edc-controlplane-base"))
     implementation(project(":core:json-ld-core"))
 
 
