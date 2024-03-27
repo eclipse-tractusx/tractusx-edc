@@ -53,11 +53,6 @@ project.subprojects.forEach {
 
 }
 
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor(10, "minutes")
-    resolutionStrategy.cacheDynamicVersionsFor(10, "minutes")
-}
-
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
 
