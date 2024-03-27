@@ -53,6 +53,11 @@ project.subprojects.forEach {
 
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(10, "minutes")
+    resolutionStrategy.cacheDynamicVersionsFor(10, "minutes")
+}
+
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
 
@@ -98,8 +103,8 @@ allprojects {
         swagger {
             title.set((project.findProperty("apiTitle") ?: "Tractus-X REST API") as String)
             description =
-                    (project.findProperty("apiDescription")
-                            ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
+                (project.findProperty("apiDescription")
+                    ?: "Tractus-X REST APIs - merged by OpenApiMerger") as String
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
             resourcePackages = setOf("org.eclipse.tractusx.edc")
@@ -151,13 +156,14 @@ allprojects {
 subprojects {
     afterEvaluate {
         if (project.plugins.hasPlugin("com.github.johnrengelman.shadow") &&
-                file("${project.projectDir}/src/main/docker/Dockerfile").exists()
+            file("${project.projectDir}/src/main/docker/Dockerfile").exists()
         ) {
             val buildDir = project.layout.buildDirectory.get().asFile
 
             val agentFile = buildDir.resolve("opentelemetry-javaagent.jar")
             // create task to download the opentelemetry agent
-            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
+            val openTelemetryAgentUrl =
+                "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
             val downloadOtel = tasks.create("downloadOtel") {
                 // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
                 onlyIf {
@@ -171,8 +177,8 @@ subprojects {
                 doLast {
                     val download = { url: String, destFile: File ->
                         ant.invokeMethod(
-                                "get",
-                                mapOf("src" to url, "dest" to destFile)
+                            "get",
+                            mapOf("src" to url, "dest" to destFile)
                         )
                     }
                     logger.lifecycle("Downloading OpenTelemetry Agent")
@@ -206,9 +212,9 @@ subprojects {
             }
             // make sure  always runs after "dockerize" and after "copyOtel"
             dockerTask
-                    .dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
-                    .dependsOn(downloadOtel)
-                    .dependsOn(copyLegalDocs)
+                .dependsOn(tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME))
+                .dependsOn(downloadOtel)
+                .dependsOn(copyLegalDocs)
         }
     }
 }
