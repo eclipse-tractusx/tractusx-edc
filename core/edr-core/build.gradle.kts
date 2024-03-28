@@ -27,7 +27,7 @@ dependencies {
     implementation(libs.edc.util)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.controlplane)
-    implementation(libs.edc.statemachine)
+    implementation(libs.edc.lib.statemachine)
 
     implementation(project(":spi:edr-spi"))
     implementation(project(":spi:core-spi"))
