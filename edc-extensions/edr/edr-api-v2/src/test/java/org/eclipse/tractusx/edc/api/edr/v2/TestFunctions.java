@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.api.edr.v2;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
+import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
@@ -82,6 +83,15 @@ public class TestFunctions {
                         .id("offerId")
                         .assetId("assetId")
                         .policy(Policy.Builder.newInstance().build()).build())
+                .build();
+    }
+
+    public static ContractNegotiation createContractNegotiation() {
+        return ContractNegotiation.Builder.newInstance()
+                .id("id")
+                .counterPartyAddress("http://test")
+                .counterPartyId("provider")
+                .protocol("protocol")
                 .build();
     }
 }

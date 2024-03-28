@@ -116,7 +116,8 @@ jobs:
                    { dir: edc-tests/edc-controlplane/edr-api-tests },
                    { dir: edc-tests/edc-controlplane/iatp-tests },
                    { dir: edc-tests/edc-controlplane/policy-tests },
-                   { dir: edc-tests/edc-controlplane/transfer-tests }
+                   { dir: edc-tests/edc-controlplane/transfer-tests },
+                   { dir: edc-tests/edc-dataplane/edc-dataplane-tokenrefresh-tests }
         ]
     steps:
       - uses: actions/checkout@v4

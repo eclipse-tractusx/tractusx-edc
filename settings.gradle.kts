@@ -27,7 +27,6 @@ include(":spi:tokenrefresh-spi")
 
 
 // core modules
-include(":core:edr-cache-core")
 include(":core:edr-core")
 include(":core:json-ld-core")
 include(":core:core-utils")

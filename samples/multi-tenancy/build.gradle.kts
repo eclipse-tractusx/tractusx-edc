@@ -34,6 +34,7 @@ dependencies {
         // the token refresh extension is not needed
         exclude(module = "tx-iatp-sts-dim")
         exclude(module = "tokenrefresh-handler")
+        exclude(module = "edr-core")
         exclude(module = "edr-api-v2")
         exclude(module = "edr-callback")
     }

@@ -32,9 +32,9 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.ApiCoreSchema;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiSchema;
+import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
 import org.eclipse.tractusx.edc.api.edr.v2.schema.EdrSchema;
-import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;

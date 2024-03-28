@@ -17,5 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.edr.core.EdrCoreExtension
 org.eclipse.tractusx.edc.edr.core.EdrCoreServiceExtension
