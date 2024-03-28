@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,13 +15,15 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.participant;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.json.Json;
 import org.eclipse.edc.test.system.utils.Participant;
+import org.eclipse.tractusx.edc.tests.IdentityParticipant;
+import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
+import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
@@ -37,19 +39,23 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
-public class TxParticipant extends IdentityParticipant {
+/**
+ * Base class for doing E2E tests with participants.
+ */
+public abstract class TractusxParticipantBase extends IdentityParticipant {
+
     public static final String API_KEY = "testkey";
     public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
-
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
     private final URI backendProviderProxy = URI.create("http://localhost:" + getFreePort() + "/events");
     private final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI dataPlanePublic = URI.create("http://localhost:" + getFreePort() + "/public");
 
-    private ParticipantEdrApi edrs;
-    private ParticipantDataApi data;
+    protected ParticipantEdrApi edrs;
+    protected ParticipantDataApi data;
+    protected String did;
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
@@ -93,7 +99,6 @@ public class TxParticipant extends IdentityParticipant {
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + controlPlaneDefault.getPort() + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
-                put("edc.data.encryption.keys.alias", "test-alias");
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
                 put("edc.iam.issuer.id", getDid());
@@ -102,6 +107,9 @@ public class TxParticipant extends IdentityParticipant {
         };
     }
 
+    /**
+     * Returns the client api for fetching EDRs
+     */
     public ParticipantEdrApi edrs() {
         return edrs;
     }
@@ -136,23 +144,27 @@ public class TxParticipant extends IdentityParticipant {
     }
 
     @NotNull
-    private String getDid() {
-        return "did:web:" + name.toLowerCase();
+    public String getDid() {
+        return did;
     }
 
-    public static final class Builder extends Participant.Builder<TxParticipant, Builder> {
+    public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
 
-        private Builder() {
-            super(new TxParticipant());
+        protected Builder(P participant) {
+            super(participant);
         }
 
-        @JsonCreator
-        public static Builder newInstance() {
-            return new Builder();
+        public B did(String did) {
+            this.participant.did = did;
+            return self();
         }
 
         @Override
-        public TxParticipant build() {
+        public TractusxParticipantBase build() {
+            if (participant.did == null) {
+                participant.did = "did:web:" + participant.name.toLowerCase();
+            }
+
             super.managementEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/management"), Map.of("x-api-key", API_KEY)));
             super.protocolEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/protocol")));
             super.timeout(ASYNC_TIMEOUT);
@@ -163,4 +175,5 @@ public class TxParticipant extends IdentityParticipant {
             return participant;
         }
     }
+
 }

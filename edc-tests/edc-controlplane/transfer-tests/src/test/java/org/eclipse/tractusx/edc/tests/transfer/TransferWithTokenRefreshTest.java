@@ -19,23 +19,19 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
-import com.nimbusds.jose.util.Base64;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
 
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,9 +46,10 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
-import static org.eclipse.tractusx.edc.tests.transfer.TransferProcessHelperFunctions.createProxyRequest;
+import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
+import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -64,46 +61,26 @@ import static org.mockserver.model.HttpResponse.response;
 @EndToEndTest
 public class TransferWithTokenRefreshTest {
 
-    public static final String MOCK_BACKEND_REMOTEHOST = "localhost";
+    public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
     public static final String MOCK_BACKEND_PATH = "/mock/api";
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
             .name(SOKRATES_NAME)
             .id(SOKRATES_BPN)
             .build();
-    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+    protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
             .name(PLATO_NAME)
             .id(PLATO_BPN)
             .build();
+
     @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory",
-            SOKRATES.getName(),
-            SOKRATES.getBpn(),
-            SOKRATES.getConfiguration()
-    );
+    protected static final ParticipantRuntime SOKRATES_RUNTIME = memoryRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
     private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
+
     @RegisterExtension
-    protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory",
-            PLATO.getName(),
-            PLATO.getBpn(),
-            forConfig(PLATO.getConfiguration())
-    );
+    protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), forConfig(PLATO.getConfiguration()));
     protected ClientAndServer server;
     private String privateBackendUrl;
 
-    @BeforeAll
-    static void prepare() {
-        var bytes = new byte[32];
-
-        new SecureRandom().nextBytes(bytes);
-        var value = Base64.encode(bytes).toString();
-        var vault = SOKRATES_RUNTIME.getContext().getService(Vault.class);
-        vault.storeSecret("test-alias", value);
-        vault = PLATO_RUNTIME.getContext().getService(Vault.class);
-        vault.storeSecret("test-alias", value);
-
-    }
 
     private static Map<String, String> forConfig(Map<String, String> originalConfig) {
         var newConfig = new HashMap<>(originalConfig);
@@ -114,8 +91,8 @@ public class TransferWithTokenRefreshTest {
 
     @BeforeEach
     void setup() {
-        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTEHOST, getFreePort());
-        privateBackendUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTEHOST, server.getPort(), MOCK_BACKEND_PATH);
+        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());
+        privateBackendUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), MOCK_BACKEND_PATH);
     }
 
     @Test
@@ -133,7 +110,7 @@ public class TransferWithTokenRefreshTest {
         var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
         var contractPolicyId = PLATO.createPolicyDefinition(createContractPolicy(SOKRATES.getBpn()));
         PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest());
+        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -202,7 +179,7 @@ public class TransferWithTokenRefreshTest {
         var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
         var contractPolicyId = PLATO.createPolicyDefinition(createContractPolicy(SOKRATES.getBpn()));
         PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest());
+        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
         var edr = new AtomicReference<JsonObject>();
 

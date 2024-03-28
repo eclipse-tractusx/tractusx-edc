@@ -37,7 +37,7 @@ import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ import static org.mockserver.model.StringBody.exact;
  */
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
             .name("sokrates")
             .id("BPN00001")
             .build();

@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
-import org.eclipse.tractusx.edc.tests.TractusxIatpParticipantBase;
+import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public class DimParticipant extends TractusxIatpParticipantBase {
     }
 
     public static class Builder extends TractusxIatpParticipantBase.Builder<DimParticipant, Builder> {
-        
+
         protected Builder() {
             super(new DimParticipant());
         }

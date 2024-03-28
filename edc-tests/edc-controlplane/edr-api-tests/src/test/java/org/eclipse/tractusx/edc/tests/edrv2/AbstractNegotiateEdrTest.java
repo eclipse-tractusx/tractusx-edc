@@ -33,9 +33,9 @@ import org.eclipse.edc.connector.transfer.spi.event.TransferProcessRequested;
 import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
 import org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
+import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,19 +49,19 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_POLL_INTERVAL;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEvent;
 import static org.eclipse.tractusx.edc.tests.helpers.Functions.waitForEvent;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 public abstract class AbstractNegotiateEdrTest {
 
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
             .name(TestRuntimeConfiguration.SOKRATES_NAME)
             .id(TestRuntimeConfiguration.SOKRATES_BPN)
             .build();
 
-    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+    protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
             .name(TestRuntimeConfiguration.PLATO_NAME)
             .id(TestRuntimeConfiguration.PLATO_BPN)
             .build();

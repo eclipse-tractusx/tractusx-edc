@@ -21,8 +21,7 @@ package org.eclipse.tractusx.edc.tests.negotiation;
 
 import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.tests.SsiParticipant;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
+import org.eclipse.tractusx.edc.tests.MiwParticipant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,24 +34,22 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_POLL_INTERVAL;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 public abstract class AbstractContractNegotiateTest {
 
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+    protected static final MiwParticipant SOKRATES = MiwParticipant.Builder.newInstance()
             .name(SOKRATES_NAME)
             .id(SOKRATES_BPN)
             .build();
 
-    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
+    protected static final MiwParticipant PLATO = MiwParticipant.Builder.newInstance()
             .name(PLATO_NAME)
             .id(PLATO_BPN)
             .build();
-    protected static final SsiParticipant PLATO_SSI = new SsiParticipant();
-    protected static final SsiParticipant SOKRATES_SSI = new SsiParticipant();
 
 
     @Test

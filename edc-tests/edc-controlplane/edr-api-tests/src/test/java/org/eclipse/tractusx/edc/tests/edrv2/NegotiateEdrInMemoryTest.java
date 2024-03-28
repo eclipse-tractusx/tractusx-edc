@@ -20,14 +20,9 @@
 package org.eclipse.tractusx.edc.tests.edrv2;
 
 
-import com.nimbusds.jose.util.Base64;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
-
-import java.security.SecureRandom;
 
 @EndToEndTest
 public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
@@ -48,16 +43,4 @@ public class NegotiateEdrInMemoryTest extends AbstractNegotiateEdrTest {
             PLATO.getConfiguration()
     );
 
-    @BeforeAll
-    static void prepare() {
-        var bytes = new byte[32];
-
-        new SecureRandom().nextBytes(bytes);
-        var value = Base64.encode(bytes).toString();
-        var vault = SOKRATES_RUNTIME.getContext().getService(Vault.class);
-        vault.storeSecret("test-alias", value);
-        vault = PLATO_RUNTIME.getContext().getService(Vault.class);
-        vault.storeSecret("test-alias", value);
-
-    }
 }

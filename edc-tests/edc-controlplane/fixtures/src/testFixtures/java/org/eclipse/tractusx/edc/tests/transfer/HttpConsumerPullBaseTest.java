@@ -21,55 +21,52 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
-import org.eclipse.tractusx.edc.tests.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.verify.VerificationTimes;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 /**
  * Base tests for Http PULL scenario
  */
-public abstract class HttpConsumerPullBaseTest {
+public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
 
-    protected MockWebServer server;
+    public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
+    public static final String MOCK_BACKEND_PATH = "/mock/api";
+    protected ClientAndServer server;
 
-    public static JsonObject createProxyRequest() {
-        return Json.createObjectBuilder()
-                .add(TYPE, EDC_NAMESPACE + "DataAddress")
-                .add(EDC_NAMESPACE + "type", "HttpProxy-PULL")
-                .build();
+    private String privateBackendUrl;
 
-    }
 
     @BeforeEach
     void setup() {
-        server = new MockWebServer();
+        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());
+        privateBackendUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), MOCK_BACKEND_PATH);
     }
 
     @Test
-    void transferData_privateBackend() throws IOException, InterruptedException {
+    void transferData_privateBackend() {
         var assetId = "api-asset-1";
-        var url = server.url("/mock/api");
-        server.start();
 
 
         Map<String, Object> dataAddress = Map.of(
-                "baseUrl", url.toString(),
+                "baseUrl", privateBackendUrl,
                 "type", "HttpData",
                 "contentType", "application/json"
         );
@@ -79,9 +76,8 @@ public abstract class HttpConsumerPullBaseTest {
         var accessPolicyId = plato().createPolicyDefinition(createAccessPolicy(sokrates().getBpn()));
         var contractPolicyId = plato().createPolicyDefinition(createContractPolicy(sokrates().getBpn()));
         plato().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = sokrates().requestAsset(plato(), assetId, Json.createObjectBuilder().build(), createProxyRequest());
+        var transferProcessId = sokrates().requestAsset(plato(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
-        var contractAgreementId = new AtomicReference<String>();
         var edr = new AtomicReference<JsonObject>();
 
         // wait until transfer process completes
@@ -93,7 +89,7 @@ public abstract class HttpConsumerPullBaseTest {
                 });
 
         // wait until EDC is available on the consumer side
-        server.enqueue(new MockResponse().setBody("test response").setResponseCode(200));
+        server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
@@ -104,20 +100,19 @@ public abstract class HttpConsumerPullBaseTest {
         // pull data out of provider's backend service:
         // Prov-DP -> Prov-backend
         assertThat(sokrates().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
-        var rq = server.takeRequest();
-        assertThat(rq.getHeader("Edc-Contract-Agreement-Id")).isNotNull();
-        assertThat(rq.getHeader("Edc-Bpn")).isEqualTo(sokrates().getBpn());
-        assertThat(rq.getMethod()).isEqualToIgnoringCase("GET");
+
+        server.verify(request()
+                .withPath(MOCK_BACKEND_PATH)
+                .withHeader("Edc-Contract-Agreement-Id")
+                .withHeader("Edc-Bpn", sokrates().getBpn())
+                .withMethod("GET"), VerificationTimes.exactly(1));
+
     }
 
     @AfterEach
-    void teardown() throws IOException {
-        server.shutdown();
+    void teardown() {
+        server.stop();
     }
-
-    protected abstract TractusxParticipantBase plato();
-
-    protected abstract TractusxParticipantBase sokrates();
 
     protected JsonObject createAccessPolicy(String bpn) {
         return bnpPolicy(bpn);

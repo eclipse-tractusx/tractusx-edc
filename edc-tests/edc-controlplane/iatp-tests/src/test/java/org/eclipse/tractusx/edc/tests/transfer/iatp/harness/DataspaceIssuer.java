@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
@@ -37,7 +37,6 @@ import org.eclipse.edc.security.signature.jws2020.JwkMethod;
 import org.eclipse.edc.security.signature.jws2020.JwsSignature2020Suite;
 import org.eclipse.edc.verifiablecredentials.linkeddata.LdpIssuer;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.IatpParticipant;
 
 import java.net.URI;
 import java.time.Instant;
@@ -78,7 +77,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return DATASPACE_ISSUER + "#" + getKeyId();
     }
 
-    public VerifiableCredentialResource issueCredential(IatpParticipant participant, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, Supplier<JsonObject> subjectSupplier) {
+    public VerifiableCredentialResource issueCredential(String did, String bpn, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, Supplier<JsonObject> subjectSupplier) {
         var credential = VerifiableCredential.Builder.newInstance()
                 .type(type)
                 .credentialSubject(credentialSubjectSupplier.get())
@@ -89,40 +88,40 @@ public class DataspaceIssuer extends IdentityParticipant {
         var rawVc = createLdpVc(jsonLd, type, subjectSupplier);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
-                .participantId(participant.didUrl())
-                .holderId(participant.getBpn())
+                .participantId(did)
+                .holderId(bpn)
                 .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JSON_LD, credential))
                 .build();
 
     }
 
-    public VerifiableCredentialResource issueMembershipCredential(IatpParticipant participant, JsonLd jsonLd) {
-        return issueCredential(participant, jsonLd, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
-                        .claim("holderIdentifier", participant.getBpn())
+    public VerifiableCredentialResource issueMembershipCredential(String did, String bpn, JsonLd jsonLd) {
+        return issueCredential(did, bpn, jsonLd, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
+                        .claim("holderIdentifier", bpn)
                         .build(),
-                () -> membershipSubject(participant.didUrl(), participant.getBpn()));
+                () -> membershipSubject(did, bpn));
     }
 
-    public VerifiableCredentialResource issueDismantlerCredential(IatpParticipant participant, JsonLd jsonLd) {
-        return issueCredential(participant, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
-                        .claim("holderIdentifier", participant.didUrl())
+    public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn, JsonLd jsonLd) {
+        return issueCredential(did, bpn, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
+                        .claim("holderIdentifier", bpn)
                         .claim("activityType", "vehicleDismantle")
                         .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
                         .build(),
                 () -> Json.createObjectBuilder()
-                        .add("type", "MembershipCredential")
-                        .add("holderIdentifier", participant.didUrl())
+                        .add("type", "DismantlerCredential")
+                        .add("holderIdentifier", bpn)
                         .add("activityType", "vehicleDismantle")
                         .add("allowedVehicleBrands", Json.createArrayBuilder().add("Moskvich").add("Lada").build())
-                        .add("id", participant.didUrl())
+                        .add("id", did)
                         .build());
     }
 
-    public VerifiableCredentialResource issueFrameworkCredential(IatpParticipant participant, JsonLd jsonLd, String credentialType) {
-        return issueCredential(participant, jsonLd, credentialType, () -> CredentialSubject.Builder.newInstance()
-                        .claim("holderIdentifier", participant.getBpn())
+    public VerifiableCredentialResource issueFrameworkCredential(String did, String bpn, JsonLd jsonLd, String credentialType) {
+        return issueCredential(did, bpn, jsonLd, credentialType, () -> CredentialSubject.Builder.newInstance()
+                        .claim("holderIdentifier", bpn)
                         .build(),
-                () -> frameworkAgreementSubject(participant.didUrl(), participant.getBpn(), credentialType));
+                () -> frameworkAgreementSubject(did, bpn, credentialType));
 
     }
 

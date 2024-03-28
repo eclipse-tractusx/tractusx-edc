@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
@@ -32,7 +32,6 @@ import org.eclipse.edc.identityhub.spi.store.CredentialStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.IatpParticipant;
 
 import java.time.Instant;
 import java.util.List;
@@ -105,8 +104,8 @@ public class IatpHelperFunctions {
                 .build();
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
-                .participantId(participant.didUrl())
-                .did(participant.didUrl())
+                .participantId(participant.getDid())
+                .did(participant.getDid())
                 .key(key)
                 .build();
 
@@ -124,9 +123,9 @@ public class IatpHelperFunctions {
 
     private static List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer, IatpParticipant participant, JsonLd jsonLd) {
         return List.of(
-                issuer.issueMembershipCredential(participant, jsonLd),
-                issuer.issueDismantlerCredential(participant, jsonLd),
-                issuer.issueFrameworkCredential(participant, jsonLd, "PcfCredential"));
+                issuer.issueMembershipCredential(participant.getDid(), participant.getBpn(), jsonLd),
+                issuer.issueDismantlerCredential(participant.getDid(), participant.getBpn(), jsonLd),
+                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), jsonLd, "PcfCredential"));
 
     }
 }
