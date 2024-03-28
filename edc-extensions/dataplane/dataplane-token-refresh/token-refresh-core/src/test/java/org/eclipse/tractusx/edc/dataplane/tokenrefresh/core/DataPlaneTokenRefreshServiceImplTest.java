@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
+import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
@@ -65,7 +66,10 @@ class DataPlaneTokenRefreshServiceImplTest {
     private final TokenValidationService tokenValidationService = mock();
     private final DidPublicKeyResolver didPublicKeyResolver = mock();
 
-    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(), tokenValidationService, didPublicKeyResolver, accessTokenDataStore, tokenGenService, mock(), mock(),
+    private final LocalPublicKeyService localPublicKeyService = mock();
+
+    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
+            tokenValidationService, didPublicKeyResolver, localPublicKeyService, accessTokenDataStore, tokenGenService, mock(), mock(),
             "https://example.com", 1, 300L,
             () -> "keyid", mock(), new ObjectMapper());
 

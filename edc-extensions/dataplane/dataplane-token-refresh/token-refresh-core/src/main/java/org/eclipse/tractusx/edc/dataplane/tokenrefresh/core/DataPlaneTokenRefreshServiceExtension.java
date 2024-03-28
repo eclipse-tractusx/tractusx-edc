@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
+import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -63,6 +64,8 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private TokenValidationService tokenValidationService;
     @Inject
     private DidPublicKeyResolver didPkResolver;
+    @Inject
+    private LocalPublicKeyService localPublicKeyService;
     @Inject
     private AccessTokenDataStore accessTokenDataStore;
     @Inject
@@ -108,7 +111,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             var tokenExpiry = getExpiryConfig(context);
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
-            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, accessTokenDataStore, new JwtGenerationService(),
+            tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(),
                     getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
                     () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper());
         }
