@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.participant;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -86,7 +86,7 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
             participant.trustedIssuer = trustedIssuer;
             return self();
         }
-        
+
         @Override
         public TractusxIatpParticipantBase build() {
             super.build();

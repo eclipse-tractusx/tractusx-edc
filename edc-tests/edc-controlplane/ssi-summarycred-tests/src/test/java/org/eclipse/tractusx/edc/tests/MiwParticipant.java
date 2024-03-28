@@ -19,13 +19,15 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
-public class SsiParticipant {
+public class MiwParticipant extends TractusxParticipantBase {
 
     private final URI miwUri = URI.create("http://localhost:" + getFreePort());
     private final URI oauthTokenUri = URI.create("http://localhost:" + getFreePort());
@@ -33,8 +35,8 @@ public class SsiParticipant {
     /**
      * Returns the SSI configuration
      */
-    public Map<String, String> ssiConfiguration(TxParticipant forParticipant) {
-        var ssiConfiguration = new HashMap<String, String>() {
+    public Map<String, String> getConfiguration() {
+        return new HashMap<>(super.getConfiguration()) {
             {
                 put("tx.ssi.miw.url", miwUri.toString());
                 put("tx.ssi.oauth.token.url", oauthTokenUri.toString());
@@ -43,12 +45,9 @@ public class SsiParticipant {
                 put("tx.ssi.miw.authority.id", "authorityId");
                 put("tx.ssi.miw.authority.issuer", "did:web:example.com");
                 put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
-                put("tx.ssi.endpoint.audience", forParticipant.getProtocolEndpoint().getUrl().toString());
+                put("tx.ssi.endpoint.audience", getProtocolEndpoint().getUrl().toString());
             }
         };
-        var baseConfiguration = forParticipant.getConfiguration();
-        ssiConfiguration.putAll(baseConfiguration);
-        return ssiConfiguration;
     }
 
     /**
@@ -63,5 +62,22 @@ public class SsiParticipant {
      */
     public URI authTokenEndpoint() {
         return oauthTokenUri;
+    }
+
+    public static class Builder extends TractusxParticipantBase.Builder<MiwParticipant, Builder> {
+
+        protected Builder() {
+            super(new MiwParticipant());
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        @Override
+        public MiwParticipant build() {
+            super.build();
+            return participant;
+        }
     }
 }

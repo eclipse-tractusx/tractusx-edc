@@ -24,6 +24,8 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.tractusx.edc.tests.KeycloakDispatcher;
 import org.eclipse.tractusx.edc.tests.MiwDispatcher;
+import org.eclipse.tractusx.edc.tests.MiwParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,27 +36,37 @@ import java.util.Map;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 
 
 @EndToEndTest
-public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsumerPullWithProxyTest {
+public class SsiHttpConsumerPullWithProxyInMemoryTest extends HttpConsumerPullBaseTest {
 
     public static final String SUMMARY_VC_TEMPLATE = "summary-vc.json";
+    protected static final MiwParticipant SOKRATES = MiwParticipant.Builder.newInstance()
+            .name(SOKRATES_NAME)
+            .id(SOKRATES_BPN)
+            .build();
+    protected static final MiwParticipant PLATO = MiwParticipant.Builder.newInstance()
+            .name(PLATO_NAME)
+            .id(PLATO_BPN)
+            .build();
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
-            SOKRATES_SSI.ssiConfiguration(SOKRATES)
+            SOKRATES.getConfiguration()
     );
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory-ssi",
             PLATO.getName(),
             PLATO.getBpn(),
-            PLATO_SSI.ssiConfiguration(PLATO)
+            PLATO.getConfiguration()
     );
 
     private static MockWebServer sokratesOauthServer;
@@ -71,16 +83,16 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
 
         var credentialSubjectId = "did:web:example.com";
 
-        miwSokratesServer.start(SOKRATES_SSI.miwEndpoint().getPort());
+        miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
         miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.getProtocolEndpoint().getUrl().toString()));
 
-        miwPlatoServer.start(PLATO_SSI.miwEndpoint().getPort());
+        miwPlatoServer.start(PLATO.miwEndpoint().getPort());
         miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.getProtocolEndpoint().getUrl().toString()));
 
-        sokratesOauthServer.start(SOKRATES_SSI.authTokenEndpoint().getPort());
+        sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
         sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
 
-        platoOauthServer.start(PLATO_SSI.authTokenEndpoint().getPort());
+        platoOauthServer.start(PLATO.authTokenEndpoint().getPort());
         platoOauthServer.setDispatcher(new KeycloakDispatcher());
     }
 
@@ -90,6 +102,16 @@ public class SsiHttpConsumerPullWithProxyInMemoryTest extends AbstractHttpConsum
         miwPlatoServer.shutdown();
         sokratesOauthServer.shutdown();
         platoOauthServer.shutdown();
+    }
+
+    @Override
+    public TractusxParticipantBase plato() {
+        return PLATO;
+    }
+
+    @Override
+    public TractusxParticipantBase sokrates() {
+        return SOKRATES;
     }
 
     @Override

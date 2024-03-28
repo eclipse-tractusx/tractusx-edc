@@ -17,30 +17,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer.iatp;
+package org.eclipse.tractusx.edc.tests;
 
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
-import org.eclipse.tractusx.edc.tests.TxParticipant;
+public interface ParticipantAwareTest {
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+    TractusxParticipantBase plato();
 
-/**
- * Extension of {@link IatpParticipant} with DIM specific configuration
- */
-public class IatpDimParticipant extends IatpParticipant {
-    private final URI dimUri;
-
-    public IatpDimParticipant(TxParticipant participant, URI stsUri, URI dimUri) {
-        super(participant, stsUri);
-        this.dimUri = dimUri;
-    }
-
-    @Override
-    public Map<String, String> iatpConfiguration(TxParticipant... others) {
-        var config = new HashMap<>(super.iatpConfiguration(others));
-        config.put("edc.iam.sts.dim.url", dimUri.toString());
-        return config;
-    }
+    TractusxParticipantBase sokrates();
 }

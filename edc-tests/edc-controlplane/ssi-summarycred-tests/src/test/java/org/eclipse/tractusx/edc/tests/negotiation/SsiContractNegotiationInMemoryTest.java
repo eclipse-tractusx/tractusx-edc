@@ -43,7 +43,7 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
             ":edc-tests:runtime:runtime-memory-ssi",
             PLATO.getName(),
             PLATO.getBpn(),
-            PLATO_SSI.ssiConfiguration(PLATO)
+            PLATO.getConfiguration()
     );
 
     @RegisterExtension
@@ -51,7 +51,7 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
             ":edc-tests:runtime:runtime-memory-ssi",
             SOKRATES.getName(),
             SOKRATES.getBpn(),
-            SOKRATES_SSI.ssiConfiguration(SOKRATES)
+            SOKRATES.getConfiguration()
     );
     private static MockWebServer miwSokratesServer;
     private static MockWebServer miwPlatoServer;
@@ -69,16 +69,16 @@ public class SsiContractNegotiationInMemoryTest extends AbstractContractNegotiat
 
         var credentialSubjectId = "did:web:example.com";
 
-        miwSokratesServer.start(SOKRATES_SSI.miwEndpoint().getPort());
+        miwSokratesServer.start(SOKRATES.miwEndpoint().getPort());
         miwSokratesServer.setDispatcher(new MiwDispatcher(SOKRATES_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, PLATO.getProtocolEndpoint().getUrl().toString()));
 
-        miwPlatoServer.start(PLATO_SSI.miwEndpoint().getPort());
+        miwPlatoServer.start(PLATO.miwEndpoint().getPort());
         miwPlatoServer.setDispatcher(new MiwDispatcher(PLATO_BPN, SUMMARY_VC_TEMPLATE, credentialSubjectId, SOKRATES.getProtocolEndpoint().getUrl().toString()));
 
-        sokratesOauthServer.start(SOKRATES_SSI.authTokenEndpoint().getPort());
+        sokratesOauthServer.start(SOKRATES.authTokenEndpoint().getPort());
         sokratesOauthServer.setDispatcher(new KeycloakDispatcher());
 
-        platoOauthServer.start(PLATO_SSI.authTokenEndpoint().getPort());
+        platoOauthServer.start(PLATO.authTokenEndpoint().getPort());
         platoOauthServer.setDispatcher(new KeycloakDispatcher());
     }
 

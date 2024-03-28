@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
-import org.eclipse.tractusx.edc.tests.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Objects;
  * Extension of {@link TractusxParticipantBase} with MIW specific configuration
  */
 public class MiwParticipant extends TractusxParticipantBase {
-    
+
     protected String miwUri;
     protected String oauth2Uri;
 

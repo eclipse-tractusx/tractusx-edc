@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
+import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,39 +37,30 @@ import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
-import static org.eclipse.tractusx.edc.tests.TxParticipant.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.mockserver.model.HttpRequest.request;
 
-public abstract class AbstractHttpProviderPushTest {
-    public static final String MOCK_BACKEND_REMOTEHOST = "localhost";
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
-            .name(SOKRATES_NAME)
-            .id(SOKRATES_BPN)
-            .build();
+/**
+ * Base tests for Provider PUSH scenario
+ */
+public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
 
-    protected static final TxParticipant PLATO = TxParticipant.Builder.newInstance()
-            .name(PLATO_NAME)
-            .id(PLATO_BPN)
-            .build();
+    public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
 
     private ClientAndServer server;
 
     @BeforeEach
     void setup() {
-        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTEHOST, getFreePort());
+        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());
     }
 
     @Test
     void httpPushDataTransfer() {
         var assetId = UUID.randomUUID().toString();
 
-        var providerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTEHOST, server.getPort(), "/mock/api/provider");
-        var consumerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTEHOST, server.getPort(), "/mock/api/consumer");
+        var providerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), "/mock/api/provider");
+        var consumerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), "/mock/api/consumer");
 
         server.when(request().withPath("/mock/api/provider"))
                 .respond(HttpResponse.response().withStatusCode(200));
@@ -83,15 +74,15 @@ public abstract class AbstractHttpProviderPushTest {
                 "contentType", "application/json"
         );
 
-        PLATO.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PLATO.createPolicyDefinition(bnpPolicy(SOKRATES.getBpn()));
-        PLATO.createContractDefinition(assetId, "def-1", policyId, policyId);
+        plato().createAsset(assetId, Map.of(), dataAddress);
+        var policyId = plato().createPolicyDefinition(bnpPolicy(sokrates().getBpn()));
+        plato().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destination = httpDataAddress(consumerUrl);
 
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
+        var transferProcessId = sokrates().requestAsset(plato(), assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-            var state = SOKRATES.getTransferProcessState(transferProcessId);
+            var state = sokrates().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
         });
     }

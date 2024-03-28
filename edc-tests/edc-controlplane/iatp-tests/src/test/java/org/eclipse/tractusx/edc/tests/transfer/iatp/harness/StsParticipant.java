@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,14 +15,12 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 
-import org.eclipse.tractusx.edc.tests.IdentityParticipant;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -36,54 +34,60 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 /**
  * STS configurations
  */
-public class SecureTokenService extends IdentityParticipant {
+public class StsParticipant extends TractusxParticipantBase {
 
     protected final URI stsUri = URI.create("http://localhost:" + getFreePort() + "/api/v1/sts");
-    protected final TxParticipant stsParticipant = TxParticipant.Builder.newInstance()
-            .name("STS")
-            .id("STS")
-            .build();
+
+    private StsParticipant() {
+    }
 
     public Map<String, String> stsConfiguration(IatpParticipant... participants) {
-        var stsConfiguration = new HashMap<String, String>() {
-            {
-                put("web.http.sts.port", String.valueOf(stsUri.getPort()));
-                put("web.http.sts.path", stsUri.getPath());
-                put("edc.dataplane.token.validation.endpoint", "");
-                put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
-            }
-        };
+        var stsConfiguration = new HashMap<>(super.getConfiguration());
+
+        stsConfiguration.put("web.http.sts.port", String.valueOf(stsUri.getPort()));
+        stsConfiguration.put("web.http.sts.path", stsUri.getPath());
+        stsConfiguration.put("edc.dataplane.token.validation.endpoint", "");
+        stsConfiguration.put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
 
         Arrays.stream(participants).forEach(participant -> {
             var prefix = format("edc.iam.sts.clients.%s", participant.getName().toLowerCase());
             stsConfiguration.put(prefix + ".name", participant.getName());
             stsConfiguration.put(prefix + ".id", UUID.randomUUID().toString());
             stsConfiguration.put(prefix + ".client_id", participant.getBpn());
-            stsConfiguration.put(prefix + ".did", participant.didUrl());
+            stsConfiguration.put(prefix + ".did", participant.getDid());
             stsConfiguration.put(prefix + ".secret.alias", "client_secret_alias");
             stsConfiguration.put(prefix + ".private-key.alias", participant.verificationId());
             stsConfiguration.put(prefix + ".public-key.reference", participant.verificationId());
         });
 
-        var baseConfiguration = stsParticipant.getConfiguration();
-        stsConfiguration.putAll(baseConfiguration);
         return stsConfiguration;
     }
 
-    public String getBpn() {
-        return stsParticipant.getBpn();
+
+    @Override
+    public String getFullKeyId() {
+        return "sts-" + getKeyId();
     }
 
-    public String getName() {
-        return stsParticipant.getName();
-    }
 
     public URI stsUri() {
         return stsUri;
     }
 
-    @Override
-    public String getFullKeyId() {
-        return "sts-" + getKeyId();
+    public static class Builder extends TractusxParticipantBase.Builder<StsParticipant, Builder> {
+
+        protected Builder() {
+            super(new StsParticipant());
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        @Override
+        public StsParticipant build() {
+            super.build();
+            return participant;
+        }
     }
 }
