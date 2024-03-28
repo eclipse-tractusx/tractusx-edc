@@ -26,6 +26,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.edc.util.string.StringUtils;
 import org.eclipse.edc.web.spi.exception.AuthenticationFailedException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
@@ -51,6 +52,12 @@ public class TokenRefreshApiController implements TokenRefreshApi {
                                       @HeaderParam(AUTHORIZATION) String bearerToken) {
         if (!REFRESH_TOKEN_GRANT.equals(grantType)) {
             throw new InvalidRequestException("Grant type MUST be '%s' but was '%s'".formatted(REFRESH_TOKEN_GRANT, grantType));
+        }
+        if (StringUtils.isNullOrBlank(refreshToken)) {
+            throw new InvalidRequestException("Parameter 'refresh_token' cannot be null");
+        }
+        if (StringUtils.isNullOrBlank(bearerToken)) {
+            throw new AuthenticationFailedException("Authorization header missing");
         }
 
         return tokenRefreshService.refreshToken(refreshToken, bearerToken)

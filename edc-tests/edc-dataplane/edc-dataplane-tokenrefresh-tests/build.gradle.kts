@@ -28,6 +28,7 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
 
+    testImplementation(project(":spi:core-spi"))
     testImplementation(libs.edc.dpf.http)
     testImplementation(libs.edc.spi.identity.did)
     testImplementation(libs.nimbus.jwt)

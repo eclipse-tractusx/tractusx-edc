@@ -34,7 +34,7 @@ import org.eclipse.edc.web.spi.ApiErrorDetail;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
 @SecurityScheme(name = "Authentication",
-        description = "Self-Issued ID token containing an access_token",
+        description = "Self-Issued ID token containing a token",
         type = SecuritySchemeType.HTTP,
         scheme = "bearer",
         bearerFormat = "JWT")

@@ -58,7 +58,7 @@ import static org.eclipse.edc.spi.http.FallbackFactories.retryWhenStatusIsNotIn;
  * SI Token:
  * <ul>
  *     <li>grantAccess: request the SI token to DIM by providing the credential types required</li>
- *     <li>signToken: request the SI token to DIM by providing the extracted `access_token` from the received SI token</li>
+ *     <li>signToken: request the SI token to DIM by providing the extracted `token` from the received SI token</li>
  * </ul>
  */
 public class DimSecureTokenService implements SecureTokenService {
