@@ -51,7 +51,6 @@ dependencies {
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-memory-ssi"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
-    testImplementation(project(":edc-extensions:ssi:ssi-miw-credential-client"))
     testImplementation(libs.edc.auth.oauth2.client)
 
     runtimeOnly(libs.tink)

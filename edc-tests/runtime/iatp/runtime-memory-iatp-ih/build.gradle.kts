@@ -29,7 +29,6 @@ dependencies {
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy-legacy")
         exclude(module = "tx-iatp-sts-dim")
     }
     implementation(project(":edc-extensions:cx-policy"))

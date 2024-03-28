@@ -42,10 +42,6 @@ dependencies {
 
     // needed for SSI integration
     runtimeOnly(project(":core:json-ld-core"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-core"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-miw-credential-client"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-extractor"))
-    runtimeOnly(project(":edc-extensions:cx-policy-legacy"))
 
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.core.controlplane)
