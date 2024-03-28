@@ -19,13 +19,12 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.sas.BlobContainerSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -60,17 +59,13 @@ public class AzureBlobHelper {
         }
         return blobServiceClient;
     }
-
+    
     public void uploadBlob(BlobContainerClient client, InputStream inputStream, String targetBlobName) {
         client.getBlobClient(targetBlobName).upload(inputStream, true);
     }
 
-    public void uploadBlob(BlobContainerClient client, String resourceName) {
-        try (var is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)) {
-            client.getBlobClient(resourceName).upload(is, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void uploadBlob(BlobContainerClient client, BinaryData data, String targetBlobName) {
+        client.getBlobClient(targetBlobName).upload(data, true);
     }
 
     public List<String> listBlobs(String container) {
@@ -84,6 +79,7 @@ public class AzureBlobHelper {
                 .toList();
     }
 
+
     public String generateAccountSas(String containerName) {
         var expiry = OffsetDateTime.MAX.minusDays(1);
         var permissions = BlobContainerSasPermission.parse("w");
@@ -91,3 +87,4 @@ public class AzureBlobHelper {
         return blobClient().getBlobContainerClient(containerName).generateSas(vals);
     }
 }
+ 
