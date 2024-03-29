@@ -81,7 +81,7 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
         var jdbcUrl = jdbcUrl(name);
         return new HashMap<>() {
             {
-                Stream.of("asset", "contractdefinition", "contractnegotiation", "policy", "transferprocess", "edr", "bpn", "policy-monitor")
+                Stream.of("asset", "contractdefinition", "contractnegotiation", "policy", "transferprocess", "bpn", "policy-monitor")
                         .forEach(context -> {
                             var group = "edc.datasource." + context;
                             put(group + ".name", context);

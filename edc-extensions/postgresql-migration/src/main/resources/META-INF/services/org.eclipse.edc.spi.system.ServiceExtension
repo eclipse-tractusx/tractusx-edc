@@ -25,5 +25,4 @@ org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigra
 org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.PolicyMonitorPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.EdrPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.BusinessGroupPostgresMigrationExtension

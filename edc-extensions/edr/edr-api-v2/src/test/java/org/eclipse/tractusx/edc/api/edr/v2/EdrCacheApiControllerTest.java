@@ -24,10 +24,13 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.api.model.IdResponse;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -37,9 +40,7 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
-import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -47,6 +48,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
+import static java.util.UUID.randomUUID;
 import static org.eclipse.edc.api.model.IdResponse.ID_RESPONSE_TYPE;
 import static org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY_ASSET_ID;
@@ -62,7 +64,6 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.api.edr.v2.TestFunctions.createContractNegotiation;
 import static org.eclipse.tractusx.edc.api.edr.v2.TestFunctions.negotiationRequest;
-import static org.eclipse.tractusx.edc.api.edr.v2.TestFunctions.openRequest;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 import static org.hamcrest.Matchers.equalTo;
@@ -96,12 +97,10 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
     void initEdrNegotiation_shouldWork_whenValidRequest() {
         when(validator.validate(any(), any())).thenReturn(ValidationResult.success());
 
-        var openRequest = openRequest();
         var contractNegotiation = createContractNegotiation();
         var responseBody = Json.createObjectBuilder().add(TYPE, ID_RESPONSE_TYPE).add(ID, contractNegotiation.getId()).build();
 
-        when(transformerRegistry.transform(any(JsonObject.class), eq(NegotiateEdrRequestDto.class))).thenReturn(Result.success(NegotiateEdrRequestDto.Builder.newInstance().build()));
-        when(transformerRegistry.transform(any(), eq(NegotiateEdrRequest.class))).thenReturn(Result.success(openRequest));
+        when(transformerRegistry.transform(any(JsonObject.class), eq(ContractRequest.class))).thenReturn(Result.success(createContractRequest()));
         when(contractNegotiationService.initiateNegotiation(any())).thenReturn(contractNegotiation);
         when(transformerRegistry.transform(any(IdResponse.class), eq(JsonObject.class))).thenReturn(Result.success(responseBody));
 
@@ -121,12 +120,11 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
     void initEdrNegotiation_shouldReturnBadRequest_whenValidInvalidRequest() {
         when(validator.validate(any(), any())).thenReturn(ValidationResult.success());
 
-        var request = NegotiateEdrRequestDto.Builder.newInstance().build();
-        when(transformerRegistry.transform(any(JsonObject.class), eq(NegotiateEdrRequestDto.class))).thenReturn(Result.failure("fail"));
+        when(transformerRegistry.transform(any(JsonObject.class), eq(ContractRequest.class))).thenReturn(Result.failure("fail"));
 
         baseRequest()
                 .contentType(JSON)
-                .body(request)
+                .body(Json.createObjectBuilder().build())
                 .post("/v2/edrs")
                 .then()
                 .statusCode(400);
@@ -296,6 +294,17 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
                 .add(EDC_PREFIX, EDC_NAMESPACE);
     }
 
+    private ContractRequest createContractRequest() {
+        return ContractRequest.Builder.newInstance()
+                .protocol("test-protocol")
+                .counterPartyAddress("test-cb")
+                .contractOffer(ContractOffer.Builder.newInstance()
+                        .id("test-offer-id")
+                        .assetId(randomUUID().toString())
+                        .policy(Policy.Builder.newInstance().build())
+                        .build())
+                .build();
+    }
 
     private RequestSpecification baseRequest() {
         return given()

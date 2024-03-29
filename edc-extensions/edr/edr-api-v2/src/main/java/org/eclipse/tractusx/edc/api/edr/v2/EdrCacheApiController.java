@@ -45,15 +45,14 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
+import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest.CONTRACT_REQUEST_TYPE;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
@@ -95,13 +94,14 @@ public class EdrCacheApiController implements EdrCacheApi {
     @POST
     @Override
     public JsonObject initiateEdrNegotiation(JsonObject requestObject) {
-        validator.validate(NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE, requestObject).orElseThrow(ValidationFailureException::new);
 
-        var edrNegotiationRequest = transformerRegistry.transform(requestObject, NegotiateEdrRequestDto.class)
-                .compose(dto -> transformerRegistry.transform(dto, NegotiateEdrRequest.class))
+        validator.validate(CONTRACT_REQUEST_TYPE, requestObject)
+                .orElseThrow(ValidationFailureException::new);
+
+        var contractRequest = transformerRegistry.transform(requestObject, ContractRequest.class)
                 .orElseThrow(InvalidRequestException::new);
 
-        var contractNegotiation = contractNegotiationService.initiateNegotiation(createContractRequest(edrNegotiationRequest));
+        var contractNegotiation = contractNegotiationService.initiateNegotiation(enrichContractRequest(contractRequest));
 
         var idResponse = IdResponse.Builder.newInstance()
                 .id(contractNegotiation.getId())
@@ -170,12 +170,12 @@ public class EdrCacheApiController implements EdrCacheApi {
                 .orElseThrow(f -> new EdcException(f.getFailureDetail()));
     }
 
-    private ContractRequest createContractRequest(NegotiateEdrRequest request) {
+    private ContractRequest enrichContractRequest(ContractRequest request) {
         var callbacks = Stream.concat(request.getCallbackAddresses().stream(), Stream.of(LOCAL_CALLBACK)).collect(Collectors.toList());
 
         return ContractRequest.Builder.newInstance()
-                .counterPartyAddress(request.getConnectorAddress())
-                .contractOffer(request.getOffer())
+                .counterPartyAddress(request.getCounterPartyAddress())
+                .contractOffer(request.getContractOffer())
                 .protocol(request.getProtocol())
                 .callbackAddresses(callbacks).build();
     }
