@@ -147,11 +147,6 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| runtime.ssi.miw.authorityId | string | `""` | The BPN of the issuer authority |
-| runtime.ssi.miw.url | string | `""` | MIW URL |
-| runtime.ssi.oauth.client.id | string | `""` | The client ID for KeyCloak |
-| runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
-| runtime.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
 | runtime.tolerations | list | `[]` |  |
 | runtime.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` |  |
