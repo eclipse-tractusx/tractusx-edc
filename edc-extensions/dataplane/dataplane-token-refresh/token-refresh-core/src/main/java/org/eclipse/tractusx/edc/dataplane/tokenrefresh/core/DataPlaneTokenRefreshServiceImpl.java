@@ -136,7 +136,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
      *     <li>resolve the public key material in the DID Document identified by the {@code kid} header</li>
      *     <li>verify the token's signature</li>
      *     <li>assert {@code iss} and {@code sub} claims are identical</li>
-     *     <li>assert the the token contains an {@code access_token} claim, and that the value is identical to the access token we have on record</li>
+     *     <li>assert the the token contains an {@code token} claim, and that the value is identical to the access token we have on record</li>
      *     <li>assert that the {@code refreshToken} parameter is identical to the refresh token we have on record</li>
      * </ul>
      *

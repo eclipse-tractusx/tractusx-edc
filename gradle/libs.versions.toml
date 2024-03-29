@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.0"
+edc = "0.6.1-SNAPSHOT"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.0"
@@ -41,7 +41,6 @@ edc-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-clien
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
-edc-spi-identitytrust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
@@ -125,9 +124,9 @@ edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callbac
 edc-controlplane-callback-dispatcher-http = { module = "org.eclipse.edc:callback-http-dispatcher", version.ref = "edc" }
 
 # IATP Modules
-edc-identity-trust-spi = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
-edc-identity-core-trust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
-edc-identity-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
+edc-spi-identitytrust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
+edc-core-identitytrust = { module = "org.eclipse.edc:identity-trust-core", version.ref = "edc" }
+edc-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
 
 edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", version.ref = "edc" }

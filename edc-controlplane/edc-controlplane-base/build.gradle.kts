@@ -35,17 +35,17 @@ dependencies {
     runtimeOnly(libs.edc.edr.store.receiver)
     runtimeOnly(libs.edc.dpf.transfer.signaling)
 
-    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))
 
-    // needed for SSI integration
+    // needed for IATP integration
     runtimeOnly(project(":core:json-ld-core"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-core"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-miw-credential-client"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-extractor"))
-    runtimeOnly(project(":edc-extensions:cx-policy-legacy"))
+    runtimeOnly(libs.edc.core.did)
+    runtimeOnly(libs.edc.core.identitytrust)
+    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
+    runtimeOnly(project(":edc-extensions:bdrs-client"))
+
 
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.core.controlplane)

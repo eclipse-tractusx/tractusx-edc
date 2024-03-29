@@ -119,21 +119,6 @@ controlplane:
       agreementValidation: true
   edr:
     transferProxyTokenValidity: "2592000"
-  # SSI configuration
-  ssi:
-    miw:
-      # -- MIW URL
-      url: ""
-      # -- The BPN of the issuer authority
-      authorityId: ""
-    oauth:
-      # -- The URL (of KeyCloak), where access tokens can be obtained
-      tokenurl: ""
-      client:
-        # -- The client ID for KeyCloak
-        id: ""
-        # -- The alias under which the client secret is stored in the vault.
-        secretAlias: "client-secret"
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.

@@ -23,12 +23,10 @@ plugins {
 
 dependencies {
     implementation(project(":spi:core-spi"))
-    implementation(project(":spi:ssi-spi"))
     implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.policyengine)
     implementation(libs.jakartaJson)
     implementation(libs.edc.spi.identitytrust)
     testImplementation(libs.jacksonJsonP)
     testImplementation(libs.titaniumJsonLd)
-    testImplementation(testFixtures(project(":spi:ssi-spi")))
 }

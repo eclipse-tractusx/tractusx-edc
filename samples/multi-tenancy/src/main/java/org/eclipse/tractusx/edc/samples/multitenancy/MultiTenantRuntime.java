@@ -51,11 +51,6 @@ public class MultiTenantRuntime extends BaseRuntime {
         loadTenantsConfig().getConfig("edc.tenants").partition().forEach(this::bootTenant);
     }
 
-    @Override
-    protected void onError(Exception e) {
-        throw new EdcException(e);
-    }
-
     private void bootTenant(Config tenantConfig) {
         var baseProperties = System.getProperties();
         tenantConfig.getRelativeEntries().forEach(System::setProperty);

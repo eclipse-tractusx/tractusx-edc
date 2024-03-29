@@ -29,7 +29,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
 
     runtimeOnly(libs.edc.jsonld) // needed by the DataPlaneSignalingApi
-    runtimeOnly(libs.edc.identity.core.did) // for the DID Public Key Resolver
+    runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.dpf.awss3)

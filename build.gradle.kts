@@ -138,13 +138,6 @@ allprojects {
         }
     }
 
-    // EdcRuntimeExtension uses this to determine the runtime classpath of the module to run.
-    tasks.register("printClasspath") {
-        doLast {
-            println(sourceSets["main"].runtimeClasspath.asPath)
-        }
-    }
-
 }
 
 // the "dockerize" task is added to all projects that use the `shadowJar` plugin

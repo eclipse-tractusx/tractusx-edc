@@ -26,10 +26,7 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy-legacy")
+        exclude(module = "bdrs-client")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:iatp:tx-iatp"))
@@ -44,8 +41,8 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.identity.core.trust)
-    implementation(libs.edc.identity.core.did)
+    implementation(libs.edc.core.identitytrust)
+    implementation(libs.edc.core.did)
     implementation(libs.edc.identity.trust.transform)
     implementation(libs.edc.identity.trust.issuers.configuration)
     implementation(libs.edc.auth.oauth2.client)

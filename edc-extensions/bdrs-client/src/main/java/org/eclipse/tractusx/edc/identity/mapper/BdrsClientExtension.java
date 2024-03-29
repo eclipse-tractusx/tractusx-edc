@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings;
 
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.NAME;
 
@@ -56,7 +57,7 @@ public class BdrsClientExtension implements ServiceExtension {
     public AudienceResolver getBdrsAudienceResolver(ServiceExtensionContext context) {
         var baseUrl = context.getConfig().getString(BDRS_SERVER_URL_PROPERTY, null);
         if (baseUrl == null) {
-            context.getMonitor().severe("The following property was expected but was not provided: '%s'. This runtime will not work correctly!".formatted(BDRS_SERVER_URL_PROPERTY));
+            RequiredConfigWarnings.warningNotPresent(context.getMonitor(), BDRS_SERVER_URL_PROPERTY);
         }
         var cacheValidity = context.getConfig().getInteger(BDRS_SERVER_CACHE_VALIDITY_PERIOD, DEFAULT_BDRS_CACHE_VALIDITY);
         return new BdrsClient(baseUrl, cacheValidity, httpClient, context.getMonitor(), typeManager.getMapper());
