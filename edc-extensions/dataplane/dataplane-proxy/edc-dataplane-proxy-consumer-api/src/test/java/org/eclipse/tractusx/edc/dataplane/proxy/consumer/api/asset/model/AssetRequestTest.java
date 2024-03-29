@@ -34,7 +34,6 @@ class AssetRequestTest {
 
         var request = AssetRequest.Builder.newInstance()
                 .assetId("asset1")
-                .endpointUrl("https://test.com")
                 .providerId("providerId")
                 .transferProcessId("tp1")
                 .queryParams("params")
@@ -47,7 +46,6 @@ class AssetRequestTest {
 
         assertThat(deserialized.getAssetId()).isEqualTo(request.getAssetId());
         assertThat(deserialized.getTransferProcessId()).isEqualTo(request.getTransferProcessId());
-        assertThat(deserialized.getEndpointUrl()).isEqualTo(request.getEndpointUrl());
         assertThat(deserialized.getProviderId()).isEqualTo(request.getProviderId());
         assertThat(deserialized.getPathSegments()).isEqualTo(request.getPathSegments());
         assertThat(deserialized.getQueryParams()).isEqualTo(request.getQueryParams());
@@ -61,7 +59,7 @@ class AssetRequestTest {
 
     @Test
     void verify_AssetIdOrTransferProcessId() {
-        AssetRequest.Builder.newInstance().assetId("asset1").endpointUrl("https://test.com").build();
-        AssetRequest.Builder.newInstance().transferProcessId("tp1").endpointUrl("https://test.com").build();
+        AssetRequest.Builder.newInstance().assetId("asset1").build();
+        AssetRequest.Builder.newInstance().transferProcessId("tp1").build();
     }
 }

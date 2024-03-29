@@ -157,7 +157,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         // 2. extract access token and validate it
         var accessToken = authTokenRes.getContent().getStringClaim("token");
-        var accessTokenDataResult = tokenValidationService.validate(accessToken, publicKeyResolver, new RefreshTokenValidationRule(vault, refreshToken, objectMapper))
+        var accessTokenDataResult = tokenValidationService.validate(accessToken, localPublicKeyService, new RefreshTokenValidationRule(vault, refreshToken, objectMapper))
                 .map(accessTokenClaims -> accessTokenDataStore.getById(accessTokenClaims.getStringClaim(JwtRegisteredClaimNames.JWT_ID)));
 
         if (accessTokenDataResult.failed()) {

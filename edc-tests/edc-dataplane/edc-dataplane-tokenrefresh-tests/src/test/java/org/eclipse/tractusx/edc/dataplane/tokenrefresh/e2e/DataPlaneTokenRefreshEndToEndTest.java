@@ -62,6 +62,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
     public static final String CONSUMER_DID = "did:web:alice";
     public static final String PROVIDER_DID = "did:web:bob";
     public static final String PROVIDER_KEY_ID = PROVIDER_DID + "#key-1";
+    public static final String PROVIDER_KEY_ID_PUBLIC = PROVIDER_DID + "#key-1-public";
     public static final String CONSUMER_KEY_ID = CONSUMER_DID + "#cons-1";
     private static final RuntimeConfig RUNTIME_CONFIG = new RuntimeConfig();
     @RegisterExtension
@@ -69,7 +70,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
             ":edc-tests:runtime:dataplane-cloud",
             "Token-Refresh-Dataplane",
             with(RUNTIME_CONFIG.baseConfig(), Map.of("edc.transfer.proxy.token.signer.privatekey.alias", PROVIDER_KEY_ID,
-                    "edc.transfer.proxy.token.verifier.publickey.alias", PROVIDER_KEY_ID))
+                    "edc.transfer.proxy.token.verifier.publickey.alias", PROVIDER_KEY_ID_PUBLIC))
     );
     private ECKey providerKey;
     private ECKey consumerKey;
@@ -317,6 +318,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
     private void prepareDataplaneRuntime() {
         var vault = DATAPLANE_RUNTIME.getContext().getService(Vault.class);
         vault.storeSecret(PROVIDER_KEY_ID, providerKey.toJSONString());
+        vault.storeSecret(PROVIDER_KEY_ID_PUBLIC, providerKey.toPublicJWK().toJSONString());
     }
 
     private String createAuthToken(String accessToken, ECKey signerKey) {

@@ -19,41 +19,38 @@
 
 package org.eclipse.tractusx.edc.edr.spi.service;
 
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.tractusx.edc.edr.spi.types.RefreshMode;
 
 import java.util.List;
 
 /**
- * Service for opening a transfer process.
+ * Mediate the access to the {@link EndpointDataReferenceEntry} and cached {@link DataAddress} EDRs.
  */
 @ExtensionPoint
 public interface EdrService {
 
-    /**
-     * Open a transfer process by firing a contract negotiation. Implementors should fire a contract negotiation
-     * and automatically fire a transfer process once the agreement has been reached.
-     *
-     * @param request The open request
-     * @return The result containing the contract negotiation id
-     */
-    ServiceResult<ContractNegotiation> initiateEdrNegotiation(NegotiateEdrRequest request);
 
     /**
-     * Return a {@link EndpointDataReference} associated with the transferProcessId in input
+     * Resolve a {@link DataAddress} EDR associated with the transfer process. The token will be refreshed
+     * accordingly the {@link RefreshMode}
      *
-     * @param transferProcessId The transferProcessId
-     * @return The result containing the {@link EndpointDataReference}
+     * @param transferProcessId The id of the transfer process
+     * @param mode              The {@link RefreshMode}
+     * @return If the token in {@link DataAddress} is expired a refresh one
      */
-    ServiceResult<EndpointDataReference> findByTransferProcessId(String transferProcessId);
+    ServiceResult<DataAddress> resolveByTransferProcess(String transferProcessId, RefreshMode mode);
 
-    ServiceResult<List<EndpointDataReferenceEntry>> findBy(QuerySpec querySpec);
-
-    ServiceResult<EndpointDataReferenceEntry> deleteByTransferProcessId(String transferProcessId);
+    /**
+     * Search for {@link EndpointDataReferenceEntry}
+     *
+     * @param query The {@link QuerySpec}
+     * @return The list of matching {@link EndpointDataReferenceEntry} if success, failure otherwise
+     */
+    ServiceResult<List<EndpointDataReferenceEntry>> query(QuerySpec query);
 
 }

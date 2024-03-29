@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.edc.dpf.util)
     implementation(libs.edc.ext.http)
     implementation(libs.edc.spi.auth)
+    implementation(libs.edc.spi.edrstore)
 
     implementation(project(":spi:edr-spi"))
 

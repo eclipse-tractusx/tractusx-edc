@@ -17,24 +17,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("io.swagger.core.v3.swagger-gradle-plugin")
-}
+package org.eclipse.tractusx.edc.edr.spi.types;
 
-dependencies {
-    implementation(project(":spi:callback-spi"))
-    implementation(project(":spi:edr-spi"))
-    implementation(project(":spi:core-spi"))
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
-    implementation(libs.edc.api.management)
-    implementation(libs.edc.core.validator)
-    implementation(libs.jakarta.rsApi)
-
-    testImplementation(testFixtures(libs.edc.core.jersey))
-    testImplementation(libs.restAssured)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.lib.jersey.providers)
-    testImplementation(libs.edc.core.transform)
+/**
+ * Different refresh modes to be used when resolving an {@link DataAddress} with {@link EdrService#resolveByTransferProcess}
+ */
+public enum RefreshMode {
+    NO_REFRESH,
+    AUTO_REFRESH,
+    FORCE_REFRESH
 }

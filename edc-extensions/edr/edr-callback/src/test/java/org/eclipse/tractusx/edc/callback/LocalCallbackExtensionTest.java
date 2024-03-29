@@ -66,10 +66,10 @@ public class LocalCallbackExtensionTest {
         assertThat(resolver.resolve("test")).isNull();
 
         var callbackArgumentCaptor = ArgumentCaptor.forClass(InProcessCallback.class);
-        verify(inProcessCallbackRegistry, times(2)).registerHandler(callbackArgumentCaptor.capture());
+        verify(inProcessCallbackRegistry, times(1)).registerHandler(callbackArgumentCaptor.capture());
 
         assertThat(callbackArgumentCaptor.getAllValues())
                 .flatExtracting(Object::getClass)
-                .containsExactly(ContractNegotiationCallback.class, TransferProcessLocalCallback.class);
+                .containsExactly(ContractNegotiationCallback.class);
     }
 }

@@ -23,7 +23,6 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":core:edr-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
 

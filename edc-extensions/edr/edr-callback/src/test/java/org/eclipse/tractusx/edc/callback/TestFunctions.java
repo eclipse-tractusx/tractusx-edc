@@ -37,7 +37,6 @@ import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.agreement.ContractAgreement;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
 import java.time.Instant;
 import java.util.Date;
@@ -113,16 +112,6 @@ public class TestFunctions {
                         .build()))
                 .reason(reason)
                 .transferProcessId(transferProcessId)
-                .build();
-    }
-
-    public static EndpointDataReference getEdr() {
-        return EndpointDataReference.Builder.newInstance()
-                .id("dataRequestId")
-                .contractId("test-contract-id")
-                .authCode(createToken())
-                .authKey("authKey")
-                .endpoint("http://endpoint")
                 .build();
     }
 

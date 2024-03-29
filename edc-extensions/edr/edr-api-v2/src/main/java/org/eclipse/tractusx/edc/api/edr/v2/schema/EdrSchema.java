@@ -22,8 +22,8 @@ package org.eclipse.tractusx.edc.api.edr.v2.schema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiSchema;
 import org.eclipse.edc.connector.api.management.contractnegotiation.ContractNegotiationApi;
+import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
-import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
 import java.util.List;
 

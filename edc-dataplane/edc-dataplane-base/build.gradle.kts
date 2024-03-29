@@ -23,7 +23,9 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":core:edr-cache-core"))
+    runtimeOnly(project(":core:edr-core"))
+    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
+    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
@@ -46,6 +48,7 @@ dependencies {
     runtimeOnly(libs.edc.dpf.api.public.v2)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
+    runtimeOnly(libs.edc.core.edrstore)
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.ext.http)

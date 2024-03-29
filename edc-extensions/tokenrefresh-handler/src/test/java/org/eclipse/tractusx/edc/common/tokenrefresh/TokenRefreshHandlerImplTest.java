@@ -103,7 +103,6 @@ class TokenRefreshHandlerImplTest {
     @Test
     void refresh_validateCorrectRequest() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(edrCache.put(any(), any())).thenReturn(StoreResult.success());
         when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
         var tokenResponse = new TokenResponse("new-access-token", "new-refresh-token", 60 * 5L, "bearer");
         var successResponse = createResponse(tokenResponse, 200, "");

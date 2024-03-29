@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.callback;
 import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
 import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
-import org.eclipse.edc.connector.transfer.spi.store.TransferProcessStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
@@ -31,7 +30,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
-import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackRegistry;
 
 import static org.eclipse.tractusx.edc.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
@@ -51,12 +49,6 @@ public class LocalCallbackExtension implements ServiceExtension {
     private TransferProcessService transferProcessService;
 
     @Inject
-    private TransferProcessStore transferProcessStore;
-
-    @Inject
-    private EndpointDataReferenceCache edrCache;
-
-    @Inject
     private InProcessCallbackRegistry callbackRegistry;
 
     @Inject
@@ -64,10 +56,7 @@ public class LocalCallbackExtension implements ServiceExtension {
 
     @Inject
     private TransactionContext transactionContext;
-
-    @Inject
-    private EndpointDataReferenceCache endpointDataReferenceCache;
-
+    
     @Inject
     private ContractAgreementService agreementService;
 
@@ -83,7 +72,6 @@ public class LocalCallbackExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
 
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor));
-        callbackRegistry.registerHandler(new TransferProcessLocalCallback(edrCache, transferProcessStore, agreementService, transformerRegistry, transactionContext, monitor));
 
         resolverRegistry.registerResolver(this::resolveProtocol);
         registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));

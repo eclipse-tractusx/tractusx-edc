@@ -32,7 +32,6 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.util.string.StringUtils;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
@@ -63,7 +62,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
     /**
      * Creates a new TokenRefreshHandler
      *
-     * @param edrCache           a persistent storage where {@link EndpointDataReference} objects are stored.
+     * @param edrCache           a persistent storage where {@link DataAddress} objects are stored.
      * @param httpClient         needed to make the actual refresh call against the refresh endpoint
      * @param ownDid             the DID of this connector
      * @param secureTokenService Service to generate the authentication token
@@ -125,19 +124,17 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         }
 
         return executeRequest(result.getContent())
-                .compose(tr -> update(tokenId, edr, tr));
+                .map(tr -> createNewEdr(edr, tr));
     }
 
-    private ServiceResult<DataAddress> update(String id, DataAddress oldEdr, TokenResponse tokenResponse) {
-        //todo: create new DataAddress out of the oldEdr, update refresh token, store and return
-        var newEdr = DataAddress.Builder.newInstance()
+    private DataAddress createNewEdr(DataAddress oldEdr, TokenResponse tokenResponse) {
+        return DataAddress.Builder.newInstance()
                 .type(oldEdr.getType())
                 .properties(oldEdr.getProperties())
                 .property(EDR_PROPERTY_AUTHORIZATION, tokenResponse.accessToken())
                 .property(EDR_PROPERTY_REFRESH_TOKEN, tokenResponse.refreshToken())
                 .property(EDR_PROPERTY_EXPIRES_IN, String.valueOf(tokenResponse.expiresInSeconds()))
                 .build();
-        return ServiceResult.from(edrCache.put(id, newEdr)).map(u -> newEdr);
     }
 
     private ServiceResult<TokenResponse> executeRequest(Request tokenRefreshRequest) {
