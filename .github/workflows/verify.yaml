@@ -116,7 +116,6 @@ jobs:
                    { dir: edc-tests/edc-controlplane/edr-api-tests },
                    { dir: edc-tests/edc-controlplane/iatp-tests },
                    { dir: edc-tests/edc-controlplane/policy-tests },
-                   { dir: edc-tests/edc-controlplane/ssi-summarycred-tests },
                    { dir: edc-tests/edc-controlplane/transfer-tests }
         ]
     steps:
