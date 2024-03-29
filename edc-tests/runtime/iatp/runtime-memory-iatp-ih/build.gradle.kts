@@ -44,8 +44,8 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.identity.core.trust)
-    implementation(libs.edc.identity.core.did)
+    implementation(libs.edc.core.identitytrust)
+    implementation(libs.edc.core.did)
     implementation(libs.edc.identity.trust.transform)
     implementation(libs.edc.identity.trust.sts.remote)
     implementation(libs.edc.identity.trust.issuers.configuration)

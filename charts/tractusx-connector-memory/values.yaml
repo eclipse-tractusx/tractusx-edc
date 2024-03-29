@@ -26,16 +26,16 @@
 fullnameOverride: ""
 nameOverride: ""
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
-imagePullSecrets: []
+imagePullSecrets: [ ]
 # -- To add some custom labels
-customLabels: {}
+customLabels: { }
 
 participant:
   # -- BPN Number
   id: "BPNLCHANGEME"
 
 # -- Add custom ca certificates to the truststore
-customCaCerts: {}
+customCaCerts: { }
 
 runtime:
   image:
@@ -44,7 +44,7 @@ runtime:
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
     tag: ""
-  initContainers: []
+  initContainers: [ ]
   debug:
     enabled: false
     port: 1044
@@ -114,30 +114,15 @@ runtime:
       agreementValidation: true
   edr:
     transferProxyTokenValidity: "2592000"
-  # SSI configuration
-  ssi:
-    miw:
-      # -- MIW URL
-      url: ""
-      # -- The BPN of the issuer authority
-      authorityId: ""
-    oauth:
-      # -- The URL (of KeyCloak), where access tokens can be obtained
-      tokenurl: ""
-      client:
-        # -- The client ID for KeyCloak
-        id: ""
-        # -- The alias under which the client secret is stored in the vault.
-        secretAlias: "client-secret"
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
-    annotations: {}
+    annotations: { }
   # -- additional labels for the pod
-  podLabels: {}
+  podLabels: { }
   # -- additional annotations for the pod
-  podAnnotations: {}
+  podAnnotations: { }
   # -- The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment
   podSecurityContext:
     seccompProfile:
@@ -156,7 +141,7 @@ runtime:
       drop:
         - ALL
       # -- Specifies which capabilities to add to issue specialized syscalls
-      add: []
+      add: [ ]
     # -- Whether the root filesystem is mounted in read-only mode
     readOnlyRootFilesystem: true
     # -- Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID
@@ -166,12 +151,12 @@ runtime:
     # -- The container's process will run with the specified uid
     runAsUser: 10001
   # Extra environment variables that will be pass onto deployment pods
-  env: {}
+  env: { }
   #  ENV_NAME: value
 
   # "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
   # ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
-  envValueFrom: {}
+  envValueFrom: { }
   #  ENV_NAME:
   #    configMapKeyRef:
   #      name: configmap-name
@@ -181,12 +166,12 @@ runtime:
   #      key: value_key
 
   # [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
-  envSecretNames: []
+  envSecretNames: [ ]
   #  - first-secret
   #  - second-secret
 
   # [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
-  envConfigMapNames: []
+  envConfigMapNames: [ ]
   #  - first-config-map
   #  - second-config-map
 
@@ -197,7 +182,7 @@ runtime:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.local"
       # -- Additional ingress annotations to add
-      annotations: {}
+      annotations: { }
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - protocol
@@ -221,7 +206,7 @@ runtime:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.intranet"
       # -- Additional ingress annotations to add
-      annotations: {}
+      annotations: { }
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - management
@@ -241,11 +226,11 @@ runtime:
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
-  volumeMounts: []
+  volumeMounts: [ ]
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
-  volumes: []
+  volumes: [ ]
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources: {}
+  resources: { }
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -277,11 +262,11 @@ runtime:
     java.util.logging.ConsoleHandler.level=ALL
     java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
   # [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
-  nodeSelector: {}
+  nodeSelector: { }
   # [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
-  tolerations: []
+  tolerations: [ ]
   # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
-  affinity: {}
+  affinity: { }
   url:
     # -- Explicitly declared url for reaching the dsp api (e.g. if ingresses not used)
     protocol: ""
@@ -301,12 +286,12 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: {}
+  annotations: { }
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
-  imagePullSecrets: []
+  imagePullSecrets: [ ]
 # -- Configurations for Helm tests
 tests:
   # -- Configure the hook-delete-policy for Helm tests
