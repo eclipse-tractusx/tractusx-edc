@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,6 +51,7 @@ class BdrsClientExtensionTest {
         when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY), isNull())).thenReturn(null);
 
         extension.getBdrsAudienceResolver(context);
-        verify(monitor).severe(matches("^The following property was expected but was not provided: '.*'. This runtime will not work correctly!$"));
+        verify(monitor).severe(eq("Mandatory config value missing: 'tx.iam.iatp.bdrs.server.url'. This runtime will not be fully operational! Starting with v0.7.x this will be a runtime error."));
+
     }
 }
