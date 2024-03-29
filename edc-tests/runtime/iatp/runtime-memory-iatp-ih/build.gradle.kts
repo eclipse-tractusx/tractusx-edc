@@ -26,9 +26,7 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
+        exclude(module = "bdrs-client")
         exclude(module = "tx-iatp-sts-dim")
     }
     implementation(project(":edc-extensions:cx-policy"))

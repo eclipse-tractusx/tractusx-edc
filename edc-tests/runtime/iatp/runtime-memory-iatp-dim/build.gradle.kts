@@ -25,11 +25,7 @@ plugins {
 dependencies {
 
     // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-    }
+    implementation(project(":edc-controlplane:edc-controlplane-base"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:iatp:tx-iatp"))
