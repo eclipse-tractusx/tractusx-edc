@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.api.edr.v2.transform;
 
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.edc.transform.spi.TypeTransformer;
 import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;

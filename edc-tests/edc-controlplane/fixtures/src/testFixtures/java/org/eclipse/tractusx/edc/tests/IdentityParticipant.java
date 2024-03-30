@@ -20,8 +20,8 @@
 package org.eclipse.tractusx.edc.tests;
 
 import com.nimbusds.jose.jwk.JWK;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
-import org.eclipse.edc.test.system.utils.Participant;
 
 import java.security.KeyPair;
 

@@ -32,7 +32,7 @@ import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class EdrNegotiationHelperFunctions {
 

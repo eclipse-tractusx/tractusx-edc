@@ -23,7 +23,7 @@ package org.eclipse.tractusx.edc.provision.additionalheaders;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedContentResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedContentResource;
 
 @JsonDeserialize(builder = AdditionalHeadersProvisionedResource.Builder.class)
 class AdditionalHeadersProvisionedResource extends ProvisionedContentResource {

@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.tests.participant;
 
 import jakarta.json.Json;
-import org.eclipse.edc.test.system.utils.Participant;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
 import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
