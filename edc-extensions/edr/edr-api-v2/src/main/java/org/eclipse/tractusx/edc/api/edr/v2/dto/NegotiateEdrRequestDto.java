@@ -19,13 +19,13 @@
 
 package org.eclipse.tractusx.edc.api.edr.v2.dto;
 
-import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
+import org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.model.ContractOfferDescription;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public class NegotiateEdrRequestDto {
@@ -62,10 +62,6 @@ public class NegotiateEdrRequestDto {
 
     public String getCounterPartyId() {
         return counterPartyId;
-    }
-
-    public String getProviderId() {
-        return providerId;
     }
 
     public List<CallbackAddress> getCallbackAddresses() {

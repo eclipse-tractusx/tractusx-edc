@@ -52,7 +52,7 @@ import java.util.Map;
 
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 import static org.hamcrest.Matchers.containsString;
 

@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

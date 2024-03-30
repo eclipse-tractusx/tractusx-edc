@@ -26,9 +26,9 @@ import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
 import org.eclipse.edc.validator.spi.Validator;
 import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.ASSET_ID;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.OFFER_ID;
-import static org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
+import static org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.model.ContractOfferDescription.ASSET_ID;
+import static org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.model.ContractOfferDescription.OFFER_ID;
+import static org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.model.ContractOfferDescription.POLICY;
 
 
 public class NegotiateEdrRequestDtoValidator {

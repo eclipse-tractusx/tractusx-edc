@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.helpers.DimHelper.configureParticipant;
 import static org.eclipse.tractusx.edc.lifecycle.Runtimes.dimRuntime;

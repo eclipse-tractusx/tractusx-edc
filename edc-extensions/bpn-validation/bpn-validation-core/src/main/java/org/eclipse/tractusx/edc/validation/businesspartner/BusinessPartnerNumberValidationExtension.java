@@ -28,9 +28,9 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerNumberPermissionFunction;
 
-import static org.eclipse.edc.connector.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
-import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
-import static org.eclipse.edc.connector.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.NAME;
@@ -62,7 +62,7 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
     private RuleBindingRegistry ruleBindingRegistry;
     @Inject
     private PolicyEngine policyEngine;
-    
+
     @Override
     public String name() {
         return NAME;

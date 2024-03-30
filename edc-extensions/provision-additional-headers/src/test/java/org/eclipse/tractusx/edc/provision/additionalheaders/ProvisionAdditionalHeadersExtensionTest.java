@@ -20,8 +20,8 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
-import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProvisionManager;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ResourceManifestGenerator;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.junit.jupiter.api.BeforeEach;

@@ -39,4 +39,5 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.lib.jersey.providers)
     testImplementation(libs.edc.core.transform)
+    testImplementation(libs.edc.spi.contract)
 }

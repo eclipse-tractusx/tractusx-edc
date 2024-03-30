@@ -19,9 +19,9 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
-import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
-import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolverRegistry;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
@@ -56,7 +56,7 @@ public class LocalCallbackExtension implements ServiceExtension {
 
     @Inject
     private TransactionContext transactionContext;
-    
+
     @Inject
     private ContractAgreementService agreementService;
 

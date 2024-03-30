@@ -32,7 +32,7 @@ import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class EdrNegotiationHelperFunctions {
 
@@ -42,7 +42,6 @@ public class EdrNegotiationHelperFunctions {
         return Json.createObjectBuilder()
                 .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
                 .add(EDC_NAMESPACE + "counterPartyId", providerId)
-                .add(EDC_NAMESPACE + "providerId", providerId)
                 .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)
                 .add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http")
                 .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()

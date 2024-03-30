@@ -19,13 +19,13 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import org.eclipse.edc.boot.system.injection.InjectionContainer;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.api.edr.v2;
 
 import jakarta.json.Json;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
-import org.eclipse.edc.connector.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;

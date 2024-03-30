@@ -19,8 +19,8 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolver;
-import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolver;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolverRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;

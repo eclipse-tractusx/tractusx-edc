@@ -25,7 +25,7 @@ import jakarta.json.JsonObject;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class TransferProcessHelperFunctions {
 

@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;

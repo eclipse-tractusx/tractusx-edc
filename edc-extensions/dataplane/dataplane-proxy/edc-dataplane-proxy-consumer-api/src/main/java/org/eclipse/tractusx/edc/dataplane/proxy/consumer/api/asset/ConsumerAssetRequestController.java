@@ -56,7 +56,7 @@ import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 
 /**
