@@ -154,5 +154,5 @@ jobs:
 
       - name: Run Azure/S3 dataplane tests
         run: |
-          ./gradlew compileJava compileTestJava --refresh-dependencies
+          ./gradlew compileJava compileTestJava
           ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="AzureCosmosDbIntegrationTest,AwsS3IntegrationTest"

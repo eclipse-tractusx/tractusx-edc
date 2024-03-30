@@ -53,6 +53,15 @@ project.subprojects.forEach {
 
 }
 
+configurations.all {
+    resolutionStrategy {
+        // cache dynamic versions for 1 second
+        cacheDynamicVersionsFor(1, "seconds")
+        // don't cache changing modules at all
+        cacheChangingModulesFor(1, "seconds")
+    }
+}
+
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
 
