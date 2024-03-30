@@ -23,11 +23,11 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
-import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public class EdrNegotiationHelperFunctions {
 
     public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
-                .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
+                .add(TYPE, ContractRequest.CONTRACT_REQUEST_TYPE)
                 .add(EDC_NAMESPACE + "counterPartyId", providerId)
                 .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)
                 .add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http")

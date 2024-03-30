@@ -35,7 +35,8 @@ import static java.lang.String.format;
 
 public class ContractNegotiationCallback implements InProcessCallback {
 
-    public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy-PULL").build();
+    public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy").build();
+    private static final String TRANSFER_TYPE = "HttpData-PULL";
     private final TransferProcessService transferProcessService;
 
     private final Monitor monitor;
@@ -62,6 +63,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
                 .counterPartyAddress(negotiationFinalized.getCounterPartyAddress())
                 .protocol(negotiationFinalized.getProtocol())
                 .dataDestination(DATA_DESTINATION)
+                .transferType(TRANSFER_TYPE)
                 .callbackAddresses(negotiationFinalized.getCallbackAddresses())
                 .build();
 

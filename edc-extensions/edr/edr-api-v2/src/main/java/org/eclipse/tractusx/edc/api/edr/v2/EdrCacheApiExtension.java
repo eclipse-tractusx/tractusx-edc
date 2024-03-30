@@ -31,11 +31,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
-import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.api.edr.v2.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
-import org.eclipse.tractusx.edc.api.edr.v2.transform.JsonObjectToNegotiateEdrRequestDtoTransformer;
-import org.eclipse.tractusx.edc.api.edr.v2.transform.NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer;
-import org.eclipse.tractusx.edc.api.edr.v2.validation.NegotiateEdrRequestDtoValidator;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
 import java.util.Map;
@@ -74,10 +70,7 @@ public class EdrCacheApiExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
-        mgmtApiTransformerRegistry.register(new NegotiateEdrRequestDtoToNegotiatedEdrRequestTransformer());
-        mgmtApiTransformerRegistry.register(new JsonObjectToNegotiateEdrRequestDtoTransformer());
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
-        validatorRegistry.register(NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE, NegotiateEdrRequestDtoValidator.instance());
         webService.registerResource(apiConfig.getContextAlias(), new EdrCacheApiController(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
     }
 }
