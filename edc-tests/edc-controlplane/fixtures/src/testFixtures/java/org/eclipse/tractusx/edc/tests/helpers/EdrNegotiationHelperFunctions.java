@@ -42,7 +42,6 @@ public class EdrNegotiationHelperFunctions {
         return Json.createObjectBuilder()
                 .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
                 .add(EDC_NAMESPACE + "counterPartyId", providerId)
-                .add(EDC_NAMESPACE + "providerId", providerId)
                 .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)
                 .add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http")
                 .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
