@@ -34,6 +34,18 @@ participant:
   # -- BPN Number
   id: "BPNLCHANGEME"
 
+iatp:
+  # Decentralized IDentifier
+  id: "did:web:changeme"
+  sts:
+    dim:
+      url:
+    oauth:
+      token_url:
+      client:
+        id:
+        secret_alias:
+
 # -- Add custom ca certificates to the truststore
 customCaCerts: {}
 
@@ -109,11 +121,29 @@ runtime:
     proxy:
       port: 8186
       path: /proxy
+
   businessPartnerValidation:
     log:
       agreementValidation: true
-  edr:
-    transferProxyTokenValidity: "2592000"
+  token:
+    refresh:
+      expiry_seconds: 300
+      expiry_tolerance_seconds: 10
+      # optional URL that can be provided where clients go to refresh tokens.
+      refresh_endpoint:
+    signer:
+      # alias under which the private key is stored in the vault (JWK or PEM format)
+      privatekey_alias:
+    verifier:
+      # alias under which the public key is stored in the vault, that belongs to the private key ("privatekey_alias", JWK or PEM format)
+      publickey_alias:
+
+  bdrs:
+    # time that a cached BPN/DID resolution map is valid in seconds, default is 10 min
+    cache_validity_seconds: 600
+    server:
+      # URL of the BPN/DID Resolution Service - required:
+      url:
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.

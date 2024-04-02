@@ -10,7 +10,6 @@ aws = "2.25.21"
 azure-identity = "1.11.4"
 bouncyCastle-jdk18on = "1.77"
 flyway = "10.10.0"
-iron-vc = "0.14.0"
 jackson = "2.17.0"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
@@ -187,7 +186,6 @@ edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", versio
 
 apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache-sshd" }
 apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
-apicatalog-iron-vc = { module = "com.apicatalog:iron-verifiable-credentials", version.ref = "iron-vc" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
