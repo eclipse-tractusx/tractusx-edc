@@ -56,6 +56,11 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | To add some custom labels |
 | fullnameOverride | string | `""` |  |
+| iatp.id | string | `"did:web:changeme"` |  |
+| iatp.sts.dim.url | string | `nil` |  |
+| iatp.sts.oauth.client.id | string | `nil` |  |
+| iatp.sts.oauth.client.secret_alias | string | `nil` |  |
+| iatp.sts.oauth.token_url | string | `nil` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
 | participant.id | string | `"BPNLCHANGEME"` | BPN Number |
@@ -65,11 +70,12 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | runtime.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
 | runtime.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | runtime.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
+| runtime.bdrs.cache_validity_seconds | int | `600` |  |
+| runtime.bdrs.server.url | string | `nil` |  |
 | runtime.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | runtime.debug.enabled | bool | `false` |  |
 | runtime.debug.port | int | `1044` |  |
 | runtime.debug.suspendOnStart | bool | `false` |  |
-| runtime.edr.transferProxyTokenValidity | string | `"2592000"` |  |
 | runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the control plane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
@@ -147,6 +153,11 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
+| runtime.token.refresh.expiry_seconds | int | `300` |  |
+| runtime.token.refresh.expiry_tolerance_seconds | int | `10` |  |
+| runtime.token.refresh.refresh_endpoint | string | `nil` |  |
+| runtime.token.signer.privatekey_alias | string | `nil` |  |
+| runtime.token.verifier.publickey_alias | string | `nil` |  |
 | runtime.tolerations | list | `[]` |  |
 | runtime.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` |  |
