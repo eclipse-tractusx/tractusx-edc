@@ -54,6 +54,6 @@ dependencies:
   # PostgreSQL
   - name: postgresql
     alias: postgresql
-    version: 12.11.2
+    version: "15.2.1"
     repository: https://charts.bitnami.com/bitnami
     condition: install.postgresql
