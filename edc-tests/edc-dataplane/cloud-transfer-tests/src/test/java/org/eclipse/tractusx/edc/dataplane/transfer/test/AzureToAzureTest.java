@@ -139,6 +139,7 @@ public class AzureToAzureTest {
         // upload file to provider's blob store
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+        
         providerBlobHelper.uploadBlob(sourceContainer,fileData, TESTFILE_NAME);
 
         // create container in consumer's blob store
@@ -227,6 +228,7 @@ public class AzureToAzureTest {
     void transferFile_targetContainerNotExist_shouldFail() {
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+        
         providerBlobHelper.uploadBlob(sourceContainer,fileData,TESTFILE_NAME);
 
         DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
