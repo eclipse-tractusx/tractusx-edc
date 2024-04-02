@@ -20,12 +20,12 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
 import com.nimbusds.jose.jwk.JWK;
+import org.eclipse.edc.boot.system.injection.InjectionContainer;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.InjectionContainer;
 import org.eclipse.tractusx.edc.tests.runtimes.DataWiper;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;

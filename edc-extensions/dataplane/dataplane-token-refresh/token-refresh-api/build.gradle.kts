@@ -28,6 +28,8 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.web)
     implementation(libs.jakarta.rsApi)
+    implementation(libs.edc.util)
+
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)

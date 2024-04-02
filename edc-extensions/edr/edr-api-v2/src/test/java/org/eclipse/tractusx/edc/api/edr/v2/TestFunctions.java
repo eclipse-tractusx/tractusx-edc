@@ -21,46 +21,17 @@ package org.eclipse.tractusx.edc.api.edr.v2;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.connector.api.management.contractnegotiation.model.ContractOfferDescription;
-import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
-import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
-
-import java.util.UUID;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class TestFunctions {
 
-    public static ContractOfferDescription createOffer(String offerId, String assetId) {
-        return ContractOfferDescription.Builder.newInstance()
-                .offerId(offerId)
-                .assetId(assetId)
-                .policy(Policy.Builder.newInstance().build())
-                .build();
-    }
-
-    public static ContractOfferDescription createOffer(Policy policy) {
-        return ContractOfferDescription.Builder.newInstance()
-                .offerId(UUID.randomUUID().toString())
-                .assetId(UUID.randomUUID().toString())
-                .policy(policy)
-                .build();
-    }
-
-    public static ContractOfferDescription createOffer(String offerId) {
-        return createOffer(offerId, UUID.randomUUID().toString());
-    }
-
-    public static ContractOfferDescription createOffer() {
-        return createOffer(UUID.randomUUID().toString(), UUID.randomUUID().toString());
-    }
-
     public static JsonObject negotiationRequest() {
         return Json.createObjectBuilder()
-                .add(TYPE, NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE)
+                .add(TYPE, ContractRequest.CONTRACT_REQUEST_TYPE)
                 .add(EDC_NAMESPACE + "connectorId", "test")
                 .add(EDC_NAMESPACE + "providerId", "test")
                 .add(EDC_NAMESPACE + "connectorAddress", "test")
@@ -73,15 +44,12 @@ public class TestFunctions {
                 .build();
     }
 
-    public static NegotiateEdrRequest openRequest() {
-        return NegotiateEdrRequest.Builder.newInstance()
-                .connectorAddress("test")
-                .connectorId("id")
-                .protocol("test-protocol")
-                .offer(ContractOffer.Builder.newInstance()
-                        .id("offerId")
-                        .assetId("assetId")
-                        .policy(Policy.Builder.newInstance().build()).build())
+    public static ContractNegotiation createContractNegotiation() {
+        return ContractNegotiation.Builder.newInstance()
+                .id("id")
+                .counterPartyAddress("http://test")
+                .counterPartyId("provider")
+                .protocol("protocol")
                 .build();
     }
 }

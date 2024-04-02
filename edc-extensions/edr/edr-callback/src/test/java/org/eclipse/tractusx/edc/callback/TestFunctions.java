@@ -27,17 +27,16 @@ import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
-import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessStarted;
-import org.eclipse.edc.connector.transfer.spi.event.TransferProcessTerminated;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
+import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
+import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessTerminated;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.agreement.ContractAgreement;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 
 import java.time.Instant;
 import java.util.Date;
@@ -113,16 +112,6 @@ public class TestFunctions {
                         .build()))
                 .reason(reason)
                 .transferProcessId(transferProcessId)
-                .build();
-    }
-
-    public static EndpointDataReference getEdr() {
-        return EndpointDataReference.Builder.newInstance()
-                .id("dataRequestId")
-                .contractId("test-contract-id")
-                .authCode(createToken())
-                .authKey("authKey")
-                .endpoint("http://endpoint")
                 .build();
     }
 

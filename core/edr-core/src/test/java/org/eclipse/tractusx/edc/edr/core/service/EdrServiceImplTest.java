@@ -19,157 +19,162 @@
 
 package org.eclipse.tractusx.edc.edr.core.service;
 
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.policy.model.Policy;
+import org.assertj.core.api.Assertions;
+import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
+import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
-import org.eclipse.tractusx.edc.edr.spi.EdrManager;
-import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.FORCE_REFRESH;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class EdrServiceImplTest {
 
-    EdrManager edrManager = mock(EdrManager.class);
-
-    EndpointDataReferenceCache endpointDataReferenceCache = mock(EndpointDataReferenceCache.class);
-
-    EdrServiceImpl transferService;
+    private final TokenRefreshHandler tokenRefreshHandler = mock();
+    private final EndpointDataReferenceStore edrStore = mock();
+    private EdrServiceImpl edrService;
 
     @BeforeEach
     void setup() {
-        transferService = new EdrServiceImpl(edrManager, endpointDataReferenceCache);
+        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), mock());
     }
 
     @Test
-    void initEdrNegotiation_shouldFireContractNegotiation_WhenUsingCallbacks() {
+    void query() {
 
-        when(edrManager.initiateEdrNegotiation(any())).thenReturn(StatusResult.success(getContractNegotiation()));
+        when(edrStore.query(any())).thenReturn(StoreResult.success(List.of()));
 
-        var negotiateEdrRequest = getNegotiateEdrRequest();
-
-        var result = transferService.initiateEdrNegotiation(negotiateEdrRequest);
-
-        assertThat(result.succeeded()).isTrue();
-        assertThat(result.getContent()).isNotNull();
-
+        assertThat(edrService.query(QuerySpec.max())).isSucceeded().satisfies(results -> {
+            Assertions.assertThat(results).isEmpty();
+        });
     }
 
     @Test
-    void findByTransferProcessId_shouldReturnTheEdr_whenFoundInCache() {
+    void resolveByTransferProcess_whenNoRefresh() {
 
-        var transferProcessId = "tpId";
+        var transferProcess = "tp";
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr()));
 
-        when(endpointDataReferenceCache.resolveReference(eq(transferProcessId)))
-                .thenReturn(EndpointDataReference.Builder.newInstance()
-                        .id("test-id")
-                        .contractId("test-contract")
-                        .endpoint("test")
-                        .build());
+        var result = edrService.resolveByTransferProcess(transferProcess, NO_REFRESH);
 
-        var result = transferService.findByTransferProcessId(transferProcessId);
+        assertThat(result).isSucceeded();
 
-        assertThat(result)
-                .isNotNull()
-                .extracting(ServiceResult::getContent)
-                .isNotNull();
-    }
+        verify(edrStore).resolveByTransferProcess(transferProcess);
 
-
-    @Test
-    void findByTransferProcessId_shouldNotFound_whenNotPresentInCache() {
-        var transferProcessId = "tpId";
-
-        when(endpointDataReferenceCache.resolveReference(transferProcessId)).thenReturn(null);
-
-        var result = transferService.findByTransferProcessId(transferProcessId);
-
-        assertThat(result)
-                .isNotNull()
-                .extracting(ServiceResult::getFailure)
-                .extracting(ServiceFailure::getReason)
-                .isEqualTo(ServiceFailure.Reason.NOT_FOUND);
+        verifyNoMoreInteractions(edrStore);
+        verifyNoInteractions(tokenRefreshHandler);
     }
 
     @Test
-    void deleteByTransferProcessId() {
-        var transferProcessId = "tpId";
+    void resolveByTransferProcess_whenRefreshNotExpired() {
 
-        when(endpointDataReferenceCache.deleteByTransferProcessId(transferProcessId)).thenReturn(StoreResult.success(null));
+        var transferProcess = "tp";
+        var assetId = "assetId";
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr("1000")));
+        when(edrStore.findById(transferProcess)).thenReturn(edrEntry(assetId, transferProcess));
 
-        var result = transferService.deleteByTransferProcessId(transferProcessId);
+        var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
 
-        assertThat(result)
-                .isNotNull()
-                .extracting(ServiceResult::succeeded)
-                .isEqualTo(true);
+        assertThat(result).isSucceeded();
+
+        verify(edrStore).resolveByTransferProcess(transferProcess);
+        verify(edrStore).findById(transferProcess);
+
+        verifyNoMoreInteractions(edrStore);
+        verifyNoInteractions(tokenRefreshHandler);
     }
 
     @Test
-    void deleteByTransferProcessId_shouldNotFound_whenNotPresentInCache() {
-        var transferProcessId = "tpId";
+    void resolveByTransferProcess_whenRefreshExpired() {
 
-        when(endpointDataReferenceCache.deleteByTransferProcessId(eq(transferProcessId))).thenReturn(StoreResult.notFound(""));
+        var transferProcess = "tp";
+        var assetId = "assetId";
+        var entry = edrEntry(assetId, transferProcess);
+        var refreshedEdr = edr();
 
-        var result = transferService.deleteByTransferProcessId(transferProcessId);
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr("-1000")));
+        when(edrStore.findById(transferProcess)).thenReturn(entry);
+        when(tokenRefreshHandler.refreshToken(eq(transferProcess), any())).thenReturn(ServiceResult.success(refreshedEdr));
+        when(edrStore.save(any(), eq(refreshedEdr))).thenReturn(StoreResult.success());
 
-        assertThat(result)
-                .isNotNull()
-                .extracting(ServiceResult::getFailure)
-                .extracting(ServiceFailure::getReason)
-                .isEqualTo(ServiceFailure.Reason.NOT_FOUND);
+        var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
+
+        assertThat(result).isSucceeded();
+
+        var captor = ArgumentCaptor.forClass(EndpointDataReferenceEntry.class);
+        verify(edrStore).resolveByTransferProcess(transferProcess);
+        verify(edrStore).findById(transferProcess);
+        verify(edrStore).save(captor.capture(), eq(refreshedEdr));
+        verify(tokenRefreshHandler).refreshToken(eq(transferProcess), any());
+
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+
+        Assertions.assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(entry);
     }
 
     @Test
-    void queryEdrs() {
-        when(endpointDataReferenceCache.queryForEntries(any())).thenReturn(Stream.empty());
+    void resolveByTransferProcess_forceRefresh() {
 
-        var result = transferService.findBy(QuerySpec.Builder.newInstance().build());
+        var transferProcess = "tp";
+        var assetId = "assetId";
+        var entry = edrEntry(assetId, transferProcess);
+        var refreshedEdr = edr();
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr("1000")));
+        when(edrStore.findById(transferProcess)).thenReturn(entry);
+        when(tokenRefreshHandler.refreshToken(eq(transferProcess), any())).thenReturn(ServiceResult.success(refreshedEdr));
+        when(edrStore.save(any(), eq(refreshedEdr))).thenReturn(StoreResult.success());
 
-        assertThat(result)
-                .isNotNull()
-                .extracting(ServiceResult::getContent)
-                .extracting(List::size)
-                .isEqualTo(0);
+        var result = edrService.resolveByTransferProcess(transferProcess, FORCE_REFRESH);
+
+        assertThat(result).isSucceeded();
+
+        var captor = ArgumentCaptor.forClass(EndpointDataReferenceEntry.class);
+        verify(edrStore).resolveByTransferProcess(transferProcess);
+        verify(edrStore).findById(transferProcess);
+        verify(edrStore).save(captor.capture(), eq(refreshedEdr));
+        verify(tokenRefreshHandler).refreshToken(eq(transferProcess), any());
+
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+
+        Assertions.assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(entry);
 
     }
 
-    private NegotiateEdrRequest getNegotiateEdrRequest() {
-        return NegotiateEdrRequest.Builder.newInstance()
-                .protocol("protocol")
-                .connectorAddress("http://test")
-                .callbackAddresses(List.of(CallbackAddress.Builder.newInstance().uri("test").events(Set.of("test")).build()))
-                .offer(ContractOffer.Builder.newInstance()
-                        .id("id")
-                        .assetId("assetId")
-                        .policy(Policy.Builder.newInstance().build())
-                        .build())
-                .build();
+    private DataAddress edr(String expireIn) {
+        return DataAddress.Builder.newInstance().type("test").property(TX_AUTH_NS + "expiresIn", expireIn).build();
     }
 
-    private ContractNegotiation getContractNegotiation() {
-        return ContractNegotiation.Builder.newInstance()
-                .id("id")
-                .counterPartyAddress("http://test")
-                .counterPartyId("provider")
-                .protocol("protocol")
+    private DataAddress edr() {
+        return edr(null);
+    }
+
+    private EndpointDataReferenceEntry edrEntry(String assetId, String transferProcessId) {
+        return EndpointDataReferenceEntry.Builder.newInstance()
+                .assetId(assetId)
+                .transferProcessId(transferProcessId)
+                .contractNegotiationId(UUID.randomUUID().toString())
+                .agreementId(UUID.randomUUID().toString())
+                .providerId(UUID.randomUUID().toString())
                 .build();
     }
 }

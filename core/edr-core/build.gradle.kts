@@ -22,13 +22,11 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.config.filesystem)
     implementation(libs.edc.util)
-    implementation(libs.edc.spi.contract)
-    implementation(libs.edc.spi.controlplane)
-    implementation(libs.edc.statemachine)
+    implementation(libs.edc.spi.edrstore)
+    implementation(libs.edc.spi.transactionspi)
 
+    implementation(project(":spi:tokenrefresh-spi"))
     implementation(project(":spi:edr-spi"))
     implementation(project(":spi:core-spi"))
 

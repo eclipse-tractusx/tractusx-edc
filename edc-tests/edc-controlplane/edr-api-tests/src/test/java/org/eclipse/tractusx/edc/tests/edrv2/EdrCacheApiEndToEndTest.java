@@ -37,7 +37,7 @@ import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
-import org.eclipse.tractusx.edc.tests.TxParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
@@ -73,7 +73,7 @@ import static org.mockserver.model.StringBody.exact;
  */
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
-    protected static final TxParticipant SOKRATES = TxParticipant.Builder.newInstance()
+    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
             .name("sokrates")
             .id("BPN00001")
             .build();

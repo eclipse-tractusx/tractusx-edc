@@ -19,37 +19,6 @@
 
 package org.eclipse.tractusx.edc.edr.core.fixtures;
 
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
-
-import java.util.List;
-import java.util.Set;
-
 public class TestFunctions {
-
-
-    public static NegotiateEdrRequest getNegotiateEdrRequest() {
-        return NegotiateEdrRequest.Builder.newInstance()
-                .protocol("protocol")
-                .connectorAddress("http://test")
-                .callbackAddresses(List.of(CallbackAddress.Builder.newInstance().uri("test").events(Set.of("test")).build()))
-                .offer(ContractOffer.Builder.newInstance()
-                        .id("id")
-                        .assetId("assetId")
-                        .policy(Policy.Builder.newInstance().build())
-                        .build())
-                .build();
-    }
-
-    public static ContractNegotiation getContractNegotiation() {
-        return ContractNegotiation.Builder.newInstance()
-                .id("id")
-                .counterPartyAddress("http://test")
-                .counterPartyId("provider")
-                .protocol("protocol")
-                .build();
-    }
+    
 }

@@ -30,7 +30,7 @@ dependencies {
     implementation(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.dpf.util)
     implementation(libs.edc.dpf.core)
-    implementation(libs.edc.policy.engine)
+    implementation(libs.edc.lib.policyengine)
     implementation(libs.bouncyCastle.bcpkixJdk18on)
 
     implementation(libs.apache.sshd.core)

@@ -42,6 +42,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.net.URI;
 import java.text.ParseException;
@@ -49,7 +52,8 @@ import java.util.Map;
 
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 import static org.hamcrest.Matchers.containsString;
 
 
@@ -58,13 +62,15 @@ public class DataPlaneTokenRefreshEndToEndTest {
     public static final String CONSUMER_DID = "did:web:alice";
     public static final String PROVIDER_DID = "did:web:bob";
     public static final String PROVIDER_KEY_ID = PROVIDER_DID + "#key-1";
+    public static final String PROVIDER_KEY_ID_PUBLIC = PROVIDER_DID + "#key-1-public";
     public static final String CONSUMER_KEY_ID = CONSUMER_DID + "#cons-1";
     private static final RuntimeConfig RUNTIME_CONFIG = new RuntimeConfig();
     @RegisterExtension
     protected static final EdcRuntimeExtension DATAPLANE_RUNTIME = new EdcRuntimeExtension(
             ":edc-tests:runtime:dataplane-cloud",
             "Token-Refresh-Dataplane",
-            with(RUNTIME_CONFIG.baseConfig(), Map.of("edc.transfer.proxy.token.signer.privatekey.alias", PROVIDER_KEY_ID))
+            with(RUNTIME_CONFIG.baseConfig(), Map.of("edc.transfer.proxy.token.signer.privatekey.alias", PROVIDER_KEY_ID,
+                    "edc.transfer.proxy.token.verifier.publickey.alias", PROVIDER_KEY_ID_PUBLIC))
     );
     private ECKey providerKey;
     private ECKey consumerKey;
@@ -95,6 +101,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         });
     }
 
+    @DisplayName("Refresh token success")
     @Test
     void refresh_success() {
 
@@ -105,8 +112,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
-        var refreshToken = edr.getStringProperty("refreshToken");
-        var accessToken = edr.getStringProperty("authorization");
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
         var authToken = createAuthToken(accessToken, consumerKey);
 
         var tokenResponse = RUNTIME_CONFIG.getRefreshApi().baseRequest()
@@ -122,6 +129,79 @@ public class DataPlaneTokenRefreshEndToEndTest {
         assertThat(tokenResponse).isNotNull();
     }
 
+    @DisplayName("Refresh token is null or empty (missing)")
+    @ParameterizedTest
+    @NullSource
+    @EmptySource
+    void refresh_invalidRefreshToken(String invalidRefreshToken) {
+        // register generator and secrets
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
+        var authToken = createAuthToken(accessToken, consumerKey);
+
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", invalidRefreshToken)
+                .header(AUTHORIZATION, "Bearer " + authToken)
+                .post("/token")
+                .then()
+                .log().ifError()
+                .statusCode(400);
+    }
+
+    @DisplayName("The Authorization header is empty")
+    @Test
+    void refresh_emptyAuthHeader() {
+        // register generator and secrets
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
+
+        // auth header is empty
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "")
+                .post("/token")
+                .then()
+                .log().ifError()
+                .statusCode(401);
+    }
+
+    @DisplayName("The Authorization header is missing")
+    @Test
+    void refresh_missingAuthHeader() {
+        // register generator and secrets
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
+
+        // auth header is empty
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .post("/token")
+                .then()
+                .log().ifError()
+                .statusCode(401);
+    }
+
     @DisplayName("The sign key of the authentication token is different from the public key from the DID")
     @Test
     void refresh_spoofedAuthToken() throws JOSEException {
@@ -131,8 +211,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
-        var refreshToken = edr.getStringProperty("refreshToken");
-        var accessToken = edr.getStringProperty("authorization");
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
         var spoofedKey = new ECKeyGenerator(Curve.P_256).keyID(CONSUMER_KEY_ID).generate();
         var authTokenWithSpoofedKey = createAuthToken(accessToken, spoofedKey);
 
@@ -157,7 +237,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = "invalid_refresh_token";
-        var accessToken = edr.getStringProperty("authorization");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
         RUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
@@ -171,7 +251,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
     }
 
 
-    @DisplayName("The authentication token misses required claims: access_token")
+    @DisplayName("The authentication token misses required claims: token")
     @Test
     void refresh_invalidAuthenticationToken_missingAccessToken() {
         prepareDataplaneRuntime();
@@ -180,11 +260,11 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
-        var refreshToken = edr.getStringProperty("refreshToken");
-        var accessToken = edr.getStringProperty("authorization");
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
         var claims = new JWTClaimsSet.Builder()
-                /* missing: .claim("access_token", accessToken)*/
+                /* missing: .claim("token", accessToken)*/
                 .issuer(CONSUMER_DID)
                 .subject(CONSUMER_DID)
                 .audience("did:web:bob")
@@ -200,7 +280,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .then()
                 .log().ifValidationFails()
                 .statusCode(401)
-                .body(containsString("Required claim 'access_token' not present on token."));
+                .body(containsString("Required claim 'token' not present on token."));
     }
 
     @DisplayName("The authentication token misses required claims: audience")
@@ -212,11 +292,11 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
-        var refreshToken = edr.getStringProperty("refreshToken");
-        var accessToken = edr.getStringProperty("authorization");
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
         var claims = new JWTClaimsSet.Builder()
-                .claim("access_token", accessToken)
+                .claim("token", accessToken)
                 .issuer(CONSUMER_DID)
                 .subject(CONSUMER_DID)
                 /* missing: .audience("did:web:bob")*/
@@ -238,11 +318,12 @@ public class DataPlaneTokenRefreshEndToEndTest {
     private void prepareDataplaneRuntime() {
         var vault = DATAPLANE_RUNTIME.getContext().getService(Vault.class);
         vault.storeSecret(PROVIDER_KEY_ID, providerKey.toJSONString());
+        vault.storeSecret(PROVIDER_KEY_ID_PUBLIC, providerKey.toPublicJWK().toJSONString());
     }
 
     private String createAuthToken(String accessToken, ECKey signerKey) {
         var claims = new JWTClaimsSet.Builder()
-                .claim("access_token", accessToken)
+                .claim("token", accessToken)
                 .issuer(CONSUMER_DID)
                 .subject(CONSUMER_DID)
                 .audience("did:web:bob")

@@ -20,11 +20,11 @@
 package org.eclipse.tractusx.edc.common.tokenrefresh;
 
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.identitytrust.SecureTokenService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.http.EdcHttpClient;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;

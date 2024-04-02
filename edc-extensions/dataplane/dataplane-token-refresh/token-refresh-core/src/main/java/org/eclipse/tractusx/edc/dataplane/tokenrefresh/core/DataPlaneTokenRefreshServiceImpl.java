@@ -27,6 +27,7 @@ import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
+import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
@@ -77,6 +78,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final List<TokenValidationRule> accessTokenAuthorizationRules;
     private final TokenValidationService tokenValidationService;
     private final DidPublicKeyResolver publicKeyResolver;
+    private final LocalPublicKeyService localPublicKeyService;
     private final AccessTokenDataStore accessTokenDataStore;
     private final TokenGenerationService tokenGenerationService;
     private final Supplier<PrivateKey> privateKeySupplier;
@@ -90,6 +92,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public DataPlaneTokenRefreshServiceImpl(Clock clock,
                                             TokenValidationService tokenValidationService,
                                             DidPublicKeyResolver publicKeyResolver,
+                                            LocalPublicKeyService localPublicKeyService,
                                             AccessTokenDataStore accessTokenDataStore,
                                             TokenGenerationService tokenGenerationService,
                                             Supplier<PrivateKey> privateKeySupplier,
@@ -102,6 +105,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                                             ObjectMapper objectMapper) {
         this.tokenValidationService = tokenValidationService;
         this.publicKeyResolver = publicKeyResolver;
+        this.localPublicKeyService = localPublicKeyService;
         this.accessTokenDataStore = accessTokenDataStore;
         this.tokenGenerationService = tokenGenerationService;
         this.privateKeySupplier = privateKeySupplier;
@@ -132,7 +136,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
      *     <li>resolve the public key material in the DID Document identified by the {@code kid} header</li>
      *     <li>verify the token's signature</li>
      *     <li>assert {@code iss} and {@code sub} claims are identical</li>
-     *     <li>assert the the token contains an {@code access_token} claim, and that the value is identical to the access token we have on record</li>
+     *     <li>assert the the token contains an {@code token} claim, and that the value is identical to the access token we have on record</li>
      *     <li>assert that the {@code refreshToken} parameter is identical to the refresh token we have on record</li>
      * </ul>
      *
@@ -153,7 +157,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         // 2. extract access token and validate it
         var accessToken = authTokenRes.getContent().getStringClaim("token");
-        var accessTokenDataResult = tokenValidationService.validate(accessToken, publicKeyResolver, new RefreshTokenValidationRule(vault, refreshToken, objectMapper))
+        var accessTokenDataResult = tokenValidationService.validate(accessToken, localPublicKeyService, new RefreshTokenValidationRule(vault, refreshToken, objectMapper))
                 .map(accessTokenClaims -> accessTokenDataStore.getById(accessTokenClaims.getStringClaim(JwtRegisteredClaimNames.JWT_ID)));
 
         if (accessTokenDataResult.failed()) {
@@ -235,7 +239,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
     @Override
     public Result<AccessTokenData> resolve(String token) {
-        return tokenValidationService.validate(token, publicKeyResolver, accessTokenAuthorizationRules)
+        return tokenValidationService.validate(token, localPublicKeyService, accessTokenAuthorizationRules)
                 .compose(claimToken -> {
                     var id = claimToken.getStringClaim(JWTClaimNames.JWT_ID);
                     var tokenData = accessTokenDataStore.getById(id);

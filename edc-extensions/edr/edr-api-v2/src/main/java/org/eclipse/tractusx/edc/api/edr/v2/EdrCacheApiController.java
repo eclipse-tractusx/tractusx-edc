@@ -31,66 +31,77 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.api.model.IdResponse;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
+import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
+import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.api.edr.v2.dto.NegotiateEdrRequestDto;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
-import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
-import org.eclipse.tractusx.edc.edr.spi.types.NegotiateEdrRequest;
-import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
-import java.time.Instant;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
+import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest.CONTRACT_REQUEST_TYPE;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
-import static org.eclipse.edc.spi.result.ServiceResult.success;
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.FORCE_REFRESH;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
 @Path("/v2/edrs")
 public class EdrCacheApiController implements EdrCacheApi {
+    public static final String LOCAL_ADAPTER_URI = "local://adapter";
+    public static final Set<String> LOCAL_EVENTS = Set.of("contract.negotiation", "transfer.process");
+    public static final CallbackAddress LOCAL_CALLBACK = CallbackAddress.Builder.newInstance()
+            .transactional(true)
+            .uri(LOCAL_ADAPTER_URI)
+            .events(LOCAL_EVENTS)
+            .build();
     private final EndpointDataReferenceStore edrStore;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonObjectValidatorRegistry validator;
     private final Monitor monitor;
     private final EdrService edrService;
-    private final TokenRefreshHandler tokenRefreshHandler;
+
+    private final ContractNegotiationService contractNegotiationService;
 
     public EdrCacheApiController(EndpointDataReferenceStore edrStore,
                                  TypeTransformerRegistry transformerRegistry,
                                  JsonObjectValidatorRegistry validator,
                                  Monitor monitor,
-                                 EdrService edrService,
-                                 TokenRefreshHandler tokenRefreshHandler) {
+                                 EdrService edrService, ContractNegotiationService contractNegotiationService) {
         this.edrStore = edrStore;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
         this.monitor = monitor;
         this.edrService = edrService;
-        this.tokenRefreshHandler = tokenRefreshHandler;
+        this.contractNegotiationService = contractNegotiationService;
     }
 
     @POST
     @Override
     public JsonObject initiateEdrNegotiation(JsonObject requestObject) {
-        validator.validate(NegotiateEdrRequestDto.EDR_REQUEST_DTO_TYPE, requestObject).orElseThrow(ValidationFailureException::new);
 
-        var edrNegotiationRequest = transformerRegistry.transform(requestObject, NegotiateEdrRequestDto.class)
-                .compose(dto -> transformerRegistry.transform(dto, NegotiateEdrRequest.class))
+        validator.validate(CONTRACT_REQUEST_TYPE, requestObject)
+                .orElseThrow(ValidationFailureException::new);
+
+        var contractRequest = transformerRegistry.transform(requestObject, ContractRequest.class)
                 .orElseThrow(InvalidRequestException::new);
 
-        var contractNegotiation = edrService.initiateEdrNegotiation(edrNegotiationRequest).orElseThrow(exceptionMapper(NegotiateEdrRequest.class));
+        var contractNegotiation = contractNegotiationService.initiateNegotiation(enrichContractRequest(contractRequest));
 
         var idResponse = IdResponse.Builder.newInstance()
                 .id(contractNegotiation.getId())
@@ -129,10 +140,8 @@ public class EdrCacheApiController implements EdrCacheApi {
     @Path("{transferProcessId}/dataaddress")
     @Override
     public JsonObject getEdrEntryDataAddress(@PathParam("transferProcessId") String transferProcessId, @QueryParam("auto_refresh") boolean autoRefresh) {
-
-        var dataAddress = edrStore.resolveByTransferProcess(transferProcessId)
-                .flatMap(ServiceResult::from)
-                .compose(edr -> autoRefresh ? refreshAndUpdateToken(edr, transferProcessId) : success(edr))
+        var mode = autoRefresh ? AUTO_REFRESH : NO_REFRESH;
+        var dataAddress = edrService.resolveByTransferProcess(transferProcessId, mode)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
 
         return transformerRegistry.transform(dataAddress, JsonObject.class)
@@ -154,41 +163,21 @@ public class EdrCacheApiController implements EdrCacheApi {
     @Path("{transferProcessId}/refresh")
     @Override
     public JsonObject refreshEdr(@PathParam("transferProcessId") String transferProcessId) {
-        var updatedEdr = tokenRefreshHandler.refreshToken(transferProcessId)
-                .orElseThrow(exceptionMapper(DataAddress.class, transferProcessId));
+        var updatedEdr = edrService.resolveByTransferProcess(transferProcessId, FORCE_REFRESH)
+                .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
 
         return transformerRegistry.transform(updatedEdr, JsonObject.class)
                 .orElseThrow(f -> new EdcException(f.getFailureDetail()));
     }
 
-    // todo: move this method into a service once the "old" EDR api,service,etc. is removed
-    private ServiceResult<DataAddress> refreshAndUpdateToken(DataAddress edr, String id) {
+    private ContractRequest enrichContractRequest(ContractRequest request) {
+        var callbacks = Stream.concat(request.getCallbackAddresses().stream(), Stream.of(LOCAL_CALLBACK)).collect(Collectors.toList());
 
-        var edrEntry = edrStore.findById(id);
-        if (edrEntry == null) {
-            return ServiceResult.notFound("An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id));
-        }
-
-        if (isExpired(edr, edrEntry)) {
-            monitor.debug("Token expired, need to refresh.");
-            return tokenRefreshHandler.refreshToken(id, edr);
-        }
-        return ServiceResult.success(edr);
-    }
-
-    // todo: move this method into a service once the "old" EDR api,service,etc. is removed
-    private boolean isExpired(DataAddress edr, org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry metadata) {
-        var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);
-        if (expiresInString == null) {
-            return false;
-        }
-
-        var expiresIn = Long.parseLong(expiresInString);
-        // createdAt is in millis, expires-in is in seconds
-        var expiresAt = metadata.getCreatedAt() / 1000L + expiresIn;
-        var expiresAtInstant = Instant.ofEpochSecond(expiresAt);
-
-        return expiresAtInstant.isBefore(Instant.now());
+        return ContractRequest.Builder.newInstance()
+                .counterPartyAddress(request.getCounterPartyAddress())
+                .contractOffer(request.getContractOffer())
+                .protocol(request.getProtocol())
+                .callbackAddresses(callbacks).build();
     }
 
 }

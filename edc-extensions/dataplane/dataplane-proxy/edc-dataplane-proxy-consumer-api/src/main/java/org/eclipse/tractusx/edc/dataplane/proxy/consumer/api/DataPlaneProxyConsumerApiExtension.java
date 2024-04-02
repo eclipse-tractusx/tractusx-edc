@@ -34,7 +34,7 @@ import org.eclipse.edc.web.spi.configuration.WebServiceConfigurer;
 import org.eclipse.edc.web.spi.configuration.WebServiceSettings;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ClientErrorExceptionMapper;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.ConsumerAssetRequestController;
-import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
 import java.util.concurrent.ExecutorService;
 
@@ -65,7 +65,7 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private PipelineService pipelineService;
 
     @Inject
-    private EndpointDataReferenceCache edrCache;
+    private EdrService edrService;
 
     @Inject
     private WebServiceConfigurer configurer;
@@ -92,7 +92,7 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
         webService.registerResource(CONSUMER_API_ALIAS, new AuthenticationRequestFilter(authenticationService));
         webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());
-        webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrCache, pipelineService, executorService, monitor));
+        webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrService, pipelineService, executorService, monitor));
     }
 
     @Override

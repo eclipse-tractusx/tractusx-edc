@@ -24,7 +24,8 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.test.system.utils.Participant;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
@@ -35,7 +36,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetContractId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
@@ -109,7 +110,7 @@ public class ParticipantEdrApi {
      * @param callbacks The callbacks
      * @return The contract negotiation id
      */
-    public String negotiateEdr(TxParticipant other, String assetId, JsonArray callbacks) {
+    public String negotiateEdr(TransferParticipant other, String assetId, JsonArray callbacks) {
         var dataset = participant.getDatasetForAsset(other, assetId);
         assertThat(dataset).withFailMessage("Catalog received from " + other.getName() + " was empty!").isNotEmpty();
 

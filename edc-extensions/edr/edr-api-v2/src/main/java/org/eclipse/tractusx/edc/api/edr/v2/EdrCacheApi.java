@@ -32,9 +32,9 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.ApiCoreSchema;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiSchema;
+import org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.ContractNegotiationApi;
+import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.api.edr.v2.schema.EdrSchema;
-import org.eclipse.tractusx.edc.edr.spi.types.EndpointDataReferenceEntry;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -51,7 +51,7 @@ public interface EdrCacheApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })
-    JsonObject initiateEdrNegotiation(@Schema(implementation = EdrSchema.NegotiateEdrRequestSchema.class) JsonObject dto);
+    JsonObject initiateEdrNegotiation(@Schema(implementation = ContractNegotiationApi.ContractRequestSchema.class) JsonObject dto);
 
     @Operation(description = "Request all Edr entries according to a particular query",
             requestBody = @RequestBody(

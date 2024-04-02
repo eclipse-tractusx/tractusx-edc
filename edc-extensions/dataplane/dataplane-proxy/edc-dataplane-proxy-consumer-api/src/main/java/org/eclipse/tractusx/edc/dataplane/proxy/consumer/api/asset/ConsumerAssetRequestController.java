@@ -33,16 +33,18 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.edr.EndpointDataReference;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
-import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static jakarta.ws.rs.core.Response.Status.BAD_GATEWAY;
@@ -54,7 +56,8 @@ import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.PATH;
 import static org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema.QUERY_PARAMS;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 
 /**
  * Implements the HTTP proxy API.
@@ -62,22 +65,28 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 @Path("/aas")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
-    public static final String BASE_URL = EDC_NAMESPACE + "baseUrl";
+    public static final String BASE_URL = EDC_NAMESPACE + "endpoint";
+    public static final String EDR_ERROR_MESSAGE = "No EDR for transfer process: %s : %s";
     private static final String ASYNC_TYPE = "async";
     private static final String HEADER_AUTHORIZATION = "header:authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-
-    private final EndpointDataReferenceCache edrCache;
+    private final EdrService edrService;
     private final TransferService transferService;
     private final Monitor monitor;
 
     private final ExecutorService executorService;
 
-    public ConsumerAssetRequestController(EndpointDataReferenceCache edrCache,
+
+    private final Map<String, Function<AssetRequest, String>> mappers = Map.of(
+            "provider", AssetRequest::getProviderId,
+            "transferProcessId", AssetRequest::getTransferProcessId,
+            "assetId", AssetRequest::getAssetId);
+
+    public ConsumerAssetRequestController(EdrService edrService,
                                           TransferService transferService,
                                           ExecutorService executorService,
                                           Monitor monitor) {
-        this.edrCache = edrCache;
+        this.edrService = edrService;
         this.transferService = transferService;
         this.executorService = executorService;
         this.monitor = monitor;
@@ -90,19 +99,13 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         // resolve the EDR and add it to the request
         var edr = resolveEdr(request);
 
-        var sourceAddress = Optional.ofNullable(request.getEndpointUrl())
-                .map(url -> gatewayAddress(url, edr))
-                .orElseGet(() -> dataPlaneAddress(edr));
-
+        var sourceAddress = dataPlaneAddress(edr);
+        var properties = dataPlaneProperties(request);
 
         var destinationAddress = DataAddress.Builder.newInstance()
                 .type(ASYNC_TYPE)
                 .build();
 
-
-        var properties = Optional.ofNullable(request.getEndpointUrl())
-                .map((url) -> Map.<String, String>of())
-                .orElseGet(() -> dataPlaneProperties(request));
 
         var flowRequest = DataFlowStartMessage.Builder.newInstance()
                 .processId(randomUUID().toString())
@@ -136,38 +139,65 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         return props;
     }
 
-    private DataAddress gatewayAddress(String url, EndpointDataReference edr) {
-        return HttpDataAddress.Builder.newInstance()
-                .baseUrl(url)
-                .property(HEADER_AUTHORIZATION, BEARER_PREFIX + edr.getAuthCode())
-                .build();
-    }
 
-    private DataAddress dataPlaneAddress(EndpointDataReference edr) {
+    private DataAddress dataPlaneAddress(DataAddress edr) {
+        // TODO the header scheme should be dynamic based on the `authType`
+        //  https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md
+        var endpoint = edr.getStringProperty("endpoint");
+        var token = edr.getStringProperty("authorization");
         return HttpDataAddress.Builder.newInstance()
-                .baseUrl(edr.getEndpoint())
+                .baseUrl(endpoint)
                 .proxyQueryParams("true")
                 .proxyPath("true")
-                .property(HEADER_AUTHORIZATION, edr.getAuthCode())
+                .property(HEADER_AUTHORIZATION, BEARER_PREFIX + token)
                 .build();
     }
 
-    private EndpointDataReference resolveEdr(AssetRequest request) {
+    private DataAddress resolveEdr(AssetRequest request) {
         if (request.getTransferProcessId() != null) {
-            var edr = edrCache.resolveReference(request.getTransferProcessId());
-            if (edr == null) {
-                throw new BadRequestException("No EDR for transfer process: " + request.getTransferProcessId());
+            var edr = edrService.resolveByTransferProcess(request.getTransferProcessId(), AUTO_REFRESH);
+            if (edr.failed()) {
+                throw new BadRequestException(EDR_ERROR_MESSAGE.formatted(request.getTransferProcessId(), edr.getFailureDetail()));
             }
-            return edr;
+            return edr.getContent();
         } else {
-            var resolvedEdrs = edrCache.referencesForAsset(request.getAssetId(), request.getProviderId());
-            if (resolvedEdrs.isEmpty()) {
+            var resolvedEdrs = edrService.query(toQuery(request));
+
+            if (resolvedEdrs.failed()) {
+                throw new BadRequestException(EDR_ERROR_MESSAGE.formatted(request.getTransferProcessId(), resolvedEdrs.getFailureDetail()));
+            }
+
+            var edrs = resolvedEdrs.getContent();
+            if (edrs.isEmpty()) {
                 throw new BadRequestException("No EDR for asset: " + request.getAssetId());
-            } else if (resolvedEdrs.size() > 1) {
+            } else if (edrs.size() > 1) {
                 throw new PreconditionFailedException("More than one EDR for asset: " + request.getAssetId());
             }
-            return resolvedEdrs.get(0);
+
+            var edrEntry = edrs.get(0);
+
+            var edr = edrService.resolveByTransferProcess(edrEntry.getTransferProcessId(), AUTO_REFRESH);
+            if (edr.failed()) {
+                throw new BadRequestException(EDR_ERROR_MESSAGE.formatted(edrEntry.getTransferProcessId(), edr.getFailureDetail()));
+            }
+            return edr.getContent();
+
         }
+    }
+
+    private QuerySpec toQuery(AssetRequest request) {
+        var specBuilder = QuerySpec.Builder.newInstance();
+        mappers.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().apply(request) != null)
+                .forEach(entry -> specBuilder.filter(Criterion.criterion(entry.getKey(), "=", entry.getValue().apply(request))));
+
+        var spec = specBuilder.build();
+
+        if (spec.getFilterExpression().isEmpty()) {
+            throw new BadRequestException("No Filter provided in the request");
+        }
+        return spec;
     }
 
     /**

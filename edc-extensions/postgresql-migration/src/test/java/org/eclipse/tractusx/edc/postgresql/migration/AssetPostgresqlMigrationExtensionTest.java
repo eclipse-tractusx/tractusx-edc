@@ -19,11 +19,11 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
-import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
-import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.SqlAssetIndex;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.flywaydb.core.api.MigrationVersion;

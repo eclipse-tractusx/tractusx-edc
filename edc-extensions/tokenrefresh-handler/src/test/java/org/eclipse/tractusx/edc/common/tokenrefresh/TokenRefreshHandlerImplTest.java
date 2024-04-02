@@ -36,8 +36,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.identitytrust.SecureTokenService;
-import org.eclipse.edc.spi.http.EdcHttpClient;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -103,7 +103,6 @@ class TokenRefreshHandlerImplTest {
     @Test
     void refresh_validateCorrectRequest() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(edrCache.put(any(), any())).thenReturn(StoreResult.success());
         when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
         var tokenResponse = new TokenResponse("new-access-token", "new-refresh-token", 60 * 5L, "bearer");
         var successResponse = createResponse(tokenResponse, 200, "");

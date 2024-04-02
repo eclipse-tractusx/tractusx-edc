@@ -34,7 +34,7 @@ dependencies {
     testFixturesApi(libs.edc.spi.contract)
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))
     testFixturesApi(libs.edc.spi.edrstore)
-    testFixturesApi(libs.edc.common.crypto)
+    testFixturesApi(libs.edc.lib.cryptocommon)
     testFixturesApi(libs.edc.lib.boot)
 
     // api modules for some test utils

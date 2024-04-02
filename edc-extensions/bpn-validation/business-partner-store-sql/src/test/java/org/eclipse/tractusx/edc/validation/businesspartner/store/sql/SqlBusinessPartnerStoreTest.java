@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.store.sql;
 
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 class SqlBusinessPartnerStoreTest extends BusinessPartnerStoreTestBase {
     private final TypeManager typeManager = new TypeManager();

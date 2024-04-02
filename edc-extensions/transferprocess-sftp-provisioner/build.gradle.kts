@@ -26,7 +26,7 @@ dependencies {
     implementation(project(":edc-extensions:transferprocess-sftp-common"))
 
     implementation(libs.edc.spi.core)
-    implementation(libs.edc.policy.engine)
+    implementation(libs.edc.lib.policyengine)
     implementation(libs.edc.spi.transfer)
 
     testImplementation(libs.edc.junit)

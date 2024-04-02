@@ -34,7 +34,6 @@ public class AssetRequest {
     private String assetId;
 
     private String providerId;
-    private String endpointUrl;
 
     private String queryParams;
 
@@ -49,10 +48,6 @@ public class AssetRequest {
 
     public String getAssetId() {
         return assetId;
-    }
-
-    public String getEndpointUrl() {
-        return endpointUrl;
     }
 
     public String getProviderId() {
@@ -89,12 +84,7 @@ public class AssetRequest {
             request.assetId = assetId;
             return this;
         }
-
-        public Builder endpointUrl(String endpointUrl) {
-            request.endpointUrl = endpointUrl;
-            return this;
-        }
-
+        
         public Builder providerId(String providerId) {
             request.providerId = providerId;
             return this;

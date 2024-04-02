@@ -160,11 +160,6 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| controlplane.ssi.miw.authorityId | string | `""` | The BPN of the issuer authority |
-| controlplane.ssi.miw.url | string | `""` | MIW URL |
-| controlplane.ssi.oauth.client.id | string | `""` | The client ID for KeyCloak |
-| controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
-| controlplane.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
 | controlplane.tolerations | list | `[]` |  |
 | controlplane.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | controlplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |

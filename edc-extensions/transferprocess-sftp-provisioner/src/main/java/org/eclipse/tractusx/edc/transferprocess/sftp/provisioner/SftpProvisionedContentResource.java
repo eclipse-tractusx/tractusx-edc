@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedContentResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedContentResource;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
 
