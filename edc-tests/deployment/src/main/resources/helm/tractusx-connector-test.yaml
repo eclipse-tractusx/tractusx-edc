@@ -35,8 +35,15 @@ iatp:
       client:
         id: "test-client-id"
         secret_alias: "test-alias"
-
 controlplane:
+  # the ssi object is still needed for the upgradeability test
+  ssi:
+    miw:
+      url: "http://localhost:8080"
+      authorityId: "authorityId"
+    oauth:
+      client:
+        secretAlias: "client-secret"
   service:
     type: NodePort
   endpoints:
@@ -49,11 +56,9 @@ controlplane:
   securityContext:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
-
   bdrs:
     server:
       url: "https://bdrs.test.org"
-
 dataplane:
   endpoints:
     proxy:
