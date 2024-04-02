@@ -53,7 +53,7 @@ import static org.mockserver.model.HttpRequest.request;
 @Disabled
 public class DimCatalogIntegrationTest {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Integer BDRS_PORT = getFreePort();
     private static final String BDRS_URL = "http://localhost:%s/api".formatted(BDRS_PORT);
 
@@ -86,7 +86,7 @@ public class DimCatalogIntegrationTest {
 
         var bas = new ByteArrayOutputStream();
         try (var gzip = new GZIPOutputStream(bas)) {
-            gzip.write(mapper.writeValueAsBytes(data));
+            gzip.write(MAPPER.writeValueAsBytes(data));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

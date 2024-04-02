@@ -29,6 +29,7 @@ dependencies {
         exclude(module = "bdrs-client")
     }
     implementation(project(":core:json-ld-core"))
+    implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:iatp:tx-iatp"))
     implementation(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
 

@@ -47,7 +47,7 @@ import static org.mockserver.model.HttpRequest.request;
 @Disabled
 public class DimHttpPullTransferIntegrationTest extends HttpConsumerPullBaseTest {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Integer BDRS_PORT = getFreePort();
     private static final String BDRS_URL = "http://localhost:%s/api".formatted(BDRS_PORT);
     protected static final DimParticipant SOKRATES = configureParticipant(SOKRATES_NAME, BDRS_URL);
@@ -77,7 +77,7 @@ public class DimHttpPullTransferIntegrationTest extends HttpConsumerPullBaseTest
 
         var bas = new ByteArrayOutputStream();
         try (var gzip = new GZIPOutputStream(bas)) {
-            gzip.write(mapper.writeValueAsBytes(data));
+            gzip.write(MAPPER.writeValueAsBytes(data));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
