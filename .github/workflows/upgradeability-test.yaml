@@ -74,9 +74,6 @@ jobs:
 
       - name: "Install latest release"
         run: |
-          sh -c "edc-tests/deployment/src/main/resources/prepare-test.sh \
-                         edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml"
-          
           helm upgrade --install tx-prod tractusx/tractusx-connector \
             -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
             --set "controlplane.image.tag=$RELEASE" \

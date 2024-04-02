@@ -76,11 +76,6 @@ runs:
     ###################################################
     # Install the test infrastructure
     ###################################################
-    - name: "Generate test credentials"
-      shell: bash
-      run: |-
-        sh -c "edc-tests/deployment/src/main/resources/prepare-test.sh \
-               ${{ inputs.values_file }}"
 
     - name: Install Runtime
       shell: bash
