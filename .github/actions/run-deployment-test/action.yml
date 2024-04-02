@@ -40,10 +40,6 @@ inputs:
     required: true
     description: "The directory that contains the docker file, e.g. edc-controlplane/edc-runtime-memory"
 
-  values_file:
-    required: true
-    description: "A yaml file that contains the values for the test installation. will be modified!"
-
 runs:
   using: "composite"
   steps:
