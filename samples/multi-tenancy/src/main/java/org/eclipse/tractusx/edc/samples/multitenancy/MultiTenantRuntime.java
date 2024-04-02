@@ -47,7 +47,7 @@ public class MultiTenantRuntime extends BaseRuntime {
         runtime.boot();
     }
 
-    protected void boot() {
+    public void boot() {
         loadTenantsConfig().getConfig("edc.tenants").partition().forEach(this::bootTenant);
     }
 

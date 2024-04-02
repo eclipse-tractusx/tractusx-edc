@@ -24,6 +24,18 @@ fullnameOverride: tx-prod
 ################################
 participant:
   id: "test-participant"
+iatp:
+  # Decentralized IDentifier
+  id: "did:web:changeme"
+  sts:
+    dim:
+      url: "https://somewhere.dim.org"
+    oauth:
+      token_url: "https://changeme.org"
+      client:
+        id: "test-client-id"
+        secret_alias: "test-alias"
+
 controlplane:
   service:
     type: NodePort
@@ -37,13 +49,11 @@ controlplane:
   securityContext:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
-  ssi:
-    miw:
-      url: "http://localhost:8080"
-      authorityId: "authorityId"
-    oauth:
-      client:
-        secretAlias: "client-secret"
+
+  bdrs:
+    server:
+      url: "https://bdrs.test.org"
+
 dataplane:
   endpoints:
     proxy:
@@ -59,6 +69,11 @@ dataplane:
     endpointOverride: http://minio:9000
     secretAccessKey: qwerty123
     accessKeyId: qwerty123
+  token:
+    signer:
+      privatekey_alias: "key-1"
+    verifier:
+      publickey_alias: "key-1"
 postgresql:
   jdbcUrl: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc
   auth:

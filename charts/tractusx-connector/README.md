@@ -54,25 +54,25 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.6.0 \
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.11.2 |
-| https://helm.releases.hashicorp.com | vault(vault) | 0.20.0 |
+| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 15.2.1 |
+| https://helm.releases.hashicorp.com | vault(vault) | 0.27.0 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `"https://example.com"` | Specifies a backend service which will receive the EDR |
 | controlplane.affinity | object | `{}` |  |
 | controlplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | controlplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
 | controlplane.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
 | controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
+| controlplane.bdrs.cache_validity_seconds | int | `600` |  |
+| controlplane.bdrs.server.url | string | `nil` |  |
 | controlplane.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.edr.transferProxyTokenValidity | string | `"2592000"` |  |
 | controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
@@ -154,11 +154,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.6.0 \
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | controlplane.service.annotations | object | `{}` |  |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| controlplane.ssi.miw.authorityId | string | `""` | The BPN of the issuer authority |
-| controlplane.ssi.miw.url | string | `""` | MIW URL |
-| controlplane.ssi.oauth.client.id | string | `""` | The client ID for KeyCloak |
-| controlplane.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
-| controlplane.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
 | controlplane.tolerations | list | `[]` |  |
 | controlplane.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | controlplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
@@ -242,11 +237,21 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.6.0 \
 | dataplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | dataplane.service.port | int | `80` |  |
 | dataplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
+| dataplane.token.refresh.expiry_seconds | int | `300` |  |
+| dataplane.token.refresh.expiry_tolerance_seconds | int | `10` |  |
+| dataplane.token.refresh.refresh_endpoint | string | `nil` |  |
+| dataplane.token.signer.privatekey_alias | string | `nil` |  |
+| dataplane.token.verifier.publickey_alias | string | `nil` |  |
 | dataplane.tolerations | list | `[]` |  |
 | dataplane.url.public | string | `""` | Explicitly declared url for reaching the public api (e.g. if ingresses not used) |
 | dataplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | dataplane.volumes | string | `nil` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | fullnameOverride | string | `""` |  |
+| iatp.id | string | `"did:web:changeme"` |  |
+| iatp.sts.dim.url | string | `nil` |  |
+| iatp.sts.oauth.client.id | string | `nil` |  |
+| iatp.sts.oauth.client.secret_alias | string | `nil` |  |
+| iatp.sts.oauth.token_url | string | `nil` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | install.postgresql | bool | `true` |  |
 | install.vault | bool | `true` |  |
