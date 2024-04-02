@@ -47,6 +47,7 @@ public class MultiTenantRuntime extends BaseRuntime {
         runtime.boot();
     }
 
+    @Override
     public void boot() {
         loadTenantsConfig().getConfig("edc.tenants").partition().forEach(this::bootTenant);
     }

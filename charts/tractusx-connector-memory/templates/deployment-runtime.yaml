@@ -146,6 +146,8 @@ spec:
             ########################
             - name: EDC_PARTICIPANT_ID
               value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
+            - name: "EDC_IAM_ISSUER_ID"
+              value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote}}
 
             #######
             # API #
@@ -197,6 +199,31 @@ spec:
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
               value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path | quote }}
 
+            #############################
+            ## IATP / STS / DIM CONFIG ##
+            #############################
+            - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
+              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.oauth.token_url is required" | quote}}
+            - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
+              value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
+            - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
+              value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
+            - name: "EDC_IAM_STS_DIM_URL"
+              value: {{ .Values.iatp.sts.dim.url | required ".Values.iatp.sts.dim.url is required" | quote}}
+
+            #################
+            ## BDRS CLIENT ##
+            #################
+
+            {{- if .Values.runtime.bdrs.server.url }}
+            - name: "TX_IAM_IATP_BDRS_SERVER_URL"
+              value: {{ .Values.runtime.bdrs.server.url | required ".Values.runtime.bdrs.server.url is required" | quote }}
+            {{- end }}
+            {{- if .Values.runtime.bdrs.cache_validity_seconds }}
+            - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
+              value: {{ .Values.runtime.bdrs.cache_validity_seconds | quote}}
+            {{- end}}
+
             ################
             ## DATA PLANE ##
             ################
@@ -212,23 +239,35 @@ spec:
               value: |-
                 {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/data-plane-transfer
-            - name: "EDC_TRANSFER_PROXY_ENDPOINT"
-              value: {{ include "txdc.dataplane.url.public" . }}
-            {{- if .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
-            - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey | quote }}
-            {{- end }}
-            {{- if .Values.vault.secretNames.transferProxyTokenSignerPublicKey }}
-            - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
-            {{- end }}
-            - name: "EDC_TRANSFER_PROXY_TOKEN_VALIDITY_SECONDS"
-              value: {{ .Values.runtime.edr.transferProxyTokenValidity | required ".Values.runtime.edr.transferProxyTokenValidity is required" | quote }}
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/http-receiver
-            - name: "EDC_RECEIVER_HTTP_ENDPOINT"
-              value: {{ .Values.backendService.httpProxyTokenReceiverUrl | required ".Values.backendService.httpProxyTokenReceiverUrl is required" | quote }}
+            - name: "EDC_DATAPLANE_API_PUBLIC_BASEURL"
+              value: {{ include "txdc.dataplane.url.public" . }}
+
+
+            ##################
+            ## TOKEN REFRESH
+            ##################
+            {{- if .Values.runtime.token.refresh.expiry_seconds }}
+            - name: "EDC_DATAPLANE_TOKEN_EXPIRY"
+              value: {{ .Values.runtime.token.refresh.expiry_seconds | quote}}
+            {{- end}}
+
+            {{- if .Values.runtime.token.refresh.expiry_tolerance_seconds }}
+            - name: "EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
+              value: {{ .Values.runtime.token.refresh.expiry_tolerance_seconds | quote }}
+            {{- end}}
+
+            {{- if .Values.runtime.token.refresh.refresh_endpoint }}
+            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+              value: {{ .Values.runtime.token.refresh.refresh_endpoint }}
+            {{- end}}
+
+            - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"
+              value: {{ .Values.runtime.token.signer.privatekey_alias | required ".Values.runtime.token.signer.privatekey_alias is required" | quote}}
+
+            - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
+              value: {{ .Values.runtime.token.verifier.publickey_alias | required ".Values.runtime.token.verifier.publickey_alias" | quote }}
+
 
             ###########
             ## VAULT ##
