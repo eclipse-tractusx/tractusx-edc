@@ -19,30 +19,75 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.tractusx.edc.lifecycle.DimParticipant;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
 import org.eclipse.tractusx.edc.tag.DimIntegrationTest;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpResponse;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
+
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.helpers.DimHelper.configureParticipant;
 import static org.eclipse.tractusx.edc.lifecycle.Runtimes.dimRuntime;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.mockserver.model.HttpRequest.request;
 
 @DimIntegrationTest
 @Disabled
 public class DimHttpPullTransferIntegrationTest extends HttpConsumerPullBaseTest {
 
-    protected static final DimParticipant SOKRATES = configureParticipant(SOKRATES_NAME);
-    protected static final DimParticipant PLATO = configureParticipant(PLATO_NAME);
-
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Integer BDRS_PORT = getFreePort();
+    private static final String BDRS_URL = "http://localhost:%s/api".formatted(BDRS_PORT);
+    protected static final DimParticipant SOKRATES = configureParticipant(SOKRATES_NAME, BDRS_URL);
+    protected static final DimParticipant PLATO = configureParticipant(PLATO_NAME, BDRS_URL);
     @RegisterExtension
     protected static final ParticipantRuntime PLATO_RUNTIME = dimRuntime(PLATO.getName(), PLATO.iatpConfiguration(SOKRATES));
-
     @RegisterExtension
     protected static final ParticipantRuntime SOKRATES_RUNTIME = dimRuntime(SOKRATES.getName(), SOKRATES.iatpConfiguration(PLATO));
+    private static ClientAndServer bdrsServer;
+
+    @BeforeAll
+    static void beforeAll() {
+        bdrsServer = ClientAndServer.startClientAndServer(BDRS_PORT);
+        bdrsServer.when(request()
+                        .withMethod("GET")
+                        .withPath("/api/bpn-directory"))
+                .respond(HttpResponse.response()
+                        .withHeader("Content-Encoding", "gzip")
+                        .withBody(createGzipStream())
+                        .withStatusCode(200));
+
+    }
+
+    private static byte[] createGzipStream() {
+        var data = Map.of(SOKRATES.getBpn(), SOKRATES.getDid(),
+                PLATO.getBpn(), PLATO.getDid());
+
+        var bas = new ByteArrayOutputStream();
+        try (var gzip = new GZIPOutputStream(bas)) {
+            gzip.write(MAPPER.writeValueAsBytes(data));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return bas.toByteArray();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        bdrsServer.stop();
+    }
 
     @Override
     public TractusxParticipantBase plato() {

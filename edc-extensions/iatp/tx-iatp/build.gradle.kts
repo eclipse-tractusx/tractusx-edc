@@ -26,6 +26,9 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.policyengine)
     implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.contract)
+    implementation(libs.edc.spi.transfer)
+    implementation(libs.edc.spi.catalog)
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
 

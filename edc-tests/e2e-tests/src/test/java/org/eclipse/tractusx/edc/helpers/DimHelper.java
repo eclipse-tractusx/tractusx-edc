@@ -35,7 +35,7 @@ public interface DimHelper {
      * @param name The participant name
      * @return The composed {@link DimParticipant}
      */
-    static DimParticipant configureParticipant(String name) {
+    static DimParticipant configureParticipant(String name, String bdrsUrl) {
         var bpn = getEnv(format("DIM_%s_BPN", name));
         var dimUrl = getEnv(format("DIM_%s_DIM_URL", name));
         var stsUrl = getEnv(format("DIM_%s_STS_URL", name));
@@ -51,6 +51,7 @@ public interface DimHelper {
                 .dimUri(URI.create(dimUrl))
                 .trustedIssuer(trustedIssuer)
                 .did(did)
+                .bdrsUri(URI.create(bdrsUrl))
                 .build();
     }
 
