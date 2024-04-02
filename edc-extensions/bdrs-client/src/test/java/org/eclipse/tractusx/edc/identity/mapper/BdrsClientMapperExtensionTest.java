@@ -17,18 +17,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.identity.mapper;
 
-dependencies {
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
+import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
+@ExtendWith(DependencyInjectionExtension.class)
+class BdrsClientMapperExtensionTest {
+
+    private final Monitor monitor = mock();
+
+    @BeforeEach
+    void setup(ServiceExtensionContext context) {
+        context.registerService(Monitor.class, monitor);
+    }
+
+    @Test
+    void createMapper(BdrsClientMapperExtension extension) {
+        assertThat(extension.getBdrsAudienceResolver()).isInstanceOf(BdrsClientAudienceMapper.class);
+    }
 }

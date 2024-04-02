@@ -24,9 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Request;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -37,12 +36,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Holds a local cache of BPN-to-DID mapping entries. An incoming {@link RemoteMessage} is mapped by looking up the {@link RemoteMessage#getCounterPartyId()}
- * property in that map.
+ * Holds a local cache of BPN-to-DID mapping entries.
  * <p>
- * The local cache expires after a configurable time, at which point {@link BdrsClient#resolve(RemoteMessage)} requests will hit the server again.
+ * The local cache expires after a configurable time, at which point {@link BdrsClientImpl#resolve(String)}} requests will hit the server again.
  */
-class BdrsClient implements AudienceResolver {
+class BdrsClientImpl implements BdrsClient {
     private static final TypeReference<Map<String, String>> MAP_REF = new TypeReference<>() {
     };
     private final String serverUrl;
@@ -54,7 +52,7 @@ class BdrsClient implements AudienceResolver {
     private Map<String, String> cache = new HashMap<>();
     private Instant lastCacheUpdate;
 
-    BdrsClient(String baseUrl, int cacheValidity, EdcHttpClient httpClient, Monitor monitor, ObjectMapper mapper) {
+    BdrsClientImpl(String baseUrl, int cacheValidity, EdcHttpClient httpClient, Monitor monitor, ObjectMapper mapper) {
         this.serverUrl = baseUrl;
         this.cacheValidity = cacheValidity;
         this.httpClient = httpClient;
@@ -63,8 +61,7 @@ class BdrsClient implements AudienceResolver {
     }
 
     @Override
-    public String resolve(RemoteMessage remoteMessage) {
-        var bpn = remoteMessage.getCounterPartyId();
+    public String resolve(String bpn) {
         String value;
         lock.readLock().lock();
         try {

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,27 +15,22 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
-package org.eclipse.tractusx.edc.identity.mapper;
+package org.eclipse.tractusx.edc.flow;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.configuration.Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
-class BdrsClientExtensionTest {
+class TxDataFlowPropertiesProviderExtensionTest {
 
     private final Monitor monitor = mock();
 
@@ -45,13 +40,7 @@ class BdrsClientExtensionTest {
     }
 
     @Test
-    void createClient_whenUrlMissing_expectLogError(ServiceExtensionContext context, BdrsClientExtension extension) {
-        var cfg = mock(Config.class);
-        when(context.getConfig()).thenReturn(cfg);
-        when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY), isNull())).thenReturn(null);
-
-        extension.getBdrsAudienceResolver(context);
-        verify(monitor).severe(eq("Mandatory config value missing: 'tx.iam.iatp.bdrs.server.url'. This runtime will not be fully operational! Starting with v0.7.x this will be a runtime error."));
-
+    void createMapper(TxDataFlowPropertiesProviderExtension extension) {
+        assertThat(extension.dataFlowPropertiesProvider()).isInstanceOf(TxDataFlowPropertiesProvider.class);
     }
 }

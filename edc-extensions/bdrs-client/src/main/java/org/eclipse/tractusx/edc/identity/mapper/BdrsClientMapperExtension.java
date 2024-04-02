@@ -17,18 +17,31 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.identity.mapper;
 
-dependencies {
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
+import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.NAME;
+
+@Extension(value = NAME)
+public class BdrsClientMapperExtension implements ServiceExtension {
+
+    @Inject
+    private BdrsClient bdrsClient;
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+
+    @Provider
+    public AudienceResolver getBdrsAudienceResolver() {
+        return new BdrsClientAudienceMapper(bdrsClient);
+    }
+
 }

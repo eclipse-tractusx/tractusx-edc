@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,20 +15,18 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.runtimes;
 
-dependencies {
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
+import org.eclipse.edc.junit.extensions.EdcExtension;
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
+/**
+ * Callback invoked before the runtime boots with extensions of {@link EdcExtension}. This will allow injecting
+ * custom mock services directly in the tests rather than extending the {@link EdcExtension} with custom mocks
+ */
+@FunctionalInterface
+public interface BeforeInitCallback {
+
+    void beforeInit(EdcExtension runtime);
 }

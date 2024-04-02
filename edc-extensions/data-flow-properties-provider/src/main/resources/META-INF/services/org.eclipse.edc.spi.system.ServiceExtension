@@ -17,5 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension
-org.eclipse.tractusx.edc.identity.mapper.BdrsClientMapperExtension
+org.eclipse.tractusx.edc.flow.TxDataFlowPropertiesProviderExtension

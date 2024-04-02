@@ -24,6 +24,7 @@ include(":spi:callback-spi")
 include(":spi:edr-spi")
 include(":spi:core-spi")
 include(":spi:tokenrefresh-spi")
+include(":spi:bdrs-client-spi")
 
 
 // core modules
@@ -49,6 +50,7 @@ include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:cx-policy")
 include(":edc-extensions:iatp:tx-iatp")
 include(":edc-extensions:iatp:tx-iatp-sts-dim")
+include(":edc-extensions:data-flow-properties-provider")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")

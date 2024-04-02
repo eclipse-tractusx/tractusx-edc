@@ -23,6 +23,7 @@ plugins {
 }
 
 dependencies {
+    testImplementation(project(":spi:bdrs-client-spi"))
     testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
 
     testImplementation(libs.netty.mockserver)

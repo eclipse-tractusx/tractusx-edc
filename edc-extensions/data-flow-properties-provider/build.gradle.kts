@@ -23,12 +23,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core:core-utils"))
+    implementation(libs.edc.spi.transfer)
     implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
 
-    testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
 }
