@@ -51,7 +51,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
     public static final String MOCK_BACKEND_PATH = "/mock/api";
     protected ClientAndServer server;
 
-    private String privateBackendUrl;
+    protected String privateBackendUrl;
 
 
     @BeforeEach
