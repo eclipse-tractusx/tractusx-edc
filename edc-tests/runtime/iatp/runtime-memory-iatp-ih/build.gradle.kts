@@ -45,7 +45,7 @@ dependencies {
     implementation(libs.edc.core.identitytrust)
     implementation(libs.edc.core.did)
     implementation(libs.edc.identity.trust.transform)
-    implementation(libs.edc.identity.trust.sts.remote)
+    implementation(libs.edc.identity.trust.sts.remote.client)
     implementation(libs.edc.identity.trust.issuers.configuration)
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.ih.api)

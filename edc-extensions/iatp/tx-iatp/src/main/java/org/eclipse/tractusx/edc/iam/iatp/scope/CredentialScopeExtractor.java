@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.iam.iatp.scope;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequestMessage;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferRequestMessage;
-import org.eclipse.edc.identitytrust.scope.ScopeExtractor;
+import org.eclipse.edc.iam.identitytrust.spi.scope.ScopeExtractor;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.iam.RequestContext;

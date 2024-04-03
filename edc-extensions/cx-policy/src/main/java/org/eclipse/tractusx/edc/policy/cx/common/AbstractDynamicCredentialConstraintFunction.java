@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.common;
 
-import org.eclipse.edc.identitytrust.model.VerifiableCredential;
+import org.eclipse.edc.iam.identitytrust.spi.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;

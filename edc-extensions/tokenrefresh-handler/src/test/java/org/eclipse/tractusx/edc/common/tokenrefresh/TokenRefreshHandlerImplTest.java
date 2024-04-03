@@ -37,7 +37,7 @@ import okhttp3.ResponseBody;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.identitytrust.SecureTokenService;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.StoreResult;
