@@ -17,18 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.spi.identity.mapper;
 
-dependencies {
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
+import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
+/**
+ * Interface for resolving BPNs to DIDs
+ */
+@ExtensionPoint
+public interface BdrsClient {
+
+    /**
+     * Resolve the input BPN to a DID
+     *
+     * @param bpn The participantID (BPN)
+     * @return The resolved DID if found, null otherwise
+     */
+    String resolve(String bpn);
 }

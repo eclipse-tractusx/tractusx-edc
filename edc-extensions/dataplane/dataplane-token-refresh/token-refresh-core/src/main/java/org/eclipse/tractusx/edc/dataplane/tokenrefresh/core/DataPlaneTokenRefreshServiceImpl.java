@@ -43,6 +43,7 @@ import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.edc.token.spi.TokenValidationService;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.AuthTokenAudienceRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.ClaimIsPresentRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.IssuerEqualsSubjectRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.RefreshTokenValidationRule;
@@ -119,8 +120,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
                 new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
-                new ClaimIsPresentRule(TOKEN_ID_CLAIM)
-                /*new AuthTokenAudienceRule(accessTokenDataStore)*/);
+                new ClaimIsPresentRule(TOKEN_ID_CLAIM),
+                new AuthTokenAudienceRule(accessTokenDataStore));
         accessTokenAuthorizationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
@@ -147,9 +148,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public Result<TokenResponse> refreshToken(String refreshToken, String authenticationToken) {
 
         authenticationToken = authenticationToken.replace("Bearer", "").trim();
-
-        // 1. validate authentication token
-        monitor.warning(" TOKEN REFRESH :: TEMPORARILY DISABLED RULE AuthTokenAudienceRule UNTIL THE 'audience' PROPERTY IS FORWARDED TO DATAPLANES%n");
+        
         var authTokenRes = tokenValidationService.validate(authenticationToken, publicKeyResolver, authenticationTokenValidationRules);
         if (authTokenRes.failed()) {
             return Result.failure("Authentication token validation failed: %s".formatted(authTokenRes.getFailureDetail()));

@@ -23,6 +23,8 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
@@ -77,7 +79,7 @@ public class TransferWithTokenRefreshTest {
     private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
 
     @RegisterExtension
-    protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), forConfig(PLATO.getConfiguration()));
+    protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), forConfig(PLATO.getConfiguration()), TransferWithTokenRefreshTest::platoInitiator);
     protected ClientAndServer server;
     private String privateBackendUrl;
 
@@ -87,6 +89,10 @@ public class TransferWithTokenRefreshTest {
         newConfig.put("edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY));
         newConfig.put("edc.dataplane.token.expiry.tolerance", "0");
         return newConfig;
+    }
+
+    private static void platoInitiator(EdcExtension runtime) {
+        runtime.registerServiceMock(BdrsClient.class, (c) -> SOKRATES.getDid());
     }
 
     @BeforeEach

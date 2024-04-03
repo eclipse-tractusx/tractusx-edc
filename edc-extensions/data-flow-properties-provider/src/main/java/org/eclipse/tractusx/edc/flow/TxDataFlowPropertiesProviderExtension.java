@@ -17,18 +17,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.flow;
 
-dependencies {
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
+import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowPropertiesProvider;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
+import static org.eclipse.tractusx.edc.flow.TxDataFlowPropertiesProviderExtension.NAME;
+
+@Extension(NAME)
+public class TxDataFlowPropertiesProviderExtension implements ServiceExtension {
+
+    protected static final String NAME = "Tractus-X Data flow properties provider extension";
+
+    @Inject
+    private BdrsClient bdrsClient;
+
+    @Provider
+    public DataFlowPropertiesProvider dataFlowPropertiesProvider() {
+        return new TxDataFlowPropertiesProvider(bdrsClient);
+    }
 }

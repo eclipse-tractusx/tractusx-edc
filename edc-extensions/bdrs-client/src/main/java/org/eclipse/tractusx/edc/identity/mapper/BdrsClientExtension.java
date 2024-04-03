@@ -24,11 +24,11 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.NAME;
 
@@ -54,13 +54,13 @@ public class BdrsClientExtension implements ServiceExtension {
     }
 
     @Provider
-    public AudienceResolver getBdrsAudienceResolver(ServiceExtensionContext context) {
+    public BdrsClient getBdrsClient(ServiceExtensionContext context) {
         var baseUrl = context.getConfig().getString(BDRS_SERVER_URL_PROPERTY, null);
         if (baseUrl == null) {
             RequiredConfigWarnings.warningNotPresent(context.getMonitor(), BDRS_SERVER_URL_PROPERTY);
         }
         var cacheValidity = context.getConfig().getInteger(BDRS_SERVER_CACHE_VALIDITY_PERIOD, DEFAULT_BDRS_CACHE_VALIDITY);
-        return new BdrsClient(baseUrl, cacheValidity, httpClient, context.getMonitor(), typeManager.getMapper());
+        return new BdrsClientImpl(baseUrl, cacheValidity, httpClient, context.getMonitor(), typeManager.getMapper());
     }
 
 }

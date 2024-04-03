@@ -24,7 +24,11 @@ import java.util.Map;
 public interface Runtimes {
 
     static ParticipantRuntime memoryRuntime(String runtimeName, String bpn, Map<String, String> properties) {
-        return new ParticipantRuntime(":edc-tests:runtime:runtime-memory", runtimeName, bpn, properties);
+        return memoryRuntime(runtimeName, bpn, properties, null);
+    }
+
+    static ParticipantRuntime memoryRuntime(String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback callback) {
+        return new ParticipantRuntime(":edc-tests:runtime:runtime-memory", runtimeName, bpn, properties, callback);
     }
 
     static PgParticipantRuntime pgRuntime(String runtimeName, String bpn, Map<String, String> properties) {

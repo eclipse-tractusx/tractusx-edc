@@ -26,6 +26,7 @@ import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.runtimes.DataWiper;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -46,6 +47,7 @@ public class IatpParticipantRuntime extends EdcRuntimeExtension implements Befor
         super(moduleName, runtimeName, properties);
         this.properties = properties;
         runtimeKeyPair = CryptoConverter.createJwk(runtimeKeypair);
+        this.registerServiceMock(BdrsClient.class, (s) -> s);
     }
 
     @Override

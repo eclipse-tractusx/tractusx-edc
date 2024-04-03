@@ -17,18 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.identity.mapper;
 
-dependencies {
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:bdrs-client-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
+import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
+/**
+ * An incoming {@link RemoteMessage} is mapped to a DID by calling {@link BdrsClient#resolve(String)} with the {@link RemoteMessage#getCounterPartyId()}
+ */
+class BdrsClientAudienceMapper implements AudienceResolver {
+
+    private final BdrsClient client;
+
+    BdrsClientAudienceMapper(BdrsClient client) {
+        this.client = client;
+    }
+
+    @Override
+    public String resolve(RemoteMessage remoteMessage) {
+        return client.resolve(remoteMessage.getCounterPartyId());
+    }
+
 }

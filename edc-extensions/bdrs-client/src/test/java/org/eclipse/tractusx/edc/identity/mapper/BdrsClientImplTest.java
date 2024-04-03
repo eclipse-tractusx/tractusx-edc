@@ -25,7 +25,6 @@ import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,11 +47,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.verify.VerificationTimes.exactly;
 
-class BdrsClientTest {
+class BdrsClientImplTest {
 
     private final Monitor monitor = mock();
     private final ObjectMapper mapper = new ObjectMapper();
-    private BdrsClient client;
+    private BdrsClientImpl client;
     private ClientAndServer bdrsServer;
 
     @BeforeEach
@@ -66,7 +65,7 @@ class BdrsClientTest {
                         .withBody(createGzipStream())
                         .withStatusCode(200));
 
-        client = new BdrsClient("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1, new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor), monitor, mapper);
+        client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1, new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor), monitor, mapper);
     }
 
     @AfterEach
@@ -76,7 +75,7 @@ class BdrsClientTest {
 
     @Test
     void getData_whenCacheCold_shouldHitServer() {
-        var did = client.resolve(new TestMessage("bpn1"));
+        var did = client.resolve("bpn1");
         assertThat(did).isEqualTo("did:web:did1");
 
         bdrsServer.verify(request()
@@ -88,8 +87,8 @@ class BdrsClientTest {
 
     @Test
     void getData_whenCacheHot_shouldNotHitServer() {
-        var did1 = client.resolve(new TestMessage("bpn1"));
-        var did2 = client.resolve(new TestMessage("bpn2"));
+        var did1 = client.resolve("bpn1");
+        var did2 = client.resolve("bpn2");
         assertThat(did1).isEqualTo("did:web:did1");
         assertThat(did2).isEqualTo("did:web:did2");
 
@@ -102,13 +101,13 @@ class BdrsClientTest {
 
     @Test
     void getData_whenCacheExpired_shouldHitServer() {
-        var did1 = client.resolve(new TestMessage("bpn1")); // hits server
+        var did1 = client.resolve("bpn1"); // hits server
         assertThat(did1).isEqualTo("did:web:did1");
 
         await().pollDelay(ofSeconds(2))
                 .atMost(ofSeconds(3)) //cache expires
                 .untilAsserted(() -> {
-                    var did2 = client.resolve(new TestMessage("bpn2")); // hits server as well, b/c cache is expired
+                    var did2 = client.resolve("bpn2"); // hits server as well, b/c cache is expired
                     assertThat(did2).isEqualTo("did:web:did2");
 
                     bdrsServer.verify(request()
@@ -122,7 +121,7 @@ class BdrsClientTest {
 
     @Test
     void getData_whenNotFound() {
-        var did = client.resolve(new TestMessage("bpn-notexist"));
+        var did = client.resolve("bpn-notexist");
         assertThat(did).isNull();
         bdrsServer.verify(request()
                         .withMethod("GET")
@@ -137,7 +136,7 @@ class BdrsClientTest {
         bdrsServer.reset();
         bdrsServer.when(request().withPath("/api/bpn-directory").withMethod("GET"))
                 .respond(HttpResponse.response().withStatusCode(code));
-        assertThatThrownBy(() -> client.resolve(new TestMessage("bpn1"))).isInstanceOf(EdcException.class);
+        assertThatThrownBy(() -> client.resolve("bpn1")).isInstanceOf(EdcException.class);
     }
 
     private byte[] createGzipStream() {
@@ -154,20 +153,4 @@ class BdrsClientTest {
         return bas.toByteArray();
     }
 
-    private record TestMessage(String bpn) implements RemoteMessage {
-        @Override
-        public String getProtocol() {
-            return "test-proto";
-        }
-
-        @Override
-        public String getCounterPartyAddress() {
-            return "http://bpn1";
-        }
-
-        @Override
-        public String getCounterPartyId() {
-            return bpn;
-        }
-    }
 }
