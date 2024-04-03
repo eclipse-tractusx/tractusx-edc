@@ -18,34 +18,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+package org.eclipse.tractusx.edc.postgresql.migration;
 
-plugins {
-    `java-library`
-    id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-}
+public class AccessTokenDataPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
+    private static final String NAME_SUBSYSTEM = "accesstokendata";
 
-dependencies {
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
-    runtimeOnly(project(":edc-extensions:migrations::control-plane-migration"))
-    runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
-    runtimeOnly(libs.edc.azure.vault)
-    runtimeOnly(libs.bundles.edc.sqlstores)
-    runtimeOnly(libs.edc.transaction.local)
-    runtimeOnly(libs.edc.sql.pool)
-    runtimeOnly(libs.edc.core.controlplane)
-    runtimeOnly(libs.postgres)
-}
-
-
-tasks.withType<ShadowJar> {
-    exclude("**/pom.properties", "**/pom.xm")
-    mergeServiceFiles()
-    archiveFileName.set("${project.name}.jar")
-}
-
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
+    @Override
+    protected String getSubsystemName() {
+        return NAME_SUBSYSTEM;
+    }
 }

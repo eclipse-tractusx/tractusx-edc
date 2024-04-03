@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,29 +18,24 @@
  ********************************************************************************/
 
 plugins {
+    `maven-publish`
     `java-library`
-    id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 dependencies {
-    implementation(project(":edc-dataplane:edc-dataplane-base"))
-    runtimeOnly(project(":edc-extensions:migrations::data-plane-migration"))
-    runtimeOnly(libs.edc.vault.hashicorp)
-    runtimeOnly(libs.edc.transaction.local)
-    runtimeOnly(libs.edc.sql.pool)
-    runtimeOnly(libs.edc.sql.accesstokendata)
-    runtimeOnly(libs.edc.sql.edrindex)
-    runtimeOnly(libs.edc.sql.dataplane)
+    implementation(project(":edc-extensions:migrations:postgresql-migration-lib"))
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.junit)
+    implementation(libs.edc.spi.transaction.datasource)
+    implementation(libs.edc.sql.assetindex)
+    implementation(libs.edc.sql.core)
     runtimeOnly(libs.postgres)
-}
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    exclude("**/pom.properties", "**/pom.xm")
-    mergeServiceFiles()
-    archiveFileName.set("${project.name}.jar")
-}
+    implementation(libs.flyway.core)
+    // starting from flyway 10, they've moved to a more modular structure,
+    // so we need to add PG support explicitly
+    // https://documentation.red-gate.com/flyway/release-notes-and-older-versions/release-notes-for-flyway-engine
+    runtimeOnly(libs.flyway.database.postgres)
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
+    testImplementation(testFixtures(libs.edc.sql.core))
 }
