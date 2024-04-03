@@ -26,7 +26,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.identitytrust.SecureTokenService;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
