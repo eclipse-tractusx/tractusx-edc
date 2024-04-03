@@ -24,4 +24,5 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.vc)
 }
