@@ -25,6 +25,7 @@ plugins {
 
 dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
+    runtimeOnly(project(":edc-extensions:migrations::data-plane-migration"))
     implementation(libs.edc.azure.vault)
     constraints {
         implementation("net.minidev:json-smart:2.5.0") {
@@ -35,6 +36,9 @@ dependencies {
     implementation("com.azure:azure-security-keyvault-secrets:4.8.1")
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
+    runtimeOnly(libs.edc.sql.accesstokendata)
+    runtimeOnly(libs.edc.sql.edrindex)
+    runtimeOnly(libs.edc.sql.dataplane)
     runtimeOnly(libs.postgres)
 }
 

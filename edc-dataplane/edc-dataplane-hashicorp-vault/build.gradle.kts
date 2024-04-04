@@ -25,9 +25,13 @@ plugins {
 
 dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base"))
+    runtimeOnly(project(":edc-extensions:migrations::data-plane-migration"))
     runtimeOnly(libs.edc.vault.hashicorp)
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
+    runtimeOnly(libs.edc.sql.accesstokendata)
+    runtimeOnly(libs.edc.sql.edrindex)
+    runtimeOnly(libs.edc.sql.dataplane)
     runtimeOnly(libs.postgres)
 }
 

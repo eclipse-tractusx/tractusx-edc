@@ -45,6 +45,7 @@ edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
+edc-spi-vc = { module = "org.eclipse.edc:verifiable-credentials-spi", version.ref = "edc" }
 edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-token-core = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
@@ -107,6 +108,9 @@ edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
 edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref = "edc" }
 edc-sql-policy-monitor = { module = "org.eclipse.edc:policy-monitor-store-sql", version.ref = "edc" }
+edc-sql-edrindex = { module = "org.eclipse.edc:edr-index-sql", version.ref = "edc" }
+edc-sql-accesstokendata = { module = "org.eclipse.edc:accesstokendata-store-sql", version.ref = "edc" }
+edc-sql-dataplane = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
 
 # azure stuff
 edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
@@ -214,6 +218,6 @@ titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "ti
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
 edc-dpf = ["edc.dpf-transfer-signaling", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
-edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor"]
+edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor", "edc.sql-edrindex"]
 edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]

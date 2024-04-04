@@ -28,7 +28,7 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
-    runtimeOnly(project(":edc-extensions:postgresql-migration"))
+    runtimeOnly(project(":edc-extensions:migrations::control-plane-migration"))
     runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
     runtimeOnly(libs.edc.azure.vault)
     runtimeOnly(libs.bundles.edc.sqlstores)

@@ -19,7 +19,8 @@
 
 package org.eclipse.tractusx.edc.core.utils.credentials;
 
-import org.eclipse.edc.iam.identitytrust.spi.model.VerifiableCredential;
+
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 
 import java.util.function.Predicate;
 
