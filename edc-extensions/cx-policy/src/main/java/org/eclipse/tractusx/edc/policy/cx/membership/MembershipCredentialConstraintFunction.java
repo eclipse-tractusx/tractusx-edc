@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.membership;
 
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
@@ -31,7 +32,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 
 /**
- * This constraint function checks that a MembershipCredential is present in a list of {@link org.eclipse.edc.identitytrust.model.VerifiableCredential}
+ * This constraint function checks that a MembershipCredential is present in a list of {@link VerifiableCredential}
  * objects extracted from a {@link ParticipantAgent} which is expected to be present on the {@link PolicyContext}.
  */
 public class MembershipCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {

@@ -37,9 +37,9 @@ import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 /**
  * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction} for the following scopes:
  * <ul>
- *     <li>{@link org.eclipse.edc.connector.controlplane.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE}</li>
- *     <li>{@link org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE}</li>
- *     <li>{@link org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE}</li>
+ *     <li>{@code catalog}</li>
+ *     <li>{@code contract.negotiation}</li>
+ *     <li>{@code transfer.process}</li>
  * </ul>
  * The rule to which the function is bound is {@link BusinessPartnerGroupFunction#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
  * like this:
@@ -57,7 +57,6 @@ import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
  */
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = { "policy", "contract" })
 public class BusinessPartnerValidationExtension implements ServiceExtension {
-
     private static final String USE = "USE";
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
