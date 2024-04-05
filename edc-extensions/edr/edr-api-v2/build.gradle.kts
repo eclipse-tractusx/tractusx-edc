@@ -30,7 +30,7 @@ dependencies {
     implementation(project(":spi:tokenrefresh-spi"))
 
     implementation(libs.edc.api.management)
-    implementation(libs.edc.core.validator)
+    implementation(libs.edc.lib.validator)
     implementation(libs.edc.spi.edrstore)
     implementation(libs.jakarta.rsApi)
 
@@ -38,6 +38,6 @@ dependencies {
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.lib.jersey.providers)
-    testImplementation(libs.edc.core.transform)
+    testImplementation(libs.edc.lib.transform)
     testImplementation(libs.edc.spi.contract)
 }

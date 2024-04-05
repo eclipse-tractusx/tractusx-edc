@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.edc.spi.token)
     implementation(libs.edc.spi.jwt)
     implementation(libs.edc.spi.identitytrust)
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
     implementation(libs.nimbus.jwt)
 
 
