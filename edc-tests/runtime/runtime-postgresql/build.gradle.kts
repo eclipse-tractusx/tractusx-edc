@@ -27,20 +27,22 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude(module = "data-encryption")
         exclude(module = "json-ld-core")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy")
+        exclude(module = "tx-iatp-sts-dim")
         exclude(group = "org.eclipse.edc", "vault-hashicorp")
+        exclude(module = "tx-iatp")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
     implementation(project(":edc-tests:runtime:extensions"))
 
     // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
         exclude("org.eclipse.edc", "api-observability")
+        exclude(group = "org.eclipse.edc", "vault-hashicorp")
     }
 
     implementation(libs.edc.core.controlplane)

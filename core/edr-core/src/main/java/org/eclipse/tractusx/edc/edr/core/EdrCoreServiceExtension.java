@@ -19,15 +19,16 @@
 
 package org.eclipse.tractusx.edc.edr.core;
 
+import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.core.service.EdrServiceImpl;
-import org.eclipse.tractusx.edc.edr.spi.EdrManager;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
-import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
+import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 /**
  * Registers default services for the EDR cache.
@@ -40,19 +41,21 @@ public class EdrCoreServiceExtension implements ServiceExtension {
     private Monitor monitor;
 
     @Inject
-    private EdrManager edrManager;
+    private EndpointDataReferenceStore edrStore;
 
     @Inject
-    private EndpointDataReferenceCache endpointDataReferenceCache;
+    private TokenRefreshHandler tokenRefreshHandler;
+
+    @Inject
+    private TransactionContext transactionContext;
 
     @Override
     public String name() {
         return NAME;
     }
 
-
     @Provider
     public EdrService edrService() {
-        return new EdrServiceImpl(edrManager, endpointDataReferenceCache);
+        return new EdrServiceImpl(edrStore, tokenRefreshHandler, transactionContext, monitor);
     }
 }

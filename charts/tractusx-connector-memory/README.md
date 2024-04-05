@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.6.0](https://img.shields.io/badge/AppVersion-0.6.0-informational?style=flat-square)
+![Version: 0.7.0-rc1](https://img.shields.io/badge/Version-0.7.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0-rc1](https://img.shields.io/badge/AppVersion-0.7.0--rc1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -39,7 +39,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.0-rc1 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
@@ -56,6 +56,11 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | To add some custom labels |
 | fullnameOverride | string | `""` |  |
+| iatp.id | string | `"did:web:changeme"` |  |
+| iatp.sts.dim.url | string | `nil` |  |
+| iatp.sts.oauth.client.id | string | `nil` |  |
+| iatp.sts.oauth.client.secret_alias | string | `nil` |  |
+| iatp.sts.oauth.token_url | string | `nil` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
 | participant.id | string | `"BPNLCHANGEME"` | BPN Number |
@@ -65,12 +70,13 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | runtime.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
 | runtime.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | runtime.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
+| runtime.bdrs.cache_validity_seconds | int | `600` |  |
+| runtime.bdrs.server.url | string | `nil` |  |
 | runtime.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | runtime.debug.enabled | bool | `false` |  |
 | runtime.debug.port | int | `1044` |  |
 | runtime.debug.suspendOnStart | bool | `false` |  |
-| runtime.edr.transferProxyTokenValidity | string | `"2592000"` |  |
-| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the control plane |
+| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086},"signaling":{"path":"/api/signaling","port":8087}}` | endpoints of the control plane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | runtime.endpoints.control.port | int | `8083` | port for incoming api calls |
@@ -84,6 +90,8 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
 | runtime.endpoints.protocol.path | string | `"/api/v1/dsp"` | path for incoming api calls |
 | runtime.endpoints.protocol.port | int | `8084` | port for incoming api calls |
+| runtime.endpoints.signaling.path | string | `"/api/signaling"` | path for incoming api calls |
+| runtime.endpoints.signaling.port | int | `8087` | port for incoming api calls |
 | runtime.env | object | `{}` |  |
 | runtime.envConfigMapNames | list | `[]` |  |
 | runtime.envSecretNames | list | `[]` |  |
@@ -147,11 +155,11 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.6.0 \
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | runtime.service.annotations | object | `{}` |  |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
-| runtime.ssi.miw.authorityId | string | `""` | The BPN of the issuer authority |
-| runtime.ssi.miw.url | string | `""` | MIW URL |
-| runtime.ssi.oauth.client.id | string | `""` | The client ID for KeyCloak |
-| runtime.ssi.oauth.client.secretAlias | string | `"client-secret"` | The alias under which the client secret is stored in the vault. |
-| runtime.ssi.oauth.tokenurl | string | `""` | The URL (of KeyCloak), where access tokens can be obtained |
+| runtime.token.refresh.expiry_seconds | int | `300` |  |
+| runtime.token.refresh.expiry_tolerance_seconds | int | `10` |  |
+| runtime.token.refresh.refresh_endpoint | string | `nil` |  |
+| runtime.token.signer.privatekey_alias | string | `nil` |  |
+| runtime.token.verifier.publickey_alias | string | `nil` |  |
 | runtime.tolerations | list | `[]` |  |
 | runtime.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` |  |

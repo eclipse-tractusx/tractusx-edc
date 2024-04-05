@@ -19,16 +19,16 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
-import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
-import org.eclipse.edc.connector.policy.spi.store.PolicyDefinitionStore;
-import org.eclipse.edc.spi.asset.AssetIndex;
+import org.eclipse.edc.connector.controlplane.asset.spi.index.AssetIndex;
+import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
+import org.eclipse.edc.connector.controlplane.policy.spi.store.PolicyDefinitionStore;
+import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.lifecycle.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
 
 /**
  * Helper class to delete all objects from a runtime's data stores.
@@ -72,10 +72,10 @@ public class DataWiper {
     }
 
     public void clearEdrCache() {
-        var edrCache = context.getService(EndpointDataReferenceCache.class);
-        edrCache.queryForEntries(QuerySpec.max()).forEach(entry -> {
+        var edrCache = context.getService(EndpointDataReferenceStore.class);
+        edrCache.query(QuerySpec.max()).getContent().forEach(entry -> {
             try {
-                edrCache.deleteByTransferProcessId(entry.getTransferProcessId());
+                edrCache.delete(entry.getTransferProcessId());
             } catch (Exception e) {
                 context.getMonitor().warning("Failed to clean up the cache", e);
             }

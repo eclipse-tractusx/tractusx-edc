@@ -28,12 +28,19 @@ dependencies {
     implementation(libs.edc.boot)
     implementation(libs.edc.iam.mock)
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude("org.eclipse.tractusx.edc", "data-encryption")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-core")
         exclude(module = "auth-tokenbased")
+        // the token refresh extension is not needed
+        exclude(module = "tx-iatp-sts-dim")
+        exclude(module = "tokenrefresh-handler")
+        exclude(module = "edr-core")
+        exclude(module = "edr-api-v2")
+        exclude(module = "edr-callback")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(libs.edc.core.controlplane)
+    implementation(libs.jakarta.rsApi)
 }
 
 application {

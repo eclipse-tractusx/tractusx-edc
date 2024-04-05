@@ -21,7 +21,7 @@
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
 
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.SftpDataAddress;
@@ -33,7 +33,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.DATA_ADDRESS_TYPE;
 import static org.eclipse.tractusx.edc.transferprocess.sftp.provisioner.NoOpSftpProvisioner.PROVIDER_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -63,15 +62,15 @@ class SftpProviderResourceDefinitionGeneratorTest {
         var port = 22;
         var path = "path";
 
-        var dataRequest = DataRequest.Builder.newInstance().destinationType(DATA_ADDRESS_TYPE).build();
         var sftpUser = SftpUser.Builder.newInstance().name(name).password(password).keyPair(keyPair).build();
         var sftpLocation =
                 SftpLocation.Builder.newInstance().host(host).port(port).path(path).build();
         final DataAddress dataAddress = SftpDataAddress.Builder.newInstance().sftpUser(sftpUser).sftpLocation(sftpLocation).build();
         var policy = Policy.Builder.newInstance().build();
 
+        var transferProcess = TransferProcess.Builder.newInstance().build();
         var resourceDefinition =
-                (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
+                (SftpProviderResourceDefinition) generator.generate(transferProcess, dataAddress, policy);
 
         assertNotNull(resourceDefinition);
         var sftpDataAddress = resourceDefinition.getSftpDataAddress();
@@ -87,13 +86,13 @@ class SftpProviderResourceDefinitionGeneratorTest {
 
     @Test
     void generate_wrongDataAddressType() {
-        var dataRequest =
-                DataRequest.Builder.newInstance().destinationType(DATA_ADDRESS_TYPE).build();
         var dataAddress = DataAddress.Builder.newInstance().type("wrong").build();
         var policy = Policy.Builder.newInstance().build();
 
+        var transferProcess = TransferProcess.Builder.newInstance().build();
+
         var resourceDefinition =
-                (SftpProviderResourceDefinition) generator.generate(dataRequest, dataAddress, policy);
+                (SftpProviderResourceDefinition) generator.generate(transferProcess, dataAddress, policy);
 
         assertNull(resourceDefinition);
     }

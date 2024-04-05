@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.spi.callback;
 
 
-import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.result.Result;

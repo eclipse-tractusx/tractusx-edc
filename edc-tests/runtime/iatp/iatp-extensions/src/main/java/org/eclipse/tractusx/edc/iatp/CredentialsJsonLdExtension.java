@@ -30,11 +30,11 @@ import java.net.URISyntaxException;
 @Extension("Credentials JSON LD extension")
 public class CredentialsJsonLdExtension implements ServiceExtension {
 
-    public static final String BUSINESS_PARTNER_DATA = "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json";
+    public static final String BUSINESS_PARTNER_DATA = "https://w3id.org/catenax/credentials";
 
     @Inject
     private JsonLd jsonLd;
-    
+
     @Override
     public void initialize(ServiceExtensionContext context) {
 

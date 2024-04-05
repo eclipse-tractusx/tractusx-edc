@@ -19,8 +19,8 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolver;
-import org.eclipse.edc.connector.spi.callback.CallbackProtocolResolverRegistry;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolver;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolverRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -66,10 +66,10 @@ public class LocalCallbackExtensionTest {
         assertThat(resolver.resolve("test")).isNull();
 
         var callbackArgumentCaptor = ArgumentCaptor.forClass(InProcessCallback.class);
-        verify(inProcessCallbackRegistry, times(2)).registerHandler(callbackArgumentCaptor.capture());
+        verify(inProcessCallbackRegistry, times(1)).registerHandler(callbackArgumentCaptor.capture());
 
         assertThat(callbackArgumentCaptor.getAllValues())
                 .flatExtracting(Object::getClass)
-                .containsExactly(ContractNegotiationCallback.class, TransferProcessLocalCallback.class);
+                .containsExactly(ContractNegotiationCallback.class);
     }
 }

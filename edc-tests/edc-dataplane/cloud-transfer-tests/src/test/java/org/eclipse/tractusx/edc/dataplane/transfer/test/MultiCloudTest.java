@@ -28,7 +28,7 @@ import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -48,7 +48,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_KEY;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_CONTAINER_NAME;
@@ -126,7 +126,7 @@ public class MultiCloudTest {
         assertThat(r.sdkHttpResponse().isSuccessful()).isTrue();
 
         // create data flow request
-        var dfr = DataFlowRequest.Builder.newInstance()
+        var dfr = DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type("AzureStorage")
@@ -147,7 +147,6 @@ public class MultiCloudTest {
                         .build()
                 )
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
@@ -185,7 +184,7 @@ public class MultiCloudTest {
 
 
         // create data flow request
-        var dfr = DataFlowRequest.Builder.newInstance()
+        var dfr = DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
@@ -199,7 +198,6 @@ public class MultiCloudTest {
                 )
                 .destinationDataAddress(blobDestinationAddress(TESTFILE_NAME))
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);

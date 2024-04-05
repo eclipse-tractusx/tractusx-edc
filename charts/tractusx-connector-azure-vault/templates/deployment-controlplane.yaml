@@ -146,22 +146,8 @@ spec:
             ########################
             - name: EDC_PARTICIPANT_ID
               value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
-
-            ##########################
-            # SSI / MIW CONFIGURATION
-            ##########################
-            - name: "TX_SSI_MIW_URL"
-              value: {{ .Values.controlplane.ssi.miw.url | quote }}
-            - name: "TX_SSI_MIW_AUTHORITY_ID"
-              value: {{ .Values.controlplane.ssi.miw.authorityId | quote }}
-            - name: "TX_SSI_OAUTH_TOKEN_URL"
-              value: {{ .Values.controlplane.ssi.oauth.tokenurl | quote }}
-            - name: "TX_SSI_OAUTH_CLIENT_ID"
-              value: {{ .Values.controlplane.ssi.oauth.client.id | quote }}
-            - name: "TX_SSI_OAUTH_CLIENT_SECRET_ALIAS"
-              value: {{ .Values.controlplane.ssi.oauth.client.secretAlias | quote }}
-            - name: "TX_SSI_ENDPOINT_AUDIENCE"
-              value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" .) .Values.controlplane.endpoints.protocol.path | quote }}
+            - name: "EDC_IAM_ISSUER_ID"
+              value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote}}
 
             #######
             # API #
@@ -252,16 +238,6 @@ spec:
             - name: "EDC_DATASOURCE_TRANSFERPROCESS_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
 
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/edr-cache-sql
-            - name: "EDC_DATASOURCE_EDR_NAME"
-              value: "edr"
-            - name: "EDC_DATASOURCE_EDR_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_EDR_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_EDR_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
             # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/policy-monitor/store/sql/policy-monitor-store-sql
             - name: "EDC_DATASOURCE_POLICY-MONITOR_NAME"
               value: "policy-monitor"
@@ -282,78 +258,82 @@ spec:
             - name: "EDC_DATASOURCE_BPN_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
 
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/common/store/sql/edr-index-sql
+            - name: "EDC_DATASOURCE_EDR_NAME"
+              value: "edr"
+            - name: "EDC_DATASOURCE_EDR_USER"
+              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
+            - name: "EDC_DATASOURCE_EDR_PASSWORD"
+              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
+            - name: "EDC_DATASOURCE_EDR_URL"
+              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
+
+            #############################
+            ## IATP / STS / DIM CONFIG ##
+            #############################
+            - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
+              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.oauth.token_url is required" | quote}}
+            - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
+              value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
+            - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
+              value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
+            - name: "EDC_IAM_STS_DIM_URL"
+              value: {{ .Values.iatp.sts.dim.url | required ".Values.iatp.sts.dim.url is required" | quote}}
+
+            #################
+            ## BDRS CLIENT ##
+            #################
+
+            {{- if .Values.controlplane.bdrs.server.url }}
+            - name: "TX_IAM_IATP_BDRS_SERVER_URL"
+              value: {{ .Values.controlplane.bdrs.server.url | required ".Values.controlplane.bdrs.server.url is required" | quote }}
+            {{- end }}
+            {{- if .Values.controlplane.bdrs.cache_validity_seconds }}
+            - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
+              value: {{ .Values.controlplane.bdrs.cache_validity_seconds | quote}}
+            {{- end}}
+
             ################
             ## DATA PLANE ##
             ################
 
             # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/dataplane-selector-configuration
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
-              value: {{ include "txdc.dataplane.url.control" . }}/transfer
+              value: {{ include "txdc.dataplane.url.signaling" . }}/v1/dataflows
+            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_TRANSFERTYPES"
+              value: "HttpData-PULL,AmazonS3-PUSH,AzureStorage-PUSH"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
-              value: "HttpData,AmazonS3"
+              value: "HttpData,AmazonS3,AzureStorage"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
-              value: "HttpProxy,AmazonS3"
+              value: "HttpProxy,AmazonS3,AzureStorage"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_PROPERTIES"
               value: |-
                 {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/data-plane-transfer
-            - name: "EDC_TRANSFER_PROXY_ENDPOINT"
-              value: {{ include "txdc.dataplane.url.public" . }}
-            {{- if .Values.vault.secretNames.transferProxyTokenSignerPrivateKey }}
-            - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPrivateKey | quote }}
-            {{- end }}
-            {{- if .Values.vault.secretNames.transferProxyTokenSignerPublicKey }}
-            - name: "EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenSignerPublicKey | quote }}
-            {{- end }}
-            - name: "EDC_TRANSFER_PROXY_TOKEN_VALIDITY_SECONDS"
-              value: {{ .Values.controlplane.edr.transferProxyTokenValidity | required ".Values.controlplane.edr.transferProxyTokenValidity is required" | quote }}
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver
-
-            - name: "EDC_RECEIVER_HTTP_DYNAMIC_ENDPOINT"
-              value: {{ .Values.backendService.httpProxyTokenReceiverUrl | required ".Values.backendService.httpProxyTokenReceiverUrl is required" | quote }}
 
             ###########
             ## VAULT ##
             ###########
 
-            - name: "EDC_VAULT_CLIENTID"
+            - name: "AZURE_CLIENT_ID"
               value: {{ .Values.vault.azure.client | required ".Values.vault.azure.client is required" | quote  }}
-            - name: "EDC_VAULT_TENANTID"
+            - name: "AZURE_TENANT_ID"
               value: {{ .Values.vault.azure.tenant | required ".Values.vault.azure.tenant is required" | quote }}
             - name: "EDC_VAULT_NAME"
               value: {{ .Values.vault.azure.name | required ".Values.vault.azure.name is required" | quote }}
             # only set the env var if config value not null
             {{- if .Values.vault.azure.secret }}
-            - name: "EDC_VAULT_CLIENTSECRET"
+            - name: "AZURE_CLIENT_SECRET"
               value: {{ .Values.vault.azure.secret | quote }}
              {{- end }}
             # only set the env var if config value not null
             {{- if .Values.vault.azure.certificate }}
-            - name: "EDC_VAULT_CERTIFICATE"
+            - name: "AZURE_CLIENT_CERTIFICATE_PATH"
               value: {{ .Values.vault.azure.certificate | quote }}
             {{- end }}
 
-            #####################
-            ## DATA ENCRYPTION ##
-            #####################
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/data-encryption
-            - name: "EDC_DATA_ENCRYPTION_KEYS_ALIAS"
-              value: {{ .Values.vault.secretNames.transferProxyTokenEncryptionAesKey | quote }}
-            - name: "EDC_DATA_ENCRYPTION_ALGORITHM"
-              value: "AES"
-
-            ###########################
-            ## AAS WRAPPER EXTENSION ##
-            ###########################
-            - name: "EDC_CP_ADAPTER_CACHE_CATALOG_EXPIRE_AFTER"
-              value: "0"
-            - name: "EDC_CP_ADAPTER_REUSE_CONTRACT_AGREEMENT"
-              value: "0"
+       
 
             ###########################
             ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##

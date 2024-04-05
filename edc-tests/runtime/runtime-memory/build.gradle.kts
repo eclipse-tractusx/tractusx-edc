@@ -31,8 +31,13 @@ dependencies {
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy")
+        exclude(module = "tx-iatp-sts-dim")
+        exclude(module = "tx-iatp")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
+
+    // use an embedded STS
+    runtimeOnly(libs.edc.identity.trust.sts.embedded)
 
     implementation(project(":edc-tests:runtime:extensions"))
 

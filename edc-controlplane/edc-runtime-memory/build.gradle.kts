@@ -25,12 +25,11 @@ plugins {
 
 dependencies {
     implementation(libs.edc.spi.core)
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
-    }
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base"))
     runtimeOnly(libs.edc.core.controlplane)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.lib.boot)
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

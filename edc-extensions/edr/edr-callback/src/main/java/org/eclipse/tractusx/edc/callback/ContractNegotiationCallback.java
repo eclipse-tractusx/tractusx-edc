@@ -19,10 +19,10 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
-import org.eclipse.edc.connector.spi.callback.CallbackEventRemoteMessage;
-import org.eclipse.edc.connector.spi.transferprocess.TransferProcessService;
-import org.eclipse.edc.connector.transfer.spi.types.TransferRequest;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
+import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -36,6 +36,7 @@ import static java.lang.String.format;
 public class ContractNegotiationCallback implements InProcessCallback {
 
     public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy").build();
+    private static final String TRANSFER_TYPE = "HttpData-PULL";
     private final TransferProcessService transferProcessService;
 
     private final Monitor monitor;
@@ -62,6 +63,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
                 .counterPartyAddress(negotiationFinalized.getCounterPartyAddress())
                 .protocol(negotiationFinalized.getProtocol())
                 .dataDestination(DATA_DESTINATION)
+                .transferType(TRANSFER_TYPE)
                 .callbackAddresses(negotiationFinalized.getCallbackAddresses())
                 .build();
 

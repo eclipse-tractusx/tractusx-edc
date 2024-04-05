@@ -20,8 +20,8 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedContentResource;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedContentResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.result.AbstractResult;

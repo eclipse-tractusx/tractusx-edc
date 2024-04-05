@@ -19,14 +19,29 @@
 
 package org.eclipse.tractusx.edc.edr.spi;
 
+
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+
 public final class CoreConstants {
 
     public static final String TX_PREFIX = "tx";
+    public static final String TX_AUTH_PREFIX = "tx-auth";
     public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
-    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
     public static final String TX_CONTEXT = "https://w3id.org/tractusx/edc/v0.0.1";
+    public static final String TX_AUTH_NS = "https://w3id.org/tractusx/auth/";
     public static final String EDC_CONTEXT = "https://w3id.org/edc/v0.0.1";
-    
+    public static final String CX_CREDENTIAL_NS = "https://w3id.org/catenax/credentials/";
+    public static final String CX_POLICY_NS = "https://w3id.org/catenax/policy/";
+    public static final String TX_CREDENTIAL_NAMESPACE = "https://w3id.org/tractusx/credentials/v0.0.1/ns/";
+
+    // constants related to token refresh/renewal
+    public static final String EDR_PROPERTY_AUTHORIZATION = EDC_NAMESPACE + "authorization";
+    public static final String EDR_PROPERTY_REFRESH_TOKEN = TX_AUTH_NS + "refreshToken";
+    public static final String EDR_PROPERTY_REFRESH_ENDPOINT = TX_AUTH_NS + "refreshEndpoint";
+    public static final String EDR_PROPERTY_REFRESH_AUDIENCE = TX_AUTH_NS + "refreshAudience";
+    public static final String AUDIENCE_PROPERTY = TX_AUTH_NS + "audience";
+    public static final String EDR_PROPERTY_EXPIRES_IN = TX_AUTH_NS + "expiresIn";
+
     private CoreConstants() {
     }
 }

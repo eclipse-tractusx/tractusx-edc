@@ -19,9 +19,9 @@
 
 package org.eclipse.tractusx.edc.transferprocess.sftp.provisioner;
 
-import org.eclipse.edc.connector.transfer.spi.provision.ProviderResourceDefinitionGenerator;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProviderResourceDefinitionGenerator;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.transferprocess.sftp.common.EdcSftpException;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class SftpProviderResourceDefinitionGenerator implements ProviderResourceDefinitionGenerator {
 
     @Override
-    public @Nullable ResourceDefinition generate(DataRequest dataRequest, DataAddress assetAddress, Policy policy) {
+    public @Nullable ResourceDefinition generate(TransferProcess transferProcess, DataAddress assetAddress, Policy policy) {
         try {
             var sftpDataAddress = SftpDataAddress.fromDataAddress(assetAddress);
             return new SftpProviderResourceDefinition(NoOpSftpProvisioner.PROVIDER_TYPE, sftpDataAddress);
@@ -42,7 +42,7 @@ public class SftpProviderResourceDefinitionGenerator implements ProviderResource
     }
 
     @Override
-    public boolean canGenerate(DataRequest dataRequest, DataAddress dataAddress, Policy policy) {
+    public boolean canGenerate(TransferProcess transferProcess, DataAddress dataAddress, Policy policy) {
         try {
             SftpDataAddress.fromDataAddress(dataAddress);
         } catch (EdcSftpException e) {

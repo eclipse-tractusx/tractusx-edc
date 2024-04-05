@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.CATALOG_REQUEST_SCOPE;
-import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.NEGOTIATION_REQUEST_SCOPE;
-import static org.eclipse.edc.iam.identitytrust.core.IatpScopeExtractorExtension.TRANSFER_PROCESS_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.CATALOG_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NEGOTIATION_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
 import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.DEFAULT_SCOPES;
 import static org.mockito.ArgumentMatchers.argThat;

@@ -40,6 +40,20 @@ participant:
   # -- BPN Number
   id: "BPNLCHANGEME"
 
+
+iatp:
+  # Decentralized IDentifier
+  id: "did:web:changeme"
+  sts:
+    dim:
+      url:
+    oauth:
+      token_url:
+      client:
+        id:
+        secret_alias:
+
+
 controlplane:
   image:
     # -- Which derivate of the control plane to use. when left empty the deployment will select the correct image automatically
@@ -117,23 +131,13 @@ controlplane:
   businessPartnerValidation:
     log:
       agreementValidation: true
-  edr:
-    transferProxyTokenValidity: "2592000"
-  # SSI configuration
-  ssi:
-    miw:
-      # -- MIW URL
-      url: ""
-      # -- The BPN of the issuer authority
-      authorityId: ""
-    oauth:
-      # -- The URL (of KeyCloak), where access tokens can be obtained
-      tokenurl: ""
-      client:
-        # -- The client ID for KeyCloak
-        id: ""
-        # -- The alias under which the client secret is stored in the vault.
-        secretAlias: "client-secret"
+
+  bdrs:
+    # time that a cached BPN/DID resolution map is valid in seconds, default is 10 min
+    cache_validity_seconds: 600
+    server:
+      # URL of the BPN/DID Resolution Service - required:
+      url:
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
@@ -349,9 +353,9 @@ dataplane:
     public:
       port: 8081
       path: /api/public
-    control:
+    signaling:
       port: 8083
-      path: /api/dataplane/control
+      path: /api/signaling
     proxy:
       port: 8186
       path: /proxy
@@ -359,6 +363,20 @@ dataplane:
     metrics:
       port: 9090
       path: /metrics
+
+  token:
+    refresh:
+      expiry_seconds: 300
+      expiry_tolerance_seconds: 10
+      # optional URL that can be provided where clients go to refresh tokens.
+      refresh_endpoint:
+    signer:
+      # alias under which the private key is stored in the vault (JWK or PEM format)
+      privatekey_alias:
+    verifier:
+      # alias under which the public key is stored in the vault, that belongs to the private key ("privatekey_alias", JWK or PEM format)
+      publickey_alias:
+
   aws:
     endpointOverride: ""
     accessKeyId: ""
@@ -520,9 +538,20 @@ vault:
     transferProxyTokenSignerPublicKey:
     transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
 
-backendService:
-  # -- Specifies a backend service which will receive the EDR
-  httpProxyTokenReceiverUrl: "https://example.com"
+networkPolicy:
+  # -- If `true` network policy will be created to restrict access to control- and dataplane
+  enabled: false
+  # -- Configuration of the controlplane component
+  controlplane:
+    # -- Specify from rule network policy for cp (defaults to all namespaces)
+    from:
+    - namespaceSelector: {}
+  # -- Configuration of the dataplane component
+  dataplane:
+    # -- Specify from rule network policy for dp (defaults to all namespaces)
+    from:
+    - namespaceSelector: {}
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -533,6 +562,7 @@ serviceAccount:
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
   imagePullSecrets: []
+
 # -- Configurations for Helm tests
 tests:
   # -- Configure the hook-delete-policy for Helm tests

@@ -23,25 +23,34 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":core:edr-cache-core"))
     runtimeOnly(project(":core:edr-core"))
-    runtimeOnly(project(":edc-extensions:dataplane-selector-configuration"))
-    runtimeOnly(project(":edc-extensions:data-encryption"))
+    runtimeOnly(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
 
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
-    runtimeOnly(project(":edc-extensions:edr:edr-api"))
+    runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
+    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
+    runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.edr.store.receiver)
+    runtimeOnly(libs.edc.dpf.transfer.signaling)
+
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))
 
-    // needed for SSI integration
+    // needed for IATP integration
     runtimeOnly(project(":core:json-ld-core"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-core"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-miw-credential-client"))
-    runtimeOnly(project(":edc-extensions:ssi:ssi-identity-extractor"))
-    runtimeOnly(project(":edc-extensions:cx-policy"))
+    runtimeOnly(libs.edc.core.did)
+    runtimeOnly(libs.edc.identity.did.web)
+    runtimeOnly(libs.edc.core.identitytrust)
+    runtimeOnly(libs.edc.identity.trust.transform)
+    runtimeOnly(libs.edc.identity.trust.issuers.configuration)
+    runtimeOnly(project(":edc-extensions:iatp:tx-iatp"))
+    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
+    runtimeOnly(project(":edc-extensions:bdrs-client"))
+    runtimeOnly(project(":edc-extensions:data-flow-properties-provider"))
 
+    runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.core.policy.monitor)
     runtimeOnly(libs.edc.config.filesystem)

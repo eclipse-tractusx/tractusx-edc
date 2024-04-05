@@ -20,13 +20,13 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProviderResourceDefinitionGenerator;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
-import org.eclipse.edc.connector.spi.contractagreement.ContractAgreementService;
-import org.eclipse.edc.connector.transfer.spi.provision.ProviderResourceDefinitionGenerator;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.agreement.ContractAgreement;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -43,17 +43,23 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
     private final ContractAgreementService contractAgreementService = mock();
     private final ProviderResourceDefinitionGenerator generator = new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService);
 
+    private static ContractAgreement contractAgreementWithBpn(String bpn) {
+        return ContractAgreement.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .consumerId(bpn)
+                .providerId("providerId")
+                .assetId("assetId")
+                .policy(Policy.Builder.newInstance().build())
+                .build();
+    }
+
     @Test
     void canGenerate_shouldReturnFalseForNotHttpDataAddresses() {
         var dataAddress = DataAddress.Builder.newInstance().type("any").build();
-        var dataRequest =
-                DataRequest.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .dataDestination(dataAddress)
-                        .build();
         var build = Policy.Builder.newInstance().build();
+        var transferProcess = TransferProcess.Builder.newInstance().build();
 
-        var result = generator.canGenerate(dataRequest, dataAddress, build);
+        var result = generator.canGenerate(transferProcess, dataAddress, build);
 
         assertThat(result).isFalse();
     }
@@ -61,14 +67,10 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
     @Test
     void canGenerate_shouldReturnTrueForHttpDataAddresses() {
         var dataAddress = DataAddress.Builder.newInstance().type("HttpData").build();
-        var dataRequest =
-                DataRequest.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .dataDestination(dataAddress)
-                        .build();
         var build = Policy.Builder.newInstance().build();
+        var transferProcess = TransferProcess.Builder.newInstance().build();
 
-        var result = generator.canGenerate(dataRequest, dataAddress, build);
+        var result = generator.canGenerate(transferProcess, dataAddress, build);
 
         assertThat(result).isTrue();
     }
@@ -76,16 +78,14 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
     @Test
     void shouldCreateResourceDefinitionWithDataAddress() {
         var dataAddress = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
-        var dataRequest =
-                DataRequest.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .dataDestination(dataAddress)
-                        .contractId("contractId")
-                        .build();
         var build = Policy.Builder.newInstance().build();
         when(contractAgreementService.findById(any())).thenReturn(contractAgreementWithBpn("bpn"));
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .dataDestination(dataAddress)
+                .contractId("contractId")
+                .build();
 
-        var result = generator.generate(dataRequest, dataAddress, build);
+        var result = generator.generate(transferProcess, dataAddress, build);
 
         assertThat(result)
                 .asInstanceOf(type(AdditionalHeadersResourceDefinition.class))
@@ -98,15 +98,5 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
                     assertThat(resourceDefinition.getBpn()).isEqualTo("bpn");
                 });
         verify(contractAgreementService).findById("contractId");
-    }
-
-    private static ContractAgreement contractAgreementWithBpn(String bpn) {
-        return ContractAgreement.Builder.newInstance()
-                .id(UUID.randomUUID().toString())
-                .consumerId(bpn)
-                .providerId("providerId")
-                .assetId("assetId")
-                .policy(Policy.Builder.newInstance().build())
-                .build();
     }
 }

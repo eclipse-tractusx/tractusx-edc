@@ -27,7 +27,7 @@ import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -54,7 +54,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
@@ -71,7 +71,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
  * This test is intended to verify transfers within the same cloud provider, i.e. S3-to-S3.
- * It spins up a fully-fledged dataplane and issues the DataFlowRequest via the data plane's Control API
+ * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
  */
 @Testcontainers
 @AwsS3IntegrationTest
@@ -178,13 +178,13 @@ public class S3ToS3Test {
         // wait until the data plane logs an exception that it cannot transfer the file
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Error writing the %s object on the %s bucket: The specified bucket does not exist".formatted(TESTFILE_NAME, S3_CONSUMER_BUCKET_NAME)),
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
                         isA(NoSuchBucketException.class)));
     }
 
     @ParameterizedTest(name = "File size bytes: {0}")
     // 1mb, 512mb, 1gb
-    @ValueSource(longs = {1024 * 1024 * 512, 1024L * 1024L * 1024L, 1024L * 1024L * 1024L * 1024})
+    @ValueSource(longs = { 1024 * 1024 * 512, 1024L * 1024L * 1024L, 1024L * 1024L * 1024L * 1024 })
     void transferfile_largeFile(long sizeBytes) {
 
         // create large sparse file
@@ -244,8 +244,8 @@ public class S3ToS3Test {
     }
 
 
-    private DataFlowRequest createFlowRequest() {
-        return DataFlowRequest.Builder.newInstance()
+    private DataFlowStartMessage createFlowRequest() {
+        return DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
@@ -268,7 +268,6 @@ public class S3ToS3Test {
                         .build()
                 )
                 .processId("test-process-id")
-                .trackable(false)
                 .build();
     }
 

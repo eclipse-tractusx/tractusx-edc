@@ -26,20 +26,23 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "data-encryption")
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "cx-policy")
+        exclude(module = "tx-iatp-sts-dim")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-tests:runtime:extensions"))
 
     implementation(libs.edc.iam.mock)
+    implementation(libs.edc.spi.keys)
     // for the controller
     implementation(libs.jakarta.rsApi)
     implementation(libs.bundles.edc.sts)
 
+    implementation(libs.edc.identity.trust.sts.embedded)
+    implementation(libs.edc.core.token)
 }
 
 application {

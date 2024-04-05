@@ -20,12 +20,12 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.Provisioner;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
-import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
-import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionResponse;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.response.StatusResult;
 
@@ -54,15 +54,14 @@ public class AdditionalHeadersProvisioner implements Provisioner<AdditionalHeade
                         .addAdditionalHeader("Edc-Bpn", resourceDefinition.getBpn())
                         .build();
 
-        var provisioned =
-                AdditionalHeadersProvisionedResource.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .resourceDefinitionId(resourceDefinition.getId())
-                        .transferProcessId(resourceDefinition.getTransferProcessId())
-                        .dataAddress(address)
-                        .resourceName(UUID.randomUUID().toString())
-                        .hasToken(false)
-                        .build();
+        var provisioned = AdditionalHeadersProvisionedResource.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .resourceDefinitionId(resourceDefinition.getId())
+                .transferProcessId(resourceDefinition.getTransferProcessId())
+                .dataAddress(address)
+                .resourceName(UUID.randomUUID().toString())
+                .hasToken(false)
+                .build();
 
         var response = ProvisionResponse.Builder.newInstance().resource(provisioned).build();
         var result = StatusResult.success(response);
