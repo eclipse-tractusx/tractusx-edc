@@ -22,7 +22,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
     implementation(libs.edc.spi.edrstore)
     implementation(libs.edc.spi.transactionspi)
 
