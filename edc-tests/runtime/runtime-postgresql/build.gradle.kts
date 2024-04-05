@@ -33,6 +33,8 @@ dependencies {
         exclude(module = "ssi-identity-extractor")
         exclude(module = "tx-iatp-sts-dim")
         exclude(group = "org.eclipse.edc", "vault-hashicorp")
+        exclude(module = "tx-iatp")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
     implementation(project(":edc-tests:runtime:extensions"))

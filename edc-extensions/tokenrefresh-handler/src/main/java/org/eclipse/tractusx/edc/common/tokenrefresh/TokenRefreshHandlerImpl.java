@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.common.tokenrefresh;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jwt.SignedJWT;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -37,7 +36,6 @@ import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Map;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
@@ -48,6 +46,7 @@ import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.edc.util.string.StringUtils.isNullOrBlank;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_AUTHORIZATION;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 
@@ -97,6 +96,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         var accessToken = edr.getStringProperty(EDR_PROPERTY_AUTHORIZATION);
         var refreshToken = edr.getProperties().get(EDR_PROPERTY_REFRESH_TOKEN);
         var refreshEndpoint = edr.getProperties().get(EDR_PROPERTY_REFRESH_ENDPOINT);
+        var refreshAudience = edr.getProperties().get(EDR_PROPERTY_REFRESH_AUDIENCE);
 
         if (isNullOrBlank(accessToken)) {
             return ServiceResult.badRequest("Cannot perform token refresh: required property 'authorization' not found on EDR.");
@@ -107,16 +107,19 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         if (isNullOrBlank(StringUtils.toString(refreshEndpoint))) {
             return ServiceResult.badRequest("Cannot perform token refresh: required property 'refreshEndpoint' not found on EDR.");
         }
+        if (isNullOrBlank(StringUtils.toString(refreshAudience))) {
+            return ServiceResult.badRequest("Cannot perform token refresh: required property 'refreshAudience' not found on EDR.");
+        }
 
-        var result = getStringClaim(accessToken, ISSUER)
-                .map(audience -> Map.of(
-                        JWT_ID, tokenId,
-                        ISSUER, ownDid,
-                        SUBJECT, ownDid,
-                        AUDIENCE, audience,
-                        "token", accessToken
-                ))
-                .compose(claims -> secureTokenService.createToken(claims, null))
+        var claims = Map.of(
+                JWT_ID, tokenId,
+                ISSUER, ownDid,
+                SUBJECT, ownDid,
+                AUDIENCE, refreshAudience.toString(),
+                "token", accessToken
+        );
+
+        var result = secureTokenService.createToken(claims, null)
                 .compose(authToken -> createTokenRefreshRequest(refreshEndpoint.toString(), refreshToken.toString(), "Bearer %s".formatted(authToken.getToken())));
 
         if (result.failed()) {
@@ -178,15 +181,6 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
                 .url(url)
                 .post(RequestBody.create(new byte[0]))
                 .build());
-    }
-
-    private Result<String> getStringClaim(String accessToken, String claimName) {
-        try {
-            return success(SignedJWT.parse(accessToken).getJWTClaimsSet().getStringClaim(claimName));
-        } catch (ParseException e) {
-            monitor.warning("Failed to get string claim '%s'".formatted(claimName), e);
-            return Result.failure("Failed to parse string claim '%s': %s".formatted(claimName, e));
-        }
     }
 
 }

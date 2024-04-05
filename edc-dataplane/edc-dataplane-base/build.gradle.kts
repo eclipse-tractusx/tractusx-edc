@@ -32,6 +32,7 @@ dependencies {
 
     runtimeOnly(libs.edc.jsonld) // needed by the DataPlaneSignalingApi
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
+    runtimeOnly(libs.edc.identity.did.web)
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.dpf.awss3)

@@ -149,7 +149,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                 .baseUrl(endpoint)
                 .proxyQueryParams("true")
                 .proxyPath("true")
-                .property(HEADER_AUTHORIZATION, BEARER_PREFIX + token)
+                .property(HEADER_AUTHORIZATION, token)
                 .build();
     }
 

@@ -54,6 +54,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
@@ -94,6 +95,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 () -> privateKey,
                 mock(),
                 TEST_REFRESH_ENDPOINT,
+                PROVIDER_DID,
                 1,
                 300L,
                 () -> providerKey.getKeyID(),
@@ -111,7 +113,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     @Test
     void obtainToken() {
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID));
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID));
         assertThat(edr).isSucceeded();
         // assert access token contents
         assertThat(asClaims(edr.getContent().getToken()))
@@ -131,7 +133,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         assertThat(storedData).isNotNull();
         assertThat(storedData.additionalProperties())
                 .hasSize(2)
-                .containsEntry("audience", CONSUMER_DID)
+                .containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID)
                 .containsEntry("authType", "bearer");
 
     }
@@ -141,7 +143,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     void refresh_success() throws JOSEException {
 
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         var accessToken = edr.getToken();
@@ -169,7 +171,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
 
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", "did:web:trudy"))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, "did:web:trudy"))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         // bob attempts to create an auth token with an EDR he stole from trudy
@@ -192,7 +194,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         when(didPkResolverMock.resolveKey(eq(trudyKey.getKeyID()))).thenReturn(Result.success(trudyKey.toPublicKey()));
 
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", "did:web:trudy"))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, "did:web:trudy"))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         // bob poses as trudy, using her key-ID and DID, but has to use his own private key
@@ -211,7 +213,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     @Test
     void refresh_whenNoAccessTokenClaim() throws JOSEException {
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         var accessToken = edr.getToken();
@@ -231,7 +233,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     @Test
     void refresh_whenIssNotEqualToSub() throws JOSEException {
         var tokenId = "test-token-id";
-        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         var accessToken = edr.getToken();
@@ -259,7 +261,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                                 .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().minusSeconds(600).getEpochSecond())
                                 .claims(JwtRegisteredClaimNames.EXPIRATION_TIME, Instant.now().minusSeconds(300).getEpochSecond())
                                 .build(),
-                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         assertThat(tokenRefreshService.resolve(edr.getToken())).isFailed()
@@ -274,7 +276,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         var edr = tokenRefreshService.obtainToken(tokenParamsBuilder(tokenId)
                                 .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().getEpochSecond())
                                 .build(),
-                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
         assertThat(tokenRefreshService.resolve(edr.getToken())).isSucceeded();
@@ -287,7 +289,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         var edr = tokenRefreshService.obtainToken(tokenParamsBuilder(tokenId)
                                 .claims(JwtRegisteredClaimNames.ISSUED_AT, Instant.now().getEpochSecond())
                                 .build(),
-                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of("audience", CONSUMER_DID))
+                        DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
         tokenDataStore.deleteById(tokenId).orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 

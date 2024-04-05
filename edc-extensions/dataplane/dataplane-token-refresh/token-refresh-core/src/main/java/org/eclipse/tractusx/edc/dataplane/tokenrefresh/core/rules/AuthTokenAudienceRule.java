@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TokenFunctions.getTokenId;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 
 
 /**
@@ -37,7 +38,6 @@ import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TokenFunction
  * that is associated with that token (using the {@code jti} claim).
  */
 public class AuthTokenAudienceRule implements TokenValidationRule {
-    private static final String AUDIENCE_PROPERTY = "audience";
     private final AccessTokenDataStore store;
 
     public AuthTokenAudienceRule(AccessTokenDataStore store) {

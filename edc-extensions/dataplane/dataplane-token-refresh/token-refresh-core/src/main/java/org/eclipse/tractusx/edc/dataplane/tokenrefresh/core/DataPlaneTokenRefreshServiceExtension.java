@@ -36,6 +36,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
+import org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,6 +61,10 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "edc.transfer.proxy.token.verifier.publickey.alias";
     @Setting(value = "Expiry time of access token in seconds", defaultValue = DEFAULT_TOKEN_EXPIRY_SECONDS + "")
     public static final String TOKEN_EXPIRY_SECONDS_PROPERTY = "edc.dataplane.token.expiry";
+
+    @Setting(value = "DID of this connector", required = true)
+    private static final String PARTICIPANT_DID_PROPERTY = "edc.iam.issuer.id";
+
     @Inject
     private TokenValidationService tokenValidationService;
     @Inject
@@ -112,7 +117,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(),
-                    getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
+                    getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, getOwnDid(context), expiryTolerance, tokenExpiry,
                     () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper());
         }
         return tokenRefreshService;
@@ -133,6 +138,13 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         return refreshEndpoint;
     }
 
+    private String getOwnDid(ServiceExtensionContext context) {
+        var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
+        if (did == null) {
+            RequiredConfigWarnings.warningNotPresent(context.getMonitor().withPrefix("DataPlane Token Refresh"), PARTICIPANT_DID_PROPERTY);
+        }
+        return did;
+    }
 
     @NotNull
     private Supplier<PrivateKey> getPrivateKeySupplier(ServiceExtensionContext context) {

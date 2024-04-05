@@ -29,13 +29,14 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.Map;
 
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
+
 /**
  * Extension of {@link DataFlowPropertiesProvider} which provides additional properties in the {@link DataFlowStartMessage}
  * like the DID of the counter-party BPN. The resolution is made with the {@link BdrsClient}
  */
 public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider {
 
-    private static final String AUDIENCE_PROPERTY = "audience";
 
     private final BdrsClient bdrsClient;
 

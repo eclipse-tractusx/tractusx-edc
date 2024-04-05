@@ -32,10 +32,10 @@ spec:
       targetPort: default
       protocol: TCP
       name: default
-    - port: {{ .Values.dataplane.endpoints.control.port }}
-      targetPort: control
+    - port: {{ .Values.dataplane.endpoints.signaling.port }}
+      targetPort: signaling
       protocol: TCP
-      name: control
+      name: signaling
     - port: {{ .Values.dataplane.endpoints.public.port }}
       targetPort: public
       protocol: TCP

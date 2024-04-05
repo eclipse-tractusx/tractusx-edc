@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
@@ -85,6 +86,7 @@ public class EdrCacheApiEndToEndTest {
             with(SOKRATES.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:sokrates")));
     private final ObjectMapper mapper = new ObjectMapper();
     private String refreshEndpoint;
+    private String refreshAudience;
     private ClientAndServer mockedRefreshApi;
     private ECKey providerSigningKey;
 
@@ -99,6 +101,7 @@ public class EdrCacheApiEndToEndTest {
         providerSigningKey = new ECKeyGenerator(Curve.P_256).keyID("did:web:provider#key-1").generate();
         var port = getFreePort();
         refreshEndpoint = "http://localhost:%s/refresh".formatted(port);
+        refreshAudience = "did:web:sokrates";
         mockedRefreshApi = startClientAndServer(port);
     }
 
@@ -305,6 +308,7 @@ public class EdrCacheApiEndToEndTest {
                 .property(EDR_PROPERTY_REFRESH_TOKEN, createJwt(providerSigningKey, new JWTClaimsSet.Builder().build()))
                 .property(EDR_PROPERTY_EXPIRES_IN, "300")
                 .property(EDR_PROPERTY_REFRESH_ENDPOINT, refreshEndpoint)
+                .property(EDR_PROPERTY_REFRESH_AUDIENCE, refreshAudience)
                 .build();
         var entry = EndpointDataReferenceEntry.Builder.newInstance()
                 .clock(isExpired ? // defaults to an expired token

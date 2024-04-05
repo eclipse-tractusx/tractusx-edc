@@ -30,6 +30,7 @@ dependencies {
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "tx-iatp-sts-dim")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-tests:runtime:extensions"))

@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     implementation(libs.edc.spi.transfer)
+    implementation(project(":spi:core-spi"))
     implementation(project(":spi:bdrs-client-spi"))
 
     testImplementation(libs.edc.junit)
