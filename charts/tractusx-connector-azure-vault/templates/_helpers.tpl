@@ -8,6 +8,7 @@ Expand the name of the chart.
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "txdc.fullname" -}}
@@ -143,10 +144,10 @@ Control Plane URL
 {{- end }}
 
 {{/*
-Data Control URL
+Data Signaling URL
 */}}
-{{- define "txdc.dataplane.url.control" -}}
-{{- printf "http://%s-dataplane:%v%s" (include "txdc.fullname" . ) .Values.dataplane.endpoints.control.port .Values.dataplane.endpoints.control.path -}}
+{{- define "txdc.dataplane.url.signaling" -}}
+{{- printf "http://%s-dataplane:%v%s" (include "txdc.fullname" . ) .Values.dataplane.endpoints.signaling.port .Values.dataplane.endpoints.signaling.path -}}
 {{- end }}
 
 {{/*

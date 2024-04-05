@@ -157,10 +157,10 @@ spec:
               value: {{ .Values.dataplane.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
               value: {{ .Values.dataplane.endpoints.default.path | quote }}
-            - name: "WEB_HTTP_CONTROL_PORT"
-              value: {{ .Values.dataplane.endpoints.control.port | quote }}
-            - name: "WEB_HTTP_CONTROL_PATH"
-              value: {{ .Values.dataplane.endpoints.control.path | quote }}
+            - name: "WEB_HTTP_SIGNALING_PORT"
+              value: {{ .Values.dataplane.endpoints.signaling.port | quote }}
+            - name: "WEB_HTTP_SIGNALING_PATH"
+              value: {{ .Values.dataplane.endpoints.signaling.path | quote }}
             - name: "WEB_HTTP_PUBLIC_PORT"
               value: {{ .Values.dataplane.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
@@ -273,6 +273,9 @@ spec:
             {{- if .Values.dataplane.token.refresh.refresh_endpoint }}
             - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ .Values.dataplane.token.refresh.refresh_endpoint }}
+            {{- else}}
+            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+              value: {{ include "txdc.dataplane.url.public" . }}/token
             {{- end}}
 
             - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"

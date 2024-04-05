@@ -26,6 +26,7 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +46,7 @@ public class TxDataFlowPropertiesProviderTest {
         var result = provider.propertiesFor(TransferProcess.Builder.newInstance().build(), Policy.Builder.newInstance().assignee(bpn).build());
 
         assertThat(result).isSucceeded().satisfies(properties -> {
-            Assertions.assertThat(properties).containsEntry("audience", did);
+            Assertions.assertThat(properties).containsEntry(AUDIENCE_PROPERTY, did);
         });
     }
 

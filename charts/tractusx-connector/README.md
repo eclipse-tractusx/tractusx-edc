@@ -172,8 +172,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.6.0 \
 | dataplane.debug.enabled | bool | `false` |  |
 | dataplane.debug.port | int | `1044` |  |
 | dataplane.debug.suspendOnStart | bool | `false` |  |
-| dataplane.endpoints.control.path | string | `"/api/dataplane/control"` |  |
-| dataplane.endpoints.control.port | int | `8083` |  |
 | dataplane.endpoints.default.path | string | `"/api"` |  |
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
@@ -183,6 +181,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.6.0 \
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
 | dataplane.endpoints.public.port | int | `8081` |  |
+| dataplane.endpoints.signaling.path | string | `"/api/signaling"` |  |
+| dataplane.endpoints.signaling.port | int | `8083` |  |
 | dataplane.env | object | `{}` |  |
 | dataplane.envConfigMapNames | list | `[]` |  |
 | dataplane.envSecretNames | list | `[]` |  |

@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "bdrs-client")
         exclude(module = "tx-iatp-sts-dim")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":core:json-ld-core"))

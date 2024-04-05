@@ -351,9 +351,9 @@ dataplane:
     public:
       port: 8081
       path: /api/public
-    control:
+    signaling:
       port: 8083
-      path: /api/dataplane/control
+      path: /api/signaling
     proxy:
       port: 8186
       path: /proxy

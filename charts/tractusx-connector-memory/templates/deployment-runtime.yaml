@@ -177,6 +177,10 @@ spec:
               value: {{ .Values.runtime.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.runtime.endpoints.control.path | quote }}
+            - name: "WEB_HTTP_SIGNALING_PORT"
+              value: {{ .Values.runtime.endpoints.signaling.port | quote }}
+            - name: "WEB_HTTP_SIGNALING_PATH"
+              value: {{ .Values.runtime.endpoints.signaling.path | quote }}
             - name: "WEB_HTTP_PROTOCOL_PORT"
               value: {{ .Values.runtime.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_PROTOCOL_PATH"
@@ -230,7 +234,7 @@ spec:
 
             # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
-              value: {{ include "txdc.dataplane.url.control" . }}/transfer
+              value: {{ include "txdc.dataplane.url.signaling" . }}/v1/dataflows
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
               value: "HttpData,AmazonS3"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
@@ -260,6 +264,9 @@ spec:
             {{- if .Values.runtime.token.refresh.refresh_endpoint }}
             - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ .Values.runtime.token.refresh.refresh_endpoint }}
+            {{- else }}
+            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+              value: {{ include "txdc.dataplane.url.public" . }}/token
             {{- end}}
 
             - name: "EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS"
