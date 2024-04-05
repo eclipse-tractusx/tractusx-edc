@@ -150,8 +150,7 @@ subprojects {
 
             val agentFile = buildDir.resolve("opentelemetry-javaagent.jar")
             // create task to download the opentelemetry agent
-            val openTelemetryAgentUrl =
-                "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
+            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
             val downloadOtel = tasks.create("downloadOtel") {
                 // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
                 onlyIf {
