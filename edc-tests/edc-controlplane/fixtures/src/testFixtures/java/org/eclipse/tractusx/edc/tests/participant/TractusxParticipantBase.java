@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
+import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
@@ -35,7 +36,11 @@ import java.util.Map;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
@@ -146,6 +151,24 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     @NotNull
     public String getDid() {
         return did;
+    }
+
+    public ValidatableResponse getCatalog(TractusxParticipantBase provider) {
+        var requestBodyBuilder = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "CatalogRequest")
+                .add("counterPartyId", provider.id)
+                .add("counterPartyAddress", provider.protocolEndpoint.getUrl().toString())
+                .add("protocol", protocol);
+
+
+        return managementEndpoint.baseRequest()
+                .contentType(JSON)
+                .when()
+                .body(requestBodyBuilder.build())
+                .post("/v2/catalog/request")
+                .then();
+
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {

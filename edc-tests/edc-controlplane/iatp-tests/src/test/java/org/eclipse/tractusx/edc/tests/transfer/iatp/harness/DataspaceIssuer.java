@@ -85,7 +85,8 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .issuanceDate(Instant.now())
                 .build();
 
-        var rawVc = createLdpVc(jsonLd, type, subjectSupplier);
+        var vcJson = createVc(didUrl(), type, subjectSupplier);
+        var rawVc = createLdpVc(jsonLd, vcJson);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
                 .participantId(did)
@@ -130,7 +131,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return verificationId();
     }
 
-    private String createLdpVc(JsonLd jsonLd, String type, Supplier<JsonObject> subjectSupplier) {
+    public String createLdpVc(JsonLd jsonLd, JsonObject verifiableCredential) {
         var issuer = LdpIssuer.Builder.newInstance()
                 .jsonLd(jsonLd)
                 .monitor(mock())
@@ -143,8 +144,7 @@ public class DataspaceIssuer extends IdentityParticipant {
 
         var key = getKeyPairAsJwk();
 
-        var vc = createVc(didUrl(), type, subjectSupplier);
-        var result = issuer.signDocument(vc, createKeyPair(key, verificationId()), proofOptions).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
+        var result = issuer.signDocument(verifiableCredential, createKeyPair(key, verificationId()), proofOptions).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
 
         try {
             return MAPPER.writeValueAsString(result);
