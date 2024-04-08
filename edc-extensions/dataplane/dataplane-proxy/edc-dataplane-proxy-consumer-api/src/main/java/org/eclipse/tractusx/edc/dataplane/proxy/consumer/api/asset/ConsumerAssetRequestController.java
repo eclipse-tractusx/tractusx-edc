@@ -78,7 +78,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
 
 
     private final Map<String, Function<AssetRequest, String>> mappers = Map.of(
-            "provider", AssetRequest::getProviderId,
+            "providerId", AssetRequest::getProviderId,
             "transferProcessId", AssetRequest::getTransferProcessId,
             "assetId", AssetRequest::getAssetId);
 
