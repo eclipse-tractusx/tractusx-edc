@@ -34,6 +34,8 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDC_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_PREFIX;
@@ -45,19 +47,18 @@ public class JsonLdExtension implements ServiceExtension {
 
     public static final String CREDENTIALS_V_1 = "https://www.w3.org/2018/credentials/v1";
 
-    public static final String CREDENTIALS_SUMMARY_V_1 = "https://w3id.org/2023/catenax/credentials/summary/v1";
-    public static final String CREDENTIALS_SUMMARY_V_1_FALLBACK = "https://catenax-ng.github.io/product-core-schemas/SummaryVC.json";
     public static final String SECURITY_JWS_V1 = "https://w3id.org/security/suites/jws-2020/v1";
     public static final String SECURITY_ED25519_V1 = "https://w3id.org/security/suites/ed25519-2020/v1";
+
+    public static final String CX_POLICY_CONTEXT = "https://w3id.org/tractusx/policy/v1.0.0";
 
     private static final String PREFIX = "document" + File.separator;
     private static final Map<String, String> FILES = Map.of(
             CREDENTIALS_V_1, PREFIX + "credential-v1.jsonld",
-            CREDENTIALS_SUMMARY_V_1, PREFIX + "summary-vc-context-v1.jsonld",
-            CREDENTIALS_SUMMARY_V_1_FALLBACK, PREFIX + "summary-vc-context-v1.jsonld",
             SECURITY_JWS_V1, PREFIX + "security-jws-2020.jsonld",
             SECURITY_ED25519_V1, PREFIX + "security-ed25519-2020.jsonld",
             TX_CONTEXT, PREFIX + "tx-v1.jsonld",
+            CX_POLICY_CONTEXT, PREFIX + "cx-policy-v1.jsonld",
             EDC_CONTEXT, PREFIX + "edc-v1.jsonld");
     @Inject
     private JsonLd jsonLdService;
@@ -69,6 +70,7 @@ public class JsonLdExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
         jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS);
+        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS);
         FILES.entrySet().stream().map(this::mapToFile)
                 .forEach(result -> result.onSuccess(entry -> jsonLdService.registerCachedDocument(entry.getKey(), entry.getValue().toURI()))
                         .onFailure(failure -> monitor.warning("Failed to register cached json-ld document: " + failure.getFailureDetail())));
