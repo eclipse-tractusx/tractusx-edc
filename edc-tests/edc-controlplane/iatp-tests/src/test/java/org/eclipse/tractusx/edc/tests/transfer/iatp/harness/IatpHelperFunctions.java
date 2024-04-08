@@ -37,19 +37,18 @@ import org.eclipse.edc.spi.security.Vault;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class IatpHelperFunctions {
-    public static JsonObject createVc(String issuer, String type, Supplier<JsonObject> subjectSupplier) {
+    public static JsonObject createVc(String issuer, String type, JsonObject subjectSupplier) {
         return createVcBuilder(issuer, type, subjectSupplier)
                 .build();
     }
 
-    public static JsonObjectBuilder createVcBuilder(String issuer, String type, Supplier<JsonObject> subjectSupplier) {
+    public static JsonObjectBuilder createVcBuilder(String issuer, String type, JsonObject subjectSupplier) {
         return Json.createObjectBuilder()
                 .add("@context", context())
                 .add("type", types(type))
-                .add("credentialSubject", subjectSupplier.get())
+                .add("credentialSubject", subjectSupplier)
                 .add("issuer", issuer)
                 .add("issuanceDate", Instant.now().toString());
     }

@@ -47,7 +47,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockserver.verify.VerificationTimes;
 
-import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -177,7 +176,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     @DisplayName("Contract policy is NOT fulfilled")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InvalidContractPolicyProvider.class)
-    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) throws IOException {
+    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) {
         var assetId = "api-asset-1";
 
         var authCodeHeaderName = "test-authkey";
@@ -230,7 +229,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
 
         var did = SOKRATES.getDid();
         var bpn = SOKRATES.getBpn();
-        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", () -> membershipSubject(did, bpn));
+        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("expirationDate", expirationDate.toString());
 
         var newVcString = DATASPACE_ISSUER_PARTICIPANT.createLdpVc(jsonLd, newRawVc.build());
@@ -285,7 +284,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
 
         var did = SOKRATES.getDid();
         var bpn = SOKRATES.getBpn();
-        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", () -> membershipSubject(did, bpn));
+        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("credentialStatus", Json.createObjectBuilder()
                 .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
                 .add("type", "StatusList2021Entry")

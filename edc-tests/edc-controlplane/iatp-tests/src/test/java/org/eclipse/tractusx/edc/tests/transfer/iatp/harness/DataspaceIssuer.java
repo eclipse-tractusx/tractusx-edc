@@ -77,7 +77,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return DATASPACE_ISSUER + "#" + getKeyId();
     }
 
-    public VerifiableCredentialResource issueCredential(String did, String bpn, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, Supplier<JsonObject> subjectSupplier) {
+    public VerifiableCredentialResource issueCredential(String did, String bpn, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObject subjectSupplier) {
         var credential = VerifiableCredential.Builder.newInstance()
                 .type(type)
                 .credentialSubject(credentialSubjectSupplier.get())
@@ -100,7 +100,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return issueCredential(did, bpn, jsonLd, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", bpn)
                         .build(),
-                () -> membershipSubject(did, bpn));
+                membershipSubject(did, bpn));
     }
 
     public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn, JsonLd jsonLd) {
@@ -109,7 +109,7 @@ public class DataspaceIssuer extends IdentityParticipant {
                         .claim("activityType", "vehicleDismantle")
                         .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
                         .build(),
-                () -> Json.createObjectBuilder()
+                Json.createObjectBuilder()
                         .add("type", "DismantlerCredential")
                         .add("holderIdentifier", bpn)
                         .add("activityType", "vehicleDismantle")
@@ -122,7 +122,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return issueCredential(did, bpn, jsonLd, credentialType, () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", bpn)
                         .build(),
-                () -> frameworkAgreementSubject(did, bpn, credentialType));
+                frameworkAgreementSubject(did, bpn, credentialType));
 
     }
 
