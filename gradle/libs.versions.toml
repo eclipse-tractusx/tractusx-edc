@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.1-20240405-SNAPSHOT"
+edc = "0.6.1-SNAPSHOT"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.0"
