@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.participant;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
+import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
 import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
 import org.jetbrains.annotations.NotNull;
@@ -47,14 +48,16 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public static final String API_KEY = "testkey";
     public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
     private final URI backendProviderProxy = URI.create("http://localhost:" + getFreePort() + "/events");
-    private final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI dataPlanePublic = URI.create("http://localhost:" + getFreePort() + "/public");
 
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
+    protected ParticipantConsumerDataPlaneApi dataPlane;
+
     protected String did;
 
     public void createAsset(String id) {
@@ -121,6 +124,14 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return data;
     }
 
+
+    /**
+     * Returns the consumer data plane api for fetching data via consumer proxy
+     */
+    public ParticipantConsumerDataPlaneApi dataPlane() {
+        return dataPlane;
+    }
+
     /**
      * Stores BPN groups
      */
@@ -172,6 +183,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
             this.participant.edrs = new ParticipantEdrApi(participant);
             this.participant.data = new ParticipantDataApi();
+            this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(new Endpoint(this.participant.dataPlaneProxy, Map.of("x-api-key", API_KEY)));
             return participant;
         }
     }
