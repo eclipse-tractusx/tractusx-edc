@@ -21,15 +21,23 @@
 ---
 changelog:
   exclude:
+    labels:
+      - dependencies
     authors:
-      - dependabot[bot]
+      - 'dependabot[bot]'
   categories:
+    - title: Breaking changes
+      labels:
+        - breaking-change
     - title: Bugfixes
       labels:
         - bug
     - title: New Features & Improvements
       labels:
-        - "*"
+        - enhancement
     - title: Documentation
       labels:
         - documentation
+    - title: Other Changes
+      labels:
+        - "*"
