@@ -19,8 +19,11 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
+import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +37,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +53,7 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_PROVIDER_KEY_ALIAS;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_DOCKER_IMAGE;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobSourceAddress;
@@ -66,8 +72,8 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @AzureStorageIntegrationTest
 public class AzureToAzureTest {
     private static final int PROVIDER_CONTROL_PORT = getFreePort();
-
     private static final int AZURITE_HOST_PORT = getFreePort();
+    // launches the data plane
     // launches the data plane
     @RegisterExtension
     protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
@@ -94,10 +100,48 @@ public class AzureToAzureTest {
     }
 
     @Test
+    void transferMultipleFile_success() {
+        var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
+        var filesNames = new ArrayDeque<String>();
+
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+        var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
+        fileNames.forEach(filename -> providerBlobHelper.uploadBlob(sourceContainer, fileData, filename));
+
+        consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
+        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
+                {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
+                """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
+
+        var request = createMultipleFileFlowRequest(PREFIX_FOR_MUTIPLE_FILES);
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+
+
+        given().when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(200);
+
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(60))
+                .untilAsserted(() -> assertThat(consumerBlobHelper.listBlobs(AZBLOB_CONSUMER_CONTAINER_NAME))
+                        .isNotEmpty()
+                        .containsAll(filesNames));
+
+    }
+
+    @Test
     void transferFile_success() {
         // upload file to provider's blob store
-        var bcc = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
-        providerBlobHelper.uploadBlob(bcc, TESTFILE_NAME);
+        var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
 
         // create container in consumer's blob store
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
@@ -117,7 +161,6 @@ public class AzureToAzureTest {
                 .body(request)
                 .post()
                 .then()
-                .log().ifValidationFails()
                 .log().ifError()
                 .statusCode(200);
 
@@ -184,11 +227,10 @@ public class AzureToAzureTest {
 
     @Test
     void transferFile_targetContainerNotExist_shouldFail() {
-        // upload file to provider's blob store
-        var bcc = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
-        providerBlobHelper.uploadBlob(bcc, TESTFILE_NAME);
+        var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
 
-        // do NOT create container in consumer's blob store
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
 
         DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
         DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
@@ -205,11 +247,9 @@ public class AzureToAzureTest {
                 .body(request)
                 .post()
                 .then()
-                .log().ifValidationFails()
                 .log().ifError()
                 .statusCode(200);
 
-        // wait until the data plane logs an exception that it cannot transfer the blob
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor())
@@ -225,4 +265,19 @@ public class AzureToAzureTest {
                 .build();
     }
 
+    private DataFlowStartMessage createMultipleFileFlowRequest(String blobPrefix) {
+        return DataFlowStartMessage.Builder.newInstance()
+                .id("test-process-multiple-file-id")
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type("AzureStorage").property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
+                        .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME).property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
+                        .property("blobPrefix", blobPrefix)
+                        .build())
+                .destinationDataAddress(DataAddress.Builder.newInstance()
+                        .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
+                        .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
+                        .build())
+                .processId("test-process-multiple-file-id").build();
+    }
 }
+ 

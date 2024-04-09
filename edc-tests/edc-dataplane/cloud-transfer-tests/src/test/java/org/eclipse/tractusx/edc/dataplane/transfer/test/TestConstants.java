@@ -31,9 +31,9 @@ public class TestConstants {
     public static final String AZBLOB_CONSUMER_ACCOUNT_NAME = "consumer";
     public static final String AZBLOB_CONSUMER_ACCOUNT_KEY = "consumerkey";
     // alias under which the provider key is stored in the vault. must end with -key1
-    public static final String AZBLOB_PROVIDER_KEY_ALIAS = "providerkey-key1";
+    public static final String AZBLOB_PROVIDER_KEY_ALIAS = "provider-key1";
     // alias under which the consumer key is stored in the vault. must end with -key1
-    public static final String AZBLOB_CONSUMER_KEY_ALIAS = "consumerkey-key1`";
+    public static final String AZBLOB_CONSUMER_KEY_ALIAS = "consumer-key1";
     public static final String AZBLOB_PROVIDER_CONTAINER_NAME = "src-container";
     public static final String AZBLOB_CONSUMER_CONTAINER_NAME = "dest-container";
     // AMAZON S3 CONSTANTS
@@ -45,6 +45,7 @@ public class TestConstants {
     public static final String S3_ACCESS_KEY_ID = "test-access-key"; // user name
     // GENERIC CONSTANTS
     public static final String TESTFILE_NAME = "testfile.json";
+    public static final String PREFIX_FOR_MUTIPLE_FILES = "m/";
 
     public static DataAddress blobSourceAddress(String blobName) {
         return DataAddress.Builder.newInstance()
