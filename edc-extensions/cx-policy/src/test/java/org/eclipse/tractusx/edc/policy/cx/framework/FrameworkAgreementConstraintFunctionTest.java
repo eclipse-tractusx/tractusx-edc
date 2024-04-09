@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createCredential;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPlainPcfCredential;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
@@ -279,6 +280,15 @@ class FrameworkAgreementConstraintFunctionTest {
         void evaluate_rightOperand_withVersion() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
                     "vc", List.of(createPcfCredential().build())
+            ));
+            assertThat(function.evaluate(CX_POLICY_NS + "FrameworkAgreement", Operator.EQ, "pcf:1.0.0", permission, context)).isTrue();
+            assertThat(function.evaluate(CX_POLICY_NS + "FrameworkAgreement", Operator.EQ, "pcf:4.2.0", permission, context)).isFalse();
+        }
+
+        @Test
+        void evaluate_withoutNamespace() {
+            when(participantAgent.getClaims()).thenReturn(Map.of(
+                    "vc", List.of(createPlainPcfCredential().build())
             ));
             assertThat(function.evaluate(CX_POLICY_NS + "FrameworkAgreement", Operator.EQ, "pcf:1.0.0", permission, context)).isTrue();
             assertThat(function.evaluate(CX_POLICY_NS + "FrameworkAgreement", Operator.EQ, "pcf:4.2.0", permission, context)).isFalse();

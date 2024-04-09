@@ -54,7 +54,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  * credential that satisfies the {@code subtype} requirement.
  */
 public class FrameworkAgreementCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
-    public static final String CONTRACT_VERSION_PROPERTY = CX_CREDENTIAL_NS + "contractVersion";
+    public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
 
     /**
@@ -176,7 +176,7 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
         list.add(new CredentialTypePredicate(CX_CREDENTIAL_NS, capitalize(subtype) + CREDENTIAL_LITERAL));
 
         if (version != null) {
-            list.add(credential -> credential.getCredentialSubject().stream().anyMatch(cs -> version.equals(cs.getClaims().getOrDefault(CONTRACT_VERSION_PROPERTY, null))));
+            list.add(credential -> credential.getCredentialSubject().stream().anyMatch(cs -> version.equals(getClaimOrDefault(cs, CX_CREDENTIAL_NS, CONTRACT_VERSION_LITERAL, null))));
         }
         return list;
     }
