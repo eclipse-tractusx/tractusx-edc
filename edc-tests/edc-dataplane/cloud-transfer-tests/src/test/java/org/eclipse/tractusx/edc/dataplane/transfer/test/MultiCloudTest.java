@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
@@ -36,12 +37,12 @@ import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import com.azure.core.util.BinaryData;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayDeque;
@@ -58,10 +59,10 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_KEY_ALIAS;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
@@ -106,6 +107,7 @@ public class MultiCloudTest {
     private AzureBlobHelper blobStoreHelper;
     private S3Client s3Client;
     private String s3EndpointOverride;
+
     @BeforeEach
     void setup() {
         blobStoreHelper = new AzureBlobHelper(BLOB_ACCOUNT_NAME, BLOB_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(10000));
@@ -121,11 +123,11 @@ public class MultiCloudTest {
     void transferFile_azureToS3MultipleFiles() {
         var sourceContainer = blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
         var filesNames = new ArrayDeque<String>();
-        
+
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
         fileNames.forEach(filename -> blobStoreHelper.uploadBlob(sourceContainer, fileData, filename));
-        
+
         DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, BLOB_ACCOUNT_KEY);
 
         var destinationBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
@@ -175,7 +177,7 @@ public class MultiCloudTest {
     void transferFile_azureToS3() {
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         var sourceContainer = blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
-        blobStoreHelper.uploadBlob(sourceContainer, fileData,TESTFILE_NAME);
+        blobStoreHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
         DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, BLOB_ACCOUNT_KEY);
 
         var r = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
@@ -229,14 +231,14 @@ public class MultiCloudTest {
 
         var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
-        
+
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename ->putResponse.set(s3Client.putObject(PutObjectRequest.builder()
-                                      .bucket(BUCKET_NAME)
-                                      .key(filename)
-                                      .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
-                                      .sdkHttpResponse()
-                                      .isSuccessful() && putResponse.get()));
+        fileNames.forEach(filename -> putResponse.set(s3Client.putObject(PutObjectRequest.builder()
+                        .bucket(BUCKET_NAME)
+                        .key(filename)
+                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
+                .sdkHttpResponse()
+                .isSuccessful() && putResponse.get()));
         assertThat(putResponse.get()).isTrue();
 
         blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
@@ -293,14 +295,14 @@ public class MultiCloudTest {
 
         var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
-        
+
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename ->putResponse.set(s3Client.putObject(PutObjectRequest.builder()
-                                      .bucket(BUCKET_NAME)
-                                      .key(filename)
-                                      .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
-                                      .sdkHttpResponse()
-                                      .isSuccessful() && putResponse.get()));
+        fileNames.forEach(filename -> putResponse.set(s3Client.putObject(PutObjectRequest.builder()
+                        .bucket(BUCKET_NAME)
+                        .key(filename)
+                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
+                .sdkHttpResponse()
+                .isSuccessful() && putResponse.get()));
 
         assertThat(putResponse.get()).isTrue();
 
@@ -328,7 +330,7 @@ public class MultiCloudTest {
                                 .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
                                 .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
                                 .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                                .property("blobName","NOME_TEST")
+                                .property("blobName", "NOME_TEST")
                                 .build()
                 )
                 .processId("test-process-multiple-file-id")

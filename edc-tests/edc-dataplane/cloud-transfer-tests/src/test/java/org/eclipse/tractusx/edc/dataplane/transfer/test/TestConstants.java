@@ -45,7 +45,8 @@ public class TestConstants {
     public static final String S3_ACCESS_KEY_ID = "test-access-key"; // user name
     // GENERIC CONSTANTS
     public static final String TESTFILE_NAME = "testfile.json";
-    public static final String PREFIX_FOR_MUTIPLE_FILES ="m/";
+    public static final String PREFIX_FOR_MUTIPLE_FILES = "m/";
+
     public static DataAddress blobSourceAddress(String blobName) {
         return DataAddress.Builder.newInstance()
                 .type("AzureStorage")

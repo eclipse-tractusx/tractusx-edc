@@ -60,18 +60,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_PROVIDER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_REGION;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.verify;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+
 /**
  * This test is intended to verify transfers within the same cloud provider, i.e. S3-to-S3.
  * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
@@ -127,14 +128,14 @@ public class S3ToS3Test {
         assertThat(sourceBucket.sdkHttpResponse().isSuccessful()).isTrue();
         var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
-        
+
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename ->putResponse.set(providerClient.putObject(PutObjectRequest.builder()
-                                      .bucket(S3_PROVIDER_BUCKET_NAME)
-                                      .key(filename)
-                                      .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
-                                      .sdkHttpResponse()
-                                      .isSuccessful() && putResponse.get()));
+        fileNames.forEach(filename -> putResponse.set(providerClient.putObject(PutObjectRequest.builder()
+                        .bucket(S3_PROVIDER_BUCKET_NAME)
+                        .key(filename)
+                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
+                .sdkHttpResponse()
+                .isSuccessful() && putResponse.get()));
 
 
         assertThat(putResponse.get()).isTrue();
@@ -317,29 +318,29 @@ public class S3ToS3Test {
 
 
     private DataFlowStartMessage createMultipleFileFlowRequest() {
-      return DataFlowStartMessage.Builder.newInstance()
-              .id("test-process-multiple-file-id")
-              .sourceDataAddress(DataAddress.Builder.newInstance()
-                      .type(S3BucketSchema.TYPE)
-                      .property(S3BucketSchema.KEY_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
-                      .property(S3BucketSchema.REGION, S3_REGION)
-                      .property(S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME)
-                      .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
-                      .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
-                      .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
-                      .build()
-              )
-              .destinationDataAddress(DataAddress.Builder.newInstance()
-                      .type(S3BucketSchema.TYPE)
-                      .property(S3BucketSchema.REGION, S3_REGION)
-                      .property(S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME)
-                      .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
-                      .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
-                      .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
-                      .build()
-              )
-              .processId("test-process-multiple-file-id")
-              .build();
-  }
+        return DataFlowStartMessage.Builder.newInstance()
+                .id("test-process-multiple-file-id")
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .property(S3BucketSchema.KEY_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
+                        .property(S3BucketSchema.REGION, S3_REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
+                        .build()
+                )
+                .destinationDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .property(S3BucketSchema.REGION, S3_REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
+                        .build()
+                )
+                .processId("test-process-multiple-file-id")
+                .build();
+    }
 
 }

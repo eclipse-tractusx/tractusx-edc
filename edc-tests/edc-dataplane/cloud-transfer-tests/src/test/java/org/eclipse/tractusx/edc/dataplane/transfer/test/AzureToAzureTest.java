@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
@@ -32,7 +33,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import com.azure.core.util.BinaryData;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
@@ -57,7 +58,6 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TES
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobSourceAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
-
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
@@ -85,24 +85,25 @@ public class AzureToAzureTest {
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
      * two different endpoint templates for provider and consumer. Endpoint templates are configured globally.
      * Also, the host-port must be fixed/deterministic, as the {@code PROVIDER_RUNTIME} needs to know it in advance
-    */
+     */
     @Container
     private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(AZURITE_DOCKER_IMAGE)
             .withFixedExposedPort(AZURITE_HOST_PORT, AZURITE_CONTAINER_PORT)
             .withEnv("AZURITE_ACCOUNTS", AZBLOB_PROVIDER_ACCOUNT_NAME + ":" + AZBLOB_PROVIDER_ACCOUNT_KEY + ";" + AZBLOB_CONSUMER_ACCOUNT_NAME + ":" + AZBLOB_CONSUMER_ACCOUNT_KEY);
     private AzureBlobHelper providerBlobHelper;
     private AzureBlobHelper consumerBlobHelper;
+
     @BeforeEach
     void setup() {
         providerBlobHelper = new AzureBlobHelper(AZBLOB_PROVIDER_ACCOUNT_NAME, AZBLOB_PROVIDER_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(AZURITE_CONTAINER_PORT));
         consumerBlobHelper = new AzureBlobHelper(AZBLOB_CONSUMER_ACCOUNT_NAME, AZBLOB_CONSUMER_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(AZURITE_CONTAINER_PORT));
     }
 
-    @Test 
+    @Test
     void transferMultipleFile_success() {
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var filesNames = new ArrayDeque<String>();
-        
+
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
         fileNames.forEach(filename -> providerBlobHelper.uploadBlob(sourceContainer, fileData, filename));
@@ -126,21 +127,21 @@ public class AzureToAzureTest {
                 .log().ifError()
                 .statusCode(200);
 
-                await().pollInterval(Duration.ofSeconds(2))
+        await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
                 .untilAsserted(() -> assertThat(consumerBlobHelper.listBlobs(AZBLOB_CONSUMER_CONTAINER_NAME))
                         .isNotEmpty()
                         .containsAll(filesNames));
 
     }
-    
+
     @Test
     void transferFile_success() {
         // upload file to provider's blob store
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
-        
-        providerBlobHelper.uploadBlob(sourceContainer,fileData, TESTFILE_NAME);
+
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
 
         // create container in consumer's blob store
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
@@ -228,8 +229,8 @@ public class AzureToAzureTest {
     void transferFile_targetContainerNotExist_shouldFail() {
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
-        
-        providerBlobHelper.uploadBlob(sourceContainer,fileData,TESTFILE_NAME);
+
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
 
         DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
         DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
@@ -268,14 +269,14 @@ public class AzureToAzureTest {
         return DataFlowStartMessage.Builder.newInstance()
                 .id("test-process-multiple-file-id")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
-                      .type("AzureStorage").property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
-                      .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME).property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
-                      .property("blobPrefix", blobPrefix)
-                      .build())
+                        .type("AzureStorage").property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
+                        .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME).property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
+                        .property("blobPrefix", blobPrefix)
+                        .build())
                 .destinationDataAddress(DataAddress.Builder.newInstance()
-                      .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
-                      .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                .build())
+                        .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
+                        .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
+                        .build())
                 .processId("test-process-multiple-file-id").build();
     }
 }
