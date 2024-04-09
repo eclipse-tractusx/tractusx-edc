@@ -30,7 +30,10 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.http)
     implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.spi.jwt) //JwtRegisteredClaimNames
+
+    implementation(libs.edc.identity.trust.service)
 
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)

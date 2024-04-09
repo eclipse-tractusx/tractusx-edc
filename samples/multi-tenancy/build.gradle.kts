@@ -28,8 +28,6 @@ dependencies {
     implementation(libs.edc.boot)
     implementation(libs.edc.iam.mock)
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-core")
         exclude(module = "auth-tokenbased")
         // the token refresh extension is not needed
         exclude(module = "tx-iatp-sts-dim")

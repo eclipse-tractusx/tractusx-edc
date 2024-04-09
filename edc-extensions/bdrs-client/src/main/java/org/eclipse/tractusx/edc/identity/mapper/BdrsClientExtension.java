@@ -20,23 +20,24 @@
 package org.eclipse.tractusx.edc.identity.mapper;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
+import org.eclipse.edc.iam.identitytrust.service.DidCredentialServiceUrlResolver;
 import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
-import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceUrlResolver;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
+import java.util.function.Supplier;
+
 import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.NAME;
 
-@Requires(CredentialServiceUrlResolver.class)
 @Extension(value = NAME)
 public class BdrsClientExtension implements ServiceExtension {
     public static final String NAME = "BPN/DID Resolution Service Client Extension";
@@ -66,6 +67,9 @@ public class BdrsClientExtension implements ServiceExtension {
     @Inject
     private CredentialServiceClient credentialServiceClient;
 
+    @Inject
+    private DidResolverRegistry didResolverRegistry;
+
     @Override
     public String name() {
         return NAME;
@@ -87,17 +91,24 @@ public class BdrsClientExtension implements ServiceExtension {
         }
 
         // get CS URL
-        var url = context.getConfig().getString(CREDENTIAL_SERVICE_BASE_URL_PROPERTY, null);
-        if (url == null) {
-            monitor.warning("No config value found for '%s'. As a fallback, the credentialService URL from this connector's DID document will be resolved");
-            var resolver = context.getService(CredentialServiceUrlResolver.class);
-            url = resolver.resolve(ownDid).orElseThrow(f -> {
-                monitor.severe("Resolving the credentialService URL failed. This runtime won't be able to communicate with BDRS. Error: %s.");
-                return null;
-            });
+        Supplier<String> urlSupplier;
+        var configuredUrl = context.getConfig().getString(CREDENTIAL_SERVICE_BASE_URL_PROPERTY, null);
+        if (configuredUrl != null) {
+            urlSupplier = () -> configuredUrl;
+        } else {
+            monitor.warning("No config value found for '%s'. As a fallback, the credentialService URL from this connector's DID document will be resolved.".formatted(CREDENTIAL_SERVICE_BASE_URL_PROPERTY));
+
+            urlSupplier = () -> {
+                var resolver = new DidCredentialServiceUrlResolver(didResolverRegistry);
+                return resolver.resolve(ownDid).orElse(f -> {
+                    monitor.severe("Resolving the credentialService URL failed. This runtime won't be able to communicate with BDRS. Error: %s.".formatted(f.getFailureDetail()));
+                    return null;
+                });
+            };
+
         }
 
-        return new BdrsClientImpl(baseUrl, cacheValidity, ownDid, url, httpClient, monitor, typeManager.getMapper(), secureTokenService, credentialServiceClient);
+        return new BdrsClientImpl(baseUrl, cacheValidity, ownDid, urlSupplier, httpClient, monitor, typeManager.getMapper(), secureTokenService, credentialServiceClient);
     }
 
 }

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 import java.util.zip.GZIPInputStream;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
@@ -62,7 +63,7 @@ class BdrsClientImpl implements BdrsClient {
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final SecureTokenService secureTokenService;
     private final String ownDid;
-    private final String ownCredentialServiceUrl;
+    private final Supplier<String> ownCredentialServiceUrl;
     private final CredentialServiceClient credentialServiceClient;
     private Map<String, String> cache = new HashMap<>();
     private Instant lastCacheUpdate;
@@ -70,7 +71,7 @@ class BdrsClientImpl implements BdrsClient {
     BdrsClientImpl(String baseUrl,
                    int cacheValidity,
                    String ownDid,
-                   String ownCredentialServiceUrl,
+                   Supplier<String> ownCredentialServiceUrl,
                    EdcHttpClient httpClient,
                    Monitor monitor,
                    ObjectMapper mapper,
@@ -123,7 +124,7 @@ class BdrsClientImpl implements BdrsClient {
         }
 
         var request = new Request.Builder()
-                .addHeader("Authorization", membershipCredToken.getContent()) //todo: add MembershipCredential as JWT-VP to the auth header
+                .addHeader("Authorization", "Bearer " + membershipCredToken.getContent())
                 .header("Accept-Encoding", "gzip")
                 .url(serverUrl + "/bpn-directory")
                 .get()
@@ -158,7 +159,7 @@ class BdrsClientImpl implements BdrsClient {
         var scope = TxIatpConstants.DEFAULT_MEMBERSHIP_SCOPE;
 
         return secureTokenService.createToken(claims, scope)
-                .compose(sit -> credentialServiceClient.requestPresentation(ownCredentialServiceUrl, sit.getToken(), List.of(scope)))
+                .compose(sit -> credentialServiceClient.requestPresentation(ownCredentialServiceUrl.get(), sit.getToken(), List.of(scope)))
                 .compose(pres -> {
                     if (pres.isEmpty()) {
                         return Result.failure("Expected exactly 1 VP, but was empty");
