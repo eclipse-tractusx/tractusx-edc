@@ -58,4 +58,13 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     }
 
+    @Override
+    protected IatpParticipantRuntime sokratesRuntime() {
+        return SOKRATES_RUNTIME;
+    }
+
+    @Override
+    protected IatpParticipantRuntime platoRuntime() {
+        return PLATO_RUNTIME;
+    }
 }

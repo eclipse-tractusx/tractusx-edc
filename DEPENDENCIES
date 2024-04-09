@@ -24,7 +24,6 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.5, Apache
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.14.0, Apache-2.0, approved, #5303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.14.1, Apache-2.0, approved, #5303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.15.1, Apache-2.0, approved, #7947
-maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.15.2, Apache-2.0, approved, #7947
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.15.3, Apache-2.0, approved, #7947
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.16.2, Apache-2.0, approved, #11606
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.0, Apache-2.0, approved, #13672
@@ -39,7 +38,6 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.0, Apache-2.
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.1, Apache-2.0, approved, #4105
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.2, Apache-2.0, approved, #4105
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.1, Apache-2.0, approved, #7934
-maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.2, Apache-2.0, approved, #7934
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.3, Apache-2.0, approved, #7934
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.0, approved, #11605
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.17.0, Apache-2.0, approved, #13671
@@ -49,18 +47,17 @@ maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.17.0, Apache-2.0, approved, #13666
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.14.0, Apache-2.0, approved, #5933
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15.1, Apache-2.0, approved, #8802
-maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15.2, Apache-2.0, approved, #8802
+maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.16.2, Apache-2.0, approved, #11855
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.17.0, Apache-2.0, approved, #13669
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.16.2, Apache-2.0, approved, #11854
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.17.0, Apache-2.0, approved, #14161
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.13.5, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.14.0, Apache-2.0, approved, #4699
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.15.1, Apache-2.0, approved, #7930
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.15.2, Apache-2.0, approved, #7930
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.16.2, Apache-2.0, approved, #11853
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.17.0, Apache-2.0, approved, #14160
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.17.0, Apache-2.0, approved, #14194
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.1, Apache-2.0, approved, #9236
-maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.2, Apache-2.0, approved, #9236
+maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.16.2, Apache-2.0, approved, #11858
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.17.0, Apache-2.0, approved, #14195
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.15.3, Apache-2.0, approved, #9241
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.17.0, Apache-2.0, approved, #13668
@@ -146,45 +143,45 @@ maven/mavencentral/dev.failsafe/failsafe/3.3.1, Apache-2.0, approved, #9268
 maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
 maven/mavencentral/info.picocli/picocli/4.7.5, Apache-2.0, approved, #4365
 maven/mavencentral/io.github.classgraph/classgraph/4.8.154, MIT, approved, CQ22530
-maven/mavencentral/io.github.classgraph/classgraph/4.8.162, MIT, approved, CQ22530
+maven/mavencentral/io.github.classgraph/classgraph/4.8.165, MIT, approved, CQ22530
 maven/mavencentral/io.micrometer/micrometer-commons/1.12.4, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #11679
 maven/mavencentral/io.micrometer/micrometer-core/1.12.4, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #11678
 maven/mavencentral/io.micrometer/micrometer-observation/1.12.4, Apache-2.0, approved, #11680
 maven/mavencentral/io.netty/netty-buffer/4.1.100.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.101.Final, Apache-2.0, approved, CQ21842
-maven/mavencentral/io.netty/netty-buffer/4.1.107.Final, Apache-2.0, approved, CQ21842
+maven/mavencentral/io.netty/netty-buffer/4.1.108.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.86.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-codec-dns/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-codec-http/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-http/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-codec-http2/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-http2/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-codec/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-common/4.1.100.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
 maven/mavencentral/io.netty/netty-common/4.1.101.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
-maven/mavencentral/io.netty/netty-common/4.1.107.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
+maven/mavencentral/io.netty/netty-common/4.1.108.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
 maven/mavencentral/io.netty/netty-common/4.1.86.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
 maven/mavencentral/io.netty/netty-handler-proxy/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler-proxy/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-handler/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-handler/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver-dns-classes-macos/4.1.101.Final, Apache-2.0, approved, #6367
 maven/mavencentral/io.netty/netty-resolver-dns-native-macos/4.1.101.Final, Apache-2.0, approved, #7004
 maven/mavencentral/io.netty/netty-resolver-dns/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-resolver/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-resolver/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.56.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.62.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
@@ -192,16 +189,16 @@ maven/mavencentral/io.netty/netty-tcnative-classes/2.0.56.Final, Apache-2.0, app
 maven/mavencentral/io.netty/netty-tcnative-classes/2.0.62.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.100.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.101.Final, Apache-2.0, approved, #6366
-maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.107.Final, Apache-2.0, approved, #6366
+maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.108.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.101.Final, Apache-2.0, approved, #4107
 maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.101.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-transport/4.1.107.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport/4.1.108.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
@@ -221,22 +218,21 @@ maven/mavencentral/io.rest-assured/rest-assured/5.4.0, Apache-2.0, approved, #12
 maven/mavencentral/io.rest-assured/xml-path/5.4.0, Apache-2.0, approved, #12038
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.15, Apache-2.0, approved, #5947
-maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.18, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.21, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations/2.2.15, Apache-2.0, approved, #11362
 maven/mavencentral/io.swagger.core.v3/swagger-annotations/2.2.8, Apache-2.0, approved, #11362
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.15, Apache-2.0, approved, #5929
-maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.18, Apache-2.0, approved, #5929
+maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.21, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-core/2.2.15, Apache-2.0, approved, #9265
 maven/mavencentral/io.swagger.core.v3/swagger-core/2.2.8, Apache-2.0, approved, #9265
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.15, Apache-2.0, approved, #11475
-maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.18, Apache-2.0, approved, #11475
+maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.21, Apache-2.0, approved, #11475
 maven/mavencentral/io.swagger.core.v3/swagger-integration/2.2.15, Apache-2.0, approved, #10352
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.15, Apache-2.0, approved, #11477
-maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.18, Apache-2.0, approved, #11477
+maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.21, Apache-2.0, approved, #11477
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2/2.2.15, Apache-2.0, approved, #9814
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.15, Apache-2.0, approved, #5919
-maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.18, Apache-2.0, approved, #5919
+maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.21, Apache-2.0, approved, #5919
 maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.15, Apache-2.0, approved, #10353
 maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.8, Apache-2.0, approved, #10353
 maven/mavencentral/io.swagger.parser.v3/swagger-parser-core/2.1.10, Apache-2.0, approved, #11478
@@ -289,7 +285,7 @@ maven/mavencentral/org.apache.commons/commons-digester3/3.2, Apache-2.0, approve
 maven/mavencentral/org.apache.commons/commons-lang3/3.10, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.commons/commons-lang3/3.11, Apache-2.0, approved, CQ22642
 maven/mavencentral/org.apache.commons/commons-lang3/3.12.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.commons/commons-lang3/3.13.0, Apache-2.0, approved, #9820
+maven/mavencentral/org.apache.commons/commons-lang3/3.14.0, Apache-2.0, approved, #11677
 maven/mavencentral/org.apache.commons/commons-lang3/3.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.commons/commons-lang3/3.8.1, Apache-2.0, approved, #815
 maven/mavencentral/org.apache.commons/commons-pool2/2.12.0, Apache-2.0 AND LicenseRef-Public-Domain, approved, #10843
@@ -323,10 +319,13 @@ maven/mavencentral/org.awaitility/awaitility/4.2.0, Apache-2.0, approved, #14178
 maven/mavencentral/org.awaitility/awaitility/4.2.1, Apache-2.0, approved, #14178
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.72, MIT, approved, #3789
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.77, MIT, approved, #11593
+maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.78, MIT, approved, #14235
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.72, MIT AND CC0-1.0, approved, #3538
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.77, MIT AND CC0-1.0, approved, #11595
+maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.78, MIT AND CC0-1.0, approved, #14237
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.72, MIT, approved, #3790
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.77, MIT, approved, #11596
+maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.78, MIT, approved, #14238
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.12.0, MIT, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.42.0, MIT, approved, clearlydefined
@@ -337,6 +336,7 @@ maven/mavencentral/org.codehaus.plexus/plexus-utils/3.1.1, , approved, CQ16492
 maven/mavencentral/org.codehaus.plexus/plexus-utils/3.3.0, , approved, CQ21066
 maven/mavencentral/org.codehaus.woodstox/stax2-api/4.2.2, BSD-2-Clause, approved, #2670
 maven/mavencentral/org.eclipse.angus/angus-activation/1.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.angus
+maven/mavencentral/org.eclipse.edc/accesstokendata-store-sql/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/api-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/api-observability/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -396,25 +396,27 @@ maven/mavencentral/org.eclipse.edc/data-plane-signaling-api/0.6.1-SNAPSHOT, Apac
 maven/mavencentral/org.eclipse.edc/data-plane-signaling-client/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-signaling-transform/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-store-sql/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-util/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-api-configuration/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-catalog-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-catalog-http-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-http-dispatcher/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-transform/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-http-api-configuration/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-http-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-http-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-negotiation-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-negotiation-http-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-http-dispatcher/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-transform/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-transfer-process-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-transfer-process-http-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-http-dispatcher/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-version-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-version-http-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/edr-index-sql/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-receiver/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -441,8 +443,8 @@ maven/mavencentral/org.eclipse.edc/identity-trust-sts-api/0.6.1-SNAPSHOT, Apache
 maven/mavencentral/org.eclipse.edc/identity-trust-sts-client-configuration/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-trust-sts-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-trust-sts-embedded/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/identity-trust-sts-remote-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/identity-trust-sts-remote/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/identity-trust-sts-remote-client/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/identity-trust-sts-remote-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-trust-sts-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-trust-transform/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jersey-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -455,7 +457,7 @@ maven/mavencentral/org.eclipse.edc/json-ld-spi/0.6.1-SNAPSHOT, Apache-2.0, appro
 maven/mavencentral/org.eclipse.edc/json-ld/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/junit-base/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/junit/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/jws2020/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/jws2020-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jwt-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jwt-verifiable-credentials/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/keys-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -496,17 +498,16 @@ maven/mavencentral/org.eclipse.edc/transfer-process-api/0.6.1-SNAPSHOT, Apache-2
 maven/mavencentral/org.eclipse.edc/transfer-process-store-sql/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-pull-http-dynamic-receiver/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/transform-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/util/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/validator-core/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-data-address-http-data/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-azure/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-hashicorp/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/verifiable-credentials-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/verifiable-credentials/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/web-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-jakarta-servlet-api/5.0.2, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api/2.0.0, EPL-2.0 OR Apache-2.0, approved, rt.jetty
@@ -530,8 +531,8 @@ maven/mavencentral/org.eclipse.jetty/jetty-servlet/11.0.20, EPL-2.0 OR Apache-2.
 maven/mavencentral/org.eclipse.jetty/jetty-util/11.0.20, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-webapp/11.0.20, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-xml/11.0.20, EPL-2.0 OR Apache-2.0, approved, rt.jetty
-maven/mavencentral/org.flywaydb/flyway-core/10.10.0, Apache-2.0, approved, #14163
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/10.10.0, Apache-2.0, approved, #14158
+maven/mavencentral/org.flywaydb/flyway-core/10.11.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/10.11.0, Apache-2.0, approved, #14239
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.5, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.5, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/3.0.5, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -558,13 +559,14 @@ maven/mavencentral/org.jacoco/org.jacoco.core/0.8.9, EPL-2.0, approved, CQ23283
 maven/mavencentral/org.jacoco/org.jacoco.report/0.8.9, EPL-2.0 AND Apache-2.0, approved, CQ23284
 maven/mavencentral/org.javassist/javassist/3.28.0-GA, Apache-2.0 OR LGPL-2.1-or-later OR MPL-1.1, approved, #327
 maven/mavencentral/org.javassist/javassist/3.29.2-GA, Apache-2.0 AND LGPL-2.1-or-later AND MPL-1.1, approved, #6023
+maven/mavencentral/org.javassist/javassist/3.30.2-GA, Apache-2.0 AND LGPL-2.1-or-later AND MPL-1.1, approved, #12108
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-common/1.9.10, Apache-2.0, approved, #14186
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.8.0, Apache-2.0, approved, #8807
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.8.21, Apache-2.0, approved, #8807
-maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.9.10, None, restricted, #14193
+maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.9.10, Apache-2.0, approved, #14193
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.8.0, Apache-2.0, approved, #8919
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.8.21, Apache-2.0, approved, #8919
-maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.9.10, None, restricted, #14191
+maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.9.10, Apache-2.0, approved, #14191
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.8.21, Apache-2.0, approved, #8865
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.9.10, Apache-2.0, approved, #11827
 maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.9.21, Apache-2.0, approved, #11827
@@ -631,58 +633,58 @@ maven/mavencentral/org.yaml/snakeyaml/1.33, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.0, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #7275
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232
 maven/mavencentral/software.amazon.awssdk/annotations/2.24.10, Apache-2.0, approved, #13251
-maven/mavencentral/software.amazon.awssdk/annotations/2.25.16, Apache-2.0, approved, #13691
+maven/mavencentral/software.amazon.awssdk/annotations/2.25.26, Apache-2.0, approved, #13691
 maven/mavencentral/software.amazon.awssdk/apache-client/2.24.10, Apache-2.0, approved, #13257
-maven/mavencentral/software.amazon.awssdk/apache-client/2.25.16, Apache-2.0, approved, #13687
+maven/mavencentral/software.amazon.awssdk/apache-client/2.25.26, Apache-2.0, approved, #13687
 maven/mavencentral/software.amazon.awssdk/arns/2.24.10, Apache-2.0, approved, #13243
-maven/mavencentral/software.amazon.awssdk/arns/2.25.16, Apache-2.0, approved, #13695
+maven/mavencentral/software.amazon.awssdk/arns/2.25.26, Apache-2.0, approved, #13695
 maven/mavencentral/software.amazon.awssdk/auth/2.24.10, Apache-2.0, approved, #13256
-maven/mavencentral/software.amazon.awssdk/auth/2.25.16, Apache-2.0, approved, #13692
+maven/mavencentral/software.amazon.awssdk/auth/2.25.26, Apache-2.0, approved, #13692
 maven/mavencentral/software.amazon.awssdk/aws-core/2.24.10, Apache-2.0, approved, #13240
-maven/mavencentral/software.amazon.awssdk/aws-core/2.25.16, Apache-2.0, approved, #13702
+maven/mavencentral/software.amazon.awssdk/aws-core/2.25.26, Apache-2.0, approved, #13702
 maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.24.10, Apache-2.0, approved, #13262
-maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.25.16, Apache-2.0, approved, #13701
+maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.25.26, Apache-2.0, approved, #13701
 maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.24.10, Apache-2.0, approved, #13247
-maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.25.16, Apache-2.0, approved, #13684
+maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.25.26, Apache-2.0, approved, #13684
 maven/mavencentral/software.amazon.awssdk/checksums-spi/2.24.10, Apache-2.0, approved, #13245
-maven/mavencentral/software.amazon.awssdk/checksums-spi/2.25.16, Apache-2.0, approved, #13686
+maven/mavencentral/software.amazon.awssdk/checksums-spi/2.25.26, Apache-2.0, approved, #13686
 maven/mavencentral/software.amazon.awssdk/checksums/2.24.10, Apache-2.0, approved, #13242
-maven/mavencentral/software.amazon.awssdk/checksums/2.25.16, Apache-2.0, approved, #13677
+maven/mavencentral/software.amazon.awssdk/checksums/2.25.26, Apache-2.0, approved, #13677
 maven/mavencentral/software.amazon.awssdk/crt-core/2.24.10, Apache-2.0, approved, #13252
-maven/mavencentral/software.amazon.awssdk/crt-core/2.25.16, Apache-2.0, approved, #13705
+maven/mavencentral/software.amazon.awssdk/crt-core/2.25.26, Apache-2.0, approved, #13705
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.24.10, Apache-2.0, approved, #13246
-maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.25.16, Apache-2.0, approved, #13681
+maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.25.26, Apache-2.0, approved, #13681
 maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.24.10, Apache-2.0, approved, #13253
-maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.25.16, Apache-2.0, approved, #13696
+maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.25.26, Apache-2.0, approved, #13696
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.24.10, Apache-2.0, approved, #13264
-maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.25.16, Apache-2.0, approved, #13704
+maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.25.26, Apache-2.0, approved, #13704
 maven/mavencentral/software.amazon.awssdk/http-auth/2.24.10, Apache-2.0, approved, #13248
-maven/mavencentral/software.amazon.awssdk/http-auth/2.25.16, Apache-2.0, approved, #13682
+maven/mavencentral/software.amazon.awssdk/http-auth/2.25.26, Apache-2.0, approved, #13682
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.24.10, Apache-2.0, approved, #13259
-maven/mavencentral/software.amazon.awssdk/http-client-spi/2.25.16, Apache-2.0, approved, #13706
+maven/mavencentral/software.amazon.awssdk/http-client-spi/2.25.26, Apache-2.0, approved, #13706
 maven/mavencentral/software.amazon.awssdk/iam/2.24.10, Apache-2.0, approved, #13444
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.24.10, Apache-2.0, approved, #13244
-maven/mavencentral/software.amazon.awssdk/identity-spi/2.25.16, Apache-2.0, approved, #13685
+maven/mavencentral/software.amazon.awssdk/identity-spi/2.25.26, Apache-2.0, approved, #13685
 maven/mavencentral/software.amazon.awssdk/json-utils/2.24.10, Apache-2.0, approved, #13261
-maven/mavencentral/software.amazon.awssdk/json-utils/2.25.16, Apache-2.0, approved, #13698
+maven/mavencentral/software.amazon.awssdk/json-utils/2.25.26, Apache-2.0, approved, #13698
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.24.10, Apache-2.0, approved, #13239
-maven/mavencentral/software.amazon.awssdk/metrics-spi/2.25.16, Apache-2.0, approved, #13680
+maven/mavencentral/software.amazon.awssdk/metrics-spi/2.25.26, Apache-2.0, approved, #13680
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.24.10, Apache-2.0, approved, #13260
-maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.25.16, Apache-2.0, approved, #13693
+maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.25.26, Apache-2.0, approved, #13693
 maven/mavencentral/software.amazon.awssdk/profiles/2.24.10, Apache-2.0, approved, #13258
-maven/mavencentral/software.amazon.awssdk/profiles/2.25.16, Apache-2.0, approved, #13697
+maven/mavencentral/software.amazon.awssdk/profiles/2.25.26, Apache-2.0, approved, #13697
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.24.10, Apache-2.0, approved, #13241
-maven/mavencentral/software.amazon.awssdk/protocol-core/2.25.16, Apache-2.0, approved, #13679
+maven/mavencentral/software.amazon.awssdk/protocol-core/2.25.26, Apache-2.0, approved, #13679
 maven/mavencentral/software.amazon.awssdk/regions/2.24.10, Apache-2.0, approved, #13255
-maven/mavencentral/software.amazon.awssdk/regions/2.25.16, Apache-2.0, approved, #13694
-maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.25.16, Apache-2.0, approved, #13699
+maven/mavencentral/software.amazon.awssdk/regions/2.25.26, Apache-2.0, approved, #13694
+maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.25.26, Apache-2.0, approved, #13699
 maven/mavencentral/software.amazon.awssdk/s3/2.24.10, Apache-2.0, approved, #13254
-maven/mavencentral/software.amazon.awssdk/s3/2.25.16, Apache-2.0, approved, #13688
+maven/mavencentral/software.amazon.awssdk/s3/2.25.26, Apache-2.0, approved, #13688
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.24.10, Apache-2.0, approved, #13265
-maven/mavencentral/software.amazon.awssdk/sdk-core/2.25.16, Apache-2.0, approved, #13700
+maven/mavencentral/software.amazon.awssdk/sdk-core/2.25.26, Apache-2.0, approved, #13700
 maven/mavencentral/software.amazon.awssdk/sts/2.24.10, Apache-2.0, approved, #13442
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.24.10, Apache-2.0, approved, #13249
-maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.25.16, Apache-2.0, approved, #13703
+maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.25.26, Apache-2.0, approved, #13703
 maven/mavencentral/software.amazon.awssdk/utils/2.24.10, Apache-2.0, approved, #13250
-maven/mavencentral/software.amazon.awssdk/utils/2.25.16, Apache-2.0, approved, #13689
+maven/mavencentral/software.amazon.awssdk/utils/2.25.26, Apache-2.0, approved, #13689
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, clearlydefined

@@ -28,6 +28,7 @@ dependencies {
     testFixturesApi(project(":edc-extensions:edr:edr-api-v2"))
     testFixturesApi(project(":spi:core-spi"))
     testFixturesApi(project(":spi:tokenrefresh-spi"))
+    testFixturesApi(project(":spi:bdrs-client-spi"))
 
     testFixturesApi(libs.edc.spi.core)
     testFixturesApi(libs.edc.spi.policy)

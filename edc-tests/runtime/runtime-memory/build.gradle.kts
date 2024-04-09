@@ -32,6 +32,8 @@ dependencies {
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
         exclude(module = "tx-iatp-sts-dim")
+        exclude(module = "tx-iatp")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
     // use an embedded STS

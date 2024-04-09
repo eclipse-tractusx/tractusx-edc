@@ -31,7 +31,7 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.identity.vc.ldp)
-    testImplementation(libs.edc.identity.jws2020)
+    testImplementation(libs.edc.lib.jws2020)
     // 3rd party libs
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.restAssured)

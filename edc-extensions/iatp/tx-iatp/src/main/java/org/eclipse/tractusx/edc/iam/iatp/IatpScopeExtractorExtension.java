@@ -19,9 +19,10 @@
 
 package org.eclipse.tractusx.edc.iam.iatp;
 
-import org.eclipse.edc.identitytrust.scope.ScopeExtractorRegistry;
+import org.eclipse.edc.iam.identitytrust.spi.scope.ScopeExtractorRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor;
@@ -36,6 +37,9 @@ public class IatpScopeExtractorExtension implements ServiceExtension {
     @Inject
     private ScopeExtractorRegistry scopeExtractorRegistry;
 
+    @Inject
+    private Monitor monitor;
+
     @Override
     public String name() {
         return NAME;
@@ -43,6 +47,6 @@ public class IatpScopeExtractorExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        scopeExtractorRegistry.registerScopeExtractor(new CredentialScopeExtractor());
+        scopeExtractorRegistry.registerScopeExtractor(new CredentialScopeExtractor(monitor));
     }
 }

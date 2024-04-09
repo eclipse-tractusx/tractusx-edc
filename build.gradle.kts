@@ -28,7 +28,7 @@ plugins {
     `jacoco-report-aggregation`
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.4.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 val txScmConnection: String by project
@@ -150,8 +150,7 @@ subprojects {
 
             val agentFile = buildDir.resolve("opentelemetry-javaagent.jar")
             // create task to download the opentelemetry agent
-            val openTelemetryAgentUrl =
-                "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
+            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
             val downloadOtel = tasks.create("downloadOtel") {
                 // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
                 onlyIf {

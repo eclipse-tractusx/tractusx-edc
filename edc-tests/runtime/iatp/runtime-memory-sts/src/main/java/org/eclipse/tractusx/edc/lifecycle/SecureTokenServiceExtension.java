@@ -19,8 +19,8 @@
 
 package org.eclipse.tractusx.edc.lifecycle;
 
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
-import org.eclipse.edc.identitytrust.SecureTokenService;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;

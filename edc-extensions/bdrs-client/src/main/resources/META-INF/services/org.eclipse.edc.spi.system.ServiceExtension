@@ -18,3 +18,4 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension
+org.eclipse.tractusx.edc.identity.mapper.BdrsClientMapperExtension

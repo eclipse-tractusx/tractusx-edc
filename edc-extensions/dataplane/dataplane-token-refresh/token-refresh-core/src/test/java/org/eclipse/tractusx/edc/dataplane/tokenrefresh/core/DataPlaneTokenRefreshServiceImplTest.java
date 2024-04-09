@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createJwt;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
@@ -70,7 +71,7 @@ class DataPlaneTokenRefreshServiceImplTest {
 
     private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
             tokenValidationService, didPublicKeyResolver, localPublicKeyService, accessTokenDataStore, tokenGenService, mock(), mock(),
-            "https://example.com", 1, 300L,
+            "https://example.com", "did:web:provider", 1, 300L,
             () -> "keyid", mock(), new ObjectMapper());
 
 
@@ -82,7 +83,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
-        var result = accessTokenService.obtainToken(params, address, Map.of("fizz", "buzz", "refreshToken", "getsOverwritten"));
+        var result = accessTokenService.obtainToken(params, address, Map.of("fizz", "buzz", "refreshToken", "getsOverwritten", AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
         assertThat(result.getContent().getAdditional())
                 .containsKeys("fizz", EDR_PROPERTY_REFRESH_TOKEN, EDR_PROPERTY_EXPIRES_IN, EDR_PROPERTY_REFRESH_ENDPOINT)
@@ -100,7 +101,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
-        var result = accessTokenService.obtainToken(params, address, Map.of("foo", "bar"));
+        var result = accessTokenService.obtainToken(params, address, Map.of("foo", "bar", AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
@@ -124,7 +125,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
-        var result = accessTokenService.obtainToken(params, address, Map.of());
+        var result = accessTokenService.obtainToken(params, address, Map.of(AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
@@ -153,7 +154,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.alreadyExists("test failure"));
 
-        var result = accessTokenService.obtainToken(params, address, Map.of());
+        var result = accessTokenService.obtainToken(params, address, Map.of(AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isFailed().detail().isEqualTo("test failure");
 
         verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));

@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     implementation(project(":core:core-utils"))
+    implementation(project(":spi:bdrs-client-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.http)
 

@@ -33,10 +33,13 @@ public class DimParticipant extends TractusxIatpParticipantBase {
 
     protected URI dimUri;
 
+    protected URI bdrsUri;
+
     @Override
     public Map<String, String> iatpConfiguration(TractusxIatpParticipantBase... others) {
         var config = new HashMap<>(super.iatpConfiguration(others));
         config.put("edc.iam.sts.dim.url", dimUri.toString());
+        config.put("tx.iam.iatp.bdrs.server.url", bdrsUri.toString());
         config.put("edc.transfer.proxy.token.verifier.publickey.alias", getKeyId());
         return config;
     }
@@ -56,10 +59,16 @@ public class DimParticipant extends TractusxIatpParticipantBase {
             return self();
         }
 
+        public Builder bdrsUri(URI bdrsUri) {
+            participant.bdrsUri = bdrsUri;
+            return self();
+        }
+
         @Override
         public DimParticipant build() {
             super.build();
             Objects.requireNonNull(participant.dimUri, "DIM URI should not be null");
+            Objects.requireNonNull(participant.bdrsUri, "BDRS URI should not be null");
             return participant;
         }
     }

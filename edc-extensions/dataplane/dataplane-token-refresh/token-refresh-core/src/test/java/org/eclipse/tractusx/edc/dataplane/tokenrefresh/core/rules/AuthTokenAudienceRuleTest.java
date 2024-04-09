@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createAuthenticationToken;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +45,7 @@ class AuthTokenAudienceRuleTest {
         when(store.getById(TEST_TOKEN_ID)).thenReturn(new AccessTokenData(TEST_TOKEN_ID,
                 ClaimToken.Builder.newInstance().build(),
                 DataAddress.Builder.newInstance().type("test-type").build(),
-                Map.of("audience", "did:web:alice")));
+                Map.of(AUDIENCE_PROPERTY, "did:web:alice")));
 
         assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
@@ -57,12 +58,12 @@ class AuthTokenAudienceRuleTest {
         when(store.getById(TEST_TOKEN_ID)).thenReturn(new AccessTokenData(TEST_TOKEN_ID,
                 ClaimToken.Builder.newInstance().build(),
                 DataAddress.Builder.newInstance().type("test-type").build(),
-                Map.of("audience", 42L)));
+                Map.of(AUDIENCE_PROPERTY, 42L)));
 
         assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
-                .isEqualTo("Property 'audience' was expected to be java.lang.String but was class java.lang.Long.");
+                .isEqualTo("Property '%s' was expected to be java.lang.String but was class java.lang.Long.".formatted(AUDIENCE_PROPERTY));
     }
 
     @Test
@@ -75,6 +76,6 @@ class AuthTokenAudienceRuleTest {
         assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
                 .detail()
-                .isEqualTo("Property 'audience' was expected to be java.lang.String but was null.");
+                .isEqualTo("Property '%s' was expected to be java.lang.String but was null.".formatted(AUDIENCE_PROPERTY));
     }
 }

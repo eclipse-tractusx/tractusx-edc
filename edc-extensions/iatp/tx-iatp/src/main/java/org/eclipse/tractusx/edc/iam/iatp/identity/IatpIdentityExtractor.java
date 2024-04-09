@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.identity;
 
-import org.eclipse.edc.identitytrust.model.VerifiableCredential;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.agent.ParticipantAgentServiceExtension;
 import org.eclipse.edc.spi.iam.ClaimToken;

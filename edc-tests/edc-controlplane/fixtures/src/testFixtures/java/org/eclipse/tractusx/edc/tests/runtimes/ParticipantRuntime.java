@@ -25,8 +25,8 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import org.eclipse.edc.boot.system.injection.InjectionContainer;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
-import org.eclipse.edc.identitytrust.SecureTokenService;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
@@ -36,6 +36,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.edc.token.JwtGenerationService;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -54,12 +55,15 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     private DataWiper wiper;
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
+        this(moduleName, runtimeName, bpn, properties, null);
+    }
+
+    public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback beforeInitCallback) {
         super(moduleName, runtimeName, properties);
         this.properties = properties;
-        if (!properties.containsKey("tx.ssi.miw.url")) {
-            this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
-            this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
-        }
+        this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
+        this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
+        this.registerServiceMock(BdrsClient.class, (s) -> s);
         var kid = properties.get("edc.iam.issuer.id") + "#key-1";
         try {
             runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
@@ -70,6 +74,10 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
             registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);
+        }
+
+        if (beforeInitCallback != null) {
+            beforeInitCallback.beforeInit(this);
         }
     }
 

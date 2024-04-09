@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.edc.spi.policyengine)
     implementation(libs.jakartaJson)
     implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.vc)
     testImplementation(libs.jacksonJsonP)
     testImplementation(libs.titaniumJsonLd)
 }

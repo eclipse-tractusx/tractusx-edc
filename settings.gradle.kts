@@ -24,6 +24,7 @@ include(":spi:callback-spi")
 include(":spi:edr-spi")
 include(":spi:core-spi")
 include(":spi:tokenrefresh-spi")
+include(":spi:bdrs-client-spi")
 
 
 // core modules
@@ -37,7 +38,9 @@ include(":edc-extensions:bpn-validation:bpn-validation-api")
 include(":edc-extensions:bpn-validation:bpn-validation-spi")
 include(":edc-extensions:bpn-validation:bpn-validation-core")
 include(":edc-extensions:bpn-validation:business-partner-store-sql")
-include(":edc-extensions:postgresql-migration")
+include(":edc-extensions:migrations:postgresql-migration-lib")
+include(":edc-extensions:migrations:control-plane-migration")
+include(":edc-extensions:migrations:data-plane-migration")
 include(":edc-extensions:tokenrefresh-handler")
 include(":edc-extensions:bdrs-client")
 include(":edc-extensions:provision-additional-headers")
@@ -49,6 +52,7 @@ include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:cx-policy")
 include(":edc-extensions:iatp:tx-iatp")
 include(":edc-extensions:iatp:tx-iatp-sts-dim")
+include(":edc-extensions:data-flow-properties-provider")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")

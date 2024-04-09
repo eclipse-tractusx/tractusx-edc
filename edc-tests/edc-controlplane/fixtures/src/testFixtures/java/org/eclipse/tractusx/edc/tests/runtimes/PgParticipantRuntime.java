@@ -36,7 +36,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DB_SCHEMA_NAME;
@@ -46,6 +45,9 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
     private static final String POSTGRES_IMAGE_NAME = "postgres:14.2";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
+    private static final List<String> DATASOURCES = List.of("asset", "contractdefinition",
+            "contractnegotiation", "policy", "transferprocess", "bpn",
+            "policy-monitor", "edr", "dataplane", "accesstokendata");
     private final String dbName;
     public PostgreSQLContainer<?> postgreSqlContainer;
 
@@ -77,18 +79,24 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
         postgreSqlContainer.close();
     }
 
+    @Override
+    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
+        PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
+        helper.createDatabase();
+        super.bootExtensions(context, serviceExtensions);
+    }
+
     public Map<String, String> postgresqlConfiguration(String name) {
         var jdbcUrl = jdbcUrl(name);
         return new HashMap<>() {
             {
-                Stream.of("asset", "contractdefinition", "contractnegotiation", "policy", "transferprocess", "bpn", "policy-monitor")
-                        .forEach(context -> {
-                            var group = "edc.datasource." + context;
-                            put(group + ".name", context);
-                            put(group + ".url", jdbcUrl);
-                            put(group + ".user", USER);
-                            put(group + ".password", PASSWORD);
-                        });
+                DATASOURCES.forEach(context -> {
+                    var group = "edc.datasource." + context;
+                    put(group + ".name", context);
+                    put(group + ".url", jdbcUrl);
+                    put(group + ".user", USER);
+                    put(group + ".password", PASSWORD);
+                });
                 // use non-default schema name to test usage of non-default schema
                 put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
             }
@@ -101,13 +109,6 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
 
     public String baseJdbcUrl() {
         return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
-    }
-
-    @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
-        helper.createDatabase();
-        super.bootExtensions(context, serviceExtensions);
     }
 
     protected void mockVault() {

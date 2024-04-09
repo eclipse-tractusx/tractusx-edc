@@ -1,6 +1,6 @@
 # tractusx-connector-azure-vault
 
-![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.6.0](https://img.shields.io/badge/AppVersion-0.6.0-informational?style=flat-square)
+![Version: 0.7.0-rc1](https://img.shields.io/badge/Version-0.7.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0-rc1](https://img.shields.io/badge/AppVersion-0.7.0--rc1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
@@ -45,7 +45,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.6.0 \
+helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.7.0-rc1 \
      -f <path-to>/tractusx-connector-azure-vault-test.yaml \
      --set vault.azure.name=$AZURE_VAULT_NAME \
      --set vault.azure.client=$AZURE_CLIENT_ID \
@@ -61,24 +61,24 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 12.11.2 |
+| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 15.2.1 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `"https://example.com"` | Specifies a backend service which will receive the EDR |
 | controlplane.affinity | object | `{}` |  |
 | controlplane.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | controlplane.autoscaling.maxReplicas | int | `100` | Maximum replicas if resource consumption exceeds resource threshholds |
 | controlplane.autoscaling.minReplicas | int | `1` | Minimal replicas if resource consumption falls below resource threshholds |
 | controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
+| controlplane.bdrs.cache_validity_seconds | int | `600` |  |
+| controlplane.bdrs.server.url | string | `nil` |  |
 | controlplane.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | controlplane.debug.enabled | bool | `false` |  |
 | controlplane.debug.port | int | `1044` |  |
 | controlplane.debug.suspendOnStart | bool | `false` |  |
-| controlplane.edr.transferProxyTokenValidity | string | `"2592000"` |  |
 | controlplane.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | controlplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
@@ -178,8 +178,6 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.debug.enabled | bool | `false` |  |
 | dataplane.debug.port | int | `1044` |  |
 | dataplane.debug.suspendOnStart | bool | `false` |  |
-| dataplane.endpoints.control.path | string | `"/api/dataplane/control"` |  |
-| dataplane.endpoints.control.port | int | `8083` |  |
 | dataplane.endpoints.default.path | string | `"/api"` |  |
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
@@ -189,6 +187,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
 | dataplane.endpoints.public.port | int | `8081` |  |
+| dataplane.endpoints.signaling.path | string | `"/api/signaling"` |  |
+| dataplane.endpoints.signaling.port | int | `8083` |  |
 | dataplane.env | object | `{}` |  |
 | dataplane.envConfigMapNames | list | `[]` |  |
 | dataplane.envSecretNames | list | `[]` |  |
@@ -243,14 +243,29 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
 | dataplane.service.port | int | `80` |  |
 | dataplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
+| dataplane.token.refresh.expiry_seconds | int | `300` |  |
+| dataplane.token.refresh.expiry_tolerance_seconds | int | `10` |  |
+| dataplane.token.refresh.refresh_endpoint | string | `nil` |  |
+| dataplane.token.signer.privatekey_alias | string | `nil` |  |
+| dataplane.token.verifier.publickey_alias | string | `nil` |  |
 | dataplane.tolerations | list | `[]` |  |
 | dataplane.url.public | string | `""` | Explicitly declared url for reaching the public api (e.g. if ingresses not used) |
 | dataplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | dataplane.volumes | string | `nil` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | fullnameOverride | string | `""` |  |
+| iatp.id | string | `"did:web:changeme"` |  |
+| iatp.sts.dim.url | string | `nil` |  |
+| iatp.sts.oauth.client.id | string | `nil` |  |
+| iatp.sts.oauth.client.secret_alias | string | `nil` |  |
+| iatp.sts.oauth.token_url | string | `nil` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | install.postgresql | bool | `true` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.controlplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the controlplane component |
+| networkPolicy.controlplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for cp (defaults to all namespaces) |
+| networkPolicy.dataplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the dataplane component |
+| networkPolicy.dataplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for dp (defaults to all namespaces) |
+| networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
 | participant.id | string | `"BPNLCHANGEME"` | BPN Number |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |

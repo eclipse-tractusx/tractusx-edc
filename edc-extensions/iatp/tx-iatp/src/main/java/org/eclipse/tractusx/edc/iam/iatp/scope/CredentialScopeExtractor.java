@@ -19,10 +19,17 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.scope;
 
-import org.eclipse.edc.identitytrust.scope.ScopeExtractor;
+import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequestMessage;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferRequestMessage;
+import org.eclipse.edc.iam.identitytrust.spi.scope.ScopeExtractor;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.iam.RequestContext;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
@@ -39,19 +46,39 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     public static final String SCOPE_FORMAT = "%s:%s:read";
     public static final String CREDENTIAL_FORMAT = "%sCredential";
 
-    public CredentialScopeExtractor() {
+    private static final Set<Class<? extends RemoteMessage>> SUPPORTED_MESSAGES = Set.of(CatalogRequestMessage.class, ContractRequestMessage.class, TransferRequestMessage.class);
+
+    private final Monitor monitor;
+
+    public CredentialScopeExtractor(Monitor monitor) {
+        this.monitor = monitor;
     }
 
     @Override
     public Set<String> extractScopes(Object leftValue, Operator operator, Object rightValue, PolicyContext context) {
         Set<String> scopes = Set.of();
-        if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_NS)) {
-            leftOperand = leftOperand.replace(CX_POLICY_NS, "");
-            var credentialType = extractCredentialType(leftOperand, rightValue);
-            scopes = Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType))));
 
+        var requestContext = context.getContextData(RequestContext.class);
+
+        if (requestContext != null) {
+            if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_NS) && isMessageSupported(requestContext)) {
+                leftOperand = leftOperand.replace(CX_POLICY_NS, "");
+                var credentialType = extractCredentialType(leftOperand, rightValue);
+                scopes = Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType))));
+
+            }
+
+        } else {
+            monitor.warning("RequestContext not found in the PolicyContext: scope cannot be extracted from the policy. Defaulting to empty scopes");
         }
         return scopes;
+    }
+
+    private boolean isMessageSupported(RequestContext ctx) {
+        return Optional.ofNullable(ctx.getMessage())
+                .map(RemoteMessage::getClass)
+                .map(SUPPORTED_MESSAGES::contains)
+                .orElse(false);
     }
 
     /**

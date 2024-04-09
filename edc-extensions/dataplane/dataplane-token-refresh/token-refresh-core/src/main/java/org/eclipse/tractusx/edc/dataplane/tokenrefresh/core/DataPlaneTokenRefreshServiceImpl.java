@@ -43,6 +43,7 @@ import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.edc.token.spi.TokenValidationService;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.AuthTokenAudienceRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.ClaimIsPresentRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.IssuerEqualsSubjectRule;
 import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.RefreshTokenValidationRule;
@@ -63,7 +64,9 @@ import java.util.stream.Stream;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.EXPIRATION_TIME;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 
@@ -85,9 +88,11 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final Supplier<String> publicKeyIdSupplier;
     private final Monitor monitor;
     private final String refreshEndpoint;
+    private final String ownDid;
     private final Clock clock;
     private final Vault vault;
     private final ObjectMapper objectMapper;
+
 
     public DataPlaneTokenRefreshServiceImpl(Clock clock,
                                             TokenValidationService tokenValidationService,
@@ -98,6 +103,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                                             Supplier<PrivateKey> privateKeySupplier,
                                             Monitor monitor,
                                             String refreshEndpoint,
+                                            String ownDid,
                                             int tokenExpiryToleranceSeconds,
                                             long tokenExpirySeconds,
                                             Supplier<String> publicKeyIdSupplier,
@@ -113,14 +119,15 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.refreshEndpoint = refreshEndpoint;
         this.clock = clock;
         this.publicKeyIdSupplier = publicKeyIdSupplier;
+        this.ownDid = ownDid;
         this.vault = vault;
         this.objectMapper = objectMapper;
         this.tokenExpirySeconds = tokenExpirySeconds;
         authenticationTokenValidationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
                 new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
-                new ClaimIsPresentRule(TOKEN_ID_CLAIM)
-                /*new AuthTokenAudienceRule(accessTokenDataStore)*/);
+                new ClaimIsPresentRule(TOKEN_ID_CLAIM),
+                new AuthTokenAudienceRule(accessTokenDataStore));
         accessTokenAuthorizationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
@@ -148,8 +155,6 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         authenticationToken = authenticationToken.replace("Bearer", "").trim();
 
-        // 1. validate authentication token
-        monitor.warning(" TOKEN REFRESH :: TEMPORARILY DISABLED RULE AuthTokenAudienceRule UNTIL THE 'audience' PROPERTY IS FORWARDED TO DATAPLANES%n");
         var authTokenRes = tokenValidationService.validate(authenticationToken, publicKeyResolver, authenticationTokenValidationRules);
         if (authTokenRes.failed()) {
             return Result.failure("Authentication token validation failed: %s".formatted(authTokenRes.getFailureDetail()));
@@ -222,10 +227,16 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 tokenExpirySeconds, refreshEndpoint));
 
         // the refresh token information must be returned in the EDR
+        var audience = additionalDataForStorage.get(AUDIENCE_PROPERTY);
+
+        if (audience == null) {
+            return Result.failure("Missing audience in the additional properties");
+        }
         var edrAdditionalData = new HashMap<>(additionalTokenData);
         edrAdditionalData.put(EDR_PROPERTY_REFRESH_TOKEN, refreshTokenResult.getContent().tokenRepresentation().getToken());
         edrAdditionalData.put(EDR_PROPERTY_EXPIRES_IN, String.valueOf(tokenExpirySeconds));
         edrAdditionalData.put(EDR_PROPERTY_REFRESH_ENDPOINT, refreshEndpoint);
+        edrAdditionalData.put(EDR_PROPERTY_REFRESH_AUDIENCE, audience);
 
         var edrTokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(accessTokenResult.getContent().tokenRepresentation().getToken()) // the access token

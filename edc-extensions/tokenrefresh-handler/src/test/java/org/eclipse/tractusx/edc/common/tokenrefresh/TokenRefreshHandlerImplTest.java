@@ -37,7 +37,7 @@ import okhttp3.ResponseBody;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.identitytrust.SecureTokenService;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -58,6 +58,7 @@ import java.util.stream.Stream;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_AUTHORIZATION;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
@@ -178,14 +179,7 @@ class TokenRefreshHandlerImplTest {
         assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
                 .detail().isEqualTo("Error executing token refresh request: java.io.IOException: test exception");
     }
-
-    @Test
-    void refresh_accessTokenIsNotJwt() {
-        when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().property(EDR_PROPERTY_AUTHORIZATION, "not-jwt").build()));
-        assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
-                .detail().startsWith("Could not execute token refresh: Failed to parse string claim 'iss'");
-    }
-
+    
     @Test
     void refresh_tokenGenerationFailed() {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
@@ -211,7 +205,8 @@ class TokenRefreshHandlerImplTest {
                 .type("HttpData")
                 .property(EDR_PROPERTY_AUTHORIZATION, createJwt())
                 .property(EDR_PROPERTY_REFRESH_TOKEN, "foo-refresh-token")
-                .property(EDR_PROPERTY_REFRESH_ENDPOINT, REFRESH_ENDPOINT);
+                .property(EDR_PROPERTY_REFRESH_ENDPOINT, REFRESH_ENDPOINT)
+                .property(EDR_PROPERTY_REFRESH_AUDIENCE, CONSUMER_DID);
     }
 
     private static class InvalidEdrProvider implements ArgumentsProvider {

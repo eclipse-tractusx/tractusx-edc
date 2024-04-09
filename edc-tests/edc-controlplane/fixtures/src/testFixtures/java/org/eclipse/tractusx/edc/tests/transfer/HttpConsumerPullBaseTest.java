@@ -51,7 +51,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
     public static final String MOCK_BACKEND_PATH = "/mock/api";
     protected ClientAndServer server;
 
-    private String privateBackendUrl;
+    protected String privateBackendUrl;
 
 
     @BeforeEach
@@ -106,8 +106,59 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
                 .withHeader("Edc-Contract-Agreement-Id")
                 .withHeader("Edc-Bpn", sokrates().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
-
+        
     }
+
+
+    @Test
+    void transferData_privateBackend_withConsumerDataPlane() {
+        var assetId = "api-asset-1";
+
+
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", privateBackendUrl,
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
+
+        plato().createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = plato().createPolicyDefinition(createAccessPolicy(sokrates().getBpn()));
+        var contractPolicyId = plato().createPolicyDefinition(createContractPolicy(sokrates().getBpn()));
+        plato().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = sokrates().requestAsset(plato(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+
+        var edr = new AtomicReference<JsonObject>();
+
+        // wait until transfer process completes
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var tpState = sokrates().getTransferProcessState(transferProcessId);
+                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
+                });
+
+        // wait until EDC is available on the consumer side
+        server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
+        await().pollInterval(fibonacci())
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    edr.set(sokrates().edrs().getEdr(transferProcessId));
+                    assertThat(edr).isNotNull();
+                });
+
+
+        // pull data out of provider's backend service:
+        //Consumer-DP -> Prov-DP -> Prov-backend
+        assertThat(sokrates().dataPlane().pullData(Map.of("transferProcessId", transferProcessId))).isEqualTo("test response");
+
+        server.verify(request()
+                .withPath(MOCK_BACKEND_PATH)
+                .withHeader("Edc-Contract-Agreement-Id")
+                .withHeader("Edc-Bpn", sokrates().getBpn())
+                .withMethod("GET"), VerificationTimes.exactly(1));
+    }
+
 
     @AfterEach
     void teardown() {

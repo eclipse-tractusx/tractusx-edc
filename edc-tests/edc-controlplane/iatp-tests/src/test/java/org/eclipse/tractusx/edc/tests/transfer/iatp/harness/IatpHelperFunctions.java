@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.identityhub.spi.ParticipantContextService;
@@ -36,17 +37,20 @@ import org.eclipse.edc.spi.security.Vault;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class IatpHelperFunctions {
-    public static JsonObject createVc(String issuer, String type, Supplier<JsonObject> subjectSupplier) {
+    public static JsonObject createVc(String issuer, String type, JsonObject subjectSupplier) {
+        return createVcBuilder(issuer, type, subjectSupplier)
+                .build();
+    }
+
+    public static JsonObjectBuilder createVcBuilder(String issuer, String type, JsonObject subjectSupplier) {
         return Json.createObjectBuilder()
                 .add("@context", context())
                 .add("type", types(type))
-                .add("credentialSubject", subjectSupplier.get())
+                .add("credentialSubject", subjectSupplier)
                 .add("issuer", issuer)
-                .add("issuanceDate", Instant.now().toString())
-                .build();
+                .add("issuanceDate", Instant.now().toString());
     }
 
     public static JsonObject membershipSubject(String did, String id) {
@@ -81,6 +85,7 @@ public class IatpHelperFunctions {
                 .add("https://www.w3.org/2018/credentials/v1")
                 .add("https://w3id.org/security/suites/jws-2020/v1")
                 .add("https://w3id.org/catenax/credentials")
+                .add("https://w3id.org/vc/status-list/2021/v1")
                 .build();
     }
 

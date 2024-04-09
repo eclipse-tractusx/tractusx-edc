@@ -24,7 +24,27 @@ fullnameOverride: tx-prod
 ################################
 participant:
   id: "test-participant"
+iatp:
+  # Decentralized IDentifier
+  id: "did:web:changeme"
+  sts:
+    dim:
+      url: "https://somewhere.dim.org"
+    oauth:
+      token_url: "https://changeme.org"
+      client:
+        id: "test-client-id"
+        secret_alias: "test-alias"
 controlplane:
+  # the ssi object is still needed for the upgradeability test
+  # todo: remove this after 0.7.0 is released
+  ssi:
+    miw:
+      url: "http://localhost:8080"
+      authorityId: "authorityId"
+    oauth:
+      client:
+        secretAlias: "client-secret"
   service:
     type: NodePort
   endpoints:
@@ -37,13 +57,9 @@ controlplane:
   securityContext:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
-  ssi:
-    miw:
-      url: "http://localhost:8080"
-      authorityId: "authorityId"
-    oauth:
-      client:
-        secretAlias: "client-secret"
+  bdrs:
+    server:
+      url: "https://bdrs.test.org"
 dataplane:
   endpoints:
     proxy:
@@ -59,6 +75,11 @@ dataplane:
     endpointOverride: http://minio:9000
     secretAccessKey: qwerty123
     accessKeyId: qwerty123
+  token:
+    signer:
+      privatekey_alias: "key-1"
+    verifier:
+      publickey_alias: "key-1"
 postgresql:
   jdbcUrl: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc
   auth:
@@ -73,6 +94,21 @@ vault:
     # this must be set through CLI args: --set vault.secrets=$YOUR_VAULT_SECRETS where YOUR_VAULT_SECRETS should
     # be a string in the format "key1:secret1;key2:secret2;..."
     secrets:
+
+  # the post-start object is still needed for the upgradeability test
+  # todo: remove this after 0.7.0 is released
+  server:
+    postStart:
+      - sh
+      - -c
+      - |-
+        {
+        sleep 5
+
+        /bin/vault kv put secret/client-secret content=kEmH7QRPWhKfy8f+x0pFMw==
+
+        /bin/vault kv put secret/aes-keys content=YWVzX2VuY2tleV90ZXN0Cg==
+        }
 backendService:
   httpProxyTokenReceiverUrl: "http://backend:8080"
 tests:

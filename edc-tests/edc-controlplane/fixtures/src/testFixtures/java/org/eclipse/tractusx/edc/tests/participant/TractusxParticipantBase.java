@@ -19,9 +19,11 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
+import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
+import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
 import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +37,11 @@ import java.util.Map;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
@@ -47,14 +53,16 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public static final String API_KEY = "testkey";
     public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
     private final URI backendProviderProxy = URI.create("http://localhost:" + getFreePort() + "/events");
-    private final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI dataPlanePublic = URI.create("http://localhost:" + getFreePort() + "/public");
 
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
+    protected ParticipantConsumerDataPlaneApi dataPlane;
+
     protected String did;
 
     public void createAsset(String id) {
@@ -121,6 +129,14 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return data;
     }
 
+
+    /**
+     * Returns the consumer data plane api for fetching data via consumer proxy
+     */
+    public ParticipantConsumerDataPlaneApi dataPlane() {
+        return dataPlane;
+    }
+
     /**
      * Stores BPN groups
      */
@@ -148,6 +164,24 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return did;
     }
 
+    public ValidatableResponse getCatalog(TractusxParticipantBase provider) {
+        var requestBodyBuilder = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "CatalogRequest")
+                .add("counterPartyId", provider.id)
+                .add("counterPartyAddress", provider.protocolEndpoint.getUrl().toString())
+                .add("protocol", protocol);
+
+
+        return managementEndpoint.baseRequest()
+                .contentType(JSON)
+                .when()
+                .body(requestBodyBuilder.build())
+                .post("/v2/catalog/request")
+                .then();
+
+    }
+
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
 
         protected Builder(P participant) {
@@ -172,6 +206,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
             this.participant.edrs = new ParticipantEdrApi(participant);
             this.participant.data = new ParticipantDataApi();
+            this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(new Endpoint(this.participant.dataPlaneProxy, Map.of("x-api-key", API_KEY)));
             return participant;
         }
     }

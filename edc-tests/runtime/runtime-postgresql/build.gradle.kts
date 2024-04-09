@@ -33,13 +33,16 @@ dependencies {
         exclude(module = "ssi-identity-extractor")
         exclude(module = "tx-iatp-sts-dim")
         exclude(group = "org.eclipse.edc", "vault-hashicorp")
+        exclude(module = "tx-iatp")
+        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
     implementation(project(":edc-tests:runtime:extensions"))
 
     // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
         exclude("org.eclipse.edc", "api-observability")
+        exclude(group = "org.eclipse.edc", "vault-hashicorp")
     }
 
     implementation(libs.edc.core.controlplane)
