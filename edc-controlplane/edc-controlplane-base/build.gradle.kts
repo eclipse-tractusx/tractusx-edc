@@ -37,6 +37,8 @@ dependencies {
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))
+    // Credentials CX policies
+    runtimeOnly(project(":edc-extensions:cx-policy"))
 
     // needed for IATP integration
     runtimeOnly(project(":core:json-ld-core"))
