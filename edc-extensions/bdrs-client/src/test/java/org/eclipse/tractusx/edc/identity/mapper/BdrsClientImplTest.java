@@ -23,8 +23,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
+import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,22 +42,34 @@ import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.verify.VerificationTimes.exactly;
+import static org.mockserver.verify.VerificationTimes.never;
 
 class BdrsClientImplTest {
 
     private final Monitor monitor = mock();
     private final ObjectMapper mapper = new ObjectMapper();
+    private final SecureTokenService stsMock = mock();
+    private final CredentialServiceClient csMock = mock();
     private BdrsClientImpl client;
     private ClientAndServer bdrsServer;
 
@@ -65,7 +84,20 @@ class BdrsClientImplTest {
                         .withBody(createGzipStream())
                         .withStatusCode(200));
 
-        client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1, new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor), monitor, mapper);
+        client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1,
+                "did:web:self",
+                "http://credential.service",
+                new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor),
+                monitor,
+                mapper,
+                stsMock,
+                csMock);
+
+        // prime STS and CS
+        when(stsMock.createToken(anyMap(), notNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("my-fancy-sitoken").build()));
+        when(csMock.requestPresentation(anyString(), anyString(), anyList()))
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer("test-raw-vp", CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
+
     }
 
     @AfterEach
@@ -137,6 +169,53 @@ class BdrsClientImplTest {
         bdrsServer.when(request().withPath("/api/bpn-directory").withMethod("GET"))
                 .respond(HttpResponse.response().withStatusCode(code));
         assertThatThrownBy(() -> client.resolve("bpn1")).isInstanceOf(EdcException.class);
+    }
+
+    @Test
+    void getData_whenStsFails() {
+        when(stsMock.createToken(anyMap(), notNull())).thenReturn(Result.failure("test-failure"));
+        assertThatThrownBy(() -> client.resolve("bpn1"))
+                .isInstanceOf(EdcException.class)
+                .hasMessage("test-failure");
+        bdrsServer.verify(request(), never());
+    }
+
+    @Test
+    void getData_whenPresentationQueryFails() {
+        when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.failure("test-failure"));
+
+        assertThatThrownBy(() -> client.resolve("bpn1"))
+                .isInstanceOf(EdcException.class)
+                .hasMessage("test-failure");
+        bdrsServer.verify(request(), never());
+    }
+
+    @Test
+    void getData_whenPresentationQueryReturnsTooManyVps() {
+        var presentations = List.of(
+                new VerifiablePresentationContainer("test-raw-vp-1", CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()),
+                new VerifiablePresentationContainer("test-raw-vp-2", CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()));
+
+        when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.success(presentations));
+
+        assertThatNoException().isThrownBy(() -> client.resolve("bpn1"));
+        bdrsServer.verify(request()
+                        .withMethod("GET")
+                        .withPath("/api/bpn-directory")
+                        .withHeader("Accept-Encoding", "gzip"),
+                exactly(1));
+        verify(monitor).warning("Expected exactly 1 VP, but found 2.");
+    }
+
+    @Test
+    void getData_whenPresentationQueryReturnsEmpty() {
+
+        when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.success(Collections.emptyList()));
+
+        assertThatThrownBy(() -> client.resolve("bpn1"))
+                .isInstanceOf(EdcException.class)
+                .hasMessage("Expected exactly 1 VP, but was empty");
+        bdrsServer.verify(request(), never());
     }
 
     private byte[] createGzipStream() {

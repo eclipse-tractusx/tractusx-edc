@@ -61,7 +61,7 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
     private String getOwnDid(ServiceExtensionContext context) {
         var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
         if (did == null) {
-            RequiredConfigWarnings.warningNotPresent(context.getMonitor().withPrefix("Token Refresh Handler"), PARTICIPANT_DID_PROPERTY);
+            RequiredConfigWarnings.missingMandatoryProperty(context.getMonitor().withPrefix("Token Refresh Handler"), PARTICIPANT_DID_PROPERTY);
         }
         return did;
     }

@@ -23,17 +23,28 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Request;
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.TxIatpConstants;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
+
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.JWT_ID;
+import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
 
 /**
  * Holds a local cache of BPN-to-DID mapping entries.
@@ -49,15 +60,31 @@ class BdrsClientImpl implements BdrsClient {
     private final Monitor monitor;
     private final ObjectMapper mapper;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final SecureTokenService secureTokenService;
+    private final String ownDid;
+    private final String ownCredentialServiceUrl;
+    private final CredentialServiceClient credentialServiceClient;
     private Map<String, String> cache = new HashMap<>();
     private Instant lastCacheUpdate;
 
-    BdrsClientImpl(String baseUrl, int cacheValidity, EdcHttpClient httpClient, Monitor monitor, ObjectMapper mapper) {
+    BdrsClientImpl(String baseUrl,
+                   int cacheValidity,
+                   String ownDid,
+                   String ownCredentialServiceUrl,
+                   EdcHttpClient httpClient,
+                   Monitor monitor,
+                   ObjectMapper mapper,
+                   SecureTokenService secureTokenService,
+                   CredentialServiceClient credentialServiceClient) {
         this.serverUrl = baseUrl;
         this.cacheValidity = cacheValidity;
         this.httpClient = httpClient;
         this.monitor = monitor;
         this.mapper = mapper;
+        this.secureTokenService = secureTokenService;
+        this.ownDid = ownDid;
+        this.ownCredentialServiceUrl = ownCredentialServiceUrl;
+        this.credentialServiceClient = credentialServiceClient;
     }
 
     @Override
@@ -70,7 +97,7 @@ class BdrsClientImpl implements BdrsClient {
                 lock.writeLock().lock();
                 try {
                     if (isCacheExpired()) {
-                        updateCache();
+                        updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
                     }
                 } finally {
                     lock.readLock().lock(); // downgrade lock
@@ -89,9 +116,14 @@ class BdrsClientImpl implements BdrsClient {
         return lastCacheUpdate == null || lastCacheUpdate.plus(cacheValidity, ChronoUnit.SECONDS).isBefore(Instant.now());
     }
 
-    private void updateCache() {
+    private Result<Void> updateCache() {
+        var membershipCredToken = createMembershipPresentation();
+        if (membershipCredToken.failed()) {
+            return membershipCredToken.mapTo();
+        }
+
         var request = new Request.Builder()
-                //.addHeader("Authorization", createMembershipPresentation()) //todo: add MembershipCredential as JWT-VP to the auth header
+                .addHeader("Authorization", membershipCredToken.getContent()) //todo: add MembershipCredential as JWT-VP to the auth header
                 .header("Accept-Encoding", "gzip")
                 .url(serverUrl + "/bpn-directory")
                 .get()
@@ -103,15 +135,39 @@ class BdrsClientImpl implements BdrsClient {
                     var bytes = gz.readAllBytes();
                     cache = mapper.readValue(bytes, MAP_REF);
                     lastCacheUpdate = Instant.now();
+                    return Result.success();
                 }
             } else {
                 var msg = "Could not obtain data from BDRS server: code: %d, message: %s".formatted(response.code(), response.message());
-                throw new EdcException(msg);
+                return Result.failure(msg);
             }
         } catch (IOException e) {
-            monitor.severe("Error fetching BDRS data", e);
-            throw new EdcException(e);
+            var msg = "Error fetching BDRS data";
+            monitor.severe(msg, e);
+            return Result.failure(msg);
         }
+    }
+
+    private Result<String> createMembershipPresentation() {
+        var claims = Map.of(
+                JWT_ID, UUID.randomUUID().toString(),
+                ISSUER, ownDid,
+                SUBJECT, ownDid,
+                AUDIENCE, ownDid
+        );
+        var scope = TxIatpConstants.DEFAULT_MEMBERSHIP_SCOPE;
+
+        return secureTokenService.createToken(claims, scope)
+                .compose(sit -> credentialServiceClient.requestPresentation(ownCredentialServiceUrl, sit.getToken(), List.of(scope)))
+                .compose(pres -> {
+                    if (pres.isEmpty()) {
+                        return Result.failure("Expected exactly 1 VP, but was empty");
+                    }
+                    if (pres.size() != 1) {
+                        monitor.warning("Expected exactly 1 VP, but found %d.".formatted(pres.size()));
+                    }
+                    return Result.success(pres.get(0).rawVp());
+                });
     }
 
 }
