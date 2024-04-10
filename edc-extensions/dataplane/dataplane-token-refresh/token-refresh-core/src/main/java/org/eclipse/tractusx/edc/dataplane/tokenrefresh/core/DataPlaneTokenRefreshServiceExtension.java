@@ -36,7 +36,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
-import org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +43,7 @@ import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.function.Supplier;
 
+import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceExtension.NAME;
 
 @Extension(value = NAME)
@@ -141,7 +141,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private String getOwnDid(ServiceExtensionContext context) {
         var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
         if (did == null) {
-            RequiredConfigWarnings.warningNotPresent(context.getMonitor().withPrefix("DataPlane Token Refresh"), PARTICIPANT_DID_PROPERTY);
+            missingMandatoryProperty(context.getMonitor().withPrefix("DataPlane Token Refresh"), PARTICIPANT_DID_PROPERTY);
         }
         return did;
     }

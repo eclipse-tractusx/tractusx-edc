@@ -23,7 +23,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 
 public class RequiredConfigWarnings {
 
-    public static void warningNotPresent(Monitor monitor, String missingConfig) {
+    public static void missingMandatoryProperty(Monitor monitor, String missingConfig) {
         monitor.severe("Mandatory config value missing: '%s'. This runtime will not be fully operational! Starting with v0.7.x this will be a runtime error.".formatted(missingConfig));
     }
 }
