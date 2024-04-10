@@ -85,6 +85,7 @@ edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", vers
 edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
+edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
 
 # EDC lib dependencies
 edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
