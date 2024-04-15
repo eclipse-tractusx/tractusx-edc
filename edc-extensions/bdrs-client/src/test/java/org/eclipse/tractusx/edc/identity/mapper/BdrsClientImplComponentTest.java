@@ -214,7 +214,7 @@ class BdrsClientImplComponentTest {
         var subdir = holderId.substring(holderId.indexOf(":") + 1) + "/";
         var tmpDir = new File(sharedTempDir.getAbsoluteFile(), subdir);
         if (!tmpDir.mkdirs()) {
-            fail("Could not create tmp directory");
+            fail("Could not create tmp directory at " + tmpDir);
         }
         var file = new File(tmpDir, "did.json");
         try (var fos = new FileOutputStream(file)) {
