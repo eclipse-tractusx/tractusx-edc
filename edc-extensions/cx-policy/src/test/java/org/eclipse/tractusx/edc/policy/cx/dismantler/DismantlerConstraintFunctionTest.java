@@ -38,6 +38,7 @@ import static org.eclipse.edc.policy.model.Operator.IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createDismantlerCredential;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPlainDismantlerCredential;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
@@ -102,6 +103,12 @@ class DismantlerConstraintFunctionTest {
         }
 
         @Test
+        void evaluate_eq_withoutNamespace() {
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Tatra", "Moskvich").build())));
+            assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", Operator.EQ, "active", null, context)).isTrue();
+        }
+
+        @Test
         void evaluate_eq_notSatisfied() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createPcfCredential().build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", Operator.EQ, "active", null, context)).isFalse();
@@ -145,6 +152,13 @@ class DismantlerConstraintFunctionTest {
         @Test
         void evaluate_eq_list() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Tatra", "Moskvich").build())));
+            assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Tatra", "Moskvich"), null, context)).isTrue();
+        }
+
+        @DisplayName("Constraint (list) must match credential EXACTLY")
+        @Test
+        void evaluate_eq_list_withoutNamespace() {
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createPlainDismantlerCredential("Tatra", "Moskvich").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Tatra", "Moskvich"), null, context)).isTrue();
         }
 
@@ -296,6 +310,13 @@ class DismantlerConstraintFunctionTest {
         @Test
         void evaluate_eq_list() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential(brands, "vehicleDismantle", "vehicleScrap").build())));
+            assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.activityType", Operator.EQ, List.of("vehicleDismantle", "vehicleScrap"), null, context)).isTrue();
+        }
+
+        @DisplayName("Constraint (list) must match credential EXACTLY")
+        @Test
+        void evaluate_eq_list_withoutNamespace() {
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createPlainDismantlerCredential(brands, "vehicleDismantle", "vehicleScrap").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.activityType", Operator.EQ, List.of("vehicleDismantle", "vehicleScrap"), null, context)).isTrue();
         }
 

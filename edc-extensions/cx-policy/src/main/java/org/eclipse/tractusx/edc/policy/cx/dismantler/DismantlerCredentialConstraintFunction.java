@@ -51,11 +51,11 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  */
 public class DismantlerCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
 
-    public static final String ALLOWED_VEHICLE_BRANDS = CX_CREDENTIAL_NS + "allowedVehicleBrands";
+    public static final String ALLOWED_VEHICLE_BRANDS_LITERAL = "allowedVehicleBrands";
     public static final String DISMANTLER_LITERAL = "Dismantler";
     // allows to encode multiple values in a single string in the right-operand. Policies don't handle list-type right-operands well.
     public static final String RIGHT_OPERAND_LIST_SEPARATOR = ",";
-    private static final String ALLOWED_ACTIVITIES = CX_CREDENTIAL_NS + "activityType";
+    private static final String ALLOWED_ACTIVITIES_LITERAL = "activityType";
 
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
@@ -97,10 +97,10 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
 
         } else if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL + ".activityType")) {
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
-            predicate = predicate.and(getCredentialPredicate(ALLOWED_ACTIVITIES, operator, rightOperand));
+            predicate = predicate.and(getCredentialPredicate(ALLOWED_ACTIVITIES_LITERAL, operator, rightOperand));
         } else if (leftOperand.equals(CX_POLICY_NS + DISMANTLER_LITERAL + ".allowedBrands")) {
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
-            predicate = predicate.and(getCredentialPredicate(ALLOWED_VEHICLE_BRANDS, operator, rightOperand));
+            predicate = predicate.and(getCredentialPredicate(ALLOWED_VEHICLE_BRANDS_LITERAL, operator, rightOperand));
         } else {
             context.reportProblem("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was '%s'".formatted(leftOperand));
             return false;
@@ -129,7 +129,7 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
         var allowedValues = getList(rightOperand);
         // the filter predicate is determined by the operator
         return credential -> credential.getCredentialSubject().stream().anyMatch(subject -> {
-            var claimsFromCredential = getList(subject.getClaims().getOrDefault(credentialSubjectProperty, List.of()));
+            var claimsFromCredential = getList(getClaimOrDefault(subject, CX_CREDENTIAL_NS, credentialSubjectProperty, List.of()));
             return switch (operator) {
                 case EQ -> claimsFromCredential.equals(allowedValues);
                 case NEQ -> !claimsFromCredential.equals(allowedValues);

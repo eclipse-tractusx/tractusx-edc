@@ -32,8 +32,8 @@ import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
 
 /**
  * Extract credentials from the policy constraints
@@ -108,6 +108,6 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     }
 
     private String capitalize(String input) {
-        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }

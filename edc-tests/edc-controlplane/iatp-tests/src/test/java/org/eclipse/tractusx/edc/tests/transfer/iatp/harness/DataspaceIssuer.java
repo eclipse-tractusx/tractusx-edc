@@ -77,7 +77,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return DATASPACE_ISSUER + "#" + getKeyId();
     }
 
-    public VerifiableCredentialResource issueCredential(String did, String bpn, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, Supplier<JsonObject> subjectSupplier) {
+    public VerifiableCredentialResource issueCredential(String did, String bpn, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObject subjectSupplier) {
         var credential = VerifiableCredential.Builder.newInstance()
                 .type(type)
                 .credentialSubject(credentialSubjectSupplier.get())
@@ -85,7 +85,8 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .issuanceDate(Instant.now())
                 .build();
 
-        var rawVc = createLdpVc(jsonLd, type, subjectSupplier);
+        var vcJson = createVc(didUrl(), type, subjectSupplier);
+        var rawVc = createLdpVc(jsonLd, vcJson);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
                 .participantId(did)
@@ -99,16 +100,17 @@ public class DataspaceIssuer extends IdentityParticipant {
         return issueCredential(did, bpn, jsonLd, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", bpn)
                         .build(),
-                () -> membershipSubject(did, bpn));
+                membershipSubject(did, bpn));
     }
 
     public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn, JsonLd jsonLd) {
         return issueCredential(did, bpn, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
+                        .id(did)
                         .claim("holderIdentifier", bpn)
                         .claim("activityType", "vehicleDismantle")
                         .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
                         .build(),
-                () -> Json.createObjectBuilder()
+                Json.createObjectBuilder()
                         .add("type", "DismantlerCredential")
                         .add("holderIdentifier", bpn)
                         .add("activityType", "vehicleDismantle")
@@ -121,7 +123,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return issueCredential(did, bpn, jsonLd, credentialType, () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", bpn)
                         .build(),
-                () -> frameworkAgreementSubject(did, bpn, credentialType));
+                frameworkAgreementSubject(did, bpn, credentialType));
 
     }
 
@@ -130,7 +132,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return verificationId();
     }
 
-    private String createLdpVc(JsonLd jsonLd, String type, Supplier<JsonObject> subjectSupplier) {
+    public String createLdpVc(JsonLd jsonLd, JsonObject verifiableCredential) {
         var issuer = LdpIssuer.Builder.newInstance()
                 .jsonLd(jsonLd)
                 .monitor(mock())
@@ -143,8 +145,7 @@ public class DataspaceIssuer extends IdentityParticipant {
 
         var key = getKeyPairAsJwk();
 
-        var vc = createVc(didUrl(), type, subjectSupplier);
-        var result = issuer.signDocument(vc, createKeyPair(key, verificationId()), proofOptions).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
+        var result = issuer.signDocument(verifiableCredential, createKeyPair(key, verificationId()), proofOptions).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
 
         try {
             return MAPPER.writeValueAsString(result);

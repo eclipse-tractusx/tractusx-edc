@@ -17,18 +17,38 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp;
+package org.eclipse.tractusx.edc.tests;
 
-import java.util.Set;
+import io.restassured.http.ContentType;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 
-import static java.lang.String.format;
+import java.util.Map;
 
-public interface TxIatpConstants {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    String CREDENTIAL_TYPE_NAMESPACE = "org.eclipse.tractusx.vc.type";
-    String DEFAULT_CREDENTIAL = "MembershipCredential";
-    String READ_OPERATION = "read";
-    String DEFAULT_MEMBERSHIP_SCOPE = format("%s:%s:%s", CREDENTIAL_TYPE_NAMESPACE, DEFAULT_CREDENTIAL, READ_OPERATION);
-    Set<String> DEFAULT_SCOPES = Set.of(DEFAULT_MEMBERSHIP_SCOPE);
+
+/**
+ * E2E test helper for fetching the data
+ */
+public class ParticipantConsumerDataPlaneApi {
+
+
+    private final Participant.Endpoint dataPlaneProxy;
+
+    public ParticipantConsumerDataPlaneApi(Participant.Endpoint dataPlaneProxy) {
+
+        this.dataPlaneProxy = dataPlaneProxy;
+    }
+
+
+    public String pullData(Map<String, String> body) {
+        var response = dataPlaneProxy.baseRequest()
+                .body(body)
+                .contentType(ContentType.JSON)
+                .post("/proxy/aas/request");
+
+        assertThat(response.statusCode()).isBetween(200, 300);
+        return response.body().asString();
+    }
 
 }

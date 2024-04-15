@@ -51,12 +51,51 @@ public class CredentialFunctions {
                         .build());
     }
 
+    public static VerifiableCredential.Builder createPlainFrameworkCredential(String type, String version) {
+        return VerifiableCredential.Builder.newInstance()
+                .types(List.of("VerifiableCredential", type))
+                .id(UUID.randomUUID().toString())
+                .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
+                .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id("subject-id")
+                        .claim("holderIdentifier", "did:web:holder")
+                        .claim("contractVersion", version)
+                        .claim("contractTemplate", "https://public.catena-x.org/contracts/pcf.v1.pdf")
+                        .build());
+    }
+
     public static VerifiableCredential.Builder createPcfCredential() {
         return createCredential("PcfCredential", "1.0.0");
     }
 
+    public static VerifiableCredential.Builder createPlainPcfCredential() {
+        return createPlainFrameworkCredential("PcfCredential", "1.0.0");
+    }
+
     public static VerifiableCredential.Builder createDismantlerCredential(String... brands) {
         return createDismantlerCredential(Arrays.asList(brands), "vehicleDismantle");
+    }
+
+    public static VerifiableCredential.Builder createPlainDismantlerCredential(String... brands) {
+        return createPlainDismantlerCredential(Arrays.asList(brands), "vehicleDismantle");
+    }
+
+    public static VerifiableCredential.Builder createPlainDismantlerCredential(Collection<String> brands, String... activityType) {
+        var at = activityType.length == 1 ? activityType[0] : List.of(activityType);
+        return VerifiableCredential.Builder.newInstance()
+                .types(List.of("VerifiableCredential", "DismantlerCredential"))
+                .id(UUID.randomUUID().toString())
+                .issuer(new Issuer(UUID.randomUUID().toString(), Map.of("prop1", "val1")))
+                .expirationDate(Instant.now().plus(365, ChronoUnit.DAYS))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id("subject-id")
+                        .claim("holderIdentifier", "did:web:holder")
+                        .claim("allowedVehicleBrands", brands)
+                        .claim("activityType", at)
+                        .build());
     }
 
     public static VerifiableCredential.Builder createDismantlerCredential(Collection<String> brands, String... activityType) {

@@ -23,6 +23,7 @@ import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
  */
 public class DimDispatcher extends Dispatcher {
 
-    private static final TypeManager MAPPER = new TypeManager();
+    private static final TypeManager MAPPER = new JacksonTypeManager();
     private final String path;
     private final Map<String, EmbeddedSecureTokenService> secureTokenServices;
 

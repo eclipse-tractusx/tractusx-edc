@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.iam.TokenParameters;
@@ -39,7 +40,7 @@ public class MockBpnIdentityService implements IdentityService {
 
     private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";
     private final String businessPartnerNumber;
-    private final TypeManager typeManager = new TypeManager();
+    private final TypeManager typeManager = new JacksonTypeManager();
 
     public MockBpnIdentityService(String businessPartnerNumber) {
         this.businessPartnerNumber = businessPartnerNumber;

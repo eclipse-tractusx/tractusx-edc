@@ -2,14 +2,14 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.1-20240405-SNAPSHOT"
+edc = "0.6.1"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.0"
-aws = "2.25.21"
+aws = "2.25.26"
 azure-identity = "1.11.4"
-bouncyCastle-jdk18on = "1.77"
-flyway = "10.10.0"
+bouncyCastle-jdk18on = "1.78"
+flyway = "10.11.0"
 jackson = "2.17.0"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
@@ -22,7 +22,7 @@ restAssured = "5.4.0"
 rsApi = "3.1.0"
 slf4j = "2.0.12"
 testcontainers = "1.19.7"
-tink = "1.12.0"
+tink = "1.13.0"
 titanium = "1.4.0"
 
 [libraries]
@@ -37,6 +37,7 @@ edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasou
 edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-client", version.ref = "edc" }
+edc-spi-boot = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
@@ -64,6 +65,7 @@ edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", vers
 edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
+edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
@@ -84,6 +86,7 @@ edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", vers
 edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
+edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
 
 # EDC lib dependencies
 edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
@@ -136,6 +139,7 @@ edc-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "ed
 edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", version.ref = "edc" }
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
+edc-identity-trust-service = { module = "org.eclipse.edc:identity-trust-service", version.ref = "edc" }
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
 edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-trust-issuers-configuration", version.ref = "edc" }
 

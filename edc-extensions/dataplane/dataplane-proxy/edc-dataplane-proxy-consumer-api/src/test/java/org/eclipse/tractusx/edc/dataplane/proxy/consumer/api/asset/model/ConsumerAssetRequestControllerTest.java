@@ -29,6 +29,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -41,9 +42,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,6 +65,7 @@ import static org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.Consum
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,7 +101,43 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         when(datasource.openPartStream()).thenReturn(StreamResult.success(Stream.of(partStream)));
         when(partStream.openStream()).thenReturn(new ByteArrayInputStream(responseBytes));
 
-        when(edrService.query(any())).thenReturn(ServiceResult.success(List.of(edrEntry(assetId, transferProcessId))));
+        when(edrService.query(argThat(queryContainsFilter("assetId")))).thenReturn(ServiceResult.success(List.of(edrEntry(assetId, transferProcessId))));
+        when(edrService.resolveByTransferProcess(transferProcessId, AUTO_REFRESH)).thenReturn(ServiceResult.success(edr()));
+        when(pipelineService.transfer(any(), any()))
+                .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
+
+        var proxyResponseBytes = baseRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .post(ASSET_REQUEST_PATH)
+                .then()
+                .statusCode(200)
+                .extract().body().asByteArray();
+
+        var proxyResponse = mapper.readValue(proxyResponseBytes, new TypeReference<Map<String, String>>() {
+        });
+
+        assertThat(proxyResponse).containsAllEntriesOf(response);
+    }
+
+    @Test
+    void requestAsset_shouldReturnData_withAssetIdAndProviderId() throws IOException {
+
+        var assetId = "assetId";
+        var transferProcessId = "tp";
+        var providerId = "providerId";
+        var request = Map.of("assetId", assetId, "providerId", providerId);
+
+        var response = Map.of("response", "ok");
+        var responseBytes = mapper.writeValueAsBytes(response);
+
+        var datasource = mock(DataSource.class);
+        var partStream = mock(DataSource.Part.class);
+
+        when(datasource.openPartStream()).thenReturn(StreamResult.success(Stream.of(partStream)));
+        when(partStream.openStream()).thenReturn(new ByteArrayInputStream(responseBytes));
+
+        when(edrService.query(argThat(queryContainsFilter("assetId", "providerId")))).thenReturn(ServiceResult.success(List.of(edrEntry(assetId, transferProcessId, providerId))));
         when(edrService.resolveByTransferProcess(transferProcessId, AUTO_REFRESH)).thenReturn(ServiceResult.success(edr()));
         when(pipelineService.transfer(any(), any()))
                 .thenAnswer(a -> CompletableFuture.completedFuture(StreamResult.success(response)));
@@ -283,6 +323,10 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         return new ClientErrorExceptionMapper();
     }
 
+    private ArgumentMatcher<QuerySpec> queryContainsFilter(String... fields) {
+        return (querySpec -> Arrays.stream(fields).allMatch(querySpec::containsAnyLeftOperand));
+    }
+
     private DataAddress edr() {
         return edr(null);
     }
@@ -296,14 +340,18 @@ public class ConsumerAssetRequestControllerTest extends RestControllerTestBase {
         return edrEntry(assetId, UUID.randomUUID().toString());
     }
 
-    private EndpointDataReferenceEntry edrEntry(String assetId, String transferProcessId) {
+    private EndpointDataReferenceEntry edrEntry(String assetId, String transferProcessId, String providerId) {
         return EndpointDataReferenceEntry.Builder.newInstance()
                 .assetId(assetId)
                 .transferProcessId(transferProcessId)
                 .contractNegotiationId(UUID.randomUUID().toString())
                 .agreementId(UUID.randomUUID().toString())
-                .providerId(UUID.randomUUID().toString())
+                .providerId(providerId)
                 .build();
+    }
+
+    private EndpointDataReferenceEntry edrEntry(String assetId, String transferProcessId) {
+        return edrEntry(assetId, transferProcessId, UUID.randomUUID().toString());
     }
 
     private RequestSpecification baseRequest() {

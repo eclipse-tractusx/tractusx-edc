@@ -1,35 +1,37 @@
 # tractusx-connector-memory
 
-![Version: 0.7.0-rc1](https://img.shields.io/badge/Version-0.7.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0-rc1](https://img.shields.io/badge/AppVersion-0.7.0--rc1-informational?style=flat-square)
+![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0](https://img.shields.io/badge/AppVersion-0.7.0-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
 **Homepage:** <https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory>
 
-## Setting up SSI
+## Setting up IATP
 
 ### Preconditions
 
-- the [Managed Identity Walled (MIW)](https://github.com/eclipse-tractusx/managed-identity-wallet) must be running and reachable via network
-- the necessary set of VerifiableCredentials for this participant must be pushed to MIW. This is typically done by the
+- You'll need an account with DIM, the wallet for VerifiableCredentials
+- the necessary set of VerifiableCredentials for this participant must already be issued to your DIM tenant. This is typically done by the
   Portal during participant onboarding
-- KeyCloak must be running and reachable via network
-- an account with KeyCloak must be created for this BPN and the connector must be able to obtain access tokens
 - the client ID and client secret corresponding to that account must be known
 
 ### Preparatory work
 
-- store your KeyCloak client secret in the HashiCorp vault. The exact procedure will depend on your deployment of HashiCorp Vault and
-  is out of scope of this document. But by default, Tractus-X EDC expects to find the secret under `secret/client-secret`.
+- store client secret in the HashiCorp vault using an alias. The exact procedure will depend on your deployment of HashiCorp Vault and
+  is out of scope of this document. But by default, Tractus-X EDC expects to find the secret under `secret/client-secret`. The alias must be configured
+  using the `iatp.sts.oauth.client.secret_alias` Helm value.
 
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
-- `runtime.ssi.miw.url`: the URL
-- `runtime.ssi.miw.authorityId`: the BPN of the issuer authority
-- `runtime.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
-- `runtime.ssi.oauth.client.id`: client ID for KeyCloak
-- `runtime.ssi.oauth.client.secretAlias`: the alias under which the client secret is stored in the vault. Defaults to `client-secret`.
+- `iatp.sts.oauth.token_url`: the token endpoint of DIM
+- `iatp.sts.oauth.client.id`: the client ID of your tenant in DIM
+- `iatp.sts.oauth.client.secret_alias`: alias under which you saved your DIM client secret in the vault
+- `iatp.sts.dim.url`: the base URL for DIM
+
+In addition, in order to map BPNs to DIDs, a new service is required, called the BPN-DID Resolution Service, which
+must be configured:
+- `controlplane.bdrs.server.url`: base URL of the BPN-DID Resolution Service ("BDRS")
 
 ### Launching the application
 
@@ -39,7 +41,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.0-rc1 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.0 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```

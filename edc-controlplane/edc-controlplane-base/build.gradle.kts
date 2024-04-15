@@ -33,10 +33,12 @@ dependencies {
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)
     runtimeOnly(libs.edc.dpf.transfer.signaling)
-
+    runtimeOnly(libs.edc.controlplane.callback.staticendpoint)
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))
+    // Credentials CX policies
+    runtimeOnly(project(":edc-extensions:cx-policy"))
 
     // needed for IATP integration
     runtimeOnly(project(":core:json-ld-core"))

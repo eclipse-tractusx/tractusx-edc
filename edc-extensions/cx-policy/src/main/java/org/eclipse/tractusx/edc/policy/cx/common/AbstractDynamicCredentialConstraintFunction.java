@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.common;
 
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
@@ -29,6 +30,7 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This is a base class for dynamically bound Tractus-X constraint evaluation functions that implements some basic common functionality and defines some
@@ -77,4 +79,9 @@ public abstract class AbstractDynamicCredentialConstraintFunction implements Dyn
         return Result.success(vcList);
     }
 
+    protected Object getClaimOrDefault(CredentialSubject subject, String namespace, String property, Object def) {
+        return Optional.ofNullable(subject.getClaims().get(namespace + property))
+                .or(() -> Optional.ofNullable(subject.getClaims().get(property)))
+                .orElse(def);
+    }
 }

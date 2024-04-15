@@ -27,7 +27,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.warningNotPresent;
+import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
 
 /**
  * Configuration Extension for the STS OAuth2 client
@@ -62,13 +62,13 @@ public class DimStsConfigurationExtension implements ServiceExtension {
 
         var monitor = context.getMonitor().withPrefix("STS Client for DIM");
         if (tokenUrl == null) {
-            warningNotPresent(monitor, TOKEN_URL);
+            missingMandatoryProperty(monitor, TOKEN_URL);
         }
         if (clientId == null) {
-            warningNotPresent(monitor, CLIENT_ID);
+            missingMandatoryProperty(monitor, CLIENT_ID);
         }
         if (clientSecretAlias == null) {
-            warningNotPresent(monitor, CLIENT_SECRET_ALIAS);
+            missingMandatoryProperty(monitor, CLIENT_SECRET_ALIAS);
         }
 
         return new StsRemoteClientConfiguration(tokenUrl, clientId, clientSecretAlias);

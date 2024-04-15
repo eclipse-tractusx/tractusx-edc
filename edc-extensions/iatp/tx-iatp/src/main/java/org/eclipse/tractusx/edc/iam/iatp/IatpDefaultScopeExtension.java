@@ -33,8 +33,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
-import static org.eclipse.tractusx.edc.iam.iatp.TxIatpConstants.DEFAULT_SCOPES;
 
 @Extension(NAME)
 public class IatpDefaultScopeExtension implements ServiceExtension {

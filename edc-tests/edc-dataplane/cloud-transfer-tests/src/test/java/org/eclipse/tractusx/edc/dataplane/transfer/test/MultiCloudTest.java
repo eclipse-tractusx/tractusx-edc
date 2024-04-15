@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
@@ -44,7 +45,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayDeque;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +59,7 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_KEY_ALIAS;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
@@ -115,18 +120,70 @@ public class MultiCloudTest {
     }
 
     @Test
-    void transferFile_azureToS3() {
-        // create container in Azure Blob, upload file
-        var bcc = blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
-        blobStoreHelper.uploadBlob(bcc, TESTFILE_NAME);
+    void transferFile_azureToS3MultipleFiles() {
+        var sourceContainer = blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
+        var filesNames = new ArrayDeque<String>();
+
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+        var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
+        fileNames.forEach(filename -> blobStoreHelper.uploadBlob(sourceContainer, fileData, filename));
+
         DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, BLOB_ACCOUNT_KEY);
 
-        // create target bucket in S3
+        var destinationBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
+        assertThat(destinationBucket.sdkHttpResponse().isSuccessful()).isTrue();
+
+        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
+                .id("test-request-multiple")
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type("AzureStorage")
+                        .property("container", BLOB_CONTAINER_NAME)
+                        .property("account", BLOB_ACCOUNT_NAME)
+                        .property("blobPrefix", PREFIX_FOR_MUTIPLE_FILES)
+                        .property("keyName", BLOB_KEY_ALIAS)
+                        .build()
+                )
+                .destinationDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .property(S3BucketSchema.REGION, REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
+                        .build()
+                )
+                .processId("test-request-multiple")
+                .build();
+
+
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+        given().when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(dataFlowRequest)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(200);
+
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(60))
+                .untilAsserted(() -> assertThat(listObjects(s3Client, BUCKET_NAME))
+                        .isNotEmpty()
+                        .containsAll(filesNames));
+    }
+
+    @Test
+    void transferFile_azureToS3() {
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+        var sourceContainer = blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
+        blobStoreHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
+        DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, BLOB_ACCOUNT_KEY);
+
         var r = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
         assertThat(r.sdkHttpResponse().isSuccessful()).isTrue();
 
-        // create data flow request
-        var dfr = DataFlowStartMessage.Builder.newInstance()
+        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type("AzureStorage")
@@ -153,10 +210,9 @@ public class MultiCloudTest {
         given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
-                .body(dfr)
+                .body(dataFlowRequest)
                 .post()
                 .then()
-                .log().ifValidationFails()
                 .log().ifError()
                 .statusCode(200);
 
@@ -167,24 +223,150 @@ public class MultiCloudTest {
                         .contains(TESTFILE_NAME));
     }
 
+
     @Test
-    void transferFile_s3ToAzure() {
-        // create source bucket in S3, upload file
-        var b1 = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
-        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
-        var putResponse = s3Client.putObject(PutObjectRequest.builder().bucket(BUCKET_NAME).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
-        assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
+    void transferFile_s3ToAzureMultipleFiles() {
+        var sourceBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
+        assertThat(sourceBucket.sdkHttpResponse().isSuccessful()).isTrue();
 
+        var putResponse = new AtomicBoolean(true);
+        var filesNames = new ArrayDeque<String>();
 
-        // create container in consumer's blob store
+        var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
+        fileNames.forEach(filename -> putResponse.set(s3Client.putObject(PutObjectRequest.builder()
+                        .bucket(BUCKET_NAME)
+                        .key(filename)
+                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
+                .sdkHttpResponse()
+                .isSuccessful() && putResponse.get()));
+        assertThat(putResponse.get()).isTrue();
+
         blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
         DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(blobStoreHelper.generateAccountSas(BLOB_CONTAINER_NAME)));
 
 
-        // create data flow request
-        var dfr = DataFlowStartMessage.Builder.newInstance()
+        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
+                .id("test-request")
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .property(S3BucketSchema.KEY_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
+                        .property(S3BucketSchema.REGION, REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
+                        .build()
+                )
+                .destinationDataAddress(
+                        DataAddress.Builder.newInstance()
+                                .type("AzureStorage")
+                                .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
+                                .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                                .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
+                                .build()
+                )
+                .processId("test-process-multiple-file-id")
+                .build();
+
+
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+        given().when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(dataFlowRequest)
+                .post()
+                .then()
+                .statusCode(200);
+
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(60))
+                .untilAsserted(() -> assertThat(blobStoreHelper.listBlobs(BLOB_CONTAINER_NAME))
+                        .isNotEmpty()
+                        .containsAll(filesNames));
+    }
+
+
+    @Test
+    void transferFile_s3ToAzureMultipleFiles_whenConsumerDefinesBloblName_success() {
+        var sourceBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
+        assertThat(sourceBucket.sdkHttpResponse().isSuccessful()).isTrue();
+
+        var putResponse = new AtomicBoolean(true);
+        var filesNames = new ArrayDeque<String>();
+
+        var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
+        fileNames.forEach(filename -> putResponse.set(s3Client.putObject(PutObjectRequest.builder()
+                        .bucket(BUCKET_NAME)
+                        .key(filename)
+                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
+                .sdkHttpResponse()
+                .isSuccessful() && putResponse.get()));
+
+        assertThat(putResponse.get()).isTrue();
+
+        blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
+        DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, """
+                {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
+                """.formatted(blobStoreHelper.generateAccountSas(BLOB_CONTAINER_NAME)));
+
+
+        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
+                .id("test-request")
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type(S3BucketSchema.TYPE)
+                        .property(S3BucketSchema.KEY_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
+                        .property(S3BucketSchema.REGION, REGION)
+                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
+                        .build()
+                )
+                .destinationDataAddress(
+                        DataAddress.Builder.newInstance()
+                                .type("AzureStorage")
+                                .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
+                                .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                                .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
+                                .property("blobName", "NOME_TEST")
+                                .build()
+                )
+                .processId("test-process-multiple-file-id")
+                .build();
+
+
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+        given().when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(dataFlowRequest)
+                .post()
+                .then()
+                .statusCode(200);
+
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(60))
+                .untilAsserted(() -> assertThat(blobStoreHelper.listBlobs(BLOB_CONTAINER_NAME))
+                        .isNotEmpty()
+                        .containsAll(filesNames));
+    }
+
+
+    @Test
+    void transferFile_s3ToAzure() {
+        var b1 = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
+        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
+        var putResponse = s3Client.putObject(PutObjectRequest.builder().bucket(BUCKET_NAME).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
+        assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
+
+        blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
+        DATAPLANE_RUNTIME.getVault().storeSecret(BLOB_KEY_ALIAS, """
+                {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
+                """.formatted(blobStoreHelper.generateAccountSas(BLOB_CONTAINER_NAME)));
+
+        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
@@ -204,7 +386,7 @@ public class MultiCloudTest {
         given().when()
                 .baseUri(url)
                 .contentType(ContentType.JSON)
-                .body(dfr)
+                .body(dataFlowRequest)
                 .post()
                 .then()
                 .statusCode(200);

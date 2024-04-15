@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,20 +15,20 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc;
 
-dependencies {
-    implementation(project(":edc-extensions:transferprocess-sftp-common"))
+import java.util.Set;
 
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.lib.policyengine)
-    implementation(libs.edc.spi.transfer)
+import static java.lang.String.format;
 
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.testcontainers.junit)
+public interface TxIatpConstants {
+
+    String CREDENTIAL_TYPE_NAMESPACE = "org.eclipse.tractusx.vc.type";
+    String DEFAULT_CREDENTIAL = "MembershipCredential";
+    String READ_OPERATION = "read";
+    String DEFAULT_MEMBERSHIP_SCOPE = format("%s:%s:%s", CREDENTIAL_TYPE_NAMESPACE, DEFAULT_CREDENTIAL, READ_OPERATION);
+    Set<String> DEFAULT_SCOPES = Set.of(DEFAULT_MEMBERSHIP_SCOPE);
+
 }

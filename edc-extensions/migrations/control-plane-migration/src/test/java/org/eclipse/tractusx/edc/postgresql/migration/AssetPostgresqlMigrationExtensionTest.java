@@ -22,8 +22,8 @@ package org.eclipse.tractusx.edc.postgresql.migration;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.store.sql.assetindex.SqlAssetIndex;
 import org.eclipse.edc.connector.controlplane.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.flywaydb.core.api.MigrationVersion;
@@ -44,7 +44,7 @@ class AssetPostgresqlMigrationExtensionTest {
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) {
         store = new SqlAssetIndex(extension.getDataSourceRegistry(), extension.getDatasourceName(),
-                extension.getTransactionContext(), new TypeManager().getMapper(), new PostgresDialectStatements(),
+                extension.getTransactionContext(), new JacksonTypeManager().getMapper(), new PostgresDialectStatements(),
                 queryExecutor);
     }
 

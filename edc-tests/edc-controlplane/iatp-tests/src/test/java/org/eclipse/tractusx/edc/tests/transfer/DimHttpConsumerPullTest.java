@@ -101,5 +101,13 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
         return participant::verificationId;
     }
 
+    @Override
+    protected IatpParticipantRuntime sokratesRuntime() {
+        return SOKRATES_RUNTIME;
+    }
 
+    @Override
+    protected IatpParticipantRuntime platoRuntime() {
+        return SOKRATES_RUNTIME;
+    }
 }

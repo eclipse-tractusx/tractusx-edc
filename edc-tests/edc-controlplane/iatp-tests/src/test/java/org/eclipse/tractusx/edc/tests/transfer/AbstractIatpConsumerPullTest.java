@@ -22,12 +22,24 @@ package org.eclipse.tractusx.edc.tests.transfer;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialStatus;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
+import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.store.CredentialStore;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StatusList2021;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,8 +47,9 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockserver.verify.VerificationTimes;
 
-import java.io.IOException;
 import java.net.URI;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,6 +68,10 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_N
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
+import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVcBuilder;
+import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.membershipSubject;
+import static org.hamcrest.Matchers.not;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -101,7 +118,6 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     public TractusxParticipantBase sokrates() {
         return SOKRATES;
     }
-
 
     @DisplayName("Contract policy is fulfilled")
     @ParameterizedTest(name = "{1}")
@@ -160,7 +176,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     @DisplayName("Contract policy is NOT fulfilled")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InvalidContractPolicyProvider.class)
-    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) throws IOException {
+    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) {
         var assetId = "api-asset-1";
 
         var authCodeHeaderName = "test-authkey";
@@ -189,10 +205,129 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 });
     }
 
+    @DisplayName("Expect the Catalog request to fail if a credential is expired")
+    @Test
+    void catalogRequest_whenCredentialExpired() {
+        //update the membership credential to an expirationDate that is in the past
+        var store = sokratesRuntime().getService(CredentialStore.class);
+        var jsonLd = sokratesRuntime().getService(JsonLd.class);
+
+        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
+                .stream().findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        var expirationDate = Instant.now().minus(1, ChronoUnit.DAYS);
+        var newCred = VerifiableCredential.Builder.newInstance()
+                .id(existingCred.getVerifiableCredential().credential().getId())
+                .types(existingCred.getVerifiableCredential().credential().getType())
+                .credentialSubjects(existingCred.getVerifiableCredential().credential().getCredentialSubject())
+                .issuer(existingCred.getVerifiableCredential().credential().getIssuer())
+                .issuanceDate(existingCred.getVerifiableCredential().credential().getIssuanceDate())
+                .expirationDate(expirationDate)
+                .build();
+
+        var did = SOKRATES.getDid();
+        var bpn = SOKRATES.getBpn();
+        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
+        newRawVc.add("expirationDate", expirationDate.toString());
+
+        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createLdpVc(jsonLd, newRawVc.build());
+
+        store.update(VerifiableCredentialResource.Builder.newInstance()
+                        .id(existingCred.getId())
+                        .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+                        .participantId(did)
+                        .holderId(bpn)
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JSON_LD, newCred))
+                        .build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+
+        // verify the failed catalog request
+        try {
+            SOKRATES.getCatalog(PLATO)
+                    .log().ifError()
+                    .statusCode(not(200));
+        } finally {
+            // restore the non-expired cred
+            store.update(existingCred);
+        }
+    }
+
+    @DisplayName("Expect the Catalog request to fail if a credential is revoked")
+    @Test
+    void catalogRequest_whenCredentialRevoked() {
+        //update the membership credential to contain a `credentialStatus` with a revocation
+        var store = sokratesRuntime().getService(CredentialStore.class);
+        var jsonLd = sokratesRuntime().getService(JsonLd.class);
+        var port = getFreePort();
+
+        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
+                .stream().findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        var newCred = VerifiableCredential.Builder.newInstance()
+                .id(existingCred.getVerifiableCredential().credential().getId())
+                .types(existingCred.getVerifiableCredential().credential().getType())
+                .credentialSubjects(existingCred.getVerifiableCredential().credential().getCredentialSubject())
+                .credentialStatus(new CredentialStatus("https://localhost:%s/status/list/7#12345".formatted(port), "StatusList2021",
+                        Map.of("statusPurpose", "revocation",
+                                "statusListIndex", "12345",
+                                "statusListCredential", "https://localhost:%d/status/list/7".formatted(port)
+                        )
+                ))
+                .issuer(existingCred.getVerifiableCredential().credential().getIssuer())
+                .issuanceDate(existingCred.getVerifiableCredential().credential().getIssuanceDate())
+                .build();
+
+        var did = SOKRATES.getDid();
+        var bpn = SOKRATES.getBpn();
+        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
+        newRawVc.add("credentialStatus", Json.createObjectBuilder()
+                .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
+                .add("type", "StatusList2021Entry")
+                .add("statusPurpose", "revocation")
+                .add("statusListIndex", "12345")
+                .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
+                .build());
+
+        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createLdpVc(jsonLd, newRawVc.build());
+
+        store.update(VerifiableCredentialResource.Builder.newInstance()
+                        .id(existingCred.getId())
+                        .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+                        .participantId(did)
+                        .holderId(bpn)
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JSON_LD, newCred))
+                        .build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        // return a StatusListCredential, where the credential's status is "revocation"
+        try (var revocationServer = startClientAndServer(port)) {
+            var slCred = StatusList2021.create(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "revocation")
+                    .withStatus(12345, true);
+            revocationServer.when(request().withPath("/status/list/7")).respond(response().withBody(slCred.toJsonObject().toString()));
+
+            // verify the failed catalog request
+            SOKRATES.getCatalog(PLATO)
+                    .log().ifValidationFails()
+                    .statusCode(not(200));
+        } finally {
+            // restore the original credential without credentialStatus
+            store.update(existingCred);
+        }
+    }
+
     @Override
     protected JsonObject createContractPolicy(String bpn) {
         return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
     }
+
+    protected abstract IatpParticipantRuntime sokratesRuntime();
+
+    protected abstract IatpParticipantRuntime platoRuntime();
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
         @Override
@@ -224,5 +359,4 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
             );
         }
     }
-
 }

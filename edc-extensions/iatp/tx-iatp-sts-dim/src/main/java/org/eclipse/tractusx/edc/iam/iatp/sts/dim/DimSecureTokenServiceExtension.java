@@ -33,7 +33,7 @@ import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.warningNotPresent;
+import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
 
 @Extension(DimSecureTokenServiceExtension.NAME)
 public class DimSecureTokenServiceExtension implements ServiceExtension {
@@ -70,7 +70,7 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
                 .orElse(null);
 
         if (dimUrl == null) {
-            warningNotPresent(context.getMonitor().withPrefix("STS Client for DIM"), DIM_URL);
+            missingMandatoryProperty(context.getMonitor().withPrefix("STS Client for DIM"), DIM_URL);
         }
 
         return new DimSecureTokenService(httpClient, dimUrl, dimOauth2Client, typeManager.getMapper(), monitor);

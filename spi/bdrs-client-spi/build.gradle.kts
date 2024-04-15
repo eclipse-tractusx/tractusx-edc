@@ -23,5 +23,5 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.spi.core)
+    implementation(libs.edc.runtime.metamodel)
 }
