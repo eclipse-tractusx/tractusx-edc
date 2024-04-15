@@ -29,6 +29,8 @@ import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
+import org.eclipse.edc.iam.did.spi.document.DidDocument;
+import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
@@ -40,26 +42,36 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockserver.integration.ClientAndServer;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Fail.fail;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -70,14 +82,18 @@ import static org.mockito.Mockito.when;
 /**
  * This test creates a {@link BdrsClientImpl} with all its collaborators (using an embedded STS), and spins up a
  * BDRS Server in a test container.
+ * In addition, this test generates DID documents for both the dataspace issuer and the VP holder, and launches an NGINX webserver
+ * which then hosts these DID documents, so that BDRS may resolve them.
  */
 @Testcontainers
 @ComponentTest
 class BdrsClientImplComponentTest {
-
-    public static final String TEST_VP_CONTENT = "test-raw-vp";
+    public static final String NGINX_CONTAINER_NAME = "nginx";
+    public static final String BDRS_CONTAINER_NAME = "bdrs";
+    private static final Network DOCKER_NETWORK = Network.newNetwork();
+    private static File sharedTempDir;
     @Container
-    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory")
+    private final GenericContainer<?> bdrsServerContainer = new GenericContainer<>("tractusx/bdrs-server-memory")
             .withEnv("EDC_API_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
@@ -85,22 +101,52 @@ class BdrsClientImplComponentTest {
             .withEnv("WEB_HTTP_PORT", "8080")
             .withEnv("WEB_HTTP_DIRECTORY_PATH", "/api/directory")
             .withEnv("WEB_HTTP_DIRECTORY_PORT", "8082")
+            .withEnv("EDC_IAM_DID_WEB_USE_HTTPS", "false")
+            .withEnv("EDC_IAM_TRUSTED-ISSUER_ISSUER_ID", "did:web:" + NGINX_CONTAINER_NAME + ":some-issuer")
+            .withNetwork(DOCKER_NETWORK)
+            .withCreateContainerCmdModifier(cmd -> cmd.withName(BDRS_CONTAINER_NAME))
             .withExposedPorts(8080, 8081, 8082);
+    @Container
+    private final GenericContainer<?> nginxContainer = new GenericContainer<>("nginx")
+            .withFileSystemBind(new File("src/test/resources/nginx.conf").getAbsolutePath(), "/etc/nginx/nginx.conf", BindMode.READ_ONLY)
+            .withFileSystemBind(sharedTempDir.getAbsolutePath(), "/var/www", BindMode.READ_ONLY)
+            .withNetwork(DOCKER_NETWORK)
+            .withCreateContainerCmdModifier(cmd -> cmd.withName(NGINX_CONTAINER_NAME))
+            .withExposedPorts(80);
     private final Monitor monitor = mock();
     private final ObjectMapper mapper = new ObjectMapper();
     private final CredentialServiceClient csMock = mock();
-    private final String issuerId = "did:web:some-issuer";
-    private final String holderId = "did:web:bdrs-client";
+    private String issuerId;
+    private String holderId;
     private BdrsClientImpl client;
     private ECKey vpHolderKey;
     private ECKey vcIssuerKey;
-    private ClientAndServer didServer;
+
+    @BeforeAll
+    static void prepare() throws IOException {
+        sharedTempDir = Files.createTempDirectory("junit_bdrs_", PosixFilePermissions.asFileAttribute(
+                        PosixFilePermissions.fromString("rwxrwxrwx")))
+                .toFile();
+    }
+
+    @AfterAll
+    static void cleanup() {
+        if (sharedTempDir.exists()) {
+            sharedTempDir.delete();
+        }
+    }
 
     @BeforeEach
     void setup() throws JOSEException {
 
         // need to wait until healthy, otherwise BDRS will respond with a 404
-        await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> assertThat(BDRS_SERVER_CONTAINER.isHealthy()).isTrue());
+        await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> assertThat(bdrsServerContainer.isHealthy()).isTrue());
+        var nginxPort = nginxContainer.getMappedPort(80);
+        var nginxHostname = nginxContainer.getContainerName().replace("/", "");
+
+        // need to generate DID such that they point to the nginx container
+        issuerId = "did:web:%s:some-issuer".formatted(nginxHostname);
+        holderId = "did:web:%s:bdrs-client".formatted(nginxHostname);
 
         vcIssuerKey = new ECKeyGenerator(Curve.P_256).keyID(issuerId + "#key-1").generate();
         vpHolderKey = new ECKeyGenerator(Curve.P_256).keyID(holderId + "#key-1").generate();
@@ -108,8 +154,8 @@ class BdrsClientImplComponentTest {
         var pk = vpHolderKey.toPrivateKey();
         var sts = new EmbeddedSecureTokenService(new JwtGenerationService(), () -> pk, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10);
 
-        var directoryPort = BDRS_SERVER_CONTAINER.getMappedPort(8082);
-        client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,
+        var directoryPort = bdrsServerContainer.getMappedPort(8082);
+        client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(bdrsServerContainer.getHost(), directoryPort), 1,
                 "did:web:self",
                 () -> "http://credential.service",
                 new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor),
@@ -119,8 +165,8 @@ class BdrsClientImplComponentTest {
                 csMock);
 
         // prepare a mock server hosting the VC issuer's DID and the VP holders DID
-        
-
+        createDidDocument(vcIssuerKey, issuerId);
+        createDidDocument(vpHolderKey, holderId);
     }
 
     @ParameterizedTest
@@ -136,6 +182,7 @@ class BdrsClientImplComponentTest {
 
     @Test
     void resolve_withValidCredential() {
+
         // create VC-JWT (signed by the central issuer)
         var vcJwt1 = JwtCreationUtils.createJwt(vcIssuerKey, issuerId, "degreeSub", holderId, Map.of("vc", asMap(TestData.MEMBERSHIP_CREDENTIAL.formatted(holderId))));
 
@@ -145,13 +192,38 @@ class BdrsClientImplComponentTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(vpJwt, CredentialFormat.JWT, null))));
 
-        client.resolve("BPN1");
+        assertThatNoException().describedAs(bdrsServerContainer::getLogs)
+                .isThrownBy(() -> client.resolve("BPN1"));
     }
 
     @AfterEach
     void teardown() {
     }
 
+    private String createDidDocument(ECKey vpHolderKey, String holderId) {
+        var didDocument = DidDocument.Builder.newInstance()
+                .id("http://tx-test.com/" + UUID.randomUUID())
+                .verificationMethod(List.of(VerificationMethod.Builder.newInstance()
+                        .id(vpHolderKey.getKeyID())
+                        .publicKeyJwk(vpHolderKey.toPublicJWK().toJSONObject())
+                        .controller(holderId)
+                        .type("JsonWebKey2020")
+                        .build()))
+                .build();
+        holderId = holderId.replace("did:web:", "");
+        var subdir = holderId.substring(holderId.indexOf(":") + 1) + "/";
+        var tmpDir = new File(sharedTempDir.getAbsoluteFile(), subdir);
+        if (!tmpDir.mkdirs()) {
+            fail("Could not create tmp directory");
+        }
+        var file = new File(tmpDir, "did.json");
+        try (var fos = new FileOutputStream(file)) {
+            mapper.writeValue(fos, didDocument);
+            return tmpDir.getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private byte[] createGzipStream() {
         var data = Map.of("bpn1", "did:web:did1",
