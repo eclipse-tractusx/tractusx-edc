@@ -105,6 +105,7 @@ public class DataspaceIssuer extends IdentityParticipant {
 
     public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn, JsonLd jsonLd) {
         return issueCredential(did, bpn, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
+                        .id(did)
                         .claim("holderIdentifier", bpn)
                         .claim("activityType", "vehicleDismantle")
                         .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))

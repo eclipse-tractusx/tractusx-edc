@@ -33,7 +33,7 @@ dependencies {
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)
     runtimeOnly(libs.edc.dpf.transfer.signaling)
-
+    runtimeOnly(libs.edc.controlplane.callback.staticendpoint)
 
     // needed for BPN validation
     runtimeOnly(project(":edc-extensions:bpn-validation"))

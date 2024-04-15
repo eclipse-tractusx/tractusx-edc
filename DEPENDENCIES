@@ -351,6 +351,7 @@ maven/mavencentral/org.eclipse.edc/boot-spi/0.6.1-SNAPSHOT, Apache-2.0, approved
 maven/mavencentral/org.eclipse.edc/boot/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-event-dispatcher/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-http-dispatcher/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/callback-static-endpoint/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-api/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/configuration-filesystem/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
