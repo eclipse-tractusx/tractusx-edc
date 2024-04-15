@@ -43,7 +43,7 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
                 put("edc.iam.sts.oauth.token.url", stsUri + "/token");
                 put("edc.iam.sts.oauth.client.id", stsClientId);
                 put("edc.iam.sts.oauth.client.secret.alias", "client_secret_alias");
-                put("edc.ih.iam.id", getBpn());
+                put("edc.ih.iam.id", getDid());
                 put("tx.vault.seed.secrets", "client_secret_alias:%s".formatted(stsClientSecret));
                 put("edc.ih.iam.publickey.alias", getFullKeyId());
                 put("edc.agent.identity.key", "client_id");

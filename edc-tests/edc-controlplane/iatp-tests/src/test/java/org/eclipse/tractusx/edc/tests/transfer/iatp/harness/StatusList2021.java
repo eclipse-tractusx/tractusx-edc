@@ -21,15 +21,15 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.statuslist.BitString;
+import org.eclipse.edc.spi.EdcException;
 
-import java.util.Base64;
-import java.util.BitSet;
 import java.util.List;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 
 public class StatusList2021 {
-    private final BitSet bitset = new BitSet(16 * 1024 * 8); //minimum size is 16KB
+    private final BitString bitString = BitString.Builder.newInstance().size(16 * 1024 * 8).build(); //minimum size is 16KB
     private final String issuer;
     private final String purpose;
 
@@ -43,7 +43,7 @@ public class StatusList2021 {
     }
 
     public StatusList2021 withStatus(int index, boolean status) {
-        bitset.set(index, status);
+        bitString.set(index, status);
         return this;
     }
 
@@ -67,7 +67,8 @@ public class StatusList2021 {
     }
 
     private String createEncodedList() {
-        var bytes = bitset.toByteArray();
-        return Base64.getUrlEncoder().encodeToString(bytes);
+        return BitString.Writer.newInstance()
+                .write(bitString)
+                .orElseThrow((f) -> new EdcException(f.getFailureDetail()));
     }
 }
