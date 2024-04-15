@@ -27,12 +27,14 @@
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
-- `controlplane.ssi.miw.url`: the URL
-- `controlplane.ssi.miw.authorityId`: the BPN of the issuer authority
-- `controlplane.ssi.oauth.tokenurl`: the URL (of KeyCloak), where access tokens can be obtained
-- `controlplane.ssi.oauth.client.id`: client ID for KeyCloak
-- `controlplane.ssi.oauth.client.secretAlias`: the alias under which the client secret is stored in the vault. Defaults to `client-secret`.
+- `iatp.sts.oauth.token_url`: the token endpoint of DIM
+- `iatp.sts.oauth.client.id`: the client ID of your tenant in DIM
+- `iatp.sts.oauth.client.secret_alias`: alias under which you saved your DIM client secret in the vault
+- `iatp.sts.dim.url`: the base URL for DIM
 
+In addition, in order to map BPNs to DIDs, a new service is required, called the BPN-DID Resolution Service, which
+must be configured:
+- `controlplane.bdrs.server.url`: base URL of the BPN-DID Resolution Service ("BDRS")
 
 ### Launching the application
 
