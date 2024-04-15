@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 
 public class KeycloakDispatcher extends Dispatcher {
 
-    private static final TypeManager MAPPER = new TypeManager();
+    private static final TypeManager MAPPER = new JacksonTypeManager();
     private final String path;
 
     public KeycloakDispatcher(String path) {

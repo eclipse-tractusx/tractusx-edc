@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ class AdditionalHeadersProvisionedResourceTest {
 
     @Test
     void serdes() {
-        var typeManager = new TypeManager();
+        var typeManager = new JacksonTypeManager();
         var resource =
                 AdditionalHeadersProvisionedResource.Builder.newInstance()
                         .id(UUID.randomUUID().toString())

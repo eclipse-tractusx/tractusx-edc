@@ -452,6 +452,7 @@ maven/mavencentral/org.eclipse.edc/jetty-micrometer/0.6.1-SNAPSHOT, Apache-2.0, 
 maven/mavencentral/org.eclipse.edc/json-ld-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/json-ld-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/json-ld/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/json-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/junit-base/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/junit/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jws2020-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
