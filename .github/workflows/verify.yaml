@@ -125,14 +125,14 @@ jobs:
 
       - name: Run E2E tests (${{ matrix.variant.dir }})
         run: |
-          ./gradlew compileJava compileTestJava
-          ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest"
+          ./gradlew compileJava compileTestJava --refresh-dependencies
+          ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" 
 
   postgres-tests:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:14.2
+        image: postgres:16.1
         ports:
           - 5432:5432
         env:
@@ -143,7 +143,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
-        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
+        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
 
   dataplane-tests:
     runs-on: ubuntu-latest
