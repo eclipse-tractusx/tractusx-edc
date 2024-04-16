@@ -28,7 +28,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:migrations::data-plane-migration"))
     implementation(libs.edc.azure.vault)
     constraints {
-        implementation("net.minidev:json-smart:2.5.0") {
+        implementation("net.minidev:json-smart:2.5.1") {
             because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
         }
     }
