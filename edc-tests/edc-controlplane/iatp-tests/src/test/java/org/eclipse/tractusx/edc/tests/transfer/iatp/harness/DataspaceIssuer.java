@@ -48,7 +48,6 @@ import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -181,12 +180,20 @@ public class DataspaceIssuer extends IdentityParticipant {
 
     private String signJwt(ECKey privateKey, String issuerId, String subject, String audience, Map<String, Object> claims) {
         try {
-            ECDSASigner signer = new ECDSASigner(privateKey.toECPrivateKey());
-            Date now = java.sql.Date.from(Instant.now());
-            JWTClaimsSet.Builder claimsSet = (new JWTClaimsSet.Builder()).issuer(issuerId).subject(subject).issueTime(now).audience(audience).notBeforeTime(now).claim("jti", UUID.randomUUID().toString()).expirationTime(java.sql.Date.from(Instant.now().plusSeconds(300L)));
+            var signer = new ECDSASigner(privateKey.toECPrivateKey());
+            var now = java.sql.Date.from(Instant.now());
+            var claimsSet = new JWTClaimsSet.Builder()
+                    .issuer(issuerId)
+                    .subject(subject)
+                    .issueTime(now)
+                    .audience(audience)
+                    .notBeforeTime(now)
+                    .claim("jti", UUID.randomUUID().toString())
+                    .expirationTime(java.sql.Date.from(Instant.now().plusSeconds(300L)));
+
             Objects.requireNonNull(claimsSet);
             claims.forEach(claimsSet::claim);
-            SignedJWT signedJwt = new SignedJWT((new JWSHeader.Builder(JWSAlgorithm.ES256)).keyID(privateKey.getKeyID()).build(), claimsSet.build());
+            var signedJwt = new SignedJWT((new JWSHeader.Builder(JWSAlgorithm.ES256)).keyID(privateKey.getKeyID()).build(), claimsSet.build());
             signedJwt.sign(signer);
             return signedJwt.serialize();
         } catch (JOSEException e) {
