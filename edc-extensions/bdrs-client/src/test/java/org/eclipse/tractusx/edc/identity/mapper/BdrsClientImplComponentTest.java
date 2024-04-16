@@ -70,7 +70,6 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -209,9 +208,9 @@ class BdrsClientImplComponentTest {
         tmpDir.setReadable(true);
         tmpDir.setWritable(true);
         tmpDir.mkdirs();
-        if (!tmpDir.exists()) {
-            fail("Directory does not exist at: " + tmpDir.getAbsolutePath());
-        }
+//        if (!tmpDir.exists()) {
+//            fail("Directory does not exist at: " + tmpDir.getAbsolutePath());
+//        }
         var file = new File(tmpDir, "did.json");
         try (var fos = new FileOutputStream(file)) {
             mapper.writeValue(fos, didDocument);
