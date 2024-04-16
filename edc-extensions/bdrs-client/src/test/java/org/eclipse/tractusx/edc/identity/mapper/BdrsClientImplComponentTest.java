@@ -47,6 +47,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.BindMode;
@@ -59,8 +61,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
@@ -71,9 +71,9 @@ import java.util.zip.GZIPOutputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Fail.fail;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -91,9 +91,8 @@ class BdrsClientImplComponentTest {
     public static final String NGINX_CONTAINER_NAME = "nginx";
     public static final String BDRS_CONTAINER_NAME = "bdrs";
     private static final Network DOCKER_NETWORK = Network.newNetwork();
-    private static File sharedTempDir;
     @Container
-    private final GenericContainer<?> bdrsServerContainer = new GenericContainer<>("tractusx/bdrs-server-memory")
+    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory")
             .withEnv("EDC_API_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
@@ -106,6 +105,8 @@ class BdrsClientImplComponentTest {
             .withNetwork(DOCKER_NETWORK)
             .withCreateContainerCmdModifier(cmd -> cmd.withName(BDRS_CONTAINER_NAME))
             .withExposedPorts(8080, 8081, 8082);
+    @TempDir(cleanup = CleanupMode.ALWAYS)
+    private static File sharedTempDir;
     @Container
     private final GenericContainer<?> nginxContainer = new GenericContainer<>("nginx")
             .withFileSystemBind(new File("src/test/resources/nginx.conf").getAbsolutePath(), "/etc/nginx/nginx.conf", BindMode.READ_ONLY)
@@ -124,9 +125,7 @@ class BdrsClientImplComponentTest {
 
     @BeforeAll
     static void prepare() throws IOException {
-        sharedTempDir = Files.createTempDirectory("junit_bdrs_", PosixFilePermissions.asFileAttribute(
-                        PosixFilePermissions.fromString("rwxrwxrwx")))
-                .toFile();
+        sharedTempDir = new File("build/dids");
     }
 
     @AfterAll
@@ -139,9 +138,6 @@ class BdrsClientImplComponentTest {
     @BeforeEach
     void setup() throws JOSEException {
 
-        // need to wait until healthy, otherwise BDRS will respond with a 404
-        await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> assertThat(bdrsServerContainer.isHealthy()).isTrue());
-        var nginxPort = nginxContainer.getMappedPort(80);
         var nginxHostname = nginxContainer.getContainerName().replace("/", "");
 
         // need to generate DID such that they point to the nginx container
@@ -154,8 +150,8 @@ class BdrsClientImplComponentTest {
         var pk = vpHolderKey.toPrivateKey();
         var sts = new EmbeddedSecureTokenService(new JwtGenerationService(), () -> pk, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10);
 
-        var directoryPort = bdrsServerContainer.getMappedPort(8082);
-        client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(bdrsServerContainer.getHost(), directoryPort), 1,
+        var directoryPort = BDRS_SERVER_CONTAINER.getMappedPort(8082);
+        client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,
                 "did:web:self",
                 () -> "http://credential.service",
                 new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor),
@@ -167,6 +163,12 @@ class BdrsClientImplComponentTest {
         // prepare a mock server hosting the VC issuer's DID and the VP holders DID
         createDidDocument(vcIssuerKey, issuerId);
         createDidDocument(vpHolderKey, holderId);
+
+        // need to wait until healthy, otherwise BDRS will respond with a 404
+        await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {
+            assertThat(BDRS_SERVER_CONTAINER.isHealthy()).isTrue();
+            assertThat(nginxContainer.isRunning()).isTrue();
+        });
     }
 
     @ParameterizedTest
@@ -192,7 +194,7 @@ class BdrsClientImplComponentTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(vpJwt, CredentialFormat.JWT, null))));
 
-        assertThatNoException().describedAs(bdrsServerContainer::getLogs)
+        assertThatNoException().describedAs(BDRS_SERVER_CONTAINER::getLogs)
                 .isThrownBy(() -> client.resolve("BPN1"));
     }
 
@@ -213,8 +215,11 @@ class BdrsClientImplComponentTest {
         holderId = holderId.replace("did:web:", "");
         var subdir = holderId.substring(holderId.indexOf(":") + 1) + "/";
         var tmpDir = new File(sharedTempDir.getAbsoluteFile(), subdir);
-        if (!tmpDir.mkdirs()) {
-            fail("Could not create tmp directory at " + tmpDir);
+        tmpDir.setReadable(true);
+        tmpDir.setWritable(true);
+        tmpDir.mkdirs();
+        if (!tmpDir.exists()) {
+            fail("Directory does not exist at: " + tmpDir.getAbsolutePath());
         }
         var file = new File(tmpDir, "did.json");
         try (var fos = new FileOutputStream(file)) {
