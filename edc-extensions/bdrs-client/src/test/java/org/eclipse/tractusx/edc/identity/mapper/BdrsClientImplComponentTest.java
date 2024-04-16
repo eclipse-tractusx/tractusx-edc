@@ -23,7 +23,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
@@ -37,7 +44,6 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.token.JwtGenerationService;
-import org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,16 +58,21 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Date;
 import java.text.ParseException;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils.createJwt;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -152,19 +163,100 @@ class BdrsClientImplComponentTest {
     }
 
     @Test
+    void resolve_withSpoofedCredential() throws JOSEException {
+        var spoofedKey = new ECKeyGenerator(Curve.P_256).keyID("did:web:nginx:%s#key-1".formatted(ISSUER_NAME)).generate();
+
+        // create VC-JWT (signed by the central issuer)
+        var membershipCredential = createJwt(spoofedKey, ISSUER_DID, "membership", HOLDER_DID, Map.of("vc", asMap(TestData.MEMBERSHIP_CREDENTIAL.formatted(HOLDER_DID))));
+
+        // create VP-JWT (signed by the presenter) that contains the VP as a claim
+        var presentation = createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
+
+        when(csMock.requestPresentation(anyString(), anyString(), anyList()))
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+
+        assertThatThrownBy(() -> client.resolve("BPN1"))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("code: 401, message: Unauthorized");
+    }
+
+    @Test
+    void resolve_withSpoofedPresentation() throws JOSEException {
+        var spoofedKey = new ECKeyGenerator(Curve.P_256).keyID("did:web:nginx:%s#key-1".formatted(ISSUER_NAME)).generate();
+
+        // create VC-JWT (signed by the central issuer)
+        var membershipCredential = createJwt(vcIssuerKey, ISSUER_DID, "membership", HOLDER_DID, Map.of("vc", asMap(TestData.MEMBERSHIP_CREDENTIAL.formatted(HOLDER_DID))));
+
+        // create VP-JWT (signed by the presenter) that contains the VP as a claim
+        var presentation = createJwt(spoofedKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
+
+        when(csMock.requestPresentation(anyString(), anyString(), anyList()))
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+
+        assertThatThrownBy(() -> client.resolve("BPN1"))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("code: 401, message: Unauthorized");
+    }
+
+    @Test
     void resolve_withValidCredential() {
 
         // create VC-JWT (signed by the central issuer)
-        var vcJwt1 = JwtCreationUtils.createJwt(vcIssuerKey, ISSUER_DID, "degreeSub", HOLDER_DID, Map.of("vc", asMap(TestData.MEMBERSHIP_CREDENTIAL.formatted(HOLDER_DID))));
+        var membershipCredential = createJwt(vcIssuerKey, ISSUER_DID, "membership", HOLDER_DID, Map.of("vc", asMap(TestData.MEMBERSHIP_CREDENTIAL.formatted(HOLDER_DID))));
 
         // create VP-JWT (signed by the presenter) that contains the VP as a claim
-        var vpJwt = JwtCreationUtils.createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + vcJwt1 + "\""))));
+        var presentation = createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(vpJwt, CredentialFormat.JWT, null))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
 
         assertThatNoException().describedAs(BDRS_SERVER_CONTAINER::getLogs)
                 .isThrownBy(() -> client.resolve("BPN1"));
+    }
+
+
+    @Test
+    void resolve_withExpiredMembership() {
+
+        // create VC-JWT (signed by the central issuer)
+        var membershipCredential = createExpiredJwt(vcIssuerKey, ISSUER_DID, "membership", HOLDER_DID, Map.of("vc", asMap(TestData.MEMBERSHIP_CREDENTIAL_EXPIRED.formatted(HOLDER_DID))));
+
+        // create VP-JWT (signed by the presenter) that contains the VP as a claim
+        var presentation = createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
+
+        when(csMock.requestPresentation(anyString(), anyString(), anyList()))
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+
+        assertThatThrownBy(() -> client.resolve("BPN1"))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("code: 401, message: Unauthorized");
+    }
+
+    private String createExpiredJwt(ECKey privateKey, String issuerId, String subject, String audience, Map<String, Map<String, Object>> claims) {
+        try {
+            var signer = new ECDSASigner(privateKey.toECPrivateKey());
+
+            // Prepare JWT with claims set
+            var now = Date.from(Instant.now().minus(1, ChronoUnit.DAYS));
+            var claimsSet = new JWTClaimsSet.Builder()
+                    .issuer(issuerId)
+                    .subject(subject)
+                    .issueTime(now)
+                    .audience(audience)
+                    .notBeforeTime(now)
+                    .claim("jti", UUID.randomUUID().toString())
+                    .expirationTime(Date.from(Instant.now().plusSeconds(60)));
+
+            claims.forEach(claimsSet::claim);
+
+            var signedJwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(privateKey.getKeyID()).build(), claimsSet.build());
+
+            signedJwt.sign(signer);
+
+            return signedJwt.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, Object> asMap(String rawContent) {
