@@ -49,7 +49,7 @@ class AdditionalHeadersProvisionerTest {
 
     @Test
     void cannotDeprovisionAdditionalHeadersResourceDefinition() {
-        assertThat(provisioner.canDeprovision(mock(AdditionalHeadersProvisionedResource.class))).isFalse();
+        assertThat(provisioner.canDeprovision(mock(AdditionalHeadersProvisionedResource.class))).isTrue();
         assertThat(provisioner.canDeprovision(mock(ProvisionedResource.class))).isFalse();
     }
 
@@ -78,5 +78,21 @@ class AdditionalHeadersProvisionerTest {
                 .asInstanceOf(map(String.class, String.class))
                 .containsEntry("Edc-Contract-Agreement-Id", "contractId")
                 .containsEntry("Edc-Bpn", "bpn");
+    }
+
+    @Test
+    void shouldDeprovision() {
+        var address = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
+        var resource = AdditionalHeadersProvisionedResource.Builder.newInstance()
+                .dataAddress(address).id("id")
+                .transferProcessId("transferProcessId")
+                .resourceDefinitionId("definitionId")
+                .resourceName("name")
+                .build();
+        
+        var result = provisioner.deprovision(resource, Policy.Builder.newInstance().build());
+        assertThat(result)
+                .succeedsWithin(5, SECONDS)
+                .matches(StatusResult::succeeded);
     }
 }

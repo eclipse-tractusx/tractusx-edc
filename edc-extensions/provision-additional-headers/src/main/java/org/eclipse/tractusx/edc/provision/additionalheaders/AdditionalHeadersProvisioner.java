@@ -41,7 +41,7 @@ public class AdditionalHeadersProvisioner implements Provisioner<AdditionalHeade
 
     @Override
     public boolean canDeprovision(ProvisionedResource provisionedResource) {
-        return false; // nothing to deprovision
+        return provisionedResource instanceof AdditionalHeadersProvisionedResource;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class AdditionalHeadersProvisioner implements Provisioner<AdditionalHeade
 
     @Override
     public CompletableFuture<StatusResult<DeprovisionedResource>> deprovision(
-            AdditionalHeadersProvisionedResource additionalHeadersProvisionedResource, Policy policy) {
-        return null; // nothing to deprovision
+            AdditionalHeadersProvisionedResource resource, Policy policy) {
+        return CompletableFuture.completedFuture(StatusResult.success(DeprovisionedResource.Builder.newInstance().provisionedResourceId(resource.getId()).build())); // nothing to deprovision
     }
 }
