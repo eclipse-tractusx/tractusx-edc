@@ -44,11 +44,8 @@ import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.CleanupMode;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.BindMode;
@@ -105,12 +102,11 @@ class BdrsClientImplComponentTest {
             .withNetwork(DOCKER_NETWORK)
             .withCreateContainerCmdModifier(cmd -> cmd.withName(BDRS_CONTAINER_NAME))
             .withExposedPorts(8080, 8081, 8082);
-    @TempDir(cleanup = CleanupMode.ALWAYS)
-    private static File sharedTempDir;
+    private static final File SHARED_TEMP_DIR = new File("build/dids");
     @Container
-    private final GenericContainer<?> nginxContainer = new GenericContainer<>("nginx")
+    private static final GenericContainer<?> NGINX_CONTAINER = new GenericContainer<>("nginx")
             .withFileSystemBind(new File("src/test/resources/nginx.conf").getAbsolutePath(), "/etc/nginx/nginx.conf", BindMode.READ_ONLY)
-            .withFileSystemBind(sharedTempDir.getAbsolutePath(), "/var/www", BindMode.READ_ONLY)
+            .withFileSystemBind(SHARED_TEMP_DIR.getAbsolutePath(), "/var/www", BindMode.READ_ONLY)
             .withNetwork(DOCKER_NETWORK)
             .withCreateContainerCmdModifier(cmd -> cmd.withName(NGINX_CONTAINER_NAME))
             .withExposedPorts(80);
@@ -123,22 +119,17 @@ class BdrsClientImplComponentTest {
     private ECKey vpHolderKey;
     private ECKey vcIssuerKey;
 
-    @BeforeAll
-    static void prepare() throws IOException {
-        sharedTempDir = new File("build/dids");
-    }
-
     @AfterAll
     static void cleanup() {
-        if (sharedTempDir.exists()) {
-            sharedTempDir.delete();
+        if (SHARED_TEMP_DIR.exists()) {
+            SHARED_TEMP_DIR.delete();
         }
     }
 
     @BeforeEach
     void setup() throws JOSEException {
 
-        var nginxHostname = nginxContainer.getContainerName().replace("/", "");
+        var nginxHostname = NGINX_CONTAINER.getContainerName().replace("/", "");
 
         // need to generate DID such that they point to the nginx container
         issuerId = "did:web:%s:some-issuer".formatted(nginxHostname);
@@ -167,7 +158,7 @@ class BdrsClientImplComponentTest {
         // need to wait until healthy, otherwise BDRS will respond with a 404
         await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {
             assertThat(BDRS_SERVER_CONTAINER.isHealthy()).isTrue();
-            assertThat(nginxContainer.isRunning()).isTrue();
+            assertThat(NGINX_CONTAINER.isRunning()).isTrue();
         });
     }
 
@@ -214,7 +205,7 @@ class BdrsClientImplComponentTest {
                 .build();
         holderId = holderId.replace("did:web:", "");
         var subdir = holderId.substring(holderId.indexOf(":") + 1) + "/";
-        var tmpDir = new File(sharedTempDir.getAbsoluteFile(), subdir);
+        var tmpDir = new File(SHARED_TEMP_DIR.getAbsoluteFile(), subdir);
         tmpDir.setReadable(true);
         tmpDir.setWritable(true);
         tmpDir.mkdirs();
