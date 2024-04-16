@@ -70,9 +70,8 @@ import static org.mockito.Mockito.when;
 
 /**
  * This test creates a {@link BdrsClientImpl} with all its collaborators (using an embedded STS), and spins up a
- * BDRS Server in a test container.
- * In addition, this test generates DID documents for both the dataspace issuer and the VP holder, and launches an NGINX webserver
- * which then hosts these DID documents, so that BDRS may resolve them.
+ * BDRS Server in a test container. In addition, DID documents are hosted by an NGINX server running in another container
+ * from where BDRS resolves them.
  */
 @Testcontainers
 @ComponentTest
