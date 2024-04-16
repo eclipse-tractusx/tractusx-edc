@@ -37,7 +37,6 @@ import org.mockserver.verify.VerificationTimes;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,24 +117,13 @@ public class TransferWithTokenRefreshTest {
         PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
-        var edr = new AtomicReference<JsonObject>();
 
-        // wait until transfer process completes
-        await().pollInterval(fibonacci())
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var tpState = SOKRATES.getTransferProcessState(transferProcessId);
-                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
-                });
+        SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
         server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
-        await().pollInterval(fibonacci())
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    edr.set(SOKRATES.edrs().getEdr(transferProcessId));
-                    assertThat(edr).isNotNull();
-                });
+
+        var edr = SOKRATES.edrs().waitForEdr(transferProcessId);
 
 
         // wait until the EDR expires
@@ -143,8 +131,8 @@ public class TransferWithTokenRefreshTest {
                 .pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var endpoint = edr.get().getString("endpoint");
-                    var token = edr.get().getString("authorization");
+                    var endpoint = edr.getString("endpoint");
+                    var token = edr.getString("authorization");
                     given()
                             .baseUri(endpoint)
                             .header("Authorization", token)
@@ -187,33 +175,20 @@ public class TransferWithTokenRefreshTest {
         PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
-        var edr = new AtomicReference<JsonObject>();
-
-        // wait until transfer process completes
-        await().pollInterval(fibonacci())
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var tpState = SOKRATES.getTransferProcessState(transferProcessId);
-                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
-                });
+        SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
         server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
-        await().pollInterval(fibonacci())
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    edr.set(SOKRATES.edrs().getEdr(transferProcessId));
-                    assertThat(edr).isNotNull();
-                });
 
+        var edr = SOKRATES.edrs().waitForEdr(transferProcessId);
 
         // wait until the EDR expires
         await().pollDelay(Duration.ofSeconds(VERY_SHORT_TOKEN_EXPIRY + 1))
                 .pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var endpoint = edr.get().getString("endpoint");
-                    var token = edr.get().getString("authorization");
+                    var endpoint = edr.getString("endpoint");
+                    var token = edr.getString("authorization");
                     given()
                             .baseUri(endpoint)
                             .header("Authorization", token)
