@@ -1,17 +1,37 @@
 # Fetching a Data Plane Token via EDR
 
-EDR is short for Endpoint Data Reference. It describes a more ergonomic process for the Data Consumer
-to negotiate access to a Data Offer and receive the corresponding token for the HTTP Data Plane. Unlike the process via
-[Contract-Negotiation](05_contractnegotiations.md)- and [Transfer-Process](06_transferprocesses.md)-APIs, the EDR-process does not require a Consumer to operate a
-separate service that receives the Tokens from the Provider Control Plane. Instead, the Consumer Control Plane receives
-and stores the Data Plane Tokens. Consumer Applications query it for valid tokens and use these for Data Plane calls.
-As a consumer-side abstraction, the checks of the Contract Negotiation and Transfer Process phases are still executed
-between the Business Partners' EDCs.
+EDR is short for Endpoint Data Reference and describes how a Data Consumer can fetch data with PULL mechanism.
+It contains information such as the `endpoint` where to fetch the data, additional information like
+authentication and so on. The EDR is conveyed with the Transfer start message of the DSP protocol from the Provider to the Consumer,
+after receiving and accepting a [Transfer](06_transferprocesses.md) request made by a Consumer.
 
-## Initiate Negotiation & Token Transfer
+For sending a Transfer Request a [Contract Agreement](05_contractnegotiations.md) should be already in place.
+
+Previously TractusX-EDC provided a set extension for caching EDRs on Consumer side and exposing them via EDRs management APIs.
+The renewal was handled proactively by firing another transfer process with the same contract agreement near expiry and caching
+the newly transmitted EDR.
+
+Starting from TractusX-EDC 0.7.0, the high level concepts are the same, but with the advent of [DPS](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling.md) (Data plane signaling)
+the way EDRs are managed and renewed has been changed.
+
+Since the default implementation of DPS does not support token renewals, the TractusX-EDC project extends it by introducing renewals capabilities. More info [here](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/dataplane-signaling/tx-signaling.extensions.md)
+
+## Receiving the EDR
+
+An EDR can be received on Consumer side by:
+
+- Negotiating a contract for an asset
+- Sending a transfer request for the contract agreement previously negotiated
+
+Once the Transfer process reaches the state of `STARTED`, the provider will send the EDR to the consumer, which will
+automatically cache it for later usage.
+
+Alternatively TractusX-EDC provides a single API to collapse those two processes in a single request.
+
+Example of negotiating a contract for an asset with a framework agreement policy:
 
 ```http
-POST /edrs HTTP/1.1
+POST /v2/edrs HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -19,96 +39,120 @@ Content-Type: application/json
 
 ```json
 {
-  "@context": {
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-  },
-  "@type": "NegotiationInitiateRequest",
-  "edc:connectorAddress": "https://provider-control.plane/api/v1/dsp",
-  "edc:protocol": "dataspace-protocol-http",
-  "edc:connectorId": "<PROVIDER_BPN>",
-  "edc:providerId": "<PROVIDER_BPN>",
-  "edc:offer": {
-    "edc:offerId": "<OFFER_ID>",
-    "edc:assetId": "<ASSET_ID>",
-    "edc:policy": {
-      "@type": "odrl:Set",
-      "odrl:target": "<ASSET_ID>",
-      "odrl:permission": {
-        "odrl:target": "<ASSET_ID>",
-        "odrl:action": {
-          "odrl:type": "use"
-        },
-        "odrl:constraint": {
-          "odrl:and": {
-            "odrl:leftOperand": "BusinessPartnerNumber",
-            "odrl:operator": {
-              "@id": "odrl:eq"
-            },
-            "odrl:rightOperand": "<BPN_CONSUMER>"
-          }
+    "@context": [
+        "https://w3id.org/tractusx/policy/v1.0.0",
+        "http://www.w3.org/ns/odrl.jsonld",
+        {
+            "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         }
-      },
-      "odrl:prohibition": [],
-      "odrl:obligation": []
-    }
-  }
+    ],
+    "@type": "ContractRequest",
+    "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
+    "protocol": "dataspace-protocol-http",
+    "policy": {
+        "@id": "<OFFER_ID>",
+        "@type": "Offer",
+        "assigner": "<PROVIDER_BPN}>",
+        "permission": [
+            {
+                "action": "use",
+                "constraint": {
+                    "or": {
+                        "leftOperand": "FrameworkAgreement",
+                        "operator": "eq",
+                        "rightOperand": "pcf"
+                    }
+                }
+            }
+        ],
+        "prohibition": [],
+        "obligation": [],
+        "target": "<ASSET_ID>"
+    },
+    "callbackAddresses": []
 }
 ```
-- `edc:connectorAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
+
+- `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
   It will usually end in `/api/v1/dsp`
-- `edc:protocol` must be `dataspace-protocol-http`
-- `edc:assetId` and all `odrl:target` properties must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
-- `edc:connectorId` and `edc:providerId` must both hold the correct BPN for the `edc:connectorAddress`.
-- In the `edc:offer` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
-  Data Offers for the same DataSet, the Data Consumer must choose one.
-    - `edc:offerId` is the id of the entry in the [catalog-response](04_catalog.md) that the Consumer wants to negotiate for.
-      It will usually be a concatenation of three base64-encoded ids.
-    - `edc:policy` must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the
-      `odrl:hasPolicy` field.
+- `protocol` must be `dataspace-protocol-http`
+- In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
+  Data Offers for the same DataSet, the Data Consumer must choose one. 
+  It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `odrl:hasPolicy` field plus:
+    - `assigner` must hold the BPN of the Provider
+    - `target` must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
 
 This request synchronously returns a server-generated `negotiationId` that could be used to get the state of the negotiation.
+Once the negotiation reaches the `FINALIZED` state, using this API, the transfer process will be automatically fired off
+by sending a transfer request for the `PULL` scenario.
 
-```http
-POST /v2/contractnegotiations HTTP/1.1
-Host: https://consumer-control.plane/api/management
-X-Api-Key: password
-Content-Type: application/json
+Additional callbacks can be provided in both cases for being notified about the start of a transfer process.
+
+```json
+{
+   ...
+    "callbackAddresses": [
+        {
+            "events": [
+                "transfer.process.started"
+            ],
+            "uri": "https://mybackend/edr"
+        }
+    ]
+}
 ```
-When the `edc:state` in the response is `"FINALIZED"`, the Consumer can proceed.
 
-## Retrieving the Data Plane Token from the Consumer Control Plane
+But in any case the EDR will be cached upon arrival on the consumer side.
+
+
+## Retrieving EDR entries from the Consumer Control Plane (Management API)
 
 The Consumer Control Plane can be queried for EDRs by the 
 - id of the [Assets](01_assets.md) and/or 
 - id of the relevant Contract Agreement (given there is one)
-- id of the Contract Negotiation (as obtained [previously](#initiate-negotiation--token-transfer))
+- id of the Contract Negotiation (as obtained [previously](#receiving-the-edr))
 - id of the Data Provider
 
 ```http
-GET /edrs?assetId=myAssetId&agreementId=myAgreementId HTTP/1.1
+POST /v2/edrs HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
 ```
 
+```json
+{
+    "@context": {
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "@type": "QuerySpec",
+    "filterExpression": [
+        {
+            "operandLeft": "assetId",
+            "operator": "=",
+            "operandRight": "1"
+        }
+        
+    ]
+}
+```
+
 It returns a set of EDR entries holding meta-data including two IDs per entry:
-- `edc:transferProcessId`: This is the ID of the [Transfer Process](06_transferprocesses.md) that was implicitly initiated
-  by the POST `/edrs` request.
-- `edc:agreementId`: This is the ID of the agreement that the two EDCs have made in the [Contract Negotiation](05_contractnegotiations.md)
+- `transferProcessId`: The ID of the [Transfer Process](06_transferprocesses.md) that was implicitly initiated
+  by the POST `/v2/edrs` request.
+- `agreementId`: The ID of the agreement that the two EDCs have made in the [Contract Negotiation](05_contractnegotiations.md)
   phase of their EDR-interaction.
+- `providerId`: The ID of the provider.
+- `assetId`: The ID of the asset.
+- `contractNegotiationId`: The ID of contract negotiation.
 
-One of the essential features of the EDR-API is the automatic retrieval of new short-lived Data Plane tokens for an
-agreed Contract Agreement. When choosing the route via [the negotiation-](05_contractnegotiations.md) and [transfer-APIs](06_transferprocesses.md),
-the transfer process would have to be initiated for every new token.
+The EDR itself contain also authentication information are stored in the secure vault of the Consumer. 
 
-The EDR mechanism stores the Data Plane tokens in the secure vault of the Consumer's Control Plane. 
 Finally, after first obtaining them from the Provider Control Plane and
 then locating in the Consumer Control Plane's cache, they can be retrieved using the `transferProcessId`.
 
 ```http
-GET /edrs/myTransferProcessId HTTP/1.1
+GET /v2/edrs/myTransferProcessId/dataaddress HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -119,20 +163,16 @@ that is located at `edc:endpoint`.
 
 ```json
 {
-  "@type": "edc:DataAddress",
-  "edc:type": "EDR",
-  "edc:authCode": "myAuthCode",
-  "edc:endpoint": "https://provider-data.plane/api/public",
-  "edc:id": "someServer-GeneratedId",
-  "edc:authKey": "Authorization",
-  "@context": {
-    "dct": "https://purl.org/dc/terms/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "dcat": "https://www.w3.org/ns/dcat/",
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "dspace": "https://w3id.org/dspace/v0.8/"
-  }
+  "@context": {},
+  "@type": "DataAddress",
+  "endpointType": "https://w3id.org/idsa/v4.1/HTTP",
+  "refreshEndpoint": "http://alice-tractusx-connector-dataplane:8081/api/public/token",
+  "audience": "did:web:dim-static-prod.dis-cloud-prod.cfapps.eu10-004.hana.ondemand.com:dim-hosted:3ecba91c-cc4f-4e07-b11c-2cc2af28c248:holder-iatp",
+  "endpoint": "http://alice-tractusx-connector-dataplane:8081/api/public",
+  "refreshToken": "eyJraWQiOiJ0cmFuc2ZlclByb3h5VG9rZW5TaWduZXJQdWJsaWNLZXkiLCJhbGciOiJFZERTQSJ9.eyJleHAiOjE3MTMzNTE0NDQsImlhdCI6MTcxMzM1MTE0NCwianRpIjoiZjYxOWFmMTItOWNhMS00OTliLTg5MmEtZWE3ZjNkYmQxNjI4In0.igyKMywf1eTBSWaZB3799NRFmGU9jBqOo5sZ-EPRRuEeueZz2seYBMq2aPCFHcQ1kJh-G_ylPb5OXWxIv4ITDw",
+  "expiresIn": "300",
+  "authorization": "eyJraWQiOiJ0cmFuc2ZlclByb3h5VG9rZW5TaWduZXJQdWJsaWNLZXkiLCJhbGciOiJFZERTQSJ9.eyJpc3MiOiJCUE5MMDAwMDAwMDAxSU5UIiwiYXVkIjoiQlBOTDAwMDAwMDAwMUROUyIsInN1YiI6IkJQTkwwMDAwMDAwMDFJTlQiLCJleHAiOjE3MTMzNTE0NDQsImlhdCI6MTcxMzM1MTE0NCwianRpIjoiMWNkNzU3NjktNDIxZS00ZTQ0LTkxOGMtMDVhMDZkZTA0OTVkIn0.LxfCU3UfyAnaoUym_ZD-97kcoiLvOIF1nBaL4oH-VLwisnxzkwaMFqeyW0r28rSRCKagZr0UkyoC_Hfq38ldCQ",
+  "refreshAudience": "did:web:dim-static-prod.dis-cloud-prod.cfapps.eu10-004.hana.ondemand.com:dim-hosted:3ecba91c-cc4f-4e07-b11c-2cc2af28c248:holder-iatp",
 }
 ```
 
