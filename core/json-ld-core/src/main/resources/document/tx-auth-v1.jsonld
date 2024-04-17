@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "tx-auth": "https://w3id.org/tractusx/auth/",
+    "refreshToken": "tx-auth:refreshToken",
+    "refreshEndpoint": "tx-auth:refreshEndpoint",
+    "refreshAudience": "tx-auth:refreshAudience",
+    "audience": "tx-auth:audience",
+    "expiresIn": "tx-auth:expiresIn"
+  }
+}
