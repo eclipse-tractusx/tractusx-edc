@@ -20,8 +20,16 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
@@ -42,6 +50,8 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
@@ -86,12 +96,12 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .build();
 
         var vcJson = createVc(didUrl(), type, subjectSupplier);
-        var rawVc = createLdpVc(jsonLd, vcJson);
+        var rawVc = createJwtVc(vcJson, did);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
                 .participantId(did)
                 .holderId(bpn)
-                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JSON_LD, credential))
+                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JWT, credential))
                 .build();
 
     }
@@ -150,6 +160,43 @@ public class DataspaceIssuer extends IdentityParticipant {
         try {
             return MAPPER.writeValueAsString(result);
         } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String createJwtVc(JsonObject verifiableCredential, String participantDid) {
+
+        try {
+            var vc = MAPPER.readValue(verifiableCredential.toString(), new TypeReference<Map<String, Object>>() {
+            });
+            var key = getKeyPairAsJwk();
+            return signJwt(key.toECKey(), didUrl(), participantDid, "", Map.of("vc", vc));
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private String signJwt(ECKey privateKey, String issuerId, String subject, String audience, Map<String, Object> claims) {
+        try {
+            var signer = new ECDSASigner(privateKey.toECPrivateKey());
+            var now = java.sql.Date.from(Instant.now());
+            var claimsSet = new JWTClaimsSet.Builder()
+                    .issuer(issuerId)
+                    .subject(subject)
+                    .issueTime(now)
+                    .audience(audience)
+                    .notBeforeTime(now)
+                    .claim("jti", UUID.randomUUID().toString())
+                    .expirationTime(java.sql.Date.from(Instant.now().plusSeconds(300L)));
+
+            Objects.requireNonNull(claimsSet);
+            claims.forEach(claimsSet::claim);
+            var signedJwt = new SignedJWT((new JWSHeader.Builder(JWSAlgorithm.ES256)).keyID(privateKey.getKeyID()).build(), claimsSet.build());
+            signedJwt.sign(signer);
+            return signedJwt.serialize();
+        } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
     }

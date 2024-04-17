@@ -293,14 +293,14 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
                 .build());
 
-        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createLdpVc(jsonLd, newRawVc.build());
+        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createJwtVc(newRawVc.build(), did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                         .participantId(did)
                         .holderId(bpn)
-                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JSON_LD, newCred))
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JWT, newCred))
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
