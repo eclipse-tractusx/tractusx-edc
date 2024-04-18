@@ -26,7 +26,7 @@
         * [5.1 Catalog](#51-catalog)
         * [5.2 Transfer Process](#52-transfer-process)
         * [5.3 EDRs](#53-edrs)
-    * [6. Other changes](#6-other-changes)
+    * [6. Other changes and noteworthy items](#6-other-changes-and-noteworthy-items)
 
 <!-- TOC -->
 
@@ -193,6 +193,10 @@ Service" ("BDRS")](#4-bpndid-resolution-service), which provides that mapping in
 - [Tractus-X Credentials](https://github.com/eclipse-tractusx/tractusx-profiles/tree/main/cx/credentials)
 - [Tractus-X Policies](https://github.com/eclipse-tractusx/tractusx-profiles/tree/main/cx/policy)
 
+### 3.5 Limitations
+
+- It is not possible to define an access policy that would require the evaluation of a VerifiableCredential
+
 ## 4. BPN/DID Resolution Service
 
 The BPN/DID Resolution Service (BDRS) is a new core service that became necessary due to the dual use of identifiers (
@@ -258,14 +262,13 @@ mechanism for EDRs.
 For a detailed explanation, please refer to
 the [EDR API documentation](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/usage/management-api-walkthrough/07_edrs.md).
 
-## 6. Other changes
+## 6. Other changes and noteworthy items
 
 - Changes in the policy definition properties: A policy definition now adheres to ODRL and the `@type` has changed
   to `Set`
 - An `Offer` does not contain a `target` property anymore, it has to be injected in the ContractRequest message.
 - The `consumerId` and `providerId` were replaced by the ODRL `assignee `and `assigner`, respectively. The latter also
-  has
-  to be injected in the ContractRequest Message.
+  has to be injected in the ContractRequest Message.
 - A transfer process has now a new transfer type property that should adhere to the following
   mapping: https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-mapping.md
 - The EDR API changed, and it's no longer possible to query for EDRs by contract agreement directly. A `QuerySpec` with
@@ -274,6 +277,8 @@ the [EDR API documentation](https://github.com/eclipse-tractusx/tractusx-edc/blo
   address. This enables the transfer of multiple files within on single transfer process. For more information, visit
   the
   extension [readme](https://github.com/eclipse-edc/Technology-Aws/tree/main/extensions/data-plane/data-plane-aws-s3).
+- contrary to previous deprecation warnings, the Business Partner Number evaluation function will remain in place and
+  can continue to be used in parallel to the Business Partner Group evaluation function.
 - changes to environment variables in the Azure KeyVault variant of Tractus-X EDC. Note that this does not affect the
   Helm config values.
     - `EDC_VAULT_CLIENTID` was replaced by `AZURE_CLIENT_ID`
