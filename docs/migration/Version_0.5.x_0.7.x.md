@@ -37,13 +37,13 @@
 Dataplane Signaling effectively replaces the previous data plane public API. It is a standardized way for the control
 plane to communicate with the data plane, e.g. when suspending or resuming data transfers.
 
-New features like token renewal build on to of it.
+New features like token renewal build on top of it.
 
 > This replaces the Control API, the Public API and the EDR callbacks
 
 ### 1.2  Automatic token renewal
 
-when a `TransferProcess` enters the `STARTED` state, the consumer connector receives the Endpoint Data Reference (EDR)
+When a `TransferProcess` enters the `STARTED` state, the consumer connector receives the Endpoint Data Reference (EDR)
 that contains the URL to the public API, an access token, a refresh token and endpoint where the token can be refreshed.
 
 EDRs are now cached automatically within the consumer connector's control plane, and the [EDR API](#2-new-edr-api) will
@@ -57,7 +57,7 @@ the `dspace` [data format](https://github.com/eclipse-edc/Connector/blob/main/do
 
 ### 1.4 Dataplane Signaling API
 
-this is a new REST api that replaces the old Control API for a more consolidated and streamlined communication between a
+This is a new REST api that replaces the old Control API for a more consolidated and streamlined communication between a
 participant's control plane and data plane.
 
 ### 1.5 Configuration values
@@ -90,13 +90,13 @@ The setting `backendService.httpProxyTokenReceiverUrl`, which configured an EDR 
 EDC [extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver)
 is no longer available as well as the extension is not shipped in the Tractus-X EDC 0.7.x distributions.
 
-The main reason is that EDC/Tractus-X-Edc switched to Dataplane Signaling for handling transfers and the EDR format
+The main reason is that EDC/Tractus-X-EDC switched to Dataplane Signaling for handling transfers and the EDR format
 specified in
 DPS [spec](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md)
 was not handled properly by the receiver extension.
 
 Now all the EDRs are automatically stored by the consumer's EDR cache and made available via the new
-EDRs API. If users still need to receive the EDR on their backend and hand this manually, EDC can handle this
+EDRs API. If users still need to receive the EDR on their backend and want to process this manually, EDC can handle this
 natively by registering an HTTP callback for the `transfer.process.start` event.
 
 This can be done in two ways:
@@ -241,7 +241,7 @@ this [test class](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc
 - `transferType`  is a needed property for the transfer request to be working in tx-edc. `transferTypes` are the
   supported transfer format in tx-edc. They return as part of the Catalog response as part of distribution format for an
   asset. In TX-EDC we currently supports `HttpData-PULL`, `AzureStorage-PUSH` and `AmazonS3-PUSH`. The `transferType`
-  i's not mandatory (backward compatibility) but if not provided the transfer request will fail.
+  is not mandatory (backward compatibility) but if not provided the transfer request will fail.
 
 ### 5.3 EDRs
 
@@ -249,7 +249,7 @@ The 0.5.4 EDRs API was removed due the adoption of DPS (data plane signaling) an
 in `/v2/edrs`
 
 The main difference between 0.5.4 and 0.7.0 is how the token refresh is handled. In 0.5.x when an EDR was about to
-expire or the users had to manually trigger another transfer process, or by using the EDR API which did that
+expire, the users had to manually trigger another transfer process, or use the EDR API which did that
 automatically. This approach had major drawbacks like proactively creating transfer process on EDR expiration. In 0.7.0
 this changed radically by adopting DPS and overlaying on top of it
 a [refresh](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/dataplane-signaling/tx-signaling.extensions.md)
