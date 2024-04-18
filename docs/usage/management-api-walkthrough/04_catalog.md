@@ -27,7 +27,7 @@ Content-Type: application/json
     "sortOrder": "ASC",
     "filterExpression": [
       {
-        "operandLeft": "edc:someProperty",
+        "operandLeft": "https://w3id.org/edc/v0.0.1/ns/someProperty",
         "operator": "=",
         "operandRight": "value"
       }
