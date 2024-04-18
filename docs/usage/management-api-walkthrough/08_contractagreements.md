@@ -15,41 +15,44 @@ A Contract Agreement looks like this:
 
 ```json
 {
-  "@type": "edc:ContractAgreement",
+  "@type": "ContractAgreement",
   "@id": "<AGREEMENT_ID>",
-  "edc:assetId": "<ASSET_ID>",
-  "edc:policy": {
+  "assetId": "<ASSET_ID>",
+  "policy": {
     "@id": "<POLICY_ID>",
-    "@type": "odrl:Set",
+    "@type": "odrl:Agreement",
     "odrl:permission": {
-      "odrl:target": "<ASSET_ID>",
       "odrl:action": {
-        "odrl:type": "use"
+        "odrl:type": "http://www.w3.org/ns/odrl/2/use"
       },
       "odrl:constraint": {
-        "odrl:and": {
-          "odrl:leftOperand": "BusinessPartnerNumber",
+        "odrl:or": {
+          "odrl:leftOperand": "https://w3id.org/catenax/policy/FrameworkAgreement",
           "odrl:operator": {
             "@id": "odrl:eq"
           },
-          "odrl:rightOperand": "<SOME_BPN>"
+          "odrl:rightOperand": "pcf"
         }
       }
     },
     "odrl:prohibition": [],
     "odrl:obligation": [],
-    "odrl:target": ">ASSET_ID>"
+    "odrl:assignee": "<BPN_CONSUMER>",
+    "odrl:assigner": "<BPN_PROVIDER>",
+    "odrl:target": {
+      "@id": "<ASSET_ID>"
+    }
   },
-  "edc:contractSigningDate": 1697720380,
-  "edc:consumerId": "<BPN_CONSUMER>",
-  "edc:providerId": "<BPN_PROVIDER>",
+  "contractSigningDate": 1713441910,
+  "consumerId": "<BPN_CONSUMER>",
+  "providerId": "<BPN_PROVIDER>",
   "@context": {
-    "dct": "https://purl.org/dc/terms/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "dcat": "https://www.w3.org/ns/dcat/",
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "dspace": "https://w3id.org/dspace/v0.8/"
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "tx-auth": "https://w3id.org/tractusx/auth/",
+    "cx-policy": "https://w3id.org/catenax/policy/",
+    "odrl": "http://www.w3.org/ns/odrl/2/"
   }
 }
 ```

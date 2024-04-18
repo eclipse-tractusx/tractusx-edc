@@ -14,23 +14,19 @@ Content-Type: application/json
 {
   "@context": {
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "odrl": "http://www.w3.org/ns/odrl/2/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "@type": "edc:CatalogRequest",
+  "@type": "CatalogRequest",
   "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
+  "counterPartyId": "<PROVIDER-BPN>",
   "protocol": "dataspace-protocol-http",
   "querySpec": {
-    "@type": "edc:QuerySpec",
     "offset": 0,
     "limit": 50,
     "sortField": "https://purl.org/dc/terms/type",
     "sortOrder": "ASC",
     "filterExpression": [
       {
-        "@context": {
-          "edc": "https://w3id.org/edc/v0.0.1/ns/"
-        },
-        "@type": "edc:Criterion",
         "operandLeft": "edc:someProperty",
         "operator": "=",
         "operandRight": "value"
@@ -42,6 +38,8 @@ Content-Type: application/json
 The request body is lean. Mandatory properties are:
 - `counterPartyAddress` (formerly `providerUrl`): This property points to the DSP-endpoint of the Data Provider's Control
   Plane. Usually this ends on `/api/v1/dsp`.
+- `counterPartyId`: must be the provider BPN. This in not a mandatory property for EDC but it's required for TractusX-EDC.
+  If omitted the catalog request will fail.
 - `protocol`: must be `"dataspace-protocol-http"`.
 
 The `querySpec` section is optional and allows the Data Consumer to specify what entries from the catalog shall be returned.
@@ -68,67 +66,88 @@ The returned payload is a `dcat:Catalog` as required by the [DSP-Specification v
 
 ```json
 {
-  "@id": "10b1b0f3-5a67-4eee-9404-5a300356a50d",
+  "@id": "acd67c9c-a5c6-4c59-9474-fcd3f948eab8",
   "@type": "dcat:Catalog",
-  "dcat:dataset": [
-    {
-      "@id": "<ASSET-ID>",
-      "@type": "dcat:Dataset",
-      "odrl:hasPolicy": {
-        "@id": "Y29udHJhY3QtZ2V0LTE=:anNvbi1nZXQtMQ==:MDEwODg2ZTItZDhmNi00Y2NjLWFhMWYtY2U2Y2JmYjlmMWQz",
-        "@type": "odrl:Set",
-        "odrl:permission": {
-          "odrl:target": "<ASSET-ID>",
-          "odrl:action": {
-            "odrl:type": "http://www.w3.org/ns/odrl/2/use"
-          },
-          "odrl:constraint": {
-            "odrl:leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/Membership",
+  "dspace:participantId": "BPNL000000001INT",
+  "dcat:dataset": {
+    "@id": "<ASSET-ID>",
+    "@type": "dcat:Dataset",
+    "odrl:hasPolicy": {
+      "@id": "MQ==:MQ==:M2ZmZDRhY2MtMzkyNy00NGI4LWJlZDItNDcwY2RiZGRjN2Ex",
+      "@type": "odrl:Offer",
+      "odrl:permission": {
+        "odrl:action": {
+          "odrl:type": "http://www.w3.org/ns/odrl/2/use"
+        },
+        "odrl:constraint": {
+          "odrl:or": {
+            "odrl:leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
             "odrl:operator": {
               "@id": "odrl:eq"
             },
-            "odrl:rightOperand": "active"
+            "odrl:rightOperand": "gold-partners"
           }
-        },
-        "odrl:prohibition": [],
-        "odrl:obligation": [],
-        "odrl:target": "<ASSET-ID>"
-      },
-      "dcat:distribution": [
-        {
-          "@type": "dcat:Distribution",
-          "dct:format": {
-            "@id": "HttpProxy"
-          },
-          "dcat:accessService": "b4f2c6b6-d3d1-46e2-a517-6912b7f8a509"
-        },
-        {
-          "@type": "dcat:Distribution",
-          "dct:format": {
-            "@id": "AmazonS3"
-          },
-          "dcat:accessService": "b4f2c6b6-d3d1-46e2-a517-6912b7f8a509"
         }
-      ],
-      "edc:description": "Json Get Asset",
-      "edc:id": "<ASSET-ID>",
-      "dct:type": {
-        "@id": "https://my-namespa.ce/my-asset-type"
+      },
+      "odrl:prohibition": [],
+      "odrl:obligation": []
+    },
+    "dcat:distribution": [
+      {
+        "@type": "dcat:Distribution",
+        "dct:format": {
+          "@id": "AzureStorage-PUSH"
+        },
+        "dcat:accessService": {
+          "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
+          "@type": "dcat:DataService",
+          "dct:terms": "connector",
+          "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+        }
+      },
+      {
+        "@type": "dcat:Distribution",
+        "dct:format": {
+          "@id": "HttpData-PULL"
+        },
+        "dcat:accessService": {
+          "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
+          "@type": "dcat:DataService",
+          "dct:terms": "connector",
+          "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+        }
+      },
+      {
+        "@type": "dcat:Distribution",
+        "dct:format": {
+          "@id": "AmazonS3-PUSH"
+        },
+        "dcat:accessService": {
+          "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
+          "@type": "dcat:DataService",
+          "dct:terms": "connector",
+          "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+        }
       }
-    }
-  ],
+    ],
+    "description": "Product EDC Demo Asset 1",
+    "id": "1"
+  },
   "dcat:service": {
-    "@id": "b4f2c6b6-d3d1-46e2-a517-6912b7f8a509",
+    "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
     "@type": "dcat:DataService",
     "dct:terms": "connector",
-    "dct:endpointUrl": "https://provider-data.plane/api/v1/dsp"
+    "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
   },
-  "edc:participantId": "<PROVIDER-BPN>",
+  "participantId": "<PROVIDER-BPN>",
   "@context": {
-    "dct": "https://purl.org/dc/terms/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "dcat": "https://www.w3.org/ns/dcat/",
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "tx-auth": "https://w3id.org/tractusx/auth/",
+    "cx-policy": "https://w3id.org/catenax/policy/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
     "odrl": "http://www.w3.org/ns/odrl/2/",
     "dspace": "https://w3id.org/dspace/v0.8/"
   }
@@ -148,13 +167,12 @@ Consequently, if there may be more than one offer for the same Asset, requiring 
 policies included.
 
 - The `@id` corresponds to the id of the Asset that can be negotiated for.
-- `dcat:Distribution` makes statements over which Data Planes an Asset's data can be retrieved. Currently, the EDC always
-  returns `HttpProxy` and `AmazonS3` even though not all EDC-deployments have both capabilities.
+- `dcat:Distribution` makes statements over which Data Planes an Asset's data can be retrieved. Currently, the TractusX-EDC supports
+  `HttpData-PULL`, `AmazonS3-PUSH` and `AzureStorage-PUSH` capabilities.
 - `dcat:hasPolicy` holds the Data Offer that is relevant for the Consumer.
     - `@id` is the identifier for the Data Offer. The EDC composes this id by concatenating three identifiers in base64-encoding.
       separated with `:` (colons). The format is `base64(contractDefinitionId):base64(assetId):base64(newUuidV4)`. The last
       of three UUIDs changes with every request as every /v2/catalog/request call yields a new catalog with new Data Offers.
-    - The `odrl:target` properties in the Data Offer always hold the Asset's id.
     - The `odrl:permission`, `odrl:prohibition` and `odrl:obligation` will hold the content of the contractPolicy configured
       in the [Contract Definition](03_contractdefinitions.md) the Contract Offer was derived from.
 
