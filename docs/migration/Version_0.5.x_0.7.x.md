@@ -269,8 +269,11 @@ the [EDR API documentation](https://github.com/eclipse-tractusx/tractusx-edc/blo
 - A transfer process has now a new transfer type property that should adhere to the following
   mapping: https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-mapping.md
 - The EDR API changed, and it's no longer possible to query for EDRs by contract agreement directly. A `QuerySpec` with
-  a
-  filter has to be used for this.
+  a filter has to be used for this.
+- The AWS S3 Extension also has been improved and now enables the user to specify S3 object prefixes in the data
+  address. This enables the transfer of multiple files within on single transfer process. For more information, visit
+  the
+  extension [readme](https://github.com/eclipse-edc/Technology-Aws/tree/main/extensions/data-plane/data-plane-aws-s3).
 - changes to environment variables in the Azure KeyVault variant of Tractus-X EDC. Note that this does not affect the
   Helm config values.
     - `EDC_VAULT_CLIENTID` was replaced by `AZURE_CLIENT_ID`
