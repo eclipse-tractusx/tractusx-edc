@@ -37,6 +37,8 @@ participant:
 iatp:
   # Decentralized IDentifier
   id: "did:web:changeme"
+  # -- Configures the trusted issuers for this runtime
+  trustedIssuers: []
   sts:
     dim:
       url:

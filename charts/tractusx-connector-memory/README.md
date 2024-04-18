@@ -63,6 +63,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.0 \
 | iatp.sts.oauth.client.id | string | `nil` |  |
 | iatp.sts.oauth.client.secret_alias | string | `nil` |  |
 | iatp.sts.oauth.token_url | string | `nil` |  |
+| iatp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
 | participant.id | string | `"BPNLCHANGEME"` | BPN Number |
