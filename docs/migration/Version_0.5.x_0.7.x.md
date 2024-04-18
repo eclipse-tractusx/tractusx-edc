@@ -5,7 +5,7 @@
 * [Migration Guide `0.5.x/0.6.0 -> 0.7.x`](#migration-guide-05x060---07x)
     * [1. Dataplane Signaling (DPS)](#1-dataplane-signaling-dps)
         * [1.1 Overview](#11-overview)
-        * [1.2  Automatic token renewal](#12--automatic-token-renewal)
+        * [1.2 Automatic token renewal](#12-automatic-token-renewal)
         * [1.3 New data format for `DataAddress`](#13-new-data-format-for-dataaddress)
         * [1.4 Dataplane Signaling API](#14-dataplane-signaling-api)
         * [1.5 Configuration values](#15-configuration-values)
@@ -41,7 +41,7 @@ New features like token renewal build on top of it.
 
 > This replaces the Control API, the Public API and the EDR callbacks
 
-### 1.2  Automatic token renewal
+### 1.2 Automatic token renewal
 
 When a `TransferProcess` enters the `STARTED` state, the consumer connector receives the Endpoint Data Reference (EDR)
 that contains the URL to the public API, an access token, a refresh token and endpoint where the token can be refreshed.
