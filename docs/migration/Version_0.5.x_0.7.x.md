@@ -255,9 +255,8 @@ this changed radically by adopting DPS and overlaying on top of it
 a [refresh](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/dataplane-signaling/tx-signaling.extensions.md)
 mechanism for EDRs.
 
-For a detailed usage I would suggest
-changing [this](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/usage/management-api-walkthrough/07_edrs.md)
-section of the docs.
+For a detailed explanation, please refer to
+the [EDR API documentation](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/usage/management-api-walkthrough/07_edrs.md).
 
 ## 6. Other changes
 
