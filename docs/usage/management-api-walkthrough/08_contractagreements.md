@@ -4,8 +4,8 @@ The Management API has a provider-internal endpoint to retrieve existing Contrac
 endpoint (to be used with the previously explained `QuerySpec` object) but allows retrieval of single agreements by id
 like this:
 
-```http
-GET /v2/contractagreements/{{agreementId}} HTTP/1.1
+```http request
+GET /v2/contractagreements/{{AGREEMENT_ID}} HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -16,10 +16,10 @@ A Contract Agreement looks like this:
 ```json
 {
   "@type": "ContractAgreement",
-  "@id": "<AGREEMENT_ID>",
-  "assetId": "<ASSET_ID>",
+  "@id": "{{AGREEMENT_ID}}",
+  "assetId": "{{ASSET_ID}}",
   "policy": {
-    "@id": "<POLICY_ID>",
+    "@id": "{{POLICY_ID}}",
     "@type": "odrl:Agreement",
     "odrl:permission": {
       "odrl:action": {
@@ -40,12 +40,12 @@ A Contract Agreement looks like this:
     "odrl:assignee": "<BPN_CONSUMER>",
     "odrl:assigner": "<BPN_PROVIDER>",
     "odrl:target": {
-      "@id": "<ASSET_ID>"
+      "@id": "{{ASSET_ID}}"
     }
   },
   "contractSigningDate": 1713441910,
-  "consumerId": "<BPN_CONSUMER>",
-  "providerId": "<BPN_PROVIDER>",
+  "consumerId": "{{BPN_CONSUMER}}",
+  "providerId": "{{BPN_PROVIDER}}",
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",

@@ -4,7 +4,7 @@ An Asset is the fundamental representation of an arbitrary backend interface in 
 with its Control Plane as a first step to expose it to the Dataspace via the Dataplane later on. This registration is
 executed via the following Request:
 
-```http
+```http request
 POST /v3/assets HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
@@ -15,19 +15,21 @@ Content-Type: application/json
 {
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "dct": "https://purl.org/dc/terms/"
+    "dct": "http://purl.org/dc/terms/"
   },
-  "@id": "<ASSET-ID>",
+  "@type": "Asset",
+  "@id": "{{ASSET_ID}}",
+  "dataAddress": {
+    "@type": "DataAddress",
+    "type": "{{SUPPORTED_TYPE}}"
+  },
   "properties": {
     "dct:type": {
       "@id": "https://my-namespa.ce/my-asset-type"
     }
   },
   "privateProperties": {
-    "private-property": "<PRIVATE-PROPERTY-VALUE>"
-  },
-  "dataAddress": {
-    "type": "<SUPPORTED-TYPE>"
+    "private-property": "{{PRIVATE-PROPERTY-VALUE}}"
   }
 }
 ```
@@ -59,11 +61,12 @@ request will be manipulated by the Data Plane - to what degree depends on the co
 ```json
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "cx-common": "https://w3id.org/catenax/ontology/common#",
     "cx-taxo": "https://w3id.org/catenax/taxonomy#",
-    "dct": "https://purl.org/dc/terms/"
+    "dct": "http://purl.org/dc/terms/"
   },
+  "@type": "Asset",
   "@id": "{% uuid 'v4' %}",
   "properties": {
     "dct:type": {
