@@ -168,7 +168,7 @@ policies included.
 
 - The `@id` corresponds to the id of the Asset that can be negotiated for.
 - `dcat:Distribution` makes statements over which Data Planes an Asset's data can be retrieved. Currently, the TractusX-EDC supports
-  `HttpData-PULL`, `AmazonS3-PUSH` and `AzureStorage-PUSH` capabilities.
+  `HttpData-PULL`, `HttpData-PUSH`, `AmazonS3-PUSH` and `AzureStorage-PUSH` capabilities.
 - `dcat:hasPolicy` holds the Data Offer that is relevant for the Consumer.
     - `@id` is the identifier for the Data Offer. The EDC composes this id by concatenating three identifiers in base64-encoding.
       separated with `:` (colons). The format is `base64(contractDefinitionId):base64(assetId):base64(newUuidV4)`. The last
