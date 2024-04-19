@@ -28,7 +28,7 @@ impacting policy definitions.
 Policies can be created in the EDC as follows:
 
 ```http
-POST /v3/assets HTTP/1.1
+POST /v3/policydefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -36,30 +36,25 @@ Content-Type: application/json
 
 ```json
 {
-  "@context": {
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
-  "@type": "PolicyDefinitionRequest",
+  "@context": [
+    "https://w3id.org/tractusx/policy/v1.0.0",
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
   "@id": "{{POLICY_ID}}",
   "policy": {
-    "@type": "odrl:Set",
-    "odrl:permission": [
+    "@type": "Set",
+    "permission": [
       {
-        "odrl:action": {
-          "@id": "odrl:use"
-        },
-        "odrl:constraint": [
-          {
-            "odrl:leftOperand": {
-              "@value": "BusinessPartnerNumber"
-            },
-            "odrl:operator": {
-              "@id": "odrl:eq"
-            },
-            "odrl:rightOperand": "<bpnNumber>"
-          }
-        ]
+        "action": "use",
+        "constraint": {
+          "leftOperand": "FrameworkAgreement",
+          "operator": "eq",
+          "rightOperand": "pcf"
+        }
       }
     ]
   }
@@ -81,6 +76,35 @@ or compacted, define additional `@context` objects, refer to a predefined outsid
 or the [json-ld playground](https://json-ld.org/playground/) helps to be consistent.
 
 If the creation of the `policy-definition` was successful, the Management-API will return HTTP 200.
+
+The JSON-LD context to include depends on the type of constraint:
+
+- ODRL -> `http://www.w3.org/ns/odrl.jsonld` (always)
+- BPN/BPN-Groups -> `https://w3id.org/tractusx/edc/v0.0.1`
+- VC -> `https://w3id.org/tractusx/policy/v1.0.0`
+
+The `https://w3id.org/tractusx/edc/v0.0.1` context is available only from 0.7.1 version and not in the initial one 0.7.0
+
+An equivalent syntax would be 
+
+```json
+{
+  "@context" : [
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+    }
+  ],
+  "policy": {
+    "permission" : {
+      "constraint" : {
+        "leftOperand" : "tx:BusinessPartnerGroup" // or tx:BusinessPartnerNumber
+        ..
+      }
+    }
+  }
+}
+```
 
 #### Catena-X specific `constraints`
 
@@ -122,76 +146,65 @@ For the following Scenarios, we assume there is a **Partner 1 (provider)** who w
 Partner 2 (consumer) signed the **Traceability Framework Agreement** and followed all the necessary steps that the
 Credential appears within Partner 2s identity.
 
-So for this example, if Partner 2 does a catalog request to Partner 1, the following credential is provided to
-Partner 1:
+When doing a catalog request with the [IATP](https://github.com/eclipse-tractusx/identity-trust/blob/main/specifications/verifiable.presentation.protocol.md) presentation flow
+the `MembershipCredential` is provided to Partner 1:
+
+For example:
 
 ```json
 {
   "@context": [
-    "https://w3id.org/2023/catenax/credentials/summary/v1"
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/catenax/credentials/v1.0.0"
   ],
-  "id": "<credential uid>",
+  "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089",
   "type": [
     "VerifiableCredential",
-    "SummaryCredential"
+    "MembershipCredential"
   ],
-  "issuer": "<did:web:issuer>",
-  "issuanceDate": "2023-06-02T12:00:00Z",
+  "issuer": "did:web:com.example.issuer",
+  "issuanceDate": "2021-06-16T18:56:59Z",
   "expirationDate": "2022-06-16T18:56:59Z",
   "credentialSubject": {
-    "id": "<did:web:subject>",
-    "holderIdentifier": "BPN6789",
-    "items": [
-      "MembershipCredential",
-      "TraceabilityCredential"
-    ],
-    "contractTemplates": "https://public.catena-x.org/contracts/"
+    "id": "did:web:com.example.participant",
+    "holderIdentifier": "BPN6789"
   }
 }
 ```
-> Note: This specific credential schema will not be supported in upcoming releases but serves the purpose to illustrate
-> what such a credential may look like.
+
+For other subsequent requests like Contract negotiation requests and transfer process requests, the presented
+credentials are based on the usage/contract policy. This means VC based policies can be used only
+in the usage/contract policy.
 
 #### Scenario 1
 
-Partner 1 wants to create an Access Policy, that Partner 2 can only receive the Contract offer if its BPN matches AND if
-it has the Traceability Credential (Traceability Contract Signed). If one of those is missing, Partner 2 won't receive a
-Contract Offer.
+Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a
+Contract Agreement should only be created if Partner 2 also signed the Traceability Framework Agreement. So in this
+case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Traceability Framework
+Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
 
-##### Partner 1 - Access Policy Example
+##### Partner 1 - Access Policy Example (Scenario 1)
 
 ```json
+{
+  "@context": [
+    "https://w3id.org/tractusx/edc/v0.0.1",
+    "http://www.w3.org/ns/odrl.jsonld",
     {
-  "@context": {
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
-  "@type": "PolicyDefinitionRequest",
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
   "@id": "{{POLICY_ID}}",
   "policy": {
-    "@type": "Policy",
-    "odrl:permission": [
+    "@type": "Set",
+    "permission": [
       {
-        "odrl:action": "use",
-        "odrl:constraint": {
-          "@type": "LogicalConstraint",
-          "odrl:and": [
-            {
-              "@type": "Constraint",
-              "odrl:leftOperand": "BusinessPartnerNumber",
-              "odrl:operator": {
-                "@id": "odrl:eq"
-              },
-              "odrl:rightOperand": "{{CONSUMERS_BPN}}"
-            },
-            {
-              "@type": "Constraint",
-              "odrl:leftOperand": "FrameworkAgreement.traceability",
-              "odrl:operator": {
-                "@id": "odrl:eq"
-              },
-              "odrl:rightOperand": "active"
-            }
-          ]
+        "action": "use",
+        "constraint": {
+          "leftOperand": "BusinessPartnerNumber",
+          "operator": "eq",
+          "rightOperand": "BPN6789"
         }
       }
     ]
@@ -199,41 +212,66 @@ Contract Offer.
 }
 ```
 
-Each `leftOperand` is resolved by the EDC against a property in the participant's Verfiable Credential. Thus the exact
-data structure may not always match between the VC and the policy.
+##### Partner 1 - Usage/Contract Policy Example (Scenario 1)
 
-##### Desired Outcome
+```json
+{
+  "@context": [
+    "https://w3id.org/tractusx/policy/v1.0.0",
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
+  "@id": "{{POLICY_ID}}",
+  "policy": {
+    "@type": "Set",
+    "permission": [
+      {
+        "action": "use",
+        "constraint": {
+          "leftOperand": "FrameworkAgreement",
+          "operator": "eq",
+          "rightOperand": "traceability"
+        }
+      }
+    ]
+  }
+}
+```
 
-Partner 2 receives the Contract Offer because the BPNs are matching and he owns the Traceability Credential.
+##### Desired Outcome (Scenario 1)
+
+Partner 2 receives the Contract Offer and is able to negotiate the contract because he owns the Traceability Credential.
 
 #### Scenario 2
 
-Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a
-Contract Agreement should only be created if Partner 2 also signed the Traceability Framework Agreement. So in this
-case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Traceability Framework
-Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
+Partner 1 wants to create an Access Policy that Partner 2 can receive the Contract Offer if the BPN is matching 
+but a Contract Agreement should only be created if Partner 2 is identified as a Dismantler (owns the "DismantlerCredential").
 
 ##### Partner 1 - Access Policy Example (Scenario 2)
 
 ```json
 {
-  "@context": {
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
-  "@type": "PolicyDefinitionRequest",
+  "@context": [
+    "https://w3id.org/tractusx/edc/v0.0.1",
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
   "@id": "{{POLICY_ID}}",
   "policy": {
-    "@type": "Policy",
-    "odrl:permission": [
+    "@type": "Set",
+    "permission": [
       {
-        "odrl:action": "use",
-        "odrl:constraint": {
-          "@type": "Constraint",
-          "odrl:leftOperand": "BusinessPartnerNumber",
-          "odrl:operator": {
-            "@id": "odrl:eq"
-          },
-          "odrl:rightOperand": "{{BPN6789}}"
+        "action": "use",
+        "constraint": {
+          "leftOperand": "BusinessPartnerNumber",
+          "operator": "eq",
+          "rightOperand": "BPN6789"
         }
       }
     ]
@@ -244,24 +282,25 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
 ##### Partner 1 - Usage/Contract Policy Example (Scenario 2)
 
 ```json
+{
+  "@context": [
+    "https://w3id.org/tractusx/policy/v1.0.0",
+    "http://www.w3.org/ns/odrl.jsonld",
     {
-  "@context": {
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
-  "@type": "PolicyDefinitionRequest",
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
   "@id": "{{POLICY_ID}}",
   "policy": {
-    "@type": "Policy",
-    "odrl:permission": [
+    "@type": "Set",
+    "permission": [
       {
-        "odrl:action": "use",
-        "odrl:constraint": {
-          "@type": "Constraint",
-          "odrl:leftOperand": "FrameworkAgreement.traceability",
-          "odrl:operator": {
-            "@id": "odrl:eq"
-          },
-          "odrl:rightOperand": "active"
+        "action": "use",
+        "constraint": {
+          "leftOperand": "Dismantler",
+          "operator": "eq",
+          "rightOperand": "active"
         }
       }
     ]
@@ -271,137 +310,11 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
 
 ##### Desired Outcome (Scenario 2)
 
-Partner 2 receives the Contract Offer and is able to negotiate the contract because he owns the Traceability Credential.
-
-#### Scenario 3
-
-Partner 1 wants to create an Access Policy that Partner 2 can receive the Contract Offer if the BPN is matching AND
-Partner 2 is identified as a Dismantler (owns the "DismantlerCredential").
-
-##### Partner 1 - Access Policy Example (Scenario 3)
-
-```json
-{
-  "@context": {
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
-  "@type": "PolicyDefinitionRequest",
-  "@id": "{{POLICY_ID}}",
-  "policy": {
-    "@type": "Policy",
-    "odrl:permission": [
-      {
-        "odrl:action": "use",
-        "odrl:constraint": {
-          "@type": "LogicalConstraint",
-          "odrl:and": [
-            {
-              "@type": "Constraint",
-              "odrl:leftOperand": "BusinessPartnerNumber",
-              "odrl:operator": {
-                "@id": "odrl:eq"
-              },
-              "odrl:rightOperand": "{{BPN6789}}"
-            },
-            {
-              "@type": "Constraint",
-              "odrl:leftOperand": "Dismantler",
-              "odrl:operator": {
-                "@id": "odrl:eq"
-              },
-              "odrl:rightOperand": "active"
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
-```
-
-##### Desired Outcome (Scenario 3)
-
-Partner 2 does not receive the Contract Offer as he does not own the Dismantler Credential and is therefore not able to
-negotiate the contract or request the data.
-
-#### Scenario 4
-
-Partner 1 wants to create an Access Policy that Partner 2 can receive the Contract Offer if the BPN is matching.
-Further, Partner 1 only wants to create an Agreement if Partner 2 is identified as a Dismantler (owns the
-"DismantlerCredential"). Otherwise the Negotiation has to fail.
-
-##### Partner 1 - Access Policy Example (Scenario 4)
-
-```json
-{
-    "@context": {
-        "odrl": "http://www.w3.org/ns/odrl/2/"
-    },
-    "@type": "PolicyDefinitionRequest",
-    "@id": "{{POLICY_ID}}",
-    "policy": {
-        "@type": "Policy",
-        "odrl:permission": [
-            {
-                "odrl:action": "use",
-                "odrl:constraint": {
-                    "@type": "LogicalConstraint",
-                    "odrl:and": [
-                        {
-                            "@type": "Constraint",
-                            "odrl:leftOperand": "BusinessPartnerNumber",
-                            "odrl:operator": {
-                                "@id": "odrl:eq"
-                            },
-                            "odrl:rightOperand": "{{BPN6789}}"
-                        }
-                    ]
-                }
-            }
-        ]
-    }
-}
-```
-
-##### Partner 1 - Usage/Contract Policy Example (Scenario 4)
-
-```json
-{
-    "@context": {
-        "odrl": "http://www.w3.org/ns/odrl/2/"
-    },
-    "@type": "PolicyDefinitionRequest",
-    "@id": "{{POLICY_ID}}",
-    "policy": {
-        "@type": "Policy",
-        "odrl:permission": [
-            {
-                "odrl:action": "use",
-                "odrl:constraint": {
-                    "@type": "LogicalConstraint",
-                    "odrl:and": [
-                        {
-                            "@type": "Constraint",
-                            "odrl:leftOperand": "Dismantler",
-                            "odrl:operator": {
-                                "@id": "odrl:eq"
-                            },
-                            "odrl:rightOperand": "active"
-                        }
-                    ]
-                }
-            }
-        ]
-    }
-}
-```
-
-##### Desired Outcome (Scenario 4)
-
 Partner 2 receives the Contract Offer in the first place.
 
 The contract negotiation, started by Partner 2 fails because he has not been identified as Dismantler and therefore does
 not own the Dismantler Credential.
+
 
 #### Writing Policies for the EDC
 
@@ -439,29 +352,29 @@ it.
 
 ```json
 {
-  "@context": {
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
-  },
-  "@type": "PolicyDefinitionRequest",
-  "@id": "{% uuid 'v4' %}",
+  "@context": [
+    "https://w3id.org/tractusx/edc/v0.0.1",
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
+  "@id": "{{POLICY_ID}}",
   "policy": {
     "@type": "Set",
-    "@context": "http://www.w3.org/ns/odrl.jsonld",
     "permission": [
       {
         "action": "use",
-        "constraint": [
-          {
-            "leftOperand": "tx:BusinessPartnerGroup",
-            "operator": "isPartOf",
-            "rightOperand": "<group>"
-          }
-        ]
+        "constraint": {
+          "leftOperand": "BusinessPartnerGroup",
+          "operator": "eq",
+          "rightOperand": "gold-partners"
+        }
       }
     ]
   }
 }
-
 ```
 
 #### Chaining Constraints
@@ -471,30 +384,30 @@ and `odrl:xone` (exactly one constraint evaluates to `true`).
 
 ```json
 {
-  "@context": {
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
-  },
-  "@type": "PolicyDefinitionRequest",
+  "@context": [
+    "https://w3id.org/tractusx/edc/v0.0.1",
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
+  "@type": "PolicyDefinition",
   "@id": "{{POLICY_ID}}",
   "policy": {
     "@type": "Set",
-    "@context": "http://www.w3.org/ns/odrl.jsonld",
     "permission": [
       {
         "action": "use",
         "constraint": [
           {
-            "@type": "LogicalConstraint",
             "and": [
               {
-                "leftOperand": {
-                  "@value": "<field>"
-                },
+                "leftOperand": "<leftOperand>",
                 "operator": "eq",
                 "rightOperand": "<value>"
               },
               {
-                "leftOperand": "tx:BusinessPartnerGroup",
+                "leftOperand": "BusinessPartnerGroup",
                 "operator": "isPartOf",
                 "rightOperand": "<group>"
               }
