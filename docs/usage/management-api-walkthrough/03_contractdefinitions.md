@@ -4,7 +4,7 @@ A Contract Definition is the connection between a set of [Assets](01_assets.md) 
 Policy. The two policies are both policies as explained [previously](02_policies.md) but checked in different
 stages of communication between Data Provider and Data Consumer. The creation request looks like this:
 
-```http
+```http request
 POST /v2/contractdefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
@@ -22,6 +22,7 @@ Content-Type: application/json
   "contractPolicyId": "myContractPolicyId",
   "assetsSelector": 
     {
+      "@type": "CriterionDto",
       "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
       "operator": "=",
       "operandRight": "myAssetId"
@@ -52,6 +53,7 @@ to match multiple Assets if they share a common property:
 ```json
 {
   "assetsSelector": {
+    "@type": "Criterion",
     "operandLeft": "https://w3id.org/edc/v0.0.1/ns/myCommonProperty",
     "operator": "=",
     "operandRight": "sharedValue"
@@ -64,11 +66,13 @@ These can also be chained together with a logical AND:
 {
   "assetsSelector": [
     {
+      "@type": "Criterion",
       "operandLeft": "https://w3id.org/edc/v0.0.1/ns/myCommonProperty",
       "operator": "=",
       "operandRight": "sharedValue"
     },
     {
+      "@type": "Criterion",
       "operandLeft": "https://w3id.org/edc/v0.0.1/ns/myOtherProperty",
       "operator": "=",
       "operandRight": "otherSharedValue"

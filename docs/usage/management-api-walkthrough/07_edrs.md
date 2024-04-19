@@ -30,7 +30,7 @@ Alternatively TractusX-EDC provides a single API to collapse those two processes
 
 Example of negotiating a contract for an asset with a framework agreement policy:
 
-```http
+```http request
 POST /v2/edrs HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -50,9 +50,9 @@ Content-Type: application/json
     "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
     "protocol": "dataspace-protocol-http",
     "policy": {
-        "@id": "<OFFER_ID>",
+        "@id": "{{OFFER_ID}}",
         "@type": "Offer",
-        "assigner": "<PROVIDER_BPN}>",
+        "assigner": "{{PROVIDER_BPN}}",
         "permission": [
             {
                 "action": "use",
@@ -67,7 +67,7 @@ Content-Type: application/json
         ],
         "prohibition": [],
         "obligation": [],
-        "target": "<ASSET_ID>"
+        "target": "{{ASSET_ID}}"
     },
     "callbackAddresses": []
 }
@@ -122,7 +122,7 @@ The Consumer Control Plane can be queried for EDRs by the
 
 Here's an example of querying with `assetId`:
 
-```http
+```http request
 POST /v2/edrs/request HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -160,7 +160,7 @@ The EDR itself contain also authentication information is stored in the secure v
 Finally, after first obtaining them from the Provider Control Plane and
 then locating in the Consumer Control Plane's cache, they can be retrieved using the `transferProcessId`.
 
-```http
+```http request
 GET /v2/edrs/myTransferProcessId/dataaddress HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -179,10 +179,10 @@ that is located at `endpoint`.
   "tx-auth:refreshEndpoint": "http://provider.dataplane/api/public/token",
   "type": "https://w3id.org/idsa/v4.1/HTTP",
   "endpoint": "http://provider.dataplane/api/public",
-  "tx-auth:refreshToken": "<refreshToken>",
+  "tx-auth:refreshToken": "{{REFRESH_TOKEN}}",
   "tx-auth:expiresIn": "300",
-  "authorization": "<token>",
-  "tx-auth:refreshAudience": "<refreshAudience>",
+  "authorization": "{{TOKEN}}",
+  "tx-auth:refreshAudience": "{{REFRESH_AUDIENCE}}",
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
@@ -207,7 +207,7 @@ Three ways are currently supported depending on the use case:
 By using the same API described above and passing a query parameter `auto_refresh=true`, the renewal
 will be done automatically if necessary transparently.
 
-```http
+```http request
 GET /v2/edrs/myTransferProcessId/dataaddress?auto_refresh=true HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -239,7 +239,7 @@ If/When the transfer process transition to `SUSPENDED`/`TERMINATED` the EDR is a
 However, if needed this endpoint will delete the EDR entry associated with the `transfer-process-id` and it will remove the EDR itself
 from the vault.
 
-```http
+```http request
 DELETE /v2/edrs/myTransferProcessId HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -259,10 +259,10 @@ you want to transfer, we can use the `endpoint`, `authorization` to make the req
 has been configured to proxy also HTTP verb, query parameters and path segments, they will be forwarded to the backend from the 
 Provider Data Plane:
 
-```http
+```http request
 GET /subroute?foo=bar HTTP/1.1
 Host: https://consumer-data.plane/api/public
-Authorization: <token>
+Authorization: {{TOKEN}}
 Content-Type: application/json
 ```
 
@@ -279,7 +279,7 @@ Shell APIs but can be used to connect to any Http-based Asset.
 
 Example:
 
-```http
+```http request
 POST /aas/request HTTP/1.1
 Host: https://consumer-data.plane/proxy
 X-Api-Key: password
@@ -299,7 +299,7 @@ url:
 - `queryParams` query parameters to add to the url
 
 So if the `Edr#endpoint` is `http://provider-data.plane:8080/test`, the following request
-```http
+```http request
 POST /aas/request HTTP/1.1
 Host: https://consumer-data.plane/proxy
 X-Api-Key: password

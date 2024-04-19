@@ -27,8 +27,8 @@ impacting policy definitions.
 
 Policies can be created in the EDC as follows:
 
-```http
-POST /v3/policydefinitions HTTP/1.1
+```http request
+POST /v2/policydefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -330,7 +330,7 @@ that the EDC interprets policies it can't evaluate as true by default. A couple 
   "@context": {
     "odrl": "http://www.w3.org/ns/odrl/2/"
   },
-  "@type": "PolicyDefinitionRequest",
+  "@type": "PolicyDefinition",
   "@id": "{% uuid 'v4' %}",
   "policy": {
     "@type": "Policy",
@@ -477,8 +477,8 @@ Example:
 {
   "@context": "http://www.w3.org/ns/odrl.jsonld",
   "@type": "Set",
-  "@id": "<ID_SET_BY_CLIENT>",
-  "target": "<ID_OF_TARGET_DATASET>",
+  "@id": "{{ID_SET_BY_CLIENT}}",
+  "target": "{{ID_OF_TARGET_DATASET}}",
   "permission": [
     {
       "action": "use"

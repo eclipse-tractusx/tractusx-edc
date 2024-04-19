@@ -4,7 +4,7 @@ The catalog API is the first request in this sequence that passes through the Da
 Consumer against their own Control Plane and triggers the retrieval of a catalog from a specified Data Provider. The request
 looks like this:
 
-```http
+```http request
 POST /v2/catalog/request HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -13,17 +13,18 @@ Content-Type: application/json
 ```json
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "odrl": "http://www.w3.org/ns/odrl/2/"
   },
   "@type": "CatalogRequest",
+  "counterPartyId": "<string>",
   "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
-  "counterPartyId": "<PROVIDER-BPN>",
   "protocol": "dataspace-protocol-http",
   "querySpec": {
+    "@type": "QuerySpec",
     "offset": 0,
     "limit": 50,
-    "sortField": "https://purl.org/dc/terms/type",
+    "sortField": "http://purl.org/dc/terms/type",
     "sortOrder": "ASC",
     "filterExpression": [
       {
@@ -70,7 +71,7 @@ The returned payload is a `dcat:Catalog` as required by the [DSP-Specification v
   "@type": "dcat:Catalog",
   "dspace:participantId": "BPNL000000001INT",
   "dcat:dataset": {
-    "@id": "<ASSET-ID>",
+    "@id": "{{ASSET_ID}}",
     "@type": "dcat:Dataset",
     "odrl:hasPolicy": {
       "@id": "MQ==:MQ==:M2ZmZDRhY2MtMzkyNy00NGI4LWJlZDItNDcwY2RiZGRjN2Ex",
@@ -139,7 +140,7 @@ The returned payload is a `dcat:Catalog` as required by the [DSP-Specification v
     "dct:terms": "connector",
     "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
   },
-  "participantId": "<PROVIDER-BPN>",
+  "participantId": "{{PROVIDER_BPN}}",
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",

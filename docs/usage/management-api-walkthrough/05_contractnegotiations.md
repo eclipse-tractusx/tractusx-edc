@@ -10,7 +10,7 @@ It includes
 
 To trigger the process, the Data Consumer POSTs against their own Control Plane.
 
-```http
+```http request
 POST /v2/contractnegotiations HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -20,16 +20,16 @@ Content-Type: application/json
 ```json
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "ContractRequest",
   "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
   "protocol": "dataspace-protocol-http",
   "policy": {
-    "@id": "<OFFER_ID>",
     "@type": "Offer",
-    "target": "<ASSET_ID>",
-    "assigner": "<PROVIDER_BPN>",
+    "@id": "{{OFFER_ID}}",
+    "target": "{{ASSET_ID}}",
+    "assigner": "{{PROVIDER_BPN}}",
     "permission": [],
     "prohibition": [],
     "obligation": []
@@ -46,7 +46,6 @@ Content-Type: application/json
     }
   ]
 }
-
 ```
 - `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
   It will usually end in `/api/v1/dsp`
@@ -92,7 +91,7 @@ the `@id` property.
 
 ### Polling
 
-```http
+```http request
 GET /v2/contractnegotiation/773b8795-45f2-4c57-a020-dc04e639baf3 HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -109,7 +108,7 @@ that will look like this:
   "type": "CONSUMER",
   "protocol": "dataspace-protocol-http",
   "state": "REQUESTING",
-  "counterPartyId": "<PROVIDER_BPN>",
+  "counterPartyId": "{{PROVIDER_BPN}}",
   "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
   "callbackAddresses": [
     {
@@ -154,8 +153,8 @@ Here's an example:
   "at": 1701441001897,
   "payload": {
     "contractNegotiationId": "019488e0-f242-4c12-8314-610927b09e96",
-    "counterPartyAddress": "<PROVIDER-CONTROLPLANE-DSP-ENDPOINT>",
-    "counterPartyId": "<PROVIDER-BPN>",
+    "counterPartyAddress": "{{PROVIDER_CONTROLPLANE_DSP_ENDPOINT}}",
+    "counterPartyId": "{{PROVIDER_BPN}}",
     "callbackAddresses": [
       {
         "transactional": false,
@@ -169,12 +168,12 @@ Here's an example:
     ],
     "contractOffers": [
       {
-        "id": "<OFFER-ID>",
+        "id": "{{OFFER_ID}}",
         "policy": {
           "permissions": [
             {
               "edctype": "dataspaceconnector:permission",
-              "target": "<ASSET-ID>",
+              "target": "{{ASSET_ID}}",
               "action": {
                 "type": "http://www.w3.org/ns/odrl/2/use",
                 "includedIn": null,
@@ -192,22 +191,22 @@ Here's an example:
           "inheritsFrom": null,
           "assigner": null,
           "assignee": null,
-          "target": "<ASSET-ID>",
+          "target": "{{ASSET_ID}}",
           "@type": {
             "@policytype": "set"
           }
         },
-        "assetId": "<ASSET-ID>"
+        "assetId": "{{ASSET_ID}}"
       }
     ],
     "protocol": "dataspace-protocol-http",
     "lastContractOffer": {
-      "id": "<OFFER-ID>",
+      "id": "{{OFFER_ID}}",
       "policy": {
         "permissions": [
           {
             "edctype": "dataspaceconnector:permission",
-            "target": "<ASSET-ID>",
+            "target": "{{ASSET_ID}}",
             "action": {
               "type": "http://www.w3.org/ns/odrl/2/use",
               "includedIn": null,
@@ -225,12 +224,12 @@ Here's an example:
         "inheritsFrom": null,
         "assigner": null,
         "assignee": null,
-        "target": "<ASSET-ID>",
+        "target": "{{ASSET_ID}}",
         "@type": {
           "@policytype": "set"
         }
       },
-      "assetId": "<ASSET-ID>"
+      "assetId": "{{ASSET_ID}}"
     }
   },
   "type": "ContractNegotiationRequested"
