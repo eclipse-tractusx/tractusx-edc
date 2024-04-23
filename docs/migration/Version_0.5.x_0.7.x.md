@@ -89,6 +89,7 @@ participant's control plane and data plane.
 The setting `backendService.httpProxyTokenReceiverUrl`, which configured an EDR receiver backend using the upstream
 EDC [extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver)
 is no longer available as well as the extension is not shipped in the Tractus-X EDC 0.7.x distributions.
+Likewise, the option to dynamically register a consumer-side HTTP-callback via `receiverHttpEndpoint` in the POST /transferprocesses call was removed. Consumer apps should use the /v2/edrs API instead.
 
 The main reason is that EDC/Tractus-X-EDC switched to Dataplane Signaling for handling transfers and the EDR format
 specified in
