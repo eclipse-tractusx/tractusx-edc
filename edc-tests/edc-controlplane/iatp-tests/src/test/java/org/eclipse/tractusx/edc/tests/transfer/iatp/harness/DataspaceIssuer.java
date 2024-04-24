@@ -41,8 +41,9 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
 import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
 import org.eclipse.edc.jsonld.spi.JsonLd;
-import org.eclipse.edc.security.signature.jws2020.JwkMethod;
-import org.eclipse.edc.security.signature.jws2020.JwsSignature2020Suite;
+import org.eclipse.edc.security.signature.jws2020.JsonWebKeyPair;
+import org.eclipse.edc.security.signature.jws2020.Jws2020ProofDraft;
+import org.eclipse.edc.security.signature.jws2020.Jws2020SignatureSuite;
 import org.eclipse.edc.verifiablecredentials.linkeddata.LdpIssuer;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 
@@ -66,9 +67,10 @@ import static org.mockito.Mockito.mock;
 public class DataspaceIssuer extends IdentityParticipant {
 
     public static final String DATASPACE_ISSUER = "did:example:dataspace_issuer";
+    public static final URI ASSERTION_METHOD = URI.create("https://w3id.org/security#assertionMethod");
     private static final ObjectMapper MAPPER = createObjectMapper();
     private static final String KEY_ID = "#key1";
-    private final JwsSignature2020Suite jws2020suite = new JwsSignature2020Suite(MAPPER);
+    private final Jws2020SignatureSuite jws2020suite = new Jws2020SignatureSuite(MAPPER);
     private final DidDocument didDocument;
 
     public DataspaceIssuer() {
@@ -148,14 +150,16 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .monitor(mock())
                 .build();
 
-        var proofOptions = jws2020suite.createOptions()
+        var proofDraft = Jws2020ProofDraft.Builder.newInstance()
+                .proofPurpose(ASSERTION_METHOD)
+                .verificationMethod(new JsonWebKeyPair(URI.create(verificationId()), null, null, null))
                 .created(Instant.now())
-                .verificationMethod(new JwkMethod(URI.create(verificationId()), null, null, null))
-                .purpose(URI.create("https://w3id.org/security#assertionMethod"));
+                .mapper(MAPPER)
+                .build();
 
         var key = getKeyPairAsJwk();
 
-        var result = issuer.signDocument(verifiableCredential, createKeyPair(key, verificationId()), proofOptions).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
+        var result = issuer.signDocument(jws2020suite, verifiableCredential, createKeyPair(key, verificationId()), proofDraft).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
 
         try {
             return MAPPER.writeValueAsString(result);
@@ -203,7 +207,7 @@ public class DataspaceIssuer extends IdentityParticipant {
 
     private com.apicatalog.ld.signature.key.KeyPair createKeyPair(JWK jwk, String id) {
         var type = URI.create("https://w3id.org/security#JsonWebKey2020");
-        return new JwkMethod(URI.create(id), type, null, jwk);
+        return new JsonWebKeyPair(URI.create(id), type, null, jwk);
     }
 
     private DidDocument generateDidDocument() {
