@@ -114,6 +114,11 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
                 put("edc.iam.issuer.id", getDid());
+                put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
+                put("edc.iam.sts.oauth.client.id", "test-clientid");
+                put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
+                put("edc.iam.sts.dim.url", "http://sts.example.com");
+                put("tx.iam.iatp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "http://localhost:%d/api/public/v2/data".formatted(dataPlanePublic.getPort()));
             }
         };

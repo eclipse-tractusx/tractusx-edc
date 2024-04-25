@@ -24,6 +24,7 @@ import io.restassured.specification.RequestSpecification;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -51,6 +52,12 @@ public class RuntimeConfig {
                 put("web.http.public.port", String.valueOf(publicApi.url().getPort()));
                 put("web.http.signaling.path", signalingApi.url().getPath());
                 put("web.http.signaling.port", String.valueOf(signalingApi.url().getPort()));
+                put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
+                put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
+                put("edc.iam.sts.oauth.client.id", "test-clientid");
+                put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
+                put("edc.iam.sts.dim.url", "http://sts.example.com");
+                put("tx.iam.iatp.bdrs.server.url", "http://sts.example.com");
             }
         };
     }
