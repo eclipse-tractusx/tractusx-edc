@@ -36,11 +36,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TransferProcessServiceStub implements TransferProcessService {
-    private final ResponseQueue responseQueue;
+public class TransferProcessServiceStub extends AbstractServiceStub implements TransferProcessService {
 
     public TransferProcessServiceStub(ResponseQueue responseQueue) {
-        this.responseQueue = responseQueue;
+        super(responseQueue);
     }
 
     @Override

@@ -30,11 +30,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class PolicyDefinitionServiceStub implements PolicyDefinitionService {
-    private final ResponseQueue responseQueue;
+public class PolicyDefinitionServiceStub extends AbstractServiceStub implements PolicyDefinitionService {
 
     public PolicyDefinitionServiceStub(ResponseQueue responseQueue, Monitor monitor) {
-        this.responseQueue = responseQueue;
+        super(responseQueue);
     }
 
     @Override

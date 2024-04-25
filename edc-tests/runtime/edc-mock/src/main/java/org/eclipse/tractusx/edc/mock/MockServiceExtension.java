@@ -19,11 +19,6 @@
 
 package org.eclipse.tractusx.edc.mock;
 
-import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.command.TerminateNegotiationCommand;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
 import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogService;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
@@ -35,18 +30,19 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.mock.services.AssetServiceStub;
+import org.eclipse.tractusx.edc.mock.services.ContractAgreementServiceStub;
+import org.eclipse.tractusx.edc.mock.services.ContractDefinitionServiceStub;
+import org.eclipse.tractusx.edc.mock.services.ContractNegotiationServiceStub;
 import org.eclipse.tractusx.edc.mock.services.PolicyDefinitionServiceStub;
 import org.eclipse.tractusx.edc.mock.services.TransferProcessServiceStub;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class MockServiceExtension implements ServiceExtension {
@@ -59,8 +55,10 @@ public class MockServiceExtension implements ServiceExtension {
         try {
             var assetQuery = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("assetquery.request.json"), RecordedRequest.class);
             var assetCreation = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("assetcreation.request.json"), RecordedRequest.class);
+            var tpQuery = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("transferprocess.request.json"), RecordedRequest.class);
             recordedRequests.offer(assetQuery);
             recordedRequests.offer(assetCreation);
+            recordedRequests.offer(tpQuery);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -89,89 +87,21 @@ public class MockServiceExtension implements ServiceExtension {
     }
 
     @Provider
-    public ContractAgreementService mockContractAgreementService() {
-        return new ContractAgreementService() {
-            @Override
-            public ContractAgreement findById(String contractAgreementId) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<List<ContractAgreement>> search(QuerySpec query) {
-                return null;
-            }
-
-            @Override
-            public ContractNegotiation findNegotiation(String contractAgreementId) {
-                return null;
-            }
-        };
+    public ContractAgreementService mockContractAgreementService(ServiceExtensionContext context) {
+        var monitor = context.getMonitor().withPrefix("ContractAgreementService");
+        return new ContractAgreementServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
     @Provider
-    public ContractDefinitionService mockContractDefService() {
-        return new ContractDefinitionService() {
-
-            @Override
-            public ContractDefinition findById(String contractDefinitionId) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<List<ContractDefinition>> search(QuerySpec query) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<ContractDefinition> create(ContractDefinition contractDefinition) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<Void> update(ContractDefinition contractDefinition) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<ContractDefinition> delete(String contractDefinitionId) {
-                return null;
-            }
-        };
+    public ContractDefinitionService mockContractDefService(ServiceExtensionContext context) {
+        var monitor = context.getMonitor().withPrefix("ContractDefinitionService");
+        return new ContractDefinitionServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
     @Provider
-    public ContractNegotiationService mockContractNegService() {
-        return new ContractNegotiationService() {
-            @Override
-            public ContractNegotiation findbyId(String contractNegotiationId) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<List<ContractNegotiation>> search(QuerySpec query) {
-                return null;
-            }
-
-            @Override
-            public String getState(String negotiationId) {
-                return "";
-            }
-
-            @Override
-            public ContractAgreement getForNegotiation(String negotiationId) {
-                return null;
-            }
-
-            @Override
-            public ContractNegotiation initiateNegotiation(ContractRequest request) {
-                return null;
-            }
-
-            @Override
-            public ServiceResult<Void> terminate(TerminateNegotiationCommand command) {
-                return null;
-            }
-        };
+    public ContractNegotiationService mockContractNegService(ServiceExtensionContext context) {
+        var monitor = context.getMonitor().withPrefix("ContractNegotiationService");
+        return new ContractNegotiationServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
     @Provider
@@ -182,7 +112,7 @@ public class MockServiceExtension implements ServiceExtension {
 
     @Provider
     public TransferProcessService mockTransferProcessService(ServiceExtensionContext context) {
-        var monitor = context.getMonitor().withPrefix("PolicyDefinitionService");
+        var monitor = context.getMonitor().withPrefix("TransferProcessService");
         return new TransferProcessServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
