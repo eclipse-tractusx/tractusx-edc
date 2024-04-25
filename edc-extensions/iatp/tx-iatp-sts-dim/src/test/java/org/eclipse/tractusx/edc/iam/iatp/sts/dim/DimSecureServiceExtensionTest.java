@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
@@ -27,10 +28,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.iam.iatp.sts.dim.DimSecureTokenServiceExtension.DIM_URL;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
@@ -49,8 +50,10 @@ public class DimSecureServiceExtensionTest {
         var monitor = context.getMonitor();
         var prefixeMonitor = mock(Monitor.class);
         when(monitor.withPrefix(anyString())).thenReturn(prefixeMonitor);
-        extension.secureTokenService(context);
-        verify(prefixeMonitor).severe("Mandatory config value missing: 'edc.iam.sts.dim.url'. This runtime will not be fully operational! Starting with v0.7.x this will be a runtime error.");
+
+        assertThatThrownBy(() -> extension.secureTokenService(context))
+                .isInstanceOf(EdcException.class)
+                .hasMessage("Mandatory config value missing: 'edc.iam.sts.dim.url'. This runtime is not operational.");
     }
 
 }
