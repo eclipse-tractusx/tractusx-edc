@@ -19,42 +19,11 @@
 
 package org.eclipse.tractusx.edc.mock.api.instrumentation;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import org.eclipse.tractusx.edc.mock.RecordedRequest;
-import org.eclipse.tractusx.edc.mock.ResponseQueue;
-
-import java.util.List;
-
-@Consumes({ MediaType.APPLICATION_JSON })
-@Produces({ MediaType.APPLICATION_JSON })
-@Path("/instrumentation")
-public class InstrumentationApi {
-
-    private final ResponseQueue responseQueue;
-
-    public InstrumentationApi(ResponseQueue responseQueue) {
-        this.responseQueue = responseQueue;
-    }
-
-    @POST
-    public void addNewRequest(RecordedRequest<?, ?> recordedRequest) {
-        responseQueue.append(recordedRequest);
-    }
-
-    @DELETE
-    public void clearQueue() {
-        responseQueue.clear();
-    }
-
-    @GET
-    public List<RecordedRequest<?, ?>> getRequests() {
-        return responseQueue.toList();
-    }
+@OpenAPIDefinition(info = @Info(description = "This API allows to insert ", title = "Business Partner Group API"))
+@Tag(name = "Business Partner Group")
+public interface InstrumentationApi {
 }

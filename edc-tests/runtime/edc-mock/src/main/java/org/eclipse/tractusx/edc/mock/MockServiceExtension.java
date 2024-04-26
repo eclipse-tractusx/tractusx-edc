@@ -35,7 +35,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.web.spi.WebService;
-import org.eclipse.tractusx.edc.mock.api.instrumentation.InstrumentationApi;
+import org.eclipse.tractusx.edc.mock.api.instrumentation.InstrumentationApiController;
 import org.eclipse.tractusx.edc.mock.services.AssetServiceStub;
 import org.eclipse.tractusx.edc.mock.services.ContractAgreementServiceStub;
 import org.eclipse.tractusx.edc.mock.services.ContractDefinitionServiceStub;
@@ -75,7 +75,7 @@ public class MockServiceExtension implements ServiceExtension {
             throw new RuntimeException(e);
         }
 
-        webService.registerResource("instrumentation", new InstrumentationApi(new ResponseQueue(recordedRequests, monitor)));
+        webService.registerResource(new InstrumentationApiController(new ResponseQueue(recordedRequests, monitor)));
 
     }
 
