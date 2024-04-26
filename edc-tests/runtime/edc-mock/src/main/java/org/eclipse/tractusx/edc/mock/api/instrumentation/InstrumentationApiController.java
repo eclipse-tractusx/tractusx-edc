@@ -43,18 +43,28 @@ public class InstrumentationApiController implements InstrumentationApi {
         this.responseQueue = responseQueue;
     }
 
+    @Override
     @POST
     public void addNewRequest(RecordedRequest<?, ?> recordedRequest) {
         responseQueue.append(recordedRequest);
     }
 
+    @Override
     @DELETE
     public void clearQueue() {
         responseQueue.clear();
     }
 
+    @Override
     @GET
     public List<RecordedRequest<?, ?>> getRequests() {
         return responseQueue.toList();
+    }
+
+    @Override
+    @GET
+    @Path("/count")
+    public int count() {
+        return responseQueue.toList().size();
     }
 }

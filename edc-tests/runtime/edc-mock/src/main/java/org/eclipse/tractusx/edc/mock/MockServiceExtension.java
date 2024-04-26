@@ -43,7 +43,6 @@ import org.eclipse.tractusx.edc.mock.services.ContractNegotiationServiceStub;
 import org.eclipse.tractusx.edc.mock.services.PolicyDefinitionServiceStub;
 import org.eclipse.tractusx.edc.mock.services.TransferProcessServiceStub;
 
-import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -61,20 +60,6 @@ public class MockServiceExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         monitor = context.getMonitor().withPrefix("ResponseQueue");
-        try {
-            var assetQuery = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("asset.request.json"), RecordedRequest.class);
-            var assetCreation = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("asset.creation.json"), RecordedRequest.class);
-            var tpQuery = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("transferprocess.request.json"), RecordedRequest.class);
-            var cdCreation = typeManager.getMapper().readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream("contractdef.creation.json"), RecordedRequest.class);
-            recordedRequests.offer(assetQuery);
-            recordedRequests.offer(assetCreation);
-            recordedRequests.offer(tpQuery);
-            recordedRequests.offer(cdCreation);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         webService.registerResource(new InstrumentationApiController(new ResponseQueue(recordedRequests, monitor)));
 
     }
