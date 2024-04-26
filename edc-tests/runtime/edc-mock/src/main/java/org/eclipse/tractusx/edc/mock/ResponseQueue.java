@@ -25,14 +25,14 @@ import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
+import java.util.Queue;
 
 public class ResponseQueue {
-    private final Deque<RecordedRequest<?, ?>> recordedRequests;
+    private final Queue<RecordedRequest<?, ?>> recordedRequests; // todo guard access with locks
     private final Monitor monitor;
 
-    public ResponseQueue(Deque<RecordedRequest<?, ?>> recordedRequests, Monitor monitor) {
+    public ResponseQueue(Queue<RecordedRequest<?, ?>> recordedRequests, Monitor monitor) {
         this.recordedRequests = recordedRequests;
         this.monitor = monitor;
     }
@@ -63,11 +63,26 @@ public class ResponseQueue {
         return ServiceResult.badRequest(r.getFailureDetail());
     }
 
+    public void clear() {
+        recordedRequests.clear();
+    }
+
+    public void append(RecordedRequest<?, ?> recordedRequest) {
+        recordedRequests.offer(recordedRequest);
+    }
+
+    public List<RecordedRequest<?, ?>> toList() {
+        return recordedRequests.stream().toList(); //immutable
+    }
+
     @SuppressWarnings("unchecked")
     private <T> ServiceResult<T> getNext(Class<T> outputType) {
+        monitor.debug("Get next recorded request, expect output of type %s".formatted(outputType));
         var r = recordedRequests.poll();
 
+
         if (r != null) {
+            monitor.debug("Recorded request fetched, %d remaining.".formatted(recordedRequests.size()));
             var recipeOutputType = r.getOutput().getClass();
             if (!recipeOutputType.isAssignableFrom(outputType)) {
                 return ServiceResult.badRequest("Type mismatch: service invocation requires '%s', but Recipe specifies '%s'".formatted(outputType, recipeOutputType));
@@ -75,7 +90,9 @@ public class ResponseQueue {
             var output = (T) r.getOutput();
             return ServiceResult.success(output);
         }
-        return ServiceResult.badRequest("No Recipe in queue");
+        var message = "Failure: no recorded request left in queue.";
+        monitor.debug(message);
+        return ServiceResult.badRequest(message);
     }
 
     //todo: add method getNextWithMatch that accepts an input and a match type

@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.mock.services;
 
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
@@ -32,7 +31,7 @@ import java.util.List;
 
 public class PolicyDefinitionServiceStub extends AbstractServiceStub implements PolicyDefinitionService {
 
-    public PolicyDefinitionServiceStub(ResponseQueue responseQueue, Monitor monitor) {
+    public PolicyDefinitionServiceStub(ResponseQueue responseQueue) {
         super(responseQueue);
     }
 

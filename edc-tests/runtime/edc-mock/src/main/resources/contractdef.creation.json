@@ -1,0 +1,33 @@
+{
+  "name": "Asset Creation V3",
+  "input": {
+    "class": "org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition",
+    "data": {
+      "id": "asset-1",
+      "accessPolicyId": "test-policy1",
+      "contractPolicyId": "test-policy2",
+      "assetsSelector": [
+        {
+          "operandLeft": "id",
+          "operator": "=",
+          "operandRight": "some-asset-id"
+        }
+      ]
+    }
+  },
+  "output": {
+    "class": "org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition",
+    "data": {
+      "id": "asset-1",
+      "accessPolicyId": "test-policy1",
+      "contractPolicyId": "test-policy2",
+      "assetsSelector": [
+        {
+          "operandLeft": "id",
+          "operator": "=",
+          "operandRight": "some-asset-id"
+        }
+      ]
+    }
+  }
+}

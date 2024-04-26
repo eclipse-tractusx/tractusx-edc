@@ -1,5 +1,5 @@
 {
-  "name": "Asset Query v3",
+  "name": "TransferProcess Query v3",
   "input": {
     "class": "org.eclipse.edc.spi.query.QuerySpec",
     "data": {
