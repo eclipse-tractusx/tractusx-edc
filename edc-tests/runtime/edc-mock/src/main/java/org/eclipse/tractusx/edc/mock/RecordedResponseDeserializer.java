@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.eclipse.edc.spi.result.ServiceFailure;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -34,6 +35,9 @@ class RecordedResponseDeserializer extends StdDeserializer<RecordedRequest<?, ?>
     public static final String CLASS_FIELD = "class";
     public static final String DATA_FIELD = "data";
     public static final String INPUT_MATCH_TYPE_FIELD = "match_type";
+    public static final String NAME_FIELD = "name";
+    public static final String DESCRIPTION_FIELD = "description";
+    private static final String FAILURE_OBJECT = "failure";
 
     RecordedResponseDeserializer() {
         this(null);
@@ -55,8 +59,12 @@ class RecordedResponseDeserializer extends StdDeserializer<RecordedRequest<?, ?>
             var inputObj = ctxt.readTreeAsValue(input.get(DATA_FIELD), inputClass);
             var matchType = Optional.ofNullable(input.get("matchType")).map(JsonNode::asText).map(MatchType::valueOf).orElse(MatchType.CLASS);
             var outputObj = ctxt.readTreeAsValue(output.get(DATA_FIELD), outputClass);
+
             return new RecordedRequest.Builder(inputObj, outputObj)
                     .inputMatchType(matchType)
+                    .failure(ctxt.readTreeAsValue(node.get(FAILURE_OBJECT), ServiceFailure.class))
+                    .name(Optional.ofNullable(node.get(NAME_FIELD)).map(JsonNode::asText).orElse(null))
+                    .description(Optional.ofNullable(node.get(DESCRIPTION_FIELD)).map(JsonNode::asText).orElse(null))
                     .build();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

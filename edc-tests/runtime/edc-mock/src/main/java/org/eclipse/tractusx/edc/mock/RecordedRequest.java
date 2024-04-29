@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.mock;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.eclipse.edc.spi.result.ServiceFailure;
 
 @JsonDeserialize(using = RecordedResponseDeserializer.class)
 public final class RecordedRequest<I, O> {
@@ -28,6 +29,7 @@ public final class RecordedRequest<I, O> {
     private String description;
     private String name;
     private MatchType inputMatchType;
+    private ServiceFailure failure;
 
     private RecordedRequest(I input, O output) {
         this.input = input;
@@ -44,6 +46,18 @@ public final class RecordedRequest<I, O> {
 
     public MatchType getInputMatchType() {
         return inputMatchType;
+    }
+
+    public ServiceFailure getFailure() {
+        return failure;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public static class Builder<I, O> {
@@ -65,6 +79,11 @@ public final class RecordedRequest<I, O> {
 
         public Builder<I, O> description(String description) {
             instance.description = description;
+            return this;
+        }
+
+        public Builder<I, O> failure(ServiceFailure failure) {
+            instance.failure = failure;
             return this;
         }
 

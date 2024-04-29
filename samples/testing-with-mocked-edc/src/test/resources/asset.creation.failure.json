@@ -1,0 +1,24 @@
+{
+  "name": "Some failed asset request",
+  "description": "test description",
+  "input": {
+    "class": "org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset",
+    "data": {
+      "id": "asset-1",
+      "properties": {
+        "https://w3id.org/edc/v0.0.1/ns/contenttype": "application/json",
+        "https://w3id.org/edc/v0.0.1/ns/prop1": "value1"
+      }
+    }
+  },
+  "output": {
+    "class": "org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset"
+  },
+  "failure": {
+    "reason": "UNAUTHORIZED",
+    "messages": [
+      "This user is not authorized",
+      "This is just a second error message"
+    ]
+  }
+}

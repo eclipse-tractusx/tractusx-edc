@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.mock;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
 import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogService;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
@@ -31,6 +32,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -62,6 +64,11 @@ public class MockServiceExtension implements ServiceExtension {
         monitor = context.getMonitor().withPrefix("ResponseQueue");
         webService.registerResource(new InstrumentationApiController(new ResponseQueue(recordedRequests, monitor)));
 
+        // register custom deserializer for the ServiceFailure
+        var mapper = typeManager.getMapper();
+        var module = new SimpleModule();
+        module.addDeserializer(ServiceFailure.class, new ServiceFailureDeserializer());
+        mapper.registerModule(module);
     }
 
     @Provider

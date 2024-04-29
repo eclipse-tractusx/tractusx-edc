@@ -19,11 +19,14 @@
 
 package org.eclipse.tractusx.edc.mock;
 
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
@@ -82,10 +85,15 @@ public class ResponseQueue {
 
 
         if (r != null) {
+
+            if (r.getFailure() != null) {
+                return createResult(r.getFailure());
+            }
+
             monitor.debug("Recorded request fetched, %d remaining.".formatted(recordedRequests.size()));
             var recipeOutputType = r.getOutput().getClass();
             if (!recipeOutputType.isAssignableFrom(outputType)) {
-                return ServiceResult.badRequest("Type mismatch: service invocation requires '%s', but Recipe specifies '%s'".formatted(outputType, recipeOutputType));
+                return ServiceResult.badRequest("Type mismatch: service invocation requires output type '%s', but Recipe specifies '%s'".formatted(outputType, recipeOutputType));
             }
             var output = (T) r.getOutput();
             return ServiceResult.success(output);
@@ -93,6 +101,18 @@ public class ResponseQueue {
         var message = "Failure: no recorded request left in queue.";
         monitor.debug(message);
         return ServiceResult.badRequest(message);
+    }
+
+    // hack to access a protected constructor
+    private <T> ServiceResult<T> createResult(ServiceFailure failure) {
+        try {
+            var ctor = ServiceResult.class.getDeclaredConstructor(Object.class, ServiceFailure.class);
+            ctor.setAccessible(true); // hack hack hack! I feel dirty doing this...
+            return (ServiceResult<T>) ctor.newInstance(null, failure);
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException |
+                 InvocationTargetException e) {
+            throw new EdcException(e);
+        }
     }
 
     //todo: add method getNextWithMatch that accepts an input and a match type

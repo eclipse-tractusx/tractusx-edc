@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
@@ -21,49 +19,20 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `java-library`
-    id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.swagger.core.v3.swagger-gradle-plugin")
+    `java-test-fixtures`
 }
-
 
 dependencies {
-    // compile-time dependencies
-    implementation(libs.edc.spi.boot)
-    implementation(libs.edc.spi.controlplane)
-    implementation(libs.edc.lib.util)
+    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
 
-    // runtime dependencies
-    runtimeOnly(libs.edc.core.connector)
-    runtimeOnly(libs.edc.boot)
-    runtimeOnly(libs.edc.api.management)
-    runtimeOnly(libs.edc.api.management.config)
-
-    runtimeOnly(libs.edc.ext.http)
-    runtimeOnly(libs.bundles.edc.monitoring)
-
-    // edc libs
-    runtimeOnly(libs.edc.ext.jsonld)
-
+    testImplementation(libs.testcontainers.junit)
+    testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.assertj)
+    testImplementation(libs.restAssured)
+    testImplementation(libs.awaitility)
 }
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
+// do not publish
 edcBuild {
     publish.set(false)
-}
-
-tasks.withType<ShadowJar> {
-    exclude("**/pom.properties", "**/pom.xm")
-    mergeServiceFiles()
-    archiveFileName.set("${project.name}.jar")
-}
-
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }

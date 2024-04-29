@@ -94,6 +94,7 @@ include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 
 
 include(":samples:multi-tenancy")
+include(":samples:testing-with-mocked-edc")
 
 
 // this is needed to have access to snapshot builds of plugins
