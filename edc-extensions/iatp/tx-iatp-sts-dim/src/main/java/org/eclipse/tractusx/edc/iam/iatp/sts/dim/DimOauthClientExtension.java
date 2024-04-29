@@ -23,10 +23,13 @@ import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauthClientImpl;
+
+import java.time.Clock;
 
 /**
  * Extension that provides an implementation if {@link DimOauth2Client} using {@link Oauth2Client}
@@ -46,6 +49,12 @@ public class DimOauthClientExtension implements ServiceExtension {
     @Inject
     private Vault vault;
 
+    @Inject
+    private Monitor monitor;
+
+    @Inject
+    private Clock clock;
+
     @Override
     public String name() {
         return NAME;
@@ -53,7 +62,7 @@ public class DimOauthClientExtension implements ServiceExtension {
 
     @Provider
     public DimOauth2Client oauth2Client() {
-        return new DimOauthClientImpl(oauth2Client, vault, clientConfiguration);
+        return new DimOauthClientImpl(oauth2Client, vault, clientConfiguration, clock, monitor);
     }
 
 }
