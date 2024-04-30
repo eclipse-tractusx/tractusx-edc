@@ -49,7 +49,8 @@ jobs:
                    { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
                    { dir: edc-controlplane, img: edc-controlplane-postgresql-azure-vault },
                    { dir: edc-dataplane,    img: edc-dataplane-azure-vault },
-                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault } ]
+                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault },
+                   { dir: edc-tests/runtime, img: edc-mock }]
     permissions:
       contents: write
       packages: write
