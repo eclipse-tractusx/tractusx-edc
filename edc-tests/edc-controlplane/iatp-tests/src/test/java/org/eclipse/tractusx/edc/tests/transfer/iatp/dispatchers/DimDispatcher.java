@@ -19,14 +19,13 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers;
 
-import okhttp3.mockwebserver.Dispatcher;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.RecordedRequest;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.jetbrains.annotations.NotNull;
+import org.mockserver.mock.action.ExpectationResponseCallback;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
 
 import java.util.Collection;
 import java.util.Map;
@@ -41,7 +40,7 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
 /**
  * Mock service for DIM interaction. Underlying it uses the {@link EmbeddedSecureTokenService} for generating SI tokens
  */
-public class DimDispatcher extends Dispatcher {
+public class DimDispatcher implements ExpectationResponseCallback {
 
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private final String path;
@@ -56,13 +55,12 @@ public class DimDispatcher extends Dispatcher {
         this("/", secureTokenServices);
     }
 
-    @NotNull
-    @Override
-    @SuppressWarnings({ "unchecked" })
-    public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) {
-        if (recordedRequest.getPath().split("\\?")[0].equals(path)) {
 
-            var body = MAPPER.readValue(recordedRequest.getBody().readByteArray(), Map.class);
+    @Override
+    public HttpResponse handle(HttpRequest httpRequest) throws Exception {
+        if (httpRequest.getPath().getValue().split("\\?")[0].equals(path)) {
+
+            var body = MAPPER.readValue(httpRequest.getBody().getRawBytes(), Map.class);
 
             var grant = Optional.ofNullable(body.get("grantAccess"))
                     .map((payload) -> grantAccessHandler((Map<String, Object>) payload));
@@ -70,13 +68,13 @@ public class DimDispatcher extends Dispatcher {
             var sign = Optional.ofNullable(body.get("signToken"))
                     .map((payload) -> signTokenHandler((Map<String, Object>) payload));
 
-            return grant.or(() -> sign).orElse(new MockResponse().setResponseCode(404));
+            return grant.or(() -> sign).orElse(HttpResponse.response().withStatusCode(404));
         }
-        return new MockResponse().setResponseCode(404);
+        return HttpResponse.response().withStatusCode(404);
     }
 
     @SuppressWarnings("unchecked")
-    private MockResponse grantAccessHandler(Map<String, Object> params) {
+    private HttpResponse grantAccessHandler(Map<String, Object> params) {
         var issuer = params.get("consumerDid").toString();
         var audience = params.get("providerDid").toString();
         Collection<String> scopes = (Collection<String>) params.get("credentialTypes");
@@ -88,10 +86,10 @@ public class DimDispatcher extends Dispatcher {
                 .map(TokenRepresentation::getToken)
                 .orElseThrow(failure -> new RuntimeException(failure.getFailureDetail()));
 
-        return new MockResponse().setBody(MAPPER.writeValueAsString(Map.of("jwt", token)));
+        return HttpResponse.response(MAPPER.writeValueAsString(Map.of("jwt", token)));
     }
 
-    private MockResponse signTokenHandler(Map<String, Object> params) {
+    private HttpResponse signTokenHandler(Map<String, Object> params) {
         var subject = params.get("subject").toString();
         var accessToken = params.get("token").toString();
         var audience = params.get("audience").toString();
@@ -108,11 +106,6 @@ public class DimDispatcher extends Dispatcher {
                 .map(TokenRepresentation::getToken)
                 .orElseThrow(failure -> new RuntimeException(failure.getFailureDetail()));
 
-        return new MockResponse().setBody(MAPPER.writeValueAsString(Map.of("jwt", token)));
+        return HttpResponse.response(MAPPER.writeValueAsString(Map.of("jwt", token)));
     }
-
-    private MockResponse createTokenResponse() {
-        return new MockResponse().setBody(MAPPER.writeValueAsString(Map.of("jwt", "token")));
-    }
-
 }

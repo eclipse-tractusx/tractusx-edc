@@ -20,8 +20,6 @@
 package org.eclipse.tractusx.edc.tests.edrv2;
 
 import jakarta.json.Json;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationAgreed;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationInitiated;
@@ -36,6 +34,7 @@ import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
+import org.eclipse.tractusx.edc.tests.helpers.ReceivedEvent;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.eclipse.tractusx.edc.tests.runtimes.PgParticipantRuntime;
@@ -45,25 +44,29 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEvent;
-import static org.eclipse.tractusx.edc.tests.helpers.Functions.waitForEvent;
+import static org.eclipse.tractusx.edc.tests.helpers.Functions.readEvent;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
+import static org.mockserver.model.HttpRequest.request;
 
 public class NegotiateEdrTest {
 
@@ -80,11 +83,11 @@ public class NegotiateEdrTest {
 
     abstract static class Tests {
 
-        MockWebServer server;
+        ClientAndServer server;
 
         @BeforeEach
         void setup() {
-            server = new MockWebServer();
+            server = ClientAndServer.startClientAndServer("localhost", getFreePort());
         }
 
         @Test
@@ -102,15 +105,15 @@ public class NegotiateEdrTest {
                     createEvent(TransferProcessRequested.class),
                     createEvent(TransferProcessStarted.class));
 
+            var url = "http://%s:%d%s".formatted("localhost", server.getPort(), "/mock/api");
+
             var assetId = "api-asset-1";
-            var url = server.url("/mock/api");
-            server.start();
 
             var authCodeHeaderName = "test-authkey";
             var authCode = "test-authcode";
             Map<String, Object> dataAddress = Map.of(
                     "name", "transfer-test",
-                    "baseUrl", url.toString(),
+                    "baseUrl", url,
                     "type", "HttpData",
                     "contentType", "application/json",
                     "authKey", authCodeHeaderName,
@@ -125,27 +128,32 @@ public class NegotiateEdrTest {
             PLATO.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
 
-            expectedEvents.forEach(event -> server.enqueue(new MockResponse()));
+            var events = new ArrayList<ReceivedEvent>();
+            server.when(request().withPath("/mock/api"))
+                    .respond(request -> {
+                        var event = readEvent(request);
+                        events.add(event);
+                        return HttpResponse.response().withStatusCode(200);
+                    });
+
 
             var callbacks = Json.createArrayBuilder()
-                    .add(EdrNegotiationHelperFunctions.createCallback(url.toString(), true, Set.of("contract.negotiation", "transfer.process")))
+                    .add(EdrNegotiationHelperFunctions.createCallback(url, true, Set.of("contract.negotiation", "transfer.process")))
                     .build();
 
             var contractNegotiationId = SOKRATES.edrs().negotiateEdr(PLATO, assetId, callbacks);
 
-            var events = expectedEvents.stream()
-                    .map(receivedEvent -> waitForEvent(server))
-                    .collect(Collectors.toList());
-
-
+            await().pollInterval(ASYNC_POLL_INTERVAL)
+                    .atMost(ASYNC_TIMEOUT)
+                    .untilAsserted(() -> {
+                        assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
+                    });
             await().pollInterval(ASYNC_POLL_INTERVAL)
                     .atMost(ASYNC_TIMEOUT)
                     .untilAsserted(() -> {
                         var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
                         assertThat(edrCaches).hasSize(1);
                     });
-
-            assertThat(expectedEvents).usingRecursiveFieldByFieldElementComparator().containsAll(events);
 
             var edrCaches = SOKRATES.edrs().getEdrEntriesByAssetId(assetId);
 
@@ -174,7 +182,7 @@ public class NegotiateEdrTest {
 
         @AfterEach
         void teardown() throws IOException {
-            server.shutdown();
+            server.stop();
         }
     }
 

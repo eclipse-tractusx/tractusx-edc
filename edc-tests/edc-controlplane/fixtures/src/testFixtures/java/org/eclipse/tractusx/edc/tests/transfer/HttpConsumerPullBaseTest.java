@@ -106,9 +106,8 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
                 .withHeader("Edc-Contract-Agreement-Id")
                 .withHeader("Edc-Bpn", sokrates().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
-        
-    }
 
+    }
 
     @Test
     void transferData_privateBackend_withConsumerDataPlane() {
@@ -158,8 +157,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
                 .withHeader("Edc-Bpn", sokrates().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
-
-
+    
     @AfterEach
     void teardown() {
         server.stop();

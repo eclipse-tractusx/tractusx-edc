@@ -19,19 +19,21 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
-import okhttp3.mockwebserver.MockWebServer;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.KeycloakDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpResponse;
 
 import java.io.IOException;
 import java.security.PrivateKey;
@@ -42,21 +44,21 @@ import java.util.function.Supplier;
 
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
+import static org.mockserver.model.HttpRequest.request;
 
 @EndToEndTest
 public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
-
     @RegisterExtension
     protected static final IatpParticipantRuntime SOKRATES_RUNTIME = dimRuntime(SOKRATES.getName(), SOKRATES.iatpConfiguration(PLATO), SOKRATES.getKeyPair());
-
     @RegisterExtension
     protected static final IatpParticipantRuntime PLATO_RUNTIME = dimRuntime(PLATO.getName(), PLATO.iatpConfiguration(SOKRATES), PLATO.getKeyPair());
-    private static MockWebServer oauthServer;
-    private static MockWebServer dimDispatcher;
+    private static final TypeManager MAPPER = new JacksonTypeManager();
+    private static ClientAndServer oauthServer;
+    private static ClientAndServer dimServer;
 
     @BeforeAll
-    static void prepare() throws IOException {
+    static void prepare() {
 
         var tokenGeneration = new JwtGenerationService();
 
@@ -64,13 +66,13 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
                 SOKRATES.getDid(), tokenServiceFor(tokenGeneration, SOKRATES),
                 PLATO.getDid(), tokenServiceFor(tokenGeneration, PLATO));
 
-        oauthServer = new MockWebServer();
-        oauthServer.start(STS.stsUri().getPort());
-        oauthServer.setDispatcher(new KeycloakDispatcher(STS.stsUri().getPath() + "/token"));
+        oauthServer = ClientAndServer.startClientAndServer(STS.stsUri().getPort());
 
-        dimDispatcher = new MockWebServer();
-        dimDispatcher.start(DIM_URI.getPort());
-        dimDispatcher.setDispatcher(new DimDispatcher(generatorServices));
+        oauthServer.when(request().withMethod("POST").withPath(STS.stsUri().getPath() + "/token"))
+                .respond(HttpResponse.response(MAPPER.writeValueAsString(Map.of("access_token", "token"))));
+
+        dimServer = ClientAndServer.startClientAndServer(DIM_URI.getPort());
+        dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
 
         // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();
@@ -85,8 +87,8 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @AfterAll
     static void unwind() throws IOException {
-        oauthServer.shutdown();
-        dimDispatcher.shutdown();
+        oauthServer.stop();
+        dimServer.stop();
     }
 
     private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant iatpDimParticipant) {

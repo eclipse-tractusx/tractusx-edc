@@ -23,7 +23,6 @@ plugins {
 }
 
 dependencies {
-    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.nimbus.jwt)
     testImplementation(libs.awaitility)
