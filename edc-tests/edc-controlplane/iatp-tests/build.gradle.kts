@@ -36,7 +36,6 @@ dependencies {
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
-    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
 }
 

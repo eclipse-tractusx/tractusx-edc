@@ -48,7 +48,6 @@ dependencies {
     testFixturesImplementation(libs.edc.core.token)
     testFixturesImplementation(libs.edc.spi.identity.did)
     testFixturesImplementation(testFixtures(libs.edc.sql.core))
-    testFixturesImplementation(libs.okhttp.mockwebserver)
     testFixturesImplementation(libs.testcontainers.postgres)
 
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
