@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.mock.services;
 
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
@@ -32,11 +31,9 @@ import java.util.List;
 public class AssetServiceStub implements AssetService {
 
     private final ResponseQueue responseQueue;
-    private final Monitor monitor;
 
-    public AssetServiceStub(ResponseQueue responseQueue, Monitor monitor) {
+    public AssetServiceStub(ResponseQueue responseQueue) {
         this.responseQueue = responseQueue;
-        this.monitor = monitor;
     }
 
     @Override

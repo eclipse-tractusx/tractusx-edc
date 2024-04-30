@@ -74,7 +74,7 @@ public class MockServiceExtension implements ServiceExtension {
     @Provider
     public AssetService mockAssetService(ServiceExtensionContext context) {
         var monitor = context.getMonitor().withPrefix("ResponseQueue");
-        return new AssetServiceStub(new ResponseQueue(recordedRequests, monitor), monitor);
+        return new AssetServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
     @Provider

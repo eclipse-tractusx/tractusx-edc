@@ -22,6 +22,12 @@ package org.eclipse.tractusx.edc.mock;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.edc.spi.result.ServiceFailure;
 
+/**
+ * Represents a request, that the service stub will replay. It has an input object (can be null), an output object, some metadata
+ * like name and description and a {@link MatchType}.
+ * In addition, it can have a {@link ServiceFailure}, in which case the {@code output} object is disregarded and the failure is always returned.
+ * This can be used to mock a failed API call.
+ */
 @JsonDeserialize(using = RecordedResponseDeserializer.class)
 public final class RecordedRequest<I, O> {
     private final I input;

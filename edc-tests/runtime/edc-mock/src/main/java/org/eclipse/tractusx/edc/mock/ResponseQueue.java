@@ -31,8 +31,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * Container object that maintains the queue of {@link RecordedRequest} objects and grants high-level access to it.
+ */
 public class ResponseQueue {
-    private final Queue<RecordedRequest<?, ?>> recordedRequests; // todo guard access with locks
+    private final Queue<RecordedRequest<?, ?>> recordedRequests; // todo guard access with locks?
     private final Monitor monitor;
 
     public ResponseQueue(Queue<RecordedRequest<?, ?>> recordedRequests, Monitor monitor) {
@@ -50,6 +53,14 @@ public class ResponseQueue {
         }
     }
 
+    /**
+     * Gets the next item from the request queue and wraps it in a {@link ServiceResult}, where the generic type is a list type.
+     * To do that, the class of list type is expected as parameter.
+     *
+     * @param arrayElementClass    The type of elements that are expected to be in the list
+     * @param errorMessageTemplate An error string template that should contain the '%s' placeholder to receive additional information
+     * @return A {@link ServiceResult} that contains the payload of the next request
+     */
     @SuppressWarnings("unchecked")
     public <T> ServiceResult<List<T>> getNextAsList(Class<T> arrayElementClass, String errorMessageTemplate) {
         if (arrayElementClass.isArray()) {
@@ -66,18 +77,32 @@ public class ResponseQueue {
         return ServiceResult.badRequest(r.getFailureDetail());
     }
 
+    /**
+     * clear the queue
+     */
     public void clear() {
         recordedRequests.clear();
     }
 
+    /**
+     * adds a {@link RecordedRequest}
+     */
     public void append(RecordedRequest<?, ?> recordedRequest) {
         recordedRequests.offer(recordedRequest);
     }
 
+    /**
+     * provides the contents of the queue as a list
+     */
     public List<RecordedRequest<?, ?>> toList() {
         return recordedRequests.stream().toList(); //immutable
     }
 
+    /**
+     * Takes the next element from the queue and converts it into a {@link ServiceResult}
+     *
+     * @param outputType The desired output type. If the type description in the {@link RecordedRequest} does not match, a failure is returned.
+     */
     @SuppressWarnings("unchecked")
     private <T> ServiceResult<T> getNext(Class<T> outputType) {
         monitor.debug("Get next recorded request, expect output of type %s".formatted(outputType));
@@ -103,7 +128,7 @@ public class ResponseQueue {
         return ServiceResult.badRequest(message);
     }
 
-    // hack to access a protected constructor
+    // hack to access a protected constructor of the ServiceFailure
     private <T> ServiceResult<T> createResult(ServiceFailure failure) {
         try {
             var ctor = ServiceResult.class.getDeclaredConstructor(Object.class, ServiceFailure.class);

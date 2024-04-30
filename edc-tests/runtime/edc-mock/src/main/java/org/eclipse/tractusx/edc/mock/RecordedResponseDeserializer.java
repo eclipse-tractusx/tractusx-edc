@@ -28,6 +28,10 @@ import org.eclipse.edc.spi.result.ServiceFailure;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Custom deserializer for a {@link RecordedRequest} object, to be able to instantiate the input and output objects according
+ * to their class description.
+ */
 class RecordedResponseDeserializer extends StdDeserializer<RecordedRequest<?, ?>> {
 
     public static final String INPUT_OBJECT = "input";

@@ -19,6 +19,14 @@
 
 package org.eclipse.tractusx.edc.mock;
 
+/**
+ * Represents how arguments are matched.
+ * <ul>
+ *     <li>ClASS: only the type must match, similar to Mockito's {@code isA(SomeType.class}</li>
+ *     <li>PARTIAL: only the specified properties must match, disregarding others</li>
+ *     <li>PARTIAL: all properties must match, those that are not listed are expected to be null</li>
+ * </ul>
+ */
 public enum MatchType {
     CLASS, PARTIAL, EXACT
 }

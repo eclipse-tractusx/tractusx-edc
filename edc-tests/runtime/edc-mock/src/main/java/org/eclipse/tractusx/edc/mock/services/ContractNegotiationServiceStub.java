@@ -26,6 +26,7 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.Con
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.List;
@@ -37,31 +38,35 @@ public class ContractNegotiationServiceStub extends AbstractServiceStub implemen
 
     @Override
     public ContractNegotiation findbyId(String contractNegotiationId) {
-        return null;
+        return responseQueue.getNext(ContractNegotiation.class, "Error finding ContractNegotiation: %s")
+                .orElseThrow(InvalidRequestException::new);
     }
 
     @Override
     public ServiceResult<List<ContractNegotiation>> search(QuerySpec query) {
-        return null;
+        return responseQueue.getNextAsList(ContractNegotiation.class, "Error searching for ContractNegotiation: %s");
     }
 
     @Override
     public String getState(String negotiationId) {
-        return "";
+        return responseQueue.getNext(String.class, "Error getting state of ContractNegotiation: %s")
+                .orElseThrow(InvalidRequestException::new);
     }
 
     @Override
     public ContractAgreement getForNegotiation(String negotiationId) {
-        return null;
+        return responseQueue.getNext(ContractAgreement.class, "Error getting ContractAgreement: %s")
+                .orElseThrow(InvalidRequestException::new);
     }
 
     @Override
     public ContractNegotiation initiateNegotiation(ContractRequest request) {
-        return null;
+        return responseQueue.getNext(ContractNegotiation.class, "Error initiating ContractNegotiation: %s")
+                .orElseThrow(InvalidRequestException::new);
     }
 
     @Override
     public ServiceResult<Void> terminate(TerminateNegotiationCommand command) {
-        return null;
+        return responseQueue.getNext(Void.class, "Error terminating ContractAgreement: %s");
     }
 }
