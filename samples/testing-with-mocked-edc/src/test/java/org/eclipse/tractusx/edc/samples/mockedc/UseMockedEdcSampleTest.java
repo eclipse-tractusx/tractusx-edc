@@ -84,7 +84,7 @@ public class UseMockedEdcSampleTest {
     }
 
     @Test
-    void test_notAuthenticated() {
+    void test_apiNotAuthenticated_expect400() {
         //prime the mock - post a RecordedRequest
         setupNextResponse("asset.creation.failure.json");
 
