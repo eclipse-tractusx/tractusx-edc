@@ -95,7 +95,9 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run Integration tests
-        run: ./gradlew test -DincludeTags="ComponentTest"
+        run: |
+          ./gradlew :edc-tests:runtime:edc-mock:dockerize
+          ./gradlew test -DincludeTags="ComponentTest"
 
   api-tests:
     runs-on: ubuntu-latest
