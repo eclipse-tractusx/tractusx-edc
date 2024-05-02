@@ -33,6 +33,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This example demonstrates how to use the Mock-EDC as a drop-in replacement runtime for testing client code that uses EDC's
+ * Management API. While this is written in Java, the concepts are easily translatable into any language where test containers are
+ * supported.
+ */
 @Testcontainers
 @ComponentTest
 public class UseMockedEdcSampleTest {
