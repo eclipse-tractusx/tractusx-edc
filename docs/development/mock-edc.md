@@ -39,6 +39,8 @@ the [additional references section](#5-references-and-further-reading).
 
 ## 3. Use with TestContainers
 
+Mock-EDC should be used as Docker image, we publish it as `tractusx/edc-mock`.
+
 Using the Mock-EDC is very easy, we recommend usage via Testcontainers. For example, setting up a JUnit test for a
 client application using Testcontainers could be done as follows:
 
@@ -66,8 +68,12 @@ public class UseMockedEdcSampleTest {
 ```
 
 This downloads and runs the Docker image for the Mock-EDC and supplies it with minimal configuration. Specifically, it
-exposes
-the Management API and the default context, because that is needed to set up the mock.
+exposes the Management API and the default context, because that is needed to set up the mock.
+
+> Please note that in
+> the [example](../../samples/testing-with-mocked-edc/src/test/java/org/eclipse/tractusx/edc/samples/mockedc/UseMockedEdcSampleTest.java),
+> the image name is `mock-edc` - that is because in our CI testing we build the image and then run the tests, so we
+> can't use the official image.
 
 ### 3.1 Running a simple positive test
 
@@ -200,7 +206,8 @@ POST /api/instrumentation       -> adds a new RecordedRequest, JSON must be in t
 
 ## 5. References and further reading
 
-- A complete sample how to run a test using the Mock-EDC in a Testcontainer can be found [here](../../samples/testing-with-mocked-edc)
+- A complete sample how to run a test using the Mock-EDC in a Testcontainer can be
+  found [here](../../samples/testing-with-mocked-edc)
 - To test compliance with DSP, use the [TCK](https://github.com/eclipse-dataspacetck/cvf)
 - A Mock-IATP runtime is planned for future releases.
 
@@ -208,5 +215,6 @@ POST /api/instrumentation       -> adds a new RecordedRequest, JSON must be in t
 
 - matching requests to endpoints to allow for a "from-now-on" semantic
 - introducing placeholders for domain objects to increase refactoring robustness
-- abstract description of the endpoint's inputs and outputs, so developers don't need to know about service signatures anymore
+- abstract description of the endpoint's inputs and outputs, so developers don't need to know about service signatures
+  anymore
 - request input matching
