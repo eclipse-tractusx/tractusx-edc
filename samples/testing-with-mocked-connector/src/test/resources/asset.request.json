@@ -1,0 +1,22 @@
+{
+  "name": "Asset Query v3",
+  "input": {
+    "class": "org.eclipse.edc.spi.query.QuerySpec",
+    "data": {
+      "offset": 0,
+      "sortOrder": "DESC"
+    }
+  },
+  "output": {
+    "class": "[Lorg.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;",
+    "data": [
+      {
+        "id": "asset-1",
+        "properties": {
+          "https://w3id.org/edc/v0.0.1/ns/contenttype": "application/json",
+          "https://w3id.org/edc/v0.0.1/ns/prop1": "value1"
+        }
+      }
+    ]
+  }
+}

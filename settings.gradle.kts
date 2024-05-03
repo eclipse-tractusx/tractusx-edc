@@ -67,6 +67,7 @@ include(":edc-tests:edc-controlplane:policy-tests")
 include(":edc-tests:edc-controlplane:fixtures")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
@@ -93,6 +94,7 @@ include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 
 
 include(":samples:multi-tenancy")
+include(":samples:testing-with-mocked-connector")
 
 
 // this is needed to have access to snapshot builds of plugins
