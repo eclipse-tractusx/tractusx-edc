@@ -1,4 +1,4 @@
-# Using the Mock-EDC for contract-based testing
+# Using the Mock-Connector for contract-based testing
 
 Modern testing methodologies are based on small, independent units of code that have a defined behaviour.
 Implementations as well as testing should be fast, repeatable, continuous and easily maintainable. In the context of EDC
@@ -7,12 +7,12 @@ test their workflows. While the Tractus-X EDC project did provide a pure in-memo
 requires all the configuration and a complex runtime environment to work, which may be a high barrier of entry.
 
 For this reason, and to developers who primarily interact with the Management API of a connector, the Tractus-X EDC
-project provides a testing framework with an even smaller footprint called the "Mock-EDC". It is a Docker image, that
+project provides a testing framework with an even smaller footprint called the "Mock-Connector". It is a Docker image, that
 contains just the Management API plus an instrumentation interface to enable developers to use this in their
 unit/component testing and in continuous integration.
 
 We call this "contract-based testing", as it defines the specified behaviour of an application (here: the connector).
-The Mock-EDC's Management API is guaranteed to behave exactly the same, in fact, it even runs the
+The Mock-Connector's Management API is guaranteed to behave exactly the same, in fact, it even runs the
 same code as a "real" EDC.
 
 ## 1. The contract
@@ -31,7 +31,7 @@ The [Management API spec](https://eclipse-edc.github.io/Connector/openapi/manage
 ## 2. Intended audience
 
 Developers who build their applications and systems based on EDC, and interact with EDC through the Management API can
-use the Mock-EDC to decrease friction by not having to spin up and configure a fully-fledged connector runtime.
+use the Mock-Connector to decrease friction by not having to spin up and configure a fully-fledged connector runtime.
 
 Developers who plan to work with (Tractus-X) EDC in another way, like directly using its Maven artifacts, or even by
 implementing a DSP protocol head are kindly redirected to
@@ -39,9 +39,9 @@ the [additional references section](#5-references-and-further-reading).
 
 ## 3. Use with TestContainers
 
-Mock-EDC should be used as Docker image, we publish it as `tractusx/edc-mock`.
+Mock-Connector should be used as Docker image, we publish it as `tractusx/edc-mock`.
 
-Using the Mock-EDC is very easy, we recommend usage via Testcontainers. For example, setting up a JUnit test for a
+Using the Mock-Connector is very easy, we recommend usage via Testcontainers. For example, setting up a JUnit test for a
 client application using Testcontainers could be done as follows:
 
 ```java
@@ -67,7 +67,7 @@ public class UseMockedEdcSampleTest {
 }
 ```
 
-This downloads and runs the Docker image for the Mock-EDC and supplies it with minimal configuration. Specifically, it
+This downloads and runs the Docker image for the Mock-Connector and supplies it with minimal configuration. Specifically, it
 exposes the Management API and the default context, because that is needed to set up the mock.
 
 > Please note that in
@@ -152,7 +152,7 @@ different HTTP response code, i.e. 400, and the response body contains an error 
 
 ## 4. Request pipeline and the instrumentation API
 
-The Mock-EDC internally contains a pipeline of "recorded requests", much like mocked HTTP webservers, like Netty
+The Mock-Connector internally contains a pipeline of "recorded requests", much like mocked HTTP webservers, like Netty
 Mockserver or OkHttp MockWebServer. Out-of-the-box, that pipeline is empty, which means the Management API would always
 respond with an error like the following:
 
@@ -169,12 +169,12 @@ respond with an error like the following:
 
 To get beyond that, we need to _prime_ the mock. That means, we need to tell it how to respond to the next request by
 inserting a "recorded request" into its request pipeline. In previous code examples, this was done using
-the `setupNextResponse()` method. Mock-EDC offers an instrumentation API which can be used to insert recorded requests,
+the `setupNextResponse()` method. Mock-Connector offers an instrumentation API which can be used to insert recorded requests,
 to clear the queue and to get a count.
 
 ### 4.1 Recorded requests
 
-A `RecordedRequest` is a POJO, that tells the Mock-EDC how to respond to the _next_ Management API request. To that end,
+A `RecordedRequest` is a POJO, that tells the Mock-Connector how to respond to the _next_ Management API request. To that end,
 it contains the input parameter type, the data associated with it, plus the return value type plus - most importantly -
 the data that is supposed to be returned.
 
@@ -206,7 +206,7 @@ POST /api/instrumentation       -> adds a new RecordedRequest, JSON must be in t
 
 ## 5. References and further reading
 
-- A complete sample how to run a test using the Mock-EDC in a Testcontainer can be
+- A complete sample how to run a test using the Mock-Connector in a Testcontainer can be
   found [here](../../samples/testing-with-mocked-edc)
 - To test compliance with DSP, use the [TCK](https://github.com/eclipse-dataspacetck/cvf)
 - A Mock-IATP runtime is planned for future releases.

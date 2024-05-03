@@ -96,7 +96,7 @@ jobs:
 
       - name: Run Integration tests
         run: |
-          ./gradlew :edc-tests:runtime:edc-mock:dockerize
+          ./gradlew :edc-tests:runtime:mock-connector:dockerize
           ./gradlew test -DincludeTags="ComponentTest"
 
   api-tests:

@@ -34,15 +34,15 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * This example demonstrates how to use the Mock-EDC as a drop-in replacement runtime for testing client code that uses EDC's
+ * This example demonstrates how to use the Mock-Connector as a drop-in replacement runtime for testing client code that uses EDC's
  * Management API. While this is written in Java, the concepts are easily translatable into any language where test containers are
  * supported.
  */
 @Testcontainers
 @ComponentTest
-public class UseMockedEdcSampleTest {
+public class UseMockConnectorSampleTest {
     @Container
-    protected static GenericContainer<?> edcContainer = new GenericContainer<>("edc-mock")
+    protected static GenericContainer<?> edcContainer = new GenericContainer<>("mock-connector")
             .withEnv("WEB_HTTP_PORT", "8080")
             .withEnv("WEB_HTTP_PATH", "/api")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
