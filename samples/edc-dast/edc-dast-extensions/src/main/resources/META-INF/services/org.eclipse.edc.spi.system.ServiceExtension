@@ -17,21 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-#!/bin/bash
-
-response=$(curl -X POST -d 'client_id=miw_private_client&grant_type=client_credentials&client_secret=miw_private_client&scope=openid' http://localhost:8080/realms/miw_test/protocol/openid-connect/token)
-token=$(echo "$response" | jq -r '.access_token')
-
-credentials=$(curl --url 'http://localhost:8000/api/credentials?type=SummaryCredential' --header "Authorization: Bearer $token"  --header 'Content-Type: application/json'  | jq -r '.content')
-
-
-vp_token=$(curl --request POST \
-            --url 'http://localhost:8000/api/presentations?asJwt=true&audience=http://test' \
-            --header "Authorization: Bearer $token" \
-            --header 'Content-Type: application/json' \
-            --data "{ \"verifiableCredentials\": $credentials }" \
-            | jq -r '.vp')
-
-echo "VP_TOKEN=$vp_token" >> "$GITHUB_ENV"
-
-
+org.eclipse.tractusx.edc.dast.DastSeedExtension
