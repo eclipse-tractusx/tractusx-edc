@@ -23,10 +23,16 @@ import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2CredentialsRequest;
 import org.eclipse.edc.iam.oauth2.spi.client.SharedSecretOauth2CredentialsRequest;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.StsRemoteClientConfiguration;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 public class DimOauthClientImpl implements DimOauth2Client {
 
@@ -35,19 +41,48 @@ public class DimOauthClientImpl implements DimOauth2Client {
     private final Oauth2Client oauth2Client;
 
     private final Vault vault;
+    private final Clock clock;
+    private final Monitor monitor;
 
-    public DimOauthClientImpl(Oauth2Client oauth2Client, Vault vault, StsRemoteClientConfiguration configuration) {
+    private volatile TimestampedToken authToken;
+
+    public DimOauthClientImpl(Oauth2Client oauth2Client, Vault vault, StsRemoteClientConfiguration configuration, Clock clock, Monitor monitor) {
         this.configuration = configuration;
         this.oauth2Client = oauth2Client;
         this.vault = vault;
+        this.clock = clock;
+        this.monitor = monitor;
     }
 
     @Override
     public Result<TokenRepresentation> obtainRequestToken() {
-        return createRequest().compose(oauth2Client::requestToken);
-
+        if (isExpired()) {
+            synchronized (this) {
+                if (isExpired()) {
+                    monitor.debug("DIM Token expired, need to refresh.");
+                    // expiresIn should always be present, but if not we don't cache it
+                    return requestToken().onSuccess(tokenRepresentation -> Optional.ofNullable(tokenRepresentation.getExpiresIn())
+                            .ifPresent(expiresIn -> this.authToken = new TimestampedToken(tokenRepresentation, Instant.now(clock), expiresIn)));
+                } else {
+                    return Result.success(authToken.value);
+                }
+            }
+        } else {
+            return Result.success(authToken.value);
+        }
     }
-    
+
+    private Result<TokenRepresentation> requestToken() {
+        return createRequest().compose(oauth2Client::requestToken);
+    }
+
+    private boolean isExpired() {
+        if (authToken == null) {
+            return true;
+        }
+        return authToken.isExpired(clock);
+    }
+
     @NotNull
     private Result<Oauth2CredentialsRequest> createRequest() {
         var secret = vault.resolveSecret(configuration.clientSecretAlias());
@@ -61,6 +96,13 @@ public class DimOauthClientImpl implements DimOauth2Client {
             return Result.success(builder.build());
         } else {
             return Result.failure("Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecretAlias()));
+        }
+    }
+
+    record TimestampedToken(TokenRepresentation value, Instant lastUpdatedAt, long validitySeconds) {
+
+        public boolean isExpired(Clock clock) {
+            return lastUpdatedAt.plus(validitySeconds, ChronoUnit.SECONDS).isBefore(Instant.now(clock));
         }
     }
 }

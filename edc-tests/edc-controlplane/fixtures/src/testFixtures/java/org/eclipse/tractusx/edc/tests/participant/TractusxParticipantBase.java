@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.participant;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
@@ -37,6 +38,9 @@ import java.util.Map;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -110,6 +114,11 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
                 put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
                 put("edc.iam.issuer.id", getDid());
+                put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
+                put("edc.iam.sts.oauth.client.id", "test-clientid");
+                put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
+                put("edc.iam.sts.dim.url", "http://sts.example.com");
+                put("tx.iam.iatp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "http://localhost:%d/api/public/v2/data".formatted(dataPlanePublic.getPort()));
             }
         };
@@ -152,6 +161,22 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .post("/business-partner-groups")
                 .then()
                 .statusCode(204);
+    }
+
+    /**
+     * waits for the configured timeout until the transfer process reaches the provided state
+     *
+     * @param transferProcessId The transfer process id
+     * @param state             The transfer process state to check
+     */
+    public void waitForTransferProcess(String transferProcessId, TransferProcessStates state) {
+
+        await().pollInterval(fibonacci())
+                .atMost(timeout)
+                .untilAsserted(() -> {
+                    var tpState = getTransferProcessState(transferProcessId);
+                    assertThat(tpState).isNotNull().isEqualTo(state.toString());
+                });
     }
 
     @Override

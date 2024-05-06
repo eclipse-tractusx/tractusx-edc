@@ -23,6 +23,7 @@ import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -33,13 +34,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.CONNECTOR_DID_PROPERTY;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.CREDENTIAL_SERVICE_BASE_URL_PROPERTY;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -66,9 +67,8 @@ class BdrsClientImplExtensionTest {
         when(cfg.getString(eq(CONNECTOR_DID_PROPERTY), isNull())).thenReturn("did:web:self");
         when(cfg.getString(eq(CREDENTIAL_SERVICE_BASE_URL_PROPERTY), isNull())).thenReturn("https://credential.service");
 
-        extension.getBdrsClient(context);
-        verify(monitor).severe(eq("Mandatory config value missing: 'tx.iam.iatp.bdrs.server.url'. This runtime will not be fully operational! Starting with v0.7.x this will be a runtime error."));
-        verifyNoMoreInteractions(monitor);
+        assertThatThrownBy(() -> extension.getBdrsClient(context)).isInstanceOf(EdcException.class)
+                .hasMessageContaining(BDRS_SERVER_URL_PROPERTY);
     }
 
     @Test
@@ -112,9 +112,7 @@ class BdrsClientImplExtensionTest {
         when(cfg.getString(eq(CREDENTIAL_SERVICE_BASE_URL_PROPERTY), isNull())).thenReturn("https://credential.service");
         when(cfg.getString(eq(CONNECTOR_DID_PROPERTY), isNull())).thenReturn(null);
 
-        extension.getBdrsClient(context);
-
-        verify(monitor).severe(startsWith("Mandatory config value missing: 'edc.iam.issuer.id'. This runtime will not be fully operational!"));
-        verifyNoMoreInteractions(monitor);
+        assertThatThrownBy(() -> extension.getBdrsClient(context)).isInstanceOf(EdcException.class)
+                .hasMessageContaining(CONNECTOR_DID_PROPERTY);
     }
 }

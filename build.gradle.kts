@@ -60,7 +60,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.0.12")
+        implementation("org.slf4j:slf4j-api:2.0.13")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
         testImplementation(platform("org.junit:junit-bom:5.10.2"))
@@ -69,7 +69,7 @@ allprojects {
             implementation("org.yaml:snakeyaml:2.2") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
-            implementation("net.minidev:json-smart:2.5.0") {
+            implementation("net.minidev:json-smart:2.5.1") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
         }

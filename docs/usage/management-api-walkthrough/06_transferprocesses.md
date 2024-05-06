@@ -1,33 +1,56 @@
 # Initiation a Transfer Process
 
-Despite the naming, the Transfer Process is not the step that transmits the backend's data from the Provider to the
-Consumer. What this API does instead is trigger the Transfer of a Data Plane token from the Provider Control Plane to
-the Consumer Control Plane and in turn to a location specified by the Data Consumer.
+Transfer process is a set of interactions between Consumer and Provider that gives 
+the consumer access to a `Dataset` under the terms negotiated the in [Contract Negotiation](05_contractnegotiations.md) phase.
+
+The processes are handled in the state machine of the Control Planes, but the real data transfer (if necessary)
+happens in the provider Data Plane. 
+TractusX 0.7.0 follows the spec of [DPS](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling.md) (Data plane signaling) for Control Plane -> Data Plane communication
+
+Currently, transfer processes are divided in two modes:
+
+- Push
+- Pull
+
+## Push
+
+If the mode is push, for example `AmazonS3-PUSH` mode, once the transfer request has been validated and accepted
+by the Provider Control Plane, the transfer switches to the `STARTED` state, and it delegates the data transfer 
+to the Data Plane via (DPS). The transfer process transition to `COMPLETED` state once the actual transfer 
+has been completed by the data plane.
+
+## Pull
+
+If the mode is pull, for example `HttpData-PULL` mode, once the transfer request has been validated and accepted
+by the Provider Control Plane, the transfer switches to the `STARTED` state, and it delegates [EDR](07_edrs.md) creation
+to the Data Plane via (DPS). The transfer will stay in `STARTED` state until the transfer process gets manually 
+terminated/suspended or terminated by the policy monitor depending on the configured policy on the [Contract Agreement](08_contractagreements.md).
+
+## Transfer Request
 
 To trigger this process, the Consumer app makes a request to its EDC's Control Plane:
-```http
+```http request
 POST /v2/transferprocesses HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
 ```
+
 ```json
 {
   "@context": {
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "odrl": "http://www.w3.org/ns/odrl/2/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "assetId": "<ASSET-ID>",
-  "connectorAddress": "<CONNECTOR-ADDRESS>",
-  "contractId": "<CONTRACT-AGREEMENT-ID>",
+  "@type": "TransferRequest",
+  "assetId": "{{ASSET_ID}}",
+  "contractId": "{{CONTRACT_AGREEMENT_ID}}",
+  "counterPartyAddress": "{{CONNECTOR_ADDRESS}}",
   "dataDestination": {
-    "type": "<SUPPORTED-TYPE>"
+    "type": "<supported-transfer-type>"
   },
-  "managedResources": false,
-  "privateProperties": {
-    "receiverHttpEndpoint": "<RECEIVER-HTTP-ENDPOINT>"
-  },
+  "privateProperties": {},
   "protocol": "dataspace-protocol-http",
+  "transferType": "HttpData-PULL",
   "callbackAddresses": [
     {
       "transactional": false,
@@ -38,61 +61,55 @@ Content-Type: application/json
       "authKey": "auth-key",
       "authCodeId": "auth-code-id"
     }
-  ]
+  ],
+  "privateProperties": {
+    "receiverHttpEndpoint": "{{RECEIVER_HTTP_ENDPOINT}}"
+  }
 }
 ```
 
 - `assetId` is the id of the [asset](01_assets.md) that a transfer process should be triggered for.
-- `connectorAddress` is the DSP-endpoint of the Data Provider (usually ending on /api/v1/dsp).
+- `counterPartyAddress` is the DSP-endpoint of the Data Provider (usually ending on /api/v1/dsp).
 - `contractId` represents the Contract Agreement that the Provider and Consumer agreed on during the [Contract Negotiation](05_contractnegotiations.md)
   phase.
-- `dataDestination` will in the case of an HTTP-based transfer of the Token be a `DataAddress` object, holding exclusively
-  the `edc:type` property that must be set to `"HttpProxy"`.
-- `managedResources` is a boolean (not a string like in the [assets-API](01_assets.md#http-data-plane)).
-- `privateProperties` can be filled with arbitrary data (like in the [assets-API](01_assets.md)). However, there is one property
-  that will cause changes in EDC behavior:
-    - `receiverHttpEndpoint` is interpreted by the EDC as the URL that it shall write the Data Plane token to. These messages
-      will be transmitted via HTTP POST holding plain JSON where the Data Plane Token is written to the property `authCode`.
-      The Consumer Control Plane will use authentication headers that must be configured during deployment.
+- `dataDestination` will in the case of an HTTP PULL-based transfer of the Token be a `DataAddress` object, holding exclusively
+  the `type` property that must be set to `"HttpProxy"`.
+- `privateProperties` can be filled with arbitrary data (like in the [assets-API](01_assets.md)).
 - `protocol` describes the protocol between the EDCs and will always be `dataspace-protocol-http`.
+- `transferType` should be one of the returned format in the [Catalog](04_catalog.md)
 - `callbackAddresses`: Like the [Contract Negotiation API](05_contractnegotiations.md), an application can also register
-  a callback listener to get updates on the Transfer Process state. The relevant signal is `contract.negotiation`.
+  a callback listener to get updates on the Transfer Process state. The relevant signal is `transfer.process`.
 
 This call also returns an id, that can be used to monitor the progress.
 
 ```json
 {
+  "@type": "IdResponse",
+  "@id": "927c9712-b270-47ee-b391-9e92a4c55a5d",
+  "createdAt": 1713439560709,
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
-  },
-  "@id": "177aba51-52d7-44dc-beab-fd6151147024",
-  "createdAt": 1688465655
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "tx-auth": "https://w3id.org/tractusx/auth/",
+    "cx-policy": "https://w3id.org/catenax/policy/",
+    "odrl": "http://www.w3.org/ns/odrl/2/"
+  }
 }
 ```
 
 ## Checking for Completion
 
-### Token Transfer
+### Token Transfer HTTP PULL-BASED
 
-As described in the `receiverHttpEndpoint` section, on a successful Transfer Process, a message will be transmitted to
-the specified address holding the Data Plane Token. That's not only the goal of EDC-interaction but also the sign for
-a completed process. Here's an example for such a message:
-
-```json
-{
-  "id": "177aba51-52d7-44dc-beab-fd6151147024",
-  "endpoint": "https://provider-data.plane/",
-  "authKey": "Authorization",
-  "authCode": "<DATA-PLANE-TOKEN>",
-  "properties": {}
-}
-```
+As outlined in PULL-BASED scenario the transfer process will remain in the `STARTED` state once the EDR reaches
+the Consumer Control Plane. How to handle EDRs consumption check [here](07_edrs.md). 
 
 ### Polling
 
 The state of a given Transfer Process can be requested like this:
 
-```http
+```http request
 GET /v2/transferprocesses/177aba51-52d7-44dc-beab-fd6151147024 HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -103,26 +120,19 @@ yielding
 
 ```json
 {
-  "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
-  },
-  "@type": "https://w3id.org/edc/v0.0.1/ns/TransferProcess",
-  "@id": "process-id",
-  "correlationId": "correlation-id",
-  "type": "PROVIDER",
-  "state": "STARTED",
-  "stateTimestamp": 1688465655,
-  "assetId": "asset-id",
-  "connectorId": "connectorId",
-  "contractId": "contractId",
+  "@id": "432b242d-3795-403f-8fac-f7bd41d9cef5",
+  "@type": "TransferProcess",
+  "state": "TERMINATED",
+  "stateTimestamp": 1713439434962,
+  "type": "CONSUMER",
+  "assetId": "1",
+  "contractId": "47e05ca6-c373-4345-9ba8-e4915e02e99e",
+  "transferType": "HttpData-PULL",
+  "errorDetail": "Policy not found for contract: 47e05ca6-c373-4345-9ba8-e4915e02e99e",
   "dataDestination": {
+    "@type": "DataAddress",
     "type": "HttpProxy"
   },
-  "privateProperties": {
-    "receiverHttpEndpoint": "private-value"
-  },
-  "errorDetail": "eventual-error-detail",
-  "createdAt": 1688465655,
   "callbackAddresses": [
     {
       "transactional": false,
@@ -133,9 +143,16 @@ yielding
       "authKey": "auth-key",
       "authCodeId": "auth-code-id"
     }
-  ]
+  ],
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "tx-auth": "https://w3id.org/tractusx/auth/",
+    "cx-policy": "https://w3id.org/catenax/policy/",
+    "odrl": "http://www.w3.org/ns/odrl/2/"
+  }
 }
-
 ```
 Note that the property `errorDetails` will only be returned in certain states and may contain hints to where the communication
 between the Data Planes failed. The state-machine for the Transfer Process is [documented here](https://eclipse-edc.github.io/docs/#/submodule/Connector/docs/developer/data-transfer?id=transfer-process-state-machine).

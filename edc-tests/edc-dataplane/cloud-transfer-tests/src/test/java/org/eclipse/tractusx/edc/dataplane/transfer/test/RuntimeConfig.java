@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
@@ -44,6 +45,12 @@ public class RuntimeConfig {
                 put("tx.dpf.consumer.proxy.port", String.valueOf(getFreePort()));
                 put("web.http.control.path", controlPath);
                 put("web.http.control.port", String.valueOf(controlPort));
+                put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
+                put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
+                put("edc.iam.sts.oauth.client.id", "test-clientid");
+                put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
+                put("edc.iam.sts.dim.url", "http://sts.example.com");
+                put("tx.iam.iatp.bdrs.server.url", "http://sts.example.com");
             }
         };
     }

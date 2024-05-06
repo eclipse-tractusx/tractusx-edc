@@ -104,8 +104,8 @@ jobs:
                    { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
                    { dir: edc-controlplane, img: edc-controlplane-postgresql-azure-vault },
                    { dir: edc-dataplane,    img: edc-dataplane-azure-vault },
-                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault } ]
-
+                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault },
+                   { dir: edc-tests/runtime, img: mock-connector }]
     steps:
       - uses: actions/checkout@v4
       - name: Export RELEASE_VERSION env
@@ -140,7 +140,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@v3.5
+        uses: azure/setup-helm@v4
         with:
           version: v3.8.1
       - name: Package helm, update index.yaml and push to gh-pages

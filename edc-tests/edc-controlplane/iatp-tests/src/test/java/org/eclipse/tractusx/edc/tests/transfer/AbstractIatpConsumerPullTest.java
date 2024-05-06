@@ -26,8 +26,8 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialStatus;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
-import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.store.CredentialStore;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.query.Criterion;
@@ -232,14 +232,14 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("expirationDate", expirationDate.toString());
 
-        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createLdpVc(jsonLd, newRawVc.build());
+        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createJwtVc(newRawVc.build(), did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                         .participantId(did)
                         .holderId(bpn)
-                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JSON_LD, newCred))
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JWT, newCred))
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
@@ -293,14 +293,14 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
                 .build());
 
-        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createLdpVc(jsonLd, newRawVc.build());
+        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createJwtVc(newRawVc.build(), did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                         .participantId(did)
                         .holderId(bpn)
-                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JSON_LD, newCred))
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JWT, newCred))
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 

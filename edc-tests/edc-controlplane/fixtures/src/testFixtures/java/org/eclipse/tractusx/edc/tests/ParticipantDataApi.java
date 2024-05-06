@@ -19,13 +19,16 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import io.restassured.response.ValidatableResponse;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThan;
 
 
 /**
@@ -41,17 +44,28 @@ public class ParticipantDataApi {
      * @return the data
      */
     public String pullData(JsonObject edr, Map<String, String> queryParams) {
+        return pullDataRequest(edr, queryParams)
+                .statusCode(allOf(greaterThanOrEqualTo(200), lessThan(300)))
+                .extract().body().asString();
+    }
 
+
+    /**
+     * Pull the data with an {@link DataAddress}
+     *
+     * @param edr         The edr
+     * @param queryParams additional params
+     * @return the {@link ValidatableResponse}
+     */
+    public ValidatableResponse pullDataRequest(JsonObject edr, Map<String, String> queryParams) {
         var endpoint = edr.getString("endpoint");
         var token = edr.getString("authorization");
-        var response = given()
+        return given()
                 .baseUri(endpoint)
                 .header("Authorization", token)
                 .queryParams(queryParams)
-                .when()
-                .get();
-        assertThat(response.statusCode()).isBetween(200, 300);
-        return response.body().asString();
+                .get()
+                .then();
     }
 
 }

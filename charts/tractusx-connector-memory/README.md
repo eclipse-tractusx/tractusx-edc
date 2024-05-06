@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0](https://img.shields.io/badge/AppVersion-0.7.0-informational?style=flat-square)
+![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.1](https://img.shields.io/badge/AppVersion-0.7.1-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -41,7 +41,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.0 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.1 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
@@ -63,6 +63,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.0 \
 | iatp.sts.oauth.client.id | string | `nil` |  |
 | iatp.sts.oauth.client.secret_alias | string | `nil` |  |
 | iatp.sts.oauth.token_url | string | `nil` |  |
+| iatp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | nameOverride | string | `""` |  |
 | participant.id | string | `"BPNLCHANGEME"` | BPN Number |

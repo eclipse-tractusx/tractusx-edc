@@ -20,8 +20,16 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
@@ -31,10 +39,11 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
-import org.eclipse.edc.identityhub.spi.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.jsonld.spi.JsonLd;
-import org.eclipse.edc.security.signature.jws2020.JwkMethod;
-import org.eclipse.edc.security.signature.jws2020.JwsSignature2020Suite;
+import org.eclipse.edc.security.signature.jws2020.JsonWebKeyPair;
+import org.eclipse.edc.security.signature.jws2020.Jws2020ProofDraft;
+import org.eclipse.edc.security.signature.jws2020.Jws2020SignatureSuite;
 import org.eclipse.edc.verifiablecredentials.linkeddata.LdpIssuer;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 
@@ -42,6 +51,8 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
@@ -56,9 +67,10 @@ import static org.mockito.Mockito.mock;
 public class DataspaceIssuer extends IdentityParticipant {
 
     public static final String DATASPACE_ISSUER = "did:example:dataspace_issuer";
+    public static final URI ASSERTION_METHOD = URI.create("https://w3id.org/security#assertionMethod");
     private static final ObjectMapper MAPPER = createObjectMapper();
     private static final String KEY_ID = "#key1";
-    private final JwsSignature2020Suite jws2020suite = new JwsSignature2020Suite(MAPPER);
+    private final Jws2020SignatureSuite jws2020suite = new Jws2020SignatureSuite(MAPPER);
     private final DidDocument didDocument;
 
     public DataspaceIssuer() {
@@ -86,12 +98,12 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .build();
 
         var vcJson = createVc(didUrl(), type, subjectSupplier);
-        var rawVc = createLdpVc(jsonLd, vcJson);
+        var rawVc = createJwtVc(vcJson, did);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
                 .participantId(did)
                 .holderId(bpn)
-                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JSON_LD, credential))
+                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JWT, credential))
                 .build();
 
     }
@@ -138,14 +150,16 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .monitor(mock())
                 .build();
 
-        var proofOptions = jws2020suite.createOptions()
+        var proofDraft = Jws2020ProofDraft.Builder.newInstance()
+                .proofPurpose(ASSERTION_METHOD)
+                .verificationMethod(new JsonWebKeyPair(URI.create(verificationId()), null, null, null))
                 .created(Instant.now())
-                .verificationMethod(new JwkMethod(URI.create(verificationId()), null, null, null))
-                .purpose(URI.create("https://w3id.org/security#assertionMethod"));
+                .mapper(MAPPER)
+                .build();
 
         var key = getKeyPairAsJwk();
 
-        var result = issuer.signDocument(verifiableCredential, createKeyPair(key, verificationId()), proofOptions).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
+        var result = issuer.signDocument(jws2020suite, verifiableCredential, createKeyPair(key, verificationId()), proofDraft).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
 
         try {
             return MAPPER.writeValueAsString(result);
@@ -154,9 +168,46 @@ public class DataspaceIssuer extends IdentityParticipant {
         }
     }
 
+    public String createJwtVc(JsonObject verifiableCredential, String participantDid) {
+
+        try {
+            var vc = MAPPER.readValue(verifiableCredential.toString(), new TypeReference<Map<String, Object>>() {
+            });
+            var key = getKeyPairAsJwk();
+            return signJwt(key.toECKey(), didUrl(), participantDid, "", Map.of("vc", vc));
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private String signJwt(ECKey privateKey, String issuerId, String subject, String audience, Map<String, Object> claims) {
+        try {
+            var signer = new ECDSASigner(privateKey.toECPrivateKey());
+            var now = java.sql.Date.from(Instant.now());
+            var claimsSet = new JWTClaimsSet.Builder()
+                    .issuer(issuerId)
+                    .subject(subject)
+                    .issueTime(now)
+                    .audience(audience)
+                    .notBeforeTime(now)
+                    .claim("jti", UUID.randomUUID().toString())
+                    .expirationTime(java.sql.Date.from(Instant.now().plusSeconds(300L)));
+
+            Objects.requireNonNull(claimsSet);
+            claims.forEach(claimsSet::claim);
+            var signedJwt = new SignedJWT((new JWSHeader.Builder(JWSAlgorithm.ES256)).keyID(privateKey.getKeyID()).build(), claimsSet.build());
+            signedJwt.sign(signer);
+            return signedJwt.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private com.apicatalog.ld.signature.key.KeyPair createKeyPair(JWK jwk, String id) {
         var type = URI.create("https://w3id.org/security#JsonWebKey2020");
-        return new JwkMethod(URI.create(id), type, null, jwk);
+        return new JsonWebKeyPair(URI.create(id), type, null, jwk);
     }
 
     private DidDocument generateDidDocument() {

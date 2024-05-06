@@ -29,33 +29,16 @@ runs:
 
     - uses: actions/checkout@v4
 
-    - name: Dockerize TractusX EDC in memory distribution
+    - name: Dockerize TractusX EDC in memory distribution for Dast
       shell: bash
       run: |
-        ./gradlew :edc-controlplane:edc-runtime-memory:dockerize
+        ./gradlew :samples:edc-dast:edc-dast-runtime:dockerize
 
-    - name: Starting MIW, Keycloak and Postgres Servers
-      shell: bash
-      run: |
-        cd edc-tests/miw-tests/src/test/resources/docker-environment
-        docker compose up -d --wait
-
-    - uses: nick-fields/retry@v3
-      name: Wait for MIW
-      with:
-        timeout_minutes: 5
-        max_attempts: 3
-        command: |
-          code=$(curl -IL -sw "%{http_code}" http://localhost:8000/api/actuator/health -o /dev/null)
-          if [ "$code" -ne "401" ]; then
-            echo "MIW not ready yet, status = $code"
-            exit 1;
-          fi   
 
     - name: Starting in memory TractusX EDC
       shell: bash
       run: |
-        cd dast
+        cd samples/edc-dast
         docker compose up -d 
 
 

@@ -215,6 +215,11 @@ spec:
             - name: "EDC_IAM_STS_DIM_URL"
               value: {{ .Values.iatp.sts.dim.url | required ".Values.iatp.sts.dim.url is required" | quote}}
 
+            {{- range $index, $issuer := .Values.iatp.trustedIssuers }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
+              value: { { $issuer | quote } }
+            {{- end }}
+
             #################
             ## BDRS CLIENT ##
             #################
@@ -235,10 +240,12 @@ spec:
             # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
               value: {{ include "txdc.dataplane.url.signaling" . }}/v1/dataflows
+            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_TRANSFERTYPES"
+              value: "HttpData-PULL,HttpData-PUSH,AmazonS3-PUSH,AzureStorage-PUSH"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
-              value: "HttpData,AmazonS3"
+              value: "HttpData,AmazonS3,AzureStorage"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
-              value: "HttpProxy,AmazonS3"
+              value: "HttpData,HttpProxy,AmazonS3,AzureStorage"
             - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_PROPERTIES"
               value: |-
                 {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}

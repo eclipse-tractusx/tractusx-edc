@@ -28,6 +28,8 @@ dependencies {
     testImplementation(libs.edc.ih.did)
     testImplementation(libs.edc.ih.spi)
     testImplementation(libs.edc.ih.spi.store)
+    testImplementation(libs.edc.ih.spi.participant.context)
+    testImplementation(libs.edc.ih.spi.credentials)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.identity.vc.ldp)
@@ -36,7 +38,6 @@ dependencies {
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
-    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
 }
 

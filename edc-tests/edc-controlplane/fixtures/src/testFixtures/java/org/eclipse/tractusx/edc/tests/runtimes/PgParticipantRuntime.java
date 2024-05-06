@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DB_SCHEMA_
 
 public class PgParticipantRuntime extends ParticipantRuntime implements AfterAllCallback, BeforeAllCallback {
 
-    private static final String POSTGRES_IMAGE_NAME = "postgres:14.2";
+    private static final String POSTGRES_IMAGE_NAME = "postgres:16.2";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
     private static final List<String> DATASOURCES = List.of("asset", "contractdefinition",
@@ -67,6 +68,7 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         postgreSqlContainer.start();
+        postgreSqlContainer.waitingFor(Wait.forHealthcheck());
         var config = postgresqlConfiguration(dbName);
         config.forEach(System::setProperty);
         super.beforeAll(context);

@@ -38,4 +38,8 @@ dependencies {
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)
     testImplementation(libs.awaitility)
+    testImplementation(libs.edc.identity.trust.sts.embedded)
+    testImplementation(libs.edc.core.token)
+    testImplementation(libs.testcontainers.junit)
+    testImplementation(testFixtures(libs.edc.identity.vc.jwt)) // JwtCreationUtils
 }

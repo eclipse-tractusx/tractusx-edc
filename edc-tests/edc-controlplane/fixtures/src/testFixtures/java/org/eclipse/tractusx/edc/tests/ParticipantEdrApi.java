@@ -27,9 +27,13 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -37,8 +41,8 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetContractId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetOfferId;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
 
 /**
@@ -118,9 +122,9 @@ public class ParticipantEdrApi {
                 .add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID)))
                 .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
                 .build();
-        var contractId = getDatasetContractId(dataset);
+        var offerId = getDatasetOfferId(dataset);
 
-        var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), other.getBpn(), contractId.toString(), contractId.assetIdPart(), policy, callbacks);
+        var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), other.getBpn(), offerId, assetId, policy, callbacks);
 
 
         var response = baseEdrRequest()
@@ -190,6 +194,24 @@ public class ParticipantEdrApi {
                 .extract()
                 .body()
                 .as(JsonArray.class);
+    }
+
+    /**
+     * Waits for the EDR associated with the transfer process to be available
+     *
+     * @param transferProcessId The transfer process id
+     * @return The {@link JsonObject} representation of the EDR
+     */
+    public JsonObject waitForEdr(String transferProcessId) {
+        var edr = new AtomicReference<JsonObject>();
+        await().pollInterval(fibonacci())
+                .atMost(participant.getTimeout())
+                .untilAsserted(() -> {
+                    edr.set(getEdr(transferProcessId));
+                    assertThat(edr).isNotNull();
+                });
+
+        return edr.get();
     }
 
     /**

@@ -2,25 +2,24 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.1"
+edc = "0.6.3"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
-awaitility = "4.2.0"
-aws = "2.25.26"
-azure-identity = "1.11.4"
-bouncyCastle-jdk18on = "1.78"
-flyway = "10.11.0"
+awaitility = "4.2.1"
+aws = "2.25.40"
+azure-identity = "1.12.0"
+bouncyCastle-jdk18on = "1.78.1"
+flyway = "10.11.1"
 jackson = "2.17.0"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
-mockwebserver = "5.0.0-alpha.12"
 nimbus = "9.37.3"
 netty-mockserver = "5.15.0"
 okhttp = "4.12.0"
 postgres = "42.7.3"
 restAssured = "5.4.0"
-rsApi = "3.1.0"
-slf4j = "2.0.12"
+rsApi = "4.0.0"
+slf4j = "2.0.13"
 testcontainers = "1.19.7"
 tink = "1.13.0"
 titanium = "1.4.0"
@@ -94,6 +93,7 @@ edc-lib-cryptocommon = { module = "org.eclipse.edc:crypto-common-lib", version.r
 edc-lib-http = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-lib-jersey-providers = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
 edc-lib-jsonld = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
+edc-lib-json = { module = "org.eclipse.edc:json-lib", version.ref = "edc" }
 edc-lib-jws2020 = { module = "org.eclipse.edc:jws2020-lib", version.ref = "edc" }
 edc-lib-policyengine = { module = "org.eclipse.edc:policy-engine-lib", version.ref = "edc" }
 edc-lib-query = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
@@ -154,10 +154,12 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 
 ## IH for testing
 
-edc-ih-api = { module = "org.eclipse.edc:identity-hub-api", version.ref = "edc" }
+edc-ih-api-presentation = { module = "org.eclipse.edc:presentation-api", version.ref = "edc" }
 edc-ih-credentials = { module = "org.eclipse.edc:identity-hub-credentials", version.ref = "edc" }
 edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
 edc-ih-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
+edc-ih-spi-participant-context = { module = "org.eclipse.edc:participant-context-spi", version.ref = "edc" }
+edc-ih-spi-credentials = { module = "org.eclipse.edc:verifiable-credential-spi", version.ref = "edc" }
 edc-ih-keypairs = { module = "org.eclipse.edc:identity-hub-keypairs", version.ref = "edc" }
 edc-ih-participants = { module = "org.eclipse.edc:identity-hub-participants", version.ref = "edc" }
 edc-ih-did = { module = "org.eclipse.edc:identity-hub-did", version.ref = "edc" }
@@ -209,7 +211,6 @@ jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-js
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }

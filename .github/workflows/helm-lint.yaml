@@ -49,7 +49,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: helm (setup)
-        uses: azure/setup-helm@v3.5
+        uses: azure/setup-helm@v4
         with:
           version: v3.8.1
       - name: python (setup)

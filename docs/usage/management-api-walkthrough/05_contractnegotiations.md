@@ -10,7 +10,7 @@ It includes
 
 To trigger the process, the Data Consumer POSTs against their own Control Plane.
 
-```http
+```http request
 POST /v2/contractnegotiations HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -20,27 +20,19 @@ Content-Type: application/json
 ```json
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "@type": "https://w3id.org/edc/v0.0.1/ns/ContractRequest",
-  "connectorAddress": "https://provider-control.plane/api/v1/dsp",
+  "@type": "ContractRequest",
+  "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
   "protocol": "dataspace-protocol-http",
-  "providerId": "<PROVIDER_BPN>",
-  "connectorId": "<PROVIDER_BPN>", 
-  "offer": {
-    "offerId": "<OFFER_ID>",
-    "assetId": "<ASSET_ID>",
-    "policy": {
-      "@context": "http://www.w3.org/ns/odrl.jsonld",
-      "@type": "Set",
-      "@id": "<CONTRACT_OFFER_ID",
-      "permission": [
-        {
-          "target": "<ASSET_ID>",
-          "action": "use"
-        }
-      ]
-    }
+  "policy": {
+    "@type": "Offer",
+    "@id": "{{OFFER_ID}}",
+    "target": "{{ASSET_ID}}",
+    "assigner": "{{PROVIDER_BPN}}",
+    "permission": [],
+    "prohibition": [],
+    "obligation": []
   },
   "callbackAddresses": [
     {
@@ -54,24 +46,15 @@ Content-Type: application/json
     }
   ]
 }
-
 ```
-- `edc:connectorAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider
-  EDC).
-  It will usually end on /api/v1/dsp
-- `edc:protocol` must be "dataspace-protocol-http"
-- `providerId` is the Data Provider's BPN
-- `edc:assetId` and all `odrl:target` properties must be the id of the EDC-Asset/dcat:DataSet that the offer was made
-  for.
-- `edc:connectorId` and `edc:providerId` must both hold the correct BPN for the `edc:connectorAddress`.
-- In the `edc:offer` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
+- `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
+  It will usually end in `/api/v1/dsp`
+- `protocol` must be `dataspace-protocol-http`
+- In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
   Data Offers for the same DataSet, the Data Consumer must choose one.
-    - `edc:offerId` is the id of the entry in the [catalog-response](04_catalog.md) that the Consumer wants to negotiate
-      for.
-      It will usually be a concatenation of three base64-encoded ids.
-    - `edc:policy` must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in
-      the
-      `odrl:hasPolicy` field.
+  It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `odrl:hasPolicy` field plus:
+    - `assigner` must hold the BPN of the Provider
+    - `target` must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
 - `callbackAddresses` is a list of Consumer-side endpoints that the Provider's Data Plane writes events to.
     - `uri` is the http endpoint of the token repository. Mandatory.
     - `events` is a list of the strings, signifying for what callbacks the specified API shall be used. They are
@@ -90,17 +73,17 @@ the `@id` property.
 
 ```json
 {
-	"@type": "edc:IdResponse",
-	"@id": "773b8795-45f2-4c57-a020-dc04e639baf3",
-	"edc:createdAt": 1701289079455,
-	"@context": {
-		"dct": "https://purl.org/dc/terms/",
-		"tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-		"edc": "https://w3id.org/edc/v0.0.1/ns/",
-		"dcat": "https://www.w3.org/ns/dcat/",
-		"odrl": "http://www.w3.org/ns/odrl/2/",
-		"dspace": "https://w3id.org/dspace/v0.8/"
-	}
+	  "@type": "IdResponse",
+	  "@id": "773b8795-45f2-4c57-a020-dc04e639baf3",
+	  "edc:createdAt": 1701289079455,
+      "@context": {
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+        "tx-auth": "https://w3id.org/tractusx/auth/",
+        "cx-policy": "https://w3id.org/catenax/policy/",
+        "odrl": "http://www.w3.org/ns/odrl/2/"
+      }
 }
 ```
 
@@ -108,7 +91,7 @@ the `@id` property.
 
 ### Polling
 
-```http
+```http request
 GET /v2/contractnegotiation/773b8795-45f2-4c57-a020-dc04e639baf3 HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -120,13 +103,13 @@ that will look like this:
 
 ```json
 {
-  "@type": "edc:ContractNegotiation",
+  "@type": "ContractNegotiation",
   "@id": "50bf14b9-8f6e-4975-8ada-6f24379a58a2",
-  "edc:type": "CONSUMER",
-  "edc:protocol": "dataspace-protocol-http",
-  "edc:state": "REQUESTING",
-  "edc:counterPartyId": "<PROVIDER_BPN>",
-  "edc:counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
+  "type": "CONSUMER",
+  "protocol": "dataspace-protocol-http",
+  "state": "REQUESTING",
+  "counterPartyId": "{{PROVIDER_BPN}}",
+  "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
   "callbackAddresses": [
     {
       "transactional": false,
@@ -138,14 +121,14 @@ that will look like this:
       "authCodeId": "auth-code-id"
     }
   ],
-  "edc:createdAt": 1701351116766,
+  "createdAt": 1701351116766,
   "@context": {
-    "dct": "https://purl.org/dc/terms/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "dcat": "https://www.w3.org/ns/dcat/",
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "dspace": "https://w3id.org/dspace/v0.8/"
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "tx-auth": "https://w3id.org/tractusx/auth/",
+    "cx-policy": "https://w3id.org/catenax/policy/",
+    "odrl": "http://www.w3.org/ns/odrl/2/"
   }
 }
 ```
@@ -170,8 +153,8 @@ Here's an example:
   "at": 1701441001897,
   "payload": {
     "contractNegotiationId": "019488e0-f242-4c12-8314-610927b09e96",
-    "counterPartyAddress": "<PROVIDER-CONTROLPLANE-DSP-ENDPOINT>",
-    "counterPartyId": "<PROVIDER-BPN>",
+    "counterPartyAddress": "{{PROVIDER_CONTROLPLANE_DSP_ENDPOINT}}",
+    "counterPartyId": "{{PROVIDER_BPN}}",
     "callbackAddresses": [
       {
         "transactional": false,
@@ -185,12 +168,12 @@ Here's an example:
     ],
     "contractOffers": [
       {
-        "id": "<OFFER-ID>",
+        "id": "{{OFFER_ID}}",
         "policy": {
           "permissions": [
             {
               "edctype": "dataspaceconnector:permission",
-              "target": "<ASSET-ID>",
+              "target": "{{ASSET_ID}}",
               "action": {
                 "type": "http://www.w3.org/ns/odrl/2/use",
                 "includedIn": null,
@@ -208,22 +191,22 @@ Here's an example:
           "inheritsFrom": null,
           "assigner": null,
           "assignee": null,
-          "target": "<ASSET-ID>",
+          "target": "{{ASSET_ID}}",
           "@type": {
             "@policytype": "set"
           }
         },
-        "assetId": "<ASSET-ID>"
+        "assetId": "{{ASSET_ID}}"
       }
     ],
     "protocol": "dataspace-protocol-http",
     "lastContractOffer": {
-      "id": "<OFFER-ID>",
+      "id": "{{OFFER_ID}}",
       "policy": {
         "permissions": [
           {
             "edctype": "dataspaceconnector:permission",
-            "target": "<ASSET-ID>",
+            "target": "{{ASSET_ID}}",
             "action": {
               "type": "http://www.w3.org/ns/odrl/2/use",
               "includedIn": null,
@@ -241,12 +224,12 @@ Here's an example:
         "inheritsFrom": null,
         "assigner": null,
         "assignee": null,
-        "target": "<ASSET-ID>",
+        "target": "{{ASSET_ID}}",
         "@type": {
           "@policytype": "set"
         }
       },
-      "assetId": "<ASSET-ID>"
+      "assetId": "{{ASSET_ID}}"
     }
   },
   "type": "ContractNegotiationRequested"
