@@ -80,7 +80,7 @@ public class CatalogTest {
             assertThat(catalog).isNotEmpty()
                     .hasSize(1)
                     .allSatisfy(co -> {
-                        assertThat(getDatasetAssetId(co)).isEqualTo("test-asset");
+                        assertThat(getDatasetAssetId(co.asJsonObject())).isEqualTo("test-asset");
                     });
 
         }
@@ -176,7 +176,7 @@ public class CatalogTest {
             var catalog = PLATO.getCatalogDatasets(SOKRATES);
             assertThat(catalog).hasSize(1)
                     .allSatisfy(cd -> {
-                        assertThat(getDatasetAssetId(cd)).isEqualTo("asset-1");
+                        assertThat(getDatasetAssetId(cd.asJsonObject())).isEqualTo("asset-1");
                         assertThat(getDatasetPolicies(cd)).hasSize(2);
                     });
         }

@@ -122,7 +122,7 @@ public class DimCatalogIntegrationTest {
         assertThat(catalog).isNotEmpty()
                 .hasSize(1)
                 .allSatisfy(co -> {
-                    assertThat(getDatasetAssetId(co)).isEqualTo("test-asset");
+                    assertThat(getDatasetAssetId(co.asJsonObject())).isEqualTo("test-asset");
                 });
 
     }

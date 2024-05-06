@@ -28,6 +28,8 @@ dependencies {
     testImplementation(libs.edc.ih.did)
     testImplementation(libs.edc.ih.spi)
     testImplementation(libs.edc.ih.spi.store)
+    testImplementation(libs.edc.ih.spi.participant.context)
+    testImplementation(libs.edc.ih.spi.credentials)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.identity.vc.ldp)

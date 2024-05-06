@@ -23,7 +23,6 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import org.eclipse.edc.connector.controlplane.contract.spi.ContractId;
 
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_QUERY_SPEC;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
@@ -45,17 +44,12 @@ public class CatalogHelperFunctions {
         return jsonBuilder.build();
     }
 
-    public static ContractId getDatasetContractId(JsonObject dataset) {
-        var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parseId(id).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+    public static String getDatasetOfferId(JsonObject dataset) {
+        return dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
     }
 
     public static String getDatasetAssetId(JsonObject dataset) {
-        return getDatasetContractId(dataset).assetIdPart();
-    }
-
-    public static String getDatasetAssetId(JsonValue dataset) {
-        return getDatasetContractId(dataset.asJsonObject()).assetIdPart();
+        return dataset.getString(ID);
     }
 
     public static JsonArray getDatasetPolicies(JsonObject dataset) {
