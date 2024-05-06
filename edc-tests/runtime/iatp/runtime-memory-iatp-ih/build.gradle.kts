@@ -49,7 +49,7 @@ dependencies {
     implementation(libs.edc.identity.trust.sts.remote.client)
     implementation(libs.edc.identity.trust.issuers.configuration)
     implementation(libs.edc.auth.oauth2.client)
-    implementation(libs.edc.ih.api)
+    implementation(libs.edc.ih.api.presentation)
     implementation(libs.edc.ih.credentials)
     implementation(libs.edc.ih.keypairs)
     implementation(libs.edc.ih.participants)
