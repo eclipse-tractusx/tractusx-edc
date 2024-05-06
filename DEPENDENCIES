@@ -28,10 +28,12 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.14.1, Apache
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.15.1, Apache-2.0, approved, #7947
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.16.2, Apache-2.0, approved, #11606
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.0, Apache-2.0, approved, #13672
+maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.1, Apache-2.0, approved, #13672
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.13.5, Apache-2.0, approved, #2133
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.14.1, Apache-2.0 AND MIT, approved, #4303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.15.1, MIT AND Apache-2.0, approved, #7932
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.17.0, , approved, #13665
+maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.17.1, , approved, #13665
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.11.0, Apache-2.0, approved, CQ23093
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.13.4.2, Apache-2.0, approved, #2134
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.13.5, Apache-2.0, approved, #2134
@@ -41,6 +43,7 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.2, Apache-2.
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.1, Apache-2.0, approved, #7934
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.0, approved, #11605
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.17.0, Apache-2.0, approved, #13671
+maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.17.1, Apache-2.0, approved, #13671
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.15.2, Apache-2.0, approved, #9160
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-toml/2.17.0, Apache-2.0, approved, #14192
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.5, Apache-2.0, approved, #3768
@@ -50,6 +53,7 @@ maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.16.2, Apache-2.0, approved, #11855
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.17.0, Apache-2.0, approved, #13669
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.17.0, Apache-2.0, approved, #14161
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.17.1, Apache-2.0, approved, #14161
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.13.5, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.14.0, Apache-2.0, approved, #4699
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.15.1, Apache-2.0, approved, #7930
@@ -62,6 +66,7 @@ maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-prov
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.17.0, Apache-2.0, approved, #13668
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.15.1, Apache-2.0, approved, #7929
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.17.0, Apache-2.0, approved, #14162
+maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.17.1, Apache-2.0, approved, #14162
 maven/mavencentral/com.fasterxml.uuid/java-uuid-generator/4.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.woodstox/woodstox-core/6.6.1, Apache-2.0, approved, #12789
 maven/mavencentral/com.github.cliftonlabs/json-simple/3.0.2, Apache-2.0, approved, clearlydefined
