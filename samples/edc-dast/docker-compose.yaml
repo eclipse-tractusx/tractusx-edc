@@ -22,29 +22,22 @@ version: '3'
 
 services:
   edc-runtime:
-    image: edc-runtime-memory:latest
-    environment:
-      TX_SSI_OAUTH_TOKEN_URL: http://keycloak:8080/realms/miw_test/protocol/openid-connect/token
-      TX_SSI_OAUTH_CLIENT_ID: miw_private_client
-      TX_SSI_OAUTH_CLIENT_SECRET_ALIAS: client-alias
-      EDC_VAULT_SECRETS: "client-alias:miw_private_client"
-      TX_SSI_MIW_URL: http://miw:8000
-      TX_SSI_MIW_AUTHORITY_ID: BPNL000000000000
-      TX_SSI_MIW_AUTHORITY_ISSUER: did:web:localhost%3A8000:BPNL000000000000
-      TX_SSI_ENDPOINT_AUDIENCE: "http://test"
-      EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: "http://validate"
-      EDC_API_AUTH_KEY: password
-
-    networks:
-      - miw-net
+    image: edc-dast-runtime:latest
+    volumes:
+      - type: bind
+        source: ./edc-dast-runtime/configuration.properties
+        target: /app/configuration.properties
     ports:
       - "8282:8282"
       - "8181:8181"
-
+      - "8989:8989"
+      - "8990:8990"
+    networks:
+      - edc-net
 volumes:
   postgres_data:
     driver: local
 
 networks:
-  miw-net:
-    external: true
+  edc-net:
+    name: edc-net
