@@ -37,10 +37,10 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.TERMINATED;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
@@ -48,15 +48,15 @@ import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 public class PolicyMonitorEndToEndTest {
 
-    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
-            .name(SOKRATES_NAME)
-            .id(SOKRATES_BPN)
+    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
             .build();
 
 
-    protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
-            .name(PLATO_NAME)
-            .id(PLATO_BPN)
+    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
             .build();
 
     abstract static class Tests {
@@ -72,21 +72,21 @@ public class PolicyMonitorEndToEndTest {
                     "contentType", "application/json",
                     "proxyQueryParams", "true"
             );
-            PLATO.createAsset(assetId, Map.of(), dataAddress);
+            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var policy = inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
-            var policyId = PLATO.createPolicyDefinition(policy);
-            PLATO.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+            var policyId = PROVIDER.createPolicyDefinition(policy);
+            PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
 
-            var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+            var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
             await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-                var state = SOKRATES.getTransferProcessState(transferProcessId);
+                var state = CONSUMER.getTransferProcessState(transferProcessId);
                 assertThat(state).isEqualTo(STARTED.name());
             });
 
             await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-                var state = SOKRATES.getTransferProcessState(transferProcessId);
+                var state = CONSUMER.getTransferProcessState(transferProcessId);
                 assertThat(state).isEqualTo(TERMINATED.name());
             });
         }
@@ -98,10 +98,10 @@ public class PolicyMonitorEndToEndTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final ParticipantRuntime SOKRATES_RUNTIME = memoryRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
@@ -110,10 +110,10 @@ public class PolicyMonitorEndToEndTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final PgParticipantRuntime SOKRATES_RUNTIME = pgRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final PgParticipantRuntime CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final PgParticipantRuntime PLATO_RUNTIME = pgRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final PgParticipantRuntime PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 }

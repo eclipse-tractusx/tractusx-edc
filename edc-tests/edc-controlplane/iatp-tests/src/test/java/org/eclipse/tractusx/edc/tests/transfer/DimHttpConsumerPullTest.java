@@ -50,9 +50,9 @@ import static org.mockserver.model.HttpRequest.request;
 public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime SOKRATES_RUNTIME = dimRuntime(SOKRATES.getName(), SOKRATES.iatpConfiguration(PLATO), SOKRATES.getKeyPair());
+    protected static final IatpParticipantRuntime CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
     @RegisterExtension
-    protected static final IatpParticipantRuntime PLATO_RUNTIME = dimRuntime(PLATO.getName(), PLATO.iatpConfiguration(SOKRATES), PLATO.getKeyPair());
+    protected static final IatpParticipantRuntime PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private static ClientAndServer oauthServer;
     private static ClientAndServer dimServer;
@@ -63,8 +63,8 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
         var tokenGeneration = new JwtGenerationService();
 
         var generatorServices = Map.of(
-                SOKRATES.getDid(), tokenServiceFor(tokenGeneration, SOKRATES),
-                PLATO.getDid(), tokenServiceFor(tokenGeneration, PLATO));
+                CONSUMER.getDid(), tokenServiceFor(tokenGeneration, CONSUMER),
+                PROVIDER.getDid(), tokenServiceFor(tokenGeneration, PROVIDER));
 
         oauthServer = ClientAndServer.startClientAndServer(STS.stsUri().getPort());
 
@@ -77,11 +77,11 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
         // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();
         dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(SOKRATES.getDid(), SOKRATES.getDidDocument());
-        dids.put(PLATO.getDid(), PLATO.getDidDocument());
+        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
+        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
 
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, SOKRATES, SOKRATES_RUNTIME, dids, null);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PLATO, PLATO_RUNTIME, dids, null);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, null);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, null);
 
     }
 
@@ -104,12 +104,12 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     }
 
     @Override
-    protected IatpParticipantRuntime sokratesRuntime() {
-        return SOKRATES_RUNTIME;
+    protected IatpParticipantRuntime consumerRuntime() {
+        return CONSUMER_RUNTIME;
     }
 
     @Override
-    protected IatpParticipantRuntime platoRuntime() {
-        return SOKRATES_RUNTIME;
+    protected IatpParticipantRuntime providerRuntime() {
+        return CONSUMER_RUNTIME;
     }
 }

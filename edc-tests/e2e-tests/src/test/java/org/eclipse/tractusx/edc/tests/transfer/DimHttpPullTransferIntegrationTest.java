@@ -39,8 +39,8 @@ import java.util.zip.GZIPOutputStream;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.helpers.DimHelper.configureParticipant;
 import static org.eclipse.tractusx.edc.lifecycle.Runtimes.dimRuntime;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.mockserver.model.HttpRequest.request;
 
 @DimIntegrationTest
@@ -50,12 +50,12 @@ public class DimHttpPullTransferIntegrationTest extends HttpConsumerPullBaseTest
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Integer BDRS_PORT = getFreePort();
     private static final String BDRS_URL = "http://localhost:%s/api".formatted(BDRS_PORT);
-    protected static final DimParticipant SOKRATES = configureParticipant(SOKRATES_NAME, BDRS_URL);
-    protected static final DimParticipant PLATO = configureParticipant(PLATO_NAME, BDRS_URL);
+    protected static final DimParticipant CONSUMER = configureParticipant(CONSUMER_NAME, BDRS_URL);
+    protected static final DimParticipant PROVIDER = configureParticipant(PROVIDER_NAME, BDRS_URL);
     @RegisterExtension
-    protected static final ParticipantRuntime PLATO_RUNTIME = dimRuntime(PLATO.getName(), PLATO.iatpConfiguration(SOKRATES));
+    protected static final ParticipantRuntime PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER));
     @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = dimRuntime(SOKRATES.getName(), SOKRATES.iatpConfiguration(PLATO));
+    protected static final ParticipantRuntime CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER));
     private static ClientAndServer bdrsServer;
 
     @BeforeAll
@@ -72,8 +72,8 @@ public class DimHttpPullTransferIntegrationTest extends HttpConsumerPullBaseTest
     }
 
     private static byte[] createGzipStream() {
-        var data = Map.of(SOKRATES.getBpn(), SOKRATES.getDid(),
-                PLATO.getBpn(), PLATO.getDid());
+        var data = Map.of(CONSUMER.getBpn(), CONSUMER.getDid(),
+                PROVIDER.getBpn(), PROVIDER.getDid());
 
         var bas = new ByteArrayOutputStream();
         try (var gzip = new GZIPOutputStream(bas)) {
@@ -90,12 +90,12 @@ public class DimHttpPullTransferIntegrationTest extends HttpConsumerPullBaseTest
     }
 
     @Override
-    public TractusxParticipantBase plato() {
-        return PLATO;
+    public TractusxParticipantBase provider() {
+        return PROVIDER;
     }
 
     @Override
-    public TractusxParticipantBase sokrates() {
-        return SOKRATES;
+    public TractusxParticipantBase consumer() {
+        return CONSUMER;
     }
 }

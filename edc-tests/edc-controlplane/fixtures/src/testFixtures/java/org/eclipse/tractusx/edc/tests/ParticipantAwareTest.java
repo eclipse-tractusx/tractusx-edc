@@ -23,7 +23,7 @@ import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 public interface ParticipantAwareTest {
 
-    TractusxParticipantBase plato();
+    TractusxParticipantBase provider();
 
-    TractusxParticipantBase sokrates();
+    TractusxParticipantBase consumer();
 }

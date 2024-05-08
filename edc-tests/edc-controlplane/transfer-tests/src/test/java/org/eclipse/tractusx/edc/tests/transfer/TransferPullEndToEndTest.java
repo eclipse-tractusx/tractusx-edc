@@ -37,10 +37,10 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -51,23 +51,23 @@ public class TransferPullEndToEndTest {
 
     abstract static class Tests extends HttpConsumerPullBaseTest {
 
-        protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
-                .name(SOKRATES_NAME)
-                .id(SOKRATES_BPN)
+        protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+                .name(CONSUMER_NAME)
+                .id(CONSUMER_BPN)
                 .build();
-        protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
-                .name(PLATO_NAME)
-                .id(PLATO_BPN)
+        protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+                .name(PROVIDER_NAME)
+                .id(PROVIDER_BPN)
                 .build();
 
         @Override
-        public TractusxParticipantBase plato() {
-            return PLATO;
+        public TractusxParticipantBase provider() {
+            return PROVIDER;
         }
 
         @Override
-        public TractusxParticipantBase sokrates() {
-            return SOKRATES;
+        public TractusxParticipantBase consumer() {
+            return CONSUMER;
         }
 
 
@@ -83,46 +83,46 @@ public class TransferPullEndToEndTest {
                     "contentType", "application/json"
             );
 
-            PLATO.createAsset(assetId, Map.of(), dataAddress);
+            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-            var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
-            var contractPolicyId = PLATO.createPolicyDefinition(createContractPolicy(SOKRATES.getBpn()));
-            PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-            var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+            var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+            var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+            PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+            var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
-            SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
             server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
 
-            var edr = SOKRATES.edrs().waitForEdr(transferProcessId);
+            var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
             // consumer can fetch data with a valid token
-            var data = SOKRATES.data().pullData(edr, Map.of());
+            var data = CONSUMER.data().pullData(edr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
             server.verify(requestDefinition, VerificationTimes.exactly(1));
 
-            SOKRATES.suspendTransfer(transferProcessId, "reason");
-            SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.SUSPENDED);
+            CONSUMER.suspendTransfer(transferProcessId, "reason");
+            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.SUSPENDED);
 
             // consumer cannot fetch data with the prev token (suspended)
-            SOKRATES.data().pullDataRequest(edr, Map.of()).statusCode(403);
+            CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
             server.verify(requestDefinition, VerificationTimes.exactly(1));
 
-            SOKRATES.resumeTransfer(transferProcessId);
-            SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+            CONSUMER.resumeTransfer(transferProcessId);
+            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-            var newEdr = SOKRATES.edrs().waitForEdr(transferProcessId);
+            var newEdr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
             // consumer can now re-fetch data with a new EDR token
-            data = SOKRATES.data().pullData(newEdr, Map.of());
+            data = CONSUMER.data().pullData(newEdr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
             server.verify(requestDefinition, VerificationTimes.exactly(2));
 
             // consumer cannot fetch data with the prev token (suspended) after the transfer process has been resumed
-            SOKRATES.data().pullDataRequest(edr, Map.of()).statusCode(403);
+            CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
             server.verify(requestDefinition, VerificationTimes.exactly(2));
 
         }
@@ -139,34 +139,34 @@ public class TransferPullEndToEndTest {
                     "contentType", "application/json"
             );
 
-            PLATO.createAsset(assetId, Map.of(), dataAddress);
+            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-            var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
-            var contractPolicyId = PLATO.createPolicyDefinition(inForcePolicy());
-            PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-            var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+            var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+            var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
-            SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
             server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
 
-            var edr = SOKRATES.edrs().waitForEdr(transferProcessId);
+            var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
             // consumer can fetch data with a valid token
-            var data = SOKRATES.data().pullData(edr, Map.of());
+            var data = CONSUMER.data().pullData(edr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
             server.verify(requestDefinition, VerificationTimes.exactly(1));
 
-            SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
+            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
 
             // consumer cannot fetch data with the prev token (suspended)
-            var body = SOKRATES.data().pullDataRequest(edr, Map.of()).statusCode(403).extract().body().asString();
+            var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403).extract().body().asString();
             server.verify(requestDefinition, VerificationTimes.exactly(1));
 
         }
-        
+
         protected JsonObject inForcePolicy() {
             return inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
         }
@@ -178,10 +178,10 @@ public class TransferPullEndToEndTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final ParticipantRuntime SOKRATES_RUNTIME = memoryRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
@@ -190,10 +190,10 @@ public class TransferPullEndToEndTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final PgParticipantRuntime SOKRATES_RUNTIME = pgRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final PgParticipantRuntime CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final PgParticipantRuntime PLATO_RUNTIME = pgRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final PgParticipantRuntime PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 }

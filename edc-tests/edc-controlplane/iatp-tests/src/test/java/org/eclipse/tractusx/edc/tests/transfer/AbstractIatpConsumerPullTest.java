@@ -61,10 +61,10 @@ import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
@@ -83,25 +83,25 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
             .id("STS")
             .name("STS")
             .build();
-    protected static final IatpParticipant SOKRATES = IatpParticipant.Builder.newInstance()
-            .name(SOKRATES_NAME)
-            .id(SOKRATES_BPN)
+    protected static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
             .stsUri(STS.stsUri())
-            .stsClientId(SOKRATES_BPN)
+            .stsClientId(CONSUMER_BPN)
             .stsClientSecret("client_secret")
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
-            .did(did(SOKRATES_NAME))
+            .did(did(CONSUMER_NAME))
             .build();
-    protected static final IatpParticipant PLATO = IatpParticipant.Builder.newInstance()
-            .name(PLATO_NAME)
-            .id(PLATO_BPN)
+    protected static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
             .stsUri(STS.stsUri())
-            .stsClientId(PLATO_BPN)
+            .stsClientId(PROVIDER_BPN)
             .stsClientSecret("client_secret")
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
-            .did(did(PLATO_NAME))
+            .did(did(PROVIDER_NAME))
             .build();
 
     private static String did(String name) {
@@ -110,13 +110,13 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
 
 
     @Override
-    public TractusxParticipantBase plato() {
-        return PLATO;
+    public TractusxParticipantBase provider() {
+        return PROVIDER;
     }
 
     @Override
-    public TractusxParticipantBase sokrates() {
-        return SOKRATES;
+    public TractusxParticipantBase consumer() {
+        return CONSUMER;
     }
 
     @DisplayName("Contract policy is fulfilled")
@@ -136,12 +136,12 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 "authCode", authCode
         );
 
-        PLATO.createAsset(assetId, Map.of(), dataAddress);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
-        var contractPolicyId = PLATO.createPolicyDefinition(contractPolicy);
-        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy);
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -149,7 +149,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tpState = SOKRATES.getTransferProcessState(transferProcessId);
+                    var tpState = CONSUMER.getTransferProcessState(transferProcessId);
                     assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
                 });
 
@@ -158,18 +158,18 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    edr.set(SOKRATES.edrs().getEdr(transferProcessId));
+                    edr.set(CONSUMER.edrs().getEdr(transferProcessId));
                     assertThat(edr).isNotNull();
                 });
 
         // pull data out of provider's backend service:
         // Prov-DP -> Prov-backend
-        assertThat(sokrates().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
+        assertThat(consumer().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
 
         server.verify(request()
                 .withPath(MOCK_BACKEND_PATH)
                 .withHeader("Edc-Contract-Agreement-Id")
-                .withHeader("Edc-Bpn", sokrates().getBpn())
+                .withHeader("Edc-Bpn", consumer().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
 
@@ -190,17 +190,17 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 "authCode", authCode
         );
 
-        PLATO.createAsset(assetId, Map.of(), dataAddress);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
-        var contractPolicyId = PLATO.createPolicyDefinition(contractPolicy);
-        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var negotiationId = SOKRATES.initContractNegotiation(PLATO, assetId);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy);
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var negotiationId = CONSUMER.initContractNegotiation(PROVIDER, assetId);
 
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var contractNegotiationState = SOKRATES.getContractNegotiationState(negotiationId);
+                    var contractNegotiationState = CONSUMER.getContractNegotiationState(negotiationId);
                     assertThat(contractNegotiationState).isEqualTo("TERMINATED");
                 });
     }
@@ -209,8 +209,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     @Test
     void catalogRequest_whenCredentialExpired() {
         //update the membership credential to an expirationDate that is in the past
-        var store = sokratesRuntime().getService(CredentialStore.class);
-        var jsonLd = sokratesRuntime().getService(JsonLd.class);
+        var store = consumerRuntime().getService(CredentialStore.class);
+        var jsonLd = consumerRuntime().getService(JsonLd.class);
 
         var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
@@ -227,8 +227,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .expirationDate(expirationDate)
                 .build();
 
-        var did = SOKRATES.getDid();
-        var bpn = SOKRATES.getBpn();
+        var did = CONSUMER.getDid();
+        var bpn = CONSUMER.getBpn();
         var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("expirationDate", expirationDate.toString());
 
@@ -246,7 +246,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
 
         // verify the failed catalog request
         try {
-            SOKRATES.getCatalog(PLATO)
+            CONSUMER.getCatalog(PROVIDER)
                     .log().ifError()
                     .statusCode(not(200));
         } finally {
@@ -259,8 +259,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     @Test
     void catalogRequest_whenCredentialRevoked() {
         //update the membership credential to contain a `credentialStatus` with a revocation
-        var store = sokratesRuntime().getService(CredentialStore.class);
-        var jsonLd = sokratesRuntime().getService(JsonLd.class);
+        var store = consumerRuntime().getService(CredentialStore.class);
+        var jsonLd = consumerRuntime().getService(JsonLd.class);
         var port = getFreePort();
 
         var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
@@ -282,8 +282,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .issuanceDate(existingCred.getVerifiableCredential().credential().getIssuanceDate())
                 .build();
 
-        var did = SOKRATES.getDid();
-        var bpn = SOKRATES.getBpn();
+        var did = CONSUMER.getDid();
+        var bpn = CONSUMER.getBpn();
         var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("credentialStatus", Json.createObjectBuilder()
                 .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
@@ -311,7 +311,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
             revocationServer.when(request().withPath("/status/list/7")).respond(response().withBody(slCred.toJsonObject().toString()));
 
             // verify the failed catalog request
-            SOKRATES.getCatalog(PLATO)
+            CONSUMER.getCatalog(PROVIDER)
                     .log().ifValidationFails()
                     .statusCode(not(200));
         } finally {
@@ -325,9 +325,9 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
     }
 
-    protected abstract IatpParticipantRuntime sokratesRuntime();
+    protected abstract IatpParticipantRuntime consumerRuntime();
 
-    protected abstract IatpParticipantRuntime platoRuntime();
+    protected abstract IatpParticipantRuntime providerRuntime();
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
         @Override

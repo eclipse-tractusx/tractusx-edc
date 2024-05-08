@@ -43,10 +43,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
@@ -64,21 +64,21 @@ public class TransferWithTokenRefreshTest {
 
     public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
     public static final String MOCK_BACKEND_PATH = "/mock/api";
-    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
-            .name(SOKRATES_NAME)
-            .id(SOKRATES_BPN)
+    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
             .build();
-    protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
-            .name(PLATO_NAME)
-            .id(PLATO_BPN)
+    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
             .build();
 
     @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = memoryRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+    protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
     private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
 
     @RegisterExtension
-    protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), forConfig(PLATO.getConfiguration()), TransferWithTokenRefreshTest::platoInitiator);
+    protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), forConfig(PROVIDER.getConfiguration()), TransferWithTokenRefreshTest::providerInitiator);
     protected ClientAndServer server;
     private String privateBackendUrl;
 
@@ -90,8 +90,8 @@ public class TransferWithTokenRefreshTest {
         return newConfig;
     }
 
-    private static void platoInitiator(EdcExtension runtime) {
-        runtime.registerServiceMock(BdrsClient.class, (c) -> SOKRATES.getDid());
+    private static void providerInitiator(EdcExtension runtime) {
+        runtime.registerServiceMock(BdrsClient.class, (c) -> CONSUMER.getDid());
     }
 
     @BeforeEach
@@ -110,20 +110,20 @@ public class TransferWithTokenRefreshTest {
                 "contentType", "application/json"
         );
 
-        PLATO.createAsset(assetId, Map.of(), dataAddress);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
-        var contractPolicyId = PLATO.createPolicyDefinition(createContractPolicy(SOKRATES.getBpn()));
-        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
 
-        SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
         server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
 
-        var edr = SOKRATES.edrs().waitForEdr(transferProcessId);
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
 
         // wait until the EDR expires
@@ -146,13 +146,13 @@ public class TransferWithTokenRefreshTest {
         server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.never());
 
         // renew EDR explicitly
-        var renewedEdr = SOKRATES.edrs().refreshEdr(transferProcessId)
+        var renewedEdr = CONSUMER.edrs().refreshEdr(transferProcessId)
                 .statusCode(200)
                 .extract().body()
                 .as(JsonObject.class);
 
         // make sure the consumer has now been able to fetch the data.
-        var data = SOKRATES.data().pullData(renewedEdr, Map.of());
+        var data = CONSUMER.data().pullData(renewedEdr, Map.of());
         assertThat(data).isNotNull().isEqualTo("test response");
 
         server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.exactly(1));
@@ -168,19 +168,19 @@ public class TransferWithTokenRefreshTest {
                 "contentType", "application/json"
         );
 
-        PLATO.createAsset(assetId, Map.of(), dataAddress);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PLATO.createPolicyDefinition(createAccessPolicy(SOKRATES.getBpn()));
-        var contractPolicyId = PLATO.createPolicyDefinition(createContractPolicy(SOKRATES.getBpn()));
-        PLATO.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = SOKRATES.requestAsset(PLATO, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
-        SOKRATES.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
         server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
 
-        var edr = SOKRATES.edrs().waitForEdr(transferProcessId);
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
         // wait until the EDR expires
         await().pollDelay(Duration.ofSeconds(VERY_SHORT_TOKEN_EXPIRY + 1))
@@ -202,13 +202,13 @@ public class TransferWithTokenRefreshTest {
         server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.never());
 
         // get EDR with automatic refresh
-        var renewedEdr = SOKRATES.edrs().getEdrWithRefresh(transferProcessId, true)
+        var renewedEdr = CONSUMER.edrs().getEdrWithRefresh(transferProcessId, true)
                 .statusCode(200)
                 .extract().body()
                 .as(JsonObject.class);
 
         // make sure the consumer has now been able to fetch the data.
-        var data = SOKRATES.data().pullData(renewedEdr, Map.of());
+        var data = CONSUMER.data().pullData(renewedEdr, Map.of());
         assertThat(data).isNotNull().isEqualTo("test response");
 
         server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.exactly(1));
