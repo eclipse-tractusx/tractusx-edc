@@ -71,12 +71,12 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
                 "contentType", "application/json"
         );
 
-        plato().createAsset(assetId, Map.of(), dataAddress);
+        provider().createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = plato().createPolicyDefinition(createAccessPolicy(sokrates().getBpn()));
-        var contractPolicyId = plato().createPolicyDefinition(createContractPolicy(sokrates().getBpn()));
-        plato().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = sokrates().requestAsset(plato(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = consumer().requestAsset(provider(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -84,7 +84,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tpState = sokrates().getTransferProcessState(transferProcessId);
+                    var tpState = consumer().getTransferProcessState(transferProcessId);
                     assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
                 });
 
@@ -93,18 +93,18 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    edr.set(sokrates().edrs().getEdr(transferProcessId));
+                    edr.set(consumer().edrs().getEdr(transferProcessId));
                     assertThat(edr).isNotNull();
                 });
 
         // pull data out of provider's backend service:
         // Prov-DP -> Prov-backend
-        assertThat(sokrates().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
+        assertThat(consumer().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
 
         server.verify(request()
                 .withPath(MOCK_BACKEND_PATH)
                 .withHeader("Edc-Contract-Agreement-Id")
-                .withHeader("Edc-Bpn", sokrates().getBpn())
+                .withHeader("Edc-Bpn", consumer().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
 
     }
@@ -120,12 +120,12 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
                 "contentType", "application/json"
         );
 
-        plato().createAsset(assetId, Map.of(), dataAddress);
+        provider().createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = plato().createPolicyDefinition(createAccessPolicy(sokrates().getBpn()));
-        var contractPolicyId = plato().createPolicyDefinition(createContractPolicy(sokrates().getBpn()));
-        plato().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = sokrates().requestAsset(plato(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = consumer().requestAsset(provider(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -133,7 +133,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tpState = sokrates().getTransferProcessState(transferProcessId);
+                    var tpState = consumer().getTransferProcessState(transferProcessId);
                     assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
                 });
 
@@ -142,22 +142,22 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    edr.set(sokrates().edrs().getEdr(transferProcessId));
+                    edr.set(consumer().edrs().getEdr(transferProcessId));
                     assertThat(edr).isNotNull();
                 });
 
 
         // pull data out of provider's backend service:
         //Consumer-DP -> Prov-DP -> Prov-backend
-        assertThat(sokrates().dataPlane().pullData(Map.of("transferProcessId", transferProcessId))).isEqualTo("test response");
+        assertThat(consumer().dataPlane().pullData(Map.of("transferProcessId", transferProcessId))).isEqualTo("test response");
 
         server.verify(request()
                 .withPath(MOCK_BACKEND_PATH)
                 .withHeader("Edc-Contract-Agreement-Id")
-                .withHeader("Edc-Bpn", sokrates().getBpn())
+                .withHeader("Edc-Bpn", consumer().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
-    
+
     @AfterEach
     void teardown() {
         server.stop();

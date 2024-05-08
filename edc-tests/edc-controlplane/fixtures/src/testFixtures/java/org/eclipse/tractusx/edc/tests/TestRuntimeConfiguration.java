@@ -22,10 +22,10 @@ package org.eclipse.tractusx.edc.tests;
 public class TestRuntimeConfiguration {
 
     public static final String BPN_SUFFIX = "-BPN";
-    public static final String SOKRATES_NAME = "SOKRATES";
-    public static final String SOKRATES_BPN = SOKRATES_NAME + BPN_SUFFIX;
-    public static final String PLATO_NAME = "PLATO";
-    public static final String PLATO_BPN = PLATO_NAME + BPN_SUFFIX;
+    public static final String CONSUMER_NAME = "CONSUMER";
+    public static final String CONSUMER_BPN = CONSUMER_NAME + BPN_SUFFIX;
+    public static final String PROVIDER_NAME = "PROVIDER";
+    public static final String PROVIDER_BPN = PROVIDER_NAME + BPN_SUFFIX;
     public static final String DB_SCHEMA_NAME = "testschema";
 
 }

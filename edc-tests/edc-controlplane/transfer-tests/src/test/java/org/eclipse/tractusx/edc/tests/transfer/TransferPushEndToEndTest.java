@@ -28,10 +28,10 @@ import org.eclipse.tractusx.edc.tests.runtimes.PgParticipantRuntime;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -39,23 +39,23 @@ public class TransferPushEndToEndTest {
 
     abstract static class Tests extends ProviderPushBaseTest {
 
-        protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
-                .name(SOKRATES_NAME)
-                .id(SOKRATES_BPN)
+        protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+                .name(CONSUMER_NAME)
+                .id(CONSUMER_BPN)
                 .build();
-        protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
-                .name(PLATO_NAME)
-                .id(PLATO_BPN)
+        protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+                .name(PROVIDER_NAME)
+                .id(PROVIDER_BPN)
                 .build();
 
         @Override
-        public TractusxParticipantBase plato() {
-            return PLATO;
+        public TractusxParticipantBase provider() {
+            return PROVIDER;
         }
 
         @Override
-        public TractusxParticipantBase sokrates() {
-            return SOKRATES;
+        public TractusxParticipantBase consumer() {
+            return CONSUMER;
         }
 
     }
@@ -65,10 +65,10 @@ public class TransferPushEndToEndTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final ParticipantRuntime SOKRATES_RUNTIME = memoryRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
@@ -77,10 +77,10 @@ public class TransferPushEndToEndTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final PgParticipantRuntime SOKRATES_RUNTIME = pgRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final PgParticipantRuntime CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final PgParticipantRuntime PLATO_RUNTIME = pgRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final PgParticipantRuntime PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 }

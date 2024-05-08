@@ -35,10 +35,10 @@ import java.util.Map;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.BUSINESS_PARTNER_LEGACY_EVALUATION_KEY;
@@ -51,30 +51,30 @@ import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 public class CatalogTest {
 
-    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
-            .name(SOKRATES_NAME)
-            .id(SOKRATES_BPN)
+    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
             .build();
 
 
-    protected static final TransferParticipant PLATO = TransferParticipant.Builder.newInstance()
-            .name(PLATO_NAME)
-            .id(PLATO_BPN)
+    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
             .build();
 
 
     abstract static class Tests {
         @Test
-        @DisplayName("Plato gets catalog from Sokrates. No constraints.")
+        @DisplayName("Consumer gets catalog from the provider. No constraints.")
         void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
             // arrange
-            SOKRATES.createAsset("test-asset");
-            var ap = SOKRATES.createPolicyDefinition(noConstraintPolicy());
-            var cp = SOKRATES.createPolicyDefinition(noConstraintPolicy());
-            SOKRATES.createContractDefinition("test-asset", "test-def", ap, cp);
+            PROVIDER.createAsset("test-asset");
+            var ap = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+            var cp = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+            PROVIDER.createContractDefinition("test-asset", "test-def", ap, cp);
 
             // act
-            var catalog = PLATO.getCatalogDatasets(SOKRATES);
+            var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
 
             // assert
             assertThat(catalog).isNotEmpty()
@@ -86,94 +86,94 @@ public class CatalogTest {
         }
 
         @Test
-        @DisplayName("Verify that Plato receives only the offers he is permitted to (using the legacy BPN validation)")
+        @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
         void requestCatalog_filteredByBpnLegacy_shouldReject() {
-            var onlyPlatoPolicy = bnpPolicy("BPN1", "BPN2", PLATO.getBpn());
+            var onlyConsumerPolicy = bnpPolicy("BPN1", "BPN2", CONSUMER.getBpn());
             var onlyDiogenesPolicy = bnpPolicy("ARISTOTELES-BPN");
 
-            var onlyPlatoId = SOKRATES.createPolicyDefinition(onlyPlatoPolicy);
-            var onlyDiogenesId = SOKRATES.createPolicyDefinition(onlyDiogenesPolicy);
-            var noConstraintPolicyId = SOKRATES.createPolicyDefinition(noConstraintPolicy());
+            var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
+            var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
+            var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
-            SOKRATES.createAsset("test-asset1");
-            SOKRATES.createAsset("test-asset2");
-            SOKRATES.createAsset("test-asset3");
+            PROVIDER.createAsset("test-asset1");
+            PROVIDER.createAsset("test-asset2");
+            PROVIDER.createAsset("test-asset3");
 
-            SOKRATES.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
-            SOKRATES.createContractDefinition("test-asset2", "def2", onlyPlatoId, noConstraintPolicyId);
-            SOKRATES.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
 
             // act
-            var catalog = PLATO.getCatalogDatasets(SOKRATES);
+            var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
             assertThat(catalog).hasSize(2);
         }
 
 
         @Test
-        @DisplayName("Verify that Plato receives only the offers he is permitted to (using the legacy BPN validation)")
+        @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
         void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
-            var onlyPlatoPolicy = bnpPolicy("BPN1", "BPN2", PLATO.getBpn());
+            var onlyConsumerPolicy = bnpPolicy("BPN1", "BPN2", CONSUMER.getBpn());
             var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"));
 
-            var onlyPlatoId = SOKRATES.createPolicyDefinition(onlyPlatoPolicy);
-            var onlyDiogenesId = SOKRATES.createPolicyDefinition(onlyDiogenesPolicy);
-            var noConstraintPolicyId = SOKRATES.createPolicyDefinition(noConstraintPolicy());
+            var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
+            var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
+            var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
-            SOKRATES.createAsset("test-asset1");
-            SOKRATES.createAsset("test-asset2");
-            SOKRATES.createAsset("test-asset3");
+            PROVIDER.createAsset("test-asset1");
+            PROVIDER.createAsset("test-asset2");
+            PROVIDER.createAsset("test-asset3");
 
-            SOKRATES.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
-            SOKRATES.createContractDefinition("test-asset2", "def2", onlyPlatoId, noConstraintPolicyId);
-            SOKRATES.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
 
             // act
-            var catalog = PLATO.getCatalogDatasets(SOKRATES);
+            var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
             assertThat(catalog).hasSize(2);
         }
 
         @Test
-        @DisplayName("Verify that Plato receives only the offers he is permitted to (using the new BPN validation)")
+        @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the new BPN validation)")
         void requestCatalog_filteredByBpn_shouldReject() {
 
             var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
             var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_ALL_OF, "greek_customer", "mathematician");
 
 
-            SOKRATES.storeBusinessPartner(PLATO.getBpn(), "greek_customer", "philosopher");
-            var philosopherId = SOKRATES.createPolicyDefinition(mustBeGreekPhilosopher);
-            var mathId = SOKRATES.createPolicyDefinition(mustBeGreekMathematician);
-            var noConstraintPolicyId = SOKRATES.createPolicyDefinition(noConstraintPolicy());
+            PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
+            var philosopherId = PROVIDER.createPolicyDefinition(mustBeGreekPhilosopher);
+            var mathId = PROVIDER.createPolicyDefinition(mustBeGreekMathematician);
+            var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
-            SOKRATES.createAsset("test-asset1");
-            SOKRATES.createAsset("test-asset2");
-            SOKRATES.createAsset("test-asset3");
+            PROVIDER.createAsset("test-asset1");
+            PROVIDER.createAsset("test-asset2");
+            PROVIDER.createAsset("test-asset3");
 
-            SOKRATES.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
-            SOKRATES.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
-            SOKRATES.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
+            PROVIDER.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
 
 
             // act
-            var catalog = PLATO.getCatalogDatasets(SOKRATES);
+            var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
             assertThat(catalog).hasSize(2);
         }
 
         @Test
         @DisplayName("Multiple ContractDefinitions exist for one Asset")
         void requestCatalog_multipleOffersForAsset() {
-            SOKRATES.storeBusinessPartner(PLATO.getBpn(), "test-group");
-            SOKRATES.createAsset("asset-1");
-            var noConstraintId = SOKRATES.createPolicyDefinition(noConstraintPolicy());
-            var groupConstraintId = SOKRATES.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group"));
+            PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group");
+            PROVIDER.createAsset("asset-1");
+            var noConstraintId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+            var groupConstraintId = PROVIDER.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group"));
 
-            SOKRATES.createContractDefinition("asset-1", "def1", noConstraintId, noConstraintId);
-            SOKRATES.createContractDefinition("asset-1", "def2", groupConstraintId, noConstraintId);
+            PROVIDER.createContractDefinition("asset-1", "def1", noConstraintId, noConstraintId);
+            PROVIDER.createContractDefinition("asset-1", "def2", groupConstraintId, noConstraintId);
 
-            var catalog = PLATO.getCatalogDatasets(SOKRATES);
+            var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
             assertThat(catalog).hasSize(1)
                     .allSatisfy(cd -> {
                         assertThat(getDatasetAssetId(cd.asJsonObject())).isEqualTo("asset-1");
@@ -185,24 +185,24 @@ public class CatalogTest {
         @DisplayName("Catalog with 1000 offers")
         void requestCatalog_of1000Assets_shouldContainAll() {
             var policy = bpnGroupPolicy(Operator.IS_NONE_OF, "test-group1", "test-group2");
-            var policyId = SOKRATES.createPolicyDefinition(policy);
-            var noConstraintId = SOKRATES.createPolicyDefinition(noConstraintPolicy());
-            SOKRATES.storeBusinessPartner(PLATO.getBpn(), "test-group-3");
+            var policyId = PROVIDER.createPolicyDefinition(policy);
+            var noConstraintId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+            PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group-3");
 
             range(0, 1000)
                     .forEach(i -> {
                         var assetId = "asset-" + i;
-                        SOKRATES.createAsset(assetId);
-                        SOKRATES.createContractDefinition(assetId, "def-" + i, policyId, noConstraintId);
+                        PROVIDER.createAsset(assetId);
+                        PROVIDER.createContractDefinition(assetId, "def-" + i, policyId, noConstraintId);
                     });
 
             // request all at once
-            var dataset = PLATO.getCatalogDatasets(SOKRATES, createQuery(1000, 0));
+            var dataset = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(1000, 0));
             assertThat(dataset).hasSize(1000);
 
             // request in chunks
-            var o2 = PLATO.getCatalogDatasets(SOKRATES, createQuery(500, 0));
-            var o3 = PLATO.getCatalogDatasets(SOKRATES, createQuery(500, 500));
+            var o2 = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(500, 0));
+            var o3 = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(500, 500));
             assertThat(o2).doesNotContainAnyElementsOf(o3);
 
         }
@@ -213,10 +213,10 @@ public class CatalogTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final ParticipantRuntime SOKRATES_RUNTIME = memoryRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final ParticipantRuntime PLATO_RUNTIME = memoryRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
@@ -225,10 +225,10 @@ public class CatalogTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final PgParticipantRuntime SOKRATES_RUNTIME = pgRuntime(SOKRATES.getName(), SOKRATES.getBpn(), SOKRATES.getConfiguration());
+        protected static final PgParticipantRuntime CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final PgParticipantRuntime PLATO_RUNTIME = pgRuntime(PLATO.getName(), PLATO.getBpn(), PLATO.getConfiguration());
+        protected static final PgParticipantRuntime PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
