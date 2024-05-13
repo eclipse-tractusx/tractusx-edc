@@ -22,12 +22,9 @@ package org.eclipse.tractusx.edc.tests.catalog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.tractusx.edc.lifecycle.DimParticipant;
 import org.eclipse.tractusx.edc.lifecycle.ParticipantRuntime;
-import org.eclipse.tractusx.edc.tag.DimIntegrationTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
@@ -49,8 +46,8 @@ import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getD
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.mockserver.model.HttpRequest.request;
 
-@DimIntegrationTest
-@Disabled
+//@DimIntegrationTest
+//@Disabled
 public class DimCatalogIntegrationTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -98,7 +95,7 @@ public class DimCatalogIntegrationTest {
         bdrsServer.stop();
     }
 
-    @Test
+    //@Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to")
     void requestCatalog_filteredByDismantler_shouldReturnOffer() {
         // arrange
