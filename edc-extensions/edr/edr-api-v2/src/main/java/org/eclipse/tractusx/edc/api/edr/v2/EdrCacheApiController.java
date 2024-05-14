@@ -23,6 +23,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -139,7 +140,7 @@ public class EdrCacheApiController implements EdrCacheApi {
     @GET
     @Path("{transferProcessId}/dataaddress")
     @Override
-    public JsonObject getEdrEntryDataAddress(@PathParam("transferProcessId") String transferProcessId, @QueryParam("auto_refresh") boolean autoRefresh) {
+    public JsonObject getEdrEntryDataAddress(@PathParam("transferProcessId") String transferProcessId, @DefaultValue("true") @QueryParam("auto_refresh") boolean autoRefresh) {
         var mode = autoRefresh ? AUTO_REFRESH : NO_REFRESH;
         var dataAddress = edrService.resolveByTransferProcess(transferProcessId, mode)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));

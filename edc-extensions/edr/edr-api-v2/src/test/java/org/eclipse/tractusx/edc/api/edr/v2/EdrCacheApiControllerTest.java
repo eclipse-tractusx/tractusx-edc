@@ -161,7 +161,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         var dataAddressType = "type";
         var dataAddress = DataAddress.Builder.newInstance().type(dataAddressType).build();
-        when(edrService.resolveByTransferProcess("transferProcessId", NO_REFRESH))
+        when(edrService.resolveByTransferProcess("transferProcessId", AUTO_REFRESH))
                 .thenReturn(ServiceResult.success(dataAddress));
 
         when(transformerRegistry.transform(isA(DataAddress.class), eq(JsonObject.class)))
@@ -176,13 +176,13 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
                 .contentType(JSON)
                 .body("'%s'".formatted(DataAddress.EDC_DATA_ADDRESS_TYPE_PROPERTY), equalTo(dataAddressType));
 
-        verify(edrService).resolveByTransferProcess("transferProcessId", NO_REFRESH);
+        verify(edrService).resolveByTransferProcess("transferProcessId", AUTO_REFRESH);
         verify(transformerRegistry).transform(isA(DataAddress.class), eq(JsonObject.class));
         verifyNoMoreInteractions(transformerRegistry);
     }
 
     @Test
-    void getEdrEntryDataAddress_withAutorefresh() {
+    void getEdrEntryDataAddress_withExplicitAutoRefreshTrue() {
 
         var dataAddressType = "type";
         var dataAddress = DataAddress.Builder.newInstance().type(dataAddressType).build();
@@ -206,11 +206,36 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
         verifyNoMoreInteractions(transformerRegistry);
     }
 
+    @Test
+    void getEdrEntryDataAddress_withExplicitAutoRefreshFalse() {
+
+        var dataAddressType = "type";
+        var dataAddress = DataAddress.Builder.newInstance().type(dataAddressType).build();
+        when(edrService.resolveByTransferProcess("transferProcessId", NO_REFRESH))
+                .thenReturn(ServiceResult.success(dataAddress));
+
+        when(transformerRegistry.transform(isA(DataAddress.class), eq(JsonObject.class)))
+                .thenReturn(Result.success(createDataAddress(dataAddressType).build()));
+
+        baseRequest()
+                .contentType(JSON)
+                .get("/v2/edrs/transferProcessId/dataaddress?auto_refresh=false")
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .contentType(JSON)
+                .body("'%s'".formatted(DataAddress.EDC_DATA_ADDRESS_TYPE_PROPERTY), equalTo(dataAddressType));
+
+        verify(edrService).resolveByTransferProcess("transferProcessId", NO_REFRESH);
+        verify(transformerRegistry).transform(isA(DataAddress.class), eq(JsonObject.class));
+        verifyNoMoreInteractions(transformerRegistry);
+    }
+
 
     @Test
     void getEdrEntryDataAddress_whenNotFound() {
 
-        when(edrService.resolveByTransferProcess("transferProcessId", NO_REFRESH))
+        when(edrService.resolveByTransferProcess("transferProcessId", AUTO_REFRESH))
                 .thenReturn(ServiceResult.notFound("notFound"));
 
 
@@ -222,7 +247,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
                 .statusCode(404)
                 .contentType(JSON);
 
-        verify(edrService).resolveByTransferProcess("transferProcessId", NO_REFRESH);
+        verify(edrService).resolveByTransferProcess("transferProcessId", AUTO_REFRESH);
         verifyNoMoreInteractions(transformerRegistry);
     }
 
