@@ -67,7 +67,7 @@ public interface EdrCacheApi {
 
     @Operation(description = "Gets the EDR data address with the given transfer process ID",
             parameters = { @Parameter(name = "transferProcessId", description = "The ID of the transferprocess for which the EDR should be fetched", required = true),
-                    @Parameter(name = "auto_refresh", description = "Whether the access token that is stored on the EDR should be checked for expiry, and renewed if necessary. Default is true")
+                    @Parameter(name = "auto_refresh", description = "Whether the access token that is stored on the EDR should be checked for expiry, and renewed if necessary. Default is true.")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "The data address",
