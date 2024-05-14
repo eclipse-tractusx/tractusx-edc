@@ -24,6 +24,9 @@ plugins {
 
 dependencies {
 
+    implementation(project(":core:core-utils"))
+    implementation(project(":spi:edr-spi"))
+
     implementation(libs.jakarta.rsApi)
 
     implementation(libs.edc.spi.http)
@@ -34,7 +37,6 @@ dependencies {
     implementation(libs.edc.spi.auth)
     implementation(libs.edc.spi.edrstore)
 
-    implementation(project(":spi:edr-spi"))
 
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.core.jersey))

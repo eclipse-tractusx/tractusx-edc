@@ -32,7 +32,7 @@ import java.util.HashMap;
 public class TestAudienceMapperExtension implements ServiceExtension {
 
     @Setting
-    private static final String TX_IATP_AUDIENCES = "tx.iam.iatp.audiences";
+    private static final String TX_IATP_AUDIENCES = "tx.edc.iam.iatp.audiences";
 
     @Provider
     public AudienceResolver audienceResolver(ServiceExtensionContext context) {

@@ -39,7 +39,7 @@ import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
 @Extension(NAME)
 public class IatpDefaultScopeExtension implements ServiceExtension {
 
-    public static final String TX_IATP_DEFAULT_SCOPE_PREFIX = "edc.iam.iatp.default-scopes";
+    public static final String TX_IATP_DEFAULT_SCOPE_PREFIX = "tx.edc.iam.iatp.default-scopes";
 
     public static final String TX_IATP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS = TX_IATP_DEFAULT_SCOPE_PREFIX + ".<scopeAlias>.";
 

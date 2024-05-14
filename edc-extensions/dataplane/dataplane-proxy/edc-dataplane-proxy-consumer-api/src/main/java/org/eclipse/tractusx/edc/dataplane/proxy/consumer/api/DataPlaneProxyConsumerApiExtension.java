@@ -39,6 +39,7 @@ import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
 
 /**
  * Instantiates the Proxy Data API for the consumer-side data plane.
@@ -52,9 +53,13 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private static final String CONSUMER_CONTEXT_PATH = "/proxy";
     private static final String CONSUMER_CONFIG_KEY = "web.http.proxy";
     @Setting(value = "Data plane proxy API consumer port", type = "int")
-    private static final String CONSUMER_PORT = "tx.dpf.consumer.proxy.port";
+    private static final String CONSUMER_PORT = "tx.edc.dpf.consumer.proxy.port";
+    @Deprecated(since = "0.7.1")
+    private static final String CONSUMER_PORT_DEPRECATED = "tx.dpf.consumer.proxy.port";
     @Setting(value = "Thread pool size for the consumer data plane proxy gateway", type = "int")
-    private static final String THREAD_POOL_SIZE = "tx.dpf.consumer.proxy.thread.pool";
+    private static final String THREAD_POOL_SIZE = "tx.edc.dpf.consumer.proxy.thread.pool";
+    @Deprecated(since = "0.7.1")
+    private static final String THREAD_POOL_SIZE_DEPRECATED = "tx.dpf.consumer.proxy.thread.pool";
     @Inject
     private WebService webService;
 
@@ -85,10 +90,12 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var port = context.getSetting(CONSUMER_PORT, DEFAULT_PROXY_PORT);
+        var port = propertyCompatibility(context, CONSUMER_PORT, CONSUMER_PORT_DEPRECATED, DEFAULT_PROXY_PORT);
+
         configurer.configure(context, webServer, createApiContext(port));
 
-        executorService = newFixedThreadPool(context.getSetting(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL));
+        var poolSize = propertyCompatibility(context, THREAD_POOL_SIZE, THREAD_POOL_SIZE_DEPRECATED, DEFAULT_THREAD_POOL);
+        executorService = newFixedThreadPool(poolSize);
 
         webService.registerResource(CONSUMER_API_ALIAS, new AuthenticationRequestFilter(authenticationService));
         webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());

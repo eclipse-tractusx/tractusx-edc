@@ -24,6 +24,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.core)
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base"))

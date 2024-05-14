@@ -26,8 +26,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
 
-import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
 
 /**
  * Configuration Extension for the STS OAuth2 client
@@ -36,13 +35,19 @@ import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missing
 public class DimStsConfigurationExtension implements ServiceExtension {
 
     @Setting(value = "STS OAuth2 endpoint for requesting a token")
-    public static final String TOKEN_URL = "edc.iam.sts.oauth.token.url";
+    public static final String TOKEN_URL = "tx.edc.iam.sts.oauth.token.url";
+    @Deprecated(since = "0.7.1")
+    public static final String TOKEN_URL_DEPRECATED = "edc.iam.sts.oauth.token.url";
 
     @Setting(value = "STS OAuth2 client id")
-    public static final String CLIENT_ID = "edc.iam.sts.oauth.client.id";
+    public static final String CLIENT_ID = "tx.edc.iam.sts.oauth.client.id";
+    @Deprecated(since = "0.7.1")
+    public static final String CLIENT_ID_DEPRECATED = "edc.iam.sts.oauth.client.id";
 
     @Setting(value = "Vault alias of STS OAuth2 client secret")
-    public static final String CLIENT_SECRET_ALIAS = "edc.iam.sts.oauth.client.secret.alias";
+    public static final String CLIENT_SECRET_ALIAS = "tx.edc.iam.sts.oauth.client.secret.alias";
+    @Deprecated(since = "0.7.1")
+    public static final String CLIENT_SECRET_ALIAS_DEPRECATED = "edc.iam.sts.oauth.client.secret.alias";
 
     protected static final String NAME = "DIM STS client configuration extension";
 
@@ -55,21 +60,11 @@ public class DimStsConfigurationExtension implements ServiceExtension {
     @Provider
     public StsRemoteClientConfiguration clientConfiguration(ServiceExtensionContext context) {
 
-        var tokenUrl = ofNullable(context.getConfig().getString(TOKEN_URL, null))
-                .map(PathUtils::removeTrailingSlash).orElse(null);
-        var clientId = context.getConfig().getString(CLIENT_ID, null);
-        var clientSecretAlias = context.getConfig().getString(CLIENT_SECRET_ALIAS, null);
+        var tokenUrl = PathUtils.removeTrailingSlash(propertyCompatibility(context, TOKEN_URL, TOKEN_URL_DEPRECATED));
+        var clientId = propertyCompatibility(context, CLIENT_ID, CLIENT_ID_DEPRECATED);
+        var clientSecretAlias = propertyCompatibility(context, CLIENT_SECRET_ALIAS, CLIENT_SECRET_ALIAS_DEPRECATED);
 
         var monitor = context.getMonitor().withPrefix("STS Client for DIM");
-        if (tokenUrl == null) {
-            missingMandatoryProperty(monitor, TOKEN_URL);
-        }
-        if (clientId == null) {
-            missingMandatoryProperty(monitor, CLIENT_ID);
-        }
-        if (clientSecretAlias == null) {
-            missingMandatoryProperty(monitor, CLIENT_SECRET_ALIAS);
-        }
 
         return new StsRemoteClientConfiguration(tokenUrl, clientId, clientSecretAlias);
     }
