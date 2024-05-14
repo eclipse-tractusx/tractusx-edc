@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.3"
+edc = "0.6.4"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.1"
@@ -13,7 +13,7 @@ flyway = "10.12.0"
 jackson = "2.17.1"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
-nimbus = "9.37.3"
+nimbus = "9.38"
 netty-mockserver = "5.15.0"
 okhttp = "4.12.0"
 postgres = "42.7.3"
