@@ -39,7 +39,7 @@ public class DimParticipant extends TractusxIatpParticipantBase {
     public Map<String, String> iatpConfiguration(TractusxIatpParticipantBase... others) {
         var config = new HashMap<>(super.iatpConfiguration(others));
         config.put("edc.iam.sts.dim.url", dimUri.toString());
-        config.put("tx.iam.iatp.bdrs.server.url", bdrsUri.toString());
+        config.put("tx.edc.iam.iatp.bdrs.server.url", bdrsUri.toString());
         config.put("edc.transfer.proxy.token.verifier.publickey.alias", getKeyId());
         return config;
     }
