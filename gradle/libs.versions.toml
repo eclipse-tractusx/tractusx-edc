@@ -155,7 +155,6 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 ## IH for testing
 
 edc-ih-api-presentation = { module = "org.eclipse.edc:presentation-api", version.ref = "edc" }
-edc-ih-credentials = { module = "org.eclipse.edc:identity-hub-credentials", version.ref = "edc" }
 edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
 edc-ih-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-ih-spi-participant-context = { module = "org.eclipse.edc:participant-context-spi", version.ref = "edc" }
@@ -163,6 +162,7 @@ edc-ih-spi-credentials = { module = "org.eclipse.edc:verifiable-credential-spi",
 edc-ih-keypairs = { module = "org.eclipse.edc:identity-hub-keypairs", version.ref = "edc" }
 edc-ih-participants = { module = "org.eclipse.edc:identity-hub-participants", version.ref = "edc" }
 edc-ih-did = { module = "org.eclipse.edc:identity-hub-did", version.ref = "edc" }
+edc-ih-core = { module = "org.eclipse.edc:identity-hub-core", version.ref = "edc" }
 
 # DPF modules
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
