@@ -23,6 +23,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.junit)
     implementation(libs.edc.spi.transaction.datasource)

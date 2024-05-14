@@ -57,7 +57,7 @@ public class RuntimeConfig {
                 put("edc.iam.sts.oauth.client.id", "test-clientid");
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
                 put("edc.iam.sts.dim.url", "http://sts.example.com");
-                put("tx.iam.iatp.bdrs.server.url", "http://sts.example.com");
+                put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
             }
         };
     }

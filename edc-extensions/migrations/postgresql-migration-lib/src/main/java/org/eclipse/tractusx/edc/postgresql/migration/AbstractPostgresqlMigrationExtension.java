@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.sql.DriverManagerConnectionFactory;
 import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
+import org.eclipse.tractusx.edc.core.utils.ConfigUtil;
 
 import java.util.Objects;
 import java.util.Properties;
@@ -38,7 +39,9 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
 
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     @Setting(value = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
-    private static final String MIGRATION_ENABLED_TEMPLATE = "org.eclipse.tractusx.edc.postgresql.migration.%s.enabled";
+    private static final String MIGRATION_ENABLED_TEMPLATE = "tx.edc.postgresql.migration.%s.enabled";
+    @Deprecated(since = "0.7.1")
+    private static final String MIGRATION_ENABLED_TEMPLATE_DEPRECATED = "org.eclipse.tractusx.edc.postgresql.migration.%s.enabled";
 
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
     @Setting(value = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
@@ -56,6 +59,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
         var subSystemName = Objects.requireNonNull(getSubsystemName());
         var enabled = config.getBoolean(MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
 
+        ConfigUtil.propertyCompatibility(context, MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), MIGRATION_ENABLED_TEMPLATE_DEPRECATED.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
         if (!enabled) {
             return;
         }

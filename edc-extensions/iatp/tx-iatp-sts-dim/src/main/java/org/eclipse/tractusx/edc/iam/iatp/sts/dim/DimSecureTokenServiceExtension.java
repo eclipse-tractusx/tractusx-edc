@@ -29,17 +29,18 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
 
-import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
+import static org.eclipse.tractusx.edc.core.utils.PathUtils.removeTrailingSlash;
 
 @Extension(DimSecureTokenServiceExtension.NAME)
 public class DimSecureTokenServiceExtension implements ServiceExtension {
 
     @Setting(value = "STS Dim endpoint")
-    public static final String DIM_URL = "edc.iam.sts.dim.url";
+    public static final String DIM_URL = "tx.edc.iam.sts.dim.url";
+    @Deprecated(since = "0.7.1")
+    public static final String DIM_URL_DEPRECATED = "edc.iam.sts.dim.url";
     protected static final String NAME = "DIM Secure token service extension";
 
     @Inject
@@ -65,14 +66,7 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
 
     @Provider
     public SecureTokenService secureTokenService(ServiceExtensionContext context) {
-        var dimUrl = ofNullable(context.getConfig().getString(DIM_URL, null))
-                .map(PathUtils::removeTrailingSlash)
-                .orElse(null);
-
-        if (dimUrl == null) {
-            missingMandatoryProperty(context.getMonitor().withPrefix("STS Client for DIM"), DIM_URL);
-        }
-
+        var dimUrl = removeTrailingSlash(propertyCompatibility(context, DIM_URL, DIM_URL_DEPRECATED));
         return new DimSecureTokenService(httpClient, dimUrl, dimOauth2Client, typeManager.getMapper(), monitor);
     }
 }

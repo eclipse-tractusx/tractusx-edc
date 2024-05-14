@@ -53,7 +53,7 @@ public class DimSecureServiceExtensionTest {
 
         assertThatThrownBy(() -> extension.secureTokenService(context))
                 .isInstanceOf(EdcException.class)
-                .hasMessage("Mandatory config value missing: 'edc.iam.sts.dim.url'. This runtime is not operational.");
+                .hasMessage("No setting found for key edc.iam.sts.dim.url");
     }
 
 }

@@ -20,9 +20,7 @@
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauthClientImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -31,15 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(DependencyInjectionExtension.class)
 public class DimOauthClientExtensionTest {
 
-    @BeforeEach
-    void setup(ServiceExtensionContext context) {
-
-    }
-
     @Test
     void initialize(DimOauthClientExtension extension) {
         assertThat(extension.oauth2Client()).isInstanceOf(DimOauthClientImpl.class);
     }
-
-
 }

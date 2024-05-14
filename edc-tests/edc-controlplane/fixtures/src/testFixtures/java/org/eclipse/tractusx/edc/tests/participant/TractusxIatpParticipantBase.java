@@ -54,7 +54,7 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
         };
 
         Stream.concat(Stream.of(this), Arrays.stream(others)).forEach(p -> {
-            var prefix = "tx.iam.iatp.audiences.%s".formatted(p.getName().toLowerCase());
+            var prefix = "tx.edc.iam.iatp.audiences.%s".formatted(p.getName().toLowerCase());
             iatpConfiguration.put("%s.from".formatted(prefix), p.getBpn());
             iatpConfiguration.put("%s.to".formatted(prefix), p.getDid());
         });
