@@ -530,8 +530,8 @@ postgresql:
 vault:
   azure:
     name: "<AZURE_NAME>"
-    client: "<AZURE_CLIENT_ID>"
-    tenant: "<AZURE_TENANT_ID>"
+    client:
+    tenant:
     secret:
     certificate:
 
