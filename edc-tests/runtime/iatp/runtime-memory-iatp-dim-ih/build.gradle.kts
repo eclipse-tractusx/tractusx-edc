@@ -49,10 +49,10 @@ dependencies {
     implementation(libs.edc.identity.trust.issuers.configuration)
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.ih.api.presentation)
-    implementation(libs.edc.ih.credentials)
     implementation(libs.edc.ih.keypairs)
     implementation(libs.edc.ih.participants)
     implementation(libs.edc.ih.did)
+    implementation(libs.edc.ih.core)
 
     // for the controller
     implementation(libs.jakarta.rsApi)
