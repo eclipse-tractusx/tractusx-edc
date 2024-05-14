@@ -280,10 +280,10 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
 | tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.azure.certificate | string | `nil` |  |
-| vault.azure.client | string | `"<AZURE_CLIENT_ID>"` |  |
+| vault.azure.client | string | `nil` |  |
 | vault.azure.name | string | `"<AZURE_NAME>"` |  |
 | vault.azure.secret | string | `nil` |  |
-| vault.azure.tenant | string | `"<AZURE_TENANT_ID>"` |  |
+| vault.azure.tenant | string | `nil` |  |
 | vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
 | vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
 | vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |
