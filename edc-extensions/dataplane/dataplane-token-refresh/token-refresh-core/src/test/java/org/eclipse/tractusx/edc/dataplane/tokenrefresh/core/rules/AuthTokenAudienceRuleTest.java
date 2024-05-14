@@ -78,4 +78,14 @@ class AuthTokenAudienceRuleTest {
                 .detail()
                 .isEqualTo("Property '%s' was expected to be java.lang.String but was null.".formatted(AUDIENCE_PROPERTY));
     }
+
+    @Test
+    void checkRule_accessTokenDataNotFound() {
+        when(store.getById(TEST_TOKEN_ID)).thenReturn(null);
+
+        assertThat(rule.checkRule(createAuthenticationToken(TEST_TOKEN_ID), Map.of()))
+                .isFailed()
+                .detail()
+                .isEqualTo("Token with id '%s' not found".formatted(TEST_TOKEN_ID));
+    }
 }
