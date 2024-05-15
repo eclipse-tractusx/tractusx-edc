@@ -316,6 +316,43 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .body(containsString("Required claim 'aud' not present on token."));
     }
 
+    @DisplayName("The authentication token has a invalid id")
+    @Test
+    void refresh_invalidTokenId() {
+        prepareDataplaneRuntime();
+
+        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
+        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
+        var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
+
+
+        authorizationService.revokeEndpointDataReference("test-process-id", "Revoked");
+        var tokenId = getJwtId(accessToken);
+
+        var claims = new JWTClaimsSet.Builder()
+                .claim("token", accessToken)
+                .issuer(CONSUMER_DID)
+                .subject(CONSUMER_DID)
+                .audience("did:web:bob")
+                .jwtID(tokenId)
+                .build();
+
+        var authToken = createJwt(consumerKey, claims);
+
+        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("refresh_token", refreshToken)
+                .header(AUTHORIZATION, "Bearer " + authToken)
+                .post("/token")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(401)
+                .body(containsString("Authentication token validation failed: Token with id '%s' not found".formatted(tokenId)));
+    }
+
     private void prepareDataplaneRuntime() {
         var vault = DATAPLANE_RUNTIME.getContext().getService(Vault.class);
         vault.storeSecret(PROVIDER_KEY_ID, providerKey.toJSONString());
