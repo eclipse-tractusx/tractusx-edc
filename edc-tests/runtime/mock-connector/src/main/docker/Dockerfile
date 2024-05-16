@@ -18,7 +18,7 @@
 #################################################################################
 
 
-FROM eclipse-temurin:22_36-jre-alpine
+FROM eclipse-temurin:22.0.1_8-jre-alpine
 ARG JAR
 ARG OTEL_JAR
 ARG ADDITIONAL_FILES

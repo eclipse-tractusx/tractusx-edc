@@ -1,5 +1,5 @@
 #################################################################################
-#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2021,2024 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -21,7 +21,8 @@
 ---
 version: 2
 updates:
-  # Maven
+
+  # Gradle
   -
     package-ecosystem: "gradle"
     target-branch: main
@@ -44,6 +45,14 @@ updates:
       interval: "weekly"
 
   # Docker
+  - package-ecosystem: "docker"
+    target-branch: main
+    directory: ./edc-controlplane/edc-controlplane-postgresql-azure-vault/src/main/docker/
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "weekly"
   -
     package-ecosystem: "docker"
     target-branch: main
@@ -56,16 +65,7 @@ updates:
   -
     package-ecosystem: "docker"
     target-branch: main
-    directory: ./edc-controlplane/edc-controlplane-postgresql-azure-vault/src/main/docker/
-    labels:
-      - "dependabot"
-      - "docker"
-    schedule:
-      interval: "weekly"
-  -
-    package-ecosystem: "docker"
-    target-branch: main
-    directory: ./edc-controlplane/edc-controlplane-memory/src/main/docker/
+    directory: ./edc-controlplane/edc-runtime-memory/src/main/docker/
     labels:
       - "dependabot"
       - "docker"
@@ -84,6 +84,24 @@ updates:
     package-ecosystem: "docker"
     target-branch: main
     directory: ./edc-dataplane/edc-dataplane-hashicorp-vault/src/main/docker/
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "weekly"
+  -
+    package-ecosystem: "docker"
+    target-branch: main
+    directory: ./edc-tests/runtime/mock-connector/src/main/docker/
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "weekly"
+  -
+    package-ecosystem: "docker"
+    target-branch: main
+    directory: ./samples/edc-dast/edc-dast-runtime/src/main/docker/
     labels:
       - "dependabot"
       - "docker"
