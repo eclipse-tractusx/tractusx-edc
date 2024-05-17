@@ -40,16 +40,16 @@ inputs:
     required: true
     description: "The directory that contains the docker file, e.g. edc-controlplane/edc-runtime-memory"
 
+  k8sversion:
+    required: false
+    description: "Version of Kubernetes to use"
+    default: "v1.30.0"
+
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3.3.0
     - uses: ./.github/actions/setup-java
-
-    - name: Build docker images
-      shell: bash
-      run: |-
-        ./gradlew -p ${{ inputs.rootDir }} dockerize
 
     - name: Setup Helm
       uses: azure/setup-helm@v3.5
@@ -62,7 +62,14 @@ runs:
         version: 'v1.28.2'
 
     - name: Create k8s Kind Cluster
-      uses: helm/kind-action@v1.5.0
+      uses: helm/kind-action@v1.10.0
+      with:
+        node_image: kindest/node:${{ inputs.k8sversion }}
+
+    - name: Build docker images
+      shell: bash
+      run: |-
+        ./gradlew -p ${{ inputs.rootDir }} dockerize
 
     - name: Load images into KinD
       shell: bash
