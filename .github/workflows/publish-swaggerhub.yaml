@@ -83,9 +83,9 @@ jobs:
           ./gradlew resolve
 
       - name: Download upstream API specs
-        run: |
-          curl -X GET https://api.swaggerhub.com/apis/eclipse-edc-bot/management-api/${{ env.UPSTREAM_VERSION }}/swagger.yaml > resources/openapi/yaml/upstream-management-api.yaml
-          curl -X GET https://api.swaggerhub.com/apis/eclipse-edc-bot/control-api/${{ env.UPSTREAM_VERSION }}/swagger.yaml > resources/openapi/yaml/upstream-control-api.yaml
+        run: |          
+          curl -X GET https://eclipse-edc.github.io/Connector/openapi/management-api/${{ env.UPSTREAM_VERSION }}/management-api.yaml > resources/openapi/yaml/upstream-management-api.yaml
+          curl -X GET https://eclipse-edc.github.io/Connector/openapi/control-api/${{ env.UPSTREAM_VERSION }}/control-api.yaml > resources/openapi/yaml/upstream-control-api.yaml
 
       - name: Merge API specs
         run: |
