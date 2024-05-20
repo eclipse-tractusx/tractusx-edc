@@ -35,7 +35,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 public class RuntimeConfig {
 
     private final Endpoint publicApi = new Endpoint(URI.create("http://localhost:%d/public".formatted(getFreePort())));
-    private final Endpoint signalingApi = new Endpoint(URI.create("http://localhost:%d/signaling".formatted(getFreePort())));
+    private final Endpoint controlApi = new Endpoint(URI.create("http://localhost:%d/control".formatted(getFreePort())));
     private final Endpoint refreshApi = publicApi;
     private final Endpoint defaultApi = new Endpoint(URI.create("http://localhost:%d/api".formatted(getFreePort())));
 
@@ -50,8 +50,8 @@ public class RuntimeConfig {
                 put("web.http.port", String.valueOf(defaultApi.url().getPort()));
                 put("web.http.public.path", publicApi.url().getPath());
                 put("web.http.public.port", String.valueOf(publicApi.url().getPort()));
-                put("web.http.signaling.path", signalingApi.url().getPath());
-                put("web.http.signaling.port", String.valueOf(signalingApi.url().getPort()));
+                put("web.http.control.path", controlApi.url().getPath());
+                put("web.http.control.port", String.valueOf(controlApi.url().getPort()));
                 put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-clientid");
@@ -66,8 +66,8 @@ public class RuntimeConfig {
         return publicApi;
     }
 
-    public Endpoint getSignalingApi() {
-        return signalingApi;
+    public Endpoint getControlApi() {
+        return controlApi;
     }
 
     public Endpoint getRefreshApi() {

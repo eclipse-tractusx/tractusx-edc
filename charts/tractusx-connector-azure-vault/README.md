@@ -177,6 +177,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.debug.enabled | bool | `false` |  |
 | dataplane.debug.port | int | `1044` |  |
 | dataplane.debug.suspendOnStart | bool | `false` |  |
+| dataplane.endpoints.control.path | string | `"/api/control"` |  |
+| dataplane.endpoints.control.port | int | `8084` |  |
 | dataplane.endpoints.default.path | string | `"/api"` |  |
 | dataplane.endpoints.default.port | int | `8080` |  |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` |  |
