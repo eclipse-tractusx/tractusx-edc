@@ -62,6 +62,7 @@ dependencies {
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.api.controlplane)
     runtimeOnly(libs.edc.api.management.config)
+    runtimeOnly(libs.edc.api.core)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.dsp)
     runtimeOnly(libs.edc.spi.jwt)

@@ -358,6 +358,9 @@ dataplane:
     signaling:
       port: 8083
       path: /api/signaling
+    control:
+      port: 8084
+      path: /api/control
     proxy:
       port: 8186
       path: /proxy

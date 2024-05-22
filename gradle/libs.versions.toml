@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.4"
+edc = "0.7.0"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.1"
@@ -68,6 +68,7 @@ edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
+edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-api-catalog = { module = "org.eclipse.edc:catalog-api", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
