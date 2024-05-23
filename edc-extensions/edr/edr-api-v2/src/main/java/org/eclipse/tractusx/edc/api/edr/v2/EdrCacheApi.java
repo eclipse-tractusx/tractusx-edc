@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.ApiCoreSchema;
-import org.eclipse.edc.connector.api.management.configuration.ManagementApiSchema;
 import org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.ContractNegotiationApi;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
@@ -67,11 +66,11 @@ public interface EdrCacheApi {
 
     @Operation(description = "Gets the EDR data address with the given transfer process ID",
             parameters = { @Parameter(name = "transferProcessId", description = "The ID of the transferprocess for which the EDR should be fetched", required = true),
-                    @Parameter(name = "auto_refresh", description = "Whether the access token that is stored on the EDR should be checked for expiry, and renewed if necessary. Default is true")
+                    @Parameter(name = "auto_refresh", description = "Whether the access token that is stored on the EDR should be checked for expiry, and renewed if necessary. Default is true.")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "The data address",
-                            content = @Content(schema = @Schema(implementation = ManagementApiSchema.DataAddressSchema.class))),
+                            content = @Content(schema = @Schema(implementation = ApiCoreSchema.DataAddressSchema.class))),
                     @ApiResponse(responseCode = "400", description = "Request was malformed, e.g. id was null",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class)))),
                     @ApiResponse(responseCode = "404", description = "An EDR data address with the given transfer process ID does not exist",
@@ -95,7 +94,7 @@ public interface EdrCacheApi {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "The data address",
-                            content = @Content(schema = @Schema(implementation = ManagementApiSchema.DataAddressSchema.class))),
+                            content = @Content(schema = @Schema(implementation = ApiCoreSchema.DataAddressSchema.class))),
                     @ApiResponse(responseCode = "400", description = "Request was malformed, e.g. id was null",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class)))),
                     @ApiResponse(responseCode = "404", description = "An EDR data address with the given transfer process ID does not exist",

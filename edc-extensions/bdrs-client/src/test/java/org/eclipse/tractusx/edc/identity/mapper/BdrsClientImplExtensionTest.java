@@ -36,6 +36,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY;
+import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY_DEPRECATED;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.CONNECTOR_DID_PROPERTY;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.CREDENTIAL_SERVICE_BASE_URL_PROPERTY;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -60,8 +61,9 @@ class BdrsClientImplExtensionTest {
     }
 
     @Test
-    void createClient_whenUrlMissing_expectLogError(ServiceExtensionContext context, BdrsClientExtension extension) {
+    void createClient_whenUrlMissing_expectException(ServiceExtensionContext context, BdrsClientExtension extension) {
         var cfg = mock(Config.class);
+        when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY_DEPRECATED))).thenThrow(new EdcException(BDRS_SERVER_URL_PROPERTY));
         when(context.getConfig()).thenReturn(cfg);
         when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY), isNull())).thenReturn(null);
         when(cfg.getString(eq(CONNECTOR_DID_PROPERTY), isNull())).thenReturn("did:web:self");
@@ -82,7 +84,7 @@ class BdrsClientImplExtensionTest {
 
         extension.getBdrsClient(context);
 
-        verify(monitor).warning("No config value found for 'tx.iam.iatp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
+        verify(monitor).warning("No config value found for 'tx.edc.iam.iatp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
         verifyNoMoreInteractions(monitor);
     }
 
@@ -97,7 +99,7 @@ class BdrsClientImplExtensionTest {
 
         var client = extension.getBdrsClient(context);
 
-        verify(monitor).warning("No config value found for 'tx.iam.iatp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
+        verify(monitor).warning("No config value found for 'tx.edc.iam.iatp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
 
         // the DID url resolver is only invoked on-demand, so no eager-loading of the DID document
         verify(monitor, never()).severe("Resolving the credentialService URL failed. This runtime won't be able to communicate with BDRS. Error: test failure.");

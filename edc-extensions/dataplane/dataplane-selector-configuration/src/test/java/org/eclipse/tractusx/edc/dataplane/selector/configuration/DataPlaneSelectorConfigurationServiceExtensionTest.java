@@ -43,6 +43,7 @@ import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlan
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.PROPERTIES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.PUBLIC_API_URL_PROPERTY;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.SOURCE_TYPES_SUFFIX;
+import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.TRANSFER_TYPES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.URL_SUFFIX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,16 +58,16 @@ import static org.mockito.Mockito.when;
 class DataPlaneSelectorConfigurationServiceExtensionTest {
     private static final String S3_BUCKET = "s3-bucket";
     private static final String BLOB_STORAGE = "blob-storage";
-    private static final String LOCAL_FILE_SYSTEM = "local-file-system";
 
     private static final String DATA_PLANE_INSTANCE_ID = "test-plane";
     private static final String DATA_PLANE_INSTANCE_URL = "http://127.0.0.1:8080/test";
     private static final String DATA_PLANE_INSTANCE_SOURCE_TYPES = "%s, %s".formatted(S3_BUCKET, BLOB_STORAGE);
-    private static final String DATA_PLANE_INSTANCE_DESTINATION_TYPES = LOCAL_FILE_SYSTEM;
+    private static final String DATA_PLANE_INSTANCE_TRANSFER_TYPES = "%s".formatted(S3_BUCKET);
 
     private static final String URL_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, URL_SUFFIX);
     private static final String SOURCE_TYPES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, SOURCE_TYPES_SUFFIX);
     private static final String DESTINATION_TYPES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, DESTINATION_TYPES_SUFFIX);
+    private static final String TRANSFER_TYPES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, TRANSFER_TYPES_SUFFIX);
     private static final String PROPERTIES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, PROPERTIES_SUFFIX);
     private final ServiceExtensionContext serviceExtensionContext = mock();
     private final DataPlaneSelectorService dataPlaneSelectorService = mock();
@@ -106,12 +107,11 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
                 .addInstance(argThat(dataPlaneInstance -> {
                     var s3Source = DataAddress.Builder.newInstance().type(S3_BUCKET).build();
                     var blobSource = DataAddress.Builder.newInstance().type(BLOB_STORAGE).build();
-                    var fsSink = DataAddress.Builder.newInstance().type(LOCAL_FILE_SYSTEM).build();
 
                     return dataPlaneInstance.getId().equals(DATA_PLANE_INSTANCE_ID) &&
                             dataPlaneInstance.getUrl().toString().equals(DATA_PLANE_INSTANCE_URL) &&
-                            dataPlaneInstance.canHandle(s3Source, fsSink) &&
-                            dataPlaneInstance.canHandle(blobSource, fsSink);
+                            dataPlaneInstance.canHandle(s3Source, S3_BUCKET) &&
+                            dataPlaneInstance.canHandle(blobSource, S3_BUCKET);
                 }));
     }
 
@@ -125,7 +125,7 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
         extension.initialize(serviceExtensionContext);
 
         // one warning config missing, one warning data plane instance skipped
-        verify(monitor, times(3)).warning(anyString());
+        verify(monitor, times(2)).warning(anyString());
     }
 
     @Test
@@ -143,7 +143,8 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
             {
                 put(URL_KEY, DATA_PLANE_INSTANCE_URL);
                 put(SOURCE_TYPES_KEY, DATA_PLANE_INSTANCE_SOURCE_TYPES);
-                put(DESTINATION_TYPES_KEY, DATA_PLANE_INSTANCE_DESTINATION_TYPES);
+                put(TRANSFER_TYPES_KEY, DATA_PLANE_INSTANCE_TRANSFER_TYPES);
+                put(DESTINATION_TYPES_KEY, S3_BUCKET);
                 put(PROPERTIES_KEY, "{ \"%s\": \"%s\" }".formatted(PUBLIC_API_URL_PROPERTY, DATA_PLANE_INSTANCE_URL));
             }
         };

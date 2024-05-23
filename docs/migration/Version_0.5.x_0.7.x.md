@@ -236,10 +236,59 @@ this [test class](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc
 
 ## 5. EDC Management API
 
+### 5.0 Policies
+
+Due to [#4192](https://github.com/eclipse-edc/Connector/issues/4192) and [#4179](https://github.com/eclipse-edc/Connector/issues/4179)
+
+The `action` and the `leftOperand` field are now represented as `@id` instead of `value` in JSON-LD.
+
+`action` from:
+
+```json
+ {
+  "odrl:permission": {
+    "odrl:action": {
+      "odrl:type": "http://www.w3.org/ns/odrl/2/use"
+    }
+  }
+}
+```
+to:
+
+```json
+{
+  "odrl:action": {
+    "@id": "odrl:use"
+  }
+}
+```
+
+`leftOperand` from:
+
+```json
+{
+  "odrl:leftOperand": "https://w3id.org/catenax/policy/FrameworkAgreement"
+}
+```
+
+to: 
+
+```json
+{
+  "odrl:leftOperand": {
+    "@id": "cx-policy:FrameworkAgreement"
+  }
+}
+```
+
+This is reflected in the `Catalog` as well as in `PolicyDefinition` API.
+
 ### 5.1 Catalog
 
 - `counterPartyId` is a **required** property for the catalog request in Tractus-X EDC. It's not enforced currently (
   backward compatibility) but if not provided, the IATP flows won't work and thus the catalog request will fail.
+
+
 
 ### 5.2 Transfer Process
 

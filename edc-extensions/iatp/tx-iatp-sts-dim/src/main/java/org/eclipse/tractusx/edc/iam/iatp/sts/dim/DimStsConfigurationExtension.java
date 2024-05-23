@@ -27,7 +27,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.RequiredConfigWarnings.missingMandatoryProperty;
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
 
 /**
  * Configuration Extension for the STS OAuth2 client
@@ -70,7 +70,6 @@ public class DimStsConfigurationExtension implements ServiceExtension {
         if (clientSecretAlias == null) {
             missingMandatoryProperty(monitor, CLIENT_SECRET_ALIAS);
         }
-
         return new StsRemoteClientConfiguration(tokenUrl, clientId, clientSecretAlias);
     }
 

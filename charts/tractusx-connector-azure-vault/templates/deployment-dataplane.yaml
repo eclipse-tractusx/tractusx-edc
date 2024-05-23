@@ -161,6 +161,10 @@ spec:
               value: {{ .Values.dataplane.endpoints.signaling.port | quote }}
             - name: "WEB_HTTP_SIGNALING_PATH"
               value: {{ .Values.dataplane.endpoints.signaling.path | quote }}
+            - name: "WEB_HTTP_CONTROL_PORT"
+              value: {{ .Values.dataplane.endpoints.control.port | quote }}
+            - name: "WEB_HTTP_CONTROL_PATH"
+              value: {{ .Values.dataplane.endpoints.control.path | quote }}
             - name: "WEB_HTTP_PUBLIC_PORT"
               value: {{ .Values.dataplane.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
@@ -188,18 +192,21 @@ spec:
             ## VAULT ##
             ###########
 
+            - name: "EDC_VAULT_NAME"
+              value: {{ .Values.vault.azure.name | required ".Values.vault.azure.name is required" | quote }}
+            # only set the env vars if config value not null
+            {{- if .Values.vault.azure.client }}
             - name: "AZURE_CLIENT_ID"
               value: {{ .Values.vault.azure.client | quote  }}
+            {{- end }}
+            {{- if .Values.vault.azure.tenant }}
             - name: "AZURE_TENANT_ID"
               value: {{ .Values.vault.azure.tenant | quote }}
-            - name: "EDC_VAULT_NAME"
-              value: {{ .Values.vault.azure.name | quote }}
-            # only set the env var if config value not null
+            {{- end }}
             {{- if .Values.vault.azure.secret }}
             - name: "AZURE_CLIENT_SECRET"
               value: {{ .Values.vault.azure.secret | quote }}
             {{- end }}
-            # only set the env var if config value not null
             {{- if .Values.vault.azure.certificate }}
             - name: "AZURE_CLIENT_CERTIFICATE_PATH"
               value: {{ .Values.vault.azure.certificate | quote }}

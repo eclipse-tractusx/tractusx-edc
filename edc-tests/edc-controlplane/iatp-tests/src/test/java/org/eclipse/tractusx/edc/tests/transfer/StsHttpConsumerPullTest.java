@@ -36,13 +36,13 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime SOKRATES_RUNTIME = iatpRuntime(SOKRATES.getName(), SOKRATES.iatpConfiguration(PLATO), SOKRATES.getKeyPair());
+    protected static final IatpParticipantRuntime CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime PLATO_RUNTIME = iatpRuntime(PLATO.getName(), PLATO.iatpConfiguration(SOKRATES), PLATO.getKeyPair());
+    protected static final IatpParticipantRuntime PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(SOKRATES, PLATO), STS.getKeyPair());
+    protected static final IatpParticipantRuntime STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER), STS.getKeyPair());
 
     @BeforeAll
     static void prepare() {
@@ -50,21 +50,21 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
         // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();
         dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(SOKRATES.getDid(), SOKRATES.getDidDocument());
-        dids.put(PLATO.getDid(), PLATO.getDidDocument());
+        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
+        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
 
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, SOKRATES, SOKRATES_RUNTIME, dids, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PLATO, PLATO_RUNTIME, dids, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, STS_RUNTIME);
 
     }
 
     @Override
-    protected IatpParticipantRuntime sokratesRuntime() {
-        return SOKRATES_RUNTIME;
+    protected IatpParticipantRuntime consumerRuntime() {
+        return CONSUMER_RUNTIME;
     }
 
     @Override
-    protected IatpParticipantRuntime platoRuntime() {
-        return PLATO_RUNTIME;
+    protected IatpParticipantRuntime providerRuntime() {
+        return PROVIDER_RUNTIME;
     }
 }

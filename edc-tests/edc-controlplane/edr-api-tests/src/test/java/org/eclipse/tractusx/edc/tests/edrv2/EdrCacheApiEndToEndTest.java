@@ -61,6 +61,8 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRE
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.matchers.Times.exactly;
 import static org.mockserver.model.HttpRequest.request;
@@ -74,16 +76,16 @@ import static org.mockserver.model.StringBody.exact;
  */
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
-    protected static final TransferParticipant SOKRATES = TransferParticipant.Builder.newInstance()
-            .name("sokrates")
-            .id("BPN00001")
+    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
             .build();
     @RegisterExtension
-    protected static final ParticipantRuntime SOKRATES_RUNTIME = new ParticipantRuntime(
+    protected static final ParticipantRuntime CONSUMER_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:runtime-memory",
-            SOKRATES.getName(),
-            SOKRATES.getId(),
-            with(SOKRATES.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:sokrates")));
+            CONSUMER.getName(),
+            CONSUMER.getId(),
+            with(CONSUMER.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:consumer")));
     private final ObjectMapper mapper = new ObjectMapper();
     private String refreshEndpoint;
     private String refreshAudience;
@@ -101,7 +103,7 @@ public class EdrCacheApiEndToEndTest {
         providerSigningKey = new ECKeyGenerator(Curve.P_256).keyID("did:web:provider#key-1").generate();
         var port = getFreePort();
         refreshEndpoint = "http://localhost:%s/refresh".formatted(port);
-        refreshAudience = "did:web:sokrates";
+        refreshAudience = "did:web:consumer";
         mockedRefreshApi = startClientAndServer(port);
     }
 
@@ -127,7 +129,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            var edr = SOKRATES.edrs().getEdrWithRefresh("test-id", true)
+            var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -151,7 +153,7 @@ public class EdrCacheApiEndToEndTest {
             // mock the provider dataplane's refresh endpoint
 
             storeEdr("test-id", false);
-            var edr = SOKRATES.edrs().getEdrWithRefresh("test-id", true)
+            var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -174,7 +176,7 @@ public class EdrCacheApiEndToEndTest {
             // mock the provider dataplane's refresh endpoint
 
             storeEdr("test-id", true);
-            var edr = SOKRATES.edrs()
+            var edr = CONSUMER.edrs()
                     .getEdrWithRefresh("test-id", false)
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
@@ -207,7 +209,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            SOKRATES.edrs().getEdrWithRefresh("test-id", true)
+            CONSUMER.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(403);
 
             // assert the correct endpoint was called
@@ -235,7 +237,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            var edr = SOKRATES.edrs().refreshEdr("test-id")
+            var edr = CONSUMER.edrs().refreshEdr("test-id")
                     .statusCode(200)
                     .extract().body().as(JsonObject.class);
             assertThat(edr).isNotNull();
@@ -253,7 +255,7 @@ public class EdrCacheApiEndToEndTest {
 
     @Test
     void refreshEdr_whenNotFound() {
-        var edr = SOKRATES.edrs().refreshEdr("does-not-exist")
+        var edr = CONSUMER.edrs().refreshEdr("does-not-exist")
                 .statusCode(404);
     }
 
@@ -272,7 +274,7 @@ public class EdrCacheApiEndToEndTest {
                     );
 
             storeEdr("test-id", true);
-            SOKRATES.edrs().refreshEdr("test-id")
+            CONSUMER.edrs().refreshEdr("test-id")
                     .statusCode(403);
 
             // assert the correct endpoint was called
@@ -300,7 +302,7 @@ public class EdrCacheApiEndToEndTest {
 
     private void storeEdr(String transferProcessId, boolean isExpired) {
         var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
-        var store = SOKRATES_RUNTIME.getService(EndpointDataReferenceStore.class);
+        var store = CONSUMER_RUNTIME.getService(EndpointDataReferenceStore.class);
         var edr = DataAddress.Builder.newInstance()
                 .type("test-type")
                 .property(EDC_NAMESPACE + "authorization", createJwt(providerSigningKey, claims))

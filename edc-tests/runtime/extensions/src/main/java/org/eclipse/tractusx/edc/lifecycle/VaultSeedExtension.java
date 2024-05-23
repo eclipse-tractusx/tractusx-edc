@@ -28,17 +28,21 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import java.util.stream.Stream;
 
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
+
 @BaseExtension
 public class VaultSeedExtension implements ServiceExtension {
     @Setting
-    private static final String TX_VAULT_SEED = "tx.vault.seed.secrets";
+    private static final String TX_VAULT_SEED = "tx.edc.vault.seed.secrets";
+    @Deprecated(since = "0.7.1")
+    private static final String TX_VAULT_SEED_DEPRECATED = "tx.vault.seed.secrets";
 
     @Inject
     private Vault vault;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var seedSecrets = context.getSetting(TX_VAULT_SEED, null);
+        var seedSecrets = propertyCompatibility(context, TX_VAULT_SEED, TX_VAULT_SEED_DEPRECATED, null);
         if (seedSecrets != null) {
             Stream.of(seedSecrets.split(";"))
                     .filter(pair -> pair.contains(":"))

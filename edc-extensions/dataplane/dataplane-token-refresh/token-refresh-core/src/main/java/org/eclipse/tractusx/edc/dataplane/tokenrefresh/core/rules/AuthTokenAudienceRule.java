@@ -54,6 +54,9 @@ public class AuthTokenAudienceRule implements TokenValidationRule {
         var tokenId = getTokenId(accessToken);
 
         var accessTokenData = store.getById(tokenId);
+        if (accessTokenData == null) {
+            return Result.failure("Token with id '%s' not found".formatted(tokenId));
+        }
         var expectedAudience = accessTokenData.additionalProperties().getOrDefault(AUDIENCE_PROPERTY, null);
         if (expectedAudience instanceof String expectedAud) {
             return expectedAud.equals(issuer) ? Result.success() : Result.failure("Principal '%s' is not authorized to refresh this token.".formatted(issuer));

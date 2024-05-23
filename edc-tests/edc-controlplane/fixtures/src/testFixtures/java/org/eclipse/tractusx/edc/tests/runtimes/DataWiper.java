@@ -27,8 +27,8 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PLATO_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.SOKRATES_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 
 /**
  * Helper class to delete all objects from a runtime's data stores.
@@ -51,8 +51,8 @@ public class DataWiper {
 
     public void clearBusinessPartnerStore() {
         var bps = context.getService(BusinessPartnerStore.class);
-        bps.delete(SOKRATES_BPN);
-        bps.delete(PLATO_BPN);
+        bps.delete(CONSUMER_BPN);
+        bps.delete(PROVIDER_BPN);
     }
 
     public void clearContractDefinitions() {

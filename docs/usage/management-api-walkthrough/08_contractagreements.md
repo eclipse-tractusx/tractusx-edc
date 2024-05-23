@@ -31,7 +31,7 @@ A Contract Agreement looks like this:
           "odrl:operator": {
             "@id": "odrl:eq"
           },
-          "odrl:rightOperand": "pcf"
+          "odrl:rightOperand": "Pcf"
         }
       }
     },

@@ -358,6 +358,9 @@ dataplane:
     signaling:
       port: 8083
       path: /api/signaling
+    control:
+      port: 8084
+      path: /api/control
     proxy:
       port: 8186
       path: /proxy
@@ -530,8 +533,8 @@ postgresql:
 vault:
   azure:
     name: "<AZURE_NAME>"
-    client: "<AZURE_CLIENT_ID>"
-    tenant: "<AZURE_TENANT_ID>"
+    client:
+    tenant:
     secret:
     certificate:
 

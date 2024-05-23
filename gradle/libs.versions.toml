@@ -2,25 +2,25 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.3"
+edc = "0.7.0"
 apache-sshd = "2.12.1"
 assertj = "3.25.3"
 awaitility = "4.2.1"
-aws = "2.25.40"
-azure-identity = "1.12.0"
+aws = "2.25.55"
+azure-identity = "1.12.1"
 bouncyCastle-jdk18on = "1.78.1"
-flyway = "10.11.1"
-jackson = "2.17.0"
+flyway = "10.13.0"
+jackson = "2.17.1"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
-nimbus = "9.37.3"
+nimbus = "9.38"
 netty-mockserver = "5.15.0"
 okhttp = "4.12.0"
 postgres = "42.7.3"
 restAssured = "5.4.0"
 rsApi = "4.0.0"
 slf4j = "2.0.13"
-testcontainers = "1.19.7"
+testcontainers = "1.19.8"
 tink = "1.13.0"
 titanium = "1.4.0"
 
@@ -68,6 +68,7 @@ edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
+edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-api-catalog = { module = "org.eclipse.edc:catalog-api", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
@@ -155,7 +156,6 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 ## IH for testing
 
 edc-ih-api-presentation = { module = "org.eclipse.edc:presentation-api", version.ref = "edc" }
-edc-ih-credentials = { module = "org.eclipse.edc:identity-hub-credentials", version.ref = "edc" }
 edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
 edc-ih-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-ih-spi-participant-context = { module = "org.eclipse.edc:participant-context-spi", version.ref = "edc" }
@@ -163,6 +163,7 @@ edc-ih-spi-credentials = { module = "org.eclipse.edc:verifiable-credential-spi",
 edc-ih-keypairs = { module = "org.eclipse.edc:identity-hub-keypairs", version.ref = "edc" }
 edc-ih-participants = { module = "org.eclipse.edc:identity-hub-participants", version.ref = "edc" }
 edc-ih-did = { module = "org.eclipse.edc:identity-hub-did", version.ref = "edc" }
+edc-ih-core = { module = "org.eclipse.edc:identity-hub-core", version.ref = "edc" }
 
 # DPF modules
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }

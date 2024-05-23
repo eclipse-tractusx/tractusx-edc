@@ -74,15 +74,15 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
                 "contentType", "application/json"
         );
 
-        plato().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = plato().createPolicyDefinition(bnpPolicy(sokrates().getBpn()));
-        plato().createContractDefinition(assetId, "def-1", policyId, policyId);
+        provider().createAsset(assetId, Map.of(), dataAddress);
+        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
+        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destination = httpDataAddress(consumerUrl);
 
-        var transferProcessId = sokrates().requestAsset(plato(), assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
+        var transferProcessId = consumer().requestAsset(provider(), assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-            var state = sokrates().getTransferProcessState(transferProcessId);
+            var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
         });
     }
