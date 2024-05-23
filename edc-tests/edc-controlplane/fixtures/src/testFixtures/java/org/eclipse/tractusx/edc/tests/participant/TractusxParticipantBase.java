@@ -83,7 +83,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public Map<String, String> getConfiguration() {
         return new HashMap<>() {
             {
-                put("edc.connector.name", name);
+                put("edc.runtime.id", name);
                 put("edc.participant.id", id);
                 put("web.http.port", String.valueOf(controlPlaneDefault.getPort()));
                 put("web.http.path", "/api");
@@ -102,12 +102,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
                 put("tx.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));
-                put("edc.dataplane.token.validation.endpoint", controlPlaneControl + "/token");
-                put("edc.dataplane.selector.httpplane.url", controlPlaneControl.toString());
-                put("edc.dataplane.selector.httpplane.sourcetypes", "HttpData");
-                put("edc.dataplane.selector.httpplane.destinationtypes", "HttpProxy");
-                put("edc.dataplane.selector.httpplane.transfertypes", "HttpProxy-PULL");
-                put("edc.dataplane.selector.httpplane.properties", "{\"publicApiUrl\":\"http://localhost:" + dataPlanePublic.getPort() + "/api/public/v2\"}");
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + controlPlaneDefault.getPort() + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");

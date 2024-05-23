@@ -46,7 +46,6 @@ public class StsParticipant extends TractusxParticipantBase {
 
         stsConfiguration.put("web.http.sts.port", String.valueOf(stsUri.getPort()));
         stsConfiguration.put("web.http.sts.path", stsUri.getPath());
-        stsConfiguration.put("edc.dataplane.token.validation.endpoint", "");
         stsConfiguration.put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
 
         Arrays.stream(participants).forEach(participant -> {

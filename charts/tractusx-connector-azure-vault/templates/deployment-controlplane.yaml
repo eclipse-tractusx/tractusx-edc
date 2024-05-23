@@ -298,25 +298,6 @@ spec:
               value: {{ .Values.controlplane.bdrs.cache_validity_seconds | quote}}
             {{- end}}
 
-            ################
-            ## DATA PLANE ##
-            ################
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/dataplane-selector-configuration
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
-              value: {{ include "txdc.dataplane.url.signaling" . }}/v1/dataflows
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_TRANSFERTYPES"
-              value: "HttpData-PULL,HttpData-PUSH,AmazonS3-PUSH,AzureStorage-PUSH"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
-              value: "HttpData,AmazonS3,AzureStorage"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
-              value: "HttpData,HttpProxy,AmazonS3,AzureStorage"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_PROPERTIES"
-              value: |-
-                {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
-
-
-
             ###########
             ## VAULT ##
             ###########
@@ -352,7 +333,7 @@ spec:
             ######################################
             ## Additional environment variables ##
             ######################################
-            - name: "EDC_CONNECTOR_NAME"
+            - name: "EDC_RUNTIME_ID"
               value: {{ include "txdc.fullname" .}}-controlplane
           {{- range $key, $value := .Values.controlplane.envValueFrom }}
             - name: {{ $key | quote }}

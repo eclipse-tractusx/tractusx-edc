@@ -169,8 +169,10 @@ spec:
               value: {{ .Values.dataplane.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.dataplane.endpoints.public.path | quote }}
-            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
-              value: {{ include "txdc.controlplane.url.validation" .}}
+            - name: "EDC_CONTROL_ENDPOINT"
+              value: {{ include "txdc.dataplane.url.control" . }}
+            - name: "EDC_DPF_SELECTOR_URL"
+              value: {{ include "txdc.controlplane.url.control" . }}/v1/dataplanes
 
             #######
             # AWS #
@@ -296,7 +298,7 @@ spec:
             ######################################
             ## Additional environment variables ##
             ######################################
-            - name: "EDC_CONNECTOR_NAME"
+            - name: "EDC_RUNTIME_ID"
               value: {{ include "txdc.fullname" .}}-dataplane
           {{- range $key, $value := .Values.dataplane.envValueFrom }}
             - name: {{ $key | quote }}

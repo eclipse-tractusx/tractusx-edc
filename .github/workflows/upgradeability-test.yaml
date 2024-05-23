@@ -117,6 +117,11 @@ jobs:
           # execute the helm test
           helm test tx-prod
 
+      - name: Print logs
+        if: failure()
+        shell: bash
+        run: kubectl get deployments | tail -n +2 | awk '{print $1}' | sed 's/^/deployment\//' | xargs -n1 kubectl logs
+
       - name: Destroy the kind cluster
         if: always()
         shell: bash

@@ -86,7 +86,7 @@ public class S3ToS3Test {
     protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:dataplane-cloud",
             "AwsS3-Dataplane",
-            RuntimeConfig.S3.createDataplane("/control", PROVIDER_CONTROL_PORT)
+            RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT)
     );
     @Container
     private final GenericContainer<?> providerContainer = new GenericContainer<>(MINIO_DOCKER_IMAGE)

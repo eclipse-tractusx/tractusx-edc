@@ -40,6 +40,10 @@ spec:
       targetPort: signaling
       protocol: TCP
       name: signaling
+    - port: {{ .Values.dataplane.endpoints.control.port }}
+      targetPort: control
+      protocol: TCP
+      name: control
     - port: {{ .Values.dataplane.endpoints.public.port }}
       targetPort: public
       protocol: TCP

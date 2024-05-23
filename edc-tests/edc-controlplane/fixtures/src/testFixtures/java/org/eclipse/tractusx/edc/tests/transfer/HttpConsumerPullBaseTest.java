@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
@@ -37,7 +36,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -76,7 +74,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = consumer().requestAsset(provider(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL").execute();
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -125,7 +123,7 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = consumer().requestAsset(provider(), assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL").execute();
 
         var edr = new AtomicReference<JsonObject>();
 

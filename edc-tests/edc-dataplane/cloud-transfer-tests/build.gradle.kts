@@ -33,6 +33,7 @@ dependencies {
     testImplementation(libs.edc.config.filesystem)
     testImplementation(libs.edc.dpf.http)
     testImplementation(libs.edc.auth.tokenbased)
+    testImplementation(libs.edc.dpf.selector.spi)
     testImplementation(libs.testcontainers.junit)
     testImplementation(testFixtures(libs.edc.azure.test))
     testImplementation(libs.edc.aws.s3.core)

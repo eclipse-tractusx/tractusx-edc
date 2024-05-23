@@ -392,8 +392,12 @@ maven/mavencentral/org.eclipse.edc/data-plane-http-oauth2/0.7.0, Apache-2.0, app
 maven/mavencentral/org.eclipse.edc/data-plane-http-spi/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-http/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-public-api-v2/0.7.0, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-selector-api/0.7.0, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-selector-client/0.7.0, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-selector-control-api/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-core/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-spi/0.7.0, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-self-registration/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-signaling-api-configuration/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-signaling-api/0.7.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-signaling-client/0.7.0, Apache-2.0, approved, technology.edc

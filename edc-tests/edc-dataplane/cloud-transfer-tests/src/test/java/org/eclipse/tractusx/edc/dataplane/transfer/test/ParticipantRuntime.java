@@ -37,7 +37,6 @@ import static org.mockito.Mockito.spy;
 
 public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
 
-
     public ParticipantRuntime(String moduleName, String runtimeName, Map<String, String> properties) {
         super(moduleName, runtimeName, properties);
         var monitor = spy(new ConsoleMonitor(runtimeName, ConsoleMonitor.Level.DEBUG));
