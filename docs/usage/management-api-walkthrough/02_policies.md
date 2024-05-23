@@ -53,7 +53,7 @@ Content-Type: application/json
         "constraint": {
           "leftOperand": "FrameworkAgreement",
           "operator": "eq",
-          "rightOperand": "pcf"
+          "rightOperand": "Pcf:<version>"
         }
       }
     ]
@@ -233,7 +233,7 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
         "constraint": {
           "leftOperand": "FrameworkAgreement",
           "operator": "eq",
-          "rightOperand": "traceability"
+          "rightOperand": "Traceability:<version>"
         }
       }
     ]

@@ -60,7 +60,7 @@ Content-Type: application/json
                     "or": {
                         "leftOperand": "FrameworkAgreement",
                         "operator": "eq",
-                        "rightOperand": "pcf"
+                        "rightOperand": "Pcf:<version>"
                     }
                 }
             }
