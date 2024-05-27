@@ -19,9 +19,9 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.consumer.api;
 
+import org.eclipse.edc.api.auth.spi.AuthenticationRequestFilter;
 import org.eclipse.edc.api.auth.spi.AuthenticationService;
 import org.eclipse.edc.api.auth.spi.registry.ApiAuthenticationRegistry;
-import org.eclipse.edc.api.auth.token.TokenBasedAuthenticationService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -69,9 +69,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     @Deprecated(since = "0.7.1")
     private static final String THREAD_POOL_SIZE_DEPRECATED = "tx.dpf.consumer.proxy.thread.pool";
     @Deprecated(since = "0.7.1")
-    private static final String AUTH_SETTING_APIKEY_ALIAS = "edc.api.auth.key.alias";
+    private static final String AUTH_SETTING_APIKEY_ALIAS_DEPRECATED = "edc.api.auth.key.alias";
     @Deprecated(since = "0.7.1")
-    private static final String AUTH_SETTING_APIKEY = "edc.api.auth.key";
+    private static final String AUTH_SETTING_APIKEY_DEPRECATED = "edc.api.auth.key";
     @Inject
     private WebService webService;
 
@@ -115,6 +115,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
         var authenticationService = createAuthenticationService(context);
         apiAuthenticationRegistry.register(CONSUMER_API_ALIAS, authenticationService);
 
+        var authenticationFilter = new AuthenticationRequestFilter(apiAuthenticationRegistry, CONSUMER_API_ALIAS);
+        webService.registerResource(CONSUMER_API_ALIAS, authenticationFilter);
+
         webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());
         webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrService, pipelineService, executorService, monitor));
     }
@@ -128,11 +131,10 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
     private AuthenticationService createAuthenticationService(ServiceExtensionContext context) {
 
-        var apiKey = ofNullable(propertyCompatibility(context, AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS, AUTH_SETTING_APIKEY_ALIAS, null))
+        var apiKey = ofNullable(propertyCompatibility(context, AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS, AUTH_SETTING_APIKEY_ALIAS_DEPRECATED, null))
                 .map(alias -> vault.resolveSecret(alias))
-                .orElseGet(() -> propertyCompatibility(context, AUTH_SETTING_CONSUMER_PROXY_APIKEY, AUTH_SETTING_APIKEY, UUID.randomUUID().toString()));
-
-        return new TokenBasedAuthenticationService(apiKey);
+                .orElseGet(() -> propertyCompatibility(context, AUTH_SETTING_CONSUMER_PROXY_APIKEY, AUTH_SETTING_APIKEY_DEPRECATED, UUID.randomUUID().toString()));
+        return new TokenBasedAuthenticationService(context.getMonitor().withPrefix("ConsumerProxyAPI"), apiKey);
     }
 
     private WebServiceSettings createApiContext(int port) {
