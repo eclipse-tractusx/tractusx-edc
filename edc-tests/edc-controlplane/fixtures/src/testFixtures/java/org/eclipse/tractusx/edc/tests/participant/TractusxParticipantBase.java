@@ -54,9 +54,10 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  */
 public abstract class TractusxParticipantBase extends IdentityParticipant {
 
-    public static final String API_KEY = "testkey";
+    public static final String MANAGEMENT_API_KEY = "testkey";
     public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
+    private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
     protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
@@ -94,14 +95,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.control.port", String.valueOf(controlPlaneControl.getPort()));
                 put("web.http.control.path", controlPlaneControl.getPath());
                 put("edc.dsp.callback.address", protocolEndpoint.getUrl().toString());
-                put("edc.api.auth.key", "testkey");
+                put("edc.api.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
                 put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
                 put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
-                put("tx.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));
+                put("tx.edc.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));
+                put("tx.edc.dpf.consumer.proxy.auth.apikey", CONSUMER_PROXY_API_KEY);
                 put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + controlPlaneDefault.getPort() + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
@@ -218,14 +220,14 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 participant.did = "did:web:" + participant.name.toLowerCase();
             }
 
-            super.managementEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/management"), Map.of("x-api-key", API_KEY)));
+            super.managementEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/management"), Map.of("x-api-key", MANAGEMENT_API_KEY)));
             super.protocolEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/protocol")));
             super.timeout(ASYNC_TIMEOUT);
             super.build();
 
             this.participant.edrs = new ParticipantEdrApi(participant);
             this.participant.data = new ParticipantDataApi();
-            this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(new Endpoint(this.participant.dataPlaneProxy, Map.of("x-api-key", API_KEY)));
+            this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(new Endpoint(this.participant.dataPlaneProxy, Map.of("x-api-key", CONSUMER_PROXY_API_KEY)));
             return participant;
         }
     }
