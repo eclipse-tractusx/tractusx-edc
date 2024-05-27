@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.edc.spi.http)
     implementation(libs.edc.spi.dataplane.http)
     implementation(libs.edc.lib.util)
+    implementation(libs.edc.auth.tokenbased)
     implementation(libs.edc.dpf.util)
     implementation(libs.edc.ext.http)
     implementation(libs.edc.spi.auth)
