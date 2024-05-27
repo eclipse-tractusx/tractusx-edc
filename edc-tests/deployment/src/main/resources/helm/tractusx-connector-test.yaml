@@ -61,6 +61,10 @@ controlplane:
     server:
       url: "https://bdrs.test.org"
 dataplane:
+  debug:
+    enabled: true
+    port: 1044
+    suspendOnStart: false
   endpoints:
     proxy:
       authKey: password

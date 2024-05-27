@@ -79,7 +79,7 @@ public class AzureToAzureTest {
     protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:dataplane-cloud",
             "AzureBlob-Dataplane",
-            RuntimeConfig.Azure.createDataplane("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
+            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
     );
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
@@ -280,4 +280,3 @@ public class AzureToAzureTest {
                 .processId("test-process-multiple-file-id").build();
     }
 }
- 

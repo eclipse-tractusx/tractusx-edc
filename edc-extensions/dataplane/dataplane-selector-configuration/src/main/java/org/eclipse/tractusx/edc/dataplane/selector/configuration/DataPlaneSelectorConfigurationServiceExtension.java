@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.lang.String.join;
 
+@Deprecated(since = "0.7.2")
 @Requires({ DataPlaneSelectorService.class })
 public class DataPlaneSelectorConfigurationServiceExtension implements ServiceExtension {
 
@@ -51,7 +52,7 @@ public class DataPlaneSelectorConfigurationServiceExtension implements ServiceEx
     public static final String PROPERTIES_SUFFIX = "properties";
     public static final String PUBLIC_API_URL_PROPERTY = "publicApiUrl";
 
-    private static final String NAME = "Data Plane Selector Configuration Extension";
+    private static final String NAME = "DEPRECATED: Data Plane Selector Configuration Extension";
     private static final String COMMA = ",";
     private static final String LOG_MISSING_CONFIGURATION = NAME + ": Missing configuration for " + CONFIG_PREFIX + ".%s.%s";
     private static final String LOG_SKIP_BC_MISSING_CONFIGURATION = NAME + ": Configuration issues. Skip registering of Data Plane Instance '%s'";
@@ -66,18 +67,23 @@ public class DataPlaneSelectorConfigurationServiceExtension implements ServiceEx
     }
 
     @Override
-    public void initialize(final ServiceExtensionContext serviceExtensionContext) {
-        this.dataPlaneSelectorService =
-                serviceExtensionContext.getService(DataPlaneSelectorService.class);
-        this.monitor = serviceExtensionContext.getMonitor();
+    public void initialize(ServiceExtensionContext context) {
+        this.dataPlaneSelectorService = context.getService(DataPlaneSelectorService.class);
+        this.monitor = context.getMonitor();
 
-        var config = serviceExtensionContext.getConfig(CONFIG_PREFIX);
+        var config = context.getConfig(CONFIG_PREFIX);
 
         config.partition().forEach(this::configureDataPlaneInstance);
     }
 
     private void configureDataPlaneInstance(final Config config) {
         var id = config.currentNode();
+
+        monitor.warning("""
+                The dataplane-selector-configuration has been deprecated, as now data-planes can register themselves
+                through the data-plane-self-registration extension. Please remove the 'edc.dataplane.selector.%s' config
+                group and configure your data-plane accordingly
+                """.formatted(id));
 
         var url = config.getString(URL_SUFFIX, "");
         var sourceTypes =

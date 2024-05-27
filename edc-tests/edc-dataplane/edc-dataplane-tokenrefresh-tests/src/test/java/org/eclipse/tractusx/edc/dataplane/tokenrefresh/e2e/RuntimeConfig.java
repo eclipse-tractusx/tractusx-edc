@@ -45,13 +45,13 @@ public class RuntimeConfig {
     public Map<String, String> baseConfig() {
         return new HashMap<>() {
             {
-                put("edc.dataplane.token.validation.endpoint", "http://token-validation.com");
                 put("web.http.path", defaultApi.url().getPath());
                 put("web.http.port", String.valueOf(defaultApi.url().getPort()));
                 put("web.http.public.path", publicApi.url().getPath());
                 put("web.http.public.port", String.valueOf(publicApi.url().getPort()));
                 put("web.http.control.path", controlApi.url().getPath());
                 put("web.http.control.port", String.valueOf(controlApi.url().getPort()));
+                put("edc.dpf.selector.url", "http://not-used/feature");
                 put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-clientid");

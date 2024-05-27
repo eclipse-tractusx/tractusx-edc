@@ -189,8 +189,6 @@ spec:
               value: {{ .Values.runtime.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.runtime.endpoints.public.path | quote }}
-            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
-              value: {{ include "txdc.runtime.url.validation" .}}
 
             #########
             ## DSP ##
@@ -236,21 +234,6 @@ spec:
             ################
             ## DATA PLANE ##
             ################
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
-              value: {{ include "txdc.dataplane.url.signaling" . }}/v1/dataflows
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_TRANSFERTYPES"
-              value: "HttpData-PULL,HttpData-PUSH,AmazonS3-PUSH,AzureStorage-PUSH"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
-              value: "HttpData,AmazonS3,AzureStorage"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
-              value: "HttpData,HttpProxy,AmazonS3,AzureStorage"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_PROPERTIES"
-              value: |-
-                {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
-
-
             - name: "EDC_DATAPLANE_API_PUBLIC_BASEURL"
               value: {{ include "txdc.dataplane.url.public" . }}
 

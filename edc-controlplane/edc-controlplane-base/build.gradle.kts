@@ -25,7 +25,6 @@ plugins {
 dependencies {
     runtimeOnly(project(":core:edr-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
-
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
@@ -58,6 +57,7 @@ dependencies {
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.validator.data.address.http.data)
+    runtimeOnly(libs.edc.data.plane.selector.control.api)
 
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.api.controlplane)

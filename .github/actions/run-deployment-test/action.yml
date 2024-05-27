@@ -84,6 +84,10 @@ runs:
       shell: bash
       run: ${{ inputs.helm_command }}
 
+    - name: Print logs
+      if: failure()
+      shell: bash
+      run: kubectl get deployments | tail -n +2 | awk '{print $1}' | sed 's/^/deployment\//' | xargs -n1 kubectl logs
 
     #################
     ### Tear Down ###

@@ -34,7 +34,6 @@ dependencies {
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
     runtimeOnly(libs.edc.identity.did.web)
     runtimeOnly(libs.edc.config.filesystem)
-    runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.dpf.awss3)
     runtimeOnly(libs.edc.dpf.azblob)
     runtimeOnly(libs.edc.dpf.oauth2)
@@ -43,6 +42,8 @@ dependencies {
     runtimeOnly(libs.edc.dpf.core)
     runtimeOnly(libs.edc.controlplane.apiclient)
 
+    runtimeOnly(libs.edc.data.plane.selector.client)
+    runtimeOnly(libs.edc.data.plane.self.registration)
     runtimeOnly(libs.edc.dpf.api.control)
     runtimeOnly(libs.edc.dpf.api.signaling)
 

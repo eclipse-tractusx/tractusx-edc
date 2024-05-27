@@ -42,7 +42,8 @@ dependencies {
     // use basic (all in-mem) data plane
     runtimeOnly(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
         exclude("org.eclipse.edc", "api-observability")
-        exclude(group = "org.eclipse.edc", "vault-hashicorp")
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+        exclude("org.eclipse.edc", "vault-hashicorp")
     }
 
     implementation(libs.edc.core.controlplane)

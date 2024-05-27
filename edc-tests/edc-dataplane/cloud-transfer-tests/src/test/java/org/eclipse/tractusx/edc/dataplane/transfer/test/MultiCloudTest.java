@@ -90,7 +90,7 @@ public class MultiCloudTest {
     protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:dataplane-cloud",
             "MultiCloud-Dataplane",
-            RuntimeConfig.Azure.createDataplane("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
+            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
     );
 
     @Container
