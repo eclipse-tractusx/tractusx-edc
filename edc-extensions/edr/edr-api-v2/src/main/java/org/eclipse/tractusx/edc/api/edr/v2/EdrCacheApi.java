@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.ApiCoreSchema;
-import org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.ContractNegotiationApi;
+import org.eclipse.edc.connector.controlplane.api.management.contractnegotiation.v3.ContractNegotiationApiV3;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
 
@@ -50,7 +50,7 @@ public interface EdrCacheApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })
-    JsonObject initiateEdrNegotiation(@Schema(implementation = ContractNegotiationApi.ContractRequestSchema.class) JsonObject dto);
+    JsonObject initiateEdrNegotiation(@Schema(implementation = ContractNegotiationApiV3.ContractRequestSchema.class) JsonObject dto);
 
     @Operation(description = "Request all Edr entries according to a particular query",
             requestBody = @RequestBody(

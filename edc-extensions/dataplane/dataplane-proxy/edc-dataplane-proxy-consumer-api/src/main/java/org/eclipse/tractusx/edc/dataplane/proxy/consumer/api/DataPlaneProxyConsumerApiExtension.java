@@ -19,8 +19,8 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.consumer.api;
 
-import org.eclipse.edc.api.auth.spi.AuthenticationRequestFilter;
 import org.eclipse.edc.api.auth.spi.AuthenticationService;
+import org.eclipse.edc.api.auth.spi.registry.ApiAuthenticationRegistry;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -79,6 +79,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private AuthenticationService authenticationService;
 
     @Inject
+    private ApiAuthenticationRegistry apiAuthenticationRegistry;
+
+    @Inject
     private Monitor monitor;
 
     private ExecutorService executorService;
@@ -97,7 +100,8 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
         var poolSize = propertyCompatibility(context, THREAD_POOL_SIZE, THREAD_POOL_SIZE_DEPRECATED, DEFAULT_THREAD_POOL);
         executorService = newFixedThreadPool(poolSize);
 
-        webService.registerResource(CONSUMER_API_ALIAS, new AuthenticationRequestFilter(authenticationService));
+        apiAuthenticationRegistry.register(CONSUMER_API_ALIAS, authenticationService);
+
         webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());
         webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrService, pipelineService, executorService, monitor));
     }
