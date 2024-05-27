@@ -38,17 +38,12 @@ public class EdrNegotiationHelperFunctions {
 
     private static final JsonLd JSON_LD = new TitaniumJsonLd(new ConsoleMonitor());
 
-    public static JsonObject createEdrNegotiationRequest(String connectorAddress, String providerId, String offerId, String assetId, JsonObject policy, JsonArray callbacks) {
+    public static JsonObject createEdrNegotiationRequest(String connectorAddress, JsonObject policy, JsonArray callbacks) {
         return Json.createObjectBuilder()
                 .add(TYPE, ContractRequest.CONTRACT_REQUEST_TYPE)
-                .add(EDC_NAMESPACE + "counterPartyId", providerId)
                 .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)
                 .add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http")
-                .add(EDC_NAMESPACE + "offer", Json.createObjectBuilder()
-                        .add(EDC_NAMESPACE + "offerId", offerId)
-                        .add(EDC_NAMESPACE + "assetId", assetId)
-                        .add(EDC_NAMESPACE + "policy", JSON_LD.compact(policy).getContent())
-                )
+                .add(EDC_NAMESPACE + "policy", policy)
                 .add(EDC_NAMESPACE + "callbackAddresses", callbacks)
                 .build();
     }
