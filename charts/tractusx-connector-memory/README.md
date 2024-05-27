@@ -79,7 +79,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.debug.enabled | bool | `false` |  |
 | runtime.debug.port | int | `1044` |  |
 | runtime.debug.suspendOnStart | bool | `false` |  |
-| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086},"signaling":{"path":"/api/signaling","port":8087}}` | endpoints of the control plane |
+| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the control plane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | runtime.endpoints.control.port | int | `8083` | port for incoming api calls |
@@ -93,8 +93,6 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
 | runtime.endpoints.protocol.path | string | `"/api/v1/dsp"` | path for incoming api calls |
 | runtime.endpoints.protocol.port | int | `8084` | port for incoming api calls |
-| runtime.endpoints.signaling.path | string | `"/api/signaling"` | path for incoming api calls |
-| runtime.endpoints.signaling.port | int | `8087` | port for incoming api calls |
 | runtime.env | object | `{}` |  |
 | runtime.envConfigMapNames | list | `[]` |  |
 | runtime.envSecretNames | list | `[]` |  |

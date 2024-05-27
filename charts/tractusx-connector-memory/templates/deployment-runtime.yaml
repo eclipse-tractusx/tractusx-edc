@@ -179,10 +179,6 @@ spec:
               value: {{ .Values.runtime.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.runtime.endpoints.control.path | quote }}
-            - name: "WEB_HTTP_SIGNALING_PORT"
-              value: {{ .Values.runtime.endpoints.signaling.port | quote }}
-            - name: "WEB_HTTP_SIGNALING_PATH"
-              value: {{ .Values.runtime.endpoints.signaling.path | quote }}
             - name: "WEB_HTTP_PROTOCOL_PORT"
               value: {{ .Values.runtime.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_PROTOCOL_PATH"
