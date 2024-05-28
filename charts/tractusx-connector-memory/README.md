@@ -175,7 +175,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | serviceAccount.name | string | `""` |  |
 | tests | object | `{"hookDeletePolicy":"before-hook-creation,hook-succeeded"}` | Configurations for Helm tests |
 | tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
-| vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
+| vault.secretNames | string | `nil` |  |
 | vault.secrets | string | `""` |  |
 | vault.server.postStart | string | `""` |  |
 
