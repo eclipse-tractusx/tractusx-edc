@@ -64,10 +64,10 @@ participant's control plane and data plane.
 
 | Helm value                                         | Environment value                                   | required | default value        | description                                               |
 |----------------------------------------------------|-----------------------------------------------------|----------|----------------------|-----------------------------------------------------------|
-| `dataplane.token.refresh.expiry_seconds`           | `EDC_DATAPLANE_TOKEN_EXPIRY`                        |          | 30                   | TTL for access tokens                                     |
-| `dataplane.token.refresh.expiry_tolerance_seconds` | `EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE`              |          | 10                   | tolerance for token expiry                                |
-| `dataplane.token.refresh.refresh_endpoint`         | `EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT`              |          | `<PUBLIC_API>/token` | endpoint for an OAuth2 token refresh request              |
-| `dataplane.token.refresh.refresh_endpoint`         | `EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT`              |          | `<PUBLIC_API>/token` | endpoint for an OAuth2 token refresh request              |
+| `dataplane.token.refresh.expiry_seconds`           | `TX_EDC_DATAPLANE_TOKEN_EXPIRY`                     |          | 30                   | TTL for access tokens                                     |
+| `dataplane.token.refresh.expiry_tolerance_seconds` | `TX_EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE`           |          | 10                   | tolerance for token expiry                                |
+| `dataplane.token.refresh.refresh_endpoint`         | `TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT`           |          | `<PUBLIC_API>/token` | endpoint for an OAuth2 token refresh request              |
+| `dataplane.token.refresh.refresh_endpoint`         | `TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT`           |          | `<PUBLIC_API>/token` | endpoint for an OAuth2 token refresh request              |
 | `dataplane.token.signer.privatekey_alias`          | `EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS`  | x        |                      | alias, under which the private key is stored in the vault |
 | `dataplane.token.verifier.publickey_alias`         | `EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS` | x        |                      | alias, under which the public key is stored in the vault  |
 | `dataplane.endpoints.signaling.port`               | `WEB_HTTP_SIGNALING_PORT`                           |          | 8083                 | port where the Signaling API is exposed                   |
@@ -89,7 +89,8 @@ participant's control plane and data plane.
 The setting `backendService.httpProxyTokenReceiverUrl`, which configured an EDR receiver backend using the upstream
 EDC [extension](https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver)
 is no longer available as well as the extension is not shipped in the Tractus-X EDC 0.7.x distributions.
-Likewise, the option to dynamically register a consumer-side HTTP-callback via `receiverHttpEndpoint` in the POST /transferprocesses call was removed. Consumer apps should use the /v2/edrs API instead.
+Likewise, the option to dynamically register a consumer-side HTTP-callback via `receiverHttpEndpoint` in the POST
+/transferprocesses call was removed. Consumer apps should use the /v2/edrs API instead.
 
 The main reason is that EDC/Tractus-X-EDC switched to Dataplane Signaling for handling transfers and the EDR format
 specified in
@@ -174,7 +175,7 @@ the connector.
 |--------------------------------------|-----------------------------------------------|----------|---------------|---------------------------------------------------------------|
 | `iatp.id`                            | `EDC_IAM_ISSUER_ID`                           | x        |               | DID, e.g. `did:web:your connector`                            |
 | `iatp.trustedIssuers`                | `EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID` | x        |               | a list of DIDs, each representing an issuer of VCs            |
-| `iatp.sts.dim.url`                   | `EDC_IAM_STS_DIM_URL`                         | x        |               | URL where connectors can request SI tokens                    |
+| `iatp.sts.dim.url`                   | `TX_EDC_IAM_STS_DIM_URL`                      | x        |               | URL where connectors can request SI tokens                    |
 | `iatp.sts.oauth.token_url`           | `EDC_IAM_STS_OAUTH_TOKEN_URL`                 | x        |               | URL where connectors can request OAuth2 access tokens for DIM |
 | `iatp.sts.oauth.client.id`           | `EDC_IAM_STS_OAUTH_CLIENT_ID`                 | x        |               | Client ID issued by DIM                                       |
 | `iatp.sts.oauth.client.secret_alias` | `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS`       | x        |               | alias under which the client secret is stored in the vault    |
@@ -238,7 +239,8 @@ this [test class](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc
 
 ### 5.0 Policies
 
-Due to [#4192](https://github.com/eclipse-edc/Connector/issues/4192) and [#4179](https://github.com/eclipse-edc/Connector/issues/4179)
+Due to [#4192](https://github.com/eclipse-edc/Connector/issues/4192)
+and [#4179](https://github.com/eclipse-edc/Connector/issues/4179)
 
 The `action` and the `leftOperand` field are now represented as `@id` instead of `value` in JSON-LD.
 
@@ -253,6 +255,7 @@ The `action` and the `leftOperand` field are now represented as `@id` instead of
   }
 }
 ```
+
 to:
 
 ```json
@@ -271,7 +274,7 @@ to:
 }
 ```
 
-to: 
+to:
 
 ```json
 {
@@ -287,8 +290,6 @@ This is reflected in the `Catalog` as well as in `PolicyDefinition` API.
 
 - `counterPartyId` is a **required** property for the catalog request in Tractus-X EDC. It's not enforced currently (
   backward compatibility) but if not provided, the IATP flows won't work and thus the catalog request will fail.
-
-
 
 ### 5.2 Transfer Process
 
