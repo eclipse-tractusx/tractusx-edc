@@ -110,7 +110,9 @@ public class PgParticipantRuntime extends ParticipantRuntime implements AfterAll
     }
 
     public String baseJdbcUrl() {
-        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
+        var url = format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
+        System.out.printf("USING JDBC %s%n", url);
+        return url;
     }
 
     protected void mockVault() {

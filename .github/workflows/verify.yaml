@@ -145,7 +145,7 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
-        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
+        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies --info
 
   dataplane-tests:
     runs-on: ubuntu-latest
