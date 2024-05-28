@@ -154,6 +154,8 @@ spec:
             #######
             - name: "EDC_API_AUTH_KEY"
               value: {{ .Values.runtime.endpoints.management.authKey | required ".Values.runtime.endpoints.management.authKey is required" | quote }}
+            - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
+              value: {{ .Values.runtime.endpoints.proxy.authKey | required ".Values.runtime.endpoints.proxy.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.runtime.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
@@ -215,7 +217,7 @@ spec:
 
             {{- range $index, $issuer := .Values.iatp.trustedIssuers }}
             - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
-              value: { { $issuer | quote } }
+              value: {{ $issuer | quote }}
             {{- end }}
 
             #################
