@@ -313,7 +313,6 @@ vault:
   # secrets can be seeded by supplying them in a semicolon separated list key1:secret2;key2:secret2
   secrets: ""
   secretNames:
-    transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
   server:
     postStart: |-
 backendService:

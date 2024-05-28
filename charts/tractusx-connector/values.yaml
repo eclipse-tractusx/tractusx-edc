@@ -547,8 +547,6 @@ vault:
   secretNames:
     transferProxyTokenSignerPrivateKey:
     transferProxyTokenSignerPublicKey:
-    transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
-
 networkPolicy:
   # -- If `true` network policy will be created to restrict access to control- and dataplane
   enabled: false

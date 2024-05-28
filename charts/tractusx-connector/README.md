@@ -287,7 +287,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.7.2 \
 | vault.hashicorp.token | string | `"root"` |  |
 | vault.hashicorp.url | string | `"http://{{ .Release.Name }}-vault:8200"` |  |
 | vault.injector.enabled | bool | `false` |  |
-| vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
 | vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
 | vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |
 | vault.server.dev.devRootToken | string | `"root"` |  |

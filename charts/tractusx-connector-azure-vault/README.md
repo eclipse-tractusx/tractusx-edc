@@ -286,7 +286,6 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | vault.azure.name | string | `"<AZURE_NAME>"` |  |
 | vault.azure.secret | string | `nil` |  |
 | vault.azure.tenant | string | `nil` |  |
-| vault.secretNames.transferProxyTokenEncryptionAesKey | string | `"transfer-proxy-token-encryption-aes-key"` |  |
 | vault.secretNames.transferProxyTokenSignerPrivateKey | string | `nil` |  |
 | vault.secretNames.transferProxyTokenSignerPublicKey | string | `nil` |  |
 
