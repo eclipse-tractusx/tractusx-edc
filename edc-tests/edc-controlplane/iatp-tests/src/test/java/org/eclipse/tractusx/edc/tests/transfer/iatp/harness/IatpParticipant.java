@@ -53,7 +53,7 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
         cfg.put("web.http.resolution.port", String.valueOf(csService.getPort()));
         cfg.put("web.http.resolution.path", csService.getPath());
         if (dimUri != null) {
-            cfg.put("edc.iam.sts.dim.url", dimUri.toString());
+            cfg.put("tx.edc.iam.sts.dim.url", dimUri.toString());
         }
         return cfg;
     }

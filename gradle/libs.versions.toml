@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.7.0"
+edc = "0.7.1-SNAPSHOT"
 apache-sshd = "2.12.1"
 assertj = "3.26.0"
 awaitility = "4.2.1"
@@ -119,14 +119,15 @@ edc-sql-accesstokendata = { module = "org.eclipse.edc:accesstokendata-store-sql"
 edc-sql-dataplane = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
 
 # azure stuff
-edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
+edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = "edc" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
-edc-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
+edc-azure-test = { module = "org.eclipse.edc.azure:azure-test", version.ref = "edc" }
+edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
 
 # EDC aws s3 stuff
-edc-aws-s3-core = { module = "org.eclipse.edc:aws-s3-core", version.ref = "edc" }
-edc-aws-s3-test = { module = "org.eclipse.edc:aws-s3-test", version.ref = "edc" }
-edc-dpf-awss3 = { module = "org.eclipse.edc:data-plane-aws-s3", version.ref = "edc" }
+edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
+edc-aws-s3-test = { module = "org.eclipse.edc.aws:aws-s3-test", version.ref = "edc" }
+edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 
 # Control Plane implementations
 edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
@@ -177,7 +178,6 @@ edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-sig
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
-edc-dpf-azblob = { module = "org.eclipse.edc:data-plane-azure-storage", version.ref = "edc" }
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
 edc-dpf-api-control = { module = "org.eclipse.edc:data-plane-control-api", version.ref = "edc" }

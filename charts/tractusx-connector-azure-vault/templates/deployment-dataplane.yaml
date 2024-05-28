@@ -151,8 +151,8 @@ spec:
             #######
             # API #
             #######
-            - name: "EDC_API_AUTH_KEY"
-              value: {{ .Values.dataplane.endpoints.proxy.authKey | required ".Values.proxy.endpoints.proxy.authKey is required" | quote }}
+            - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
+              value: {{ .Values.dataplane.endpoints.proxy.authKey | required ".Values.dataplane.endpoints.proxy.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.dataplane.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
@@ -214,7 +214,7 @@ spec:
               value: {{ .Values.vault.azure.certificate | quote }}
             {{- end }}
 
-           #############################
+            #############################
             ## IATP / STS / DIM CONFIG ##
             #############################
             - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
@@ -223,7 +223,7 @@ spec:
               value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
               value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
-            - name: "EDC_IAM_STS_DIM_URL"
+            - name: "TX_EDC_IAM_STS_DIM_URL"
               value: {{ .Values.iatp.sts.dim.url | required ".Values.iatp.sts.dim.url is required" | quote}}
 
             ################
@@ -271,20 +271,20 @@ spec:
             ## TOKEN REFRESH
             ##################
             {{- if .Values.dataplane.token.refresh.expiry_seconds }}
-            - name: "EDC_DATAPLANE_TOKEN_EXPIRY"
+            - name: "TX_EDC_DATAPLANE_TOKEN_EXPIRY"
               value: {{ .Values.dataplane.token.refresh.expiry_seconds | quote}}
             {{- end}}
 
             {{- if .Values.dataplane.token.refresh.expiry_tolerance_seconds }}
-            - name: "EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
+            - name: "TX_EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
               value: {{ .Values.dataplane.token.refresh.expiry_tolerance_seconds | quote }}
             {{- end}}
 
             {{- if .Values.dataplane.token.refresh.refresh_endpoint }}
-            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+            - name: "TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ .Values.dataplane.token.refresh.refresh_endpoint }}
             {{- else}}
-            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+            - name: "TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ include "txdc.dataplane.url.public" . }}/token
             {{- end}}
 

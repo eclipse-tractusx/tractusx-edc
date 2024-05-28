@@ -63,14 +63,10 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     public static final String REFRESH_ENDPOINT_PROPERTY_DEPRECATED = "edc.dataplane.token.refresh.endpoint";
 
     @Setting(value = "Alias of private key used for signing tokens, retrieved from private key resolver")
-    public static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS = "tx.edc.transfer.proxy.token.signer.privatekey.alias";
-    @Deprecated(since = "0.7.1")
-    public static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS_DEPRECATED = "edc.transfer.proxy.token.signer.privatekey.alias";
+    public static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS = "edc.transfer.proxy.token.signer.privatekey.alias";
 
     @Setting(value = "Alias of public key used for verifying the tokens, retrieved from the vault")
-    public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "tx.edc.transfer.proxy.token.verifier.publickey.alias";
-    @Deprecated(since = "0.7.1")
-    public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS_DEPRECATED = "edc.transfer.proxy.token.verifier.publickey.alias";
+    public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "edc.transfer.proxy.token.verifier.publickey.alias";
 
     @Setting(value = "Expiry time of access token in seconds", defaultValue = DEFAULT_TOKEN_EXPIRY_SECONDS + "")
     public static final String TOKEN_EXPIRY_SECONDS_PROPERTY = "tx.edc.dataplane.token.expiry";
@@ -133,7 +129,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(),
                     getPrivateKeySupplier(context), context.getMonitor(), refreshEndpoint, getOwnDid(context), expiryTolerance, tokenExpiry,
-                    () -> propertyCompatibility(context, TOKEN_VERIFIER_PUBLIC_KEY_ALIAS, TOKEN_VERIFIER_PUBLIC_KEY_ALIAS_DEPRECATED), vault, typeManager.getMapper());
+                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper());
         }
         return tokenRefreshService;
     }
@@ -164,7 +160,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     @NotNull
     private Supplier<PrivateKey> getPrivateKeySupplier(ServiceExtensionContext context) {
         return () -> {
-            var alias = propertyCompatibility(context, TOKEN_SIGNER_PRIVATE_KEY_ALIAS, TOKEN_SIGNER_PRIVATE_KEY_ALIAS_DEPRECATED);
+            var alias = context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS);
             return privateKeyResolver.resolvePrivateKey(alias)
                     .orElse(f -> {
                         context.getMonitor().warning("Cannot resolve private key: " + f.getFailureDetail());
