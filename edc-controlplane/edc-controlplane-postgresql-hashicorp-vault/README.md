@@ -5,7 +5,7 @@ This version of the EDC Control-Plane is backed by [PostgreSQL](https://www.post
 ## Building
 
 ```shell
-./gardlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
+./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
 ```
 
 ## Configuration
