@@ -51,9 +51,5 @@ spec:
       targetPort: public
       protocol: TCP
       name: public
-    - port: {{ .Values.runtime.endpoints.signaling.port }}
-      targetPort: signaling
-      protocol: TCP
-      name: signaling
   selector:
     {{- include "txdc.runtime.selectorLabels" . | nindent 4 }}

@@ -124,11 +124,6 @@ runtime:
       port: 8186
       path: /proxy
       authKey: "password"
-    signaling:
-      # -- port for incoming api calls
-      port: 8087
-      # -- path for incoming api calls
-      path: /api/signaling
 
   businessPartnerValidation:
     log:

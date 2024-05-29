@@ -188,8 +188,6 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.endpoints.proxy.port | int | `8186` |  |
 | dataplane.endpoints.public.path | string | `"/api/public"` |  |
 | dataplane.endpoints.public.port | int | `8081` |  |
-| dataplane.endpoints.signaling.path | string | `"/api/signaling"` |  |
-| dataplane.endpoints.signaling.port | int | `8083` |  |
 | dataplane.env | object | `{}` |  |
 | dataplane.envConfigMapNames | list | `[]` |  |
 | dataplane.envSecretNames | list | `[]` |  |

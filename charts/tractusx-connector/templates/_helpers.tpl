@@ -150,13 +150,6 @@ Data Plane Control URL
 {{- end }}
 
 {{/*
-Data Signaling URL
-*/}}
-{{- define "txdc.dataplane.url.signaling" -}}
-{{- printf "http://%s-dataplane:%v%s" (include "txdc.fullname" . ) .Values.dataplane.endpoints.signaling.port .Values.dataplane.endpoints.signaling.path -}}
-{{- end }}
-
-{{/*
 Data Public URL
 */}}
 {{- define "txdc.dataplane.url.public" -}}
