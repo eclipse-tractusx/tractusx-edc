@@ -5,7 +5,7 @@ This build of the EDC Data-Plane utilizes [Azure Key Vault](https://azure.micros
 ## Building
 
 ```shell
-./gardlew :edc-dataplane:edc-dataplane-azure-vault:dockerize
+./gradlew :edc-dataplane:edc-dataplane-azure-vault:dockerize
 ```
 
 ## Configuration
