@@ -77,7 +77,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.debug.enabled | bool | `false` | Enables java debugging mode. |
 | runtime.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | runtime.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086},"signaling":{"path":"/api/signaling","port":8087}}` | endpoints of the controlplane |
+| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | runtime.endpoints.control.port | int | `8083` | port for incoming api calls |
@@ -91,7 +91,8 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
 | runtime.endpoints.protocol.path | string | `"/api/v1/dsp"` | path for incoming api calls |
 | runtime.endpoints.protocol.port | int | `8084` | port for incoming api calls |
-| runtime.endpoints.proxy | object | `{"path":"/proxy","port":8186}` | proxy API |
+| runtime.endpoints.proxy | object | `{"authKey":"password","path":"/proxy","port":8186}` | proxy API |
+| runtime.endpoints.proxy.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
 | runtime.endpoints.proxy.path | string | `"/proxy"` | path for incoming api calls |
 | runtime.endpoints.proxy.port | int | `8186` | port for incoming api calls |
 | runtime.endpoints.public | object | `{"path":"/api/public","port":8086}` | public endpoint where the data can be fetched from if HttpPull was used. Must be internet facing. |

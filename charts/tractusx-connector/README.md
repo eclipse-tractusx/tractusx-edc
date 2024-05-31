@@ -174,16 +174,13 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.7.2 \
 | dataplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | dataplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | dataplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| dataplane.endpoints | object | `{"default":{"path":"/api","port":8080},"metrics":{"path":"/metrics","port":9090},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8081},"signaling":{"path":"/api/signaling","port":8083}}` | endpoints of the dataplane |
-| dataplane.endpoints.control.path | string | `"/api/control"` |  |
-| dataplane.endpoints.control.port | int | `8084` |  |
+| dataplane.endpoints | object | `{"control":{"path":"/api/control","port":8084},"default":{"path":"/api","port":8080},"metrics":{"path":"/metrics","port":9090},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8081}}` | endpoints of the dataplane |
 | dataplane.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | dataplane.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | dataplane.endpoints.default.port | int | `8080` | port for incoming api calls |
 | dataplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |
 | dataplane.endpoints.metrics.path | string | `"/metrics"` | path for incoming api calls |
 | dataplane.endpoints.metrics.port | int | `9090` | port for incoming api calls |
-| dataplane.endpoints.proxy | object | `{"authKey":"password","path":"/proxy","port":8186}` | proxy API |
 | dataplane.endpoints.proxy.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
 | dataplane.endpoints.proxy.path | string | `"/proxy"` | path for incoming api calls |
 | dataplane.endpoints.proxy.port | int | `8186` | port for incoming api calls |
