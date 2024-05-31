@@ -144,7 +144,11 @@ controlplane:
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
+    # -- additional labels for the service
+    labels: {}
+    # -- additional annotations for the service
     annotations: {}
+
   # -- additional labels for the pod
   podLabels: {}
   # -- additional annotations for the pod
@@ -343,7 +347,11 @@ dataplane:
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
-    port: 80
+    # -- additional labels for the service
+    labels: {}
+    # -- additional annotations for the service
+    annotations: {}
+
   endpoints:
     default:
       port: 8080

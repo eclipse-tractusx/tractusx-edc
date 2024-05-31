@@ -150,7 +150,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.7.2 \
 | controlplane.securityContext.readOnlyRootFilesystem | bool | `true` | Whether the root filesystem is mounted in read-only mode |
 | controlplane.securityContext.runAsNonRoot | bool | `true` | Requires the container to run without root privileges |
 | controlplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
-| controlplane.service.annotations | object | `{}` |  |
+| controlplane.service.annotations | object | `{}` | additional annotations for the service |
+| controlplane.service.labels | object | `{}` | additional labels for the service |
 | controlplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | controlplane.tolerations | list | `[]` |  |
 | controlplane.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
@@ -229,7 +230,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.7.2 \
 | dataplane.securityContext.readOnlyRootFilesystem | bool | `true` | Whether the root filesystem is mounted in read-only mode |
 | dataplane.securityContext.runAsNonRoot | bool | `true` | Requires the container to run without root privileges |
 | dataplane.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
-| dataplane.service.port | int | `80` |  |
+| dataplane.service.annotations | object | `{}` | additional annotations for the service |
+| dataplane.service.labels | object | `{}` | additional labels for the service |
 | dataplane.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | dataplane.token.refresh.expiry_seconds | int | `300` |  |
 | dataplane.token.refresh.expiry_tolerance_seconds | int | `10` |  |

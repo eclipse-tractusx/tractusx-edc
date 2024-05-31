@@ -1,8 +1,8 @@
 #################################################################################
-#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023,2024 ZF Friedrichshafen AG
 #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
 #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2021,2024 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -26,9 +26,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "txdc.fullname" . }}-dataplane
-  namespace: {{ .Release.Namespace | default "default" | quote }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.dataplane.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "txdc.dataplane.labels" . | nindent 4 }}
+      {{- with .Values.dataplane.service.labels }}
+      {{- toYaml . | nindent 4 }}
+      {{- end }}
 spec:
   type: {{ .Values.dataplane.service.type }}
   ports:

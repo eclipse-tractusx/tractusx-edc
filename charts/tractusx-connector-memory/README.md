@@ -150,7 +150,8 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.securityContext.readOnlyRootFilesystem | bool | `true` | Whether the root filesystem is mounted in read-only mode |
 | runtime.securityContext.runAsNonRoot | bool | `true` | Requires the container to run without root privileges |
 | runtime.securityContext.runAsUser | int | `10001` | The container's process will run with the specified uid |
-| runtime.service.annotations | object | `{}` |  |
+| runtime.service.annotations | object | `{}` | additional annotations for the service |
+| runtime.service.labels | object | `{}` | additional labels for the service |
 | runtime.service.type | string | `"ClusterIP"` | [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service. |
 | runtime.token.refresh.expiry_seconds | int | `300` |  |
 | runtime.token.refresh.expiry_tolerance_seconds | int | `10` |  |
