@@ -271,10 +271,14 @@ controlplane:
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
   resources:
     limits:
+      # -- Maximum CPU limit
       cpu: 1.5
+      # -- Maximum memory limit
       memory: 512Mi
     requests:
+      # -- Initial CPU request
       cpu: 500m
+      # -- Initial memory request
       memory: 512Mi
 
   replicaCount: 1
@@ -381,9 +385,12 @@ dataplane:
       port: 8081
       # -- path for incoming api calls
       path: /api/public
+    # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
+      # -- port for incoming api calls
       port: 8084
-      path: /api/control
+      # -- path for incoming api calls
+      path: /control
     proxy:
       # -- port for incoming api calls
       port: 8186

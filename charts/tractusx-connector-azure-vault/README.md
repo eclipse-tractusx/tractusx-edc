@@ -146,6 +146,10 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | controlplane.replicaCount | int | `1` |  |
 | controlplane.resources | object | `{"limits":{"cpu":1.5,"memory":"512Mi"},"requests":{"cpu":"500m","memory":"512Mi"}}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
+| controlplane.resources.limits.cpu | float | `1.5` | Maximum CPU limit |
+| controlplane.resources.limits.memory | string | `"512Mi"` | Maximum memory limit |
+| controlplane.resources.requests.cpu | string | `"500m"` | Initial CPU request |
+| controlplane.resources.requests.memory | string | `"512Mi"` | Initial memory request |
 | controlplane.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
 | controlplane.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |
 | controlplane.securityContext.capabilities.drop | list | `["ALL"]` | Specifies which capabilities to drop to reduce syscall attack surface |
@@ -173,7 +177,10 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | dataplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | dataplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | dataplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| dataplane.endpoints | object | `{"control":{"path":"/api/control","port":8084},"default":{"path":"/api","port":8080},"metrics":{"path":"/metrics","port":9090},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8081}}` | endpoints of the dataplane |
+| dataplane.endpoints | object | `{"control":{"path":"/control","port":8084},"default":{"path":"/api","port":8080},"metrics":{"path":"/metrics","port":9090},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8081}}` | endpoints of the dataplane |
+| dataplane.endpoints.control | object | `{"path":"/control","port":8084}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
+| dataplane.endpoints.control.path | string | `"/control"` | path for incoming api calls |
+| dataplane.endpoints.control.port | int | `8084` | port for incoming api calls |
 | dataplane.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | dataplane.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | dataplane.endpoints.default.port | int | `8080` | port for incoming api calls |

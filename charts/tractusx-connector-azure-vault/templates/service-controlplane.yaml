@@ -33,9 +33,9 @@ metadata:
   {{- end }}
   labels:
     {{- include "txdc.controlplane.labels" . | nindent 4 }}
-      {{- with .Values.controlplane.service.labels }}
-      {{- toYaml . | nindent 4 }}
-      {{- end }}
+    {{- with .Values.controlplane.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.controlplane.service.type }}
   ports:
