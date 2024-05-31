@@ -322,14 +322,6 @@ spec:
               value: {{ .Values.vault.azure.certificate | quote }}
             {{- end }}
 
-
-
-            ###########################
-            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
-            ###########################
-            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
-              value: {{ .Values.controlplane.businessPartnerValidation.log.agreementValidation | quote }}
-
             ######################################
             ## Additional environment variables ##
             ######################################

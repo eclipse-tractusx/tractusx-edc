@@ -280,12 +280,6 @@ spec:
             - name: "EDC_CP_ADAPTER_REUSE_CONTRACT_AGREEMENT"
               value: "0"
 
-            ###########################
-            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
-            ###########################
-            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
-              value: {{ .Values.runtime.businessPartnerValidation.log.agreementValidation | quote }}
-
             ######################################
             ## Additional environment variables ##
             ######################################

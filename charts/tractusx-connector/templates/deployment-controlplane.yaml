@@ -319,12 +319,6 @@ spec:
             - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
               value: {{ .Values.vault.hashicorp.paths.health | quote }}
 
-            ###########################
-            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
-            ###########################
-            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
-              value: {{ .Values.controlplane.businessPartnerValidation.log.agreementValidation | quote }}
-
             ######################################
             ## Additional environment variables ##
             ######################################
