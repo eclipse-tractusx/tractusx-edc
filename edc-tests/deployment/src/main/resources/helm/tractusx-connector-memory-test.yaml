@@ -55,7 +55,5 @@ runtime:
       privatekey_alias: "key-1"
     verifier:
       publickey_alias: "key-1"
-backendService:
-  httpProxyTokenReceiverUrl: "http://backend:8080"
 tests:
   hookDeletePolicy: before-hook-creation

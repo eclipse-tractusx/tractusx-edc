@@ -86,7 +86,5 @@ vault:
     certificate:
   server:
     postStart:
-backendService:
-  httpProxyTokenReceiverUrl: "http://backend:8080"
 tests:
   hookDeletePolicy: before-hook-creation

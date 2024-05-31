@@ -36,15 +36,6 @@ iatp:
         id: "test-client-id"
         secret_alias: "test-alias"
 controlplane:
-  # the ssi object is still needed for the upgradeability test
-  # todo: remove this after 0.7.0 is released
-  ssi:
-    miw:
-      url: "http://localhost:8080"
-      authorityId: "authorityId"
-    oauth:
-      client:
-        secretAlias: "client-secret"
   service:
     type: NodePort
   endpoints:
