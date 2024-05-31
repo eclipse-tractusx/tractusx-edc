@@ -387,8 +387,11 @@ dataplane:
       port: 8081
       # -- path for incoming api calls
       path: /api/public
+    # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
+      # -- port for incoming api calls
       port: 8084
+      # -- path for incoming api calls
       path: /api/control
     proxy:
       # -- port for incoming api calls
