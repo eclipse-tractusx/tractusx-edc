@@ -54,7 +54,6 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendService.httpProxyTokenReceiverUrl | string | `"https://example.com"` | Specifies a backend service which will receive the EDR |
 | customCaCerts | object | `{}` | Add custom ca certificates to the truststore |
 | customLabels | object | `{}` | Add some custom labels |
 | fullnameOverride | string | `""` |  |
@@ -170,7 +169,6 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.tolerations | list | `[]` | [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes |
 | runtime.url.protocol | string | `""` | Explicitly declared url for reaching the dsp api (e.g. if ingresses not used) |
 | runtime.url.public | string | `""` | Explicitly declared url for reaching the public api (e.g. if ingresses not used) |
-| runtime.url.readiness | string | `""` |  |
 | runtime.volumeMounts | list | `[]` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | runtime.volumes | list | `[]` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |

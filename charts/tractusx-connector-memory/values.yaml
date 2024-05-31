@@ -335,15 +335,13 @@ runtime:
     protocol: ""
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
-    readiness: ""
+
 vault:
   # secrets can be seeded by supplying them in a semicolon separated list key1:secret2;key2:secret2
   secrets: ""
   server:
     postStart: |-
-backendService:
-  # -- Specifies a backend service which will receive the EDR
-  httpProxyTokenReceiverUrl: "https://example.com"
+
 serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
