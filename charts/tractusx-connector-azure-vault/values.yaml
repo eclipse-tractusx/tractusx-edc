@@ -141,10 +141,6 @@ controlplane:
       # -- path for incoming api calls
       path: /metrics
 
-  businessPartnerValidation:
-    log:
-      agreementValidation: true
-
   bdrs:
     # -- Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min)
     cache_validity_seconds: 600

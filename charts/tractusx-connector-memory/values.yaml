@@ -144,9 +144,6 @@ runtime:
       # -- authentication key, must be attached to each request as `X-Api-Key` header
       authKey: "password"
 
-  businessPartnerValidation:
-    log:
-      agreementValidation: true
   token:
     refresh:
       # -- TTL in seconds for access tokens (also known as EDR token)

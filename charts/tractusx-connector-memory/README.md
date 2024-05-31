@@ -75,7 +75,6 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.7.2 \
 | runtime.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | runtime.bdrs.cache_validity_seconds | int | `600` | Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min) |
 | runtime.bdrs.server.url | string | `nil` | URL of the BPN/DID Resolution Service |
-| runtime.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | runtime.debug.enabled | bool | `false` | Enables java debugging mode. |
 | runtime.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | runtime.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |

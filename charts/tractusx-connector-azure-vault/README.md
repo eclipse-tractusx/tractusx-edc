@@ -74,7 +74,6 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | controlplane.bdrs.cache_validity_seconds | int | `600` | Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min) |
 | controlplane.bdrs.server.url | string | `nil` | URL of the BPN/DID Resolution Service |
-| controlplane.businessPartnerValidation.log.agreementValidation | bool | `true` |  |
 | controlplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | controlplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | controlplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
