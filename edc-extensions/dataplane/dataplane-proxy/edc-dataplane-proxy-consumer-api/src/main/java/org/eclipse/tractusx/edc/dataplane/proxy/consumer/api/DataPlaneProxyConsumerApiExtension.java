@@ -106,8 +106,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var port = propertyCompatibility(context, CONSUMER_PORT, CONSUMER_PORT_DEPRECATED, DEFAULT_PROXY_PORT);
+        var config = context.getConfig(CONSUMER_CONFIG_KEY);
 
-        configurer.configure(context, webServer, createApiContext(port));
+        configurer.configure(config, webServer, createApiContext(port));
 
         var poolSize = propertyCompatibility(context, THREAD_POOL_SIZE, THREAD_POOL_SIZE_DEPRECATED, DEFAULT_THREAD_POOL);
         executorService = newFixedThreadPool(poolSize);

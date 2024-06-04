@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.api.edr.v2;
 
 import jakarta.json.Json;
-import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -31,6 +30,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
+import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.api.edr.v2.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
@@ -43,8 +43,6 @@ public class EdrCacheApiExtension implements ServiceExtension {
 
     @Inject
     private WebService webService;
-    @Inject
-    private ManagementApiConfiguration apiConfig;
 
     @Inject
     private EdrService edrService;
@@ -71,6 +69,6 @@ public class EdrCacheApiExtension implements ServiceExtension {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
-        webService.registerResource(apiConfig.getContextAlias(), new EdrCacheApiController(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
+        webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiController(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
     }
 }
