@@ -220,10 +220,8 @@ spec:
             ## BDRS CLIENT ##
             #################
 
-            {{- if .Values.runtime.bdrs.server.url }}
             - name: "TX_IAM_IATP_BDRS_SERVER_URL"
               value: {{ .Values.runtime.bdrs.server.url | required ".Values.runtime.bdrs.server.url is required" | quote }}
-            {{- end }}
             {{- if .Values.runtime.bdrs.cache_validity_seconds }}
             - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
               value: {{ .Values.runtime.bdrs.cache_validity_seconds | quote}}

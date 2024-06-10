@@ -290,10 +290,8 @@ spec:
             ## BDRS CLIENT ##
             #################
 
-            {{- if .Values.controlplane.bdrs.server.url }}
             - name: "TX_IAM_IATP_BDRS_SERVER_URL"
               value: {{ .Values.controlplane.bdrs.server.url | required ".Values.controlplane.bdrs.server.url is required" | quote }}
-            {{- end }}
             {{- if .Values.controlplane.bdrs.cache_validity_seconds }}
             - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
               value: {{ .Values.controlplane.bdrs.cache_validity_seconds | quote}}
