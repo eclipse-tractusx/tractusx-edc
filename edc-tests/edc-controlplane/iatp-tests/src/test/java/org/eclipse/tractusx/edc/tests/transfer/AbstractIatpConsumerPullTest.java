@@ -270,10 +270,10 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .id(existingCred.getVerifiableCredential().credential().getId())
                 .types(existingCred.getVerifiableCredential().credential().getType())
                 .credentialSubjects(existingCred.getVerifiableCredential().credential().getCredentialSubject())
-                .credentialStatus(new CredentialStatus("https://localhost:%s/status/list/7#12345".formatted(port), "StatusList2021",
+                .credentialStatus(new CredentialStatus("http://localhost:%s/status/list/7#12345".formatted(port), "StatusList2021",
                         Map.of("statusPurpose", "revocation",
                                 "statusListIndex", "12345",
-                                "statusListCredential", "https://localhost:%d/status/list/7".formatted(port)
+                                "statusListCredential", "http://localhost:%d/status/list/7".formatted(port)
                         )
                 ))
                 .issuer(existingCred.getVerifiableCredential().credential().getIssuer())
