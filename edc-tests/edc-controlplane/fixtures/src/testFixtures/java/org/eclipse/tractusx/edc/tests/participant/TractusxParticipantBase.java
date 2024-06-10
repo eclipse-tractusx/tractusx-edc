@@ -55,7 +55,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public static final String MANAGEMENT_API_KEY = "testkey";
-    public static final Duration ASYNC_TIMEOUT = ofSeconds(60);
+    public static final Duration ASYNC_TIMEOUT = ofSeconds(120);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
     private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
     protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());

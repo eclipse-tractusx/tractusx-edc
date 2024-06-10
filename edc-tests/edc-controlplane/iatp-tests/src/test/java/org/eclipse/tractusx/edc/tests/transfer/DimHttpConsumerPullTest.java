@@ -114,6 +114,6 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @Override
     protected RuntimeExtension providerRuntime() {
-        return CONSUMER_RUNTIME;
+        return PROVIDER_RUNTIME;
     }
 }
