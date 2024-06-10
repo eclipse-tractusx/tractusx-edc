@@ -36,7 +36,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
-import java.io.IOException;
 import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     private static ClientAndServer dimServer;
 
     @AfterAll
-    static void unwind() throws IOException {
+    static void unwind() {
         oauthServer.stop();
         dimServer.stop();
     }
