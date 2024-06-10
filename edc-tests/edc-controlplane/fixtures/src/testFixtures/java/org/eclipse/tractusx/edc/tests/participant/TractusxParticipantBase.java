@@ -198,7 +198,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
-                .post("/v2/catalog/request")
+                .post("/v3/catalog/request")
                 .then();
 
     }

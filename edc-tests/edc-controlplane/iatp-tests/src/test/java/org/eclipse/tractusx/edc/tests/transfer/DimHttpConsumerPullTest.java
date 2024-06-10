@@ -23,14 +23,15 @@ import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
@@ -50,40 +51,12 @@ import static org.mockserver.model.HttpRequest.request;
 public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
     @RegisterExtension
-    protected static final IatpParticipantRuntime PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private static ClientAndServer oauthServer;
     private static ClientAndServer dimServer;
-
-    @BeforeAll
-    static void prepare() {
-
-        var tokenGeneration = new JwtGenerationService();
-
-        var generatorServices = Map.of(
-                CONSUMER.getDid(), tokenServiceFor(tokenGeneration, CONSUMER),
-                PROVIDER.getDid(), tokenServiceFor(tokenGeneration, PROVIDER));
-
-        oauthServer = ClientAndServer.startClientAndServer(STS.stsUri().getPort());
-
-        oauthServer.when(request().withMethod("POST").withPath(STS.stsUri().getPath() + "/token"))
-                .respond(HttpResponse.response(MAPPER.writeValueAsString(Map.of("access_token", "token"))));
-
-        dimServer = ClientAndServer.startClientAndServer(DIM_URI.getPort());
-        dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
-
-        // create the DIDs cache
-        var dids = new HashMap<String, DidDocument>();
-        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
-        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
-
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, null);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, null);
-
-    }
 
     @AfterAll
     static void unwind() throws IOException {
@@ -103,13 +76,45 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
         return participant::verificationId;
     }
 
+    @BeforeAll
+    static void prepare() {
+
+        var tokenGeneration = new JwtGenerationService();
+
+        var generatorServices = Map.of(
+                CONSUMER.getDid(), tokenServiceFor(tokenGeneration, CONSUMER),
+                PROVIDER.getDid(), tokenServiceFor(tokenGeneration, PROVIDER));
+
+        oauthServer = ClientAndServer.startClientAndServer(STS.stsUri().getPort());
+
+        oauthServer.when(request().withMethod("POST").withPath(STS.stsUri().getPath() + "/token"))
+                .respond(HttpResponse.response(MAPPER.writeValueAsString(Map.of("access_token", "token"))));
+
+        dimServer = ClientAndServer.startClientAndServer(DIM_URI.getPort());
+        dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
+
+    }
+
+    // credentials etc get wiped after every, so the need to be created before every test
+    @BeforeEach
+    void setupParticipants() {
+        // create the DIDs cache
+        var dids = new HashMap<String, DidDocument>();
+        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
+        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
+        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
+
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, null);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, null);
+    }
+
     @Override
-    protected IatpParticipantRuntime consumerRuntime() {
+    protected RuntimeExtension consumerRuntime() {
         return CONSUMER_RUNTIME;
     }
 
     @Override
-    protected IatpParticipantRuntime providerRuntime() {
+    protected RuntimeExtension providerRuntime() {
         return CONSUMER_RUNTIME;
     }
 }

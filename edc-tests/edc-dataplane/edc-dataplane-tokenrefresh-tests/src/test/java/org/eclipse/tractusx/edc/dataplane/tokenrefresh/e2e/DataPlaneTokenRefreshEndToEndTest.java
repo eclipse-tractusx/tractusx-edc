@@ -31,7 +31,9 @@ import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -60,21 +62,20 @@ import static org.hamcrest.Matchers.containsString;
 
 @EndToEndTest
 public class DataPlaneTokenRefreshEndToEndTest {
+    public static final RuntimeConfig ARUNTIME_CONFIG = new RuntimeConfig();
     public static final String CONSUMER_DID = "did:web:alice";
     public static final String PROVIDER_DID = "did:web:bob";
     public static final String PROVIDER_KEY_ID = PROVIDER_DID + "#key-1";
     public static final String PROVIDER_KEY_ID_PUBLIC = PROVIDER_DID + "#key-1-public";
-    public static final String CONSUMER_KEY_ID = CONSUMER_DID + "#cons-1";
-    private static final RuntimeConfig RUNTIME_CONFIG = new RuntimeConfig();
-
     @RegisterExtension
-    private static final EdcRuntimeExtension DATAPLANE_RUNTIME = new EdcRuntimeExtension(
-            ":edc-tests:runtime:dataplane-cloud",
-            "Token-Refresh-Dataplane",
-            with(RUNTIME_CONFIG.baseConfig(), Map.of("edc.transfer.proxy.token.signer.privatekey.alias", PROVIDER_KEY_ID,
-                    "edc.transfer.proxy.token.verifier.publickey.alias", PROVIDER_KEY_ID_PUBLIC))
-    );
+    private static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerMethodExtension(
+            new EmbeddedRuntime("Token-Refresh-Dataplane",
+                    with(ARUNTIME_CONFIG.baseConfig(), Map.of("edc.transfer.proxy.token.signer.privatekey.alias", PROVIDER_KEY_ID,
+                            "edc.transfer.proxy.token.verifier.publickey.alias", PROVIDER_KEY_ID_PUBLIC)),
+                    ":edc-tests:runtime:dataplane-cloud")
 
+    );
+    public static final String CONSUMER_KEY_ID = CONSUMER_DID + "#cons-1";
     private ECKey providerKey;
     private ECKey consumerKey;
 
@@ -118,7 +119,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
         var authToken = createAuthToken(accessToken, consumerKey);
 
-        var tokenResponse = RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        var tokenResponse = ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
@@ -147,7 +148,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
         var authToken = createAuthToken(accessToken, consumerKey);
 
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", invalidRefreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
@@ -171,7 +172,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
         // auth header is empty
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "")
@@ -195,7 +196,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
         // auth header is empty
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .post("/token")
@@ -218,7 +219,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var spoofedKey = new ECKeyGenerator(Curve.P_256).keyID(CONSUMER_KEY_ID).generate();
         var authTokenWithSpoofedKey = createAuthToken(accessToken, spoofedKey);
 
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authTokenWithSpoofedKey)
@@ -241,7 +242,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var refreshToken = "invalid_refresh_token";
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + createAuthToken(accessToken, consumerKey))
@@ -274,7 +275,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .build();
         var authToken = createJwt(consumerKey, claims);
 
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
@@ -306,7 +307,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .build();
         var authToken = createJwt(consumerKey, claims);
 
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
@@ -343,7 +344,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
 
         var authToken = createJwt(consumerKey, claims);
 
-        RUNTIME_CONFIG.getRefreshApi().baseRequest()
+        ARUNTIME_CONFIG.getRefreshApi().baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
@@ -355,7 +356,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
     }
 
     private void prepareDataplaneRuntime() {
-        var vault = DATAPLANE_RUNTIME.getContext().getService(Vault.class);
+        var vault = DATAPLANE_RUNTIME.getService(Vault.class);
         vault.storeSecret(PROVIDER_KEY_ID, providerKey.toJSONString());
         vault.storeSecret(PROVIDER_KEY_ID_PUBLIC, providerKey.toPublicJWK().toJSONString());
     }
