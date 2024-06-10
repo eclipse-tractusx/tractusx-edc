@@ -23,6 +23,7 @@ import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -252,7 +253,7 @@ public class AzureToAzureTest {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor())
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class))
                         .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
     }
 

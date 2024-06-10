@@ -31,7 +31,7 @@ import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManif
 import org.eclipse.edc.identityhub.spi.store.CredentialStore;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.jsonld.spi.JsonLd;
-import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
 
 import java.time.Instant;
@@ -89,14 +89,14 @@ public class IatpHelperFunctions {
                 .build();
     }
 
-    public static void configureParticipant(DataspaceIssuer issuer, IatpParticipant participant, EdcExtension runtime, Map<String, DidDocument> didDocs, EdcExtension stsRuntime) {
+    public static void configureParticipant(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtimeExtension, Map<String, DidDocument> didDocs, RuntimeExtension stsRuntimeExtension) {
 
-        if (stsRuntime != null) {
-            stsRuntime.getContext().getService(Vault.class).storeSecret(participant.verificationId(), participant.getPrivateKeyAsString());
+        if (stsRuntimeExtension != null) {
+            stsRuntimeExtension.getService(Vault.class).storeSecret(participant.verificationId(), participant.getPrivateKeyAsString());
         }
-        var participantContextService = runtime.getContext().getService(ParticipantContextService.class);
-        var vault = runtime.getContext().getService(Vault.class);
-        var didResolverRegistry = runtime.getContext().getService(DidResolverRegistry.class);
+        var participantContextService = runtimeExtension.getService(ParticipantContextService.class);
+        var vault = runtimeExtension.getService(Vault.class);
+        var didResolverRegistry = runtimeExtension.getService(DidResolverRegistry.class);
         var didResolver = new DidExampleResolver();
         didDocs.forEach(didResolver::addCached);
         didResolverRegistry.register(didResolver);
@@ -117,12 +117,12 @@ public class IatpHelperFunctions {
         participantContextService.createParticipantContext(participantManifest);
         vault.storeSecret(participant.getPrivateKeyAlias(), participant.getPrivateKeyAsString());
 
-        storeCredentials(issuer, participant, runtime);
+        storeCredentials(issuer, participant, runtimeExtension);
     }
 
-    private static void storeCredentials(DataspaceIssuer issuer, IatpParticipant participant, EdcExtension runtime) {
-        var credentialStore = runtime.getContext().getService(CredentialStore.class);
-        var jsonLd = runtime.getContext().getService(JsonLd.class);
+    private static void storeCredentials(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtime) {
+        var credentialStore = runtime.getService(CredentialStore.class);
+        var jsonLd = runtime.getService(JsonLd.class);
         issueCredentials(issuer, participant, jsonLd).forEach(credentialStore::create);
     }
 

@@ -51,7 +51,6 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
 
     protected String privateBackendUrl;
 
-
     @BeforeEach
     void setup() {
         server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());

@@ -23,19 +23,19 @@ import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
-import java.io.IOException;
 import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.HashMap;
@@ -50,12 +50,30 @@ import static org.mockserver.model.HttpRequest.request;
 public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
     @RegisterExtension
-    protected static final IatpParticipantRuntime PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private static ClientAndServer oauthServer;
     private static ClientAndServer dimServer;
+
+    @AfterAll
+    static void unwind() {
+        oauthServer.stop();
+        dimServer.stop();
+    }
+
+    private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant iatpDimParticipant) {
+        return new EmbeddedSecureTokenService(tokenGenerationService, privateKeySupplier(iatpDimParticipant), publicIdSupplier(iatpDimParticipant), Clock.systemUTC(), 60 * 60);
+    }
+
+    private static Supplier<PrivateKey> privateKeySupplier(IatpParticipant participant) {
+        return () -> participant.getKeyPair().getPrivate();
+    }
+
+    private static Supplier<String> publicIdSupplier(IatpParticipant participant) {
+        return participant::verificationId;
+    }
 
     @BeforeAll
     static void prepare() {
@@ -74,6 +92,11 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
         dimServer = ClientAndServer.startClientAndServer(DIM_URI.getPort());
         dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
 
+    }
+
+    // credentials etc get wiped after every, so the need to be created before every test
+    @BeforeEach
+    void setupParticipants() {
         // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();
         dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
@@ -82,34 +105,15 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
         configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, null);
         configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, null);
-
-    }
-
-    @AfterAll
-    static void unwind() throws IOException {
-        oauthServer.stop();
-        dimServer.stop();
-    }
-
-    private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant iatpDimParticipant) {
-        return new EmbeddedSecureTokenService(tokenGenerationService, privateKeySupplier(iatpDimParticipant), publicIdSupplier(iatpDimParticipant), Clock.systemUTC(), 60 * 60);
-    }
-
-    private static Supplier<PrivateKey> privateKeySupplier(IatpParticipant participant) {
-        return () -> participant.getKeyPair().getPrivate();
-    }
-
-    private static Supplier<String> publicIdSupplier(IatpParticipant participant) {
-        return participant::verificationId;
     }
 
     @Override
-    protected IatpParticipantRuntime consumerRuntime() {
+    protected RuntimeExtension consumerRuntime() {
         return CONSUMER_RUNTIME;
     }
 
     @Override
-    protected IatpParticipantRuntime providerRuntime() {
-        return CONSUMER_RUNTIME;
+    protected RuntimeExtension providerRuntime() {
+        return PROVIDER_RUNTIME;
     }
 }

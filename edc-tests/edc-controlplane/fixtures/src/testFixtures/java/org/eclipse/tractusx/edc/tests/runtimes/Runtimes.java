@@ -19,19 +19,21 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+
 import java.util.Map;
 
 public interface Runtimes {
 
-    static ParticipantRuntime memoryRuntime(String runtimeName, String bpn, Map<String, String> properties) {
+    static RuntimeExtension memoryRuntime(String runtimeName, String bpn, Map<String, String> properties) {
         return memoryRuntime(runtimeName, bpn, properties, null);
     }
 
-    static ParticipantRuntime memoryRuntime(String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback callback) {
-        return new ParticipantRuntime(":edc-tests:runtime:runtime-memory", runtimeName, bpn, properties, callback);
+    static RuntimeExtension memoryRuntime(String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback callback) {
+        return new ParticipantRuntimeExtension(":edc-tests:runtime:runtime-memory", runtimeName, bpn, properties, callback);
     }
 
-    static PgParticipantRuntime pgRuntime(String runtimeName, String bpn, Map<String, String> properties) {
-        return new PgParticipantRuntime(":edc-tests:runtime:runtime-postgresql", runtimeName, bpn, properties);
+    static RuntimeExtension pgRuntime(String runtimeName, String bpn, Map<String, String> properties) {
+        return new PgRuntimeExtension(":edc-tests:runtime:runtime-postgresql", runtimeName, bpn, properties);
     }
 }

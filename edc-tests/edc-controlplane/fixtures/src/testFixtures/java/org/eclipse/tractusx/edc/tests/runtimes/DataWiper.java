@@ -35,7 +35,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
  */
 public class DataWiper {
 
-    private final ServiceExtensionContext context;
+    protected final ServiceExtensionContext context;
 
     public DataWiper(ServiceExtensionContext context) {
         this.context = context;

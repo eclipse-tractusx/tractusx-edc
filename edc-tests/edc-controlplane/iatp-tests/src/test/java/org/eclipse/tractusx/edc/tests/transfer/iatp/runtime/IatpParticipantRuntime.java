@@ -21,60 +21,40 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
 import com.nimbusds.jose.jwk.JWK;
 import org.eclipse.edc.boot.system.injection.InjectionContainer;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.runtimes.DataWiper;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
 
 
-public class IatpParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
-
+public class IatpParticipantRuntime extends EmbeddedRuntime {
     private final Map<String, String> properties;
     private final JWK runtimeKeyPair;
     private DataWiper wiper;
 
     public IatpParticipantRuntime(String moduleName, String runtimeName, Map<String, String> properties, KeyPair runtimeKeypair) {
-        super(moduleName, runtimeName, properties);
+        super(runtimeName, properties, moduleName);
         this.properties = properties;
         runtimeKeyPair = CryptoConverter.createJwk(runtimeKeypair);
         this.registerServiceMock(BdrsClient.class, (s) -> s);
     }
 
-    @Override
-    public void beforeTestExecution(ExtensionContext extensionContext) {
-        //do nothing - we only want to start the runtime once
-        wiper.clearPersistence();
+    public DataWiper getWiper() {
+        return wiper;
     }
 
-    @Override
-    public void afterTestExecution(ExtensionContext context) {
-    }
-
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-        //only run this once
-        super.beforeTestExecution(context);
-    }
-
-    @Override
-    public void afterAll(ExtensionContext context) throws Exception {
-        super.afterTestExecution(context);
-    }
 
     @Override
     protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
         super.bootExtensions(context, serviceExtensions);
-        wiper = new DataWiper(context);
+        wiper = new CredentialWiper(getContext());
         registerConsumerPullKeys(runtimeKeyPair);
     }
 
@@ -83,7 +63,7 @@ public class IatpParticipantRuntime extends EdcRuntimeExtension implements Befor
         var publicAlias = properties.get("edc.transfer.proxy.token.verifier.publickey.alias");
 
         if (privateAlias != null && publicAlias != null) {
-            var vault = getContext().getService(Vault.class);
+            var vault = getService(Vault.class);
             vault.storeSecret(privateAlias, ecKey.toJSONString());
             vault.storeSecret(publicAlias, ecKey.toPublicJWK().toJSONString());
         }

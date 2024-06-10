@@ -21,10 +21,9 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
-import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
-import org.eclipse.tractusx.edc.tests.runtimes.PgParticipantRuntime;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -65,10 +64,10 @@ public class TransferPushEndToEndTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
@@ -77,10 +76,10 @@ public class TransferPushEndToEndTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final PgParticipantRuntime CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final PgParticipantRuntime PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 }

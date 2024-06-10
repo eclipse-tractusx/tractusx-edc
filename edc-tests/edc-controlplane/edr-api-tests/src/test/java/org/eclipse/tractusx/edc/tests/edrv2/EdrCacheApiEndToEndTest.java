@@ -35,10 +35,10 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
-import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,6 +63,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRES
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.matchers.Times.exactly;
 import static org.mockserver.model.HttpRequest.request;
@@ -81,11 +82,7 @@ public class EdrCacheApiEndToEndTest {
             .id(CONSUMER_BPN)
             .build();
     @RegisterExtension
-    protected static final ParticipantRuntime CONSUMER_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:runtime-memory",
-            CONSUMER.getName(),
-            CONSUMER.getId(),
-            with(CONSUMER.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:consumer")));
+    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getId(), with(CONSUMER.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:consumer")));
     private final ObjectMapper mapper = new ObjectMapper();
     private String refreshEndpoint;
     private String refreshAudience;

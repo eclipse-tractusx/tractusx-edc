@@ -19,14 +19,15 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
-import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 
 /**
- * Callback invoked before the runtime boots with extensions of {@link EdcExtension}. This will allow injecting
- * custom mock services directly in the tests rather than extending the {@link EdcExtension} with custom mocks
+ * Callback invoked before the runtime boots with extensions of {@link RuntimeExtension}. This will allow injecting
+ * custom mock services directly in the tests rather than extending the {@link RuntimeExtension} with custom mocks
  */
 @FunctionalInterface
 public interface BeforeInitCallback {
 
-    void beforeInit(EdcExtension runtime);
+    void beforeInit(EmbeddedRuntime runtime);
 }
