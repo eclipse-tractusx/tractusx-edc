@@ -77,6 +77,15 @@ jobs:
         run: |
           ./gradlew checkstyleMain checkstyleTest
 
+  verify-javadoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-java
+
+      - name: Run Javadoc
+        run: ./gradlew javadoc
+
   unit-tests:
     runs-on: ubuntu-latest
     steps:

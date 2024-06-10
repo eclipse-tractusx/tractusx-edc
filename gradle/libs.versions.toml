@@ -6,14 +6,14 @@ edc = "0.7.1-SNAPSHOT"
 apache-sshd = "2.12.1"
 assertj = "3.26.0"
 awaitility = "4.2.1"
-aws = "2.25.60"
+aws = "2.25.64"
 azure-identity = "1.12.1"
 bouncyCastle-jdk18on = "1.78.1"
 flyway = "10.13.0"
 jackson = "2.17.1"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
-nimbus = "9.39.1"
+nimbus = "9.39.3"
 netty-mockserver = "5.15.0"
 okhttp = "4.12.0"
 postgres = "42.7.3"
@@ -67,6 +67,7 @@ edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "
 edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
+edc-api-control-config = { module = "org.eclipse.edc:control-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }

@@ -47,6 +47,7 @@ dependencies {
     runtimeOnly(libs.edc.dpf.api.control)
     runtimeOnly(libs.edc.dpf.api.signaling)
 
+    runtimeOnly(libs.edc.api.control.config)
     runtimeOnly(libs.edc.dpf.api.public.v2)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
@@ -55,4 +56,5 @@ dependencies {
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.ext.http)
     runtimeOnly(libs.edc.api.observability)
+    runtimeOnly(libs.edc.api.core)
 }

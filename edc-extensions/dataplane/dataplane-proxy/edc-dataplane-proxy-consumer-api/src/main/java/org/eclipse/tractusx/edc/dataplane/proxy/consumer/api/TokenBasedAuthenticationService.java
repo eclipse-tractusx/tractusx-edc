@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * This is a carbon-copy of the {@link org.eclipse.edc.api.auth.token.TokenBasedAuthenticationService}.
+ * This is a carbon-copy of the upstream EDC org.eclipse.edc.api.auth.token.TokenBasedAuthenticationService.
  *
  * @deprecated this is a shim that we need to use until upstream EDC has made the TokenBasedAuthenticationService available for standalone use.
  */
