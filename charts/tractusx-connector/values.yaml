@@ -276,12 +276,12 @@ controlplane:
       # -- Maximum CPU limit
       cpu: 1.5
       # -- Maximum memory limit
-      memory: 512Mi
+      memory: 1024Mi
     requests:
       # -- Initial CPU request
       cpu: 500m
       # -- Initial memory request
-      memory: 512Mi
+      memory: 1024Mi
 
   replicaCount: 1
 
