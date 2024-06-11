@@ -142,11 +142,11 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.7.2 \
 | controlplane.readinessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.readinessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | controlplane.replicaCount | int | `1` |  |
-| controlplane.resources | object | `{"limits":{"cpu":1.5,"memory":"512Mi"},"requests":{"cpu":"500m","memory":"512Mi"}}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
+| controlplane.resources | object | `{"limits":{"cpu":1.5,"memory":"1024Mi"},"requests":{"cpu":"500m","memory":"1024Mi"}}` | [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container |
 | controlplane.resources.limits.cpu | float | `1.5` | Maximum CPU limit |
-| controlplane.resources.limits.memory | string | `"512Mi"` | Maximum memory limit |
+| controlplane.resources.limits.memory | string | `"1024Mi"` | Maximum memory limit |
 | controlplane.resources.requests.cpu | string | `"500m"` | Initial CPU request |
-| controlplane.resources.requests.memory | string | `"512Mi"` | Initial memory request |
+| controlplane.resources.requests.memory | string | `"1024Mi"` | Initial memory request |
 | controlplane.securityContext.allowPrivilegeEscalation | bool | `false` | Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID |
 | controlplane.securityContext.capabilities.add | list | `[]` | Specifies which capabilities to add to issue specialized syscalls |
 | controlplane.securityContext.capabilities.drop | list | `["ALL"]` | Specifies which capabilities to drop to reduce syscall attack surface |
