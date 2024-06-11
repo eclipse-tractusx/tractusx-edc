@@ -24,7 +24,6 @@ plugins {
 dependencies {
 
     testImplementation(project(":spi:tokenrefresh-spi"))
-    testImplementation(project(":edc-tests:e2e-tests"))
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
 
