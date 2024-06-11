@@ -26,6 +26,7 @@ import org.eclipse.edc.aws.s3.S3BucketSchema;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -223,7 +224,7 @@ public class S3ToS3Test {
         // wait until the data plane logs an exception that it cannot transfer the file
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class)).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
                         isA(NoSuchBucketException.class)));
     }
 

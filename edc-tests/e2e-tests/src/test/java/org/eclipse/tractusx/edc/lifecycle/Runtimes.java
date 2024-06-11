@@ -24,8 +24,6 @@ import java.util.Map;
 public interface Runtimes {
 
     static ParticipantRuntime dimRuntime(String name, Map<String, String> configuration) {
-        return new ParticipantRuntime(name, configuration,
-                ":edc-tests:runtime:iatp:runtime-memory-iatp-dim"
-        );
+        return new ParticipantRuntime(name, configuration, ":edc-tests:runtime:iatp:runtime-memory-iatp-dim");
     }
 }

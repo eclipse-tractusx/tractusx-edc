@@ -28,14 +28,13 @@ import org.eclipse.edc.identityhub.spi.verifiablecredentials.generator.Verifiabl
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,32 +73,15 @@ public class CredentialSpoofTest implements IatpParticipants {
             .build();
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.iatpConfiguration(PROVIDER, CONSUMER), MALICIOUS_ACTOR.getKeyPair());
+    protected static final RuntimeExtension MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.iatpConfiguration(PROVIDER, CONSUMER), MALICIOUS_ACTOR.getKeyPair());
     @RegisterExtension
-    protected static final IatpParticipantRuntime CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER, MALICIOUS_ACTOR), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER, MALICIOUS_ACTOR), CONSUMER.getKeyPair());
     @RegisterExtension
-    protected static final IatpParticipantRuntime PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER, MALICIOUS_ACTOR), PROVIDER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER, MALICIOUS_ACTOR), PROVIDER.getKeyPair());
     @RegisterExtension
-    protected static final IatpParticipantRuntime STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER, MALICIOUS_ACTOR), STS.getKeyPair());
+    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER, MALICIOUS_ACTOR), STS.getKeyPair());
     private static final Integer MOCKED_CS_SERVICE_PORT = getFreePort();
     protected ClientAndServer server;
-
-
-    @BeforeAll
-    static void prepare() {
-
-        // create the DIDs cache
-        var dids = new HashMap<String, DidDocument>();
-        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
-        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
-        dids.put(MALICIOUS_ACTOR.getDid(), maliciousActorDidDocument(MALICIOUS_ACTOR.getDidDocument()));
-
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR, MALICIOUS_ACTOR_RUNTIME, dids, STS_RUNTIME);
-
-    }
 
     private static DidDocument maliciousActorDidDocument(DidDocument didDocument) {
         var service = new Service();
@@ -116,6 +98,17 @@ public class CredentialSpoofTest implements IatpParticipants {
     @BeforeEach
     void setup() {
         server = ClientAndServer.startClientAndServer("localhost", getFreePort(), MOCKED_CS_SERVICE_PORT);
+
+        // create the DIDs cache
+        var dids = new HashMap<String, DidDocument>();
+        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
+        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
+        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
+        dids.put(MALICIOUS_ACTOR.getDid(), maliciousActorDidDocument(MALICIOUS_ACTOR.getDidDocument()));
+
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR, MALICIOUS_ACTOR_RUNTIME, dids, STS_RUNTIME);
     }
 
     @AfterEach
@@ -127,7 +120,6 @@ public class CredentialSpoofTest implements IatpParticipants {
     @DisplayName("Malicious actor should not impersonate a consumer by creating a VP with the consumer membership credential")
     void shouldNotImpersonateConsumer_withWrappedConsumerCredential() {
         var assetId = "api-asset-1";
-
 
         Map<String, Object> dataAddress = Map.of(
                 "baseUrl", "http://mock",
@@ -149,7 +141,6 @@ public class CredentialSpoofTest implements IatpParticipants {
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
                 .log().ifError()
                 .statusCode(not(200));
-
     }
 
     @Test

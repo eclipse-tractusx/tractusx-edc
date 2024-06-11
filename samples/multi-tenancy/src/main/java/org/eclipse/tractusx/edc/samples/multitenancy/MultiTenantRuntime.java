@@ -44,11 +44,11 @@ public class MultiTenantRuntime extends BaseRuntime {
 
     public static void main(String[] args) {
         var runtime = new MultiTenantRuntime();
-        runtime.boot();
+        runtime.boot(false);
     }
 
     @Override
-    public void boot() {
+    public void boot(boolean shutdownHook) {
         loadTenantsConfig().getConfig("edc.tenants").partition().forEach(this::bootTenant);
     }
 
@@ -64,7 +64,7 @@ public class MultiTenantRuntime extends BaseRuntime {
             runtimeThread = new Thread(() -> {
                 try {
                     Thread.currentThread().setContextClassLoader(classLoader);
-                    super.boot();
+                    super.boot(false);
                 } catch (Exception e) {
                     throw new EdcException(e);
                 }

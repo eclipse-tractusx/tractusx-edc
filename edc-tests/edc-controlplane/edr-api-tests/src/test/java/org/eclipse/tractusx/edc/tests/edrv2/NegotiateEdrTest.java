@@ -31,13 +31,12 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcess
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.ReceivedEvent;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
-import org.eclipse.tractusx.edc.tests.runtimes.ParticipantRuntime;
-import org.eclipse.tractusx.edc.tests.runtimes.PgParticipantRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -191,10 +190,10 @@ public class NegotiateEdrTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final ParticipantRuntime CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final ParticipantRuntime PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 
@@ -203,10 +202,10 @@ public class NegotiateEdrTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final PgParticipantRuntime CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
 
         @RegisterExtension
-        protected static final PgParticipantRuntime PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
     }
 }

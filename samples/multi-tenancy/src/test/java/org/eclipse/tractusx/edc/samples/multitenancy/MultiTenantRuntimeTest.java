@@ -45,7 +45,7 @@ class MultiTenantRuntimeTest {
 
     @Test
     void throwsExceptionIfNoTenantsPropertyProvided() {
-        assertThrows(EdcException.class, runtime::boot);
+        assertThrows(EdcException.class, () -> runtime.boot(false));
         verify(monitor, never()).info(argThat(connectorIsReady()));
     }
 
@@ -53,7 +53,7 @@ class MultiTenantRuntimeTest {
     void throwsExceptionIfTenantsFileDoesNotExist() {
         System.setProperty("edc.tenants.path", "unexistentfile");
 
-        assertThrows(EdcException.class, runtime::boot);
+        assertThrows(EdcException.class, () -> runtime.boot(false));
         verify(monitor, never()).info(argThat(connectorIsReady()));
     }
 
@@ -61,7 +61,7 @@ class MultiTenantRuntimeTest {
     void threadForEveryTenant() {
         System.setProperty("edc.tenants.path", "./src/test/resources/tenants.properties");
 
-        runtime.boot();
+        runtime.boot(false);
 
         verify(monitor, times(2)).info(argThat(connectorIsReady()));
     }

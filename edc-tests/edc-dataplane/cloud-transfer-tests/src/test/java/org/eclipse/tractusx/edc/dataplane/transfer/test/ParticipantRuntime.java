@@ -19,18 +19,14 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
-import org.eclipse.edc.boot.system.injection.InjectionContainer;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.spy;
@@ -64,12 +60,8 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     }
 
     public Vault getVault() {
-        return getContext().getService(Vault.class);
+        return getService(Vault.class);
     }
 
-    @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        super.bootExtensions(context, serviceExtensions);
-    }
 
 }
