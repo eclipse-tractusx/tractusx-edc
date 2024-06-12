@@ -25,7 +25,6 @@ plugins {
 
 dependencies {
 
-    testImplementation(project(":edc-tests:e2e-tests"))
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
 
