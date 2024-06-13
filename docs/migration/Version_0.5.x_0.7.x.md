@@ -67,7 +67,6 @@ participant's control plane and data plane.
 | `dataplane.token.refresh.expiry_seconds`           | `TX_EDC_DATAPLANE_TOKEN_EXPIRY`                     |          | 30                   | TTL for access tokens                                     |
 | `dataplane.token.refresh.expiry_tolerance_seconds` | `TX_EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE`           |          | 10                   | tolerance for token expiry                                |
 | `dataplane.token.refresh.refresh_endpoint`         | `TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT`           |          | `<PUBLIC_API>/token` | endpoint for an OAuth2 token refresh request              |
-| `dataplane.token.refresh.refresh_endpoint`         | `TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT`           |          | `<PUBLIC_API>/token` | endpoint for an OAuth2 token refresh request              |
 | `dataplane.token.signer.privatekey_alias`          | `EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS`  | x        |                      | alias, under which the private key is stored in the vault |
 | `dataplane.token.verifier.publickey_alias`         | `EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS` | x        |                      | alias, under which the public key is stored in the vault  |
 

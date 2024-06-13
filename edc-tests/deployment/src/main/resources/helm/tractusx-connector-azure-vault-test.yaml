@@ -84,13 +84,7 @@ vault:
     tenant: ''
     secret:
     certificate:
-  secretNames:
-  # this must be set through CLI args: --set vault.secrets=$YOUR_VAULT_SECRETS where YOUR_VAULT_SECRETS should
-  # be a string in the format "key1:secret1;key2:secret2;..."
-  secrets:
   server:
     postStart:
-backendService:
-  httpProxyTokenReceiverUrl: "http://backend:8080"
 tests:
   hookDeletePolicy: before-hook-creation

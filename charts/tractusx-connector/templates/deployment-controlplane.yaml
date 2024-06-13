@@ -273,7 +273,7 @@ spec:
             ## IATP / STS / DIM CONFIG ##
             #############################
             - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
-              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.oauth.token_url is required" | quote}}
+              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.sts.oauth.token_url is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
               value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
@@ -290,10 +290,8 @@ spec:
             ## BDRS CLIENT ##
             #################
 
-            {{- if .Values.controlplane.bdrs.server.url }}
             - name: "TX_IAM_IATP_BDRS_SERVER_URL"
               value: {{ .Values.controlplane.bdrs.server.url | required ".Values.controlplane.bdrs.server.url is required" | quote }}
-            {{- end }}
             {{- if .Values.controlplane.bdrs.cache_validity_seconds }}
             - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
               value: {{ .Values.controlplane.bdrs.cache_validity_seconds | quote}}
@@ -318,12 +316,6 @@ spec:
               value: {{ .Values.vault.hashicorp.paths.secret | quote }}
             - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
               value: {{ .Values.vault.hashicorp.paths.health | quote }}
-
-            ###########################
-            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
-            ###########################
-            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
-              value: {{ .Values.controlplane.businessPartnerValidation.log.agreementValidation | quote }}
 
             ######################################
             ## Additional environment variables ##
