@@ -99,7 +99,7 @@ maven/mavencentral/com.nimbusds/content-type/2.3, Apache-2.0, approved, clearlyd
 maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.28, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.40, , restricted, clearlydefined
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.40, Apache-2.0, approved, #15156
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.9.1, Apache-2.0, approved, #12667
 maven/mavencentral/com.puppycrawl.tools/checkstyle/10.17.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #15077
 maven/mavencentral/com.samskivert/jmustache/1.15, BSD-2-Clause, approved, clearlydefined
@@ -530,7 +530,7 @@ maven/mavencentral/org.eclipse.jetty/jetty-util/11.0.21, EPL-2.0 OR Apache-2.0, 
 maven/mavencentral/org.eclipse.jetty/jetty-webapp/11.0.21, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-xml/11.0.21, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.flywaydb/flyway-core/10.14.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/10.14.0, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/10.14.0, NOASSERTION, restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
