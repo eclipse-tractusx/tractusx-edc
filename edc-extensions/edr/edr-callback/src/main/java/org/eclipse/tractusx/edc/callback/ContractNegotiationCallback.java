@@ -58,7 +58,6 @@ public class ContractNegotiationCallback implements InProcessCallback {
 
         var transferRequest = TransferRequest.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
-                .assetId(negotiationFinalized.getContractAgreement().getAssetId())
                 .contractId(negotiationFinalized.getContractAgreement().getId())
                 .counterPartyAddress(negotiationFinalized.getCounterPartyAddress())
                 .protocol(negotiationFinalized.getProtocol())

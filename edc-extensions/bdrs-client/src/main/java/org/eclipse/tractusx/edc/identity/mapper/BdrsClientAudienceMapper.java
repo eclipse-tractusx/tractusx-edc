@@ -20,8 +20,11 @@
 package org.eclipse.tractusx.edc.identity.mapper;
 
 import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+
+import java.util.Optional;
 
 /**
  * An incoming {@link RemoteMessage} is mapped to a DID by calling {@link BdrsClient#resolve(String)} with the {@link RemoteMessage#getCounterPartyId()}
@@ -35,8 +38,8 @@ class BdrsClientAudienceMapper implements AudienceResolver {
     }
 
     @Override
-    public String resolve(RemoteMessage remoteMessage) {
-        return client.resolve(remoteMessage.getCounterPartyId());
+    public Result<String> resolve(RemoteMessage remoteMessage) {
+        return Result.from(Optional.ofNullable(client.resolve(remoteMessage.getCounterPartyId())));
     }
 
 }
