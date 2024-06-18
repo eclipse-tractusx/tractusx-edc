@@ -34,7 +34,6 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
@@ -61,7 +60,7 @@ public class ParticipantRuntime extends EmbeddedRuntime {
         super(runtimeName, properties, moduleName);
         this.properties = properties;
         this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
-        this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
+        this.registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()));
         this.registerServiceMock(BdrsClient.class, (s) -> s);
         var kid = properties.get("edc.iam.issuer.id") + "#key-1";
         try {

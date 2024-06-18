@@ -105,7 +105,6 @@ public class ContractNegotiationCallbackTest {
 
         assertThat(transferRequest).satisfies(tp -> {
             assertThat(tp.getContractId()).isEqualTo(event.getContractAgreement().getId());
-            assertThat(tp.getAssetId()).isEqualTo(event.getContractAgreement().getAssetId());
             assertThat(tp.getCounterPartyAddress()).isEqualTo(event.getCounterPartyAddress());
             assertThat(tp.getProtocol()).isEqualTo(event.getProtocol());
             assertThat(tp.getDataDestination()).usingRecursiveComparison().isEqualTo(DATA_DESTINATION);

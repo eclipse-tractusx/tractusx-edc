@@ -64,6 +64,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRES
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -116,6 +117,10 @@ class TokenRefreshHandlerImplTest {
                     Assertions.assertThat(tr.getProperties()).containsEntry(EDR_PROPERTY_REFRESH_TOKEN, "new-refresh-token");
                     Assertions.assertThat(tr.getProperties()).containsEntry(EDR_PROPERTY_REFRESH_ENDPOINT, REFRESH_ENDPOINT);
                 });
+        verify(mockedHttpClient).execute(argThat(r -> {
+            var hdr = r.header("Content-Type");
+            return hdr != null && hdr.equalsIgnoreCase("application/x-www-form-urlencoded");
+        }));
     }
 
     @Test
@@ -179,7 +184,7 @@ class TokenRefreshHandlerImplTest {
         assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
                 .detail().isEqualTo("Error executing token refresh request: java.io.IOException: test exception");
     }
-    
+
     @Test
     void refresh_tokenGenerationFailed() {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
