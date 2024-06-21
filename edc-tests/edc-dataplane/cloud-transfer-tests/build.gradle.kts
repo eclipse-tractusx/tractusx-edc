@@ -34,11 +34,10 @@ dependencies {
     testImplementation(libs.edc.auth.tokenbased)
     testImplementation(libs.edc.dpf.selector.spi)
     testImplementation(libs.testcontainers.junit)
-    testImplementation(testFixtures(libs.edc.azure.test))
     testImplementation(libs.edc.aws.s3.core)
-    testImplementation(testFixtures(libs.edc.aws.s3.test))
     testImplementation(libs.aws.s3)
     testImplementation(libs.aws.s3transfer)
+    testImplementation(libs.azure.storage.blob)
 }
 
 

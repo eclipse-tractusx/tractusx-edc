@@ -22,15 +22,16 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.sas.BlobContainerSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.azure.storage.common.StorageSharedKeyCredential;
 
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import static org.eclipse.edc.azure.testfixtures.TestFunctions.getBlobServiceClient;
 
 /**
  * Helper class that internally uses Azure SDK classes to create containers, upload blobs, generate SAS tokens, etc.
@@ -56,7 +57,10 @@ public class AzureBlobHelper {
     private BlobServiceClient blobClient() {
         if (blobServiceClient == null) {
             var endpoint = "http://%s:%s/%s".formatted(host, port, accountName);
-            blobServiceClient = getBlobServiceClient(accountName, key, endpoint);
+            blobServiceClient = new BlobServiceClientBuilder()
+                    .credential(new StorageSharedKeyCredential(accountName, key))
+                    .endpoint(endpoint)
+                    .buildClient();
         }
         return blobServiceClient;
     }
@@ -88,4 +92,3 @@ public class AzureBlobHelper {
         return blobClient().getBlobContainerClient(containerName).generateSas(vals);
     }
 }
- 

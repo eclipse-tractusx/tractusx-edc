@@ -8,6 +8,7 @@ assertj = "3.26.0"
 awaitility = "4.2.1"
 aws = "2.26.3"
 azure-identity = "1.12.2"
+azure-storage-blob = "12.26.0"
 bouncyCastle-jdk18on = "1.78.1"
 flyway = "10.15.0"
 jackson = "2.17.1"
@@ -84,7 +85,6 @@ edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref
 edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
-edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
 edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
@@ -121,13 +121,12 @@ edc-sql-dataplane = { module = "org.eclipse.edc:data-plane-store-sql", version.r
 
 # azure stuff
 edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = "edc" }
+azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
-edc-azure-test = { module = "org.eclipse.edc.azure:azure-test", version.ref = "edc" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
-edc-aws-s3-test = { module = "org.eclipse.edc.aws:aws-s3-test", version.ref = "edc" }
 edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 
 # Control Plane implementations

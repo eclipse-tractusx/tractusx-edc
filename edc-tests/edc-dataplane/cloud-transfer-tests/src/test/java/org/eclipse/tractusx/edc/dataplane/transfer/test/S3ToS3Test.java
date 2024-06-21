@@ -24,7 +24,6 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3BucketSchema;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
-import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -79,7 +78,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
  * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
  */
 @Testcontainers
-@AwsS3IntegrationTest
+@CloudTransferTest
 public class S3ToS3Test {
     private static final String SECRET_ACCESS_KEY = UUID.randomUUID().toString(); // password
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
