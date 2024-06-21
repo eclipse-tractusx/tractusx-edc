@@ -156,7 +156,7 @@ jobs:
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
 
-  dataplane-tests:
+  cloud-transfer-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -166,4 +166,4 @@ jobs:
       - name: Run Azure/S3 dataplane tests
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="AzureCosmosDbIntegrationTest,AwsS3IntegrationTest"
+          ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="CloudTransferTest"

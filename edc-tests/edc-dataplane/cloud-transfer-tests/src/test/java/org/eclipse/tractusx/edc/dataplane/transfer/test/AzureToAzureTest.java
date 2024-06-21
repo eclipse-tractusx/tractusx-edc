@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
-import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -70,7 +69,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
  */
 @SuppressWarnings("resource")
 @Testcontainers
-@AzureStorageIntegrationTest
+@CloudTransferTest
 public class AzureToAzureTest {
     private static final int PROVIDER_CONTROL_PORT = getFreePort();
     private static final int AZURITE_HOST_PORT = getFreePort();

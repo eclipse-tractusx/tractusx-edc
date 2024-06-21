@@ -25,8 +25,6 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3BucketSchema;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
-import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
-import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -68,8 +66,7 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.lis
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
-@AzureStorageIntegrationTest
-@AwsS3IntegrationTest
+@CloudTransferTest
 public class MultiCloudTest {
     // S3 test constants
     public static final String REGION = Region.US_WEST_2.id();
