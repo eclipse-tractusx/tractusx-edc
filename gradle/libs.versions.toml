@@ -3,7 +3,6 @@ format.version = "1.1"
 
 [versions]
 edc = "0.7.1-20240618-SNAPSHOT"
-apache-sshd = "2.12.1"
 assertj = "3.26.0"
 awaitility = "4.2.1"
 aws = "2.26.7"
@@ -199,8 +198,6 @@ edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", versio
 
 # other deps
 
-apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache-sshd" }
-apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
