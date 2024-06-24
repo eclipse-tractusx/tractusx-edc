@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.7.1-20240618-SNAPSHOT"
+edc = "0.7.1"
 assertj = "3.26.0"
 awaitility = "4.2.1"
 aws = "2.26.7"
