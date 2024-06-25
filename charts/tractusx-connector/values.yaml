@@ -1,8 +1,8 @@
 #################################################################################
-#  Copyright (c) 2023 ZF Friedrichshafen AG
+#  Copyright (c) 2023,2024 ZF Friedrichshafen AG
 #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
 #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2021,2024 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -20,45 +20,53 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-
 ---
 # Default values for eclipse-dataspace-connector.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 install:
+  # -- Deploying a PostgreSQL instance
   postgresql: true
+  # -- Deploying a HashiCorp Vault instance
   vault: true
+
 fullnameOverride: ""
 nameOverride: ""
+
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
 imagePullSecrets: []
-# -- To add some custom labels
+# -- Add some custom labels
 customLabels: {}
 
 participant:
   # -- BPN Number
   id: "BPNLCHANGEME"
 
-
 iatp:
-  # Decentralized IDentifier
+  # -- Decentralized IDentifier (DID) of the connector
   id: "did:web:changeme"
   # -- Configures the trusted issuers for this runtime
   trustedIssuers: []
   sts:
     dim:
+      # -- URL where connectors can request SI tokens
       url:
     oauth:
+      # -- URL where connectors can request OAuth2 access tokens for DIM access
       token_url:
       client:
+        # -- Client ID for requesting OAuth2 access token for DIM access
         id:
+        # -- Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access
         secret_alias:
 
+# -- Add custom ca certificates to the truststore
+customCaCerts: {}
 
 controlplane:
   image:
-    # -- Which derivate of the control plane to use. when left empty the deployment will select the correct image automatically
+    # -- Which derivate of the control plane to use. When left empty the deployment will select the correct image automatically
     repository: ""
     # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
     pullPolicy: IfNotPresent
@@ -66,9 +74,13 @@ controlplane:
     tag: ""
   initContainers: []
   debug:
+    # -- Enables java debugging mode.
     enabled: false
+    # -- Port where the debuggee can connect to.
     port: 1044
+    # -- Defines if the JVM should wait with starting the application until someone connected to the debugging port.
     suspendOnStart: false
+
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
@@ -95,6 +107,7 @@ controlplane:
     failureThreshold: 6
     # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
+
   # -- endpoints of the control plane
   endpoints:
     # -- default api for health checks, should not be added to any ingress
@@ -109,7 +122,7 @@ controlplane:
       port: 8081
       # -- path for incoming api calls
       path: /management
-      # -- authentication key, must be attached to each 'X-Api-Key' request header
+      # -- authentication key, must be attached to each request as `X-Api-Key` header
       authKey: "password"
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
@@ -130,21 +143,21 @@ controlplane:
       # -- path for incoming api calls
       path: /metrics
 
-  businessPartnerValidation:
-    log:
-      agreementValidation: true
-
   bdrs:
-    # time that a cached BPN/DID resolution map is valid in seconds, default is 10 min
+    # -- Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min)
     cache_validity_seconds: 600
     server:
-      # URL of the BPN/DID Resolution Service - required:
+      # -- URL of the BPN/DID Resolution Service
       url:
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
+    # -- additional labels for the service
+    labels: {}
+    # -- additional annotations for the service
     annotations: {}
+
   # -- additional labels for the pod
   podLabels: {}
   # -- additional annotations for the pod
@@ -176,11 +189,12 @@ controlplane:
     runAsNonRoot: true
     # -- The container's process will run with the specified uid
     runAsUser: 10001
-  # Extra environment variables that will be pass onto deployment pods
+
+  # -- Extra environment variables that will be pass onto deployment pods
   env: {}
   #  ENV_NAME: value
 
-  # "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
+  # -- "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
   # ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
   envValueFrom: {}
   #  ENV_NAME:
@@ -191,12 +205,12 @@ controlplane:
   #      name: secret-name
   #      key: value_key
 
-  # [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
+  # -- [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
   envSecretNames: []
   #  - first-secret
   #  - second-secret
 
-  # [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
+  # -- [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
   envConfigMapNames: []
   #  - first-config-map
   #  - second-config-map
@@ -250,23 +264,27 @@ controlplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
+
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
   volumeMounts:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes:
+
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 1.5
-    memory: 512Mi
-  requests:
-    cpu: 500m
-    memory: 128Mi
+  resources:
+    limits:
+      # -- Maximum CPU limit
+      cpu: 1.5
+      # -- Maximum memory limit
+      memory: 1024Mi
+    requests:
+      # -- Initial CPU request
+      cpu: 500m
+      # -- Initial memory request
+      memory: 1024Mi
+
   replicaCount: 1
+
   autoscaling:
     # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
     enabled: false
@@ -278,6 +296,7 @@ controlplane:
     targetCPUUtilizationPercentage: 80
     # -- targetAverageUtilization of memory provided to a pod
     targetMemoryUtilizationPercentage: 80
+
   # -- configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics
   opentelemetry: |-
     otel.javaagent.enabled=false
@@ -290,18 +309,17 @@ controlplane:
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
     java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
-  # [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
+
+  # -- [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
   nodeSelector: {}
-  # [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
+  # -- [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
   tolerations: []
-  # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
+  # -- [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
   affinity: {}
+
   url:
     # -- Explicitly declared url for reaching the dsp api (e.g. if ingresses not used)
     protocol: ""
-
-# -- Add custom ca certificates to the truststore
-customCaCerts: {}
 
 dataplane:
   image:
@@ -313,9 +331,13 @@ dataplane:
     tag: ""
   initContainers: []
   debug:
+    # -- Enables java debugging mode.
     enabled: false
+    # -- Port where the debuggee can connect to.
     port: 1044
+    # -- Defines if the JVM should wait with starting the application until someone connected to the debugging port.
     suspendOnStart: false
+
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true
@@ -342,48 +364,69 @@ dataplane:
     failureThreshold: 6
     # -- number of consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
+
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
-    port: 80
+    # -- additional labels for the service
+    labels: {}
+    # -- additional annotations for the service
+    annotations: {}
+
+  # -- endpoints of the dataplane
   endpoints:
+    # -- default api for health checks, should not be added to any ingress
     default:
+      # -- port for incoming api calls
       port: 8080
+      # -- path for incoming api calls
       path: /api
+    # -- public endpoint where the data can be fetched from if HttpPull was used. Must be internet facing.
     public:
+      # -- port for incoming api calls
       port: 8081
+      # -- path for incoming api calls
       path: /api/public
-    signaling:
-      port: 8083
-      path: /api/signaling
+    # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
+      # -- port for incoming api calls
       port: 8084
+      # -- path for incoming api calls
       path: /api/control
     proxy:
+      # -- port for incoming api calls
       port: 8186
+      # -- path for incoming api calls
       path: /proxy
+      # -- authentication key, must be attached to each request as `X-Api-Key` header
       authKey: "password"
+    # -- metrics api, used for application metrics, must not be internet facing
     metrics:
+      # -- port for incoming api calls
       port: 9090
+      # -- path for incoming api calls
       path: /metrics
 
   token:
     refresh:
+      # -- TTL in seconds for access tokens (also known as EDR token)
       expiry_seconds: 300
+      # -- Tolerance for token expiry in seconds
       expiry_tolerance_seconds: 10
-      # optional URL that can be provided where clients go to refresh tokens.
+      # -- Optional endpoint for an OAuth2 token refresh. Default endpoint is `<PUBLIC_API>/token`
       refresh_endpoint:
     signer:
-      # alias under which the private key is stored in the vault (JWK or PEM format)
+      # -- Alias under which the private key (JWK or PEM format) is stored in the vault
       privatekey_alias:
     verifier:
-      # alias under which the public key is stored in the vault, that belongs to the private key ("privatekey_alias", JWK or PEM format)
+      # -- Alias under which the public key (JWK or PEM format) is stored in the vault, that belongs to the private key which was referred to at `dataplane.token.signer.privatekey_alias`
       publickey_alias:
 
   aws:
     endpointOverride: ""
     accessKeyId: ""
     secretAccessKey: ""
+
   # -- additional labels for the pod
   podLabels: {}
   # -- additional annotations for the pod
@@ -399,7 +442,7 @@ dataplane:
     runAsGroup: 10001
     # -- The owner for volumes and any files created within volumes will belong to this guid
     fsGroup: 10001
-  # The [container security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) defines privilege and access control settings for a Container within a pod
+  # -- The [container security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) defines privilege and access control settings for a Container within a pod
   securityContext:
     capabilities:
       # -- Specifies which capabilities to drop to reduce syscall attack surface
@@ -415,11 +458,12 @@ dataplane:
     runAsNonRoot: true
     # -- The container's process will run with the specified uid
     runAsUser: 10001
-  # Extra environment variables that will be pass onto deployment pods
+
+  # -- Extra environment variables that will be pass onto deployment pods
   env: {}
   #  ENV_NAME: value
 
-  # "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
+  # -- "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
   # ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
   envValueFrom: {}
   #  ENV_NAME:
@@ -430,12 +474,12 @@ dataplane:
   #      name: secret-name
   #      key: value_key
 
-  # [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
+  # -- [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
   envSecretNames: []
   #  - first-secret
   #  - second-secret
 
-  # [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
+  # -- [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
   envConfigMapNames: []
   #  - first-config-map
   #  - second-config-map
@@ -465,23 +509,27 @@ dataplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
+
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
   volumeMounts:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
   volumes:
+
   # -- [resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the container
-  resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 1.5
-    memory: 1024Mi
-  requests:
-    cpu: 500m
-    memory: 128Mi
+  resources:
+    limits:
+      # -- Maximum CPU limit
+      cpu: 1.5
+      # -- Maximum memory limit
+      memory: 1024Mi
+    requests:
+      # -- Initial CPU request
+      cpu: 500m
+      # -- Initial memory request
+      memory: 1024Mi
+
   replicaCount: 1
+
   autoscaling:
     # -- Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
     enabled: false
@@ -493,6 +541,7 @@ dataplane:
     targetCPUUtilizationPercentage: 80
     # -- targetAverageUtilization of memory provided to a pod
     targetMemoryUtilizationPercentage: 80
+
   # -- configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics
   opentelemetry: |-
     otel.javaagent.enabled=false
@@ -505,15 +554,17 @@ dataplane:
     java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.ConsoleHandler.level=ALL
     java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
-  # [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
+
+  # -- [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
   nodeSelector: {}
-  # [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
+  # -- [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
   tolerations: []
-  # [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
+  # -- [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
   affinity: {}
   url:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
     public: ""
+
 postgresql:
   jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
@@ -526,6 +577,7 @@ postgresql:
     database: "edc"
     username: "user"
     password: "password"
+
 vault:
   injector:
     enabled: false
@@ -544,10 +596,6 @@ vault:
     paths:
       secret: /v1/secret
       health: /v1/sys/health
-  secretNames:
-    transferProxyTokenSignerPrivateKey:
-    transferProxyTokenSignerPublicKey:
-    transferProxyTokenEncryptionAesKey: transfer-proxy-token-encryption-aes-key
 
 networkPolicy:
   # -- If `true` network policy will be created to restrict access to control- and dataplane
@@ -564,11 +612,11 @@ networkPolicy:
     - namespaceSelector: {}
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)

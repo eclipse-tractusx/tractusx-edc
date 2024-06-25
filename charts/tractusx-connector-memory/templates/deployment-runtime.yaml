@@ -154,6 +154,8 @@ spec:
             #######
             - name: "EDC_API_AUTH_KEY"
               value: {{ .Values.runtime.endpoints.management.authKey | required ".Values.runtime.endpoints.management.authKey is required" | quote }}
+            - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
+              value: {{ .Values.runtime.endpoints.proxy.authKey | required ".Values.runtime.endpoints.proxy.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.runtime.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
@@ -177,10 +179,6 @@ spec:
               value: {{ .Values.runtime.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
               value: {{ .Values.runtime.endpoints.control.path | quote }}
-            - name: "WEB_HTTP_SIGNALING_PORT"
-              value: {{ .Values.runtime.endpoints.signaling.port | quote }}
-            - name: "WEB_HTTP_SIGNALING_PATH"
-              value: {{ .Values.runtime.endpoints.signaling.path | quote }}
             - name: "WEB_HTTP_PROTOCOL_PORT"
               value: {{ .Values.runtime.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_PROTOCOL_PATH"
@@ -189,8 +187,6 @@ spec:
               value: {{ .Values.runtime.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.runtime.endpoints.public.path | quote }}
-            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
-              value: {{ include "txdc.runtime.url.validation" .}}
 
             #########
             ## DSP ##
@@ -207,27 +203,25 @@ spec:
             ## IATP / STS / DIM CONFIG ##
             #############################
             - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
-              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.oauth.token_url is required" | quote}}
+              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.sts.oauth.token_url is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
               value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
               value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
-            - name: "EDC_IAM_STS_DIM_URL"
+            - name: "TX_EDC_IAM_STS_DIM_URL"
               value: {{ .Values.iatp.sts.dim.url | required ".Values.iatp.sts.dim.url is required" | quote}}
 
             {{- range $index, $issuer := .Values.iatp.trustedIssuers }}
             - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
-              value: { { $issuer | quote } }
+              value: {{ $issuer | quote }}
             {{- end }}
 
             #################
             ## BDRS CLIENT ##
             #################
 
-            {{- if .Values.runtime.bdrs.server.url }}
             - name: "TX_IAM_IATP_BDRS_SERVER_URL"
               value: {{ .Values.runtime.bdrs.server.url | required ".Values.runtime.bdrs.server.url is required" | quote }}
-            {{- end }}
             {{- if .Values.runtime.bdrs.cache_validity_seconds }}
             - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
               value: {{ .Values.runtime.bdrs.cache_validity_seconds | quote}}
@@ -236,21 +230,6 @@ spec:
             ################
             ## DATA PLANE ##
             ################
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/dataplane-selector-configuration
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_URL"
-              value: {{ include "txdc.dataplane.url.signaling" . }}/v1/dataflows
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_TRANSFERTYPES"
-              value: "HttpData-PULL,HttpData-PUSH,AmazonS3-PUSH,AzureStorage-PUSH"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_SOURCETYPES"
-              value: "HttpData,AmazonS3,AzureStorage"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_DESTINATIONTYPES"
-              value: "HttpData,HttpProxy,AmazonS3,AzureStorage"
-            - name: "EDC_DATAPLANE_SELECTOR_DEFAULTPLANE_PROPERTIES"
-              value: |-
-                {{ printf "{ \"publicApiUrl\": \"%s\" }" (include "txdc.dataplane.url.public" . ) }}
-
-
             - name: "EDC_DATAPLANE_API_PUBLIC_BASEURL"
               value: {{ include "txdc.dataplane.url.public" . }}
 
@@ -259,20 +238,20 @@ spec:
             ## TOKEN REFRESH
             ##################
             {{- if .Values.runtime.token.refresh.expiry_seconds }}
-            - name: "EDC_DATAPLANE_TOKEN_EXPIRY"
+            - name: "TX_EDC_DATAPLANE_TOKEN_EXPIRY"
               value: {{ .Values.runtime.token.refresh.expiry_seconds | quote}}
             {{- end}}
 
             {{- if .Values.runtime.token.refresh.expiry_tolerance_seconds }}
-            - name: "EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
+            - name: "TX_EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
               value: {{ .Values.runtime.token.refresh.expiry_tolerance_seconds | quote }}
             {{- end}}
 
             {{- if .Values.runtime.token.refresh.refresh_endpoint }}
-            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+            - name: "TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ .Values.runtime.token.refresh.refresh_endpoint }}
             {{- else }}
-            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+            - name: "TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ include "txdc.dataplane.url.public" . }}/token
             {{- end}}
 
@@ -298,12 +277,6 @@ spec:
               value: "0"
             - name: "EDC_CP_ADAPTER_REUSE_CONTRACT_AGREEMENT"
               value: "0"
-
-            ###########################
-            ## BUSINESS PARTNER NUMBER VALIDATION EXTENSION ##
-            ###########################
-            - name: "TRACTUSX_BUSINESSPARTNERVALIDATION_LOG_AGREEMENT_VALIDATION"
-              value: {{ .Values.runtime.businessPartnerValidation.log.agreementValidation | quote }}
 
             ######################################
             ## Additional environment variables ##

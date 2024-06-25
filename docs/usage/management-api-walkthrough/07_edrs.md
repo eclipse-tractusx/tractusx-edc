@@ -32,7 +32,7 @@ Example of negotiating a contract for an asset with a framework agreement policy
 
 ```http request
 POST /v2/edrs HTTP/1.1
-Host: https://consumer-control.plane/api/management
+Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
 ```
@@ -124,7 +124,7 @@ Here's an example of querying with `assetId`:
 
 ```http request
 POST /v2/edrs/request HTTP/1.1
-Host: https://consumer-control.plane/api/management
+Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
 ```
@@ -162,7 +162,7 @@ then locating in the Consumer Control Plane's cache, they can be retrieved using
 
 ```http request
 GET /v2/edrs/myTransferProcessId/dataaddress HTTP/1.1
-Host: https://consumer-control.plane/api/management
+Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
 ```
@@ -209,7 +209,7 @@ will be done automatically if necessary transparently.
 
 ```http request
 GET /v2/edrs/myTransferProcessId/dataaddress?auto_refresh=true HTTP/1.1
-Host: https://consumer-control.plane/api/management
+Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
 ```
@@ -222,7 +222,7 @@ A explicit refresh API is available for users;
 
 ```http
 POST /v2/edrs/myTransferProcessId/refresh HTTP/1.1
-Host: https://consumer-control.plane/api/management
+Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
 ```
@@ -241,7 +241,7 @@ from the vault.
 
 ```http request
 DELETE /v2/edrs/myTransferProcessId HTTP/1.1
-Host: https://consumer-control.plane/api/management
+Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
 ```

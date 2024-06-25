@@ -21,8 +21,8 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
-import org.junit.jupiter.api.BeforeAll;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashMap;
@@ -36,16 +36,16 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
 
     @RegisterExtension
-    protected static final IatpParticipantRuntime STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER), STS.getKeyPair());
+    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER), STS.getKeyPair());
 
-    @BeforeAll
-    static void prepare() {
+    @BeforeEach
+    void prepare() {
 
         // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();
@@ -59,12 +59,12 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     }
 
     @Override
-    protected IatpParticipantRuntime consumerRuntime() {
+    protected RuntimeExtension consumerRuntime() {
         return CONSUMER_RUNTIME;
     }
 
     @Override
-    protected IatpParticipantRuntime providerRuntime() {
+    protected RuntimeExtension providerRuntime() {
         return PROVIDER_RUNTIME;
     }
 }

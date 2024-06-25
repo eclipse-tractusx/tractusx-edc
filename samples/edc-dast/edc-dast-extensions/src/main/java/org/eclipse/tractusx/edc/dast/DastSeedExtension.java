@@ -79,6 +79,7 @@ public class DastSeedExtension implements ServiceExtension {
     private static final String DID = "did:example:participant";
     private static final String KEY = "key1";
     private static final String METHOD_ID = DID + "#" + KEY;
+    private static final String PRIVATE_METHOD_ID = "private." + DID + "#" + KEY;
     @Inject
     private ParticipantContextService participantContextService;
     @Inject
@@ -108,10 +109,10 @@ public class DastSeedExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         ServiceExtension.super.initialize(context);
         var keyPair = generateKeyPair();
-        var jwkString = getJwkAsString(keyPair);
         var participantKey = getKeyPairAsJwk(keyPair, METHOD_ID);
 
-        vault.storeSecret(METHOD_ID, jwkString);
+        vault.storeSecret(METHOD_ID, participantKey.toPublicJWK().toJSONString());
+        vault.storeSecret(PRIVATE_METHOD_ID, participantKey.toJSONString());
         vault.storeSecret("public_key_alias", participantKey.toPublicJWK().toJSONString());
 
         var exampleResolver = new DidExampleResolver();
@@ -162,7 +163,7 @@ public class DastSeedExtension implements ServiceExtension {
         var key = KeyDescriptor.Builder.newInstance()
                 .keyId(KEY)
                 .publicKeyJwk(participantKey.toPublicJWK().toJSONObject())
-                .privateKeyAlias(METHOD_ID)
+                .privateKeyAlias(PRIVATE_METHOD_ID)
                 .build();
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
@@ -205,11 +206,7 @@ public class DastSeedExtension implements ServiceExtension {
     private String toBase64(String s) {
         return Base64.getUrlEncoder().encodeToString(s.getBytes());
     }
-
-    private String getJwkAsString(KeyPair keyPair) {
-        return CryptoConverter.createJwk(keyPair).toJSONString();
-    }
-
+    
     private KeyPair generateKeyPair() {
         try {
             KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());

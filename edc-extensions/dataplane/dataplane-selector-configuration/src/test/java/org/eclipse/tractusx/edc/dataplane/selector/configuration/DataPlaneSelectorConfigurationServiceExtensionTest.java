@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.CONFIG_PREFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.DESTINATION_TYPES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.PROPERTIES_SUFFIX;
@@ -45,8 +46,6 @@ import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlan
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.SOURCE_TYPES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.TRANSFER_TYPES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.URL_SUFFIX;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
@@ -87,8 +86,7 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
     void testName() {
         var extension = new DataPlaneSelectorConfigurationServiceExtension();
 
-        assertNotNull(extension.name());
-        assertEquals("Data Plane Selector Configuration Extension", extension.name());
+        assertThat(extension.name()).contains("Data Plane Selector Configuration Extension");
     }
 
     @Test
@@ -124,8 +122,8 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
         when(serviceExtensionContext.getConfig(CONFIG_PREFIX)).thenReturn(config);
         extension.initialize(serviceExtensionContext);
 
-        // one warning config missing, one warning data plane instance skipped
-        verify(monitor, times(2)).warning(anyString());
+        // one warning deprecation, one warning config missing, one warning data plane instance skipped
+        verify(monitor, times(3)).warning(anyString());
     }
 
     @Test

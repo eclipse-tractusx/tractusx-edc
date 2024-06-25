@@ -2,18 +2,18 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.7.0"
-apache-sshd = "2.12.1"
-assertj = "3.25.3"
+edc = "0.7.1"
+assertj = "3.26.0"
 awaitility = "4.2.1"
-aws = "2.25.55"
-azure-identity = "1.12.1"
+aws = "2.26.7"
+azure-identity = "1.13.0"
+azure-storage-blob = "12.26.1"
 bouncyCastle-jdk18on = "1.78.1"
-flyway = "10.13.0"
+flyway = "10.15.0"
 jackson = "2.17.1"
 jakarta-json = "2.0.1"
 jupiter = "5.10.2"
-nimbus = "9.38"
+nimbus = "9.40"
 netty-mockserver = "5.15.0"
 okhttp = "4.12.0"
 postgres = "42.7.3"
@@ -67,6 +67,7 @@ edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "
 edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
+edc-api-control-config = { module = "org.eclipse.edc:control-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
@@ -83,7 +84,6 @@ edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref
 edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
-edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
 edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
@@ -119,14 +119,14 @@ edc-sql-accesstokendata = { module = "org.eclipse.edc:accesstokendata-store-sql"
 edc-sql-dataplane = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
 
 # azure stuff
-edc-azure-vault = { module = "org.eclipse.edc:vault-azure", version.ref = "edc" }
+edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = "edc" }
+azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
-edc-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
+edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
 
 # EDC aws s3 stuff
-edc-aws-s3-core = { module = "org.eclipse.edc:aws-s3-core", version.ref = "edc" }
-edc-aws-s3-test = { module = "org.eclipse.edc:aws-s3-test", version.ref = "edc" }
-edc-dpf-awss3 = { module = "org.eclipse.edc:data-plane-aws-s3", version.ref = "edc" }
+edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
+edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 
 # Control Plane implementations
 edc-controlplane-callback-dispatcher-event = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
@@ -177,13 +177,15 @@ edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-sig
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
-edc-dpf-azblob = { module = "org.eclipse.edc:data-plane-azure-storage", version.ref = "edc" }
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
 edc-dpf-api-control = { module = "org.eclipse.edc:data-plane-control-api", version.ref = "edc" }
 edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
+edc-data-plane-selector-control-api = { module = "org.eclipse.edc:data-plane-selector-control-api", version.ref = "edc" }
+edc-data-plane-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
+edc-data-plane-self-registration = { module = "org.eclipse.edc:data-plane-self-registration", version.ref = "edc" }
 
 # micrometer and other infra stuff
 edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref = "edc" }
@@ -196,8 +198,6 @@ edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", versio
 
 # other deps
 
-apache-sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "apache-sshd" }
-apache-sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "apache-sshd" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }

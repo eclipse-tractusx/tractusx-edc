@@ -58,7 +58,6 @@ include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 
 // test modules
-include(":edc-tests:e2e-tests")
 include(":edc-tests:edc-controlplane:edr-api-tests")
 include(":edc-tests:edc-controlplane:catalog-tests")
 include(":edc-tests:edc-controlplane:transfer-tests")

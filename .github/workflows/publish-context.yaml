@@ -17,20 +17,33 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-name: "Verify DIM"
+
+---
+name: Publish JSON-LD context
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'core/json-ld-core/src/main/resources/document/**'
 
 jobs:
-  dim-integration-tests:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
       - uses: actions/checkout@v4
+      - name: copy contexts into public folder
+        run: |
+          mkdir -p public/context
+          cp core/json-ld-core/src/main/resources/document/tx-auth-v1.jsonld public/context/
+          cp core/json-ld-core/src/main/resources/document/tx-v1.jsonld public/context/
 
-      - uses: ./.github/actions/setup-java
-
-      - name: Run DIM Integration tests
-        run: ./gradlew test -DincludeTags="DimIntegrationTest"
+      - name: deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: true

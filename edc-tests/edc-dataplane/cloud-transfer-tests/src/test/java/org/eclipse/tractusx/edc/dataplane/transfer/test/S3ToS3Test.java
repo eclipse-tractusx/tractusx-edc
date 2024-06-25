@@ -22,10 +22,10 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
-import org.eclipse.edc.aws.s3.S3BucketSchema;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
-import org.eclipse.edc.aws.s3.testfixtures.annotations.AwsS3IntegrationTest;
+import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,7 +78,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
  * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
  */
 @Testcontainers
-@AwsS3IntegrationTest
+@CloudTransferTest
 public class S3ToS3Test {
     private static final String SECRET_ACCESS_KEY = UUID.randomUUID().toString(); // password
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
@@ -86,7 +86,7 @@ public class S3ToS3Test {
     protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:dataplane-cloud",
             "AwsS3-Dataplane",
-            RuntimeConfig.S3.createDataplane("/control", PROVIDER_CONTROL_PORT)
+            RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT)
     );
     @Container
     private final GenericContainer<?> providerContainer = new GenericContainer<>(MINIO_DOCKER_IMAGE)
@@ -223,7 +223,7 @@ public class S3ToS3Test {
         // wait until the data plane logs an exception that it cannot transfer the file
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor()).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class)).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
                         isA(NoSuchBucketException.class)));
     }
 

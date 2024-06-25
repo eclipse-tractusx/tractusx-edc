@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.tag;
+package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import org.eclipse.edc.junit.annotations.IntegrationTest;
 import org.junit.jupiter.api.Tag;
@@ -30,7 +30,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @IntegrationTest
-@Tag("DimIntegrationTest")
-public @interface DimIntegrationTest {
+@Tag("CloudTransferTest")
+public @interface CloudTransferTest {
 }
-

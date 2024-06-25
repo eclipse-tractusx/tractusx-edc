@@ -42,7 +42,6 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTR
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetOfferId;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
 
 /**
@@ -122,9 +121,8 @@ public class ParticipantEdrApi {
                 .add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID)))
                 .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
                 .build();
-        var offerId = getDatasetOfferId(dataset);
 
-        var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), other.getBpn(), offerId, assetId, policy, callbacks);
+        var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), policy, callbacks);
 
 
         var response = baseEdrRequest()

@@ -36,15 +36,6 @@ iatp:
         id: "test-client-id"
         secret_alias: "test-alias"
 controlplane:
-  # the ssi object is still needed for the upgradeability test
-  # todo: remove this after 0.7.0 is released
-  ssi:
-    miw:
-      url: "http://localhost:8080"
-      authorityId: "authorityId"
-    oauth:
-      client:
-        secretAlias: "client-secret"
   service:
     type: NodePort
   endpoints:
@@ -61,6 +52,10 @@ controlplane:
     server:
       url: "https://bdrs.test.org"
 dataplane:
+  debug:
+    enabled: true
+    port: 1044
+    suspendOnStart: false
   endpoints:
     proxy:
       authKey: password
@@ -89,11 +84,6 @@ vault:
   hashicorp:
     url: http://{{ .Release.Name }}-vault:8200
     token: root
-  secretNames:
-    transferProxyTokenEncryptionAesKey: aes-keys
-    # this must be set through CLI args: --set vault.secrets=$YOUR_VAULT_SECRETS where YOUR_VAULT_SECRETS should
-    # be a string in the format "key1:secret1;key2:secret2;..."
-    secrets:
 
   # the post-start object is still needed for the upgradeability test
   # todo: remove this after 0.7.0 is released
@@ -109,7 +99,5 @@ vault:
 
         /bin/vault kv put secret/aes-keys content=YWVzX2VuY2tleV90ZXN0Cg==
         }
-backendService:
-  httpProxyTokenReceiverUrl: "http://backend:8080"
 tests:
   hookDeletePolicy: before-hook-creation

@@ -19,27 +19,29 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+
 import java.security.KeyPair;
 import java.util.Map;
 
 public interface Runtimes {
 
-    static IatpParticipantRuntime dimRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
-        return new IatpParticipantRuntime(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
+    static RuntimeExtension dimRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
+        return new IatpParticipantRuntimeExtension(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
                 name,
                 properties,
                 keyPair);
     }
 
-    static IatpParticipantRuntime iatpRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
-        return new IatpParticipantRuntime(":edc-tests:runtime:iatp:runtime-memory-iatp-ih",
+    static RuntimeExtension iatpRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
+        return new IatpParticipantRuntimeExtension(":edc-tests:runtime:iatp:runtime-memory-iatp-ih",
                 name,
                 properties,
                 keyPair);
     }
 
-    static IatpParticipantRuntime stsRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
-        return new IatpParticipantRuntime(
+    static RuntimeExtension stsRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
+        return new IatpParticipantRuntimeExtension(
                 ":edc-tests:runtime:iatp:runtime-memory-sts",
                 name,
                 properties,

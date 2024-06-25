@@ -5,7 +5,7 @@ This build of the EDC Data-Plane utilizes [Hashicorp Vault](https://www.vaultpro
 ## Building
 
 ```shell
-./gardlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
+./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
 ```
 
 ## Configuration

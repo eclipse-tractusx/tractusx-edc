@@ -178,6 +178,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
 
         return success(new Request.Builder()
                 .addHeader("Authorization", bearerToken)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .url(url)
                 .post(RequestBody.create(new byte[0]))
                 .build());

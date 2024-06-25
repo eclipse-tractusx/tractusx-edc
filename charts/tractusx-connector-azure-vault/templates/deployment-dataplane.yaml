@@ -151,16 +151,12 @@ spec:
             #######
             # API #
             #######
-            - name: "EDC_API_AUTH_KEY"
-              value: {{ .Values.dataplane.endpoints.proxy.authKey | required ".Values.proxy.endpoints.proxy.authKey is required" | quote }}
+            - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
+              value: {{ .Values.dataplane.endpoints.proxy.authKey | required ".Values.dataplane.endpoints.proxy.authKey is required" | quote }}
             - name: "WEB_HTTP_DEFAULT_PORT"
               value: {{ .Values.dataplane.endpoints.default.port | quote }}
             - name: "WEB_HTTP_DEFAULT_PATH"
               value: {{ .Values.dataplane.endpoints.default.path | quote }}
-            - name: "WEB_HTTP_SIGNALING_PORT"
-              value: {{ .Values.dataplane.endpoints.signaling.port | quote }}
-            - name: "WEB_HTTP_SIGNALING_PATH"
-              value: {{ .Values.dataplane.endpoints.signaling.path | quote }}
             - name: "WEB_HTTP_CONTROL_PORT"
               value: {{ .Values.dataplane.endpoints.control.port | quote }}
             - name: "WEB_HTTP_CONTROL_PATH"
@@ -169,8 +165,10 @@ spec:
               value: {{ .Values.dataplane.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.dataplane.endpoints.public.path | quote }}
-            - name: "EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT"
-              value: {{ include "txdc.controlplane.url.validation" .}}
+            - name: "EDC_CONTROL_ENDPOINT"
+              value: {{ include "txdc.dataplane.url.control" . }}
+            - name: "EDC_DPF_SELECTOR_URL"
+              value: {{ include "txdc.controlplane.url.control" . }}/v1/dataplanes
 
             #######
             # AWS #
@@ -212,16 +210,16 @@ spec:
               value: {{ .Values.vault.azure.certificate | quote }}
             {{- end }}
 
-           #############################
+            #############################
             ## IATP / STS / DIM CONFIG ##
             #############################
             - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
-              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.oauth.token_url is required" | quote}}
+              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.sts.oauth.token_url is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
               value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
               value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
-            - name: "EDC_IAM_STS_DIM_URL"
+            - name: "TX_EDC_IAM_STS_DIM_URL"
               value: {{ .Values.iatp.sts.dim.url | required ".Values.iatp.sts.dim.url is required" | quote}}
 
             ################
@@ -269,20 +267,20 @@ spec:
             ## TOKEN REFRESH
             ##################
             {{- if .Values.dataplane.token.refresh.expiry_seconds }}
-            - name: "EDC_DATAPLANE_TOKEN_EXPIRY"
+            - name: "TX_EDC_DATAPLANE_TOKEN_EXPIRY"
               value: {{ .Values.dataplane.token.refresh.expiry_seconds | quote}}
             {{- end}}
 
             {{- if .Values.dataplane.token.refresh.expiry_tolerance_seconds }}
-            - name: "EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
+            - name: "TX_EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE"
               value: {{ .Values.dataplane.token.refresh.expiry_tolerance_seconds | quote }}
             {{- end}}
 
             {{- if .Values.dataplane.token.refresh.refresh_endpoint }}
-            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+            - name: "TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ .Values.dataplane.token.refresh.refresh_endpoint }}
             {{- else}}
-            - name: "EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
+            - name: "TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT"
               value: {{ include "txdc.dataplane.url.public" . }}/token
             {{- end}}
 
@@ -296,7 +294,7 @@ spec:
             ######################################
             ## Additional environment variables ##
             ######################################
-            - name: "EDC_CONNECTOR_NAME"
+            - name: "EDC_RUNTIME_ID"
               value: {{ include "txdc.fullname" .}}-dataplane
           {{- range $key, $value := .Values.dataplane.envValueFrom }}
             - name: {{ $key | quote }}

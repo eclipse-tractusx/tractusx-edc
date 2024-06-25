@@ -23,7 +23,7 @@ import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +40,7 @@ class BdrsClientAudienceMapperTest {
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
-        assertThat(did).isEqualTo("did:web:did1");
+        assertThat(did).isSucceeded().isEqualTo("did:web:did1");
 
     }
 
@@ -51,7 +51,7 @@ class BdrsClientAudienceMapperTest {
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
-        assertThat(did).isNull();
+        assertThat(did).isFailed();
 
     }
 

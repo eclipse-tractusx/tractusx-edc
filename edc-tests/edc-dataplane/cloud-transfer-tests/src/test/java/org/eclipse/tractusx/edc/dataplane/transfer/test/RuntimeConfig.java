@@ -35,21 +35,20 @@ public class RuntimeConfig {
     public static Map<String, String> baseConfig(String controlPath, int controlPort) {
         return new HashMap<>() {
             {
-                put("edc.dataplane.token.validation.endpoint", "http://token-validation.com");
                 put("web.http.path", "/api");
                 put("web.http.port", String.valueOf(getFreePort()));
+                put("web.http.control.path", controlPath);
+                put("web.http.control.port", String.valueOf(controlPort));
                 put("web.http.public.path", "/public");
                 put("web.http.public.port", String.valueOf(getFreePort()));
                 put("web.http.consumer.api.path", "/api/consumer");
                 put("web.http.consumer.api.port", String.valueOf(getFreePort()));
                 put("tx.dpf.consumer.proxy.port", String.valueOf(getFreePort()));
-                put("web.http.control.path", controlPath);
-                put("web.http.control.port", String.valueOf(controlPort));
                 put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-clientid");
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
-                put("edc.iam.sts.dim.url", "http://sts.example.com");
+                put("tx.edc.iam.sts.dim.url", "http://sts.example.com");
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
             }
         };
@@ -66,7 +65,7 @@ public class RuntimeConfig {
          * @param controlPort       the port of the control API
          * @param mappedAzuritePort the host port for the Blob endpoint template.
          */
-        public static Map<String, String> createDataplane(String controlPath, int controlPort, Integer mappedAzuritePort) {
+        public static Map<String, String> blobstoreDataplaneConfig(String controlPath, int controlPort, Integer mappedAzuritePort) {
             var base = baseConfig(controlPath, controlPort);
 
             base.putAll(new HashMap<>() {
@@ -80,7 +79,7 @@ public class RuntimeConfig {
 
     public static class S3 {
 
-        public static Map<String, String> createDataplane(String controlPath, int controlPort) {
+        public static Map<String, String> s3dataplaneConfig(String controlPath, int controlPort) {
             return baseConfig(controlPath, controlPort);
         }
     }

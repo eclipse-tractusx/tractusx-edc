@@ -27,28 +27,26 @@ import org.eclipse.edc.boot.system.injection.InjectionContainer;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-
-public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAllCallback, AfterAllCallback {
+/**
+ * Extends the {@link EmbeddedRuntime} adding a key pair to the runtime as well as adding a facility to purge the database ({@link DataWiper}).
+ */
+public class ParticipantRuntime extends EmbeddedRuntime {
 
     private final Map<String, String> properties;
     private final ECKey runtimeKeyPair;
@@ -59,10 +57,10 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
     }
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback beforeInitCallback) {
-        super(moduleName, runtimeName, properties);
+        super(runtimeName, properties, moduleName);
         this.properties = properties;
         this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
-        this.registerServiceMock(AudienceResolver.class, RemoteMessage::getCounterPartyAddress);
+        this.registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()));
         this.registerServiceMock(BdrsClient.class, (s) -> s);
         var kid = properties.get("edc.iam.issuer.id") + "#key-1";
         try {
@@ -81,25 +79,8 @@ public class ParticipantRuntime extends EdcRuntimeExtension implements BeforeAll
         }
     }
 
-    @Override
-    public void beforeTestExecution(ExtensionContext extensionContext) {
-        //do nothing - we only want to start the runtime once
-        wiper.clearPersistence();
-    }
-
-    @Override
-    public void afterTestExecution(ExtensionContext context) {
-    }
-
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-        //only run this once
-        super.beforeTestExecution(context);
-    }
-
-    @Override
-    public void afterAll(ExtensionContext context) throws Exception {
-        super.afterTestExecution(context);
+    public DataWiper getWiper() {
+        return wiper;
     }
 
     @Override

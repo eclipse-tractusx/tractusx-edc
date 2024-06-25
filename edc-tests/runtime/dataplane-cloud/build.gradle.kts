@@ -28,6 +28,8 @@ dependencies {
     // use basic (all in-mem) data plane
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "api-observability")
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+        exclude("org.eclipse.edc", "data-plane-self-registration")
     }
 }
 

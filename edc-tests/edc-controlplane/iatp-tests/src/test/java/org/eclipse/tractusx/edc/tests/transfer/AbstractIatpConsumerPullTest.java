@@ -29,6 +29,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialC
 import org.eclipse.edc.identityhub.spi.store.CredentialStore;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -37,7 +38,6 @@ import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StatusList2021;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.IatpParticipantRuntime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -66,7 +66,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.TransferProcessHelperFunctions.createProxyRequest;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVcBuilder;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.membershipSubject;
@@ -141,7 +140,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAsset(PROVIDER, assetId, Json.createObjectBuilder().build(), createProxyRequest(), "HttpData-PULL");
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -210,7 +209,6 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     void catalogRequest_whenCredentialExpired() {
         //update the membership credential to an expirationDate that is in the past
         var store = consumerRuntime().getService(CredentialStore.class);
-        var jsonLd = consumerRuntime().getService(JsonLd.class);
 
         var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
@@ -272,10 +270,10 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .id(existingCred.getVerifiableCredential().credential().getId())
                 .types(existingCred.getVerifiableCredential().credential().getType())
                 .credentialSubjects(existingCred.getVerifiableCredential().credential().getCredentialSubject())
-                .credentialStatus(new CredentialStatus("https://localhost:%s/status/list/7#12345".formatted(port), "StatusList2021",
+                .credentialStatus(new CredentialStatus("http://localhost:%s/status/list/7#12345".formatted(port), "StatusList2021",
                         Map.of("statusPurpose", "revocation",
                                 "statusListIndex", "12345",
-                                "statusListCredential", "https://localhost:%d/status/list/7".formatted(port)
+                                "statusListCredential", "http://localhost:%d/status/list/7".formatted(port)
                         )
                 ))
                 .issuer(existingCred.getVerifiableCredential().credential().getIssuer())
@@ -325,9 +323,9 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         return frameworkPolicy(Map.of(CX_CREDENTIAL_NS + "Membership", "active"));
     }
 
-    protected abstract IatpParticipantRuntime consumerRuntime();
+    protected abstract RuntimeExtension consumerRuntime();
 
-    protected abstract IatpParticipantRuntime providerRuntime();
+    protected abstract RuntimeExtension providerRuntime();
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
         @Override

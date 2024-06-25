@@ -21,8 +21,8 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
-import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
  */
 @SuppressWarnings("resource")
 @Testcontainers
-@AzureStorageIntegrationTest
+@CloudTransferTest
 public class AzureToAzureTest {
     private static final int PROVIDER_CONTROL_PORT = getFreePort();
     private static final int AZURITE_HOST_PORT = getFreePort();
@@ -79,7 +79,7 @@ public class AzureToAzureTest {
     protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
             ":edc-tests:runtime:dataplane-cloud",
             "AzureBlob-Dataplane",
-            RuntimeConfig.Azure.createDataplane("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
+            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
     );
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
@@ -252,7 +252,7 @@ public class AzureToAzureTest {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getContext().getMonitor())
+                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class))
                         .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
     }
 
@@ -280,4 +280,3 @@ public class AzureToAzureTest {
                 .processId("test-process-multiple-file-id").build();
     }
 }
- 

@@ -27,7 +27,9 @@ dependencies {
     implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.core)
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base"))
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+    }
     runtimeOnly(libs.edc.core.controlplane)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.lib.boot)

@@ -49,7 +49,7 @@ runs:
         max_attempts: 3
         command: |
           code=$(curl -IL -sw "%{http_code}" http://localhost:8181/api/check/health -o /dev/null)
-          if [ "$code" -ne "401" ]; then
+          if [ "$code" -ne "200" ]; then
             echo "TractusX EDC not ready yet, status = $code"
             docker logs dast-edc-runtime-1
             exit 1;
