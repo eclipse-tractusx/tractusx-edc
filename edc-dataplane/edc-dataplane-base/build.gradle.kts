@@ -39,6 +39,8 @@ dependencies {
     runtimeOnly(libs.edc.dpf.oauth2)
     runtimeOnly(libs.edc.dpf.http)
 
+    runtimeOnly(libs.edc.aws.validator.data.address.s3)
+
     runtimeOnly(libs.edc.dpf.core)
     runtimeOnly(libs.edc.controlplane.apiclient)
 
