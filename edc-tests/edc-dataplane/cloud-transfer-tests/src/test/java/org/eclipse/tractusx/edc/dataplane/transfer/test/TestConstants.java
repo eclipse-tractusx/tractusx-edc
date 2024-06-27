@@ -37,12 +37,9 @@ public class TestConstants {
     public static final String AZBLOB_PROVIDER_CONTAINER_NAME = "src-container";
     public static final String AZBLOB_CONSUMER_CONTAINER_NAME = "dest-container";
     // AMAZON S3 CONSTANTS
-    public static final String MINIO_DOCKER_IMAGE = "bitnami/minio";
-    public static final int MINIO_CONTAINER_PORT = 9000;
     public static final String S3_REGION = Region.US_WEST_2.id();
     public static final String S3_PROVIDER_BUCKET_NAME = "provider-bucket";
     public static final String S3_CONSUMER_BUCKET_NAME = "consumer-bucket";
-    public static final String S3_ACCESS_KEY_ID = "test-access-key"; // user name
     // GENERIC CONSTANTS
     public static final String TESTFILE_NAME = "testfile.json";
     public static final String PREFIX_FOR_MUTIPLE_FILES = "m/";

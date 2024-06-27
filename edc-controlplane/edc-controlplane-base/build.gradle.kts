@@ -57,6 +57,7 @@ dependencies {
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.validator.data.address.http.data)
+    runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.data.plane.selector.control.api)
 
     runtimeOnly(libs.edc.api.management)
