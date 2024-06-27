@@ -12,7 +12,7 @@ maven/mavencentral/com.azure/azure-core/1.45.1, MIT AND Apache-2.0, approved, #1
 maven/mavencentral/com.azure/azure-core/1.49.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.49.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.12.1, MIT AND Apache-2.0, approved, #14412
-maven/mavencentral/com.azure/azure-identity/1.13.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-identity/1.13.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.7.3, MIT, approved, #10868
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.8.3, MIT, approved, #13690
@@ -345,6 +345,7 @@ maven/mavencentral/org.eclipse.angus/angus-activation/1.0.0, EPL-2.0 OR GPL-2.0-
 maven/mavencentral/org.eclipse.edc.aws/aws-s3-core/0.7.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.aws/aws-spi/0.7.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.aws/data-plane-aws-s3/0.7.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc.aws/validator-data-address-s3/0.7.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.azure/azure-blob-core/0.7.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.azure/data-plane-azure-storage/0.7.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.azure/vault-azure/0.7.1, Apache-2.0, approved, technology.edc
@@ -700,7 +701,7 @@ maven/mavencentral/software.amazon.awssdk/regions/2.25.66, Apache-2.0, approved,
 maven/mavencentral/software.amazon.awssdk/regions/2.26.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.26.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries/2.26.7, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.26.7, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.26.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/s3/2.25.66, Apache-2.0, approved, #13688
 maven/mavencentral/software.amazon.awssdk/s3/2.26.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.25.66, Apache-2.0, approved, #13700
