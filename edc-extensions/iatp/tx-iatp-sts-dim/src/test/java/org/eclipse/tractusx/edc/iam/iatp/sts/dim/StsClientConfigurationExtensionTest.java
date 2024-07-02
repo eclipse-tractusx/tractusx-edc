@@ -22,21 +22,22 @@ package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.iam.iatp.sts.dim.DimStsConfigurationExtension.CLIENT_ID;
-import static org.eclipse.tractusx.edc.iam.iatp.sts.dim.DimStsConfigurationExtension.CLIENT_SECRET_ALIAS;
-import static org.eclipse.tractusx.edc.iam.iatp.sts.dim.DimStsConfigurationExtension.TOKEN_URL;
+import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.CLIENT_ID;
+import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.CLIENT_SECRET_ALIAS;
+import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.TOKEN_URL;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class DimStsConfigurationExtensionTest {
+public class StsClientConfigurationExtensionTest {
 
     @Test
-    void initialize(ServiceExtensionContext context, DimStsConfigurationExtension extension) {
+    void initialize(ServiceExtensionContext context, StsClientConfigurationExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
         when(config.getString(TOKEN_URL, null)).thenReturn("url");

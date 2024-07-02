@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauthClientImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 

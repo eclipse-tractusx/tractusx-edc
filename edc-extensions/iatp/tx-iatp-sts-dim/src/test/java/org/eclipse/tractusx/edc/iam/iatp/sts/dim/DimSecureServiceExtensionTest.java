@@ -24,12 +24,14 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.tractusx.edc.iam.dcp.sts.RemoteTokenServiceClientExtension;
+import org.eclipse.tractusx.edc.iam.dcp.sts.dim.DimSecureTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.tractusx.edc.iam.iatp.sts.dim.DimSecureTokenServiceExtension.DIM_URL;
+import static org.eclipse.tractusx.edc.iam.dcp.sts.RemoteTokenServiceClientExtension.DIM_URL;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class DimSecureServiceExtensionTest {
 
     @Test
-    void initialize(ServiceExtensionContext context, DimSecureTokenServiceExtension extension) {
+    void initialize(ServiceExtensionContext context, RemoteTokenServiceClientExtension extension) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
         when(config.getString(DIM_URL, null)).thenReturn("url");
@@ -46,7 +48,7 @@ public class DimSecureServiceExtensionTest {
     }
 
     @Test
-    void initialize_shouldNotThrow_whenUrlIsMissing(ServiceExtensionContext context, DimSecureTokenServiceExtension extension) {
+    void initialize_shouldNotThrow_whenUrlIsMissing(ServiceExtensionContext context, RemoteTokenServiceClientExtension extension) {
         var monitor = context.getMonitor();
         var prefixeMonitor = mock(Monitor.class);
         when(monitor.withPrefix(anyString())).thenReturn(prefixeMonitor);

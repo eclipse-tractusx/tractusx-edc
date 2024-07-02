@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
+package org.eclipse.tractusx.edc.iam.dcp.sts;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
@@ -34,22 +34,23 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
-import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
-import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauthClientImpl;
+import org.eclipse.tractusx.edc.iam.dcp.sts.dim.DimSecureTokenService;
+import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
+import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauthClientImpl;
 
 import java.time.Clock;
 
 import static java.util.Optional.ofNullable;
 import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibilityNullable;
 
-@Extension(DimSecureTokenServiceExtension.NAME)
-public class DimSecureTokenServiceExtension implements ServiceExtension {
+@Extension(RemoteTokenServiceClientExtension.NAME)
+public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Setting(value = "STS Dim endpoint")
     public static final String DIM_URL = "tx.edc.iam.sts.dim.url";
     @Deprecated(since = "0.7.1")
     public static final String DIM_URL_DEPRECATED = "edc.iam.sts.dim.url";
-    protected static final String NAME = "DIM Secure token service extension";
+    protected static final String NAME = "Secure Token Service (STS) client extension";
 
     @Inject
     private EdcHttpClient httpClient;
@@ -83,11 +84,11 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
         return ofNullable(dimUrlConfig)
                 .map(PathUtils::removeTrailingSlash)
                 .map(dimUrl -> {
-                    monitor.debug("DIM URL configured, will use DIM STS client");
+                    monitor.info("DIM URL configured, will use DIM STS client");
                     return (SecureTokenService) new DimSecureTokenService(httpClient, dimUrl, oauth2Client(), typeManager.getMapper(), monitor);
                 })
                 .orElseGet(() -> {
-                    monitor.debug("DIM URL not configured, will use the standard EDC Remote STS client");
+                    monitor.info("DIM URL not configured, will use the standard EDC Remote STS client");
                     return new RemoteSecureTokenService(oauth2Client, clientConfiguration);
                 });
     }

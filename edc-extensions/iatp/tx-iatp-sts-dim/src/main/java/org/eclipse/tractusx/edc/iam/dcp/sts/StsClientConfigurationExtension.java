@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
+package org.eclipse.tractusx.edc.iam.dcp.sts;
 
 import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -33,8 +33,8 @@ import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryPro
 /**
  * Configuration Extension for the STS OAuth2 client
  */
-@Extension(DimStsConfigurationExtension.NAME)
-public class DimStsConfigurationExtension implements ServiceExtension {
+@Extension(StsClientConfigurationExtension.NAME)
+public class StsClientConfigurationExtension implements ServiceExtension {
 
     @Setting(value = "STS OAuth2 endpoint for requesting a token")
     public static final String TOKEN_URL = "edc.iam.sts.oauth.token.url";
@@ -45,7 +45,7 @@ public class DimStsConfigurationExtension implements ServiceExtension {
     @Setting(value = "Vault alias of STS OAuth2 client secret")
     public static final String CLIENT_SECRET_ALIAS = "edc.iam.sts.oauth.client.secret.alias";
 
-    protected static final String NAME = "DIM STS client configuration extension";
+    protected static final String NAME = "Secure Token Service (STS) client configuration extension";
 
 
     @Override
