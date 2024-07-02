@@ -19,36 +19,17 @@
 
 plugins {
     `java-library`
-    id("application")
+    `maven-publish`
 }
 
 dependencies {
+    implementation(project(":spi:core-spi"))
+    implementation(project(":core:core-utils"))
+    implementation(libs.edc.identity.trust.sts.remote.lib)
+    implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.auth.oauth2.client)
 
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "ssi-identity-core")
-        exclude(module = "ssi-miw-credential-client")
-        exclude(module = "ssi-identity-extractor")
-        exclude(module = "tx-dcp-sts-dim")
-        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
-    }
-    implementation(project(":core:json-ld-core"))
-    implementation(project(":edc-tests:runtime:extensions"))
 
-    implementation(libs.edc.iam.mock)
-    implementation(libs.edc.spi.keys)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.bundles.edc.sts)
-
-    implementation(libs.edc.identity.trust.sts.embedded)
-    implementation(libs.edc.core.token)
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-edcBuild {
-    publish.set(false)
+    testImplementation(libs.edc.junit)
+    testImplementation(testFixtures(libs.edc.lib.http))
 }

@@ -149,6 +149,7 @@ edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-
 # IATP for Testing
 
 edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
+edc-identity-trust-sts-remote-lib = { module = "org.eclipse.edc:identity-trust-sts-remote-lib", version.ref = "edc" }
 edc-identity-trust-sts-embedded = { module = "org.eclipse.edc:identity-trust-sts-embedded", version.ref = "edc" }
 edc-identity-trust-sts-core = { module = "org.eclipse.edc:identity-trust-sts-core", version.ref = "edc" }
 edc-identity-trust-sts-api = { module = "org.eclipse.edc:identity-trust-sts-api", version.ref = "edc" }

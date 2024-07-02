@@ -78,6 +78,17 @@ public class ConfigUtil {
         return value;
     }
 
+    public static String propertyCompatibilityNullable(ServiceExtensionContext context, String config, String deprecatedConfig) {
+        var value = context.getSetting(config, null);
+        if (value == null) {
+            value = context.getConfig().getString(deprecatedConfig, null);
+            if (value != null) {
+                context.getMonitor().warning(DEPRECATION_WARNING.formatted(deprecatedConfig, config));
+            }
+        }
+        return value;
+    }
+
     public static boolean propertyCompatibility(ServiceExtensionContext context, String config, String deprecatedConfig, boolean defaultValue) {
         var value = context.getConfig().getBoolean(config, null);
         if (value == null) {
