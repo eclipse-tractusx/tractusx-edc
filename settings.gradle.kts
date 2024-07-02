@@ -47,8 +47,8 @@ include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:edr:edr-api-v2")
 include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:cx-policy")
-include(":edc-extensions:iatp:tx-iatp")
-include(":edc-extensions:iatp:tx-iatp-sts-dim")
+include(":edc-extensions:dcp:tx-dcp")
+include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
 
 // extensions - data plane

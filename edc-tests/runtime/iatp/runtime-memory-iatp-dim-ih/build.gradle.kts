@@ -31,8 +31,8 @@ dependencies {
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:cx-policy"))
-    implementation(project(":edc-extensions:iatp:tx-iatp"))
-    implementation(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
+    implementation(project(":edc-extensions:dcp:tx-dcp"))
+    implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
 
     implementation(project(":edc-tests:runtime:extensions"))
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))

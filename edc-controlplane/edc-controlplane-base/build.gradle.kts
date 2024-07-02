@@ -46,8 +46,8 @@ dependencies {
     runtimeOnly(libs.edc.core.identitytrust)
     runtimeOnly(libs.edc.identity.trust.transform)
     runtimeOnly(libs.edc.identity.trust.issuers.configuration)
-    runtimeOnly(project(":edc-extensions:iatp:tx-iatp"))
-    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
+    runtimeOnly(project(":edc-extensions:dcp:tx-dcp"))
+    runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     runtimeOnly(project(":edc-extensions:bdrs-client"))
     runtimeOnly(project(":edc-extensions:data-flow-properties-provider"))
 

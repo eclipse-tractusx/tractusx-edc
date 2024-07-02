@@ -30,7 +30,7 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "auth-tokenbased")
         // the token refresh extension is not needed
-        exclude(module = "tx-iatp-sts-dim")
+        exclude(module = "tx-dcp-sts-dim")
         exclude(module = "tokenrefresh-handler")
         exclude(module = "edr-core")
         exclude(module = "edr-api-v2")
