@@ -21,18 +21,26 @@ package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.identitytrust.sts.remote.RemoteSecureTokenService;
+import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
+import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauth2Client;
+import org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth.DimOauthClientImpl;
 
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
-import static org.eclipse.tractusx.edc.core.utils.PathUtils.removeTrailingSlash;
+import java.time.Clock;
+
+import static java.util.Optional.ofNullable;
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibilityNullable;
 
 @Extension(DimSecureTokenServiceExtension.NAME)
 public class DimSecureTokenServiceExtension implements ServiceExtension {
@@ -44,12 +52,6 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
     protected static final String NAME = "DIM Secure token service extension";
 
     @Inject
-    private StsRemoteClientConfiguration stsRemoteClientConfiguration;
-
-    @Inject
-    private DimOauth2Client dimOauth2Client;
-
-    @Inject
     private EdcHttpClient httpClient;
 
     @Inject
@@ -58,6 +60,17 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
 
+    @Inject
+    private StsRemoteClientConfiguration clientConfiguration;
+
+    @Inject
+    private Oauth2Client oauth2Client;
+
+    @Inject
+    private Vault vault;
+
+    @Inject
+    private Clock clock;
 
     @Override
     public String name() {
@@ -66,7 +79,21 @@ public class DimSecureTokenServiceExtension implements ServiceExtension {
 
     @Provider
     public SecureTokenService secureTokenService(ServiceExtensionContext context) {
-        var dimUrl = removeTrailingSlash(propertyCompatibility(context, DIM_URL, DIM_URL_DEPRECATED));
-        return new DimSecureTokenService(httpClient, dimUrl, dimOauth2Client, typeManager.getMapper(), monitor);
+        var dimUrlConfig = propertyCompatibilityNullable(context, DIM_URL, DIM_URL_DEPRECATED);
+        return ofNullable(dimUrlConfig)
+                .map(PathUtils::removeTrailingSlash)
+                .map(dimUrl -> {
+                    monitor.debug("DIM URL configured, will use DIM STS client");
+                    return (SecureTokenService) new DimSecureTokenService(httpClient, dimUrl, oauth2Client(), typeManager.getMapper(), monitor);
+                })
+                .orElseGet(() -> {
+                    monitor.debug("DIM URL not configured, will use the standard EDC Remote STS client");
+                    return new RemoteSecureTokenService(oauth2Client, clientConfiguration);
+                });
     }
+
+    private DimOauth2Client oauth2Client() {
+        return new DimOauthClientImpl(oauth2Client, vault, clientConfiguration, clock, monitor);
+    }
+
 }

@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth;
 
+import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2CredentialsRequest;
 import org.eclipse.edc.iam.oauth2.spi.client.SharedSecretOauth2CredentialsRequest;
@@ -26,7 +27,6 @@ import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.iam.iatp.sts.dim.StsRemoteClientConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
@@ -85,7 +85,7 @@ public class DimOauthClientImpl implements DimOauth2Client {
 
     @NotNull
     private Result<Oauth2CredentialsRequest> createRequest() {
-        var secret = vault.resolveSecret(configuration.clientSecretAlias());
+        var secret = vault.resolveSecret(configuration.clientSecret());
         if (secret != null) {
             var builder = SharedSecretOauth2CredentialsRequest.Builder.newInstance()
                     .url(configuration.tokenUrl())
@@ -95,7 +95,7 @@ public class DimOauthClientImpl implements DimOauth2Client {
 
             return Result.success(builder.build());
         } else {
-            return Result.failure("Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecretAlias()));
+            return Result.failure("Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecret()));
         }
     }
 

@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim;
 
+import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -72,5 +73,6 @@ public class DimStsConfigurationExtension implements ServiceExtension {
         }
         return new StsRemoteClientConfiguration(tokenUrl, clientId, clientSecretAlias);
     }
+
 
 }

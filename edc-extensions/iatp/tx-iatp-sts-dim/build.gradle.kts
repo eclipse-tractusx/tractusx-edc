@@ -23,10 +23,12 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.spi.identitytrust)
-    implementation(libs.edc.auth.oauth2.client)
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
+    implementation(libs.edc.identity.trust.sts.remote.lib)
+    implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.auth.oauth2.client)
+
 
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.lib.http))

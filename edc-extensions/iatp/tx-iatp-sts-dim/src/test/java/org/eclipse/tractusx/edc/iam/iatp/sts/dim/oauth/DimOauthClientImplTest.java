@@ -19,13 +19,13 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.sts.dim.oauth;
 
+import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.iam.oauth2.spi.client.SharedSecretOauth2CredentialsRequest;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.iam.iatp.sts.dim.StsRemoteClientConfiguration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -119,7 +119,7 @@ public class DimOauthClientImplTest {
         assertThat(request.getClientId()).isEqualTo(config.clientId());
         assertThat(request.getClientSecret()).isEqualTo("client_secret");
         assertThat(request.getUrl()).isEqualTo(config.tokenUrl());
-        
+
         Thread.sleep(2100);
 
         response = client.obtainRequestToken();
