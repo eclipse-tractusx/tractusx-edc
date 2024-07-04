@@ -32,6 +32,7 @@ import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -302,6 +303,7 @@ public class S3ToS3Test {
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
                         .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-id")
                 .build();
     }
@@ -329,6 +331,7 @@ public class S3ToS3Test {
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
                         .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-multiple-file-id")
                 .build();
     }

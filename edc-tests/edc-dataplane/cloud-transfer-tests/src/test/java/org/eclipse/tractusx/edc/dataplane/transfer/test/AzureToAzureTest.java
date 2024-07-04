@@ -30,6 +30,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -268,6 +269,7 @@ public class AzureToAzureTest {
                 .sourceDataAddress(blobSourceAddress(blobName))
                 .destinationDataAddress(blobDestinationAddress(blobName))
                 .processId("test-process-id")
+                .flowType(FlowType.PUSH)
                 .build();
     }
 
@@ -283,6 +285,8 @@ public class AzureToAzureTest {
                         .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
                         .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
                         .build())
-                .processId("test-process-multiple-file-id").build();
+                .processId("test-process-multiple-file-id")
+                .flowType(FlowType.PUSH)
+                .build();
     }
 }

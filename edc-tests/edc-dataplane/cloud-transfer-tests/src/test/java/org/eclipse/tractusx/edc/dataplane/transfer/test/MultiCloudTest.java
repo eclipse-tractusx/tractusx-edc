@@ -32,6 +32,7 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -142,6 +143,7 @@ public class MultiCloudTest {
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
                         .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-request-multiple")
                 .build();
 
@@ -193,6 +195,7 @@ public class MultiCloudTest {
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
                         .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-id")
                 .build();
 
@@ -257,6 +260,7 @@ public class MultiCloudTest {
                                 .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
                                 .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-multiple-file-id")
                 .build();
 
@@ -322,6 +326,7 @@ public class MultiCloudTest {
                                 .property("blobName", "NOME_TEST")
                                 .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-multiple-file-id")
                 .build();
 
@@ -369,6 +374,7 @@ public class MultiCloudTest {
                 )
                 .destinationDataAddress(blobDestinationAddress(TESTFILE_NAME))
                 .processId("test-process-id")
+                .flowType(FlowType.PUSH)
                 .build();
 
         var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
