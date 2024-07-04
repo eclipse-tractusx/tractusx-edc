@@ -397,6 +397,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .sourceDataAddress(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://foo.bar/").build())
                 .destinationDataAddress(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://fizz.buzz").build())
                 .flowType(FlowType.PULL)
+                .transferTypeDestination("HttpData")
                 .participantId("some-participantId")
                 .assetId("test-asset")
                 .callbackAddress(URI.create("https://foo.bar/callback"))
