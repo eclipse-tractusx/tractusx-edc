@@ -69,7 +69,7 @@ channel `DataAddresses`:
 
 #### Technical Considerations
 
-The above changes can work with both DSP pull and Push scenarios. However, it is important to note a potential race
+The above changes can work with both DSP pull and push scenarios. However, it is important to note a potential race
 condition that could be introduced in PUSH transfers. Namely, provider-pushed data could potentially arrive before the
 DSP start message containing the response channel `DataAddress` is received by the client. This is due to the nature of
 asynchronous communications. In this case, the client would either need to skip sending a response or store the response
