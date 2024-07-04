@@ -75,6 +75,9 @@ DSP start message containing the response channel `DataAddress` is received by t
 asynchronous communications. In this case, the client would either need to skip sending a response or store the response
 messages to send when it receives the response channel `DataAddress`.
 
+The response channel lifetime is tied to the forward channel. For example, when the forward channel is closed, the
+response channel will also be closed.
+
 ## Catena-X Standardization and Tractus-X Support
 
 To achieve interoperability, Catena-X would need to standardize a bidirectional transfer type similar to its support of
