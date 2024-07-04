@@ -80,5 +80,3 @@ messages to send when it receives the response channel `DataAddress`.
 To achieve interoperability, Catena-X would need to standardize a bidirectional transfer type similar to its support of
 HTTP push/pull and S3 types. This could then be implemented in Tractus-X EDC.
 
-TODOs
-different wire protocols S3 forward, HTTP back
