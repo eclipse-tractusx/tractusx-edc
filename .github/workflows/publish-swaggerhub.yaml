@@ -28,19 +28,12 @@ on:
       downstream-version:
         required: false
         type: string
-      upstream-version:
-        required: false
-        type: string
 
   workflow_dispatch:
     inputs:
       downstream-version:
         required: false
         description: "Version of the Tractus-X EDC API to be should be published"
-        type: string
-      upstream-version:
-        required: false
-        description: "Version of upstream EDC which is to be used"
         type: string
 
 jobs:
@@ -61,21 +54,15 @@ jobs:
         run: |
           npm i -g swaggerhub-cli
 
-      - name: Extract versions
+      - name: Extract version
         run: |
           if [ -z ${{ inputs.downstream-version }} ]; then
             export DOWNSTREAM_VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           else
             export DOWNSTREAM_VERSION=${{ inputs.downstream-version }}
           fi
-          
-          if [ -z ${{ inputs.upstream-version }} ]; then
-            export UPSTREAM_VERSION=$(grep "edc = " gradle/libs.versions.toml  | awk -F= '{print $2}' | jq -r)
-          else
-            export UPSTREAM_VERSION=${{ inputs.upstream-version }}
-          fi
+
           echo "DOWNSTREAM_VERSION=$DOWNSTREAM_VERSION" >> "$GITHUB_ENV"
-          echo "UPSTREAM_VERSION=$UPSTREAM_VERSION" >> "$GITHUB_ENV"
 
       - name: Resolve TX EDC API Spec
         shell: bash
@@ -84,8 +71,8 @@ jobs:
 
       - name: Download upstream API specs
         run: |          
-          curl -X GET https://eclipse-edc.github.io/Connector/openapi/management-api/${{ env.UPSTREAM_VERSION }}/management-api.yaml > resources/openapi/yaml/upstream-management-api.yaml
-          curl -X GET https://eclipse-edc.github.io/Connector/openapi/control-api/${{ env.UPSTREAM_VERSION }}/control-api.yaml > resources/openapi/yaml/upstream-control-api.yaml
+          curl -X GET https://eclipse-edc.github.io/Connector/openapi/management-api/management-api.yaml > resources/openapi/yaml/upstream-management-api.yaml
+          curl -X GET https://eclipse-edc.github.io/Connector/openapi/control-api/control-api.yaml > resources/openapi/yaml/upstream-control-api.yaml
 
       - name: Merge API specs
         run: |
