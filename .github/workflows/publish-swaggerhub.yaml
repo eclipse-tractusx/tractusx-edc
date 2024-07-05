@@ -70,9 +70,9 @@ jobs:
           ./gradlew resolve
 
       - name: Download upstream API specs
-        run: |          
-          curl -X GET https://eclipse-edc.github.io/Connector/openapi/management-api/management-api.yaml > resources/openapi/yaml/upstream-management-api.yaml
-          curl -X GET https://eclipse-edc.github.io/Connector/openapi/control-api/control-api.yaml > resources/openapi/yaml/upstream-control-api.yaml
+        run: |
+          ./gradlew :edc-controlplane:edc-controlplane-base:downloadOpenapi
+          cp edc-controlplane/edc-controlplane-base/build/docs/openapi/* resources/openapi/yaml/
 
       - name: Merge API specs
         run: |

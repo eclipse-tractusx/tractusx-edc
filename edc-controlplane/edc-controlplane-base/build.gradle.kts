@@ -77,3 +77,34 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 
 }
+
+tasks.register("downloadOpenapi") {
+    doLast {
+        configurations.asMap.values
+            .asSequence()
+            .filter { it.isCanBeResolved }
+            .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
+            .map { childrenDependencies(it) }.flatten()
+            .distinct()
+            .forEach { dep ->
+                try {
+                    val notation = "${dep.moduleGroup}:${dep.moduleName}:${dep.moduleVersion}:openapi@yaml"
+                    val openapiFile = configurations
+                        .detachedConfiguration(dependencies.create(notation))
+                        .resolve()
+                        .first()
+
+                    val buildPath = layout.buildDirectory.asFile.get().toPath()
+                        .resolve("docs").resolve("openapi")
+                        .resolve("${dep.moduleName}.yaml").toFile()
+
+                    openapiFile.copyTo(buildPath)
+                } catch (_: Exception) {
+                }
+            }
+    }
+}
+
+fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
+    return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()
+}
