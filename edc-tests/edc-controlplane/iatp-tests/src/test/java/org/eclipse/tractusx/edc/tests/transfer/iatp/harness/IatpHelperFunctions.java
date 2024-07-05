@@ -130,7 +130,8 @@ public class IatpHelperFunctions {
         return List.of(
                 issuer.issueMembershipCredential(participant.getDid(), participant.getBpn(), jsonLd),
                 issuer.issueDismantlerCredential(participant.getDid(), participant.getBpn(), jsonLd),
-                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), jsonLd, "PcfCredential"));
+                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), jsonLd, "PcfCredential"),
+                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), jsonLd, "DataExchangeGovernanceCredential"));
 
     }
 }
