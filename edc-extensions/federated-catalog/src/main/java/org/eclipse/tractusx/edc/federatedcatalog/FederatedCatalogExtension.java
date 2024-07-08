@@ -60,7 +60,7 @@ public class FederatedCatalogExtension implements ServiceExtension {
                 .map(File::new)
                 .map(f -> (TargetNodeDirectory) new FileBasedTargetNodeDirectory(f, context.getMonitor(), typeManager.getMapper()))
                 .orElseGet(() -> {
-                    context.getMonitor().warning("No TargetNode file configured ('%s'). Federated Catalog Crawler will be inactive.".formatted(NODE_LIST_FILE));
+                    context.getMonitor().warning("TargetNode file is not configured ('%s'). Federated Catalog Crawler will be inactive.".formatted(NODE_LIST_FILE));
                     return new NoopNodeDirectory();
                 });
 

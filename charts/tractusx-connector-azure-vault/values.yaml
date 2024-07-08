@@ -165,6 +165,8 @@ controlplane:
       period:
       # -- Initial delay for the crawling to start. Leave blank for a random delay
       initialDelay:
+      # -- File path to a JSON file containing TargetNode entries
+      targetsFile:
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.

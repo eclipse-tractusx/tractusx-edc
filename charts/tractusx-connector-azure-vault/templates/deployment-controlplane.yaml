@@ -346,6 +346,9 @@ spec:
             - name: "EDC_CATALOG_CACHE_EXECUTION_ENABLED"
               value: {{ .Values.controlplane.catalog.enabled | quote }}
 
+            - name: "TX_EDC_CATALOG_NODE_LIST_FILE"
+              value: {{ .Values.controlplane.catalog.crawler.targetsFile }}
+
             ######################################
             ## Additional environment variables ##
             ######################################

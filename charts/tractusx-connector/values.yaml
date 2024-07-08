@@ -166,6 +166,8 @@ controlplane:
       period:
       # -- Initial delay for the crawling to start. Leave blank for a random delay
       initialDelay:
+      # -- File path to a JSON file containing TargetNode entries
+      targetsFile:
 
 
   service:
