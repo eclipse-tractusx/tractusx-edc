@@ -79,7 +79,11 @@ dependencies {
 }
 
 tasks.register("downloadOpenapi") {
+    outputs.dir(project.layout.buildDirectory.dir("docs/openapi"))
     doLast {
+        val destinationDirectory = layout.buildDirectory.asFile.get().toPath()
+            .resolve("docs").resolve("openapi")
+
         configurations.asMap.values
             .asSequence()
             .filter { it.isCanBeResolved }
@@ -87,24 +91,28 @@ tasks.register("downloadOpenapi") {
             .map { childrenDependencies(it) }.flatten()
             .distinct()
             .forEach { dep ->
-                try {
-                    val notation = "${dep.moduleGroup}:${dep.moduleName}:${dep.moduleVersion}:openapi@yaml"
-                    val openapiFile = configurations
-                        .detachedConfiguration(dependencies.create(notation))
-                        .resolve()
-                        .first()
-
-                    val buildPath = layout.buildDirectory.asFile.get().toPath()
-                        .resolve("docs").resolve("openapi")
-                        .resolve("${dep.moduleName}.yaml").toFile()
-
-                    openapiFile.copyTo(buildPath)
-                } catch (_: Exception) {
-                }
+                downloadYamlArtifact(dep, "management-api", destinationDirectory);
+                downloadYamlArtifact(dep, "observability-api", destinationDirectory);
             }
     }
 }
 
 fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
     return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()
+}
+
+fun downloadYamlArtifact(dep: ResolvedDependency, classifier: String, destinationDirectory: java.nio.file.Path) {
+    try {
+        val managementApi = dependencies.create(dep.moduleGroup, dep.moduleName, dep.moduleVersion, classifier = classifier, ext = "yaml")
+        configurations
+            .detachedConfiguration(managementApi)
+            .resolve()
+            .forEach { file ->
+                destinationDirectory
+                    .resolve("${dep.moduleName}.yaml")
+                    .toFile()
+                    .let(file::copyTo)
+            }
+    } catch (_: Exception) {
+    }
 }
