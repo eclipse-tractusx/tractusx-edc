@@ -176,6 +176,7 @@ spec:
               value: {{ .Values.controlplane.endpoints.catalog.port | quote }}
             - name: "WEB_HTTP_CATALOG_PATH"
               value: {{ .Values.controlplane.endpoints.catalog.path | quote }}
+
             #########
             ## DSP ##
             #########
