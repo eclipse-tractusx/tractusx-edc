@@ -29,7 +29,7 @@ import java.util.Map;
 
 class PgParticipantRuntime extends ParticipantRuntime {
 
-    public PgParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
+    PgParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(moduleName, runtimeName, bpn, properties);
         mockVault();
     }
