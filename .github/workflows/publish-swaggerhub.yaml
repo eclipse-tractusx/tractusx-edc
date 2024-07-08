@@ -69,10 +69,13 @@ jobs:
         run: |
           ./gradlew resolve
 
-      - name: Download upstream API specs
+      - name: Download upstream API specs for control-plane and data-plane
         run: |
           ./gradlew :edc-controlplane:edc-controlplane-base:downloadOpenapi
           cp edc-controlplane/edc-controlplane-base/build/docs/openapi/* resources/openapi/yaml/
+
+          ./gradlew :edc-dataplane:edc-dataplane-base:downloadOpenapi
+          cp edc-dataplane/edc-dataplane-base/build/docs/openapi/* resources/openapi/yaml/
 
       - name: Merge API specs
         run: |
