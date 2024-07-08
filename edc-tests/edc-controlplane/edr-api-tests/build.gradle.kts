@@ -29,6 +29,8 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
+    testRuntimeOnly(libs.edc.transaction.local)
+
 }
 
 // do not publish

@@ -26,11 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MultiTenantRuntimeTest {
 
@@ -60,7 +62,7 @@ class MultiTenantRuntimeTest {
     @Test
     void threadForEveryTenant() {
         System.setProperty("edc.tenants.path", "./src/test/resources/tenants.properties");
-
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         runtime.boot(false);
 
         verify(monitor, times(2)).info(argThat(connectorIsReady()));
