@@ -157,6 +157,8 @@ controlplane:
 
   # -- configuration for the built-in federated catalog crawler
   catalog:
+    # -- Flag to globally enable/disable the FC feature
+    enabled: false
     crawler:
       # -- Number of desired crawlers. Final number might be different, based on number of crawl targets
       num:

@@ -170,13 +170,12 @@ spec:
               value: {{ .Values.controlplane.endpoints.protocol.port | quote }}
             - name: "WEB_HTTP_PROTOCOL_PATH"
               value: {{ .Values.controlplane.endpoints.protocol.path | quote }}
+            - name: "EDC_CONTROL_ENDPOINT"
+              value: {{ include "txdc.controlplane.url.control" .}}
             - name: "WEB_HTTP_CATALOG_PORT"
               value: {{ .Values.controlplane.endpoints.catalog.port | quote }}
             - name: "WEB_HTTP_CATALOG_PATH"
               value: {{ .Values.controlplane.endpoints.catalog.path | quote }}
-            - name: "EDC_CONTROL_ENDPOINT"
-              value: {{ include "txdc.controlplane.url.control" .}}
-
             #########
             ## DSP ##
             #########
@@ -339,6 +338,9 @@ spec:
             - name: "EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS"
               value: {{ .Values.controlplane.catalog.crawler.num }}
             {{- end }}
+
+            - name: "EDC_CATALOG_CACHE_EXECUTION_ENABLED"
+              value: {{ .Values.controlplane.catalog.enabled | quote }}
 
             ######################################
             ## Additional environment variables ##

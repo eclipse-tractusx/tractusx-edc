@@ -77,6 +77,7 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 
     // Federated Catalog Crawler + Query API
+    runtimeOnly(project(":edc-extensions:federated-catalog"))
     runtimeOnly(libs.edc.fc.core)
     runtimeOnly(libs.edc.fc.api)
 
