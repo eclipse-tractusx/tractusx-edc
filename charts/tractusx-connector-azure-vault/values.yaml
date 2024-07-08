@@ -33,9 +33,9 @@ fullnameOverride: ""
 nameOverride: ""
 
 # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
-imagePullSecrets: [ ]
+imagePullSecrets: []
 # -- Add some custom labels
-customLabels: { }
+customLabels: {}
 
 participant:
   # -- BPN Number
@@ -45,7 +45,7 @@ iatp:
   # -- Decentralized IDentifier (DID) of the connector
   id: "did:web:changeme"
   # -- Configures the trusted issuers for this runtime
-  trustedIssuers: [ ]
+  trustedIssuers: []
   sts:
     dim:
       # -- URL where connectors can request SI tokens
@@ -60,7 +60,7 @@ iatp:
         secret_alias:
 
 # -- Add custom ca certificates to the truststore
-customCaCerts: { }
+customCaCerts: {}
 
 controlplane:
   image:
@@ -70,7 +70,7 @@ controlplane:
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
     tag: ""
-  initContainers: [ ]
+  initContainers: []
   debug:
     # -- Enables java debugging mode.
     enabled: false
@@ -172,14 +172,14 @@ controlplane:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
     # -- additional labels for the service
-    labels: { }
+    labels: {}
     # -- additional annotations for the service
-    annotations: { }
+    annotations: {}
 
   # -- additional labels for the pod
-  podLabels: { }
+  podLabels: {}
   # -- additional annotations for the pod
-  podAnnotations: { }
+  podAnnotations: {}
   # -- The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment
   podSecurityContext:
     seccompProfile:
@@ -198,7 +198,7 @@ controlplane:
       drop:
         - ALL
       # -- Specifies which capabilities to add to issue specialized syscalls
-      add: [ ]
+      add: []
     # -- Whether the root filesystem is mounted in read-only mode
     readOnlyRootFilesystem: true
     # -- Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID
@@ -209,12 +209,12 @@ controlplane:
     runAsUser: 10001
 
   # Extra environment variables that will be pass onto deployment pods
-  env: { }
+  env: {}
   #  ENV_NAME: value
 
   # -- "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
   # ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
-  envValueFrom: { }
+  envValueFrom: {}
   #  ENV_NAME:
   #    configMapKeyRef:
   #      name: configmap-name
@@ -224,12 +224,12 @@ controlplane:
   #      key: value_key
 
   # -- [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
-  envSecretNames: [ ]
+  envSecretNames: []
   #  - first-secret
   #  - second-secret
 
   # -- [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
-  envConfigMapNames: [ ]
+  envConfigMapNames: []
   #  - first-config-map
   #  - second-config-map
 
@@ -240,7 +240,7 @@ controlplane:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.local"
       # -- Additional ingress annotations to add
-      annotations: { }
+      annotations: {}
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - protocol
@@ -263,7 +263,7 @@ controlplane:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-control.intranet"
       # -- Additional ingress annotations to add
-      annotations: { }
+      annotations: {}
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - management
@@ -329,11 +329,11 @@ controlplane:
     java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
 
   # -- [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
-  nodeSelector: { }
+  nodeSelector: {}
   # -- [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
-  tolerations: [ ]
+  tolerations: []
   # -- [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
-  affinity: { }
+  affinity: {}
 
   url:
     # -- Explicitly declared url for reaching the dsp api (e.g. if ingresses not used)
@@ -347,7 +347,7 @@ dataplane:
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
     tag: ""
-  initContainers: [ ]
+  initContainers: []
   debug:
     # -- Enables java debugging mode.
     enabled: false
@@ -387,9 +387,9 @@ dataplane:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
     type: ClusterIP
     # -- additional labels for the service
-    labels: { }
+    labels: {}
     # -- additional annotations for the service
-    annotations: { }
+    annotations: {}
 
   # -- endpoints of the dataplane
   endpoints:
@@ -446,9 +446,9 @@ dataplane:
     secretAccessKey: ""
 
   # -- additional labels for the pod
-  podLabels: { }
+  podLabels: {}
   # -- additional annotations for the pod
-  podAnnotations: { }
+  podAnnotations: {}
   # -- The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment
   podSecurityContext:
     seccompProfile:
@@ -467,7 +467,7 @@ dataplane:
       drop:
         - ALL
       # -- Specifies which capabilities to add to issue specialized syscalls
-      add: [ ]
+      add: []
     # -- Whether the root filesystem is mounted in read-only mode
     readOnlyRootFilesystem: true
     # -- Controls [Privilege Escalation](https://kubernetes.io/docs/concepts/security/pod-security-policy/#privilege-escalation) enabling setuid binaries changing the effective user ID
@@ -478,12 +478,12 @@ dataplane:
     runAsUser: 10001
 
   # -- Extra environment variables that will be pass onto deployment pods
-  env: { }
+  env: {}
   #  ENV_NAME: value
 
   # -- "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
   # ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
-  envValueFrom: { }
+  envValueFrom: {}
   #  ENV_NAME:
   #    configMapKeyRef:
   #      name: configmap-name
@@ -493,12 +493,12 @@ dataplane:
   #      key: value_key
 
   # -- [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from
-  envSecretNames: [ ]
+  envSecretNames: []
   #  - first-secret
   #  - second-secret
 
   # -- [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from
-  envConfigMapNames: [ ]
+  envConfigMapNames: []
   #  - first-config-map
   #  - second-config-map
 
@@ -509,7 +509,7 @@ dataplane:
       # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
       hostname: "edc-data.local"
       # -- Additional ingress annotations to add
-      annotations: { }
+      annotations: {}
       # -- EDC endpoints exposed by this ingress resource
       endpoints:
         - public
@@ -574,11 +574,11 @@ dataplane:
     java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
 
   # -- [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
-  nodeSelector: { }
+  nodeSelector: {}
   # -- [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes
-  tolerations: [ ]
+  tolerations: []
   # -- [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on
-  affinity: { }
+  affinity: {}
 
   url:
     # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
@@ -612,23 +612,23 @@ networkPolicy:
   controlplane:
     # -- Specify from rule network policy for cp (defaults to all namespaces)
     from:
-      - namespaceSelector: { }
+      - namespaceSelector: {}
   # -- Configuration of the dataplane component
   dataplane:
     # -- Specify from rule network policy for dp (defaults to all namespaces)
     from:
-      - namespaceSelector: { }
+      - namespaceSelector: {}
 
 serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
   # -- Annotations to add to the service account
-  annotations: { }
+  annotations: {}
   # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
   # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
-  imagePullSecrets: [ ]
+  imagePullSecrets: []
 
 # -- Configurations for Helm tests
 tests:
