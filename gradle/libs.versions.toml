@@ -21,7 +21,7 @@ restAssured = "5.4.0"
 rsApi = "4.0.0"
 slf4j = "2.0.13"
 testcontainers = "1.19.8"
-tink = "1.13.0"
+tink = "1.14.0"
 titanium = "1.4.0"
 
 [libraries]
