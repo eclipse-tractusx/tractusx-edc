@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -38,10 +37,6 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
         if (beforeInitCallback != null) {
             beforeInitCallback.beforeInit(runtime);
         }
-    }
-
-    public ParticipantRuntimeExtension(EmbeddedRuntime embeddedRuntime) {
-        super(embeddedRuntime);
     }
 
     @Override

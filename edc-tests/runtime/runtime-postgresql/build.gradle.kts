@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)
+    runtimeOnly(libs.edc.transaction.local)
 }
 
 application {

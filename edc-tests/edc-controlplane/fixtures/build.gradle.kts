@@ -47,15 +47,14 @@ dependencies {
     testFixturesImplementation(libs.edc.identity.trust.sts.embedded)
     testFixturesImplementation(libs.edc.core.token)
     testFixturesImplementation(libs.edc.spi.identity.did)
-    testFixturesImplementation(testFixtures(libs.edc.sql.core))
+    testFixturesImplementation(libs.postgres)
     testFixturesImplementation(libs.testcontainers.postgres)
-
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
-
     testFixturesImplementation(libs.assertj)
     testFixturesImplementation(libs.junit.jupiter.api)
     testFixturesImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
 
+    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
+    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 }
 
 // do not publish
