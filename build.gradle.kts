@@ -204,6 +204,27 @@ subprojects {
                 .dependsOn(copyLegalDocs)
         }
     }
+
+    tasks.register("downloadOpenapi") {
+        outputs.dir(project.layout.buildDirectory.dir("docs/openapi"))
+        doLast {
+            val destinationDirectory = layout.buildDirectory.asFile.get().toPath()
+                .resolve("docs").resolve("openapi")
+
+            configurations.asMap.values
+                .asSequence()
+                .filter { it.isCanBeResolved }
+                .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
+                .map { childrenDependencies(it) }.flatten()
+                .distinct()
+                .forEach { dep ->
+                    downloadYamlArtifact(dep, "management-api", destinationDirectory);
+                    downloadYamlArtifact(dep, "observability-api", destinationDirectory);
+                    downloadYamlArtifact(dep, "public-api", destinationDirectory);
+                }
+        }
+    }
+
 }
 
 nexusPublishing {
@@ -217,25 +238,6 @@ tasks.check {
     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
 }
 
-tasks.register("downloadOpenapi") {
-    outputs.dir(project.layout.buildDirectory.dir("docs/openapi"))
-    doLast {
-        val destinationDirectory = layout.buildDirectory.asFile.get().toPath()
-            .resolve("docs").resolve("openapi")
-
-        configurations.asMap.values
-            .asSequence()
-            .filter { it.isCanBeResolved }
-            .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
-            .map { childrenDependencies(it) }.flatten()
-            .distinct()
-            .forEach { dep ->
-                downloadYamlArtifact(dep, "management-api", destinationDirectory);
-                downloadYamlArtifact(dep, "observability-api", destinationDirectory);
-                downloadYamlArtifact(dep, "public-api", destinationDirectory);
-            }
-    }
-}
 
 fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
     return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()
