@@ -363,6 +363,7 @@ maven/mavencentral/org.eclipse.edc/callback-static-endpoint/0.7.2-20240709-SNAPS
 maven/mavencentral/org.eclipse.edc/catalog-api/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-spi/0.7.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/catalog-util-lib/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/configuration-filesystem/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/connector-core/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/contract-agreement-api/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -387,6 +388,8 @@ maven/mavencentral/org.eclipse.edc/control-plane-transfer/0.7.2-20240709-SNAPSHO
 maven/mavencentral/org.eclipse.edc/control-plane-transform/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/core-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/core-spi/0.7.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/crawler-core/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/crawler-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/credential-query-lib/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/crypto-common-lib/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-address-http-data-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -434,6 +437,9 @@ maven/mavencentral/org.eclipse.edc/edr-index-sql/0.7.2-20240709-SNAPSHOT, Apache
 maven/mavencentral/org.eclipse.edc/edr-store-core/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-receiver/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/federated-catalog-api/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/federated-catalog-core/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/federated-catalog-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-lib/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http/0.7.2-20240709-SNAPSHOT, Apache-2.0, approved, technology.edc

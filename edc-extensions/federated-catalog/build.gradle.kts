@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,27 +15,16 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 plugins {
+    `maven-publish`
     `java-library`
-    `java-test-fixtures`
 }
 
 dependencies {
-    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.fc.spi.crawler)
 
-    testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.restAssured)
-    testImplementation(libs.awaitility)
-    testRuntimeOnly(libs.edc.transaction.local)
-
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
-    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
-}
-
-// do not publish
-edcBuild {
-    publish.set(false)
 }

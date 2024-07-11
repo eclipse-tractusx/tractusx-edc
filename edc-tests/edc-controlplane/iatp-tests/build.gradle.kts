@@ -34,6 +34,8 @@ dependencies {
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.identity.vc.ldp)
     testImplementation(libs.edc.lib.jws2020)
+    testRuntimeOnly(libs.edc.transaction.local)
+
     // 3rd party libs
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.restAssured)

@@ -36,6 +36,10 @@ iatp:
         id: "test-client-id"
         secret_alias: "test-alias"
 controlplane:
+  debug:
+    enabled: true
+    port: 1044
+    suspendOnStart: false
   service:
     type: NodePort
   endpoints:
@@ -54,7 +58,7 @@ controlplane:
 dataplane:
   debug:
     enabled: true
-    port: 1044
+    port: 1045
     suspendOnStart: false
   endpoints:
     proxy:
