@@ -63,7 +63,7 @@ allprojects {
         implementation("org.slf4j:slf4j-api:2.0.13")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.10.2"))
+        testImplementation(platform("org.junit:junit-bom:5.10.3"))
 
         constraints {
             implementation("org.yaml:snakeyaml:2.2") {
@@ -204,6 +204,27 @@ subprojects {
                 .dependsOn(copyLegalDocs)
         }
     }
+
+    tasks.register("downloadOpenapi") {
+        outputs.dir(project.layout.buildDirectory.dir("docs/openapi"))
+        doLast {
+            val destinationDirectory = layout.buildDirectory.asFile.get().toPath()
+                .resolve("docs").resolve("openapi")
+
+            configurations.asMap.values
+                .asSequence()
+                .filter { it.isCanBeResolved }
+                .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
+                .map { childrenDependencies(it) }.flatten()
+                .distinct()
+                .forEach { dep ->
+                    downloadYamlArtifact(dep, "management-api", destinationDirectory);
+                    downloadYamlArtifact(dep, "observability-api", destinationDirectory);
+                    downloadYamlArtifact(dep, "public-api", destinationDirectory);
+                }
+        }
+    }
+
 }
 
 nexusPublishing {
@@ -215,4 +236,25 @@ nexusPublishing {
 
 tasks.check {
     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
+}
+
+
+fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
+    return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()
+}
+
+fun downloadYamlArtifact(dep: ResolvedDependency, classifier: String, destinationDirectory: java.nio.file.Path) {
+    try {
+        val managementApi = dependencies.create(dep.moduleGroup, dep.moduleName, dep.moduleVersion, classifier = classifier, ext = "yaml")
+        configurations
+            .detachedConfiguration(managementApi)
+            .resolve()
+            .forEach { file ->
+                destinationDirectory
+                    .resolve("${dep.moduleName}.yaml")
+                    .toFile()
+                    .let(file::copyTo)
+            }
+    } catch (_: Exception) {
+    }
 }

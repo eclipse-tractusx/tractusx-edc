@@ -27,12 +27,12 @@ dependencies {
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "bdrs-client")
-        exclude(module = "tx-iatp-sts-dim")
+        exclude(module = "tx-dcp-sts-dim")
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":core:json-ld-core"))
-    implementation(project(":edc-extensions:iatp:tx-iatp"))
+    implementation(project(":edc-extensions:dcp:tx-dcp"))
 
     implementation(project(":edc-tests:runtime:extensions"))
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))

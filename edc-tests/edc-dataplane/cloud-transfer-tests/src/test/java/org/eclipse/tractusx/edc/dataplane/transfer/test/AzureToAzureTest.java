@@ -21,10 +21,16 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -60,6 +66,7 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blo
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
@@ -76,11 +83,11 @@ public class AzureToAzureTest {
     // launches the data plane
     // launches the data plane
     @RegisterExtension
-    protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:dataplane-cloud",
+    protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
             "AzureBlob-Dataplane",
-            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT)
-    );
+            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT),
+            ":edc-tests:runtime:dataplane-cloud"
+    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG)));
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
      * two different endpoint templates for provider and consumer. Endpoint templates are configured globally.
@@ -100,7 +107,7 @@ public class AzureToAzureTest {
     }
 
     @Test
-    void transferMultipleFile_success() {
+    void transferMultipleFile_success(Vault vault) {
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var filesNames = new ArrayDeque<String>();
 
@@ -109,8 +116,8 @@ public class AzureToAzureTest {
         fileNames.forEach(filename -> providerBlobHelper.uploadBlob(sourceContainer, fileData, filename));
 
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
@@ -136,7 +143,7 @@ public class AzureToAzureTest {
     }
 
     @Test
-    void transferFile_success() {
+    void transferFile_success(Vault vault) {
         // upload file to provider's blob store
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
@@ -146,8 +153,8 @@ public class AzureToAzureTest {
         // create container in consumer's blob store
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
 
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
@@ -186,7 +193,7 @@ public class AzureToAzureTest {
     @ParameterizedTest(name = "File size bytes: {0}")
     // 1mb, 512mb, 1gb
     @ValueSource(longs = { 1024 * 1024 * 512, 1024L * 1024L * 1024L, /*1024L * 1024L * 1024L * 1024 takes extremely long!*/ })
-    void transferFile_largeFile(long sizeBytes) throws IOException {
+    void transferFile_largeFile(long sizeBytes, Vault vault) throws IOException {
         // upload file to provider's blob store
         var bcc = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
 
@@ -198,8 +205,8 @@ public class AzureToAzureTest {
         // create container in consumer's blob store
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
 
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
@@ -226,14 +233,14 @@ public class AzureToAzureTest {
     }
 
     @Test
-    void transferFile_targetContainerNotExist_shouldFail() {
+    void transferFile_targetContainerNotExist_shouldFail(Vault vault) {
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
 
         providerBlobHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
 
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
-        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
@@ -262,6 +269,7 @@ public class AzureToAzureTest {
                 .sourceDataAddress(blobSourceAddress(blobName))
                 .destinationDataAddress(blobDestinationAddress(blobName))
                 .processId("test-process-id")
+                .flowType(FlowType.PUSH)
                 .build();
     }
 
@@ -277,6 +285,8 @@ public class AzureToAzureTest {
                         .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
                         .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
                         .build())
-                .processId("test-process-multiple-file-id").build();
+                .processId("test-process-multiple-file-id")
+                .flowType(FlowType.PUSH)
+                .build();
     }
 }

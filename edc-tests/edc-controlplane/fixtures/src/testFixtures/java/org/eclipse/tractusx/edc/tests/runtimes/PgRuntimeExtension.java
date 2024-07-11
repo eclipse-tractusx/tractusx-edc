@@ -19,11 +19,12 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
-import org.eclipse.edc.sql.testfixtures.PostgresqlLocalInstance;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
     private final String dbName;
 
     public PgRuntimeExtension(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
-        super(new ParticipantRuntime(moduleName, runtimeName, bpn, properties));
+        super(moduleName, runtimeName, bpn, properties, null);
         this.dbName = runtimeName.toLowerCase();
         postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
                 .withLabel("runtime", dbName)
@@ -62,8 +63,7 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
         postgreSqlContainer.waitingFor(Wait.forHealthcheck());
         var config = postgresqlConfiguration(dbName);
         config.forEach(System::setProperty);
-        PostgresqlLocalInstance helper = new PostgresqlLocalInstance(postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword(), baseJdbcUrl(), postgreSqlContainer.getDatabaseName());
-        helper.createDatabase();
+        createDatabase();
         super.beforeAll(context);
     }
 
@@ -93,6 +93,14 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
 
     public String jdbcUrl(String name) {
         return baseJdbcUrl() + name + "?currentSchema=" + DB_SCHEMA_NAME;
+    }
+
+    private void createDatabase() {
+        try (var connection = DriverManager.getConnection(baseJdbcUrl() + "postgres", postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword())) {
+            connection.createStatement().execute(String.format("create database %s;", postgreSqlContainer.getDatabaseName()));
+        } catch (SQLException ignored) {
+
+        }
     }
 
     public String baseJdbcUrl() {

@@ -36,6 +36,4 @@ dependencies {
     // so we need to add PG support explicitly
     // https://documentation.red-gate.com/flyway/release-notes-and-older-versions/release-notes-for-flyway-engine
     runtimeOnly(libs.flyway.database.postgres)
-
-    testImplementation(testFixtures(libs.edc.sql.core))
 }

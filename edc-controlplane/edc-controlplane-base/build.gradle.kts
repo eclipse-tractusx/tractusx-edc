@@ -39,15 +39,15 @@ dependencies {
     // Credentials CX policies
     runtimeOnly(project(":edc-extensions:cx-policy"))
 
-    // needed for IATP integration
+    // needed for DCP integration
     runtimeOnly(project(":core:json-ld-core"))
     runtimeOnly(libs.edc.core.did)
     runtimeOnly(libs.edc.identity.did.web)
     runtimeOnly(libs.edc.core.identitytrust)
     runtimeOnly(libs.edc.identity.trust.transform)
     runtimeOnly(libs.edc.identity.trust.issuers.configuration)
-    runtimeOnly(project(":edc-extensions:iatp:tx-iatp"))
-    runtimeOnly(project(":edc-extensions:iatp:tx-iatp-sts-dim"))
+    runtimeOnly(project(":edc-extensions:dcp:tx-dcp"))
+    runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     runtimeOnly(project(":edc-extensions:bdrs-client"))
     runtimeOnly(project(":edc-extensions:data-flow-properties-provider"))
 
@@ -57,6 +57,7 @@ dependencies {
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.validator.data.address.http.data)
+    runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.data.plane.selector.control.api)
 
     runtimeOnly(libs.edc.api.management)
@@ -74,5 +75,10 @@ dependencies {
     runtimeOnly(libs.edc.transfer.dynamicreceiver)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.event)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
+
+    // Federated Catalog Crawler + Query API
+    runtimeOnly(project(":edc-extensions:federated-catalog"))
+    runtimeOnly(libs.edc.fc.core)
+    runtimeOnly(libs.edc.fc.api)
 
 }

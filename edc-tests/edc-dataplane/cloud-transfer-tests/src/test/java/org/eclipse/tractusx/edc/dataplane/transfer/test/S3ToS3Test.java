@@ -24,19 +24,22 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
@@ -50,7 +53,6 @@ import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayDeque;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
@@ -58,10 +60,7 @@ import java.util.stream.IntStream;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_CONTAINER_PORT;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.MINIO_DOCKER_IMAGE;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_ACCESS_KEY_ID;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_PROVIDER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_REGION;
@@ -70,6 +69,7 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.cre
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
@@ -80,25 +80,18 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @Testcontainers
 @CloudTransferTest
 public class S3ToS3Test {
-    private static final String SECRET_ACCESS_KEY = UUID.randomUUID().toString(); // password
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
     @RegisterExtension
-    protected static final ParticipantRuntime DATAPLANE_RUNTIME = new ParticipantRuntime(
-            ":edc-tests:runtime:dataplane-cloud",
+    protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
             "AwsS3-Dataplane",
-            RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT)
-    );
+            RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT),
+            ":edc-tests:runtime:dataplane-cloud"
+    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG)));
     @Container
-    private final GenericContainer<?> providerContainer = new GenericContainer<>(MINIO_DOCKER_IMAGE)
-            .withEnv("MINIO_ROOT_USER", S3_ACCESS_KEY_ID)
-            .withEnv("MINIO_ROOT_PASSWORD", SECRET_ACCESS_KEY)
-            .withExposedPorts(MINIO_CONTAINER_PORT);
+    private final MinioContainer providerContainer = new MinioContainer();
+    @Container
+    private final MinioContainer consumerContainer = new MinioContainer();
 
-    @Container
-    private final GenericContainer<?> consumerContainer = new GenericContainer<>(MINIO_DOCKER_IMAGE)
-            .withEnv("MINIO_ROOT_USER", S3_ACCESS_KEY_ID)
-            .withEnv("MINIO_ROOT_PASSWORD", SECRET_ACCESS_KEY)
-            .withExposedPorts(MINIO_CONTAINER_PORT);
     private S3Client providerClient;
     private S3Client consumerClient;
     private String providerEndpointOverride;
@@ -106,21 +99,20 @@ public class S3ToS3Test {
 
     @BeforeEach
     void setup() {
-        providerEndpointOverride = "http://localhost:%s/".formatted(providerContainer.getMappedPort(MINIO_CONTAINER_PORT));
+        providerEndpointOverride = "http://localhost:%s/".formatted(providerContainer.getFirstMappedPort());
         var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(() -> AwsBasicCredentials.create(S3_ACCESS_KEY_ID, SECRET_ACCESS_KEY))
+                .credentialsProvider(providerContainer::getCredentials)
                 .build();
         providerClient = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(S3_REGION, providerEndpointOverride));
 
-        consumerEndpointOverride = "http://localhost:%s".formatted(consumerContainer.getMappedPort(MINIO_CONTAINER_PORT));
+        consumerEndpointOverride = "http://localhost:%s".formatted(consumerContainer.getFirstMappedPort());
         var consumerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(consumerEndpointOverride))
-                .credentialsProvider(() -> AwsBasicCredentials.create(S3_ACCESS_KEY_ID, SECRET_ACCESS_KEY))
+                .credentialsProvider(consumerContainer::getCredentials)
                 .build();
         consumerClient = new AwsClientProviderImpl(consumerConfig).s3Client(S3ClientRequest.from(S3_REGION, consumerEndpointOverride));
     }
-
 
     @Test
     void transferMultipleFiles() {
@@ -264,14 +256,13 @@ public class S3ToS3Test {
                             .contains(TESTFILE_NAME));
         });
 
-
     }
 
     private CompletableFuture<CompletedUpload> uploadLargeFile(File file, String bucketName, String fileName) {
 
         var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(() -> AwsBasicCredentials.create(S3_ACCESS_KEY_ID, SECRET_ACCESS_KEY))
+                .credentialsProvider(providerContainer::getCredentials)
                 .build();
         var asyncClient = new AwsClientProviderImpl(providerConfig).s3AsyncClient(S3_REGION);
         var tm = S3TransferManager.builder()
@@ -294,24 +285,25 @@ public class S3ToS3Test {
                 .id("test-request")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
-                        .keyName(TESTFILE_NAME)
+                        .property(S3BucketSchema.OBJECT_NAME, TESTFILE_NAME)
                         .property(S3BucketSchema.REGION, S3_REGION)
                         .property(S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, providerContainer.getCredentials().accessKeyId())
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, providerContainer.getCredentials().secretAccessKey())
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
                         .build()
                 )
                 .destinationDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
-                        .keyName(TESTFILE_NAME)
+                        .property(S3BucketSchema.OBJECT_NAME, TESTFILE_NAME)
                         .property(S3BucketSchema.REGION, S3_REGION)
                         .property(S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, consumerContainer.getCredentials().accessKeyId())
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, consumerContainer.getCredentials().secretAccessKey())
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
                         .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-id")
                 .build();
     }
@@ -322,11 +314,11 @@ public class S3ToS3Test {
                 .id("test-process-multiple-file-id")
                 .sourceDataAddress(DataAddress.Builder.newInstance()
                         .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.KEY_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
+                        .property(S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
                         .property(S3BucketSchema.REGION, S3_REGION)
                         .property(S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, providerContainer.getCredentials().accessKeyId())
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, providerContainer.getCredentials().secretAccessKey())
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
                         .build()
                 )
@@ -334,11 +326,12 @@ public class S3ToS3Test {
                         .type(S3BucketSchema.TYPE)
                         .property(S3BucketSchema.REGION, S3_REGION)
                         .property(S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, S3_ACCESS_KEY_ID)
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, SECRET_ACCESS_KEY)
+                        .property(S3BucketSchema.ACCESS_KEY_ID, consumerContainer.getCredentials().accessKeyId())
+                        .property(S3BucketSchema.SECRET_ACCESS_KEY, consumerContainer.getCredentials().secretAccessKey())
                         .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
                         .build()
                 )
+                .flowType(FlowType.PUSH)
                 .processId("test-process-multiple-file-id")
                 .build();
     }

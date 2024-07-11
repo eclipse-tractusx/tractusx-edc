@@ -141,12 +141,32 @@ controlplane:
       # -- path for incoming api calls
       path: /metrics
 
+    catalog:
+      # -- port for incoming catalog cache query requests
+      port: 8085
+      # -- path for incoming catalog cache query requests
+      path: /catalog
+
   bdrs:
     # -- Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min)
     cache_validity_seconds: 600
     server:
       # -- URL of the BPN/DID Resolution Service
       url:
+
+  # -- configuration for the built-in federated catalog crawler
+  catalog:
+    # -- Flag to globally enable/disable the FC feature
+    enabled: false
+    crawler:
+      # -- Number of desired crawlers. Final number might be different, based on number of crawl targets
+      num:
+      # -- Period between two crawl runs in seconds. Default is 60 seconds.
+      period:
+      # -- Initial delay for the crawling to start. Leave blank for a random delay
+      initialDelay:
+      # -- File path to a JSON file containing TargetNode entries
+      targetsFile:
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
@@ -592,12 +612,12 @@ networkPolicy:
   controlplane:
     # -- Specify from rule network policy for cp (defaults to all namespaces)
     from:
-    - namespaceSelector: {}
+      - namespaceSelector: {}
   # -- Configuration of the dataplane component
   dataplane:
     # -- Specify from rule network policy for dp (defaults to all namespaces)
     from:
-    - namespaceSelector: {}
+      - namespaceSelector: {}
 
 serviceAccount:
   # -- Specifies whether a service account should be created

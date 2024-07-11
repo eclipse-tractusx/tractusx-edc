@@ -31,9 +31,9 @@ dependencies {
         exclude(module = "ssi-identity-core")
         exclude(module = "ssi-miw-credential-client")
         exclude(module = "ssi-identity-extractor")
-        exclude(module = "tx-iatp-sts-dim")
+        exclude(module = "tx-dcp-sts-dim")
         exclude(group = "org.eclipse.edc", "vault-hashicorp")
-        exclude(module = "tx-iatp")
+        exclude(module = "tx-dcp")
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)
+    runtimeOnly(libs.edc.transaction.local)
 }
 
 application {
