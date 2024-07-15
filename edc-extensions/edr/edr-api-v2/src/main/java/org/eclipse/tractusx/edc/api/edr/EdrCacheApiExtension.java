@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.v2;
+package org.eclipse.tractusx.edc.api.edr;
 
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
@@ -31,7 +31,9 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
-import org.eclipse.tractusx.edc.api.edr.v2.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
+import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
+import org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiV2Controller;
+import org.eclipse.tractusx.edc.api.edr.v3.EdrCacheApiV3Controller;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
 import java.util.Map;
@@ -69,6 +71,7 @@ public class EdrCacheApiExtension implements ServiceExtension {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
-        webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiController(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
+        webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiV2Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
+        webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiV3Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
     }
 }

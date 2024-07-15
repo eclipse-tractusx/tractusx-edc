@@ -46,7 +46,7 @@ spec:
                     "@id": "tx:BPN000001234",
                     "tx:groups": ["group1", "group2", "group3"]
                 }' ]
-      args: [ '{{- printf "http://%s-runtime:%v%s/business-partner-groups" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.management.port $.Values.runtime.endpoints.management.path -}}' ]
+      args: [ '{{- printf "http://%s-runtime:%v%s/v3/business-partner-groups" (include "txdc.fullname" $ ) $.Values.runtime.endpoints.management.port $.Values.runtime.endpoints.management.path -}}' ]
   restartPolicy: Never
   securityContext:
     fsGroup: 101 # curl_group

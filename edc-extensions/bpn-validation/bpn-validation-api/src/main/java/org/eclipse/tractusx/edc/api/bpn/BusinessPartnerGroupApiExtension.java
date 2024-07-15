@@ -26,6 +26,8 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
+import org.eclipse.tractusx.edc.api.bpn.v1.BusinessPartnerGroupApiV1Controller;
+import org.eclipse.tractusx.edc.api.bpn.v3.BusinessPartnerGroupApiV3Controller;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
@@ -45,7 +47,8 @@ public class BusinessPartnerGroupApiExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
 
-        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiController(businessPartnerStore));
+        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV1Controller(businessPartnerStore, context.getMonitor()));
+        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV3Controller(businessPartnerStore));
 
     }
 }

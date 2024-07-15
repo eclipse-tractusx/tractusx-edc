@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.v2;
+package org.eclipse.tractusx.edc.api.edr;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,7 @@ import static org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApi.EndpointDataReferenceEntrySchema.EDR_ENTRY_OUTPUT_EXAMPLE;
+import static org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiV2.EndpointDataReferenceEntrySchema.EDR_ENTRY_OUTPUT_EXAMPLE;
 import static org.mockito.Mockito.mock;
 
 public class EdrCacheApiTest {

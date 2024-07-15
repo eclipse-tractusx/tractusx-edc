@@ -11,7 +11,7 @@ It includes
 To trigger the process, the Data Consumer POSTs against their own Control Plane.
 
 ```http request
-POST /v2/contractnegotiations HTTP/1.1
+POST /v3/contractnegotiations HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -92,7 +92,7 @@ the `@id` property.
 ### Polling
 
 ```http request
-GET /v2/contractnegotiation/773b8795-45f2-4c57-a020-dc04e639baf3 HTTP/1.1
+GET /v3/contractnegotiation/773b8795-45f2-4c57-a020-dc04e639baf3 HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json

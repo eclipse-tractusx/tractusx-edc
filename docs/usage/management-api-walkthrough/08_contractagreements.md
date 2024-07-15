@@ -5,7 +5,7 @@ endpoint (to be used with the previously explained `QuerySpec` object) but allow
 like this:
 
 ```http request
-GET /v2/contractagreements/{{AGREEMENT_ID}} HTTP/1.1
+GET /v3/contractagreements/{{AGREEMENT_ID}} HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json

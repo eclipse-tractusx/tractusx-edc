@@ -5,7 +5,7 @@ Policy. The two policies are both policies as explained [previously](02_policies
 stages of communication between Data Provider and Data Consumer. The creation request looks like this:
 
 ```http request
-POST /v2/contractdefinitions HTTP/1.1
+POST /v3/contractdefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -85,8 +85,8 @@ The `edc:Criterion` mechanism is used as well in the provider-internal request-e
 part of the `edc:QuerySpec` objects that also allow pagination:
 
 - `POST /v3/assets/request`
-- `POST /v2/policydefinitions/request`
-- `POST /v2/contractdefinitions/request`
+- `POST /v3/policydefinitions/request`
+- `POST /v3/contractdefinitions/request`
 
 ## Side-Effects
 

@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 package org.eclipse.tractusx.edc.api.bpn;
 
@@ -23,15 +23,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ObjectConflictException;
 import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
@@ -45,22 +37,15 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 
-@Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
-@Path("/business-partner-groups")
-public class BusinessPartnerGroupApiController implements BusinessPartnerGroupApi {
+public abstract class BaseBusinessPartnerGroupApiController {
 
     private final BusinessPartnerStore businessPartnerService;
 
-
-    public BusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
+    public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
         this.businessPartnerService = businessPartnerService;
     }
 
-    @GET
-    @Path("/{bpn}")
-    @Override
-    public JsonObject resolve(@PathParam("bpn") String bpn) {
+    public JsonObject resolve(String bpn) {
 
         // StoreResult does not support the .map() operator, because it does not override newInstance()
         var result = businessPartnerService.resolveForBpn(bpn);
@@ -71,16 +56,11 @@ public class BusinessPartnerGroupApiController implements BusinessPartnerGroupAp
         throw new ObjectNotFoundException(List.class, result.getFailureDetail());
     }
 
-    @DELETE
-    @Path("/{bpn}")
-    @Override
     public void deleteEntry(@PathParam("bpn") String bpn) {
         businessPartnerService.delete(bpn)
                 .orElseThrow(f -> new ObjectNotFoundException(List.class, f.getFailureDetail()));
     }
 
-    @PUT
-    @Override
     public void updateEntry(@RequestBody JsonObject object) {
         var bpn = getBpn(object);
         var groups = getGroups(object);
@@ -88,8 +68,6 @@ public class BusinessPartnerGroupApiController implements BusinessPartnerGroupAp
                 .orElseThrow(f -> new ObjectNotFoundException(List.class, f.getFailureDetail()));
     }
 
-    @POST
-    @Override
     public void createEntry(@RequestBody JsonObject object) {
         var bpn = getBpn(object);
         var groups = getGroups(object);
@@ -103,7 +81,6 @@ public class BusinessPartnerGroupApiController implements BusinessPartnerGroupAp
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(list))
                 .build();
     }
-
 
     private String getBpn(JsonObject object) {
         try {
