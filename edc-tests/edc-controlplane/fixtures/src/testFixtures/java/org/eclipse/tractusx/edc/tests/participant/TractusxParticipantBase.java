@@ -156,7 +156,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/business-partner-groups")
+                .post("/v3/business-partner-groups")
                 .then()
                 .statusCode(204);
     }

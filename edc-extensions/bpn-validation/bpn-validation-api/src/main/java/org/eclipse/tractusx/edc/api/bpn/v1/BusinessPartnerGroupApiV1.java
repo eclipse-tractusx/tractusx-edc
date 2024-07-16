@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.api.bpn;
+package org.eclipse.tractusx.edc.api.bpn.v1;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,51 +38,54 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 
 @OpenAPIDefinition(info = @Info(description = "With this API clients can create, read, update and delete BusinessPartnerNumber groups. It allows the assigning of BPNs to groups.", title = "Business Partner Group API"))
 @Tag(name = "Business Partner Group")
-public interface BusinessPartnerGroupApi {
+@Deprecated(since = "0.8.0")
+public interface BusinessPartnerGroupApiV1 {
 
 
     @Operation(description = "Resolves all groups for a particular BPN",
+            deprecated = true,
             responses = {
                     @ApiResponse(responseCode = "200", description = "An object containing an array with the assigned groups"),
                     @ApiResponse(responseCode = "404", description = "No entry for the given BPN was found"),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    JsonObject resolve(@Parameter(name = "bpn", description = "The business partner number") String bpn);
+    JsonObject resolveV1(@Parameter(name = "bpn", description = "The business partner number") String bpn);
 
     @Operation(description = "Deletes the entry for a particular BPN",
+            deprecated = true,
             responses = {
                     @ApiResponse(responseCode = "204", description = "The object was successfully deleted"),
                     @ApiResponse(responseCode = "404", description = "No entry for the given BPN was found"),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    void deleteEntry(@Parameter(name = "bpn", description = "The business partner number") String bpn);
+    void deleteEntryV1(@Parameter(name = "bpn", description = "The business partner number") String bpn);
 
     @Operation(description = "Updates the entry for a particular BPN",
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = ListSchema.class))),
-
+            deprecated = true,
             responses = {
                     @ApiResponse(responseCode = "204", description = "The object was successfully updated"),
                     @ApiResponse(responseCode = "404", description = "No entry for the given BPN was found"),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    void updateEntry(JsonObject object);
+    void updateEntryV1(JsonObject object);
 
     @Operation(description = "Creates an entry for a particular BPN",
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = ListSchema.class))),
-
+            deprecated = true,
             responses = {
                     @ApiResponse(responseCode = "204", description = "The object was successfully created"),
                     @ApiResponse(responseCode = "409", description = "An entry already exists for that BPN"),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    void createEntry(JsonObject entry);
+    void createEntryV1(JsonObject entry);
 
 
-    @Schema(name = "List", example = ListSchema.EXAMPLE)
+    @Schema(name = "List", example = ListSchema.EXAMPLE, deprecated = true)
     record ListSchema(
             @Schema(name = ID) String id,
             Set<String> groups

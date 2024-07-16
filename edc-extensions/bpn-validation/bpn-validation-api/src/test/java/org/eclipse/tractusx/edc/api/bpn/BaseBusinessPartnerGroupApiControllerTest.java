@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 package org.eclipse.tractusx.edc.api.bpn;
 
@@ -24,7 +24,6 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
-import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
@@ -46,11 +44,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ApiTest
-class BusinessPartnerGroupApiControllerTest extends RestControllerTestBase {
+public abstract class BaseBusinessPartnerGroupApiControllerTest extends RestControllerTestBase {
 
     private final JsonLd jsonLdService = new TitaniumJsonLd(mock());
-    private final BusinessPartnerStore businessPartnerStore = mock();
+    protected final BusinessPartnerStore businessPartnerStore = mock();
 
     @BeforeEach
     void setUp() {
@@ -169,17 +166,7 @@ class BusinessPartnerGroupApiControllerTest extends RestControllerTestBase {
                 .statusCode(400);
     }
 
-    @Override
-    protected Object controller() {
-        return new BusinessPartnerGroupApiController(businessPartnerStore);
-    }
-
-    private RequestSpecification baseRequest() {
-        return given()
-                .baseUri("http://localhost:" + port)
-                .basePath("/business-partner-groups")
-                .when();
-    }
+    protected abstract RequestSpecification baseRequest();
 
     private JsonObject createJsonObject() {
         return jsonLdService.expand(Json.createObjectBuilder()

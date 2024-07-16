@@ -20,13 +20,13 @@ endpoints are currently versioned independently of each other.
 | Resource                                           | Endpoint                                   | Involved Actors                           |
 |----------------------------------------------------|--------------------------------------------|-------------------------------------------|
 | [Asset](01_assets.md)                              | `<MANAGEMENT_URL>/v3/assets`               | Provider Admin & Provider EDC             |
-| [Policy Definition](02_policies.md)                | `<MANAGEMENT_URL>/v2/policydefinitions`    | Provider Admin & Provider EDC             |
-| [Contract Definition](03_contractdefinitions.md)   | `<MANAGEMENT_URL>/v2/contractdefinitions`  | Provider Admin & Provider EDC             |
-| [Catalog](04_catalog.md)                           | `<MANAGEMENT_URL>/v2/catalog`              | Consumer App, Consumer EDC & Provider EDC |
-| [Contract Negotiation](05_contractnegotiations.md) | `<MANAGEMENT_URL>/v2/contractnegotiations` | Consumer App, Consumer EDC & Provider EDC |
-| [Contract Agreement](08_contractagreements.md)     | `<MANAGEMENT_URL>/v2/contractagreements`   | Provider Admin & Provider EDC             |
-| [Transfer Process](06_transferprocesses.md)        | `<MANAGEMENT_URL>/v2/transferprocesses`    | Consumer App, Consumer EDC & Provider EDC |
-| [EDR](07_edrs.md)                                  | `<MANAGEMENT_URL>/edrs`                    | Consumer App, Consumer EDC & Provider EDC |
+| [Policy Definition](02_policies.md)                | `<MANAGEMENT_URL>/v3/policydefinitions`    | Provider Admin & Provider EDC             |
+| [Contract Definition](03_contractdefinitions.md)   | `<MANAGEMENT_URL>/v3/contractdefinitions`  | Provider Admin & Provider EDC             |
+| [Catalog](04_catalog.md)                           | `<MANAGEMENT_URL>/v3/catalog`              | Consumer App, Consumer EDC & Provider EDC |
+| [Contract Negotiation](05_contractnegotiations.md) | `<MANAGEMENT_URL>/v3/contractnegotiations` | Consumer App, Consumer EDC & Provider EDC |
+| [Contract Agreement](08_contractagreements.md)     | `<MANAGEMENT_URL>/v3/contractagreements`   | Provider Admin & Provider EDC             |
+| [Transfer Process](06_transferprocesses.md)        | `<MANAGEMENT_URL>/v3/transferprocesses`    | Consumer App, Consumer EDC & Provider EDC |
+| [EDR](07_edrs.md)                                  | `<MANAGEMENT_URL>/v3/edrs`                 | Consumer App, Consumer EDC & Provider EDC |
 | Data Plane                                         | `<DATAPLANE_URL>`                          | Consumer App & Provider EDC               |
 
 ## OpenAPI

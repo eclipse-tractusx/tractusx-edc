@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,20 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.v2;
+package org.eclipse.tractusx.edc.api.edr;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.api.model.IdResponse;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
@@ -60,10 +50,8 @@ import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.FORCE_REFRESH;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 
-@Consumes({ MediaType.APPLICATION_JSON })
-@Produces({ MediaType.APPLICATION_JSON })
-@Path("/v2/edrs")
-public class EdrCacheApiController implements EdrCacheApi {
+public class BaseEdrCacheApiController {
+
     public static final String LOCAL_ADAPTER_URI = "local://adapter";
     public static final Set<String> LOCAL_EVENTS = Set.of("contract.negotiation", "transfer.process");
     public static final CallbackAddress LOCAL_CALLBACK = CallbackAddress.Builder.newInstance()
@@ -74,16 +62,16 @@ public class EdrCacheApiController implements EdrCacheApi {
     private final EndpointDataReferenceStore edrStore;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonObjectValidatorRegistry validator;
-    private final Monitor monitor;
+    protected final Monitor monitor;
     private final EdrService edrService;
 
     private final ContractNegotiationService contractNegotiationService;
 
-    public EdrCacheApiController(EndpointDataReferenceStore edrStore,
-                                 TypeTransformerRegistry transformerRegistry,
-                                 JsonObjectValidatorRegistry validator,
-                                 Monitor monitor,
-                                 EdrService edrService, ContractNegotiationService contractNegotiationService) {
+    public BaseEdrCacheApiController(EndpointDataReferenceStore edrStore,
+                                     TypeTransformerRegistry transformerRegistry,
+                                     JsonObjectValidatorRegistry validator,
+                                     Monitor monitor,
+                                     EdrService edrService, ContractNegotiationService contractNegotiationService) {
         this.edrStore = edrStore;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
@@ -92,8 +80,6 @@ public class EdrCacheApiController implements EdrCacheApi {
         this.contractNegotiationService = contractNegotiationService;
     }
 
-    @POST
-    @Override
     public JsonObject initiateEdrNegotiation(JsonObject requestObject) {
 
         validator.validate(CONTRACT_REQUEST_TYPE, requestObject)
@@ -113,9 +99,6 @@ public class EdrCacheApiController implements EdrCacheApi {
                 .orElseThrow(f -> new EdcException("Error creating response body: " + f.getFailureDetail()));
     }
 
-    @POST
-    @Path("/request")
-    @Override
     public JsonArray requestEdrEntries(JsonObject querySpecJson) {
         QuerySpec querySpec;
         if (querySpecJson == null) {
@@ -137,33 +120,22 @@ public class EdrCacheApiController implements EdrCacheApi {
                 .collect(toJsonArray());
     }
 
-    @GET
-    @Path("{transferProcessId}/dataaddress")
-    @Override
-    public JsonObject getEdrEntryDataAddress(@PathParam("transferProcessId") String transferProcessId, @DefaultValue("true") @QueryParam("auto_refresh") boolean autoRefresh) {
+    public JsonObject getEdrEntryDataAddress(String transferProcessId, boolean autoRefresh) {
         var mode = autoRefresh ? AUTO_REFRESH : NO_REFRESH;
         var dataAddress = edrService.resolveByTransferProcess(transferProcessId, mode)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
 
         return transformerRegistry.transform(dataAddress, JsonObject.class)
                 .orElseThrow(f -> new EdcException(f.getFailureDetail()));
-
-
     }
 
-    @DELETE
-    @Path("{transferProcessId}")
-    @Override
-    public void removeEdrEntry(@PathParam("transferProcessId") String transferProcessId) {
+    public void removeEdrEntry(String transferProcessId) {
         edrStore.delete(transferProcessId)
                 .flatMap(ServiceResult::from)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
     }
 
-    @POST
-    @Path("{transferProcessId}/refresh")
-    @Override
-    public JsonObject refreshEdr(@PathParam("transferProcessId") String transferProcessId) {
+    public JsonObject refreshEdr(String transferProcessId) {
         var updatedEdr = edrService.resolveByTransferProcess(transferProcessId, FORCE_REFRESH)
                 .orElseThrow(exceptionMapper(EndpointDataReferenceEntry.class, transferProcessId));
 

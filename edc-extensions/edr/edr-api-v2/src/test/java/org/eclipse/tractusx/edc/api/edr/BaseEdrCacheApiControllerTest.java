@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.v2;
+package org.eclipse.tractusx.edc.api.edr;
 
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
@@ -45,7 +45,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.UUID.randomUUID;
@@ -62,8 +61,8 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
-import static org.eclipse.tractusx.edc.api.edr.v2.TestFunctions.createContractNegotiation;
-import static org.eclipse.tractusx.edc.api.edr.v2.TestFunctions.negotiationRequest;
+import static org.eclipse.tractusx.edc.api.edr.TestFunctions.createContractNegotiation;
+import static org.eclipse.tractusx.edc.api.edr.TestFunctions.negotiationRequest;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 import static org.hamcrest.Matchers.equalTo;
@@ -78,7 +77,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ApiTest
-public class EdrCacheApiControllerTest extends RestControllerTestBase {
+public abstract class BaseEdrCacheApiControllerTest extends RestControllerTestBase {
 
     private static final String TEST_TRANSFER_PROCESS_ID = "test-transfer-process-id";
     private static final String TEST_TRANSFER_NEGOTIATION_ID = "test-cn-id";
@@ -86,11 +85,11 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
     private static final String TEST_PROVIDER_ID = "test-provider-id";
     private static final String TEST_ASSET_ID = "test-asset-id";
 
-    private final TypeTransformerRegistry transformerRegistry = mock();
-    private final JsonObjectValidatorRegistry validator = mock();
-    private final EndpointDataReferenceStore edrStore = mock();
-    private final EdrService edrService = mock();
-    private final ContractNegotiationService contractNegotiationService = mock();
+    protected final TypeTransformerRegistry transformerRegistry = mock();
+    protected final JsonObjectValidatorRegistry validator = mock();
+    protected final EndpointDataReferenceStore edrStore = mock();
+    protected final EdrService edrService = mock();
+    protected final ContractNegotiationService contractNegotiationService = mock();
 
 
     @Test
@@ -109,7 +108,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
         baseRequest()
                 .contentType(JSON)
                 .body(request)
-                .post("/v2/edrs")
+                .post("/edrs")
                 .then()
                 .statusCode(200)
                 .body(ID, is(contractNegotiation.getId()));
@@ -125,7 +124,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
         baseRequest()
                 .contentType(JSON)
                 .body(Json.createObjectBuilder().build())
-                .post("/v2/edrs")
+                .post("/edrs")
                 .then()
                 .statusCode(400);
 
@@ -144,7 +143,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
         baseRequest()
                 .contentType(JSON)
                 .body("{}")
-                .post("/v2/edrs/request")
+                .post("/edrs/request")
                 .then()
                 .log().ifError()
                 .statusCode(200)
@@ -169,7 +168,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .get("/v2/edrs/transferProcessId/dataaddress")
+                .get("/edrs/transferProcessId/dataaddress")
                 .then()
                 .log().ifError()
                 .statusCode(200)
@@ -194,7 +193,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .get("/v2/edrs/transferProcessId/dataaddress?auto_refresh=true")
+                .get("/edrs/transferProcessId/dataaddress?auto_refresh=true")
                 .then()
                 .log().ifError()
                 .statusCode(200)
@@ -219,7 +218,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .get("/v2/edrs/transferProcessId/dataaddress?auto_refresh=false")
+                .get("/edrs/transferProcessId/dataaddress?auto_refresh=false")
                 .then()
                 .log().ifError()
                 .statusCode(200)
@@ -241,7 +240,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .get("/v2/edrs/transferProcessId/dataaddress")
+                .get("/edrs/transferProcessId/dataaddress")
                 .then()
                 .log().ifError()
                 .statusCode(404)
@@ -258,7 +257,7 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .delete("/v2/edrs/transferProcessId")
+                .delete("/edrs/transferProcessId")
                 .then()
                 .statusCode(204);
         verify(edrStore).delete("transferProcessId");
@@ -271,17 +270,14 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .delete("/v2/edrs/transferProcessId")
+                .delete("/edrs/transferProcessId")
                 .then()
                 .statusCode(404);
 
         verify(edrStore).delete("transferProcessId");
     }
 
-    @Override
-    protected Object controller() {
-        return new EdrCacheApiController(edrStore, transformerRegistry, validator, mock(), edrService, contractNegotiationService);
-    }
+    protected abstract RequestSpecification baseRequest();
 
     private JsonObjectBuilder createEdrEntryJson() {
         return createObjectBuilder()
@@ -329,11 +325,5 @@ public class EdrCacheApiControllerTest extends RestControllerTestBase {
                         .policy(Policy.Builder.newInstance().build())
                         .build())
                 .build();
-    }
-
-    private RequestSpecification baseRequest() {
-        return given()
-                .baseUri("http://localhost:" + port)
-                .when();
     }
 }

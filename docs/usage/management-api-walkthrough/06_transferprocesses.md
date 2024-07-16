@@ -30,7 +30,7 @@ terminated/suspended or terminated by the policy monitor depending on the config
 
 To trigger this process, the Consumer app makes a request to its EDC's Control Plane:
 ```http request
-POST /v2/transferprocesses HTTP/1.1
+POST /v3/transferprocesses HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -110,7 +110,7 @@ the Consumer Control Plane. How to handle EDRs consumption check [here](07_edrs.
 The state of a given Transfer Process can be requested like this:
 
 ```http request
-GET /v2/transferprocesses/177aba51-52d7-44dc-beab-fd6151147024 HTTP/1.1
+GET /v3/transferprocesses/177aba51-52d7-44dc-beab-fd6151147024 HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json

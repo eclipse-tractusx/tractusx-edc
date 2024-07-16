@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.api.edr.v2;
+package org.eclipse.tractusx.edc.api.edr.v3;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +40,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 
 @OpenAPIDefinition
 @Tag(name = "Control Plane EDR Api")
-public interface EdrCacheApi {
+public interface EdrCacheApiV3 {
 
     @Operation(description = "Initiates an EDR negotiation by handling a contract negotiation first and then a transfer process for a given offer and with the given counter part. Please note that successfully invoking this endpoint " +
             "only means that the negotiation was initiated.",
@@ -50,7 +50,7 @@ public interface EdrCacheApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
             })
-    JsonObject initiateEdrNegotiation(@Schema(implementation = ContractNegotiationApiV3.ContractRequestSchema.class) JsonObject dto);
+    JsonObject initiateEdrNegotiationV3(@Schema(implementation = ContractNegotiationApiV3.ContractRequestSchema.class) JsonObject dto);
 
     @Operation(description = "Request all Edr entries according to a particular query",
             requestBody = @RequestBody(
@@ -62,7 +62,7 @@ public interface EdrCacheApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class))))
             })
-    JsonArray requestEdrEntries(JsonObject querySpecJson);
+    JsonArray requestEdrEntriesV3(JsonObject querySpecJson);
 
     @Operation(description = "Gets the EDR data address with the given transfer process ID",
             parameters = { @Parameter(name = "transferProcessId", description = "The ID of the transferprocess for which the EDR should be fetched", required = true),
@@ -77,7 +77,7 @@ public interface EdrCacheApi {
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class))))
             }
     )
-    JsonObject getEdrEntryDataAddress(String transferProcessId, boolean autoRefresh);
+    JsonObject getEdrEntryDataAddressV3(String transferProcessId, boolean autoRefresh);
 
     @Operation(description = "Removes an EDR entry given the transfer process ID",
             responses = {
@@ -87,7 +87,7 @@ public interface EdrCacheApi {
                     @ApiResponse(responseCode = "404", description = "An EDR entry with the given ID does not exist",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class))))
             })
-    void removeEdrEntry(String transferProcessId);
+    void removeEdrEntryV3(String transferProcessId);
 
     @Operation(description = "Refreshes and returns the EDR data address with the given transfer process ID",
             parameters = { @Parameter(name = "transferProcessId", description = "The ID of the transferprocess for which the EDR should be fetched", required = true),
@@ -101,7 +101,7 @@ public interface EdrCacheApi {
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class))))
             }
     )
-    JsonObject refreshEdr(String transferProcessId);
+    JsonObject refreshEdrV3(String transferProcessId);
 
 
     @ArraySchema()

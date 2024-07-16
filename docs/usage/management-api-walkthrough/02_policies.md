@@ -28,7 +28,7 @@ impacting policy definitions.
 Policies can be created in the EDC as follows:
 
 ```http request
-POST /v2/policydefinitions HTTP/1.1
+POST /v3/policydefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json

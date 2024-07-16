@@ -31,7 +31,7 @@ Alternatively TractusX-EDC provides a single API to collapse those two processes
 Example of negotiating a contract for an asset with a framework agreement policy:
 
 ```http request
-POST /v2/edrs HTTP/1.1
+POST /v3/edrs HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
@@ -123,7 +123,7 @@ The Consumer Control Plane can be queried for EDRs by the
 Here's an example of querying with `assetId`:
 
 ```http request
-POST /v2/edrs/request HTTP/1.1
+POST /v3/edrs/request HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
@@ -148,7 +148,7 @@ Content-Type: application/json
 
 It returns a set of EDR entries holding meta-data including:
 - `transferProcessId`: The ID of the [Transfer Process](06_transferprocesses.md) that was implicitly initiated
-  by the POST `/v2/edrs` request.
+  by the POST `/v3/edrs` request.
 - `agreementId`: The ID of the agreement that the two EDCs have made in the [Contract Negotiation](05_contractnegotiations.md)
   phase of their EDR-interaction.
 - `providerId`: The ID of the provider.
@@ -161,7 +161,7 @@ Finally, after first obtaining them from the Provider Control Plane and
 then locating in the Consumer Control Plane's cache, they can be retrieved using the `transferProcessId`.
 
 ```http request
-GET /v2/edrs/myTransferProcessId/dataaddress HTTP/1.1
+GET /v3/edrs/myTransferProcessId/dataaddress HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
@@ -208,7 +208,7 @@ By using the same API described above and passing a query parameter `auto_refres
 will be done automatically if necessary transparently.
 
 ```http request
-GET /v2/edrs/myTransferProcessId/dataaddress?auto_refresh=true HTTP/1.1
+GET /v3/edrs/myTransferProcessId/dataaddress?auto_refresh=true HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
@@ -221,7 +221,7 @@ In this way, always a valid token is returned.
 A explicit refresh API is available for users; 
 
 ```http
-POST /v2/edrs/myTransferProcessId/refresh HTTP/1.1
+POST /v3/edrs/myTransferProcessId/refresh HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
@@ -240,7 +240,7 @@ However, if needed this endpoint will delete the EDR entry associated with the `
 from the vault.
 
 ```http request
-DELETE /v2/edrs/myTransferProcessId HTTP/1.1
+DELETE /v3/edrs/myTransferProcessId HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
 Content-Type: application/json
