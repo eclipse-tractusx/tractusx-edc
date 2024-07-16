@@ -25,23 +25,37 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-
-import static java.lang.String.format;
 
 /**
  * AtomicConstraintFunction to validate business partner numbers for edc permissions.
  */
 public class BusinessPartnerNumberPermissionFunction implements AtomicConstraintFunction<Permission> {
 
-    public BusinessPartnerNumberPermissionFunction() {
-    }
+    private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
+            Operator.EQ,
+            Operator.IN,
+            Operator.NEQ,
+            Operator.IS_ANY_OF,
+            Operator.IS_A,
+            Operator.IS_NONE_OF,
+            Operator.IS_ALL_OF,
+            Operator.HAS_PART
+    );
+    private static final List<Operator> SCALAR_OPERATORS = Arrays.asList(
+            Operator.EQ,
+            Operator.NEQ,
+            Operator.HAS_PART
+    );
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext context) {
-        
-        if (operator != Operator.EQ) {
-            var message = format("As operator only 'EQ' is supported. Unsupported operator: '%s'", operator);
+
+        if (!SUPPORTED_OPERATORS.contains(operator)) {
+            var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
             context.reportProblem(message);
             return false;
         }
@@ -58,19 +72,27 @@ public class BusinessPartnerNumberPermissionFunction implements AtomicConstraint
             return false;
         }
 
-        if ((rightValue instanceof String businessPartnerNumberStr)) {
-            if (businessPartnerNumberStr.equals(identity)) {
-                return true;
-            } else {
-                context.reportProblem("Identity of the participant not matching the expected one: " + businessPartnerNumberStr);
-                return false;
+        if (SCALAR_OPERATORS.contains(operator)) {
+            if (rightValue instanceof String businessPartnerNumberStr) {
+                return switch (operator) {
+                    case EQ -> businessPartnerNumberStr.equals(identity);
+                    case NEQ -> !businessPartnerNumberStr.equals(identity);
+                    case HAS_PART -> identity.contains(businessPartnerNumberStr);
+                    default -> false;
+                };
             }
+            context.reportProblem("Invalid right-value: operator '%s' requires a 'String' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
         } else {
-            var message = format("Invalid right operand value: expected 'String' but got '%s'",
-                    Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null));
-            context.reportProblem(message);
-            return false;
+            if ((rightValue instanceof List numbers)) {
+                return switch (operator) {
+                    case IN, IS_A, IS_ANY_OF -> numbers.contains(identity);
+                    case IS_ALL_OF -> numbers.stream().allMatch(o -> o.equals(identity));
+                    case IS_NONE_OF -> !numbers.contains(identity);
+                    default -> false;
+                };
+            }
+            context.reportProblem("Invalid right-value: operator '%s' requires a 'List' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
         }
-
+        return false;
     }
 }
