@@ -24,7 +24,6 @@
 {{- $fullName := include "txdc.fullname" . }}
 {{- $controlLabels := include "txdc.controlplane.labels" . }}
 {{- $controlEdcEndpoints := .Values.controlplane.endpoints }}
-{{- $gitVersion := .Capabilities.KubeVersion.GitVersion }}
 {{- $namespace := .Release.Namespace }}
 
 {{- range .Values.controlplane.ingresses }}
@@ -32,13 +31,7 @@
 {{- $controlIngressName := printf "%s-controlplane-%s" $fullName .hostname }}
 {{- $annotations := .annotations | default dict }}
 ---
-{{- if semverCompare ">=1.19-0" $gitVersion }}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" $gitVersion }}
-apiVersion: networking.k8s.io/v1beta1
-{{- else }}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
   name: {{ $controlIngressName }}
@@ -46,11 +39,6 @@ metadata:
   labels:
     {{- $controlLabels | nindent 4 }}
   annotations:
-    {{- if and .className (not (semverCompare ">=1.18-0" $gitVersion)) }}
-    {{- if not (hasKey $annotations "kubernetes.io/ingress.class") }}
-    {{- $_ := set $annotations "kubernetes.io/ingress.class" .className}}
-    {{- end }}
-    {{- end }}
     {{- if .certManager }}
     {{- if .certManager.issuer }}
     {{- $_ := set $annotations "cert-manager.io/issuer" .certManager.issuer}}
@@ -63,7 +51,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  {{- if and .className (semverCompare ">=1.18-0" $gitVersion) }}
+  {{- if .className }}
   ingressClassName: {{ .className }}
   {{- end }}
   {{- if .hostname }}
@@ -87,13 +75,10 @@ spec:
           - path: {{ $mapping.path }}
             pathType: Prefix
             backend:
-              {{- if semverCompare ">=1.19-0" $gitVersion }}
               service:
                 name: {{ $fullName }}-controlplane
                 port:
                   number: {{ $mapping.port }}
-              {{- else }}
-              {{- end }}
         {{- end }}
   {{- end }}
   {{- end }}
