@@ -73,7 +73,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
     void testFailsOnUnsupportedRightValue() {
         when(participantAgent.getIdentity()).thenReturn("foo");
         assertFalse(validation.evaluate(Operator.EQ, 1, permission, policyContext));
-        verify(policyContext).reportProblem(argThat(message -> message.contains("Invalid right-value: operator 'EQ' requires a 'String' but got a 'java.lang.Integer'")));
+        verify(policyContext).reportProblem(argThat(message -> message.contains("Invalid right-value: operator 'EQ' requires a 'String' or a 'List' but got a 'java.lang.Integer'")));
     }
 
     @Test
@@ -116,8 +116,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
 
         // these two should report a problem
         assertThat(validation.evaluate(Operator.NEQ, 1, permission, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.NEQ, List.of("foo", "bar"), permission, policyContext)).isFalse();
-        verify(policyContext, times(2)).reportProblem(startsWith("Invalid right-value: operator 'NEQ' requires a 'String' but got a"));
+        assertThat(validation.evaluate(Operator.NEQ, List.of("foo", "bar"), permission, policyContext)).isTrue();
     }
 
     @Test
@@ -172,7 +171,6 @@ class BusinessPartnerNumberPermissionFunctionTest {
         assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo"), permission, policyContext)).isTrue();
         assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("bar"), permission, policyContext)).isFalse();
         assertThat(validation.evaluate(Operator.IS_ALL_OF, "bar", permission, policyContext)).isFalse();
-        verify(policyContext).reportProblem("Invalid right-value: operator 'IS_ALL_OF' requires a 'List' but got a 'java.lang.String'");
     }
 
     @Test
