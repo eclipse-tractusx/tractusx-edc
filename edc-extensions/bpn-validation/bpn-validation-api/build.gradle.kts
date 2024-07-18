@@ -20,7 +20,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.swagger.core.v3.swagger-gradle-plugin")
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
@@ -32,4 +32,10 @@ dependencies {
     testImplementation(testFixtures(libs.edc.core.jersey))
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.junit)
+}
+
+edcBuild {
+    swagger {
+        apiGroup.set("control-plane")
+    }
 }

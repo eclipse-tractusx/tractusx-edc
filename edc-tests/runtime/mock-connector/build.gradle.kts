@@ -23,7 +23,7 @@ plugins {
     `java-library`
     id("application")
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.swagger.core.v3.swagger-gradle-plugin")
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 
