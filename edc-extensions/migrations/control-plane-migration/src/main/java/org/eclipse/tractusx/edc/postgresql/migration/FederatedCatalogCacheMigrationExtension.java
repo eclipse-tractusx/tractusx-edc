@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,26 +17,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `java-test-fixtures`
-}
+package org.eclipse.tractusx.edc.postgresql.migration;
 
-dependencies {
-    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
+public class FederatedCatalogCacheMigrationExtension extends AbstractPostgresqlMigrationExtension {
+    private static final String NAME_SUBSYSTEM = "federatedcatalog";
 
-    testImplementation(libs.netty.mockserver)
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.restAssured)
-    testImplementation(libs.awaitility)
-    testImplementation(libs.edc.fc.spi.crawler)
-    testRuntimeOnly(libs.edc.transaction.local)
-
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
-    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
-}
-
-// do not publish
-edcBuild {
-    publish.set(false)
+    @Override
+    protected String getSubsystemName() {
+        return NAME_SUBSYSTEM;
+    }
 }

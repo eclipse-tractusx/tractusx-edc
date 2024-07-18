@@ -41,7 +41,7 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
     private static final String PASSWORD = "password";
     private static final List<String> DATASOURCES = List.of("asset", "contractdefinition",
             "contractnegotiation", "policy", "transferprocess", "bpn",
-            "policy-monitor", "edr", "dataplane", "accesstokendata");
+            "policy-monitor", "edr", "dataplane", "accesstokendata", "federatedcatalog");
     private final PostgreSQLContainer<?> postgreSqlContainer;
     private final String dbName;
 
@@ -95,15 +95,15 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
         return baseJdbcUrl() + name + "?currentSchema=" + DB_SCHEMA_NAME;
     }
 
+    public String baseJdbcUrl() {
+        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
+    }
+
     private void createDatabase() {
         try (var connection = DriverManager.getConnection(baseJdbcUrl() + "postgres", postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword())) {
             connection.createStatement().execute(String.format("create database %s;", postgreSqlContainer.getDatabaseName()));
         } catch (SQLException ignored) {
 
         }
-    }
-
-    public String baseJdbcUrl() {
-        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
     }
 }

@@ -3,6 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.8.0"
+fc = "0.8.1-20240719-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.1"
 aws = "2.26.20"
@@ -158,6 +159,7 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
 edc-fc-core = { module = "org.eclipse.edc:federated-catalog-core", version.ref = "edc" }
 edc-fc-api = { module = "org.eclipse.edc:federated-catalog-api", version.ref = "edc" }
+edc-fc-sql-cache = { module = "org.eclipse.edc:federated-catalog-cache-sql", version.ref = "fc" }
 
 ## IH for testing
 
@@ -231,6 +233,6 @@ titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "ti
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
 edc-dpf = ["edc.dpf-transfer-signaling", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
-edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor", "edc.sql-edrindex", "edc-transaction-local"]
+edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor", "edc.sql-edrindex", "edc-transaction-local", "edc-fc-sql-cache"]
 edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]
