@@ -1,7 +1,7 @@
 #################################################################################
 #  Copyright (c) 2023 ZF Friedrichshafen AG
 #  Copyright (c) 2022,2023 Mercedes-Benz Tech Innovation GmbH
-#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2021,2024 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -41,7 +41,7 @@ RUN adduser \
 USER "$APP_USER"
 WORKDIR /app
 
-COPY ${JAR} edc-controlplane.jar
+COPY ${JAR} edc-runtime.jar
 COPY ${OTEL_JAR} opentelemetry-javaagent.jar
 COPY ${ADDITIONAL_FILES} ./
 
@@ -56,4 +56,4 @@ CMD ["java", \
      "-Dotel.exporter.prometheus.port=9090", \
      "-Djava.security.egd=file:/dev/urandom", \
      "-jar", \
-     "edc-controlplane.jar"]
+     "edc-runtime.jar"]
