@@ -87,14 +87,14 @@ jobs:
         uses: Legion2/swagger-ui-action@v1
         with:
           output: dist/${{ matrix.apiGroup.name }}/${{ env.VERSION }}
-          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}/${{ matrix.apiGroup.name }}.yaml
+          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
 
       - name: Generate Swagger UI stable version
         uses: Legion2/swagger-ui-action@v1
         if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
         with:
           output: dist/${{ matrix.apiGroup.name }}
-          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}/${{ matrix.apiGroup.name }}.yaml
+          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
 
       - uses: actions/upload-artifact@v4
         with:
