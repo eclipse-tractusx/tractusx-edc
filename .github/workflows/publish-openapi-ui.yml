@@ -18,7 +18,7 @@
 #################################################################################
 
 ---
-name: "Publish OpenAPI to Swaggerhub"
+name: publish openapi ui
 
 on:
   push:
@@ -34,11 +34,35 @@ on:
         type: string
 
 jobs:
-  swagger-api:
+  generate-openapi-spec:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
+
+      - name: Generate openapi spec
+        run: ./gradlew resolve
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openapi-spec
+          path: resources/openapi/yaml
+
+  generate-swagger-ui:
+    needs: generate-openapi-spec
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        apiGroup: [
+          { name: "control-plane", folder: "edc-controlplane/edc-controlplane-base" },
+          { name: "data-plane", folder: "edc-dataplane/edc-dataplane-base" }
+        ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
+      - uses: actions/download-artifact@v4
+        with:
+          name: openapi-spec
+          path: resources/openapi/yaml
 
       - name: Set version
         run: |
@@ -50,39 +74,44 @@ jobs:
 
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
-      - name: Generate openapi spec
-        shell: bash
+      - name: Download upstream API specs for ${{ matrix.apiGroup.name }}
         run: |
-          ./gradlew resolve
-
-      - name: Download upstream API specs for control-plane and data-plane
-        run: |
-          ./gradlew :edc-controlplane:edc-controlplane-base:downloadOpenapi
-          cp edc-controlplane/edc-controlplane-base/build/docs/openapi/* resources/openapi/yaml/
-
-          ./gradlew :edc-dataplane:edc-dataplane-base:downloadOpenapi
-          cp edc-dataplane/edc-dataplane-base/build/docs/openapi/* resources/openapi/yaml/
+          ./gradlew -p ${{ matrix.apiGroup.folder }} downloadOpenapi
+          cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/
 
       - name: Merge API specs
         run: |
-          ./gradlew -Pversion=${{ env.VERSION }} -PapiTitle="Tractus-X EDC REST API" -PapiDescription="Tractus-X EDC API Documentation" :mergeApiSpec --input=./resources/openapi/yaml --output=./resources/openapi/yaml/tractusx-edc-api.yaml
+          ./gradlew -Pversion=${{ env.VERSION }} -PapiTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" -PapiDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" :mergeApiSpec --input=./resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=./resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
 
       - name: Generate Swagger UI current version
         uses: Legion2/swagger-ui-action@v1
         with:
-          output: openapi/${{ env.VERSION }}
-          spec-file: resources/openapi/yaml/tractusx-edc-api.yaml
+          output: dist/${{ matrix.apiGroup.name }}/${{ env.VERSION }}
+          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}/${{ matrix.apiGroup.name }}.yaml
 
       - name: Generate Swagger UI stable version
         uses: Legion2/swagger-ui-action@v1
         if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
         with:
-          output: openapi
-          spec-file: resources/openapi/yaml/tractusx-edc-api.yaml
+          output: dist/${{ matrix.apiGroup.name }}
+          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}/${{ matrix.apiGroup.name }}.yaml
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.apiGroup.name }}-api
+          path: dist
+
+  deploy-swagger-ui:
+    needs: generate-swagger-ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: openapi
+          pattern: "*-api"
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: openapi
+          publish_dir: .
           keep_files: true
