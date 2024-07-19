@@ -77,7 +77,7 @@ jobs:
       - name: Download upstream API specs for ${{ matrix.apiGroup.name }}
         run: |
           ./gradlew -p ${{ matrix.apiGroup.folder }} downloadOpenapi
-          cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/
+          cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/${{ matrix.apiGroup.name }}
 
       - name: Merge API specs
         run: |
