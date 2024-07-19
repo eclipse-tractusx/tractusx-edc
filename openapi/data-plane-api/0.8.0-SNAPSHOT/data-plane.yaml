@@ -1,0 +1,145 @@
+openapi: 3.0.1
+info:
+  title: Tractus-X EDC data-plane API
+  description: Tractus-X EDC data-plane API Documentation
+  version: 0.8.0-SNAPSHOT
+servers:
+- url: /
+paths:
+  /aas/request:
+    post:
+      tags:
+      - Data Plane Proxy API
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/AssetRequest"
+      responses:
+        default:
+          description: Requests asset data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetRequest"
+  /token:
+    post:
+      tags:
+      - Token Refresh API
+      description: Resolves all groups for a particular BPN
+      operationId: refreshToken
+      parameters:
+      - name: grant_type
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: null
+      - name: refresh_token
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: null
+      - name: Authorization
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          description: "The access token and refresh token were updated. Expiry should\
+            \ be interpreted as starting from the time of message reception, allowing\
+            \ for some leeway."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "400":
+          description: "Request body was malformed, query parameters were missing,\
+            \ etc."
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "401":
+          description: "The token could not be refreshed due to an authentication\
+            \ error, either the refresh token or the Authorization header were invalid."
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+components:
+  schemas:
+    ApiErrorDetail:
+      type: object
+      properties:
+        invalidValue:
+          type: object
+          example: null
+        message:
+          type: string
+          example: null
+        path:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+      example: null
+    AssetRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+          example: null
+        pathSegments:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+        queryParams:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null
+      example: null
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: null
+        expires:
+          type: integer
+          format: int64
+          example: null
+        refresh_token:
+          type: string
+          example: null
+        token_type:
+          type: string
+          example: null
+      example: null
+  securitySchemes:
+    Authentication:
+      type: http
+      description: Self-Issued ID token containing a token
+      scheme: bearer
+      bearerFormat: JWT
