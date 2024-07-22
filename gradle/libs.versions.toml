@@ -23,7 +23,7 @@ rsApi = "4.0.0"
 slf4j = "2.0.13"
 testcontainers = "1.19.8"
 tink = "1.14.0"
-titanium = "1.4.0"
+titanium = "1.4.1"
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
