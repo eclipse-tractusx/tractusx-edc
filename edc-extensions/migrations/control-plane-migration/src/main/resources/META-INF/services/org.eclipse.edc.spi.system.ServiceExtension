@@ -27,3 +27,4 @@ org.eclipse.tractusx.edc.postgresql.migration.PolicyMonitorPostgresqlMigrationEx
 org.eclipse.tractusx.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.BusinessGroupPostgresMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.EdrIndexPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.FederatedCatalogCacheMigrationExtension
