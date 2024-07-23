@@ -86,7 +86,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateEquals);
+        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
         OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIn);
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateNotEquals);
     }
@@ -175,6 +175,14 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
     private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
         return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
+    }
+
+    private boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
+        var assigned = bpnGroupHolder.assignedGroups;
+        return bpnGroupHolder.allowedGroups
+                .stream()
+                .distinct()
+                .allMatch(assigned::contains);
     }
 
     /**

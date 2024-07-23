@@ -183,7 +183,9 @@ class BusinessPartnerGroupFunctionTest {
 
                     Arguments.of("Disjoint groups", IS_ALL_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), false),
+                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), true),
+                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1, "different-group"), false),
+                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), false),
 
 
                     Arguments.of("Disjoint groups", IS_ANY_OF, List.of("different-group", "another-different-group"), false),
