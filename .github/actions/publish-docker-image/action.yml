@@ -57,7 +57,6 @@ runs:
         # "jq -r" removes the quotation marks, that would trip up "wget"
         URL=$(grep "val openTelemetryAgentUrl = " build.gradle.kts | awk -F'= ' '{print $2}' | jq -r)
         wget -O ${{ inputs.rootDir }}/opentelemetry-javaagent.jar -q $URL
-        
 
     #####################
     # Login to DockerHub
@@ -103,7 +102,7 @@ runs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        file: ${{ inputs.rootDir }}/src/main/docker/Dockerfile
+        file: ${{ inputs.rootDir }}/build/Dockerfile
         build-args: |
           JAR=${{ inputs.rootDir }}/build/libs/${{ inputs.imagename }}.jar
           OTEL_JAR=${{ inputs.rootDir }}/opentelemetry-javaagent.jar

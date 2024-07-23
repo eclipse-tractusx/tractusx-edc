@@ -25,7 +25,7 @@ description: "Build and publish a Docker Image to DockerHub"
 inputs:
   imagename:
     required: true
-    description: "name of the docker image, e.g. edc-runtime-memory"
+    description: "list of docker image names separated by whitespace, e.g. 'edc-runtime-memory edc-runtime-other'"
 
   image_tag:
     required: false
@@ -38,7 +38,7 @@ inputs:
 
   rootDir:
     required: true
-    description: "The directory that contains the docker file, e.g. edc-controlplane/edc-runtime-memory"
+    description: "list of directories of the modules to be dockerized, separated by whitespace, e.g. 'edc-controlplane/edc-runtime-memory edc-dataplane/edc-dataplane-memory'"
 
   k8sversion:
     required: false
@@ -69,12 +69,19 @@ runs:
     - name: Build docker images
       shell: bash
       run: |-
-        ./gradlew -p ${{ inputs.rootDir }} dockerize
+        modules=(${{ inputs.rootDir }})
+        for module in "${modules[@]}"
+        do
+          ./gradlew -p $module dockerize
+        done
 
     - name: Load images into KinD
       shell: bash
       run: |
-        kind get clusters | xargs -n1 kind load docker-image ${{ inputs.imagename }}:${{ inputs.image_tag }} --name
+        images=(${{ inputs.imagename }})
+        versioned=( "${images[@]/%/:${{ inputs.image_tag }}}" )
+        versioned_images=$(IFS=' ' ; echo "${versioned[*]}")
+        kind get clusters | xargs -n1 kind load docker-image $versioned_images --name
 
     ###################################################
     # Install the test infrastructure

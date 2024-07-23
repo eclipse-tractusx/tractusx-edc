@@ -89,7 +89,7 @@ jobs:
         name: "Run deployment test using KinD and Helm"
         with:
           imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
-          rootDir: "."
+          rootDir: "edc-controlplane/edc-controlplane-postgresql-hashicorp-vault edc-dataplane/edc-dataplane-hashicorp-vault"
           k8sversion: ${{ matrix.k8s-version }}
           helm_command: |-
             helm install tx-prod charts/tractusx-connector \
@@ -123,7 +123,7 @@ jobs:
         name: "Run deployment test using KinD and Helm"
         with:
           imagename: "edc-controlplane-postgresql-azure-vault edc-dataplane-azure-vault"
-          rootDir: "."
+          rootDir: "edc-controlplane/edc-controlplane-postgresql-azure-vault edc-dataplane/edc-dataplane-azure-vault"
           helm_command: |-
             az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name aes-keys --value "$(cat aes.key)" > /dev/null
             az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name client-secret --value "$(cat client.secret)" > /dev/null
