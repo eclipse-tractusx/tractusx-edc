@@ -28,6 +28,13 @@ on:
       version:
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: false
+        description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+
 
 concurrency:
   # cancel only running jobs on pull requests
