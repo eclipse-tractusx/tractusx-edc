@@ -28,6 +28,7 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerSt
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +137,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         // right-operand is anything other than String or Collection
         var rightOperand = parseRightOperand(rightValue, policyContext);
-        if (rightOperand == null) {
+        if (rightOperand.isEmpty()) {
             return false;
         }
 
@@ -164,7 +165,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         }
 
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
-        return null;
+        return Collections.emptyList();
     }
     
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
