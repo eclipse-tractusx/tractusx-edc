@@ -20,7 +20,7 @@
 
 
 ---
-name: "Create Docker images"
+name: "Create and publish Docker images"
 
 on:
   workflow_dispatch:
@@ -40,7 +40,7 @@ concurrency:
 
 jobs:
   create-docker-image:
-    name: "Create Docker Images for the ControlPlane"
+    name: "Build and push images"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
