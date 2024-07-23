@@ -20,7 +20,7 @@
 
 
 ---
-name: "Create Docker images"
+name: "Create and publish Docker images"
 
 on:
   workflow_dispatch:
@@ -33,6 +33,18 @@ on:
         description: 'Explicitly specify the Docker tag. Note that SHA and latest are added automatically.'
         required: false
 
+  workflow_call:
+    inputs:
+      namespace:
+        type: string
+        description: 'The namespace (=repo) in DockerHub'
+        required: false
+        default: "tractusx"
+      docker_tag:
+        type: string
+        description: 'Explicitly specify the Docker tag. Note that SHA and latest are added automatically.'
+        required: false
+
 concurrency:
   # cancel only running jobs on pull requests
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -40,7 +52,7 @@ concurrency:
 
 jobs:
   create-docker-image:
-    name: "Create Docker Images for the ControlPlane"
+    name: "Build and push images"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

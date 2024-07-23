@@ -20,14 +20,21 @@
 
 
 ---
-name: "Manually publish Maven Artefacts to OSSRH"
+name: "Publish Maven Artefacts to OSSRH"
 
 on:
   workflow_dispatch:
     inputs:
       version:
         required: false
-        description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If ommitted, the version is taken from gradle.properties'
+        description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: false
+        description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+
 
 concurrency:
   # cancel only running jobs on pull requests
@@ -58,12 +65,25 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
           OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
         run: |-
-          if [ -z ${{ inputs.version }} ]; 
-          then 
+          
+          # check if version input was specified, else read from gradle.properties 
+          
+          if [ ! -z ${{ inputs.version }} ];
+          then
+            VERSION=${{ inputs.version }}
+            echo "Publishing using version from parameter: $VERSION"
+          else
             VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
             echo "Publishing using version from gradle.properties: $VERSION"
-            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
-          else 
-            echo "Publishing using version from parameter: ${{ inputs.version }}"
-            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=${{ inputs.version }} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
           fi
+          
+          # check if the version is a SNAPSHOT, and if not, append command to close staging repo
+          
+          cmd=""
+          if [[ $VERSION != *-SNAPSHOT ]]
+          then
+            cmd="closeAndReleaseSonatypeStagingRepository";
+          fi
+          echo "Publishing Version $VERSION to Sonatype"
+          
+          ./gradlew publishToSonatype ${cmd} --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
