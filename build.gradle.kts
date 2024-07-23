@@ -182,7 +182,7 @@ subprojects {
             }
 
             val copyDockerfile = tasks.create("copyDockerfile", Copy::class) {
-                from(rootProject.projectDir)
+                from(rootProject.projectDir.toPath().resolve("resources"))
                 into(project.layout.buildDirectory)
                 include("Dockerfile")
             }
