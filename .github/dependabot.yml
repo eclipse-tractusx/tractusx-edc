@@ -47,7 +47,7 @@ updates:
   # Docker
   - package-ecosystem: "docker"
     target-branch: main
-    directory: .
+    directory: resources
     labels:
       - "dependabot"
       - "docker"
