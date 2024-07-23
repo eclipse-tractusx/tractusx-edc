@@ -88,9 +88,8 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIn);
         OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
         OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateNotEquals);
+        OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
-
 
     /**
      * Policy evaluation function that checks whether a given BusinessPartnerNumber is covered by a given policy.
@@ -120,12 +119,15 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
             return false;
         }
 
-
         var bpn = participantAgent.getIdentity();
         var groups = store.resolveForBpn(bpn);
 
         // BPN not found in database
         if (groups.failed()) {
+            if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
+                return true;
+            }
+
             policyContext.reportProblem(groups.getFailureDetail());
             return false;
         }
@@ -133,6 +135,10 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         // BPN was found, but it does not have groups assigned.
         if (assignedGroups.isEmpty()) {
+            if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
+                return true;
+            }
+
             policyContext.reportProblem("No groups were assigned to BPN " + bpn);
             return false;
         }
@@ -148,15 +154,15 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
-        if (rightValue instanceof String) {
-            var tokens = ((String) rightValue).split(",");
+        if (rightValue instanceof String value) {
+            var tokens = value.split(",");
             return Arrays.asList(tokens);
         }
         if (rightValue instanceof Collection<?>) {
             return ((Collection<?>) rightValue).stream().map(Object::toString).toList();
         }
 
-        context.reportProblem(format("Right operand expected to be either String or a Collection, but was " + rightValue.getClass()));
+        context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
         return null;
     }
     
@@ -170,7 +176,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     }
 
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
-        return !evaluateIn(bpnGroupHolder);
+        return !evaluateEquals(bpnGroupHolder);
     }
 
     private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
@@ -183,6 +189,10 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
                 .stream()
                 .distinct()
                 .allMatch(assigned::contains);
+    }
+
+    private boolean evaluateIsNoneOf(BpnGroupHolder bpnGroupHolder) {
+        return !evaluateIn(bpnGroupHolder);
     }
 
     /**

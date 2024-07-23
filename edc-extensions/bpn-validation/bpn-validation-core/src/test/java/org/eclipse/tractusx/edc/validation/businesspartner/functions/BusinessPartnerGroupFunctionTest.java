@@ -35,6 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,7 @@ import static org.eclipse.edc.policy.model.Operator.IN;
 import static org.eclipse.edc.policy.model.Operator.IS_A;
 import static org.eclipse.edc.policy.model.Operator.IS_ALL_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
+import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
@@ -82,14 +84,14 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_noParticipantAgentOnContext() {
         reset(context);
         assertThat(function.evaluate(EQ, "test-group", createPermission(EQ, List.of()), context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent not found on PolicyContext"));
+        verify(context).reportProblem("ParticipantAgent not found on PolicyContext");
     }
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)
     @DisplayName("Invalid operators, expect report in policy context")
     void evaluate_invalidOperator(Operator invalidOperator) {
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of()));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of()));
         assertThat(function.evaluate(invalidOperator, "test-group", createPermission(invalidOperator, List.of()), context)).isFalse();
         verify(context).reportProblem(endsWith("but was [" + invalidOperator.name() + "]"));
     }
@@ -98,7 +100,7 @@ class BusinessPartnerGroupFunctionTest {
     @DisplayName("Right-hand operand is not String or Collection<?>")
     void evaluate_rightOperandNotStringOrCollection() {
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(List.of("test-group")));
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
 
         assertThat(function.evaluate(EQ, 42, createPermission(EQ, List.of("test-group")), context)).isFalse();
         assertThat(function.evaluate(EQ, 42L, createPermission(EQ, List.of("test-group")), context)).isFalse();
@@ -117,29 +119,29 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_validOperator(String ignored, Operator operator, List<String> assignedBpn, boolean expectedOutcome) {
 
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
     }
 
-    @Test
-    void evaluate_noEntryForBpn() {
-        var operator = NEQ;
+    @EnumSource(value = Operator.class, names = {"NEQ", "IS_NONE_OF"})
+    @ParameterizedTest
+    void evaluate_noEntryForBpn(final Operator operator) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
     }
 
-    @Test
-    void evaluate_noGroupsAssignedToBpn() {
-        var operator = NEQ;
+    @EnumSource(value = Operator.class, names = {"NEQ", "IS_NONE_OF"})
+    @ParameterizedTest
+    void evaluate_noGroupsAssignedToBpn(final Operator operator) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
     }
 
     private Permission createPermission(Operator op, List<String> rightOperand) {
@@ -174,8 +176,9 @@ class BusinessPartnerGroupFunctionTest {
                     Arguments.of("Overlapping groups", EQ, List.of("different-group"), false),
 
                     Arguments.of("Disjoint groups", NEQ, List.of("different-group", "another-different-group"), true),
-                    Arguments.of("Overlapping groups", NEQ, List.of(TEST_GROUP_1, "different-group"), false),
+                    Arguments.of("Overlapping groups", NEQ, List.of(TEST_GROUP_1, "different-group"), true),
                     Arguments.of("Matching groups", NEQ, List.of(TEST_GROUP_1, TEST_GROUP_2), false),
+                    Arguments.of("Empty groups", NEQ, List.of(), true),
 
                     Arguments.of("Matching groups", IN, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
                     Arguments.of("Overlapping groups", IN, List.of(TEST_GROUP_1, "different-group"), true),
@@ -187,11 +190,15 @@ class BusinessPartnerGroupFunctionTest {
                     Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1, "different-group"), false),
                     Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), false),
 
-
                     Arguments.of("Disjoint groups", IS_ANY_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ANY_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
                     Arguments.of("Overlapping groups (1 overlap)", IS_ANY_OF, List.of(TEST_GROUP_1, "different-group", "another-different-group"), true),
-                    Arguments.of("Overlapping groups (2 overlap)", IS_ANY_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), true)
+                    Arguments.of("Overlapping groups (2 overlap)", IS_ANY_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), true),
+
+                    Arguments.of("Disjoint groups", IS_NONE_OF, List.of("different-group", "another-different-group"), true),
+                    Arguments.of("Matching groups", IS_NONE_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), false),
+                    Arguments.of("Overlapping groups", IS_NONE_OF, List.of(TEST_GROUP_1, "another-different-group"), false),
+                    Arguments.of("Empty groups", IS_NONE_OF, List.of(), true)
             );
         }
     }
