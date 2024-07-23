@@ -124,23 +124,14 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         // BPN not found in database
         if (groups.failed()) {
-            if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
-                return true;
-            }
-
-            policyContext.reportProblem(groups.getFailureDetail());
-            return false;
+            return evaluateEmptyGroupsResponse(operator, policyContext, groups.getFailureDetail());
         }
+
         var assignedGroups = groups.getContent();
 
         // BPN was found, but it does not have groups assigned.
         if (assignedGroups.isEmpty()) {
-            if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
-                return true;
-            }
-
-            policyContext.reportProblem("No groups were assigned to BPN " + bpn);
-            return false;
+            return evaluateEmptyGroupsResponse(operator, policyContext, "No groups were assigned to BPN " + bpn);
         }
 
         // right-operand is anything other than String or Collection
@@ -151,6 +142,16 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         //call evaluator function
         return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand));
+    }
+
+    private boolean evaluateEmptyGroupsResponse(final Operator operator, final PolicyContext policyContext,
+                                                final String problemMessage) {
+        if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
+            return true;
+        }
+
+        policyContext.reportProblem(problemMessage);
+        return false;
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {

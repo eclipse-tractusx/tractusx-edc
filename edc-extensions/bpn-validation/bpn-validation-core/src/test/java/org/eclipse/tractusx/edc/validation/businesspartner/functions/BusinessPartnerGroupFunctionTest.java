@@ -19,6 +19,11 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.LiteralExpression;
@@ -37,11 +42,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.GEQ;
@@ -57,8 +57,9 @@ import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
 import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.endsWith;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -126,22 +127,42 @@ class BusinessPartnerGroupFunctionTest {
 
     @EnumSource(value = Operator.class, names = {"NEQ", "IS_NONE_OF"})
     @ParameterizedTest
-    void evaluate_noEntryForBpn(final Operator operator) {
+    void evaluate_noEntryForBpnWithNegativeOperator_shouldBeTrue(final Operator operator) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
+        assertTrue(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context));
     }
 
     @EnumSource(value = Operator.class, names = {"NEQ", "IS_NONE_OF"})
     @ParameterizedTest
-    void evaluate_noGroupsAssignedToBpn(final Operator operator) {
+    void evaluate_noGroupsAssignedToBpnWithNegativeOperator_shouldBeTrue(final Operator operator) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
+        assertTrue(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context));
+    }
+
+    @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN"})
+    @ParameterizedTest
+    void evaluate_noEntryForBpnWithPositiveOperator_shouldBeFalse(final Operator operator) {
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
+
+        assertFalse(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context));
+    }
+
+    @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN"})
+    @ParameterizedTest
+    void evaluate_noGroupsAssignedToBpnWithPositiveOperator_shouldBeFalse(final Operator operator) {
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+        when(context.getContextData(ParticipantAgent.class)).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
+
+        assertFalse(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context));
     }
 
     private Permission createPermission(Operator op, List<String> rightOperand) {
