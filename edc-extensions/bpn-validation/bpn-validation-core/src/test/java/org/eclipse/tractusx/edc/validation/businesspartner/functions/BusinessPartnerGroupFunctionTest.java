@@ -153,6 +153,7 @@ class BusinessPartnerGroupFunctionTest {
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
         assertFalse(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context));
+        verify(context).reportProblem("foobar");
     }
 
     @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN"})
@@ -163,6 +164,7 @@ class BusinessPartnerGroupFunctionTest {
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
 
         assertFalse(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context));
+        verify(context).reportProblem("No groups were assigned to BPN " + TEST_BPN);
     }
 
     private Permission createPermission(Operator op, List<String> rightOperand) {
