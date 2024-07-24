@@ -209,3 +209,13 @@ jobs:
     with:
       downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
     secrets: inherit
+
+  publish-openapi-to-gh-pages:
+    name: "Publish OpenAPI UI spec GitHub Pages"
+    permissions:
+      contents: read
+    needs: [ release-version ]
+    uses: ./.github/workflows/publish-openapi-ui.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.release-version.outputs.RELEASE_VERSION }}

@@ -21,12 +21,15 @@
 name: publish openapi ui
 
 on:
-  push:
-    branches:
-      - main
-      - release/*
 
   workflow_dispatch:
+    inputs:
+      version:
+        required: false
+        description: "Version of the Tractus-X EDC API to be should be published"
+        type: string
+
+  workflow_call:
     inputs:
       version:
         required: false

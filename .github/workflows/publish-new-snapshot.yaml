@@ -39,6 +39,8 @@ on:
       - published
   workflow_dispatch:
 
+  # periodic build triggers are defined in run-all-tests.yml, which triggers this workflow
+
 
 concurrency:
   # cancel only running jobs on pull requests
@@ -65,34 +67,66 @@ jobs:
           [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
           exit 0
 
+  determine-version:
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Get version"
+        id: get-version
+        run: |
+          
+          # only create the version string if the run-all-tests workflow was triggered by a cron event
+          
+          if [[ ${{ github.event.workflow_run.event }} == "schedule" ]]; then
+            echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
+          fi
+
   publish-docker-images:
     name: "Create Docker Images"
-    needs: [ secret-presence ]
+    needs: [ secret-presence, determine-version]
     if: |
       needs.secret-presence.outputs.DOCKER_HUB_TOKEN
     permissions:
       contents: write
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets: inherit
+    with:
+      docker_tag: ${{ needs.determine-version.outputs.VERSION }}
 
 
   publish-maven-artifacts:
     name: "Publish artefacts to OSSRH Snapshots / MavenCentral"
     permissions:
       contents: read
-    needs: [ secret-presence ]
+    needs: [ secret-presence, determine-version ]
 
     # do not run on PR branches, do not run on releases
     if: |
       needs.secret-presence.outputs.HAS_OSSRH && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
+    with:
+      version: ${{ needs.determine-version.outputs.VERSION }}
 
   publish-to-swaggerhub:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
       contents: read
-    needs: [ secret-presence ]
+    needs: [ secret-presence, determine-version ]
     if: needs.secret-presence.outputs.HAS_SWAGGER
     uses: ./.github/workflows/publish-swaggerhub.yaml
     secrets: inherit
+    with:
+      downstream-version: ${{ needs.determine-version.outputs.VERSION }}
+
+  publish-openapi-to-gh-pages:
+    name: "Publish OpenAPI UI spec GitHub Pages"
+    permissions:
+      contents: read
+    needs: [ secret-presence, determine-version ]
+    uses: ./.github/workflows/publish-openapi-ui.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.determine-version.outputs.VERSION }}
