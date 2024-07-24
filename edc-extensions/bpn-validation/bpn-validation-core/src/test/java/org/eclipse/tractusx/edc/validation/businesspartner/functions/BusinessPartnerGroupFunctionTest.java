@@ -117,7 +117,6 @@ class BusinessPartnerGroupFunctionTest {
     @ArgumentsSource(ValidOperatorProvider.class)
     @DisplayName("Valid operators, evaluating different circumstances")
     void evaluate_validOperator(String ignored, Operator operator, List<String> assignedBpn, boolean expectedOutcome) {
-
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
@@ -164,6 +163,18 @@ class BusinessPartnerGroupFunctionTest {
 
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
         verify(context).reportProblem("No groups were assigned to BPN " + TEST_BPN);
+    }
+
+    @ArgumentsSource(OperatorForEmptyGroupsProvider.class)
+    @ParameterizedTest
+    void evaluate_groupsAssignedButNoGroupsSentToEvaluate(Operator operator, boolean expectedOutcome) {
+        var allowedGroups = List.<String>of();
+        var assignedBpnGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpnGroups));
+
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
     }
 
     private Permission createPermission(Operator op, List<String> rightOperand) {
@@ -221,6 +232,20 @@ class BusinessPartnerGroupFunctionTest {
                     Arguments.of("Matching groups", IS_NONE_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), false),
                     Arguments.of("Overlapping groups", IS_NONE_OF, List.of(TEST_GROUP_1, "another-different-group"), false),
                     Arguments.of("Empty groups", IS_NONE_OF, List.of(), true)
+            );
+        }
+    }
+
+    private static class OperatorForEmptyGroupsProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+            return Stream.of(
+                    Arguments.of(EQ, false),
+                    Arguments.of(NEQ, true),
+                    Arguments.of(IN, false),
+                    Arguments.of(IS_ALL_OF, false),
+                    Arguments.of(IS_ANY_OF, false),
+                    Arguments.of(IS_NONE_OF, true)
             );
         }
     }
