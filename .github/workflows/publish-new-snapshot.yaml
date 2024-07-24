@@ -76,7 +76,10 @@ jobs:
       - name: "Get version"
         id: get-version
         run: |
-          if [[ ${{ github.event_name }} == "schedule" }} ]]; then
+          
+          echo '${{ toJSON(context.payload.workflow_run) }}' | jq
+          
+          if [[ ${{ github.event_name }} == "workflow_run" }} ]]; then
             echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
           fi
 
