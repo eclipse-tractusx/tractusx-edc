@@ -83,8 +83,8 @@ class BusinessPartnerGroupFunctionTest {
     @DisplayName("PolicyContext does not carry ParticipantAgent")
     void evaluate_noParticipantAgentOnContext() {
         reset(context);
-        assertThat(function.evaluate(EQ, eq("test-group"), createPermission(EQ, List.of()), context)).isFalse();
-        verify(context).reportProblem("ParticipantAgent not found on PolicyContext");
+        assertThat(function.evaluate(EQ, "test-group", createPermission(EQ, List.of()), context)).isFalse();
+        verify(context).reportProblem(eq("ParticipantAgent not found on PolicyContext"));
     }
 
     @ParameterizedTest(name = "Invalid operator {0}")
