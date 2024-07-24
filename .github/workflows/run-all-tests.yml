@@ -37,6 +37,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+  schedule:
+    - cron: 0 3 * * MON # run on 03:00 UTC every Monday -> weekly build
+
 concurrency:
   # cancel older running jobs on the same branch
   group: ${{ github.workflow }}-${{ github.ref }}

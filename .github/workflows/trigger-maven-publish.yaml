@@ -59,6 +59,8 @@ jobs:
           OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
         run: |-
           
+          echo "Input Version: ${{ inputs.version }}"
+
           # check if version input was specified, else read from gradle.properties 
           
           if [ ! -z ${{ inputs.version }} ];

@@ -62,6 +62,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Log inputs
+        run: |
+          echo "Input Version: ${{ inputs.version }}, Input namespace: ${{ inputs.namespace}}"
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
