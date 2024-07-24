@@ -38,7 +38,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: 0 3 * * * # run on 03:00 UTC every day
+    - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
 
 concurrency:
   # cancel older running jobs on the same branch
@@ -47,13 +47,13 @@ concurrency:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-#  verify:
-#    uses: ./.github/workflows/verify.yaml
-#    secrets: inherit
-#
-#  deployment-test:
-#    uses: ./.github/workflows/deployment-test.yaml
-#    secrets: inherit
+  verify:
+    uses: ./.github/workflows/verify.yaml
+    secrets: inherit
+
+  deployment-test:
+    uses: ./.github/workflows/deployment-test.yaml
+    secrets: inherit
 
   upgradeability-test:
     uses: ./.github/workflows/upgradeability-test.yaml
@@ -63,8 +63,8 @@ jobs:
   # in future iterations, this could be used as a choke point to collect test data, etc.
   summary:
     needs:
-#      - verify
-#      - deployment-test
+      - verify
+      - deployment-test
       - upgradeability-test
     runs-on: ubuntu-latest
     steps:
