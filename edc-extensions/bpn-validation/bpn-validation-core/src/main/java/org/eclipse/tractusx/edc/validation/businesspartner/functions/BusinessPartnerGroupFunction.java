@@ -137,7 +137,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         // right-operand is anything other than String or Collection
         var rightOperand = parseRightOperand(rightValue, policyContext);
-        if (rightOperand.isEmpty()) {
+        if (rightOperand == null) {
             return false;
         }
 
@@ -145,8 +145,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand));
     }
 
-    private boolean evaluateEmptyGroupsResponse(final Operator operator, final PolicyContext policyContext,
-                                                final String problemMessage) {
+    private boolean evaluateEmptyGroupsResponse(Operator operator, PolicyContext policyContext, String problemMessage) {
         if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
             return true;
         }
@@ -165,7 +164,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         }
 
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
-        return Collections.emptyList();
+        return null;
     }
     
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
