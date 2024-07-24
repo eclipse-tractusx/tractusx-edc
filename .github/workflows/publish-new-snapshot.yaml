@@ -67,6 +67,13 @@ jobs:
           [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
           exit 0
 
+  print-calling-workflow-event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "log parent workflow event"
+        run: |
+          echo '${{ github.event.workflow_run.event }}'
+
   determine-version:
     runs-on: ubuntu-latest
     outputs:
@@ -77,9 +84,9 @@ jobs:
         id: get-version
         run: |
           
-          echo '${{ toJSON(context.payload.workflow_run) }}' | jq
+          # only create the version string if the run-all-tests workflow was triggered by a cron event
           
-          if [[ ${{ github.event_name }} == "workflow_run" }} ]]; then
+          if [[ ${{ github.event.workflow_run.event }} == "schedule" ]]; then
             echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
           fi
 
@@ -119,14 +126,14 @@ jobs:
     uses: ./.github/workflows/publish-swaggerhub.yaml
     secrets: inherit
     with:
-      downstream_version: ${{ needs.determine-version.outputs.VERSION }}
+      downstream-version: ${{ needs.determine-version.outputs.VERSION }}
 
-  publish-openapi-to-ghpages:
+  publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"
     permissions:
       contents: read
     needs: [ secret-presence, determine-version ]
-    uses: ./.github/workflows/publish-openapi-ui.yaml
+    uses: ./.github/workflows/publish-openapi-ui.yml
     secrets: inherit
     with:
       version: ${{ needs.determine-version.outputs.VERSION }}
