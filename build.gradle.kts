@@ -183,7 +183,7 @@ subprojects {
 
             val copyDockerfile = tasks.create("copyDockerfile", Copy::class) {
                 from(rootProject.projectDir.toPath().resolve("resources"))
-                into(project.layout.buildDirectory)
+                into(project.layout.buildDirectory.dir("resources").get().dir("docker"))
                 include("Dockerfile")
             }
             shadowJarTask.dependsOn(copyDockerfile)
@@ -192,7 +192,7 @@ subprojects {
             apply(plugin = "com.bmuschko.docker-remote-api")
 
             val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
-                dockerFile.set(project.layout.buildDirectory.asFile.get().toPath().resolve("Dockerfile").toFile())
+                dockerFile.set(project.layout.buildDirectory.asFile.get().toPath().resolve("resources").resolve("docker").resolve("Dockerfile").toFile())
 
                 val dockerContextDir = project.projectDir
                 images.add("${project.name}:${project.version}")
