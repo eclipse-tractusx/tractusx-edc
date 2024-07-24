@@ -24,11 +24,11 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +79,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
+    private static final List<Operator> NEGATIVE_OPERATORS = List.of(NEQ, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
 
@@ -123,16 +124,11 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         var bpn = participantAgent.getIdentity();
         var groups = store.resolveForBpn(bpn);
 
-        // BPN not found in database
-        if (groups.failed()) {
-            return evaluateEmptyGroupsResponse(operator, policyContext, groups.getFailureDetail());
-        }
+        var errorMessage = evaluateEmptyGroups(groups, operator, bpn);
 
-        var assignedGroups = groups.getContent();
-
-        // BPN was found, but it does not have groups assigned.
-        if (assignedGroups.isEmpty()) {
-            return evaluateEmptyGroupsResponse(operator, policyContext, "No groups were assigned to BPN " + bpn);
+        if (errorMessage != null) {
+            policyContext.reportProblem(errorMessage);
+            return false;
         }
 
         // right-operand is anything other than String or Collection
@@ -141,17 +137,45 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
             return false;
         }
 
+        var assignedGroups = groups.getContent();
+
         //call evaluator function
         return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand));
     }
 
-    private boolean evaluateEmptyGroupsResponse(Operator operator, PolicyContext policyContext, String problemMessage) {
-        if (NEQ.equals(operator) || IS_NONE_OF.equals(operator)) {
-            return true;
+    /**
+     * Verify if BPN was found in the database and if the BPN has any group assigned. If one of those validations fail,
+     * it will return an error message, otherwise it will return {@code null}.
+     * The evaluation is prematurely aborted (returns {@code null}) if:
+     * <ul>
+     *     <li>{@link Operator} is a negative operator. Check {@link BusinessPartnerGroupFunction#NEGATIVE_OPERATORS}</li>
+     * </ul>
+     *
+     * @param groups    result of the BPN search on the database
+     * @param operator  operator sent for evaluation
+     * @param bpn       participant agent identifier
+     * @return  an error message in case of empty groups or empty assigned groups, {@code null} otherwise.
+     */
+    private String evaluateEmptyGroups(StoreResult<List<String>> groups, Operator operator, String bpn) {
+        var isNegativeOperator = NEGATIVE_OPERATORS.contains(operator);
+
+        if (isNegativeOperator) {
+            return null;
         }
 
-        policyContext.reportProblem(problemMessage);
-        return false;
+        // BPN not found in database
+        if (groups.failed()) {
+            return groups.getFailureDetail();
+        }
+
+        var assignedGroups = groups.getContent();
+
+        // BPN was found, but it does not have groups assigned.
+        if (assignedGroups.isEmpty()) {
+            return "No groups were assigned to BPN " + bpn;
+        }
+
+        return null;
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
@@ -193,6 +217,10 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     }
 
     private boolean evaluateIsNoneOf(BpnGroupHolder bpnGroupHolder) {
+        if (bpnGroupHolder.assignedGroups == null) {
+            return true;
+        }
+
         return !evaluateIn(bpnGroupHolder);
     }
 
