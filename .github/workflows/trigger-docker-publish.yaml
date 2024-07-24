@@ -45,11 +45,6 @@ on:
         description: 'Explicitly specify the Docker tag. Note that SHA and latest are added automatically.'
         required: false
 
-concurrency:
-  # cancel only running jobs on pull requests
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
 jobs:
   create-docker-image:
     name: "Build and push images"
@@ -65,7 +60,6 @@ jobs:
                    { dir: edc-tests/runtime, img: mock-connector }]
     permissions:
       contents: write
-      packages: write
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/publish-docker-image

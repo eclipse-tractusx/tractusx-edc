@@ -35,12 +35,6 @@ on:
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
 
-
-concurrency:
-  # cancel only running jobs on pull requests
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
 jobs:
   maven-release:
     name: 'Publish all artefacts to Sonatype/MavenCentral'

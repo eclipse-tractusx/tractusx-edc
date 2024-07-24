@@ -80,7 +80,6 @@ jobs:
     name: "Publish artefacts to OSSRH Snapshots / MavenCentral"
     permissions:
       contents: read
-      packages: write
     needs: [ secret-presence ]
 
     # do not run on PR branches, do not run on releases
