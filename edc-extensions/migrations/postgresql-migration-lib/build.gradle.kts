@@ -25,7 +25,6 @@ plugins {
 dependencies {
     implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.core)
-    implementation(libs.edc.junit)
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.sql.assetindex)
     implementation(libs.edc.sql.core)
@@ -36,4 +35,6 @@ dependencies {
     // so we need to add PG support explicitly
     // https://documentation.red-gate.com/flyway/release-notes-and-older-versions/release-notes-for-flyway-engine
     runtimeOnly(libs.flyway.database.postgres)
+
+    testImplementation(libs.edc.junit)
 }

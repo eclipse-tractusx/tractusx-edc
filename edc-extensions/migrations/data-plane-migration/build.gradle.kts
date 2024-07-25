@@ -25,7 +25,6 @@ plugins {
 dependencies {
     implementation(project(":edc-extensions:migrations:postgresql-migration-lib"))
     implementation(libs.edc.spi.core)
-    implementation(libs.edc.junit)
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.sql.assetindex)
     implementation(libs.edc.sql.core)
@@ -37,5 +36,6 @@ dependencies {
     // https://documentation.red-gate.com/flyway/release-notes-and-older-versions/release-notes-for-flyway-engine
     runtimeOnly(libs.flyway.database.postgres)
 
+    testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.sql.core))
 }
