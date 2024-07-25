@@ -213,7 +213,7 @@ jobs:
   publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"
     permissions:
-      contents: read
+      contents: write
     needs: [ release-version ]
     uses: ./.github/workflows/publish-openapi-ui.yml
     secrets: inherit
