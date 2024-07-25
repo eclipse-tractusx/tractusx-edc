@@ -140,45 +140,26 @@ allprojects {
 
 }
 
-// the "dockerize" task is added to all projects that use the `shadowJar` plugin
 subprojects {
     afterEvaluate {
+        // the "dockerize" task is added to all projects that use the `shadowJar` plugin
         if (project.plugins.hasPlugin("com.github.johnrengelman.shadow")) {
-            val buildDir = project.layout.buildDirectory.get().asFile
+            val downloadOpentelemetryAgent = tasks.create("downloadOpentelemetryAgent", Copy::class) {
+                val openTelemetry = configurations.create("open-telemetry")
 
-            val agentFile = buildDir.resolve("opentelemetry-javaagent.jar")
-            // create task to download the opentelemetry agent
-            val openTelemetryAgentUrl = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
-            val downloadOtel = tasks.create("downloadOtel") {
-                // only execute task if the opentelemetry agent does not exist. invoke the "clean" task to force
-                onlyIf {
-                    !agentFile.exists()
+                dependencies {
+                    openTelemetry(libs.opentelemetry.javaagent)
                 }
-                // this task could be the first in the graph, so "build/" may not yet exist. Let's be defensive
-                doFirst {
-                    buildDir.mkdirs()
-                }
-                // download the jar file
-                doLast {
-                    val download = { url: String, destFile: File ->
-                        ant.invokeMethod(
-                            "get",
-                            mapOf("src" to url, "dest" to destFile)
-                        )
-                    }
-                    logger.lifecycle("Downloading OpenTelemetry Agent")
-                    download(openTelemetryAgentUrl, agentFile)
-                }
+
+                from(openTelemetry)
+                into("build/resources/otel")
+                rename { "opentelemetry-javaagent.jar" }
             }
 
-            val shadowJarTask = tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME).get()
-
-            // this task copies some legal docs into the build folder, so we can easily copy them into the docker images
             val copyLegalDocs = tasks.create("copyLegalDocs", Copy::class) {
                 from(project.rootProject.projectDir)
-                into("${buildDir}/legal")
+                into("build/legal")
                 include("SECURITY.md", "NOTICE.md", "DEPENDENCIES", "LICENSE")
-                dependsOn(shadowJarTask)
             }
 
             val copyDockerfile = tasks.create("copyDockerfile", Copy::class) {
@@ -186,31 +167,35 @@ subprojects {
                 into(project.layout.buildDirectory.dir("resources").get().dir("docker"))
                 include("Dockerfile")
             }
-            shadowJarTask.dependsOn(copyDockerfile)
+
+            val shadowJarTask = tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME).get()
+
+            shadowJarTask
+                .dependsOn(copyDockerfile)
+                .dependsOn(copyLegalDocs)
+                .dependsOn(downloadOpentelemetryAgent)
 
             //actually apply the plugin to the (sub-)project
             apply(plugin = "com.bmuschko.docker-remote-api")
 
             val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
-                dockerFile.set(project.layout.buildDirectory.asFile.get().toPath().resolve("resources").resolve("docker").resolve("Dockerfile").toFile())
+                dockerFile.set(File("build/resources/docker/Dockerfile"))
 
                 val dockerContextDir = project.projectDir
                 images.add("${project.name}:${project.version}")
                 images.add("${project.name}:latest")
-                // specify platform with the -Dplatform flag:
-                if (System.getProperty("platform") != null)
+
+                if (System.getProperty("platform") != null) {
                     platform.set(System.getProperty("platform"))
+                }
+
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
-                buildArgs.put("OTEL_JAR", agentFile.relativeTo(dockerContextDir).path)
+                buildArgs.put("OTEL_JAR", "build/resources/otel/opentelemetry-javaagent.jar")
                 buildArgs.put("ADDITIONAL_FILES", "build/legal/*")
                 inputDir.set(file(dockerContextDir))
             }
 
-            // make sure  always runs after "dockerize" and after "copyOtel"
-            dockerTask
-                .dependsOn(shadowJarTask)
-                .dependsOn(downloadOtel)
-                .dependsOn(copyLegalDocs)
+            dockerTask.dependsOn(shadowJarTask)
         }
     }
 

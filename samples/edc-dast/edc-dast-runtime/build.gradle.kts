@@ -49,7 +49,6 @@ application {
 }
 
 tasks.withType<ShadowJar> {
-    exclude("**/pom.properties", "**/pom.xm")
     mergeServiceFiles()
     archiveFileName.set("${project.name}.jar")
 }
