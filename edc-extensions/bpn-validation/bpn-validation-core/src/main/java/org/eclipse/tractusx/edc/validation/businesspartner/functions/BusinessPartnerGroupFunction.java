@@ -175,6 +175,10 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     }
 
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
+        if (bpnGroupHolder.allowedGroups.isEmpty()) {
+            return true;
+        }
+
         return !evaluateEquals(bpnGroupHolder);
     }
 

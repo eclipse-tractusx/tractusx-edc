@@ -167,9 +167,9 @@ class BusinessPartnerGroupFunctionTest {
 
     @ArgumentsSource(OperatorForEmptyGroupsProvider.class)
     @ParameterizedTest
-    void evaluate_groupsAssignedButNoGroupsSentToEvaluate(Operator operator, boolean expectedOutcome) {
+    void evaluate_groupsAssignedButNoGroupsSentToEvaluate(Operator operator, List<String> assignedBpnGroups,
+                                                          boolean expectedOutcome) {
         var allowedGroups = List.<String>of();
-        var assignedBpnGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
 
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpnGroups));
@@ -239,13 +239,21 @@ class BusinessPartnerGroupFunctionTest {
     private static class OperatorForEmptyGroupsProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+            var assignedBpnGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+
             return Stream.of(
-                    Arguments.of(EQ, false),
-                    Arguments.of(NEQ, true),
-                    Arguments.of(IN, false),
-                    Arguments.of(IS_ALL_OF, false),
-                    Arguments.of(IS_ANY_OF, false),
-                    Arguments.of(IS_NONE_OF, true)
+                    Arguments.of(EQ, assignedBpnGroups, false),
+                    Arguments.of(EQ, List.of(), false),
+                    Arguments.of(NEQ, assignedBpnGroups, true),
+                    Arguments.of(NEQ, List.of(), true),
+                    Arguments.of(IN, assignedBpnGroups, false),
+                    Arguments.of(IN, List.of(), false),
+                    Arguments.of(IS_ALL_OF, assignedBpnGroups, false),
+                    Arguments.of(IS_ALL_OF, List.of(), false),
+                    Arguments.of(IS_ANY_OF, assignedBpnGroups, false),
+                    Arguments.of(IS_ANY_OF, List.of(), false),
+                    Arguments.of(IS_NONE_OF, assignedBpnGroups, true),
+                    Arguments.of(IS_NONE_OF, List.of(), true)
             );
         }
     }
