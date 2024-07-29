@@ -50,6 +50,8 @@ public class RuntimeConfig {
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
                 put("tx.edc.iam.sts.dim.url", "http://sts.example.com");
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
+                put("edc.transfer.proxy.token.verifier.publickey.alias", "not-used-but-mandatory");
+                put("edc.transfer.proxy.token.signer.privatekey.alias", "not-used-but-mandatory");
             }
         };
     }
