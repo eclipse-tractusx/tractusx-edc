@@ -356,6 +356,7 @@ maven/mavencentral/org.eclipse.edc/asset-api/0.8.1, Apache-2.0, approved, techno
 maven/mavencentral/org.eclipse.edc/asset-index-sql/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-spi/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-spi/0.8.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/auth-configuration/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-spi/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-tokenbased/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/autodoc-processor/0.8.1, Apache-2.0, approved, technology.edc
