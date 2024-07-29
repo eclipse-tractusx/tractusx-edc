@@ -74,4 +74,3 @@ jobs:
           namespace: ${{ inputs.namespace }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-          do_push: 'true'
