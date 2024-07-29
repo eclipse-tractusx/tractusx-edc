@@ -2,8 +2,8 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.8.0"
-fc = "0.8.1-20240719-SNAPSHOT"
+edc = "0.8.1"
+fc = "0.8.1"
 assertj = "3.26.3"
 awaitility = "4.2.1"
 aws = "2.26.25"
