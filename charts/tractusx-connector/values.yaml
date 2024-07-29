@@ -147,6 +147,8 @@ controlplane:
       port: 8085
       # -- path for incoming catalog cache query requests
       path: /catalog
+      # -- authentication key, must be attached to each request as `X-Api-Key` header
+      authKey: "password"
 
   bdrs:
     # -- Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min)

@@ -95,6 +95,8 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.control.path", controlPlaneControl.getPath());
                 put("web.http.catalog.port", String.valueOf(federatedCatalog.getUrl().getPort()));
                 put("web.http.catalog.path", federatedCatalog.getUrl().getPath());
+                put("web.http.catalog.auth.type", "tokenbased");
+                put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
                 put("edc.dsp.callback.address", protocolEndpoint.getUrl().toString());
                 put("edc.api.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.public.path", "/api/public");
