@@ -103,7 +103,7 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
         try (var connection = DriverManager.getConnection(baseJdbcUrl() + "postgres", postgreSqlContainer.getUsername(), postgreSqlContainer.getPassword())) {
             connection.createStatement().execute(String.format("create database %s;", postgreSqlContainer.getDatabaseName()));
         } catch (SQLException ignored) {
-
+            // ignored
         }
     }
 }
