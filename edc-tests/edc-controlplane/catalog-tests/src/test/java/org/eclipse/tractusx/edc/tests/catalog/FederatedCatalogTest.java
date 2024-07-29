@@ -76,13 +76,12 @@ public class FederatedCatalogTest {
             await().pollInterval(ASYNC_POLL_INTERVAL)
                     .atMost(ASYNC_TIMEOUT)
                     .untilAsserted(() -> {
-                        // act
                         CONSUMER.getFederatedCatalog()
-                                .log().ifError()
+                                .log().ifValidationFails()
                                 .statusCode(200)
                                 .contentType(JSON)
                                 .body("size()", is(1))
-                                .body("[0].'http://www.w3.org/ns/dcat#dataset'.'@id'", equalTo("test-asset"));
+                                .body("[0].'dcat:dataset'.'@id'", equalTo("test-asset"));
                     });
         }
     }

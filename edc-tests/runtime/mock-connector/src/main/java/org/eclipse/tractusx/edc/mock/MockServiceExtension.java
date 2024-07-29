@@ -80,13 +80,14 @@ public class MockServiceExtension implements ServiceExtension {
     @Provider
     public CatalogService mockCatalogService() {
         return new CatalogService() {
+
             @Override
-            public CompletableFuture<StatusResult<byte[]>> requestCatalog(String counterPartyId, String counterPartyAddress, String protocol, QuerySpec querySpec) {
+            public CompletableFuture<StatusResult<byte[]>> requestCatalog(String s, String s1, String s2, QuerySpec querySpec, String... strings) {
                 return null;
             }
 
             @Override
-            public CompletableFuture<StatusResult<byte[]>> requestDataset(String id, String counterPartyId, String counterPartyAddress, String protocol) {
+            public CompletableFuture<StatusResult<byte[]>> requestDataset(String s, String s1, String s2, String s3) {
                 return null;
             }
         };

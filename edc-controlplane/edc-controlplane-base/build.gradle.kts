@@ -20,6 +20,7 @@
 
 plugins {
     `java-library`
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
