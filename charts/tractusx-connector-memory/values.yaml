@@ -149,6 +149,8 @@ runtime:
       port: 8085
       # -- path for incoming catalog cache query requests
       path: /catalog
+      # -- authentication key, must be attached to each request as `X-Api-Key` header
+      authKey: "password"
 
   token:
     refresh:

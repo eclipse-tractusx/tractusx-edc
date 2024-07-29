@@ -80,7 +80,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc1 \
 | controlplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | controlplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | controlplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| controlplane.endpoints | object | `{"catalog":{"path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"catalog":{"authKey":"password","path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints.catalog.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
 | controlplane.endpoints.catalog.path | string | `"/catalog"` | path for incoming catalog cache query requests |
 | controlplane.endpoints.catalog.port | int | `8085` | port for incoming catalog cache query requests |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
