@@ -357,6 +357,7 @@ maven/mavencentral/org.eclipse.edc/asset-index-sql/0.8.1, Apache-2.0, approved, 
 maven/mavencentral/org.eclipse.edc/asset-spi/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-spi/0.8.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-configuration/0.8.1, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/auth-delegated/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-spi/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-tokenbased/0.8.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/autodoc-processor/0.8.1, Apache-2.0, approved, technology.edc
@@ -652,7 +653,7 @@ maven/mavencentral/org.testcontainers/database-commons/1.20.0, MIT, approved, cl
 maven/mavencentral/org.testcontainers/jdbc/1.20.0, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/junit-jupiter/1.20.0, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/postgresql/1.20.0, MIT, approved, clearlydefined
-maven/mavencentral/org.testcontainers/testcontainers/1.20.0, None, restricted, #15747
+maven/mavencentral/org.testcontainers/testcontainers/1.20.0, MIT, approved, #15747
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.xmlunit/xmlunit-placeholders/2.9.1, Apache-2.0, approved, clearlydefined
