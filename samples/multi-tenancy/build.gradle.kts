@@ -47,7 +47,7 @@ application {
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
-    archiveFileName.set("multitenant.jar")
+    archiveFileName.set("multi-tenancy.jar")
 }
 
 // do not publish
