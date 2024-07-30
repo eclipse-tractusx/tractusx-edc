@@ -83,7 +83,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-r
 | runtime.debug.enabled | bool | `false` | Enables java debugging mode. |
 | runtime.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | runtime.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| runtime.endpoints | object | `{"catalog":{"authKey":"password","path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
+| runtime.endpoints | object | `{"catalog":{"authKey":"password","path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","jwksUrl":null,"path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
 | runtime.endpoints.catalog.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
 | runtime.endpoints.catalog.path | string | `"/catalog"` | path for incoming catalog cache query requests |
 | runtime.endpoints.catalog.port | int | `8085` | port for incoming catalog cache query requests |
@@ -93,8 +93,9 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-r
 | runtime.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | runtime.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | runtime.endpoints.default.port | int | `8080` | port for incoming api calls |
-| runtime.endpoints.management | object | `{"authKey":"password","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| runtime.endpoints.management | object | `{"authKey":"password","jwksUrl":null,"path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
 | runtime.endpoints.management.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
+| runtime.endpoints.management.jwksUrl | string | `nil` | if the JWKS url is set, the DelegatedAuth service will be engaged |
 | runtime.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | runtime.endpoints.management.port | int | `8081` | port for incoming api calls |
 | runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |
