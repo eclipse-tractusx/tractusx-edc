@@ -102,7 +102,7 @@ jobs:
             kubectl rollout status deployment tx-prod-dataplane
 
             # execute the helm test using token based auth in the Management API
-            helm test tx-prod --filter name=controlplane-with-token-auth-test
+            helm test tx-prod
 
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm - delegated auth"
@@ -120,21 +120,8 @@ jobs:
             # wait for the pod to become ready
             kubectl rollout status deployment tx-prod-controlplane
             kubectl rollout status deployment tx-prod-dataplane
-
-            kubectl port-forward service/tx-prod-controlplane 8081:8081 &
-
-            code=$(curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer sdfasdfasdf" -d '{
-                    "@context": {
-                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
-                    },
-                    "@id": "tx:BPN000001234",
-                    "tx:groups": ["group1", "group2", "group3"]
-                }' --silent -o /dev/null -w '%{http_code}' http://localhost:8081/management/v3/business-partner-groups)
             
-            if [[ $code -ne 401 ]]; then
-              echo "Expected a HTTP 401, got $code"
-              exit 1;
-            fi
+            # no helm test here, because the delegated auth won't work without an actual IdP
 
   test-azure-vault-postgres:
     runs-on: ubuntu-latest

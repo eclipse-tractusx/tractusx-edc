@@ -122,6 +122,8 @@ controlplane:
       path: /management
       # -- authentication key, must be attached to each request as `X-Api-Key` header
       authKey: "password"
+      # -- if the JWKS url is set, the DelegatedAuth service will be engaged
+      jwksUrl:
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls
