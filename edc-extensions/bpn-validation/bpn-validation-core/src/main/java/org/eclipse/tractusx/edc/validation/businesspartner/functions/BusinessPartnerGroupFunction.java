@@ -24,6 +24,8 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.spi.result.StoreFailure;
+import org.eclipse.edc.spi.result.StoreFailure.Reason;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.Arrays;
@@ -78,7 +80,6 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
-    private static final List<Operator> POSITIVE_OPERATORS = List.of(EQ, IN, IS_ALL_OF, IS_ANY_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
 
@@ -87,8 +88,8 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
-        OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIn);
+        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIn);
+        OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
 
@@ -98,8 +99,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
      * <ul>
      *     <li>No {@link ParticipantAgent} was found on the {@link PolicyContext}</li>
      *     <li>The operator is invalid. Check {@link BusinessPartnerGroupFunction#ALLOWED_OPERATORS} for valid operators.</li>
-     *     <li>No database entry was found for the BPN (taken from the {@link ParticipantAgent}) and the operator is 'positive' {@link BusinessPartnerGroupFunction#POSITIVE_OPERATORS}</li>
-     *     <li>A database entry was found, but no group-IDs were assigned and the operator is 'positive' {@link BusinessPartnerGroupFunction#POSITIVE_OPERATORS}</li>
+     *     <li>No database entry was found for the BPN (taken from the {@link ParticipantAgent}) and the {@link StoreFailure#getReason()} is different than {@link Reason#NOT_FOUND}</li>
      *     <li>The right value is anything other than {@link String} or {@link Collection}</li>
      * </ul>
      */
@@ -123,21 +123,17 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         var bpn = participantAgent.getIdentity();
         var groups = store.resolveForBpn(bpn);
 
-        var isPositiveOperator = POSITIVE_OPERATORS.contains(operator);
-        var errorMessage = "";
+        var assignedGroups = groups.getContent();
 
         // BPN not found in database
         if (groups.failed()) {
-            errorMessage = groups.getFailureDetail();
+            boolean isNotFound = Reason.NOT_FOUND.equals(groups.getFailure().getReason());
+            if (!isNotFound) {
+                policyContext.reportProblem(groups.getFailureDetail());
+                return false;
+            }
 
-        // BPN was found, but it does not have groups assigned.
-        } else if (groups.getContent().isEmpty()) {
-            errorMessage = "No groups were assigned to BPN " + bpn;
-        }
-
-        if (!errorMessage.isBlank() && isPositiveOperator) {
-            policyContext.reportProblem(errorMessage);
-            return false;
+            assignedGroups = List.of();
         }
 
         // right-operand is anything other than String or Collection
@@ -145,8 +141,6 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         if (rightOperand == null) {
             return false;
         }
-
-        var assignedGroups = groups.getContent();
 
         //call evaluator function
         return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand));
@@ -168,17 +162,10 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         // checks whether both lists overlap
-        return bpnGroupHolder.allowedGroups
-                .stream()
-                .distinct()
-                .anyMatch(assigned::contains);
+        return bpnGroupHolder.allowedGroups.containsAll(assigned);
     }
 
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
-        if (bpnGroupHolder.allowedGroups.isEmpty()) {
-            return true;
-        }
-
         return !evaluateEquals(bpnGroupHolder);
     }
 
@@ -186,24 +173,20 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
     }
 
-    private boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
-        if (bpnGroupHolder.allowedGroups.isEmpty()) {
-            return false;
-        }
-
-        var assigned = bpnGroupHolder.assignedGroups;
-        return bpnGroupHolder.allowedGroups
-                .stream()
-                .distinct()
-                .allMatch(assigned::contains);
-    }
-
-    private boolean evaluateIsNoneOf(BpnGroupHolder bpnGroupHolder) {
-        if (bpnGroupHolder.assignedGroups == null) {
+    private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
+        if (bpnGroupHolder.allowedGroups.isEmpty() && bpnGroupHolder.assignedGroups.isEmpty()) {
             return true;
         }
 
-        return !evaluateIn(bpnGroupHolder);
+        var allowedGroups = bpnGroupHolder.allowedGroups;
+        return bpnGroupHolder.assignedGroups
+                .stream()
+                .distinct()
+                .anyMatch(allowedGroups::contains);
+    }
+
+    private boolean evaluateIsNoneOf(BpnGroupHolder bpnGroupHolder) {
+        return !evaluateIsAnyOf(bpnGroupHolder);
     }
 
     /**

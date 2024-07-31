@@ -60,6 +60,7 @@ import static org.eclipse.tractusx.edc.validation.businesspartner.functions.Busi
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -123,46 +124,27 @@ class BusinessPartnerGroupFunctionTest {
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
     }
 
-    @EnumSource(value = Operator.class, names = {"NEQ", "IS_NONE_OF"})
+    @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN", "IS_NONE_OF", "NEQ"})
     @ParameterizedTest
-    void evaluate_noEntryForBpnWithNegativeOperator_shouldBeTrue(Operator operator) {
+    void evaluate_failedResolveForBpn_shouldBeFalse(Operator operator) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
-
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
-    }
-
-    @EnumSource(value = Operator.class, names = {"NEQ", "IS_NONE_OF"})
-    @ParameterizedTest
-    void evaluate_noGroupsAssignedToBpnWithNegativeOperator_shouldBeTrue(Operator operator) {
-        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
-
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
-    }
-
-    @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN"})
-    @ParameterizedTest
-    void evaluate_noEntryForBpnWithPositiveOperator_shouldBeFalse(Operator operator) {
-        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.generalError("foobar"));
 
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
         verify(context).reportProblem("foobar");
     }
 
-    @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN"})
-    @ParameterizedTest
-    void evaluate_noGroupsAssignedToBpnWithPositiveOperator_shouldBeFalse(Operator operator) {
-        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(Collections.emptyList()));
+    @Test
+    void evaluate_failedResolveForBpn_shouldEvaluateBasedOnOperator() {
+        var allowedGroups = List.<String>of();
+        var operator = EQ;
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
-        verify(context).reportProblem("No groups were assigned to BPN " + TEST_BPN);
+        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
+
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
+        verify(context, never()).reportProblem("foobar");
     }
 
     @ArgumentsSource(OperatorForEmptyGroupsProvider.class)
@@ -214,14 +196,14 @@ class BusinessPartnerGroupFunctionTest {
                     Arguments.of("Empty groups", NEQ, List.of(), true),
 
                     Arguments.of("Matching groups", IN, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IN, List.of(TEST_GROUP_1, "different-group"), true),
+                    Arguments.of("Overlapping groups", IN, List.of(TEST_GROUP_1, "different-group"), false),
                     Arguments.of("Disjoint groups", IN, List.of("different-group", "another-different-group"), false),
 
                     Arguments.of("Disjoint groups", IS_ALL_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), true),
+                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), false),
                     Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1, "different-group"), false),
-                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), false),
+                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), true),
 
                     Arguments.of("Disjoint groups", IS_ANY_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ANY_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
@@ -238,22 +220,22 @@ class BusinessPartnerGroupFunctionTest {
 
     private static class OperatorForEmptyGroupsProvider implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             var assignedBpnGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
 
             return Stream.of(
                     Arguments.of(EQ, assignedBpnGroups, false),
-                    Arguments.of(EQ, List.of(), false),
+                    Arguments.of(EQ, List.of(), true),
                     Arguments.of(NEQ, assignedBpnGroups, true),
-                    Arguments.of(NEQ, List.of(), true),
+                    Arguments.of(NEQ, List.of(), false),
                     Arguments.of(IN, assignedBpnGroups, false),
-                    Arguments.of(IN, List.of(), false),
+                    Arguments.of(IN, List.of(), true),
                     Arguments.of(IS_ALL_OF, assignedBpnGroups, false),
-                    Arguments.of(IS_ALL_OF, List.of(), false),
+                    Arguments.of(IS_ALL_OF, List.of(), true),
                     Arguments.of(IS_ANY_OF, assignedBpnGroups, false),
-                    Arguments.of(IS_ANY_OF, List.of(), false),
+                    Arguments.of(IS_ANY_OF, List.of(), true),
                     Arguments.of(IS_NONE_OF, assignedBpnGroups, true),
-                    Arguments.of(IS_NONE_OF, List.of(), true)
+                    Arguments.of(IS_NONE_OF, List.of(), false)
             );
         }
     }
