@@ -3,7 +3,6 @@ format.version = "1.1"
 
 [versions]
 edc = "0.8.2-20240801-SNAPSHOT"
-fc = "0.8.2-20240801-SNAPSHOT"
 
 assertj = "3.26.3"
 awaitility = "4.2.1"
@@ -163,7 +162,7 @@ edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identi
 edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
 edc-fc-core = { module = "org.eclipse.edc:federated-catalog-core", version.ref = "edc" }
 edc-fc-api = { module = "org.eclipse.edc:federated-catalog-api", version.ref = "edc" }
-edc-fc-sql-cache = { module = "org.eclipse.edc:federated-catalog-cache-sql", version.ref = "fc" }
+edc-fc-sql-cache = { module = "org.eclipse.edc:federated-catalog-cache-sql", version.ref = "edc" }
 
 ## IH for testing
 
