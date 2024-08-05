@@ -17,8 +17,9 @@ maven/mavencentral/com.azure/azure-core/1.50.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.13.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.13.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
+maven/mavencentral/com.azure/azure-json/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.7.3, MIT, approved, #10868
-maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.8.4, MIT, approved, #13690
+maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.8.5, MIT, approved, #13690
 maven/mavencentral/com.azure/azure-storage-blob/12.26.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-storage-blob/12.27.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-storage-common/12.25.0, MIT, approved, clearlydefined
