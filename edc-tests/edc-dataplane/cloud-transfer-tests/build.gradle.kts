@@ -32,7 +32,7 @@ dependencies {
     testImplementation(libs.edc.config.filesystem)
     testImplementation(libs.edc.dpf.http)
     testImplementation(libs.edc.auth.tokenbased)
-    testImplementation(libs.edc.dpf.selector.spi)
+    testImplementation(libs.edc.spi.dataplane.selector)
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.edc.aws.s3.core)
     testImplementation(libs.aws.s3)
