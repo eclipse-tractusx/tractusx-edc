@@ -127,13 +127,8 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         // BPN not found in database
         if (groups.failed()) {
-            boolean isNotFound = Reason.NOT_FOUND.equals(groups.getFailure().getReason());
-            if (!isNotFound) {
-                policyContext.reportProblem(groups.getFailureDetail());
-                return false;
-            }
-
-            assignedGroups = List.of();
+            policyContext.reportProblem(groups.getFailureDetail());
+            return false;
         }
 
         // right-operand is anything other than String or Collection

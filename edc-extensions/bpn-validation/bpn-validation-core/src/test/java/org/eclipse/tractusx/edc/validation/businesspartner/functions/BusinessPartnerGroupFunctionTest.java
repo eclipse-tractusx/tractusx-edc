@@ -123,27 +123,15 @@ class BusinessPartnerGroupFunctionTest {
         assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
     }
 
-    @EnumSource(value = Operator.class, names = {"EQ", "IS_ANY_OF", "IS_ALL_OF", "IN", "IS_NONE_OF", "NEQ"})
-    @ParameterizedTest
-    void evaluate_failedResolveForBpn_shouldBeFalse(Operator operator) {
-        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
-        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.generalError("foobar"));
-
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
-        verify(context).reportProblem("foobar");
-    }
-
     @Test
-    void evaluate_failedResolveForBpn_shouldEvaluateBasedOnOperator() {
-        var allowedGroups = List.<String>of();
+    void evaluate_failedResolveForBpn_shouldBeFalse() {
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         var operator = EQ;
-
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isTrue();
-        verify(context, never()).reportProblem("foobar");
+        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
+        verify(context).reportProblem("foobar");
     }
 
     @ArgumentsSource(OperatorForEmptyGroupsProvider.class)
