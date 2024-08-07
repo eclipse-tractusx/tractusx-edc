@@ -79,7 +79,7 @@ jobs:
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets: inherit
     with:
-      docker_tag: ${{ env.RELEASE_VERSION }}
+      docker_tag: $RELEASE_VERSION
 
   # Release: Helm Charts
   helm-release:
@@ -88,7 +88,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
       pages: write
 
     if: github.event.pull_request.merged == true && needs.release-version.outputs.RELEASE_VERSION
