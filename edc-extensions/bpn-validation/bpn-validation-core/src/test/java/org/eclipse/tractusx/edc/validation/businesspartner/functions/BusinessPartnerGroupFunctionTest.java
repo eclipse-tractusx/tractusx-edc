@@ -138,7 +138,7 @@ class BusinessPartnerGroupFunctionTest {
     @ParameterizedTest
     void evaluate_groupsAssignedButNoGroupsSentToEvaluate(Operator operator, List<String> assignedBpnGroups,
                                                           boolean expectedOutcome) {
-        var allowedGroups = List.<String>of();
+        List<String> allowedGroups = List.of();
 
         when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpnGroups));
