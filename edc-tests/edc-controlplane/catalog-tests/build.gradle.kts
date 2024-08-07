@@ -29,6 +29,7 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
+    testImplementation(libs.edc.fc.spi.crawler)
     testRuntimeOnly(libs.edc.transaction.local)
 
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))

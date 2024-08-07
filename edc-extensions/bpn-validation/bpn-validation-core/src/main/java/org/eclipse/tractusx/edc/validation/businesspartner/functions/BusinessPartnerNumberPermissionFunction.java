@@ -24,24 +24,42 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.spi.result.Failure;
+import org.eclipse.edc.spi.result.Result;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
-import static java.lang.String.format;
+import static org.eclipse.edc.policy.model.Operator.EQ;
+import static org.eclipse.edc.policy.model.Operator.HAS_PART;
+import static org.eclipse.edc.spi.result.Result.failure;
+import static org.eclipse.edc.spi.result.Result.success;
 
 /**
  * AtomicConstraintFunction to validate business partner numbers for edc permissions.
  */
 public class BusinessPartnerNumberPermissionFunction implements AtomicConstraintFunction<Permission> {
 
-    public BusinessPartnerNumberPermissionFunction() {
-    }
+    private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
+            EQ,
+            Operator.IN,
+            Operator.NEQ,
+            Operator.IS_ANY_OF,
+            Operator.IS_A,
+            Operator.IS_NONE_OF,
+            Operator.IS_ALL_OF,
+            Operator.HAS_PART
+    );
 
     @Override
     public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext context) {
-        
-        if (operator != Operator.EQ) {
-            var message = format("As operator only 'EQ' is supported. Unsupported operator: '%s'", operator);
+
+        if (!SUPPORTED_OPERATORS.contains(operator)) {
+            var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
             context.reportProblem(message);
             return false;
         }
@@ -58,19 +76,51 @@ public class BusinessPartnerNumberPermissionFunction implements AtomicConstraint
             return false;
         }
 
-        if ((rightValue instanceof String businessPartnerNumberStr)) {
-            if (businessPartnerNumberStr.equals(identity)) {
-                return true;
-            } else {
-                context.reportProblem("Identity of the participant not matching the expected one: " + businessPartnerNumberStr);
-                return false;
-            }
-        } else {
-            var message = format("Invalid right operand value: expected 'String' but got '%s'",
-                    Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null));
-            context.reportProblem(message);
-            return false;
-        }
+        return switch (operator) {
+            case EQ, IS_ALL_OF -> checkEquality(identity, rightValue, operator)
+                    .orElse(reportFailure(context));
+            case NEQ -> checkEquality(identity, rightValue, operator)
+                    .map(b -> !b)
+                    .orElse(reportFailure(context));
+            case HAS_PART -> checkStringContains(identity, rightValue)
+                    .orElse(reportFailure(context));
+            case IN, IS_A, IS_ANY_OF ->
+                    checkListContains(identity, rightValue, operator).orElse(reportFailure(context));
+            case IS_NONE_OF -> checkListContains(identity, rightValue, operator)
+                    .map(b -> !b)
+                    .orElse(reportFailure(context));
+            default -> false;
+        };
+    }
 
+    private @NotNull Function<Failure, Boolean> reportFailure(PolicyContext context) {
+        return f -> {
+            context.reportProblem(f.getFailureDetail());
+            return false;
+        };
+    }
+
+    private Result<Boolean> checkListContains(String identity, Object rightValue, Operator operator) {
+        if (rightValue instanceof List numbers) {
+            return success(numbers.contains(identity));
+        }
+        return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+    }
+
+    private Result<Boolean> checkStringContains(String identity, Object rightValue) {
+        if (rightValue instanceof String bpnString) {
+            return success(identity.contains(bpnString));
+        }
+        return failure("Invalid right-value: operator '%s' requires a 'String' but got a '%s'".formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Result<Boolean> checkEquality(String identity, Object rightValue, Operator operator) {
+        if (rightValue instanceof String bpnString) {
+            return success(Objects.equals(identity, bpnString));
+        } else if (rightValue instanceof List bpnList) {
+            return success(bpnList.stream().allMatch(bpn -> Objects.equals(identity, bpn)));
+        }
+        return failure("Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 }

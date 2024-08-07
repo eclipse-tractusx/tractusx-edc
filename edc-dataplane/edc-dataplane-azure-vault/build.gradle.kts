@@ -33,7 +33,7 @@ dependencies {
         }
     }
     implementation(libs.edc.azure.identity)
-    implementation("com.azure:azure-security-keyvault-secrets:4.8.4")
+    implementation("com.azure:azure-security-keyvault-secrets:4.8.5")
     runtimeOnly(libs.edc.transaction.local)
     runtimeOnly(libs.edc.sql.pool)
     runtimeOnly(libs.edc.sql.accesstokendata)
@@ -43,7 +43,6 @@ dependencies {
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    exclude("**/pom.properties", "**/pom.xm")
     mergeServiceFiles()
     archiveFileName.set("${project.name}.jar")
 }

@@ -19,6 +19,7 @@
 #################################################################################
 
 
+# DEPRECATED: openapi are published on github-pages now, please look at publish-openapi-ui
 ---
 name: "Publish OpenAPI to Swaggerhub"
 

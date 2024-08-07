@@ -1,6 +1,6 @@
 # tractusx-connector-azure-vault
 
-![Version: 0.8.0-rc1](https://img.shields.io/badge/Version-0.8.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc1](https://img.shields.io/badge/AppVersion-0.8.0--rc1-informational?style=flat-square)
+![Version: 0.8.0-rc2](https://img.shields.io/badge/Version-0.8.0--rc2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc2](https://img.shields.io/badge/AppVersion-0.8.0--rc2-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
@@ -44,7 +44,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.8.0-rc1 \
+helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.8.0-rc2 \
      -f <path-to>/tractusx-connector-azure-vault-test.yaml \
      --set vault.azure.name=$AZURE_VAULT_NAME \
      --set vault.azure.client=$AZURE_CLIENT_ID \
@@ -83,7 +83,8 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | controlplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | controlplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| controlplane.endpoints | object | `{"catalog":{"path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints | object | `{"catalog":{"authKey":"password","path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","jwksUrl":null,"path":"/management","port":8081},"metrics":{"path":"/metrics","port":9090},"protocol":{"path":"/api/v1/dsp","port":8084}}` | endpoints of the control plane |
+| controlplane.endpoints.catalog.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
 | controlplane.endpoints.catalog.path | string | `"/catalog"` | path for incoming catalog cache query requests |
 | controlplane.endpoints.catalog.port | int | `8085` | port for incoming catalog cache query requests |
 | controlplane.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
@@ -92,8 +93,9 @@ helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.
 | controlplane.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | controlplane.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | controlplane.endpoints.default.port | int | `8080` | port for incoming api calls |
-| controlplane.endpoints.management | object | `{"authKey":"password","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| controlplane.endpoints.management | object | `{"authKey":"password","jwksUrl":null,"path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
 | controlplane.endpoints.management.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
+| controlplane.endpoints.management.jwksUrl | string | `nil` | if the JWKS url is set, the DelegatedAuth service will be engaged |
 | controlplane.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | controlplane.endpoints.management.port | int | `8081` | port for incoming api calls |
 | controlplane.endpoints.metrics | object | `{"path":"/metrics","port":9090}` | metrics api, used for application metrics, must not be internet facing |

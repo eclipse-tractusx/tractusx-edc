@@ -88,7 +88,7 @@ public class ParticipantEdrApi {
     public ValidatableResponse getEdrWithRefresh(String transferProcessId, boolean autoRefresh) {
         return baseEdrRequest()
                 .when()
-                .get("/v2/edrs/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)
+                .get("/v3/edrs/{id}/dataaddress?auto_refresh={auto_refresh}", transferProcessId, autoRefresh)
                 .then()
                 .log().ifError();
 
@@ -100,7 +100,7 @@ public class ParticipantEdrApi {
     public ValidatableResponse refreshEdr(String transferProcessId) {
         return baseEdrRequest()
                 .when()
-                .post("/v2/edrs/{id}/refresh", transferProcessId)
+                .post("/v3/edrs/{id}/refresh", transferProcessId)
                 .then()
                 .log().ifError();
     }
@@ -128,7 +128,7 @@ public class ParticipantEdrApi {
         var response = baseEdrRequest()
                 .when()
                 .body(requestBody)
-                .post("/v2/edrs")
+                .post("/v3/edrs")
                 .then();
 
         var body = response.extract().body().asString();
@@ -148,7 +148,7 @@ public class ParticipantEdrApi {
         return baseEdrRequest()
                 .when()
                 .body(query)
-                .post("/v2/edrs/request")
+                .post("/v3/edrs/request")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -167,7 +167,7 @@ public class ParticipantEdrApi {
         return baseEdrRequest()
                 .when()
                 .body(query)
-                .post("/v2/edrs/request")
+                .post("/v3/edrs/request")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -186,7 +186,7 @@ public class ParticipantEdrApi {
         return baseEdrRequest()
                 .when()
                 .body(query)
-                .post("/v2/edrs/request")
+                .post("/v3/edrs/request")
                 .then()
                 .statusCode(200)
                 .extract()

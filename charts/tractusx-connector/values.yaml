@@ -124,6 +124,9 @@ controlplane:
       path: /management
       # -- authentication key, must be attached to each request as `X-Api-Key` header
       authKey: "password"
+      # -- if the JWKS url is set, the DelegatedAuth service will be engaged
+      jwksUrl:
+
     # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
     control:
       # -- port for incoming api calls
@@ -147,6 +150,8 @@ controlplane:
       port: 8085
       # -- path for incoming catalog cache query requests
       path: /catalog
+      # -- authentication key, must be attached to each request as `X-Api-Key` header
+      authKey: "password"
 
   bdrs:
     # -- Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min)

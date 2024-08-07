@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.8.0-rc1](https://img.shields.io/badge/Version-0.8.0--rc1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc1](https://img.shields.io/badge/AppVersion-0.8.0--rc1-informational?style=flat-square)
+![Version: 0.8.0-rc2](https://img.shields.io/badge/Version-0.8.0--rc2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc2](https://img.shields.io/badge/AppVersion-0.8.0--rc2-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -41,7 +41,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-rc1 \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-rc2 \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
@@ -83,7 +83,8 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-r
 | runtime.debug.enabled | bool | `false` | Enables java debugging mode. |
 | runtime.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | runtime.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| runtime.endpoints | object | `{"catalog":{"path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
+| runtime.endpoints | object | `{"catalog":{"authKey":"password","path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","jwksUrl":null,"path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
+| runtime.endpoints.catalog.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
 | runtime.endpoints.catalog.path | string | `"/catalog"` | path for incoming catalog cache query requests |
 | runtime.endpoints.catalog.port | int | `8085` | port for incoming catalog cache query requests |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
@@ -92,8 +93,9 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-r
 | runtime.endpoints.default | object | `{"path":"/api","port":8080}` | default api for health checks, should not be added to any ingress |
 | runtime.endpoints.default.path | string | `"/api"` | path for incoming api calls |
 | runtime.endpoints.default.port | int | `8080` | port for incoming api calls |
-| runtime.endpoints.management | object | `{"authKey":"password","path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
+| runtime.endpoints.management | object | `{"authKey":"password","jwksUrl":null,"path":"/management","port":8081}` | data management api, used by internal users, can be added to an ingress and must not be internet facing |
 | runtime.endpoints.management.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
+| runtime.endpoints.management.jwksUrl | string | `nil` | if the JWKS url is set, the DelegatedAuth service will be engaged |
 | runtime.endpoints.management.path | string | `"/management"` | path for incoming api calls |
 | runtime.endpoints.management.port | int | `8081` | port for incoming api calls |
 | runtime.endpoints.protocol | object | `{"path":"/api/v1/dsp","port":8084}` | dsp api, used for inter connector communication and must be internet facing |

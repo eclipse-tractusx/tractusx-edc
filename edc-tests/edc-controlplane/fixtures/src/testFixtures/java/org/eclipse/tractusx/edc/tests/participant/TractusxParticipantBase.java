@@ -63,12 +63,11 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
     private final URI backendProviderProxy = URI.create("http://localhost:" + getFreePort() + "/events");
     private final URI dataPlanePublic = URI.create("http://localhost:" + getFreePort() + "/public");
-
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
     protected ParticipantConsumerDataPlaneApi dataPlane;
-
     protected String did;
+    protected Endpoint federatedCatalog;
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
@@ -94,8 +93,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.management.path", managementEndpoint.getUrl().getPath());
                 put("web.http.control.port", String.valueOf(controlPlaneControl.getPort()));
                 put("web.http.control.path", controlPlaneControl.getPath());
-                put("web.http.catalog.port", String.valueOf(getFreePort()));
-                put("web.http.catalog.path", "/api/catalog");
+                put("web.http.catalog.port", String.valueOf(federatedCatalog.getUrl().getPort()));
+                put("web.http.catalog.path", federatedCatalog.getUrl().getPath());
+                put("web.http.catalog.auth.type", "tokenbased");
+                put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
                 put("edc.dsp.callback.address", protocolEndpoint.getUrl().toString());
                 put("edc.api.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.public.path", "/api/public");
@@ -118,6 +119,8 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("tx.edc.iam.sts.dim.url", "http://sts.example.com");
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "http://localhost:%d/api/public/v2/data".formatted(dataPlanePublic.getPort()));
+                put("edc.catalog.cache.execution.delay.seconds", "2");
+                put("edc.catalog.cache.execution.period.seconds", "2");
             }
         };
     }
@@ -156,7 +159,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/business-partner-groups")
+                .post("/v3/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -192,15 +195,30 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.id)
-                .add("counterPartyAddress", provider.protocolEndpoint.getUrl().toString())
+                .add("counterPartyAddress", provider.federatedCatalog.getUrl().toString())
                 .add("protocol", protocol);
 
 
-        return managementEndpoint.baseRequest()
+        return provider.federatedCatalog.baseRequest()
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
                 .post("/v3/catalog/request")
+                .then();
+
+    }
+
+    public ValidatableResponse getFederatedCatalog() {
+        var requestBodyBuilder = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "QuerySpec");
+
+
+        return federatedCatalog.baseRequest()
+                .contentType(JSON)
+                .when()
+                .body(requestBodyBuilder.build())
+                .post("/v1alpha/catalog/query")
                 .then();
 
     }
@@ -222,6 +240,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 participant.did = "did:web:" + participant.name.toLowerCase();
             }
 
+            participant.federatedCatalog = new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/catalog"), Map.of("x-api-key", MANAGEMENT_API_KEY));
             super.managementEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/management"), Map.of("x-api-key", MANAGEMENT_API_KEY)));
             super.protocolEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/protocol")));
             super.timeout(ASYNC_TIMEOUT);

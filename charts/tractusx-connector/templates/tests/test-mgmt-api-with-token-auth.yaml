@@ -1,0 +1,56 @@
+#
+  #  Copyright (c) 2023 Contributors to the Eclipse Foundation
+  #
+  #  See the NOTICE file(s) distributed with this work for additional
+  #  information regarding copyright ownership.
+  #
+  #  This program and the accompanying materials are made available under the
+  #  terms of the Apache License, Version 2.0 which is available at
+  #  https://www.apache.org/licenses/LICENSE-2.0
+  #
+  #  Unless required by applicable law or agreed to in writing, software
+  #  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  #  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  #  License for the specific language governing permissions and limitations
+  #  under the License.
+  #
+  #  SPDX-License-Identifier: Apache-2.0
+  #
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "controlplane-with-token-auth-test"
+  labels:
+    {{- include "txdc.controlplane.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": {{ .Values.tests.hookDeletePolicy }}
+spec:
+  containers:
+    {{/* Poke the pod's management API   */}}
+    - name: readiness
+      image: curlimages/curl
+      command: [ 'curl', '--fail' ]
+      args: [ '{{- printf "http://%s-controlplane:%v%s/check/readiness" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.default.port $.Values.controlplane.endpoints.default.path -}}' ]
+
+    {{/* Try adding a BPN Group to the store via the management API   */}}
+    - name: bpn-store
+      image: curlimages/curl
+      command: [ 'curl', '-X', 'POST', '--fail','-H','Content-Type: application/json', '-H', '{{- printf "x-api-key: %s" $.Values.controlplane.endpoints.management.authKey }}', '-d', '{
+                    "@context": {
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                    },
+                    "@id": "tx:BPN000001234",
+                    "tx:groups": ["group1", "group2", "group3"]
+                }' ]
+      args: [ '{{- printf "http://%s-controlplane:%v%s/v3/business-partner-groups" (include "txdc.fullname" $ ) $.Values.controlplane.endpoints.management.port $.Values.controlplane.endpoints.management.path -}}' ]
+  restartPolicy: Never
+  securityContext:
+    fsGroup: 101 # curl_group
+    runAsGroup: 101 # curl_group
+    runAsNonRoot: true
+    runAsUser: 100 # curl_user
+    seccompProfile:
+      type: RuntimeDefault

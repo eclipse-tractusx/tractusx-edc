@@ -5,7 +5,7 @@ Consumer against their own Control Plane and triggers the retrieval of a catalog
 looks like this:
 
 ```http request
-POST /v2/catalog/request HTTP/1.1
+POST /v3/catalog/request HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -173,7 +173,7 @@ policies included.
 - `dcat:hasPolicy` holds the Data Offer that is relevant for the Consumer.
     - `@id` is the identifier for the Data Offer. The EDC composes this id by concatenating three identifiers in base64-encoding.
       separated with `:` (colons). The format is `base64(contractDefinitionId):base64(assetId):base64(newUuidV4)`. The last
-      of three UUIDs changes with every request as every /v2/catalog/request call yields a new catalog with new Data Offers.
+      of three UUIDs changes with every request as every /v3/catalog/request call yields a new catalog with new Data Offers.
     - The `odrl:permission`, `odrl:prohibition` and `odrl:obligation` will hold the content of the contractPolicy configured
       in the [Contract Definition](03_contractdefinitions.md) the Contract Offer was derived from.
 

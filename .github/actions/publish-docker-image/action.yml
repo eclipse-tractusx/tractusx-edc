@@ -42,22 +42,11 @@ inputs:
   docker_tag:
     required: false
     description: 'additional docker tags'
-  do_push:
-    required: false
-    default: 'false'
-    description: 'whether or not to actually push the image'
+
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v4
-
-    - name: Download OpenTelemetry
-      shell: bash
-      run: |-
-        # "jq -r" removes the quotation marks, that would trip up "wget"
-        URL=$(grep "val openTelemetryAgentUrl = " build.gradle.kts | awk -F'= ' '{print $2}' | jq -r)
-        wget -O ${{ inputs.rootDir }}/opentelemetry-javaagent.jar -q $URL
-        
 
     #####################
     # Login to DockerHub
@@ -102,12 +91,13 @@ runs:
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
-        context: .
-        file: ${{ inputs.rootDir }}/src/main/docker/Dockerfile
+        context: ${{ inputs.rootDir }}
+        file: ${{ inputs.rootDir }}/build/resources/docker/Dockerfile
         build-args: |
-          JAR=${{ inputs.rootDir }}/build/libs/${{ inputs.imagename }}.jar
-          OTEL_JAR=${{ inputs.rootDir }}/opentelemetry-javaagent.jar
-        push: ${{ inputs.do_push == 'true' }}
+          JAR=build/libs/${{ inputs.imagename }}.jar
+          OTEL_JAR=build/resources/otel/opentelemetry-javaagent.jar
+          ADDITIONAL_FILES=build/legal/*
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 

@@ -57,7 +57,7 @@ java -jar -Dedc.tenants.path=samples/multi-tenancy/tenants.properties samples/mu
 Create a PolicyDefinition on `first` tenant:
 
 ```shell
-curl -X POST http://localhost:18183/management/v2/policydefinitions \
+curl -X POST http://localhost:18183/management/v3/policydefinitions \
     --header 'Content-Type: application/json' \
     --data '{
                 "@context": { "@vocab": "https://w3id.org/edc/v0.0.1/ns/" },
@@ -75,7 +75,7 @@ curl -X POST http://localhost:18183/management/v2/policydefinitions \
 Get `first` tenant policy definitions:
 
 ```shell
-curl -X POST http://localhost:18183/management/v2/policydefinitions/request
+curl -X POST http://localhost:18183/management/v3/policydefinitions/request
 ```
 
 Will get a list containing the PolicyDefinition we created:
@@ -108,13 +108,13 @@ Will get a list containing the PolicyDefinition we created:
 `second` and `third` tenants will have no policy definitions:
 
 ```shell
-curl -X POST http://localhost:28183/management/v2/policydefinitions/request
+curl -X POST http://localhost:28183/management/v3/policydefinitions/request
 ```
 
 and
 
 ```shell
-curl -X POST http://localhost:38183/management/v2/policydefinitions/request
+curl -X POST http://localhost:38183/management/v3/policydefinitions/request
 ```
 
 will return

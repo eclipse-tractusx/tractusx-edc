@@ -18,7 +18,6 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-
 ---
 name: "Deployment Tests"
 
@@ -28,7 +27,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   secret-presence:
     runs-on: ubuntu-latest
     outputs:
@@ -81,17 +79,17 @@ jobs:
       fail-fast: false
       # this will verify that the official distribution of the Tractus-X EDC Helm chart runs on the last 3 Kubernetes versions
       matrix:
-        k8s-version: ["v1.30.0",
-                      "v1.29.4",
-                      "v1.28.9"]
+        k8s-version: [ "v1.30.2",
+                       "v1.29.4",
+                       "v1.28.9" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/run-deployment-test
-        name: "Run deployment test using KinD and Helm"
+        name: "Run deployment test using KinD and Helm - tokenbased auth"
         with:
           imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
-          rootDir: "."
+          rootDir: "edc-controlplane/edc-controlplane-postgresql-hashicorp-vault edc-dataplane/edc-dataplane-hashicorp-vault"
           k8sversion: ${{ matrix.k8s-version }}
           helm_command: |-
             helm install tx-prod charts/tractusx-connector \
@@ -103,14 +101,33 @@ jobs:
             kubectl rollout status deployment tx-prod-controlplane
             kubectl rollout status deployment tx-prod-dataplane
 
-            # execute the helm test
+            # execute the helm test using token based auth in the Management API
             helm test tx-prod
+
+      - uses: ./.github/actions/run-deployment-test
+        name: "Run deployment test using KinD and Helm - delegated auth"
+        with:
+          imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
+          rootDir: "edc-controlplane/edc-controlplane-postgresql-hashicorp-vault edc-dataplane/edc-dataplane-hashicorp-vault"
+          k8sversion: ${{ matrix.k8s-version }}
+          helm_command: |-
+            helm install tx-prod charts/tractusx-connector \
+            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
+            --set controlplane.endpoints.management.jwksUrl="http://foo-bar.com/.well-known/jwks.json" \
+            --dependency-update \
+            --wait-for-jobs --timeout=120s    
+
+            # wait for the pod to become ready
+            kubectl rollout status deployment tx-prod-controlplane
+            kubectl rollout status deployment tx-prod-dataplane
+            
+            # no helm test here, because the delegated auth won't work without an actual IdP
 
   test-azure-vault-postgres:
     runs-on: ubuntu-latest
     needs: [ test-prepare, secret-presence ]
-#    if: |
-#      needs.secret-presence.outputs.AZURE_KV_CREDS
+    #    if: |
+    #      needs.secret-presence.outputs.AZURE_KV_CREDS
 
     # DEACTIVATE this job for now because our Azure Credentials are expired
     # TODO: reactivate once we have refreshed Azure Credentials
@@ -125,7 +142,7 @@ jobs:
         name: "Run deployment test using KinD and Helm"
         with:
           imagename: "edc-controlplane-postgresql-azure-vault edc-dataplane-azure-vault"
-          rootDir: "."
+          rootDir: "edc-controlplane/edc-controlplane-postgresql-azure-vault edc-dataplane/edc-dataplane-azure-vault"
           helm_command: |-
             az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name aes-keys --value "$(cat aes.key)" > /dev/null
             az keyvault secret set --vault-name ${{ secrets.AZURE_VAULT_NAME }} --name client-secret --value "$(cat client.secret)" > /dev/null

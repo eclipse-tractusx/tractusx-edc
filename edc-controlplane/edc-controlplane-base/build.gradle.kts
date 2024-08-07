@@ -20,6 +20,7 @@
 
 plugins {
     `java-library`
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
@@ -56,6 +57,8 @@ dependencies {
     runtimeOnly(libs.edc.core.policy.monitor)
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
+    runtimeOnly(libs.edc.auth.delegated)
+    runtimeOnly(libs.edc.auth.configuration)
     runtimeOnly(libs.edc.validator.data.address.http.data)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.data.plane.selector.control.api)
