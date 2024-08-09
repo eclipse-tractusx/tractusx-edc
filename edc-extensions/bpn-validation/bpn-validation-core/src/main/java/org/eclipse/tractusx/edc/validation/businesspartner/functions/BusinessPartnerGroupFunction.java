@@ -24,6 +24,8 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.spi.result.StoreFailure;
+import org.eclipse.edc.spi.result.StoreFailure.Reason;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.Arrays;
@@ -86,11 +88,10 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateEquals);
-        OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateNotEquals);
+        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIn);
+        OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
+        OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
-
 
     /**
      * Policy evaluation function that checks whether a given BusinessPartnerNumber is covered by a given policy.
@@ -98,8 +99,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
      * <ul>
      *     <li>No {@link ParticipantAgent} was found on the {@link PolicyContext}</li>
      *     <li>The operator is invalid. Check {@link BusinessPartnerGroupFunction#ALLOWED_OPERATORS} for valid operators.</li>
-     *     <li>No database entry was found for the BPN (taken from the {@link ParticipantAgent})</li>
-     *     <li>A database entry was found, but no group-IDs were assigned</li>
+     *     <li>No database entry was found for the BPN (taken from the {@link ParticipantAgent}) and the {@link StoreFailure#getReason()} is different than {@link Reason#NOT_FOUND}</li>
      *     <li>The right value is anything other than {@link String} or {@link Collection}</li>
      * </ul>
      */
@@ -120,20 +120,14 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
             return false;
         }
 
-
         var bpn = participantAgent.getIdentity();
         var groups = store.resolveForBpn(bpn);
+
+        var assignedGroups = groups.getContent();
 
         // BPN not found in database
         if (groups.failed()) {
             policyContext.reportProblem(groups.getFailureDetail());
-            return false;
-        }
-        var assignedGroups = groups.getContent();
-
-        // BPN was found, but it does not have groups assigned.
-        if (assignedGroups.isEmpty()) {
-            policyContext.reportProblem("No groups were assigned to BPN " + bpn);
             return false;
         }
 
@@ -148,33 +142,46 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
-        if (rightValue instanceof String) {
-            var tokens = ((String) rightValue).split(",");
+        if (rightValue instanceof String value) {
+            var tokens = value.split(",");
             return Arrays.asList(tokens);
         }
         if (rightValue instanceof Collection<?>) {
             return ((Collection<?>) rightValue).stream().map(Object::toString).toList();
         }
 
-        context.reportProblem(format("Right operand expected to be either String or a Collection, but was " + rightValue.getClass()));
+        context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
         return null;
     }
     
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         // checks whether both lists overlap
-        return bpnGroupHolder.allowedGroups
-                .stream()
-                .distinct()
-                .anyMatch(assigned::contains);
+        return bpnGroupHolder.allowedGroups.containsAll(assigned);
     }
 
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
-        return !evaluateIn(bpnGroupHolder);
+        return !evaluateEquals(bpnGroupHolder);
     }
 
     private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
         return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
+    }
+
+    private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
+        if (bpnGroupHolder.allowedGroups.isEmpty() && bpnGroupHolder.assignedGroups.isEmpty()) {
+            return true;
+        }
+
+        var allowedGroups = bpnGroupHolder.allowedGroups;
+        return bpnGroupHolder.assignedGroups
+                .stream()
+                .distinct()
+                .anyMatch(allowedGroups::contains);
+    }
+
+    private boolean evaluateIsNoneOf(BpnGroupHolder bpnGroupHolder) {
+        return !evaluateIsAnyOf(bpnGroupHolder);
     }
 
     /**
