@@ -22,7 +22,9 @@ package org.eclipse.tractusx.edc.postgresql.migration;
 public class PolicyMonitorPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
     private static final String NAME_SUBSYSTEM = "policy-monitor";
 
+    @Override
     protected String getSubsystemName() {
         return NAME_SUBSYSTEM;
     }
+
 }

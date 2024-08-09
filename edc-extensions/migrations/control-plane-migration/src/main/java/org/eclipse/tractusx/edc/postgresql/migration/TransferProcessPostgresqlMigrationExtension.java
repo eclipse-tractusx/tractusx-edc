@@ -23,7 +23,9 @@ package org.eclipse.tractusx.edc.postgresql.migration;
 public class TransferProcessPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
     private static final String NAME_SUBSYSTEM = "transferprocess";
 
+    @Override
     protected String getSubsystemName() {
         return NAME_SUBSYSTEM;
     }
+
 }

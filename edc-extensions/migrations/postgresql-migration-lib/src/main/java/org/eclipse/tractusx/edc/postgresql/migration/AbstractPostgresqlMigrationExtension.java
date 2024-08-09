@@ -26,16 +26,17 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.sql.DriverManagerConnectionFactory;
 import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.tractusx.edc.core.utils.ConfigUtil;
+import org.flywaydb.core.api.output.MigrateResult;
 
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import static org.flywaydb.core.api.MigrationVersion.LATEST;
 
 abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
-
-    private static final String EDC_DATASOURCE_PREFIX = "edc.datasource";
 
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     @Setting(value = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
@@ -46,6 +47,8 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
     @Setting(value = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
     private static final String MIGRATION_SCHEMA = "org.eclipse.tractusx.edc.postgresql.migration.schema";
+
+    private Supplier<MigrateResult> migrationExecutor;
 
     @Override
     public String name() {
@@ -64,31 +67,30 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
             return;
         }
 
-        var configGroup = "%s.%s".formatted(EDC_DATASOURCE_PREFIX, subSystemName);
-        var datasourceConfig = config.getConfig(configGroup);
+        var dataSourceName = config.getString("edc.sql.store.%s.datasource".formatted(subSystemName), DataSourceRegistry.DEFAULT_DATASOURCE);
 
-        var dataSourceName = datasourceConfig.getString("name", null);
-        if (dataSourceName == null) {
-            context.getMonitor().warning("No 'name' setting in group %s found, no schema migrations will run for subsystem %s"
-                    .formatted(configGroup, subSystemName));
-            return;
-        }
+        var configGroup = "edc.datasource.%s".formatted(dataSourceName);
+        var datasourceConfig = config.getConfig(configGroup);
 
         var jdbcUrl = datasourceConfig.getString("url");
         var jdbcProperties = new Properties();
         jdbcProperties.putAll(datasourceConfig.getRelativeEntries());
-
         var driverManagerConnectionFactory = new DriverManagerConnectionFactory();
         var dataSource = new ConnectionFactoryDataSource(driverManagerConnectionFactory, jdbcUrl, jdbcProperties);
-
         var defaultSchema = config.getString(MIGRATION_SCHEMA, DEFAULT_MIGRATION_SCHEMA);
-        var migrateResult = FlywayManager.migrate(dataSource, getMigrationSubsystem(), defaultSchema, LATEST);
+
+        migrationExecutor = () -> FlywayManager.migrate(dataSource, getMigrationSubsystem(), defaultSchema, LATEST);
+    }
+
+    @Override
+    public void prepare() {
+        var migrateResult = migrationExecutor.get();
 
         if (!migrateResult.success) {
             throw new EdcPersistenceException(
-                    String.format(
-                            "Migrating DataSource %s for subsystem %s failed: %s",
-                            dataSourceName, subSystemName, String.join(", ", migrateResult.warnings)));
+                    "Migrating subsystem %s failed: %s"
+                            .formatted(getSubsystemName(), String.join(", ", migrateResult.warnings))
+            );
         }
     }
 

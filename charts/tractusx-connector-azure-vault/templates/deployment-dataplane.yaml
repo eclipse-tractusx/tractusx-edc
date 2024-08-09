@@ -229,34 +229,12 @@ spec:
             ## POSTGRESQL ##
             ################
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/common/store/sql/edr-index-sql
-            - name: "EDC_DATASOURCE_EDR_NAME"
-              value: "edr"
-            - name: "EDC_DATASOURCE_EDR_USER"
+            # default datasource
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
               value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_EDR_PASSWORD"
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
               value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_EDR_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/data-plane/store/sql/data-plane-store-sql
-            - name: "EDC_DATASOURCE_DATAPLANE_NAME"
-              value: "edr"
-            - name: "EDC_DATASOURCE_DATAPLANE_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_DATAPLANE_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_DATAPLANE_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/data-plane/store/sql/accesstokendata-store-sql
-            - name: "EDC_DATASOURCE_ACCESSTOKENDATA_NAME"
-              value: "edr"
-            - name: "EDC_DATASOURCE_ACCESSTOKENDATA_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_ACCESSTOKENDATA_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_ACCESSTOKENDATA_URL"
+            - name: "EDC_DATASOURCE_DEFAULT_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
 
             #########################

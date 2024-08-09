@@ -26,4 +26,5 @@ public class AccessTokenDataPostgresqlMigrationExtension extends AbstractPostgre
     protected String getSubsystemName() {
         return NAME_SUBSYSTEM;
     }
+
 }
