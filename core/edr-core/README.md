@@ -17,13 +17,6 @@ The `edc-runtime-memory` bundle utilizes the `InMemory` implementation for the E
 On the other hand, the SQL Cache, found in the `edc-controlplane-postgresql-*` bundles, utilizes the SQL implementation
 and requires database access for schema migration and data management.
 
-| property                                                  | description                                          | required | default value |
-|-----------------------------------------------------------|------------------------------------------------------|----------|---------------|
-| edc.datasource.edr.name                                   | Defines the name associated with the EDR data source | false    | edr           |
-| edc.datasource.edr.url                                    | Defines the database address to access the EDR data  | true     |               |
-| edc.datasource.edr.user                                   | Defines EDR database username                        | true     |               |
-| edc.datasource.edr.password                               | Defines EDR database password                        | true     |               |
-
 ## EDR state machine Configuration
 
 Once the Transfer Request has completed, the EDR entry will be saved with the associated EDR in the primordial state `NEGOTIATED`

@@ -26,4 +26,5 @@ public class FederatedCatalogCacheMigrationExtension extends AbstractPostgresqlM
     protected String getSubsystemName() {
         return NAME_SUBSYSTEM;
     }
+
 }

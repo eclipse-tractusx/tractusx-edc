@@ -26,4 +26,5 @@ public class BusinessGroupPostgresMigrationExtension extends AbstractPostgresqlM
     protected String getSubsystemName() {
         return NAME;
     }
+
 }

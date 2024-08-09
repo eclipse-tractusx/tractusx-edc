@@ -203,105 +203,12 @@ spec:
             ## POSTGRESQL ##
             ################
 
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/store/sql/asset-index-sql
-            - name: "EDC_DATASOURCE_ASSET_NAME"
-              value: "asset"
-            - name: "EDC_DATASOURCE_ASSET_USER"
+            # default datasource
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
               value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_ASSET_PASSWORD"
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
               value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_ASSET_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/store/sql/contract-definition-store-sql
-            - name: "EDC_DATASOURCE_CONTRACTDEFINITION_NAME"
-              value: "contractdefinition"
-            - name: "EDC_DATASOURCE_CONTRACTDEFINITION_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_CONTRACTDEFINITION_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/store/sql/contract-negotiation-store-sql
-            - name: "EDC_DATASOURCE_CONTRACTNEGOTIATION_NAME"
-              value: "contractnegotiation"
-            - name: "EDC_DATASOURCE_CONTRACTNEGOTIATION_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_CONTRACTNEGOTIATION_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/store/sql/policy-store-sql
-            - name: "EDC_DATASOURCE_POLICY_NAME"
-              value: "policy"
-            - name: "EDC_DATASOURCE_POLICY_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_POLICY_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_POLICY_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/store/sql/transfer-process-store-sql
-            - name: "EDC_DATASOURCE_TRANSFERPROCESS_NAME"
-              value: "transferprocess"
-            - name: "EDC_DATASOURCE_TRANSFERPROCESS_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_TRANSFERPROCESS_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/policy-monitor/store/sql/policy-monitor-store-sql
-            - name: "EDC_DATASOURCE_POLICY-MONITOR_NAME"
-              value: "policy-monitor"
-            - name: "EDC_DATASOURCE_POLICY-MONITOR_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_POLICY-MONITOR_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_POLICY-MONITOR_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/bpn-validation/business-partner-store-sql
-            - name: "EDC_DATASOURCE_BPN_NAME"
-              value: "bpn"
-            - name: "EDC_DATASOURCE_BPN_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_BPN_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_BPN_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/common/store/sql/edr-index-sql
-            - name: "EDC_DATASOURCE_EDR_NAME"
-              value: "edr"
-            - name: "EDC_DATASOURCE_EDR_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_EDR_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_EDR_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/FederatedCatalog/tree/main/extensions/store/sql/federated-catalog-cache-sql
-            - name: "EDC_DATASOURCE_FEDERATEDCATALOG_NAME"
-              value: "federatedcatalog"
-            - name: "EDC_DATASOURCE_FEDERATEDCATALOG_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_FEDERATEDCATALOG_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_FEDERATEDCATALOG_URL"
-              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
-
-            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/data-plane-selector/store/sql/data-plane-instance-store-sql
-            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_NAME"
-              value: "dataplaneinstance"
-            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_USER"
-              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
-            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_PASSWORD"
-              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
-            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_URL"
+            - name: "EDC_DATASOURCE_DEFAULT_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
 
 

@@ -25,8 +25,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -36,12 +34,9 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DB_SCHEMA_
  * Instantiates the Postgres docker container and configures the runtime accordingly
  */
 public class PgRuntimeExtension extends ParticipantRuntimeExtension {
-    private static final String POSTGRES_IMAGE_NAME = "postgres:16.2";
+    private static final String POSTGRES_IMAGE_NAME = "postgres:16.4";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
-    private static final List<String> DATASOURCES = List.of("asset", "contractdefinition",
-            "contractnegotiation", "policy", "transferprocess", "bpn",
-            "policy-monitor", "edr", "dataplane", "accesstokendata", "federatedcatalog", "dataplaneinstance");
     private final PostgreSQLContainer<?> postgreSqlContainer;
     private final String dbName;
 
@@ -74,29 +69,16 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
         postgreSqlContainer.close();
     }
 
-    public Map<String, String> postgresqlConfiguration(String name) {
-        var jdbcUrl = jdbcUrl(name);
-        return new HashMap<>() {
-            {
-                DATASOURCES.forEach(context -> {
-                    var group = "edc.datasource." + context;
-                    put(group + ".name", context);
-                    put(group + ".url", jdbcUrl);
-                    put(group + ".user", USER);
-                    put(group + ".password", PASSWORD);
-                });
-                // use non-default schema name to test usage of non-default schema
-                put("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME);
-            }
-        };
-    }
+    private Map<String, String> postgresqlConfiguration(String name) {
+        var jdbcUrl = baseJdbcUrl() + name + "?currentSchema=" + DB_SCHEMA_NAME;
+        var group = "edc.datasource.default";
 
-    public String jdbcUrl(String name) {
-        return baseJdbcUrl() + name + "?currentSchema=" + DB_SCHEMA_NAME;
-    }
-
-    public String baseJdbcUrl() {
-        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
+        return Map.of(
+                group + ".url", jdbcUrl,
+                group + ".user", USER,
+                group + ".password", PASSWORD,
+                "org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME
+        );
     }
 
     private void createDatabase() {
@@ -105,5 +87,9 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
         } catch (SQLException ignored) {
             // ignored
         }
+    }
+
+    private String baseJdbcUrl() {
+        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), postgreSqlContainer.getFirstMappedPort());
     }
 }
