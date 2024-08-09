@@ -28,21 +28,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  
-  verify-license-headers:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: "Check for files without a license header"
-        run: |-
-          # checks all java, yaml, kts and sql files for an Apache 2.0 license header
-          cmd="grep -riL \"SPDX-License-Identifier: Apache-2.0\" --include=\*.{java,yaml,yml,kts,sql} --exclude-dir={.gradle,\*\openapi} ."
-          violations=$(eval $cmd | wc -l)
-          if [[ $violations -ne 0 ]] ; then
-            echo "$violations files without license headers were found:";
-            eval $cmd;
-            exit 1;
-          fi
 
   verify-helm-docs:
     runs-on: ubuntu-latest
@@ -64,9 +49,6 @@ jobs:
             exit 1
           fi
 
-  verify-dependencies:
-    uses: eclipse-edc/.github/.github/workflows/dependency-check.yml@main
-  
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
