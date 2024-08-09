@@ -174,39 +174,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
-  /v1alpha/catalog/query:
-    post:
-      tags:
-      - Federated Catalog
-      description: Obtains all Catalog currently held by this cache instance
-      operationId: getCachedCatalog
-      parameters:
-      - name: flatten
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: boolean
-          example: null
-          default: false
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          description: "A list of Catalog is returned, potentially empty"
-          content:
-            application/json:
-              schema:
-                type: array
-                example: null
-                items:
-                  $ref: "#/components/schemas/Catalog"
-        "500":
-          description: A Query could not be completed due to an internal error
   /v2/catalog/dataset/request:
     post:
       tags:
