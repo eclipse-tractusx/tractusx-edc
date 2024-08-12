@@ -637,7 +637,7 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.33, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.35, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
-maven/mavencentral/org.slf4j/slf4j-api/2.0.13, MIT, approved, #5915
+maven/mavencentral/org.slf4j/slf4j-api/2.0.16, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.6, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
 maven/mavencentral/org.testcontainers/database-commons/1.20.1, MIT, approved, clearlydefined
