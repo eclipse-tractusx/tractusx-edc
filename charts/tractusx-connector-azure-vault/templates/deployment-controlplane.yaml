@@ -268,6 +268,16 @@ spec:
             - name: "EDC_DATASOURCE_EDR_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
 
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/data-plane-selector/store/sql/data-plane-instance-store-sql
+            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_NAME"
+              value: "dataplaneinstance"
+            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_USER"
+              value: { { .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote } }
+            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_PASSWORD"
+              value: { { .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote } }
+            - name: "EDC_DATASOURCE_DATAPLANEINSTANCE_URL"
+              value: { { tpl .Values.postgresql.jdbcUrl . | quote } }
+
             #############################
             ## IATP / STS / DIM CONFIG ##
             #############################

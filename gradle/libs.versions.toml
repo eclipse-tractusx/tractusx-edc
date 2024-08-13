@@ -117,6 +117,7 @@ edc-sql-policy-monitor = { module = "org.eclipse.edc:policy-monitor-store-sql", 
 edc-sql-edrindex = { module = "org.eclipse.edc:edr-index-sql", version.ref = "edc" }
 edc-sql-accesstokendata = { module = "org.eclipse.edc:accesstokendata-store-sql", version.ref = "edc" }
 edc-sql-dataplane = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
+edc-data-plane-instance-store-sql = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 
 # azure stuff
 edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = "edc" }
@@ -225,6 +226,6 @@ titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "ti
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
 edc-dpf = ["edc.dpf-transfer-signaling", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
-edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor", "edc.sql-edrindex"]
+edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor", "edc.sql-edrindex", "edc.data-plane-instance-store-sql"]
 edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]

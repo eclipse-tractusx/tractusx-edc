@@ -40,7 +40,7 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
     private static final String PASSWORD = "password";
     private static final List<String> DATASOURCES = List.of("asset", "contractdefinition",
             "contractnegotiation", "policy", "transferprocess", "bpn",
-            "policy-monitor", "edr", "dataplane", "accesstokendata");
+            "policy-monitor", "edr", "dataplane", "accesstokendata", "dataplaneinstance");
     private final PostgreSQLContainer<?> postgreSqlContainer;
     private final String dbName;
 
