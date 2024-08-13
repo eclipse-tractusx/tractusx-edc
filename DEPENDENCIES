@@ -706,7 +706,7 @@ maven/mavencentral/software.amazon.awssdk/profiles/2.27.2, , restricted, clearly
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.26.27, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.27.2, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/regions/2.26.27, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/regions/2.27.2, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/regions/2.27.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.26.27, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.27.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries/2.26.27, Apache-2.0, approved, clearlydefined
