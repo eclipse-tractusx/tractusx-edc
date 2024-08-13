@@ -32,6 +32,7 @@ on:
       docker_tag:
         description: 'Explicitly specify the Docker tag. Note that SHA and latest are added automatically.'
         required: false
+        type: string
 
   workflow_call:
     inputs:
@@ -64,7 +65,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Log inputs
         run: |
-          echo "Input Version: ${{ inputs.version }}, Input namespace: ${{ inputs.namespace}}"
+          echo "Input Version: ${{ inputs.docker_tag }}, Input namespace: ${{ inputs.namespace}}"
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:

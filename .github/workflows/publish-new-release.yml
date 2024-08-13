@@ -67,7 +67,7 @@ jobs:
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
     with:
-      version: $RELEASE_VERSION
+      version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
 
   docker-release:
     name: Publish Docker images
@@ -79,7 +79,7 @@ jobs:
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets: inherit
     with:
-      docker_tag: $RELEASE_VERSION
+      docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
 
   # Release: Helm Charts
   helm-release:
