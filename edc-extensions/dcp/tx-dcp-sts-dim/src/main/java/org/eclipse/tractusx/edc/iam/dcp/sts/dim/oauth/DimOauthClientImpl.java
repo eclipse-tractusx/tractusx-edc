@@ -85,7 +85,7 @@ public class DimOauthClientImpl implements DimOauth2Client {
 
     @NotNull
     private Result<Oauth2CredentialsRequest> createRequest() {
-        var secret = vault.resolveSecret(configuration.clientSecret());
+        var secret = vault.resolveSecret(configuration.clientSecretAlias());
         if (secret != null) {
             var builder = SharedSecretOauth2CredentialsRequest.Builder.newInstance()
                     .url(configuration.tokenUrl())
@@ -95,7 +95,7 @@ public class DimOauthClientImpl implements DimOauth2Client {
 
             return Result.success(builder.build());
         } else {
-            return Result.failure("Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecret()));
+            return Result.failure("Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecretAlias()));
         }
     }
 

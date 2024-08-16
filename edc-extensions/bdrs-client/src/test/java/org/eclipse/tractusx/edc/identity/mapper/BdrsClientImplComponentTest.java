@@ -40,6 +40,8 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.keys.spi.PrivateKeyResolver;
+import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -120,6 +122,7 @@ class BdrsClientImplComponentTest {
     private final Monitor monitor = mock();
     private final ObjectMapper mapper = new ObjectMapper();
     private final CredentialServiceClient csMock = mock();
+    private final PrivateKeyResolver privateKeyResolver = mock();
 
     private BdrsClientImpl client;
     private ECKey vpHolderKey;
@@ -128,11 +131,12 @@ class BdrsClientImplComponentTest {
     @BeforeEach
     void setup() throws JOSEException, IOException, ParseException {
 
+        var privateKeyAlias = "privateKeyAlias";
         vcIssuerKey = ECKey.parse(Files.readString(Path.of(SHARED_TEMP_DIR, ISSUER_NAME + "/key.json")));
         vpHolderKey = ECKey.parse(Files.readString(Path.of(SHARED_TEMP_DIR, HOLDER_NAME + "/key.json")));
 
         var pk = vpHolderKey.toPrivateKey();
-        var sts = new EmbeddedSecureTokenService(new JwtGenerationService(), () -> pk, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10);
+        var sts = new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider(privateKeyResolver)), () -> privateKeyAlias, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10);
 
         var directoryPort = BDRS_SERVER_CONTAINER.getMappedPort(8082);
         client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,
@@ -144,6 +148,7 @@ class BdrsClientImplComponentTest {
                 sts,
                 csMock);
 
+        when(privateKeyResolver.resolvePrivateKey(privateKeyAlias)).thenReturn(Result.success(pk));
         // need to wait until healthy, otherwise BDRS will respond with a 404
         await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {
             assertThat(BDRS_SERVER_CONTAINER.isHealthy()).isTrue();

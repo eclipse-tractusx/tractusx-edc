@@ -45,7 +45,7 @@ public class StsClientConfigurationExtensionTest {
 
         assertThat(extension.clientConfiguration(context)).satisfies(stsConfig -> {
             assertThat(stsConfig.clientId()).isEqualTo("clientId");
-            assertThat(stsConfig.clientSecret()).isEqualTo("clientSecretAlias");
+            assertThat(stsConfig.clientSecretAlias()).isEqualTo("clientSecretAlias");
             assertThat(stsConfig.tokenUrl()).isEqualTo("url");
         });
     }

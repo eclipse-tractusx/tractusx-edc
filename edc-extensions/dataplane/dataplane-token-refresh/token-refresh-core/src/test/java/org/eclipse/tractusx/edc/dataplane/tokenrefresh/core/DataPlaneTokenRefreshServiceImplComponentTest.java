@@ -35,8 +35,10 @@ import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
+import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
+import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -72,6 +74,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     public static final String PROVIDER_DID = "did:web:alice";
     private final DidPublicKeyResolver didPkResolverMock = mock();
     private final LocalPublicKeyService localPublicKeyService = mock();
+    private final PrivateKeyResolver privateKeyResolver = mock();
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private InMemoryAccessTokenDataStore tokenDataStore;
     private ECKey consumerKey;
@@ -80,6 +83,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     @BeforeEach
     void setup() throws JOSEException {
 
+        var privateKeyAlias = "privateKeyAlias";
         providerKey = new ECKeyGenerator(Curve.P_384).keyID(PROVIDER_BPN + "#provider-key").keyUse(KeyUse.SIGNATURE).generate();
         consumerKey = new ECKeyGenerator(Curve.P_384).keyID(CONSUMER_DID + "#consumer-key").keyUse(KeyUse.SIGNATURE).generate();
 
@@ -91,8 +95,8 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 didPkResolverMock,
                 localPublicKeyService,
                 tokenDataStore,
-                new JwtGenerationService(),
-                () -> privateKey,
+                new JwtGenerationService(new DefaultJwsSignerProvider(privateKeyResolver)),
+                () -> privateKeyAlias,
                 mock(),
                 TEST_REFRESH_ENDPOINT,
                 PROVIDER_DID,
@@ -102,6 +106,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 new InMemoryVault(mock()),
                 new ObjectMapper());
 
+        when(privateKeyResolver.resolvePrivateKey(privateKeyAlias)).thenReturn(Result.success(privateKey));
         when(localPublicKeyService.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
         when(localPublicKeyService.resolveKey(eq(providerKey.getKeyID()))).thenReturn(Result.success(providerKey.toPublicKey()));
 

@@ -28,6 +28,7 @@ import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.result.Result;
@@ -62,13 +63,15 @@ public class ParticipantRuntime extends EmbeddedRuntime {
         this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
         this.registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()));
         this.registerServiceMock(BdrsClient.class, (s) -> s);
+
         var kid = properties.get("edc.iam.issuer.id") + "#key-1";
+        var privateAlias = properties.get("edc.transfer.proxy.token.signer.privatekey.alias");
         try {
             runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
             KeyPool.register(kid, runtimeKeyPair.toKeyPair());
             var privateKey = runtimeKeyPair.toPrivateKey();
-
-            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(), () -> privateKey, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
+            
+            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider((k) -> Result.success(privateKey))), () -> privateAlias, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
             registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);

@@ -40,6 +40,7 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.edc.identity.trust.sts.embedded)
     testImplementation(libs.edc.core.token)
+    testImplementation(libs.edc.lib.cryptocommon)
     testImplementation(libs.testcontainers.junit)
     testImplementation(testFixtures(libs.edc.identity.vc.jwt)) // JwtCreationUtils
 }
