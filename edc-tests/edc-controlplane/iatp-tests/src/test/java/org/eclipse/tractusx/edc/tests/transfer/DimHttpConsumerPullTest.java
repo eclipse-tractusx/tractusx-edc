@@ -24,6 +24,8 @@ import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.keys.spi.PrivateKeyResolver;
+import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
@@ -36,7 +38,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
-import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,11 +65,7 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     }
 
     private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant iatpDimParticipant) {
-        return new EmbeddedSecureTokenService(tokenGenerationService, privateKeySupplier(iatpDimParticipant), publicIdSupplier(iatpDimParticipant), Clock.systemUTC(), 60 * 60);
-    }
-
-    private static Supplier<PrivateKey> privateKeySupplier(IatpParticipant participant) {
-        return () -> participant.getKeyPair().getPrivate();
+        return new EmbeddedSecureTokenService(tokenGenerationService, iatpDimParticipant::getPrivateKeyAlias, publicIdSupplier(iatpDimParticipant), Clock.systemUTC(), 60 * 60);
     }
 
     private static Supplier<String> publicIdSupplier(IatpParticipant participant) {
@@ -78,11 +75,13 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     @BeforeAll
     static void prepare() {
 
-        var tokenGeneration = new JwtGenerationService();
+        var consumerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(CONSUMER_RUNTIME.getService(PrivateKeyResolver.class)));
+        var providerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(PROVIDER_RUNTIME.getService(PrivateKeyResolver.class)));
+
 
         var generatorServices = Map.of(
-                CONSUMER.getDid(), tokenServiceFor(tokenGeneration, CONSUMER),
-                PROVIDER.getDid(), tokenServiceFor(tokenGeneration, PROVIDER));
+                CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER),
+                PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER));
 
         oauthServer = ClientAndServer.startClientAndServer(STS.stsUri().getPort());
 
