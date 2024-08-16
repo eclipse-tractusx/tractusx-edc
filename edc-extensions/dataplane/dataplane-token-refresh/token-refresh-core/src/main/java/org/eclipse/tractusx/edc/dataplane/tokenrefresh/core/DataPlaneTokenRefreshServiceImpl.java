@@ -50,7 +50,6 @@ import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules.RefreshTokenVa
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 
-import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,7 +83,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final LocalPublicKeyService localPublicKeyService;
     private final AccessTokenDataStore accessTokenDataStore;
     private final TokenGenerationService tokenGenerationService;
-    private final Supplier<PrivateKey> privateKeySupplier;
+    private final Supplier<String> privateKeyIdSupplier;
     private final Supplier<String> publicKeyIdSupplier;
     private final Monitor monitor;
     private final String refreshEndpoint;
@@ -100,7 +99,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                                             LocalPublicKeyService localPublicKeyService,
                                             AccessTokenDataStore accessTokenDataStore,
                                             TokenGenerationService tokenGenerationService,
-                                            Supplier<PrivateKey> privateKeySupplier,
+                                            Supplier<String> privateKeyIdSupplier,
                                             Monitor monitor,
                                             String refreshEndpoint,
                                             String ownDid,
@@ -114,7 +113,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.localPublicKeyService = localPublicKeyService;
         this.accessTokenDataStore = accessTokenDataStore;
         this.tokenGenerationService = tokenGenerationService;
-        this.privateKeySupplier = privateKeySupplier;
+        this.privateKeyIdSupplier = privateKeyIdSupplier;
         this.monitor = monitor;
         this.refreshEndpoint = refreshEndpoint;
         this.clock = clock;
@@ -307,7 +306,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             allDecorators.add(tp -> tp.claims(JwtRegisteredClaimNames.EXPIRATION_TIME, exp));
         }
 
-        return tokenGenerationService.generate(privateKeySupplier, allDecorators.toArray(new TokenDecorator[0]))
+        return tokenGenerationService.generate(privateKeyIdSupplier.get(), allDecorators.toArray(new TokenDecorator[0]))
                 .map(tr -> new TokenRepresentationWithId(tokenId.get(), tr));
     }
 

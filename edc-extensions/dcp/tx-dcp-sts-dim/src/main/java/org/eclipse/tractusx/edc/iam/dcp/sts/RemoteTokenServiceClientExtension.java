@@ -89,7 +89,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
                 })
                 .orElseGet(() -> {
                     monitor.info("DIM URL not configured, will use the standard EDC Remote STS client");
-                    return new RemoteSecureTokenService(oauth2Client, clientConfiguration);
+                    return new RemoteSecureTokenService(oauth2Client, clientConfiguration, vault);
                 });
     }
 

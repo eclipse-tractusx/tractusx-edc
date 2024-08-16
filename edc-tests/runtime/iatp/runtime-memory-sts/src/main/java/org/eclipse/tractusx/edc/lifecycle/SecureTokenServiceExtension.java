@@ -21,18 +21,16 @@ package org.eclipse.tractusx.edc.lifecycle;
 
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
+import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.token.JwtGenerationService;
 
-import java.security.PrivateKey;
 import java.time.Clock;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public class SecureTokenServiceExtension implements ServiceExtension {
     public static final String STS_PRIVATE_KEY_ALIAS = "edc.iam.sts.privatekey.alias";
@@ -45,13 +43,15 @@ public class SecureTokenServiceExtension implements ServiceExtension {
     @Inject
     private Clock clock;
 
+    @Inject
+    private JwsSignerProvider jwsSignerProvider;
+
     @Provider
     public SecureTokenService createEmbeddedSts(ServiceExtensionContext context) {
         var tokenExpiration = context.getSetting(STS_TOKEN_EXPIRATION, DEFAULT_STS_TOKEN_EXPIRATION_MIN);
         var publicKeyId = context.getSetting(STS_PUBLIC_KEY_ID, null);
         var privKeyAlias = context.getSetting(STS_PRIVATE_KEY_ALIAS, null);
 
-        Supplier<PrivateKey> supplier = () -> privateKeyResolver.resolvePrivateKey(privKeyAlias).orElseThrow(f -> new EdcException("This EDC instance is not operational due to the following error: %s".formatted(f.getFailureDetail())));
-        return new EmbeddedSecureTokenService(new JwtGenerationService(), supplier, () -> publicKeyId, clock, TimeUnit.MINUTES.toSeconds(tokenExpiration));
+        return new EmbeddedSecureTokenService(new JwtGenerationService(jwsSignerProvider), () -> privKeyAlias, () -> publicKeyId, clock, TimeUnit.MINUTES.toSeconds(tokenExpiration));
     }
 }
