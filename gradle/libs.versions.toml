@@ -186,7 +186,6 @@ edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", v
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
 edc-data-plane-selector-control-api = { module = "org.eclipse.edc:data-plane-selector-control-api", version.ref = "edc" }
 edc-data-plane-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
-edc-data-plane-self-registration = { module = "org.eclipse.edc:data-plane-self-registration", version.ref = "edc" }
 
 # micrometer and other infra stuff
 edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref = "edc" }

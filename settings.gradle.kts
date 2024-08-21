@@ -54,6 +54,7 @@ include(":edc-extensions:data-flow-properties-provider")
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
 include(":edc-extensions:dataplane:dataplane-selector-configuration")
+include(":edc-extensions:dataplane:dataplane-self-registration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 
