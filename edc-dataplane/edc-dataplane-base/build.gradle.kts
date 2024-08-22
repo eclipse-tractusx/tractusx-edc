@@ -29,6 +29,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
+    runtimeOnly(project(":edc-extensions:dataplane:dataplane-self-registration"))
 
     runtimeOnly(libs.edc.jsonld) // needed by the DataPlaneSignalingApi
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
@@ -43,7 +44,6 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.apiclient)
 
     runtimeOnly(libs.edc.data.plane.selector.client)
-    runtimeOnly(libs.edc.data.plane.self.registration)
     runtimeOnly(libs.edc.dpf.api.control)
     runtimeOnly(libs.edc.dpf.api.signaling)
 

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,27 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id("application")
-}
+package org.eclipse.tractusx.edc.postgresql.migration;
 
+public class DataPlaneInstancePostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
+    private static final String NAME_SUBSYSTEM = "dataplaneinstance";
 
-dependencies {
-
-    // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "api-observability")
-        exclude("org.eclipse.edc", "data-plane-selector-client")
-        exclude(module = "dataplane-self-registration")
+    protected String getSubsystemName() {
+        return NAME_SUBSYSTEM;
     }
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-// do not publish
-edcBuild {
-    publish.set(false)
 }
