@@ -23,6 +23,7 @@ name: "Publish hotfix release"
 
 # Temporary workflow to enable the release of bugfix versions.
 # Should be reworked as this file contains duplicate code from draft-new-release and publish-new-release
+# This workflow, as is, should be executed after the hotfix branch is created and all needed PRs are merged
 
 on:
   workflow_dispatch:
@@ -61,10 +62,54 @@ jobs:
         run: |
           echo "RELEASE_VERSION=${{ inputs.version }}" >> $GITHUB_OUTPUT
 
+  prepare-hotfix-release:
+    name: "Prepare hotfix release"
+    runs-on: ubuntu-latest
+    needs: [release-version]
+    permissions:
+      contents: write
+      packages: write
+      pages: write
+      pull-requests: write
+    if: needs.release-version.outputs.RELEASE_VERSION
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize mandatory git config
+        run: |
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+      - uses: ./.github/actions/setup-java
+      - name: Bump version in gradle.properties
+        run: |-
+          # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
+          sed -i  's/version=.*/version=${{ needs.release-version.outputs.RELEASE_VERSION }}/g' gradle.properties
+        env:
+          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version in /charts
+        uses: mikefarah/yq@v4.44.2
+        with:
+          cmd: |-
+            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ needs.release-version.outputs.RELEASE_VERSION }}" | .version = "${{ needs.release-version.outputs.RELEASE_VERSION }}"'
+      - name: Update Chart READMEs
+        uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/charts:/helm-docs
+          run: |
+            helm-docs --log-level debug
+      - name: Commit manifest files
+        id: make-commit
+        run: |
+          git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
+          git commit --message "Prepare release ${{ needs.release-version.outputs.RELEASE_VERSION }}"
+
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
   # Release: Maven Artifacts
   maven-release:
     name: Publish extension's release version to maven repository
-    needs: [ release-version ]
+    needs: [ prepare-hotfix-release, release-version ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -97,7 +142,7 @@ jobs:
   docker-release:
     name: Publish Docker images
     runs-on: ubuntu-latest
-    needs: [ release-version ]
+    needs: [ prepare-hotfix-release, release-version ]
     permissions:
       contents: write
     if: needs.release-version.outputs.RELEASE_VERSION
@@ -129,7 +174,7 @@ jobs:
   # Release: Helm Charts
   helm-release:
     name: Publish new helm release
-    needs: [ release-version ]
+    needs: [ prepare-hotfix-release, release-version ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -172,7 +217,7 @@ jobs:
   # Release: GitHub tag & release; Merges back releases into main; Starts a new development cycle;
   github-release:
     name: Publish new github release
-    needs: [ release-version, maven-release, docker-release, helm-release ]
+    needs: [ prepare-hotfix-release, release-version, maven-release, docker-release, helm-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -215,7 +260,7 @@ jobs:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
       contents: read
-    needs: [ release-version ]
+    needs: [ prepare-hotfix-release, release-version ]
     uses: ./.github/workflows/publish-swaggerhub.yaml
     with:
       downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
