@@ -218,7 +218,7 @@ jobs:
 
           git push origin gh-pages
 
-  # Release: GitHub tag & release; Merges back releases into main; Starts a new development cycle;
+  # Release: GitHub tag & release;
   github-release:
     name: Publish new github release
     needs: [ prepare-hotfix-release, release-version, maven-release, docker-release, helm-release ]
