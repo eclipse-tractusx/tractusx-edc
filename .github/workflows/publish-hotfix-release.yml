@@ -108,7 +108,6 @@ jobs:
           git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
           git commit --message "Prepare release ${{ needs.release-version.outputs.RELEASE_VERSION }}"
 
-          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
   # Release: Maven Artifacts
   maven-release:
