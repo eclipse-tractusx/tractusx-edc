@@ -13,32 +13,27 @@ maven/mavencentral/com.azure/azure-core/1.49.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.50.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.51.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.13.2, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
 maven/mavencentral/com.azure/azure-json/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.8.5, MIT, approved, #13690
 maven/mavencentral/com.azure/azure-storage-blob/12.26.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-storage-blob/12.27.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-storage-blob/12.27.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-storage-common/12.25.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-storage-common/12.26.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-storage-common/12.26.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-storage-internal-avro/12.11.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-storage-internal-avro/12.12.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-xml/1.0.0, MIT, approved, #14410
+maven/mavencentral/com.azure/azure-storage-internal-avro/12.12.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-xml/1.1.0, MIT, approved, clearlydefined
 maven/mavencentral/com.ethlo.time/itu/1.7.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
-maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.13.5, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.14.0, Apache-2.0, approved, #5303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.14.1, Apache-2.0, approved, #5303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.16.2, Apache-2.0, approved, #11606
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.1, Apache-2.0, approved, #13672
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.2, Apache-2.0, approved, #13672
-maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.13.5, Apache-2.0, approved, #2133
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.14.1, Apache-2.0 AND MIT, approved, #4303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.16.2, Apache-2.0 AND MIT, approved, #11602
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.17.2, , approved, #13665
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.11.0, Apache-2.0, approved, CQ23093
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.13.4.2, Apache-2.0, approved, #2134
-maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.13.5, Apache-2.0, approved, #2134
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.0, Apache-2.0, approved, #4105
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.1, Apache-2.0, approved, #15232
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.0, approved, #11605
@@ -52,7 +47,6 @@ maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.14
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.16.2, Apache-2.0, approved, #11855
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.17.2, Apache-2.0, approved, #13669
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.17.2, Apache-2.0, approved, #14161
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.13.5, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.14.0, Apache-2.0, approved, #4699
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.15.2, Apache-2.0, approved, #7930
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.16.2, Apache-2.0, approved, #11853
