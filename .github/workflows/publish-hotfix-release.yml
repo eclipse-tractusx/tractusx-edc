@@ -54,28 +54,15 @@ jobs:
             exit 1
           fi
 
-  release-version:
-    name: Determine release version
-    needs: [validate-release]
-    runs-on: ubuntu-latest
-    outputs:
-      RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
-    steps:
-      - name: Output release version
-        id: release-version
-        run: |
-          echo "RELEASE_VERSION=${{ inputs.version }}" >> $GITHUB_OUTPUT
-
   prepare-hotfix-release:
     name: "Prepare hotfix release"
     runs-on: ubuntu-latest
-    needs: [release-version]
+    needs: [validate-release]
     permissions:
       contents: write
       packages: write
       pages: write
       pull-requests: write
-    if: needs.release-version.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
       - name: Initialize mandatory git config
@@ -86,7 +73,7 @@ jobs:
       - name: Bump version in gradle.properties
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
-          sed -i  's/version=.*/version=${{ needs.release-version.outputs.RELEASE_VERSION }}/g' gradle.properties
+          sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +81,7 @@ jobs:
         uses: mikefarah/yq@v4.44.2
         with:
           cmd: |-
-            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ needs.release-version.outputs.RELEASE_VERSION }}" | .version = "${{ needs.release-version.outputs.RELEASE_VERSION }}"'
+            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
       - name: Update Chart READMEs
         uses: addnab/docker-run-action@v3
         with:
@@ -106,22 +93,18 @@ jobs:
         id: make-commit
         run: |
           git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
-          git commit --message "Prepare release ${{ needs.release-version.outputs.RELEASE_VERSION }}"
+          git commit --message "Prepare release ${{ inputs.version }}"
 
 
   # Release: Maven Artifacts
   maven-release:
     name: Publish extension's release version to maven repository
-    needs: [ prepare-hotfix-release, release-version ]
+    needs: [ prepare-hotfix-release, validate-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    if: needs.release-version.outputs.RELEASE_VERSION
     steps:
-      - name: Export RELEASE_VERSION env
-        run: |
-          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
 
       # Set-Up
       - uses: actions/checkout@v4
@@ -139,17 +122,15 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
           OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
         run: |-
-          echo "Publishing Version $RELEASE_VERSION to Sonatype/MavenCentral"
-          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$RELEASE_VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
+          echo "Publishing Version ${{ inputs.version }} to Sonatype/MavenCentral"
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=${{inputs.version}} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
 
   docker-release:
     name: Publish Docker images
     runs-on: ubuntu-latest
-    needs: [ prepare-hotfix-release, release-version ]
+    needs: [ prepare-hotfix-release, validate-release ]
     permissions:
       contents: write
-    if: needs.release-version.outputs.RELEASE_VERSION
-
     strategy:
       fail-fast: false
       matrix:
@@ -161,13 +142,10 @@ jobs:
                    { dir: edc-tests/runtime, img: mock-connector }]
     steps:
       - uses: actions/checkout@v4
-      - name: Export RELEASE_VERSION env
-        run: |
-          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
-          docker_tag: ${{ env.RELEASE_VERSION }}
+          docker_tag: ${{ inputs.version }}
           rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
           imagename: ${{ matrix.variant.img }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
@@ -177,18 +155,14 @@ jobs:
   # Release: Helm Charts
   helm-release:
     name: Publish new helm release
-    needs: [ prepare-hotfix-release, release-version ]
+    needs: [ prepare-hotfix-release, validate-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
       pages: write
 
-    if: needs.release-version.outputs.RELEASE_VERSION
     steps:
-      - name: Export RELEASE_VERSION env
-        run: |
-          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -213,25 +187,21 @@ jobs:
 
           # Commit and push to gh-pages
           git add index.yaml helm-charts
-          git commit -s -m "Release ${{ env.RELEASE_VERSION }}"
+          git commit -s -m "Release ${{ inputs.version }}"
 
           git push origin gh-pages
 
   # Release: GitHub tag & release;
   github-release:
     name: Publish new github release
-    needs: [ prepare-hotfix-release, release-version, maven-release, docker-release, helm-release ]
+    needs: [ prepare-hotfix-release, validate-release, maven-release, docker-release, helm-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
       pages: write
       pull-requests: write
-    if: needs.release-version.outputs.RELEASE_VERSION
     steps:
-      - name: Export RELEASE_VERSION env
-        run: |
-          echo "RELEASE_VERSION=${{ needs.release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           # 0 to fetch the full history due to upcoming merge of releases into main branch
@@ -248,13 +218,13 @@ jobs:
           git tag
 
           # Create & push tag
-          git tag --force ${{ env.RELEASE_VERSION }}
-          git push --force origin ${{ env.RELEASE_VERSION }}
+          git tag --force ${{ inputs.version }}
+          git push --force origin ${{ inputs.version }}
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
-          tag: ${{ env.RELEASE_VERSION }}
+          tag: ${{ inputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: false
           removeArtifacts: true
@@ -263,8 +233,8 @@ jobs:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
       contents: read
-    needs: [ prepare-hotfix-release, release-version ]
+    needs: [ prepare-hotfix-release, validate-release ]
     uses: ./.github/workflows/publish-swaggerhub.yaml
     with:
-      downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
+      downstream-version: ${{ inputs.version }}
     secrets: inherit
