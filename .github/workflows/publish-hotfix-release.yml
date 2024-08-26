@@ -39,16 +39,20 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref_name, 'hotfix/')
     steps:
-      - uses: mukunku/tag-exists-action@v1.6.0
-        id: check-tag
+      - uses: actions/checkout@v4
         with:
-          tag: ${{ inputs.version }}
-
-      - if: steps.check-tag.outputs.exists == 'true'
-        name: Exit on tag existance
-        run: |
-          echo "Tag already exists! Please choose another tag."
-          exit 1
+          fetch-depth: 0
+      - id: check-tag
+        name: Check if tag exists
+        run: |-
+          
+          tag=$(git tag -l ${{ inputs.version }})
+          
+          if [ ! -z $tag ];
+          then
+            echo "Tag already exists! Please choose another tag."
+            exit 1
+          fi
 
   release-version:
     name: Determine release version
