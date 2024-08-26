@@ -60,9 +60,6 @@ jobs:
     needs: [validate-release]
     permissions:
       contents: write
-      packages: write
-      pages: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Initialize mandatory git config
@@ -103,7 +100,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
 
       # Set-Up
@@ -198,9 +194,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
-      pages: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
