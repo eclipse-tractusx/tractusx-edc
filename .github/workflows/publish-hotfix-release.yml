@@ -19,25 +19,25 @@
 
 
 ---
-name: "Publish hotfix release"
+name: "Publish bugfix release"
 
 # Temporary workflow to enable the release of bugfix versions.
 # Should be reworked as this file contains duplicate code from draft-new-release and publish-new-release
-# This workflow, as is, should be executed after the hotfix branch is created and all needed PRs are merged
+# This workflow, as is, should be executed after the bugfix branch is created and all needed PRs are merged
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The hotfix version you want to release.'
+        description: 'The bugfix version you want to release.'
         required: true
 
 jobs:
   # Gate: Check release version presence
   validate-release:
-    name: Validate if hotfix can be released
+    name: Validate if bugfix version can be released
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'hotfix/')
+    if: startsWith(github.ref_name, 'bugfix/')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,8 +54,8 @@ jobs:
             exit 1
           fi
 
-  prepare-hotfix-release:
-    name: "Prepare hotfix release"
+  prepare-bugfix-release:
+    name: "Prepare bugfix release"
     runs-on: ubuntu-latest
     needs: [validate-release]
     permissions:
@@ -96,7 +96,7 @@ jobs:
   # Release: Maven Artifacts
   maven-release:
     name: Publish extension's release version to maven repository
-    needs: [ prepare-hotfix-release, validate-release ]
+    needs: [ prepare-bugfix-release, validate-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -124,7 +124,7 @@ jobs:
   docker-release:
     name: Publish Docker images
     runs-on: ubuntu-latest
-    needs: [ prepare-hotfix-release, validate-release ]
+    needs: [ prepare-bugfix-release, validate-release ]
     permissions:
       contents: write
     strategy:
@@ -151,7 +151,7 @@ jobs:
   # Release: Helm Charts
   helm-release:
     name: Publish new helm release
-    needs: [ prepare-hotfix-release, validate-release ]
+    needs: [ prepare-bugfix-release, validate-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -190,7 +190,7 @@ jobs:
   # Release: GitHub tag & release;
   github-release:
     name: Publish new github release
-    needs: [ prepare-hotfix-release, validate-release, maven-release, docker-release, helm-release ]
+    needs: [ prepare-bugfix-release, validate-release, maven-release, docker-release, helm-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -226,7 +226,7 @@ jobs:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
       contents: read
-    needs: [ prepare-hotfix-release, validate-release ]
+    needs: [ prepare-bugfix-release, validate-release ]
     uses: ./.github/workflows/publish-swaggerhub.yaml
     with:
       downstream-version: ${{ inputs.version }}
