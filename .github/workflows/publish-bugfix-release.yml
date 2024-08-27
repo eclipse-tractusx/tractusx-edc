@@ -71,6 +71,8 @@ jobs:
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
           sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
+          # replace the openapi version with the upcoming one
+          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ github.event.inputs.version }}/swagger.yaml#g' .tractusx
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -97,56 +99,23 @@ jobs:
   maven-release:
     name: Publish extension's release version to maven repository
     needs: [ prepare-bugfix-release, validate-release ]
-    runs-on: ubuntu-latest
     permissions:
       contents: read
-    steps:
-
-      # Set-Up
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java
-
-      # Import GPG Key
-      - uses: ./.github/actions/import-gpg-key
-        name: "Import GPG Key"
-        with:
-          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
-
-      # publish releases
-      - name: Publish version
-        env:
-          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
-          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
-        run: |-
-          echo "Publishing Version ${{ inputs.version }} to Sonatype/MavenCentral"
-          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=${{inputs.version}} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
+    uses: ./.github/workflows/trigger-maven-publish.yaml
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
 
   docker-release:
     name: Publish Docker images
-    runs-on: ubuntu-latest
     needs: [ prepare-bugfix-release, validate-release ]
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        variant: [ { dir: edc-controlplane, img: edc-runtime-memory },
-                   { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
-                   { dir: edc-controlplane, img: edc-controlplane-postgresql-azure-vault },
-                   { dir: edc-dataplane,    img: edc-dataplane-azure-vault },
-                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault },
-                   { dir: edc-tests/runtime, img: mock-connector }]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/publish-docker-image
-        name: Publish ${{ matrix.variant.img }}
-        with:
-          docker_tag: ${{ inputs.version }}
-          rootDir: ${{ matrix.variant.dir }}/${{ matrix.variant.img }}
-          imagename: ${{ matrix.variant.img }}
-          docker_user: ${{ secrets.DOCKER_HUB_USER }}
-          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-          do_push: 'true'
+
+    uses: ./.github/workflows/trigger-docker-publish.yaml
+    secrets: inherit
+    with:
+      docker_tag: ${{ inputs.version }}
 
   # Release: Helm Charts
   helm-release:
@@ -155,7 +124,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
       pages: write
 
     steps:
@@ -231,3 +199,13 @@ jobs:
     with:
       downstream-version: ${{ inputs.version }}
     secrets: inherit
+
+  publish-openapi-to-gh-pages:
+    name: "Publish OpenAPI UI spec GitHub Pages"
+    permissions:
+      contents: write
+    needs: [ prepare-bugfix-release, validate-release ]
+    uses: ./.github/workflows/publish-openapi-ui.yml
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
