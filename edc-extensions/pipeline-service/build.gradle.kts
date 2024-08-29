@@ -19,11 +19,7 @@ plugins {
 
 dependencies {
     implementation(libs.edc.spi.web)
-    implementation(libs.edc.spi.dataplane.selector)
-
-    runtimeOnly(project(":edc-extensions:pipeline-service"))
+    implementation(libs.edc.spi.dataplane.dataplane)
 
     testImplementation(libs.edc.junit)
 }
-
-

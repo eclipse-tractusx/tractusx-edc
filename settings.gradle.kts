@@ -57,6 +57,7 @@ include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-self-registration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
+include(":edc-extensions:pipeline-service")
 
 // test modules
 include(":edc-tests:edc-controlplane:edr-api-tests")
