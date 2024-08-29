@@ -30,6 +30,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-self-registration"))
+    runtimeOnly(project(":edc-extensions:dataplane:pipeline-service"))
 
     runtimeOnly(libs.edc.jsonld) // needed by the DataPlaneSignalingApi
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
