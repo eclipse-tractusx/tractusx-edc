@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.pipeline;
+package org.eclipse.tractusx.edc.dataplane.pipeline;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
@@ -55,7 +55,6 @@ public class PipelineServiceImpl implements PipelineService {
 
     public PipelineServiceImpl(Monitor monitor) {
         this.monitor = monitor;
-        monitor.severe("registered smt mine svc");
     }
 
     @Override
@@ -93,7 +92,6 @@ public class PipelineServiceImpl implements PipelineService {
     @Override
     public CompletableFuture<StreamResult<Object>> transfer(DataFlowStartMessage request) {
         var sinkFactory = getSinkFactory(request);
-        monitor.severe("smt mine transfer");
         if (sinkFactory == null) {
             return noSinkFactory(request);
         }

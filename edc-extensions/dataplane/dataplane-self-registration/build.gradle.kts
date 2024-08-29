@@ -21,7 +21,7 @@ dependencies {
     implementation(libs.edc.spi.web)
     implementation(libs.edc.spi.dataplane.selector)
 
-    runtimeOnly(project(":edc-extensions:pipeline-service"))
+    runtimeOnly(project(":edc-extensions:dataplane:pipeline-service"))
 
     testImplementation(libs.edc.junit)
 }

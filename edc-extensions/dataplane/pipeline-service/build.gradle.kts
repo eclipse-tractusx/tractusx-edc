@@ -18,7 +18,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.spi.web)
     implementation(libs.edc.spi.dataplane.dataplane)
 
     testImplementation(libs.edc.junit)

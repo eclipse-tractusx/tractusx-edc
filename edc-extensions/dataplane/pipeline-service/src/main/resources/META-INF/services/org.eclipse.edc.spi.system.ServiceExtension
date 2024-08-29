@@ -17,4 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.pipeline.PipelineServiceExtension
+org.eclipse.tractusx.edc.dataplane.pipeline.PipelineServiceExtension

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.pipeline;
+package org.eclipse.tractusx.edc.dataplane.pipeline;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -25,7 +25,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-import static org.eclipse.tractusx.edc.pipeline.PipelineServiceExtension.NAME;
+import static org.eclipse.tractusx.edc.dataplane.pipeline.PipelineServiceExtension.NAME;
 
 @Extension(NAME)
 public class PipelineServiceExtension implements ServiceExtension {
