@@ -4,10 +4,7 @@
 
 Refactor the existing workflows to accomodate the release of bugfix versions as described in [this](../2024-07-18-Improvements-versioning-scheme/README.md) decision record:
 - Remove the releases and release/X-Y.Z branches in favor of using just the main branch and tags.
-- Enable hotfix releases. 
-- Should be possible to trigger the publishing of snapshots manually and automatically on every commit on `main` and after a release.
-- Intermediate builds ("nightly builds") should be triggered on a cron schedule, where the version string is `X.X.X-YYYYMMDD-SNAPSHOT`
-- publishing releases: triggered by manual interaction, supplying the version as workflow input
+- Enable hotfix releases.
 
 ## Rationale
 
@@ -79,4 +76,7 @@ However, for a bugfix release the workflow shouldn't:
 ## Other Considerations
 
 - Release workflows should not run on forks
+- Should be possible to trigger the publishing of snapshots manually and automatically on every commit on `main` and after a release.
+- Should be possible to trigger the publishing of snapshots from an `hotfix/*` branch
+- Intermediate builds ("nightly builds") should be triggered on a cron schedule, where the version string is `X.X.X-YYYYMMDD-SNAPSHOT`
 
