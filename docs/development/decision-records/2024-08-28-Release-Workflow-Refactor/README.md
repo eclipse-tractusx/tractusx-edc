@@ -78,5 +78,5 @@ However, for a bugfix release, the workflow shouldn't:
 - Release workflows should not run on forks.
 - Should be possible to trigger the publishing of snapshots manually from main or bugfix branches.
 - `draft-new-release` workflow could be named to `manual-release-draft`.
-- `publish-new-release` workflow could be named `publish-release`.
+- `publish-new-release` workflow could be named `release`.
 
