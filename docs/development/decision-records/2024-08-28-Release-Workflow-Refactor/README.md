@@ -24,14 +24,13 @@ As they stand, the current release workflows don't allow the release of bugfix v
 
 ## Approach
 
-The draft-new-release workflow should include two extra inputs:
+The draft-new-release workflow should include one extra inputs:
 - A `choice` input to allow the distinction between a release or bugfix.
-- The commit that will be used to branch the release of (ideally should be head of main or a tag)
 
 Github Actions Jobs and Step conditionals are then used to make the execution follow the required steps, as follows.
 
 ### Prepare Release workflow logic
-- Triggers manually. Input is the version, choice and base branch
+- Triggers manually. Input is the version, choice and base ref (should be either commit from main or tag)
 - if choice is release
   - branches from main into `release/<input_version>`
 - if choice is bugfix
@@ -49,7 +48,7 @@ Then, a different process takes places if we intend to release a latest version 
 After the prepare release PR is approved, merging into main will trigger the publish-release workflow where the required publication steps will take place, as shown in [Publish release workflow logic](#publish-release-workflow-logic).
 
 ### Case for bugfix Releases
-After the bugfix branch is created, developers commit the fix or set of fixes to it, either via direct push or PR.
+After the bugfix branch is created, developers commit the fix or set of fixes to it via PR.
 The release of the bugfix version should be triggered manually through the publishing workflow and should execute most of the publication steps as a normal release.
 However, for a bugfix release, the workflow shouldn't:
 - Make any commits to the main branch
@@ -59,14 +58,14 @@ However, for a bugfix release, the workflow shouldn't:
 - Triggers automatically when prepare release PR is merged into main from `release/*` branch
 - Triggers manually only from branch `bugfix/X.Y.Z`
 
-- Extracts release version from `release/*` or `bugfix/X.Y.Z` branches
+- Extracts release version from `gradle.properties`
 - Triggers release to maven repository by calling `trigger-maven-publish.yaml`
 - Triggers docker image publishing by calling `trigger-maven-publish.yaml`
 - Releases helm-charts
 - Creates Github Tag and Release
 - if PR was merged to main it means a new release then:
    - Updates project version to next version, commits and pushes to main
-      - if final version, increments to next patch version and adds "-SNAPSHOT"
+      - if final version, increments to next minor version and adds "-SNAPSHOT"
       - if not final version (e.g.-rc1), do not increment
 - _(elif PR was merged to hotfix then don't increment)_
 - Publishes to Swaggerhub by calling `publish-swaggerhub.yaml`
