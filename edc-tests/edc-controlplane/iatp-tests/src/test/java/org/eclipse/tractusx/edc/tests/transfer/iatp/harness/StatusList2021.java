@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.iam.verifiablecredentials.spi.model.statuslist.BitString;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.revocation.BitString;
 import org.eclipse.edc.spi.EdcException;
 
 import java.util.List;
