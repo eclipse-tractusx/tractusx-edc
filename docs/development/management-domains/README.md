@@ -17,14 +17,54 @@ There are several reasons why a company might consider the use of Management Dom
   different intervals or velocities. **Note that this only refers to minor changes of APIs, SPIs, configuration etc. All
   instances must still maintain protocol (DSP, DCP,...) compatibility!**
 
-For the purposes of Tractus-X, the usage of
-deployment [type 2b](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#type-2b-edc-catalog-server-and-controldata-plane-runtimes)
-or [type 2c](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#type-2c-catalog-servercontrol-plane-with-data-plane-runtime)
-is assumed:
 
-![type 2b](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/distributed.type2.b.svg)
+### Deployment Topologies
 
-Note that is possible to use a conventional Tractus-X EDC runtime as catalog server.
+Similar to what is present in the [official documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md), different topologies representing each domain can be followed.
+
+> Some deployments documented are the same as seen in Upstream, since equal approach is valid.
+
+#### Single Management Domain
+
+*One management domain controlling a single instance*
+
+Having a single management domain including the Federated Catalog as the Catalog Server (with the downstream connections to crawlable connectors) representing a single ReplicaSet.
+
+![](./single.instance.svg)
+
+
+*One management domain controlling a cluster of individual ReplicaSets*
+
+Having a single management domain including a cross-use Federated Catalog as the Catalog Server (with the downstream connections to crawlable connectors) representing a multiple ReplicaSet's.
+
+![](./cluster.svg)
+
+This solution implies a standalone Federated Catalog solution running.
+
+
+#### Distributed Management Domain
+
+For smaller use case scenarios or organizations aiming at a coupled use of EDC components, Single Management Domain can probably suffice. However, if an organization has multiple internal structures each responsible for the data shared in their domain, EDC components deployed separately must be able to communicate properly as well.
+This can be achieved by following a Distributed Management Domain. Considering the goal of usage with Federated Catalog as a Catalog Server, the next approaches can be weighted.
+
+
+*Federated Catalog as own Management Domain*
+
+The Federated Catalog can act as own single domain able to interact (provide catalog) to other managed domains.
+
+
+![](./distributed.fc.own.domain.svg)
+
+
+*Federated Catalog and Control Plane as a management domain*
+
+Having the Federated Catalog embedded in a Control Plane able to communicate with other (in this case Data Planes) separated domains.
+
+
+![](./distributed.fc.cp.domain.svg)
+
+
+
 
 ### Limitations and Caveats
 
