@@ -164,7 +164,9 @@ The following config values are used to configure the crawlers:
 | `web.http.catalog.path`                      | `controlplane.endpoints.catalog.path`       | /catalog      | URL path of the catalog QueryApi's web context                     |
 | `tx.edc.catalog.node.list.file`              | `controlplane.catalog.crawler.targetsFile ` |               | path to a JSON file that contains an array of `TargetNode` objects |
 
-all of these config values are optional and come preconfigured with defaults.
+all of these config values are optional and come preconfigured with defaults, except for `tx.edc.catalog.node.list.file`.
+
+To enable this feature, at least two properties must be updated to not use default values. These are the `edc.catalog.cache.execution.enabled` which must be enabled and `tx.edc.catalog.node.list.file` pointing to a TargetNodeDirectory (ex: local file with TargetNodes). Simply, the `TargetNodeDirectory` consists on a list containing all `TargetNodes` which can be subject to crawling (querying).
 
 ### Configure the target nodes
 
