@@ -42,6 +42,7 @@ dependencies {
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
 
     runtimeOnly(libs.edc.dpf.core)
+    runtimeOnly(libs.edc.dpf.iam)
     runtimeOnly(libs.edc.controlplane.apiclient)
 
     runtimeOnly(libs.edc.data.plane.selector.client)

@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.8.2-20240816-SNAPSHOT"
+edc = "0.8.2-20240902-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.2"
 aws = "2.27.12"
@@ -189,6 +189,7 @@ edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", versi
 edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client", version.ref = "edc" }
 edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
+edc-dpf-iam = { module = "org.eclipse.edc:data-plane-iam", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
