@@ -655,6 +655,7 @@ maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.xmlunit/xmlunit-placeholders/2.9.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/1.33, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232
+maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause AND EPL-1.0 AND GPL-2.0-or-later AND LGPL-2.1-or-later), restricted, #16046
 maven/mavencentral/software.amazon.awssdk/annotations/2.26.27, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/annotations/2.27.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/apache-client/2.26.27, Apache-2.0, approved, clearlydefined
