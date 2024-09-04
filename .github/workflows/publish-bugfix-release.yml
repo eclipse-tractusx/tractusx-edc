@@ -91,6 +91,8 @@ jobs:
         run: |
           git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
           git commit --message "Prepare release ${{ inputs.version }}"
+          
+          git push
 
 
   # Release: Maven Artifacts
