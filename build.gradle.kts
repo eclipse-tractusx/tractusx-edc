@@ -66,7 +66,7 @@ allprojects {
         testImplementation(platform("org.junit:junit-bom:5.11.0"))
 
         constraints {
-            implementation("org.yaml:snakeyaml:2.2") {
+            implementation("org.yaml:snakeyaml:2.3") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
             implementation("net.minidev:json-smart:2.5.1") {
