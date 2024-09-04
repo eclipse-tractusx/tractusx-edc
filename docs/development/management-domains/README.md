@@ -22,8 +22,6 @@ There are several reasons why a company might consider the use of Management Dom
 
 Similar to what is present in the [official documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md), different topologies representing each domain can be followed.
 
-> Some deployments documented are the same as seen in Upstream, since equal approach is valid.
-
 #### Single Management Domain
 
 *One management domain controlling a single instance*
@@ -35,14 +33,14 @@ Having a single management domain including the Federated Catalog as the Catalog
 
 *One management domain controlling a cluster of individual ReplicaSets*
 
-Having a single management domain including a cross-use Federated Catalog as the Catalog Server (with the downstream connections to crawlable connectors) representing a multiple ReplicaSet's.
+Having a single management domain including a cross-use Federated Catalog as the Catalog Server (with the downstream connections to crawlable connectors) representing multiple ReplicaSet's.
 
 ![](./cluster.svg)
 
 This solution implies a standalone Federated Catalog solution running.
 
 
-#### Distributed Management Domain
+#### Distributed Management Domains
 
 For smaller use case scenarios or organizations aiming at a coupled use of EDC components, Single Management Domain can probably suffice. However, if an organization has multiple internal structures each responsible for the data shared in their domain, EDC components deployed separately must be able to communicate properly as well.
 This can be achieved by following a Distributed Management Domain. Considering the goal of usage with Federated Catalog as a Catalog Server, the next approaches can be weighted.
@@ -50,7 +48,7 @@ This can be achieved by following a Distributed Management Domain. Considering t
 
 *Federated Catalog as own Management Domain*
 
-The Federated Catalog can act as own single domain able to interact (provide catalog) to other managed domains.
+The Federated Catalog can act as own single domain able to interact to other managed domains.
 
 
 ![](./distributed.fc.own.domain.svg)
