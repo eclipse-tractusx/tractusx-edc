@@ -107,7 +107,7 @@ maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.28, Apache-2.0, approved, clea
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.40, Apache-2.0, approved, #15156
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.9.1, Apache-2.0, approved, #12667
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.18.0, LGPL-2.1-or-later, restricted, clearlydefined
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.18.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #16060
 maven/mavencentral/com.samskivert/jmustache/1.15, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #15227
@@ -283,7 +283,7 @@ maven/mavencentral/net.minidev/json-smart/2.4.7, Apache-2.0, approved, #3288
 maven/mavencentral/net.minidev/json-smart/2.5.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/net.minidev/json-smart/2.5.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/net.sf.jopt-simple/jopt-simple/5.0.4, MIT, approved, CQ13174
-maven/mavencentral/net.sf.saxon/Saxon-HE/12.5, NOASSERTION, restricted, clearlydefined
+maven/mavencentral/net.sf.saxon/Saxon-HE/12.5, MPL-2.0-no-copyleft-exception AND (LicenseRef-scancode-proprietary-license AND MPL-2.0-no-copyleft-exception) AND (MPL-2.0-no-copyleft-exception AND X11) AND (MIT AND MPL-2.0-no-copyleft-exception) AND (MPL-1.0 AND MPL-2.0-no-copyleft-exception) AND (Apache-2.0 AND MPL-2.0-no-copyleft-exception) AND MPL-1.0, restricted, #16061
 maven/mavencentral/org.antlr/antlr4-runtime/4.13.2, BSD-3-Clause, approved, #10767
 maven/mavencentral/org.apache.commons/commons-compress/1.24.0, Apache-2.0 AND BSD-3-Clause AND bzip2-1.0.6 AND LicenseRef-Public-Domain, approved, #10368
 maven/mavencentral/org.apache.commons/commons-digester3/3.2, Apache-2.0, approved, clearlydefined
@@ -612,7 +612,7 @@ maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.0, EPL-2.0, appro
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.0, EPL-2.0, approved, #15940
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.0, EPL-2.0, approved, #15936
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.0, EPL-2.0, approved, #15932
-maven/mavencentral/org.junit/junit-bom/5.11.0, , restricted, clearlydefined
+maven/mavencentral/org.junit/junit-bom/5.11.0, EPL-2.0, approved, #16062
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.latencyutils/LatencyUtils/2.0.3, CC0-1.0, approved, #15280
 maven/mavencentral/org.mock-server/mockserver-client-java/5.15.0, Apache-2.0 AND LGPL-3.0-only, approved, #9324
