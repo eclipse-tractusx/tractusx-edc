@@ -223,4 +223,54 @@ public class AzureToAzureEndToEndTest {
         });
     }
 
+    @Test
+    void azureBlobPush_containerNotExist() {
+        var assetId = "felix-blob-test-asset";
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "@type", "DataAddress",
+                "type", "AzureStorage",
+                "container", PROVIDER_CONTAINER_NAME,
+                "account", AZBLOB_PROVIDER_ACCOUNT_NAME,
+                "blobPrefix", "folder/",
+                "keyName", PROVIDER_KEY_ALIAS
+        );
+
+        // upload file to provider's blob store
+        var sourceContainer = providerBlobHelper.createContainer(PROVIDER_CONTAINER_NAME);
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/" + TESTFILE_NAME);
+        // consumerBlobHelper.createContainer(CONSUMER_CONTAINER_NAME); <-- container is not created
+
+        // create objects in EDC
+        provider().createAsset(assetId, Map.of(), dataAddress);
+        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
+        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
+
+        var destination = createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "AzureStorage")
+                .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                        .add(EDC_NAMESPACE + "type", "AzureStorage")
+                        .add(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                        .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
+                        .build())
+                .build();
+
+        // perform contract negotiation and transfer process
+        var transferProcessId = consumer()
+                .requestAssetFrom(assetId, provider())
+                .withTransferType("AzureStorage-PUSH")
+                .withDestination(destination)
+                .execute();
+
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            var state = consumer().getTransferProcessState(transferProcessId);
+            assertThat(state).isEqualTo(COMPLETED.name());
+            assertThat(consumerBlobHelper.listBlobs(CONSUMER_CONTAINER_NAME))
+                    .contains("folder/%s".formatted(TESTFILE_NAME));
+        });
+    }
+
 }
