@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.edc.spi.web)
     implementation(libs.edc.spi.dataplane.selector)
     implementation(libs.edc.spi.transfer)
+    implementation(libs.edc.dpf.signaling.client)
 
     testImplementation(libs.edc.junit)
 }
