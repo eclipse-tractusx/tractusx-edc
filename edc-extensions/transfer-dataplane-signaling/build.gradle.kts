@@ -18,12 +18,9 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.spi.web)
     implementation(libs.edc.spi.dataplane.selector)
-    implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transfer)
-    implementation(libs.edc.spi.dataplane.transfer)
 
     testImplementation(libs.edc.junit)
 }
