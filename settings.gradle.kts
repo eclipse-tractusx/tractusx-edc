@@ -77,6 +77,7 @@ include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
+include(":edc-tests:edc-end2end:end2end-transfer-cloud")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")

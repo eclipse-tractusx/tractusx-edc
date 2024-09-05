@@ -79,6 +79,9 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.event)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 
+    // cloud provisioner extensions
+    runtimeOnly(libs.edc.azure.blob.provision)
+
     // Federated Catalog Crawler + Query API
     runtimeOnly(project(":edc-extensions:federated-catalog"))
     runtimeOnly(libs.edc.fc.core)
