@@ -24,8 +24,10 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ConsumerRes
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 
 public class ObjectStorageConsumerResourceDefinitionGenerator implements ConsumerResourceDefinitionGenerator {
@@ -51,6 +53,7 @@ public class ObjectStorageConsumerResourceDefinitionGenerator implements Consume
 
     @Override
     public boolean canGenerate(TransferProcess dataRequest, Policy policy) {
-        return AzureBlobStoreSchema.TYPE.equals(dataRequest.getDestinationType());
+        var type = ofNullable(dataRequest.getDataDestination()).map(DataAddress::getType).orElse(null);
+        return AzureBlobStoreSchema.TYPE.equals(type);
     }
 }
