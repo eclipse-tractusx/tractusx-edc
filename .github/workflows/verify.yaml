@@ -167,3 +167,8 @@ jobs:
         run: |
           ./gradlew compileJava compileTestJava
           ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="CloudTransferTest"
+
+      - name: Run Azure/S3 End-To-End tests
+        run: |
+          ./gradlew compileJava compileTestJava
+          ./gradlew -p edc-tests/edc-end2end test -DincludeTags="EndToEndTest"

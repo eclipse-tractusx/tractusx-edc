@@ -226,6 +226,61 @@ public class AzureToAzureTest {
     }
 
     @Test
+    void transferFolder_targetFolderNotExists_shouldCreate() {
+
+        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        var sas = consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME);
+        DATAPLANE_RUNTIME.getVault().storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
+                {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
+                """.formatted(sas));
+
+        // create container in consumer's blob store
+        consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
+
+        var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
+        var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
+
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/blob.bin");
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/blob2.bin");
+        providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/blob3.bin");
+
+        var request = createFlowRequestBuilder(TESTFILE_NAME)
+                .sourceDataAddress(DataAddress.Builder.newInstance()
+                        .type("AzureStorage")
+                        .property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
+                        .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME)
+                        .property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
+                        .property("blobPrefix", "folder/")
+                        .build())
+                .destinationDataAddress(DataAddress.Builder.newInstance()
+                        .type("AzureStorage")
+                        .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
+                        .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                        .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
+                        .property("folderName", "destfolder")
+                        .build())
+                .build();
+
+        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+
+        given().when()
+                .baseUri(url)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(200);
+
+        await().pollInterval(Duration.ofSeconds(2))
+                .atMost(Duration.ofSeconds(60))
+                .untilAsserted(() -> assertThat(consumerBlobHelper.listBlobs(AZBLOB_CONSUMER_CONTAINER_NAME))
+                        .isNotEmpty()
+                        .contains("destfolder/folder/blob.bin", "destfolder/folder/blob2.bin", "destfolder/folder/blob3.bin"));
+    }
+
+
+    @Test
     void transferFile_targetContainerNotExist_shouldFail() {
         var sourceContainer = providerBlobHelper.createContainer(AZBLOB_PROVIDER_CONTAINER_NAME);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
@@ -257,11 +312,7 @@ public class AzureToAzureTest {
     }
 
     private DataFlowStartMessage createFlowRequest(String blobName) {
-        return DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(blobSourceAddress(blobName))
-                .destinationDataAddress(blobDestinationAddress(blobName))
-                .processId("test-process-id")
+        return createFlowRequestBuilder(blobName)
                 .build();
     }
 
@@ -277,6 +328,17 @@ public class AzureToAzureTest {
                         .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
                         .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
                         .build())
-                .processId("test-process-multiple-file-id").build();
+                .processId("test-process-multiple-file-id")
+                .flowType(FlowType.PUSH)
+                .build();
+    }
+
+    private DataFlowStartMessage.Builder createFlowRequestBuilder(String blobName) {
+        return DataFlowStartMessage.Builder.newInstance()
+                .id("test-request")
+                .sourceDataAddress(blobSourceAddress(blobName))
+                .destinationDataAddress(blobDestinationAddress(blobName))
+                .processId("test-process-id")
+                .flowType(FlowType.PUSH);
     }
 }

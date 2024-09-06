@@ -50,6 +50,8 @@ include(":edc-extensions:cx-policy")
 include(":edc-extensions:iatp:tx-iatp")
 include(":edc-extensions:iatp:tx-iatp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
+include(":edc-extensions:backport:azblob-provisioner")
+
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
@@ -78,6 +80,7 @@ include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
 include(":edc-tests:edc-dataplane:cloud-transfer-tests")
+include(":edc-tests:edc-end2end:end2end-transfer-cloud")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")

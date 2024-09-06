@@ -39,7 +39,7 @@ dependencies {
     // Credentials CX policies
     runtimeOnly(project(":edc-extensions:cx-policy"))
 
-    // needed for IATP integration
+    // needed for DCP integration
     runtimeOnly(project(":core:json-ld-core"))
     runtimeOnly(libs.edc.core.did)
     runtimeOnly(libs.edc.identity.did.web)
@@ -74,5 +74,8 @@ dependencies {
     runtimeOnly(libs.edc.transfer.dynamicreceiver)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.event)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
+
+    // cloud provisioner extensions
+    runtimeOnly(project(":edc-extensions:backport:azblob-provisioner"))
 
 }
