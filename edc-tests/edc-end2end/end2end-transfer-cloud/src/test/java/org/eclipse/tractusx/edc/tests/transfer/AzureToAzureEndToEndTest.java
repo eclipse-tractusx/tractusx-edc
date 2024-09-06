@@ -94,7 +94,6 @@ public class AzureToAzureEndToEndTest {
         configuration.putAll(new HashMap<>() {
             {
                 put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + port + "/%s"); // set the Azure Blob endpoint template
-                put("edc.catalog.cache.execution.enabled", "false"); // don't use FCC here
             }
         });
         return configuration;
@@ -225,7 +224,7 @@ public class AzureToAzureEndToEndTest {
 
     @Test
     void azureBlobPush_containerNotExist() {
-        var assetId = "felix-blob-test-asset";
+        var assetId = "blob-test-asset";
 
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",

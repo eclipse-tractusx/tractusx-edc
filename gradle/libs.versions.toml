@@ -130,6 +130,7 @@ edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", ve
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
+edc-aws-s3-provision = { module = "org.eclipse.edc.aws:provision-aws-s3", version.ref = "edc" }
 edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
 
