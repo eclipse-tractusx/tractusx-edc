@@ -80,8 +80,7 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 
     // cloud provisioner extensions
-    runtimeOnly(libs.edc.azure.blob.provision)
-    runtimeOnly(libs.edc.aws.s3.provision)
+    runtimeOnly(project(":edc-extensions:backport:azblob-provisioner"))
 
     // Federated Catalog Crawler + Query API
     runtimeOnly(project(":edc-extensions:federated-catalog"))

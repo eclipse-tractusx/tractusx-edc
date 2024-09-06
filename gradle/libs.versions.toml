@@ -126,11 +126,14 @@ edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = 
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
+edc-azure-blob-core = { module = "org.eclipse.edc.azure:azure-blob-core", version.ref = "edc" }
+edc-azure-test = { module = "org.eclipse.edc.azure:azure-test", version.ref = "edc" }
+
+# commented, because this module has been backported temporarily
+#edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
-edc-aws-s3-provision = { module = "org.eclipse.edc.aws:provision-aws-s3", version.ref = "edc" }
 edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
 
