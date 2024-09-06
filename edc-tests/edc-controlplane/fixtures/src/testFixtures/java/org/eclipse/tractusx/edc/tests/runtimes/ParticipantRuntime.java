@@ -70,8 +70,10 @@ public class ParticipantRuntime extends EmbeddedRuntime {
             runtimeKeyPair = new ECKeyGenerator(Curve.P_256).keyID(kid).generate();
             KeyPool.register(kid, runtimeKeyPair.toKeyPair());
             var privateKey = runtimeKeyPair.toPrivateKey();
-            
-            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider((k) -> Result.success(privateKey))), () -> privateAlias, () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
+
+            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider((k) -> Result.success(privateKey))),
+                    () -> privateAlias,
+                    () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
             registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);
