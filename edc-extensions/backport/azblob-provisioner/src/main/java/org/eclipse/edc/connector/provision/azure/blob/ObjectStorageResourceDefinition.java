@@ -20,15 +20,24 @@
 package org.eclipse.edc.connector.provision.azure.blob;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 
 import java.util.Objects;
 
+@JsonTypeName("dataspaceconnector:objectstorageresourcedefinition")
+@JsonDeserialize(builder = ObjectStorageResourceDefinition.Builder.class)
 public class ObjectStorageResourceDefinition extends ResourceDefinition {
 
     private String containerName;
     private String accountName;
     private String folderName;
+
+    private ObjectStorageResourceDefinition() {
+    }
 
     public String getContainerName() {
         return containerName;
@@ -50,12 +59,14 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
         return folderName;
     }
 
+    @JsonPOJOBuilder(withPrefix = "")
     public static class Builder extends ResourceDefinition.Builder<ObjectStorageResourceDefinition, Builder> {
 
         private Builder() {
             super(new ObjectStorageResourceDefinition());
         }
 
+        @JsonCreator
         public static Builder newInstance() {
             return new Builder();
         }

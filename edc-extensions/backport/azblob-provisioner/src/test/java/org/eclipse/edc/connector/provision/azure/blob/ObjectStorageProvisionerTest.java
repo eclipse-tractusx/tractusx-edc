@@ -58,7 +58,7 @@ class ObjectStorageProvisionerTest {
 
     @Test
     void canProvision() {
-        assertThat(provisioner.canProvision(new ObjectStorageResourceDefinition())).isTrue();
+        assertThat(provisioner.canProvision(ObjectStorageResourceDefinition.Builder.newInstance().build())).isTrue();
         assertThat(provisioner.canProvision(new ResourceDefinition() {
             @Override
             public <RD extends ResourceDefinition, B extends Builder<RD, B>> B toBuilder() {

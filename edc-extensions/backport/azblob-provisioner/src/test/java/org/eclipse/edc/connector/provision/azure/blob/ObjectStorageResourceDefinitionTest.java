@@ -19,9 +19,14 @@
 
 package org.eclipse.edc.connector.provision.azure.blob;
 
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +47,25 @@ class ObjectStorageResourceDefinitionTest {
         var rebuiltDefinition = builder.build();
 
         assertThat(rebuiltDefinition).usingRecursiveComparison().isEqualTo(definition);
+    }
+
+    @Test
+    void serDes() throws IOException {
+        var definition = ObjectStorageResourceDefinition.Builder.newInstance()
+                .id("id")
+                .transferProcessId("tp-id")
+                .accountName("account")
+                .containerName("container")
+                .folderName("folder/")
+                .build();
+
+        var mapper = new ObjectMapper();
+        mapper.registerSubtypes(ObjectStorageResourceDefinition.class);
+        var json = mapper.writeValueAsString(definition);
+        assertThat(json).isNotBlank();
+
+        var deser = mapper.readValue(json, ResourceDefinition.class);
+        assertThat(deser).usingRecursiveComparison().isEqualTo(definition);
     }
 
 }

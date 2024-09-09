@@ -21,8 +21,6 @@ dependencies {
     api(libs.edc.azure.blob.core)
 
     implementation(libs.azure.storage.blob)
-//    implementation(libs.failsafe.core)
-
     testImplementation(testFixtures(libs.edc.azure.test))
 }
 
