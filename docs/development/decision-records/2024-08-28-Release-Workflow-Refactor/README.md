@@ -42,7 +42,7 @@ Github Actions Jobs and Step conditionals should be used to make the execution f
 Then, a different process takes places if we intend to release a latest version or a bugfix. 
 
 ### Case for latest releases
-After the prepare release PR is approved, merging into `main` will trigger the `publish-release` workflow where the required publication steps will take place, as shown in [Publish release workflow logic](#publish-release-workflow-logic).
+After the prepare release PR is approved, merging into `main` will trigger the `publish-release` workflow where the required publication steps will take place, as shown in [Release workflow logic](#release-workflow-logic).
 
 ### Case for bugfix Releases
 After the bugfix branch is created, developers commit the fix or set of fixes to it via PRs.
@@ -50,7 +50,7 @@ The release of the bugfix version should be triggered manually through the publi
 - Create any commits to the main branch
 - Bump the project version to the next minor version
 
-### Publish release workflow logic
+### Release workflow logic
 - Triggers automatically when prepare release PR is merged into main from `release/*` branch
 - Triggers manually only from branches `bugfix/*`
 
@@ -58,14 +58,19 @@ The release of the bugfix version should be triggered manually through the publi
 - Triggers release to maven repository by calling `trigger-maven-publish.yaml`
 - Triggers docker image publishing by calling `trigger-maven-publish.yaml`
 - Releases helm-charts
-- Creates Github Tag and Release
-- if PR was merged to `main` it means a new release then:
-   - Updates project version to next version, commits and pushes to main
-      - if final version, increments to next minor version and adds "-SNAPSHOT"
-      - if not final version (e.g.-rc1), do not increment
-- _(elif PR was merged to bugfix then don't increment)_
+- Triggers the creation of a Github Tag and Release by calling a new re-usable workflow.
 - Publishes to Swaggerhub by calling `publish-swaggerhub.yaml`
 - Publishes OpenAPI UI spec to Github Pages by calling `publish-openapi-ui.yml`
+
+### Github tag and release workflow
+A new re-usable workflow should be created that allows for parametrized calls.
+Given an `isLatest` parameter, this workflow should:
+- Create and push the new tag
+- if isLatest is set to `true`:
+    - Updates project version to next version, commits and pushes to main
+        - if final version, increments to next minor version and adds "-SNAPSHOT"
+        - if not final version (e.g.-rc1), do not increment
+- _(elif set to `false` then skip version increment)_
 
 ## Other Considerations
 
@@ -75,4 +80,6 @@ The release of the bugfix version should be triggered manually through the publi
 - Should be possible to trigger the publishing of snapshots manually from main or bugfix branches.
 - `draft-new-release` workflow could be named to `draft-release`.
 - `publish-new-release` workflow could be named `release`.
+- A new `release-bugfix` workflow should be created for releasing bugfixes.
+- Commonalities between releasing workflows can be extracted into re-usable workflows and parametrized.
 
