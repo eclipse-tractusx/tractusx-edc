@@ -59,7 +59,7 @@ public class FederatedCatalogTest {
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
-    
+
     abstract static class Tests {
 
         @Test
@@ -77,9 +77,9 @@ public class FederatedCatalogTest {
                     .atMost(ASYNC_TIMEOUT)
                     .untilAsserted(() -> {
                         CONSUMER.getFederatedCatalog()
-                                .log().ifValidationFails()
                                 .statusCode(200)
                                 .contentType(JSON)
+                                .log().ifValidationFails()
                                 .body("size()", is(1))
                                 .body("[0].'dcat:dataset'.'@id'", equalTo("test-asset"));
                     });

@@ -2,14 +2,14 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.8.2-20240816-SNAPSHOT"
+edc = "0.8.2-20240902-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.2"
-aws = "2.27.12"
+aws = "2.27.21"
 azure-identity = "1.13.2"
 azure-storage-blob = "12.27.1"
 bouncyCastle-jdk18on = "1.78.1"
-flyway = "10.17.2"
+flyway = "10.17.3"
 jackson = "2.17.2"
 jakarta-json = "2.0.1"
 jupiter = "5.11.0"
@@ -22,7 +22,7 @@ restAssured = "5.5.0"
 rsApi = "4.0.0"
 slf4j = "2.0.16"
 testcontainers = "1.20.1"
-tink = "1.14.1"
+tink = "1.15.0"
 titanium = "1.4.1"
 
 [libraries]
@@ -126,6 +126,11 @@ edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = 
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
+edc-azure-blob-core = { module = "org.eclipse.edc.azure:azure-blob-core", version.ref = "edc" }
+edc-azure-test = { module = "org.eclipse.edc.azure:azure-test", version.ref = "edc" }
+
+# commented, because this module has been backported temporarily
+#edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
@@ -189,6 +194,7 @@ edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", versi
 edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client", version.ref = "edc" }
 edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
+edc-dpf-iam = { module = "org.eclipse.edc:data-plane-iam", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
@@ -247,4 +253,4 @@ edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micromete
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]
 
 [plugins]
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.22" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.23" }

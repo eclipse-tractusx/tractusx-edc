@@ -29,6 +29,6 @@ CREATE TABLE IF NOT EXISTS edc_data_plane_instance
     data                 JSON,
     lease_id             VARCHAR
         CONSTRAINT data_plane_instance_lease_id_fk
-                    REFERENCES edc_lease
-                    ON DELETE SET NULL
+            REFERENCES edc_lease
+            ON DELETE SET NULL
 );
