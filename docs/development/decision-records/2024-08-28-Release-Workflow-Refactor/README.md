@@ -66,7 +66,7 @@ The release of the bugfix version should be triggered manually through the publi
 A new re-usable workflow should be created that allows for parametrized calls.
 Given an `isLatest` parameter, this workflow should:
 - Create and push the new tag
-- if isLatest is set to `true`:
+- if `isLatest` is set to `true`:
     - Updates project version to next version, commits and pushes to main
         - if final version, increments to next minor version and adds "-SNAPSHOT"
         - if not final version (e.g.-rc1), do not increment
