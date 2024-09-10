@@ -1,5 +1,5 @@
 #################################################################################
-#  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -19,113 +19,75 @@
 
 
 ---
-name: "Publish bugfix release"
-
-# Temporary workflow to enable the release of bugfix versions.
-# Should be reworked as this file contains duplicate code from draft-new-release and publish-new-release
-# This workflow, as is, should be executed after the bugfix branch is created and all needed PRs are merged
+name: "Release"
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'The bugfix version you want to release.'
-        required: true
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+  workflow_call:
+
 
 jobs:
-  # Gate: Check release version presence
-  validate-release:
-    name: Validate if bugfix version can be released
+  # Gate: Skip if head is not release branch
+  check-head:
+    name: "Check if head is release or base is bugfix"
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'bugfix/')
+    if: startsWith(github.ref_name, 'bugfix/*') || startsWith(github.event.pull_request.head.ref, 'release/')
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - id: check-tag
-        name: Check if tag exists
-        run: |-
-          
-          tag=$(git tag -l ${{ inputs.version }})
-          
-          if [ ! -z $tag ];
-          then
-            echo "Tag already exists! Please choose another tag."
-            exit 1
-          fi
+      - run: echo "Triggering release"
 
-  prepare-bugfix-release:
-    name: "Prepare bugfix release"
+  release-version:
+    needs: check-head
+    name: Determine release version
     runs-on: ubuntu-latest
-    needs: [validate-release]
-    permissions:
-      contents: write
+    outputs:
+      RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Initialize mandatory git config
+      - name: Output release version
+        id: release-version
         run: |
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-      - uses: ./.github/actions/setup-java
-      - name: Bump version in gradle.properties
-        run: |-
-          # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
-          sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-          # replace the openapi version with the upcoming one
-          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ github.event.inputs.version }}/swagger.yaml#g' .tractusx
-        env:
-          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
-          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      - name: Bump version in /charts
-        uses: mikefarah/yq@v4.44.3
-        with:
-          cmd: |-
-            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
-      - name: Update Chart READMEs
-        uses: addnab/docker-run-action@v3
-        with:
-          image: jnorwood/helm-docs:v1.10.0
-          options: -v ${{ github.workspace }}/charts:/helm-docs
-          run: |
-            helm-docs --log-level debug
-      - name: Commit manifest files
-        id: make-commit
-        run: |
-          git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
-          git commit --message "Prepare release ${{ inputs.version }}"
-
+          VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
 
   # Release: Maven Artifacts
   maven-release:
     name: Publish extension's release version to maven repository
-    needs: [ prepare-bugfix-release, validate-release ]
+    needs: [ release-version ]
     permissions:
       contents: read
+      packages: write
+    if: needs.release-version.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
     with:
-      version: ${{ inputs.version }}
+      version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
 
+  # Release: docker images
   docker-release:
     name: Publish Docker images
-    needs: [ prepare-bugfix-release, validate-release ]
+    needs: [ release-version ]
     permissions:
       contents: write
-
+    if: needs.release-version.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets: inherit
     with:
-      docker_tag: ${{ inputs.version }}
+      docker_tag: ${{ needs.release-version.outputs.RELEASE_VERSION }}
 
-  # Release: Helm Charts
+  # Release: Helm charts
   helm-release:
-    name: Publish new helm release
-    needs: [ prepare-bugfix-release, validate-release ]
+    name: Publish helm charts
+    needs: [ release-version ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pages: write
 
+    if: needs.release-version.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
         with:
@@ -151,61 +113,45 @@ jobs:
 
           # Commit and push to gh-pages
           git add index.yaml helm-charts
-          git commit -s -m "Release ${{ inputs.version }}"
+          git commit -s -m "Release ${{ needs.release-version.outputs.RELEASE_VERSION }}"
 
           git push origin gh-pages
 
-  # Release: GitHub tag & release;
+  # Release: GitHub tag & release; Starts a new development cycle if latest release;
   github-release:
     name: Publish new github release
-    needs: [ prepare-bugfix-release, validate-release, maven-release, docker-release, helm-release ]
+    needs: [ release-version, maven-release, docker-release, helm-release ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
+      pages: write
+      pull-requests: write
+    if: needs.release-version.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/publish-tag-and-release
         with:
-          # 0 to fetch the full history due to upcoming merge of releases into main branch
-          fetch-depth: 0
-      - name: Create Release Tag
-        id: create_release_tag
-        run: |
-          # Prepare git env
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-
-          # informative
-          git branch -a
-          git tag
-
-          # Create & push tag
-          git tag --force ${{ inputs.version }}
-          git push --force origin ${{ inputs.version }}
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          generateReleaseNotes: true
-          tag: ${{ inputs.version }}
+          version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: false
-          removeArtifacts: true
+          isLatest: ${{ github.ref_name == 'main' }}
 
   publish-to-swaggerhub:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
       contents: read
-    needs: [ prepare-bugfix-release, validate-release ]
+    needs: [ release-version ]
     uses: ./.github/workflows/publish-swaggerhub.yaml
     with:
-      downstream-version: ${{ inputs.version }}
+      downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
     secrets: inherit
 
   publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"
     permissions:
       contents: write
-    needs: [ prepare-bugfix-release, validate-release ]
+    needs: [ release-version ]
     uses: ./.github/workflows/publish-openapi-ui.yml
     secrets: inherit
     with:
-      version: ${{ inputs.version }}
+      version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
