@@ -29,5 +29,5 @@ jobs:
   check-head:
     name: "Check if head is bugfix and delegate to release"
     if: startsWith(github.ref_name, 'bugfix/*')
-    uses: ./.github/workflows/publish-new-release.yml
+    uses: ./.github/workflows/release.yml
     secrets: inherit
