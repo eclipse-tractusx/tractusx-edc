@@ -36,7 +36,7 @@ jobs:
   check-head:
     name: "Check if head is release or base is bugfix"
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'bugfix/*') || startsWith(github.event.pull_request.head.ref, 'release/')
+    if: startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')
     steps:
       - run: echo "Triggering release"
 
@@ -47,10 +47,11 @@ jobs:
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
+      - uses: actions/checkout@v4
       - name: Output release version
         id: release-version
         run: |
-          VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
 
   # Release: Maven Artifacts
@@ -59,7 +60,6 @@ jobs:
     needs: [ release-version ]
     permissions:
       contents: read
-      packages: write
     if: needs.release-version.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
@@ -70,8 +70,6 @@ jobs:
   docker-release:
     name: Publish Docker images
     needs: [ release-version ]
-    permissions:
-      contents: write
     if: needs.release-version.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets: inherit
@@ -124,12 +122,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
-      pages: write
-      pull-requests: write
     if: needs.release-version.outputs.RELEASE_VERSION
     steps:
-      - uses: actions/checkout@v4
       - uses: ./.github/actions/publish-tag-and-release
         with:
           version: ${{ needs.release-version.outputs.RELEASE_VERSION }}

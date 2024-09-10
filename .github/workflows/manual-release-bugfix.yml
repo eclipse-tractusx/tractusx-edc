@@ -20,6 +20,7 @@
 
 ---
 name: "Bugfix Release"
+run-name: "Release bugfix from ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
@@ -27,7 +28,10 @@ on:
 jobs:
   # Gate: Skip if base is not bugfix branch
   check-head:
-    name: "Check if head is bugfix and delegate to release"
-    if: startsWith(github.ref_name, 'bugfix/*')
+    name: "Check if head is bugfix and delegate to release workflow"
+    if: startsWith(github.ref_name, 'bugfix/')
     uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
+      pages: write
     secrets: inherit

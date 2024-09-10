@@ -36,13 +36,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v4
     - name: Prepare Git Config
+      shell: bash
       run: |
         # Prepare git env
         git config user.name "eclipse-tractusx-bot"
         git config user.email "tractusx-bot@eclipse.org"
     - name: Create Release Tag
       id: create_release_tag
+      shell: bash
       run: |
         # informative
         git branch -a
@@ -62,6 +65,7 @@ runs:
     - uses: ./.github/actions/setup-java
     - name: Set new snapshot version
       if: ${{ inputs.isLatest }}
+      shell: bash
       run: |
         # Extract release version
         IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ inputs.version}}"

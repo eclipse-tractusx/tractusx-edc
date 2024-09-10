@@ -33,7 +33,7 @@ jobs:
   validate-release:
     name: "Validate if version can be released"
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'bugfix/') }}
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,6 +52,7 @@ jobs:
 
   resolve-branch-prefix:
      name: "Resolve branch prefix (release or bugfix)"
+     needs: validate-release
      runs-on: ubuntu-latest
      outputs:
        branch_name: ${{ steps.release.outputs.branch_name || steps.bugfix.outputs.branch_name }}
@@ -60,7 +61,7 @@ jobs:
          if: github.ref_name == 'main'
          run: echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
        - id: bugfix
-         if: startsWith(github.ref_name, 'bugfix/')
+         if: startsWith(github.ref, 'refs/tags/')
          run: echo "branch_name=bugfix/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
 
   draft-new-release:
@@ -84,9 +85,9 @@ jobs:
       - name: Bump version in gradle.properties
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
-          sed -i  's/version=.*/version=${{ github.event.inputs.version }}/g' gradle.properties
+          sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
           # replace the openapi version with the upcoming one
-          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ github.event.inputs.version }}/swagger.yaml#g' .tractusx
+          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ inputs.version }}/swagger.yaml#g' .tractusx
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +95,7 @@ jobs:
         uses: mikefarah/yq@v4.44.3
         with:
           cmd: |-
-            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ github.event.inputs.version }}" | .version = "${{ github.event.inputs.version }}"'
+            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
       - name: Update Chart READMEs
         uses: addnab/docker-run-action@v3
         with:
@@ -106,22 +107,23 @@ jobs:
         id: make-commit
         run: |
           git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
-          git commit --message "Prepare release ${{ github.event.inputs.version }}"
+          git commit --message "Prepare release ${{ inputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Push new branch
         run: git push origin ${{ needs.resolve-branch-prefix.outputs.branch_name }}
       - name: Create pull request
+        if: ${{ github.ref_name == 'main' }}
         uses: thomaseizinger/create-pull-request@1.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           head: ${{ needs.resolve-branch-prefix.outputs.branch_name }}
           base: main
-          title: Release version ${{ github.event.inputs.version }}
+          title: Release version ${{ inputs.version }}
           reviewers: ${{ github.actor }}
           body: |-
-            This PR was created in response to a manual trigger of the [release workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+            This PR was created in response to a manual trigger of the [draft release workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
             Versions have been bumped in [commit ${{ steps.make-commit.outputs.commit }}](${{ steps.make-commit.outputs.commit }}).
 
             Merging this PR will create a GitHub release and upload any assets that are created as part of the release build.
