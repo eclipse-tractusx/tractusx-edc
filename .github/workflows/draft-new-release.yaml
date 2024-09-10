@@ -19,19 +19,54 @@
 
 
 ---
-name: "Draft new release"
+name: "Draft Release"
+run-name: "Draft Release ${{ inputs.version }} from ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version you want to release.'
+        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes. '
         required: true
 
 jobs:
+  validate-release:
+    name: "Validate if version can be released"
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'bugfix/') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check-tag
+        name: Check if tag exists
+        run: |-
+
+          tag=$(git tag -l ${{ inputs.version }})
+
+          if [ ! -z $tag ];
+          then
+            echo "Tag already exists! Please choose another tag."
+            exit 1
+          fi
+
+  resolve-branch-prefix:
+     name: "Resolve branch prefix (release or bugfix)"
+     runs-on: ubuntu-latest
+     outputs:
+       branch_name: ${{ steps.release.outputs.branch_name || steps.bugfix.outputs.branch_name }}
+     steps:
+       - id: release
+         if: github.ref_name == 'main'
+         run: echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+       - id: bugfix
+         if: startsWith(github.ref_name, 'bugfix/')
+         run: echo "branch_name=bugfix/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+
   draft-new-release:
     name: "Draft a new release"
     runs-on: ubuntu-latest
+    needs: resolve-branch-prefix
     permissions:
       contents: write
       packages: write
@@ -39,8 +74,8 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - name: Create release branch
-        run: git checkout -b release/${{ github.event.inputs.version }}
+      - name: Create Release or Bugfix branch
+        run: git checkout -b ${{ needs.resolve-branch-prefix.outputs.branch_name }}
       - name: Initialize mandatory git config
         run: |
           git config user.name "eclipse-tractusx-bot"
@@ -75,14 +110,14 @@ jobs:
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Push new branch
-        run: git push origin release/${{ github.event.inputs.version }}
+        run: git push origin ${{ needs.resolve-branch-prefix.outputs.branch_name }}
       - name: Create pull request
         uses: thomaseizinger/create-pull-request@1.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          head: release/${{ github.event.inputs.version }}
-          base: releases
+          head: ${{ needs.resolve-branch-prefix.outputs.branch_name }}
+          base: main
           title: Release version ${{ github.event.inputs.version }}
           reviewers: ${{ github.actor }}
           body: |-
