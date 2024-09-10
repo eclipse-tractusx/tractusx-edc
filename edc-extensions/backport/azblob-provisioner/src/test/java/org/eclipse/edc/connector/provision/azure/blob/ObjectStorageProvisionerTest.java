@@ -30,6 +30,8 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -58,7 +60,11 @@ class ObjectStorageProvisionerTest {
 
     @Test
     void canProvision() {
-        assertThat(provisioner.canProvision(ObjectStorageResourceDefinition.Builder.newInstance().build())).isTrue();
+        assertThat(provisioner.canProvision(ObjectStorageResourceDefinition.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .containerName("test-container")
+                .accountName("test-account")
+                .build())).isTrue();
         assertThat(provisioner.canProvision(new ResourceDefinition() {
             @Override
             public <RD extends ResourceDefinition, B extends Builder<RD, B>> B toBuilder() {
