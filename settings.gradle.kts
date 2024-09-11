@@ -50,6 +50,7 @@ include(":edc-extensions:cx-policy")
 include(":edc-extensions:iatp:tx-iatp")
 include(":edc-extensions:iatp:tx-iatp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
+include(":edc-extensions:transfer-dataplane-signaling")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
