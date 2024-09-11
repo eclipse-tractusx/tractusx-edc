@@ -32,11 +32,11 @@ on:
 
 
 jobs:
-  # Gate: Skip if head is not release branch
+  # Gate
   check-head:
-    name: "Check if head is release or base is bugfix"
+    name: "Check if repository is not fork AND head is release OR base is bugfix"
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')
+    if: ${{ github.repository == 'eclipse-tractusx/tractusx-edc' && (startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')) }}
     steps:
       - run: echo "Triggering release"
 
@@ -130,6 +130,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           isLatest: ${{ github.ref_name == 'main' }}
 
+  # Release: Publish specs to SwaggerHub
   publish-to-swaggerhub:
     name: "Publish OpenAPI spec to Swaggerhub"
     permissions:
@@ -140,6 +141,7 @@ jobs:
       downstream-version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
     secrets: inherit
 
+  # Release: Publish specs to GitHub Pages
   publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"
     permissions:
