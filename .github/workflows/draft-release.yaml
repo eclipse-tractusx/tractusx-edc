@@ -32,7 +32,7 @@ on:
 
 jobs:
   validate-release:
-    name: "Validate if version can be released"
+    name: "Validates that tag does not already exist"
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') }}
     steps:

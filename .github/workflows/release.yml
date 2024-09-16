@@ -129,7 +129,7 @@ jobs:
         with:
           version: ${{ needs.release-version.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          isLatest: ${{ github.ref_name == 'main' }}
+          is_latest: ${{ github.ref_name == 'main' }}
 
   # Release: Publish specs to SwaggerHub
   publish-to-swaggerhub:

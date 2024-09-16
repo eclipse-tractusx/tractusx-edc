@@ -29,7 +29,7 @@ inputs:
   token:
     required: true
     description: "Github token"
-  isLatest:
+  is_latest:
     required: true
     description: "Boolean that defines if a release is latest or not"
 
@@ -52,19 +52,19 @@ runs:
         git tag
 
         # Create & push tag
-        git tag --force ${{ inputs.version }}
-        git push --force origin ${{ inputs.version }}
+        git tag ${{ inputs.version }}
+        git push origin ${{ inputs.version }}
     - name: Create GitHub Release
       uses: ncipollo/release-action@v1
       with:
         generateReleaseNotes: true
         tag: ${{ inputs.version }}
         token: ${{ inputs.token }}
-        makeLatest: ${{ inputs.isLatest }}
+        makeLatest: ${{ inputs.is_latest }}
         removeArtifacts: true
     - uses: ./.github/actions/setup-java
     - name: Set new snapshot version
-      if: ${{ inputs.isLatest }}
+      if: ${{ inputs.is_latest }}
       shell: bash
       run: |
         # Extract release version
@@ -79,7 +79,7 @@ runs:
           echo "${{ inputs.version }} is not a final release version (contains \"$SNAPSHOT\"), will not increase patch"
         fi
 
-        VERSION="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$((RELEASE_VERSION_PATCH+$INC))-SNAPSHOT"
+        VERSION="$RELEASE_VERSION_MAJOR.$((RELEASE_VERSION_MINOR+$INC)).0-SNAPSHOT"
         SNAPSHOT_VERSION=$VERSION
 
         # Persist the "version" in the gradle.properties
