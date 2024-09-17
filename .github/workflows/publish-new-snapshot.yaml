@@ -23,20 +23,17 @@
 
 ---
 name: "Publish new snapshot"
+run_name: "Publish new snapshot from ${{github.ref_name}}"
 
 on:
   workflow_run:
     workflows: [ "Run-All-Tests" ]
     branches:
       - main
-      - releases
       - release/*
-      - hotfix/*
+      - bugfix/*
     types:
       - completed
-  release:
-    types:
-      - published
   workflow_dispatch:
 
   # periodic build triggers are defined in run-all-tests.yml, which triggers this workflow
@@ -107,7 +104,7 @@ jobs:
 
     # do not run on PR branches, do not run on releases
     if: |
-      needs.secret-presence.outputs.HAS_OSSRH && github.event_name != 'pull_request' && github.ref != 'refs/heads/releases'
+      needs.secret-presence.outputs.HAS_OSSRH
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
     with:
