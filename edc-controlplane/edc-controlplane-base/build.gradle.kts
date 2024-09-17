@@ -29,9 +29,9 @@ dependencies {
     runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
+    runtimeOnly(project(":edc-extensions:transfer-dataplane-signaling"))
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)
-    runtimeOnly(libs.edc.dpf.transfer.signaling)
     runtimeOnly(libs.edc.controlplane.callback.staticendpoint)
 
     // needed for BPN validation
