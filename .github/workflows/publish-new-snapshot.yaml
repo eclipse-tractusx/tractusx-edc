@@ -23,7 +23,7 @@
 
 ---
 name: "Publish new snapshot"
-run_name: "Publish new snapshot from ${{github.ref_name}}"
+run-name: "Publish new snapshot from ${{github.ref_name}}"
 
 on:
   workflow_run:
