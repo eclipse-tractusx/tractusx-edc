@@ -30,7 +30,6 @@ on:
     workflows: [ "Run-All-Tests" ]
     branches:
       - main
-      - release/*
       - bugfix/*
     types:
       - completed
