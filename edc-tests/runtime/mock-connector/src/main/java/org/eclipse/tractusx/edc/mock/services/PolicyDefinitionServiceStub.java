@@ -21,7 +21,9 @@ package org.eclipse.tractusx.edc.mock.services;
 
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.mock.ResponseQueue;
@@ -59,6 +61,12 @@ public class PolicyDefinitionServiceStub extends AbstractServiceStub implements 
     @Override
     public ServiceResult<PolicyDefinition> update(PolicyDefinition policy) {
         return responseQueue.getNext(PolicyDefinition.class, "Error updating PolicyDefinition: %s");
+    }
+
+    @Override
+    public Result<Void> validate(Policy policy) {
+        return responseQueue.getNext(Void.class, "Error validating PolicyDefinition: %s")
+                .flatMap(it -> it.succeeded() ? Result.success() : Result.failure(it.getFailureDetail()));
     }
 
 
