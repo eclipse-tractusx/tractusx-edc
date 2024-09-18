@@ -21,6 +21,8 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -28,9 +30,6 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,10 +43,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayDeque;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_KEY;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
@@ -78,10 +81,11 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @Testcontainers
 @CloudTransferTest
 public class AzureToAzureTest {
+
     private static final int PROVIDER_CONTROL_PORT = getFreePort();
+    private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
     private static final int AZURITE_HOST_PORT = getFreePort();
-    // launches the data plane
-    // launches the data plane
+
     @RegisterExtension
     protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
             "AzureBlob-Dataplane",
@@ -121,17 +125,17 @@ public class AzureToAzureTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
-        var request = createMultipleFileFlowRequest(PREFIX_FOR_MUTIPLE_FILES);
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-
+        var request = createFlowRequestBuilder("any")
+                .add("sourceDataAddress", blobSourceAddress(List.of(dspaceProperty(EDC_NAMESPACE + "blobPrefix", PREFIX_FOR_MUTIPLE_FILES))))
+                .build();
 
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(2))
@@ -158,17 +162,13 @@ public class AzureToAzureTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
-        var request = createFlowRequest(TESTFILE_NAME);
-
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(createFlowRequestBuilder(TESTFILE_NAME).build())
                 .post()
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(2))
@@ -210,18 +210,14 @@ public class AzureToAzureTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
-        var request = createFlowRequest(blobName);
-
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(createFlowRequestBuilder(blobName).build())
                 .post()
                 .then()
                 .log().ifValidationFails()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(10))
@@ -252,31 +248,17 @@ public class AzureToAzureTest {
         providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/blob3.bin");
 
         var request = createFlowRequestBuilder(TESTFILE_NAME)
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage")
-                        .property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
-                        .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME)
-                        .property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
-                        .property("blobPrefix", "folder/")
-                        .build())
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage")
-                        .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
-                        .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
-                        .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                        .property("folderName", "destfolder")
-                        .build())
+                .add("sourceDataAddress", blobSourceAddress(List.of(dspaceProperty(EDC_NAMESPACE + "blobPrefix", "folder/"))))
+                .add("destinationDataAddress", blobDestinationAddress(List.of(dspaceProperty(EDC_NAMESPACE + "folderName", "destfolder"))))
                 .build();
 
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(2))
@@ -285,7 +267,6 @@ public class AzureToAzureTest {
                         .isNotEmpty()
                         .contains("destfolder/folder/blob.bin", "destfolder/folder/blob2.bin", "destfolder/folder/blob3.bin"));
     }
-
 
     @Test
     void transferFile_targetContainerNotExist_shouldFail(Vault vault) {
@@ -299,17 +280,13 @@ public class AzureToAzureTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
 
-        var request = createFlowRequest(TESTFILE_NAME);
-
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
-
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(createFlowRequestBuilder(TESTFILE_NAME).build())
                 .post()
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200);
 
         await().pollInterval(Duration.ofSeconds(2))
@@ -318,34 +295,21 @@ public class AzureToAzureTest {
                         .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
     }
 
-    private DataFlowStartMessage createFlowRequest(String blobName) {
-        return createFlowRequestBuilder(blobName)
-                .build();
+    private JsonObjectBuilder createFlowRequestBuilder(String blobName) {
+        return Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", blobSourceAddress(List.of(dspaceProperty(EDC_NAMESPACE + "blobName", blobName))))
+                .add("destinationDataAddress", blobDestinationAddress(List.of(dspaceProperty(EDC_NAMESPACE + "blobName", blobName))))
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AzureStorage-PUSH");
     }
 
-    private DataFlowStartMessage createMultipleFileFlowRequest(String blobPrefix) {
-        return DataFlowStartMessage.Builder.newInstance()
-                .id("test-process-multiple-file-id")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage").property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
-                        .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME).property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
-                        .property("blobPrefix", blobPrefix)
-                        .build())
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage").property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
-                        .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME).property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                        .build())
-                .processId("test-process-multiple-file-id")
-                .flowType(FlowType.PUSH)
-                .build();
-    }
-
-    private DataFlowStartMessage.Builder createFlowRequestBuilder(String blobName) {
-        return DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(blobSourceAddress(blobName))
-                .destinationDataAddress(blobDestinationAddress(blobName))
-                .processId("test-process-id")
-                .flowType(FlowType.PUSH);
+    private JsonObjectBuilder dspaceProperty(String name, String value) {
+        return Json.createObjectBuilder()
+                .add("dspace:name", name)
+                .add("dspace:value", value);
     }
 }

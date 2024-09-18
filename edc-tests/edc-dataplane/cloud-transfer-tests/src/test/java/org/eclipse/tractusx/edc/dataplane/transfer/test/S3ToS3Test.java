@@ -20,6 +20,9 @@
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import io.restassured.http.ContentType;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
@@ -30,9 +33,6 @@ import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -53,12 +53,16 @@ import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayDeque;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
@@ -80,7 +84,10 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @Testcontainers
 @CloudTransferTest
 public class S3ToS3Test {
+
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
+    private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
+
     @RegisterExtension
     protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
             "AwsS3-Dataplane",
@@ -129,18 +136,16 @@ public class S3ToS3Test {
                 .sdkHttpResponse()
                 .isSuccessful() && putResponse.get()));
 
-
         assertThat(putResponse.get()).isTrue();
 
         var destinationBucket = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
         assertThat(destinationBucket.sdkHttpResponse().isSuccessful()).isTrue();
-        var request = createMultipleFileFlowRequest();
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+        var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES));
 
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(createDataFlowStartMessage(additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
@@ -168,14 +173,12 @@ public class S3ToS3Test {
         var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
         assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
 
-        // initiate data flow request
-        var request = createFlowRequest();
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+        var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(createDataFlowStartMessage(additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
@@ -199,14 +202,12 @@ public class S3ToS3Test {
 
         // do not create bucket in consumer -> will fail!
 
-        // initiate data flow request
-        var request = createFlowRequest();
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+        var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(createDataFlowStartMessage(additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
@@ -236,14 +237,12 @@ public class S3ToS3Test {
             var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
             assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
 
-            // initiate data flow request
-            var request = createFlowRequest();
-            var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
+            var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
             given().when()
-                    .baseUri(url)
+                    .baseUri(START_DATAFLOW_URL)
                     .contentType(ContentType.JSON)
-                    .body(request)
+                    .body(createDataFlowStartMessage(additionalSourceAddressProperties))
                     .post()
                     .then()
                     .statusCode(200);
@@ -279,61 +278,42 @@ public class S3ToS3Test {
         return upload.completionFuture();
     }
 
-
-    private DataFlowStartMessage createFlowRequest() {
-        return DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_NAME, TESTFILE_NAME)
-                        .property(S3BucketSchema.REGION, S3_REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, providerContainer.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, providerContainer.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
-                        .build()
+    private JsonObject createDataFlowStartMessage(List<JsonObjectBuilder> additionalSourceAddressProperties) {
+        return Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder(additionalSourceAddressProperties)
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, providerContainer.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, providerContainer.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride))
+                        )
                 )
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_NAME, TESTFILE_NAME)
-                        .property(S3BucketSchema.REGION, S3_REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, consumerContainer.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, consumerContainer.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
-                        .build()
+                .add("destinationDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, consumerContainer.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, consumerContainer.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride))
+                        )
                 )
-                .flowType(FlowType.PUSH)
-                .processId("test-process-id")
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AmazonS3-PUSH")
                 .build();
     }
 
-
-    private DataFlowStartMessage createMultipleFileFlowRequest() {
-        return DataFlowStartMessage.Builder.newInstance()
-                .id("test-process-multiple-file-id")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
-                        .property(S3BucketSchema.REGION, S3_REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, providerContainer.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, providerContainer.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride)
-                        .build()
-                )
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.REGION, S3_REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, consumerContainer.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, consumerContainer.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride)
-                        .build()
-                )
-                .flowType(FlowType.PUSH)
-                .processId("test-process-multiple-file-id")
-                .build();
+    private JsonObjectBuilder dspaceProperty(String name, String value) {
+        return Json.createObjectBuilder()
+                .add("dspace:name", name)
+                .add("dspace:value", value);
     }
 
 }

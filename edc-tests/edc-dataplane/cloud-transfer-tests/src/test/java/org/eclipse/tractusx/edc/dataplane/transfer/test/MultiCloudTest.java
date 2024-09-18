@@ -21,6 +21,8 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
@@ -30,9 +32,6 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -47,11 +46,14 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayDeque;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_KEY;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
@@ -60,7 +62,6 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
@@ -80,6 +81,7 @@ public class MultiCloudTest {
 
     // General constants, containers etc.
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
+    private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
     @RegisterExtension
     protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
             "MultiCloud-Dataplane",
@@ -124,35 +126,39 @@ public class MultiCloudTest {
         var destinationBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
         assertThat(destinationBucket.sdkHttpResponse().isSuccessful()).isTrue();
 
-        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
-                .id("test-request-multiple")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage")
-                        .property("container", BLOB_CONTAINER_NAME)
-                        .property("account", BLOB_ACCOUNT_NAME)
-                        .property("blobPrefix", PREFIX_FOR_MUTIPLE_FILES)
-                        .property("keyName", BLOB_KEY_ALIAS)
-                        .build()
+        var request = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", "AzureStorage")
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + "container", BLOB_CONTAINER_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", BLOB_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "keyName", BLOB_KEY_ALIAS))
+                                .add(dspaceProperty(EDC_NAMESPACE + "blobPrefix", PREFIX_FOR_MUTIPLE_FILES))
+                        )
                 )
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.REGION, REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
-                        .build()
+                .add("destinationDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                        )
                 )
-                .flowType(FlowType.PUSH)
-                .processId("test-request-multiple")
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AmazonS3-PUSH")
                 .build();
 
 
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(dataFlowRequest)
+                .body(request)
                 .post()
                 .then()
                 .log().ifError()
@@ -175,35 +181,38 @@ public class MultiCloudTest {
         var r = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
         assertThat(r.sdkHttpResponse().isSuccessful()).isTrue();
 
-        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type("AzureStorage")
-                        .property("container", BLOB_CONTAINER_NAME)
-                        .property("account", BLOB_ACCOUNT_NAME)
-                        .property("keyName", BLOB_KEY_ALIAS)
-                        .property("blobName", TESTFILE_NAME)
-                        .build()
+        var request = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", "AzureStorage")
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + "container", BLOB_CONTAINER_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", BLOB_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "keyName", BLOB_KEY_ALIAS))
+                                .add(dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME))
+                        )
                 )
-                .destinationDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_NAME, TESTFILE_NAME)
-                        .property(S3BucketSchema.REGION, REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
-                        .build()
+                .add("destinationDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                        )
                 )
-                .flowType(FlowType.PUSH)
-                .processId("test-process-id")
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AmazonS3-PUSH")
                 .build();
 
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(dataFlowRequest)
+                .body(request)
                 .post()
                 .then()
                 .log().ifError()
@@ -239,37 +248,38 @@ public class MultiCloudTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(blobStoreHelper.generateAccountSas(BLOB_CONTAINER_NAME)));
 
-
-        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
-                        .property(S3BucketSchema.REGION, REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
-                        .build()
+        var request = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                        )
                 )
-                .destinationDataAddress(
-                        DataAddress.Builder.newInstance()
-                                .type("AzureStorage")
-                                .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
-                                .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
-                                .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                                .build()
+                .add("destinationDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", "AzureStorage")
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
+                        )
                 )
-                .flowType(FlowType.PUSH)
-                .processId("test-process-multiple-file-id")
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AzureStorage-PUSH")
                 .build();
 
-
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(dataFlowRequest)
+                .body(request)
                 .post()
                 .then()
                 .statusCode(200);
@@ -304,38 +314,40 @@ public class MultiCloudTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(blobStoreHelper.generateAccountSas(BLOB_CONTAINER_NAME)));
 
-
-        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES)
-                        .property(S3BucketSchema.REGION, REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
-                        .build()
+        var request = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                        )
                 )
-                .destinationDataAddress(
-                        DataAddress.Builder.newInstance()
-                                .type("AzureStorage")
-                                .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
-                                .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
-                                .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                                .property("blobName", "NOME_TEST")
-                                .build()
+                .add("destinationDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", "AzureStorage")
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
+                                .add(dspaceProperty(EDC_NAMESPACE + "blobName", "NOME_TEST"))
+                        )
                 )
-                .flowType(FlowType.PUSH)
-                .processId("test-process-multiple-file-id")
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AzureStorage-PUSH")
                 .build();
 
 
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(dataFlowRequest)
+                .body(request)
                 .post()
                 .then()
                 .statusCode(200);
@@ -346,7 +358,6 @@ public class MultiCloudTest {
                         .isNotEmpty()
                         .containsAll(filesNames));
     }
-
 
     @Test
     void transferFile_s3ToAzure(Vault vault) {
@@ -360,28 +371,39 @@ public class MultiCloudTest {
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(blobStoreHelper.generateAccountSas(BLOB_CONTAINER_NAME)));
 
-        var dataFlowRequest = DataFlowStartMessage.Builder.newInstance()
-                .id("test-request")
-                .sourceDataAddress(DataAddress.Builder.newInstance()
-                        .type(S3BucketSchema.TYPE)
-                        .property(S3BucketSchema.OBJECT_NAME, TESTFILE_NAME)
-                        .property(S3BucketSchema.REGION, REGION)
-                        .property(S3BucketSchema.BUCKET_NAME, BUCKET_NAME)
-                        .property(S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId())
-                        .property(S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey())
-                        .property(S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride)
-                        .build()
+        var request = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
+                .add("@id", UUID.randomUUID().toString())
+                .add("processId", UUID.randomUUID().toString())
+                .add("sourceDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", S3BucketSchema.TYPE)
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, BUCKET_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, s3Container.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, s3Container.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                        )
                 )
-                .destinationDataAddress(blobDestinationAddress(TESTFILE_NAME))
-                .processId("test-process-id")
-                .flowType(FlowType.PUSH)
+                .add("destinationDataAddress", Json.createObjectBuilder()
+                        .add("dspace:endpointType", "AzureStorage")
+                        .add("dspace:endpointProperties", Json.createArrayBuilder()
+                                .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
+                                .add(dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME))
+                        )
+                )
+                .add("flowType", "PUSH")
+                .add("transferTypeDestination", "AzureStorage-PUSH")
                 .build();
 
-        var url = "http://localhost:%s/control/transfer".formatted(PROVIDER_CONTROL_PORT);
         given().when()
-                .baseUri(url)
+                .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(dataFlowRequest)
+                .body(request)
                 .post()
                 .then()
                 .statusCode(200);
@@ -392,4 +414,11 @@ public class MultiCloudTest {
                         .isNotEmpty()
                         .contains(TESTFILE_NAME));
     }
+
+    private static JsonObjectBuilder dspaceProperty(String name, String value) {
+        return Json.createObjectBuilder()
+                .add("dspace:name", name)
+                .add("dspace:value", value);
+    }
+
 }

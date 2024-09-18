@@ -31,12 +31,8 @@ import java.util.Map;
  */
 public class ParticipantRuntimeExtension extends RuntimePerClassExtension implements AfterEachCallback {
 
-    public ParticipantRuntimeExtension(String moduleName, String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback beforeInitCallback) {
+    public ParticipantRuntimeExtension(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
         super(new ParticipantRuntime(moduleName, runtimeName, bpn, properties));
-
-        if (beforeInitCallback != null) {
-            beforeInitCallback.beforeInit(runtime);
-        }
     }
 
     @Override
