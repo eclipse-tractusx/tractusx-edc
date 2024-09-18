@@ -47,7 +47,6 @@ dependencies {
 
     runtimeOnly(libs.edc.data.plane.selector.client)
     runtimeOnly(libs.edc.data.plane.self.registration)
-    runtimeOnly(libs.edc.dpf.api.control)
     runtimeOnly(libs.edc.dpf.api.signaling)
 
     runtimeOnly(libs.edc.api.control.config)

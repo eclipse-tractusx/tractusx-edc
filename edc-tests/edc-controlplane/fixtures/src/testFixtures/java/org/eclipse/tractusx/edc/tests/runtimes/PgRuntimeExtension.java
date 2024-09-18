@@ -41,7 +41,7 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
     private final String dbName;
 
     public PgRuntimeExtension(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
-        super(moduleName, runtimeName, bpn, properties, null);
+        super(moduleName, runtimeName, bpn, properties);
         this.dbName = runtimeName.toLowerCase();
         postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
                 .withLabel("runtime", dbName)

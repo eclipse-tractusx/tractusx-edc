@@ -54,10 +54,6 @@ public class ParticipantRuntime extends EmbeddedRuntime {
     private DataWiper wiper;
 
     public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties) {
-        this(moduleName, runtimeName, bpn, properties, null);
-    }
-
-    public ParticipantRuntime(String moduleName, String runtimeName, String bpn, Map<String, String> properties, BeforeInitCallback beforeInitCallback) {
         super(runtimeName, properties, moduleName);
         this.properties = properties;
         this.registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn));
@@ -79,9 +75,6 @@ public class ParticipantRuntime extends EmbeddedRuntime {
             throw new RuntimeException(e);
         }
 
-        if (beforeInitCallback != null) {
-            beforeInitCallback.beforeInit(this);
-        }
     }
 
     public DataWiper getWiper() {
