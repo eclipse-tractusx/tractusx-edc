@@ -56,7 +56,7 @@ jobs:
         name: "Resolve branch prefix (release or bugfix)"
         run: |
           
-           if [[ ${{ github.ref_name }} == "main"]];
+           if [[ ${{ github.ref_name }} == "main" ]];
            then
              echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
            elif [[ ${{ github.ref }} == refs/tags/* ]]
