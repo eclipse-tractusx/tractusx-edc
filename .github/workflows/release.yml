@@ -118,6 +118,7 @@ jobs:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/publish-tag-and-release
         with:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
