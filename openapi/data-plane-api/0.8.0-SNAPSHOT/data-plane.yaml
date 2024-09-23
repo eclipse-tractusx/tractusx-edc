@@ -105,7 +105,6 @@ paths:
         explode: true
         schema:
           type: string
-          example: null
       - name: refresh_token
         in: query
         required: false
@@ -113,7 +112,6 @@ paths:
         explode: true
         schema:
           type: string
-          example: null
       - name: Authorization
         in: header
         required: false
@@ -121,7 +119,6 @@ paths:
         explode: false
         schema:
           type: string
-          example: null
       responses:
         "200":
           description: "The access token and refresh token were updated. Expiry should\
@@ -138,7 +135,6 @@ paths:
             application/json:
               schema:
                 type: array
-                example: null
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
         "401":
@@ -148,7 +144,6 @@ paths:
             application/json:
               schema:
                 type: array
-                example: null
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
   /{any}:
@@ -231,90 +226,64 @@ components:
       properties:
         invalidValue:
           type: object
-          example: null
         message:
           type: string
-          example: null
         path:
           type: string
-          example: null
         type:
           type: string
-          example: null
-      example: null
     AssetRequest:
       type: object
       properties:
         assetId:
           type: string
-          example: null
         pathSegments:
           type: string
-          example: null
         providerId:
           type: string
-          example: null
         queryParams:
           type: string
-          example: null
         transferProcessId:
           type: string
-          example: null
-      example: null
     Failure:
       type: object
       properties:
         failureDetail:
           type: string
-          example: null
         messages:
           type: array
-          example: null
           items:
             type: string
-            example: null
-      example: null
     HealthCheckResult:
       type: object
       properties:
         component:
           type: string
-          example: null
         failure:
           $ref: "#/components/schemas/Failure"
         isHealthy:
           type: boolean
-          example: null
-      example: null
     HealthStatus:
       type: object
       properties:
         componentResults:
           type: array
-          example: null
           items:
             $ref: "#/components/schemas/HealthCheckResult"
         isSystemHealthy:
           type: boolean
-          example: null
-      example: null
     TokenResponse:
       type: object
       properties:
         access_token:
           type: string
-          example: null
         expires:
           type: integer
           format: int64
-          example: null
         refresh_token:
           type: string
-          example: null
         token_type:
           type: string
-          example: null
-      example: null
   securitySchemes:
     Authentication:
       type: http
