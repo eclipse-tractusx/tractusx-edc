@@ -123,14 +123,6 @@ jobs:
 
   postgres-tests:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16.1
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: password
-
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java

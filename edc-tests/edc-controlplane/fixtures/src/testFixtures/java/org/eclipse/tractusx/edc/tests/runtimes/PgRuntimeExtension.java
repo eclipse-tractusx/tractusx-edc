@@ -19,12 +19,15 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -45,10 +48,12 @@ public class PgRuntimeExtension extends ParticipantRuntimeExtension {
         this.dbName = runtimeName.toLowerCase();
         postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
                 .withLabel("runtime", dbName)
-                .withExposedPorts(5432)
                 .withUsername(USER)
                 .withPassword(PASSWORD)
                 .withDatabaseName(dbName);
+
+        postgreSqlContainer.setPortBindings(List.of("%d:5432".formatted(Ports.getFreePort())));
+
     }
 
     @Override
