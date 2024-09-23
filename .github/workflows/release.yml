@@ -84,10 +84,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.8.1
+      - uses: ./.github/actions/setup-helm
       - name: Package helm, update index.yaml and push to gh-pages
         run: |
           # Prepare git env
