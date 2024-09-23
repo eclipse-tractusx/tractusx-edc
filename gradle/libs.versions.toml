@@ -179,7 +179,6 @@ edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", versi
 edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
-edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
@@ -230,7 +229,7 @@ titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "ti
 
 [bundles]
 edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
-edc-dpf = ["edc.dpf-transfer-signaling", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
+edc-dpf = ["edc.dpf-selector-core", "edc.spi-dataplane-selector"]
 edc-sqlstores = ["edc.sql-assetindex", "edc.sql-contract-definition", "edc.sql-contract-negotiation", "edc.sql-transferprocess", "edc.sql-policydef", "edc.sql-policy-monitor", "edc.sql-edrindex", "edc.data-plane-instance-store-sql"]
 edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]
