@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.tests.runtimes;
 
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 import java.util.Map;
 
@@ -29,7 +30,10 @@ public interface Runtimes {
         return new ParticipantRuntimeExtension(":edc-tests:runtime:runtime-memory", runtimeName, bpn, properties);
     }
 
-    static RuntimeExtension pgRuntime(String runtimeName, String bpn, Map<String, String> properties) {
-        return new PgRuntimeExtension(":edc-tests:runtime:runtime-postgresql", runtimeName, bpn, properties);
+    static RuntimeExtension pgRuntime(TractusxParticipantBase participant, PostgresExtension postgres) {
+        var configuration = participant.getConfiguration();
+        configuration.putAll(postgres.getConfiguration(participant.getName()));
+        return new ParticipantRuntimeExtension(":edc-tests:runtime:runtime-postgresql",
+                participant.getName(), participant.getBpn(), configuration);
     }
 }
