@@ -20,14 +20,14 @@ defined in the Helm Chart and by default all the stores will use that.
 
 So, if you are not using the provided [Tractus-X Helm Charts](https://eclipse-tractusx.github.io/charts/) and you don't
 need to use different datasources for different stores, we suggest to remove all the `edc.datasource.<xxx>` settings and
-leave just the `edc.datasource.default` settings group.
+leave just the `edc.datasource.default` settings group. If you use the Tractus-X EDC Helm Charts there is no further action required on your part.
 
 In any case please follow the advice given by the `WARNING` log messages in the EDC console output.
 
 Ref. https://eclipse-edc.github.io/documentation/for-contributors/postgres-persistence/
 
 ## 2. New SQL schema migrations 
-For those who are not using either the Helm Charts and the provided [`migration` modules](../../edc-extensions/migrations):
+For those who are not using either the Helm Charts or the provided [`migration` modules](../../edc-extensions/migrations):
 
 ### 2.1. Control plane:
 - [contract negotiation- create state index](../../edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/contractnegotiation/V0_0_9__Alter_ContractNegotiation_CreateStateIndex.sql)
@@ -46,5 +46,5 @@ For those who are not using either the Helm Charts and the provided [`migration`
 There were many deprecations deleted after some time, mostly regarding `spi`s, something about configuration settings.
 **Management API didn't change**, we're still using upstream version 3.
 
-If you followed and fixed the eventual `WARNING` logs (it's strong advice from us to do so) you shouldn't find any other
-difficulties.
+If you noticed and took care of everything that was logged as `WARNING` (which we strongly recommend) you shouldn't find
+any other difficulties.
