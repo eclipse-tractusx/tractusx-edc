@@ -509,7 +509,6 @@ maven/mavencentral/org.eclipse.edc/token-spi/0.7.2, Apache-2.0, approved, techno
 maven/mavencentral/org.eclipse.edc/transaction-datasource-spi/0.7.2, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-local/0.7.2, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-spi/0.7.2, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/transfer-data-plane-signaling/0.7.2, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-data-plane-spi/0.7.2, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-process-api/0.7.2, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-process-store-sql/0.7.2, Apache-2.0, approved, technology.edc
