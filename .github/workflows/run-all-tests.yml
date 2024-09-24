@@ -29,6 +29,8 @@ on:
       - main
       - bugfix/*
   pull_request:
+    paths-ignore:
+      - docs/**
   workflow_dispatch:
 
   schedule:
