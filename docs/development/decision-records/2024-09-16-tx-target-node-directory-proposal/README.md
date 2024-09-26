@@ -22,7 +22,7 @@ Other solution was also considered
 
 ## Approach
 
-The user is able to obtain the Connectors' URL's (through the Discovery Service, as an example) and store them in the new service through its API. The API will allow to save a list of Connectors' URL's in bulk. These can later be retrieved and crawled by the Federated Catalog.
+The user is able to obtain the Connectors' URL's (through the Discovery Service, as an example) and store them in the new service through its API. The API will allow to save a list of Connectors' URL's in bulk and the service is responsible to store that (in memory or in database). These can later be retrieved and crawled by the Federated Catalog.
 
 
 Finally, considering service deployment, a new chart can be created just for this new service (similar to the existing ones), being its usage only decided by the member. As so, a Dockerfile should exist to ease this approach (giving the user option of running it in a container or run a simple `jar`).
