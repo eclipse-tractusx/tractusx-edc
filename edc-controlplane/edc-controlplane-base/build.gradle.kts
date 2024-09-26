@@ -77,5 +77,7 @@ dependencies {
 
     // cloud provisioner extensions
     runtimeOnly(project(":edc-extensions:backport:azblob-provisioner"))
+    // fix dataset
+    runtimeOnly(project(":edc-extensions:dataset-bugfix"))
 
 }

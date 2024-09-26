@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,7 +82,6 @@ public class CatalogTest {
                     .allSatisfy(co -> {
                         assertThat(getDatasetAssetId(co.asJsonObject())).isEqualTo("test-asset");
                     });
-
         }
 
         @Test
@@ -203,7 +203,19 @@ public class CatalogTest {
             var o2 = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(500, 0));
             var o3 = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(500, 500));
             assertThat(o2).doesNotContainAnyElementsOf(o3);
+        }
 
+        @Test
+        void getDataset_shouldReturn404_whenDatasetHasNoPolicies() {
+            var assetId = UUID.randomUUID().toString();
+            PROVIDER.createAsset(assetId);
+
+            PROVIDER.getProtocolEndpoint().baseRequest()
+                    .header("Authorization", "{ \"client_id\": \"CONSUMER\", \"BusinessPartnerNumber\": \"BPN-CONSUMER\" }")
+                    .get("/catalog/datasets/" + assetId)
+                    .then()
+                    .log().ifValidationFails()
+                    .statusCode(404);
         }
     }
 
