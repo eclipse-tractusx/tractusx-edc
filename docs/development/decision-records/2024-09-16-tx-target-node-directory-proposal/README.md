@@ -8,12 +8,14 @@ A new service that will contain Connectors' URL's of each partner a member wants
 ## Rationale
 
 While considering new interventions in the Federated Catalog, this decision aims to set the TargetNodeDirectory.
-From the [documentation](https://eclipse-edc.github.io/docs/#/submodule/FederatedCatalog/docs/developer/architecture/federated-catalog.architecture)
+From the [documentation](https://github.com/eclipse-edc/FederatedCatalog/blob/e733355c6991ff633ee009bd5f35ced61e941da6/docs/developer/architecture/federated-catalog.architecture.md)
 > The Federated Catalog requires a list of Target Catalog Nodes, so it knows which endpoints to crawl. This list is provided by the TargetNodeDirectory. During the preparation of a crawl run, the ExecutionManager queries that directory and obtains the list of TCNs.
 
-So having a service containing the data of Connectors' URL's that a certain partner wants and allow them to host it. Users are able to input (using the API of new service) the Connectors' URL's of the connectors they want the catalogs from.
+To address this, the goal is the creation of an independent service responsible for exposing an API, retrieving and storing Connectors' URL's that a certain partner chooses. This new service would be called TargetNodeDirectoryService and the user will be able to host it. 
 
-This solution allows the member to choose precisely the Target Catalog Nodes that interests them, resulting in reduced network calls and latency. Additionally, each member has control on how to host and manage this new service. Service changes do not affect other parties (unless contract changes) and is able to be independently scalable.
+Users will input the Connectors' URL's of the connectors they want the catalogs from, through the API of the TargetNodeDirectoryService
+
+This solution allows the member to choose precisely the Target Catalog Nodes that interests them, resulting in reduced network calls and latency. Additionally, each member has control on how to host and manage this new service. Service changes do not affect other parties (unless contract changes) and it can be scaled independently.
 
 Other solution was also considered
 
