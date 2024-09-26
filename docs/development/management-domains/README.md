@@ -43,87 +43,6 @@ was introduced for this purpose.
 Every target node produces one `Catalog`, so in the end there is a `List<Catalog>` which contains all the assets that
 are available in a particular dataspace. Like so, after the Federated Catalog Crawler retrieves all catalogs, an aggregation of all is made and one single root catalog is exposed, similar to a Catalog Server without CatalogAssets.
 
-## Manage Access
-
-Considering the [documented](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#21-access-control) possibility of attach access policies to sub-catalogs (CatalogAssets) using contract definitions, the Catalog Server can confirm permissions of the client credentials.
-An example of a CatalogAsset with dummy credentials.
-```json
-{
-  "@context": {
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-  },
-  "@type": "CatalogAsset",
-  "@id": "catalog-asset-example-id",
-  "properties": {
-    "test": "some test"
-  },
-  "dataAddress": {
-    "type": "HttpData",
-    "@type": "DataAddress",
-    "baseUrl": "https://example-edc.com/api/dsp",
-    "credentials": "provided_credentials"
-  }
-}
-```
-
-Can be later be checked based on similar catalog response.
-```json
-[
-  {
-    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
-    "@type": "dcat:Catalog",
-    "dspace:participantId": "BPNL000000000001",
-    "isCatalog": true,
-    "id": "catalog-asset-example-id",
-    "test": "some test",
-    "dcat:dataset": [
-      {
-        "@id": "catalog-asset-example-id",
-        "@type": "dcat:Dataset",
-        "odrl:hasPolicy": [
-          {
-            "@id": "",
-            "@type": "odrl:Offer",
-            "odrl:permission": {
-              "odrl:action": {
-                "@id": "USE"
-              },
-              "odrl:constraint": {
-                "odrl:leftOperand": {
-                  "@id": "credentials"
-                },
-                "odrl:operator": {
-                  "@id": "odrl:eq"
-                },
-                "odrl:rightOperand": "provided_credentials"
-              }
-            },
-            "odrl:prohibition": [],
-            "odrl:obligation": []
-          }
-        ],
-        "dcat:distribution": [
-          {
-            "@type": "dcat:Distribution",
-            "dct:format": {
-              "@id": "AzureStorage-PUSH"
-            },
-            "dcat:accessService": {
-              "@id": "3eb13e90-f5ed-46f5-9287-99fca35a722c",
-              "@type": "dcat:DataService",
-              "dcat:endpointDescription": "dspace:connector",
-              "dcat:endpointUrl": "https://some_edc/api/v1/dsp",
-              "dct:terms": "dspace:connector",
-              "dct:endpointUrl": "https://some_edc/api/v1/dsp",
-            }
-          }
-        ]
-      }
-    ]
-  }
-]
-```
-
 ## The Federated Catalog QueryApi
 
 After some time, when all crawlers have returned, this list of catalogs can be queried using a new REST endpoint:
@@ -448,6 +367,88 @@ of `TargetNode` objects:
 ```
 
 On Kubernetes, a common way to achieve this is using ConfigMaps.
+
+## Manage Access
+
+Considering the [documented](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#21-access-control) possibility of attach access policies to sub-catalogs (CatalogAssets) using contract definitions, the Catalog Server can confirm permissions of the client credentials.
+An example of a CatalogAsset with dummy credentials.
+```json
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "CatalogAsset",
+  "@id": "catalog-asset-example-id",
+  "properties": {
+    "test": "some test"
+  },
+  "dataAddress": {
+    "type": "HttpData",
+    "@type": "DataAddress",
+    "baseUrl": "https://example-edc.com/api/dsp",
+    "credentials": "provided_credentials"
+  }
+}
+```
+
+Can be later be checked based on similar catalog response.
+```json
+[
+  {
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
+    "@type": "dcat:Catalog",
+    "dspace:participantId": "BPNL000000000001",
+    "isCatalog": true,
+    "id": "catalog-asset-example-id",
+    "test": "some test",
+    "dcat:dataset": [
+      {
+        "@id": "catalog-asset-example-id",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [
+          {
+            "@id": "",
+            "@type": "odrl:Offer",
+            "odrl:permission": {
+              "odrl:action": {
+                "@id": "USE"
+              },
+              "odrl:constraint": {
+                "odrl:leftOperand": {
+                  "@id": "credentials"
+                },
+                "odrl:operator": {
+                  "@id": "odrl:eq"
+                },
+                "odrl:rightOperand": "provided_credentials"
+              }
+            },
+            "odrl:prohibition": [],
+            "odrl:obligation": []
+          }
+        ],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "AzureStorage-PUSH"
+            },
+            "dcat:accessService": {
+              "@id": "3eb13e90-f5ed-46f5-9287-99fca35a722c",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "https://some_edc/api/v1/dsp",
+              "dct:terms": "dspace:connector",
+              "dct:endpointUrl": "https://some_edc/api/v1/dsp",
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
 
 ## References
 
