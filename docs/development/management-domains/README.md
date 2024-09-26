@@ -17,52 +17,14 @@ There are several reasons why a company might consider the use of Management Dom
   different intervals or velocities. **Note that this only refers to minor changes of APIs, SPIs, configuration etc. All
   instances must still maintain protocol (DSP, DCP,...) compatibility!**
 
+For the purposes of Tractus-X, the usage of
+deployment [type 2b](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#type-2b-edc-catalog-server-and-controldata-plane-runtimes)
+or [type 2c](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#type-2c-catalog-servercontrol-plane-with-data-plane-runtime)
+is assumed:
 
-### Deployment Topologies
+![type 2b](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/distributed.type2.b.svg)
 
-Similar to what is present in the [official documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md), different topologies representing each domain can be followed.
-
-#### Single Management Domain
-
-*One management domain controlling a single instance*
-
-Having a single management domain including the Federated Catalog as the Catalog Server (with the downstream connections to crawlable connectors) representing a single ReplicaSet.
-
-![](./single.instance.svg)
-
-
-*One management domain controlling a cluster of individual ReplicaSets*
-
-Having a single management domain including a cross-use Federated Catalog as the Catalog Server (with the downstream connections to crawlable connectors) representing multiple ReplicaSet's.
-
-![](./cluster.svg)
-
-This solution implies a standalone Federated Catalog solution running.
-
-
-#### Distributed Management Domains
-
-For smaller use case scenarios or organizations aiming at a coupled use of EDC components, Single Management Domain can probably suffice. However, if an organization has multiple internal structures each responsible for the data shared in their domain, EDC components deployed separately must be able to communicate properly as well.
-This can be achieved by following a Distributed Management Domain. Considering the goal of usage with Federated Catalog as a Catalog Server, the next approaches can be weighted.
-
-
-*Federated Catalog as own Management Domain*
-
-The Federated Catalog can act as own single domain able to interact to other managed domains.
-
-
-![](./distributed.fc.own.domain.svg)
-
-
-*Federated Catalog and Control Plane as a management domain*
-
-Having the Federated Catalog embedded in a Control Plane able to communicate with other (in this case Data Planes) separated domains.
-
-
-![](./distributed.fc.cp.domain.svg)
-
-
-
+Note that is possible to use a conventional Tractus-X EDC runtime as catalog server.
 
 ### Limitations and Caveats
 
@@ -79,7 +41,88 @@ special [asset type](https://github.com/eclipse-edc/Connector/blob/main/docs/dev
 was introduced for this purpose.
 
 Every target node produces one `Catalog`, so in the end there is a `List<Catalog>` which contains all the assets that
-are available in a particular dataspace.
+are available in a particular dataspace. Like so, after the Federated Catalog Crawler retrieves all catalogs, an aggregation of all is made and one single root catalog is exposed, similar to a Catalog Server without CatalogAssets.
+
+## Manage Access
+
+Considering the [documented](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#21-access-control) possibility of attach access policies to sub-catalogs (CatalogAssets) using contract definitions, the Catalog Server can confirm permissions of the client credentials.
+An example of a CatalogAsset with dummy credentials.
+```json
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "CatalogAsset",
+  "@id": "catalog-asset-example-id",
+  "properties": {
+    "test": "some test"
+  },
+  "dataAddress": {
+    "type": "HttpData",
+    "@type": "DataAddress",
+    "baseUrl": "https://example-edc.com/api/dsp",
+    "credentials": "provided_credentials"
+  }
+}
+```
+
+Can be later be checked based on similar catalog response.
+```json
+[
+  {
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
+    "@type": "dcat:Catalog",
+    "dspace:participantId": "BPNL000000000001",
+    "isCatalog": true,
+    "id": "catalog-asset-example-id",
+    "test": "some test",
+    "dcat:dataset": [
+      {
+        "@id": "catalog-asset-example-id",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [
+          {
+            "@id": "",
+            "@type": "odrl:Offer",
+            "odrl:permission": {
+              "odrl:action": {
+                "@id": "USE"
+              },
+              "odrl:constraint": {
+                "odrl:leftOperand": {
+                  "@id": "credentials"
+                },
+                "odrl:operator": {
+                  "@id": "odrl:eq"
+                },
+                "odrl:rightOperand": "provided_credentials"
+              }
+            },
+            "odrl:prohibition": [],
+            "odrl:obligation": []
+          }
+        ],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "AzureStorage-PUSH"
+            },
+            "dcat:accessService": {
+              "@id": "3eb13e90-f5ed-46f5-9287-99fca35a722c",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "https://some_edc/api/v1/dsp",
+              "dct:terms": "dspace:connector",
+              "dct:endpointUrl": "https://some_edc/api/v1/dsp",
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
+```
 
 ## The Federated Catalog QueryApi
 
@@ -95,68 +138,241 @@ POST /v1alpha/catalog/query
 }
 ```
 
-the response body contains a list of catalogs as JSON-LD array (`hasPolicy` omitted for legibility). Notice
-the `@type: "dcat:Catalog`
-of the first `dataset` entry. This indicates that the "outer" Catalog actually contains another Catalog:
+As mentioned, the returned catalog can be presented in Flat or Hierarchical structures. The latter presents the catalogs hierarchical structure, for example, having a dataset that in itself contains a catalog dataset (that can also contain a catalog and so on) can be clearly understood by the Hierarchical structure. The Flat structure streamlines this view by presenting all datasets from all catalogs at the same level.
+
+To retrieve the flatten structure, include the ```flatten=true``` query param in the previous request.
+
+The following shows an example of a hierarchical structure response followed by a flatten structure response example.
+
+<details>
+  <summary>Hierarchical structure response example</summary>
 
 ```json
 [
   {
-    "@id": "a6574324-8dd2-4169-adf1-f94423c5d213",
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
     "@type": "dcat:Catalog",
     "dcat:dataset": [
       {
-        "@id": "1af92996-0bb7-4bdd-b04e-938fe54fb27f",
+        "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1c",
         "@type": "dcat:Catalog",
         "dcat:dataset": [
           {
-            "@id": "asset-2",
+            "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
             "@type": "dcat:Dataset",
-            "odrl:hasPolicy": {
-            },
-            "dcat:distribution": [],
-            "id": "asset-2"
+            "odrl:hasPolicy": [],
+            "dcat:distribution": [
+              {
+                "@type": "dcat:Distribution",
+                "dct:format": {
+                  "@id": "HttpData-PULL"
+                },
+                "dcat:accessService": {
+                  "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                  "@type": "dcat:DataService",
+                  "dcat:endpointDescription": "dspace:connector",
+                  "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                }
+              }
+            ]
           },
           {
-            "@id": "asset-1",
-            "@type": "dcat:Dataset",
-            "odrl:hasPolicy": {
-            },
+            "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+            "@type": "dcat:Catalog",
+            "dcat:dataset": [
+              {
+                "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+                "@type": "dcat:Dataset",
+                "odrl:hasPolicy": [],
+                "dcat:distribution": [
+                  {
+                    "@type": "dcat:Distribution",
+                    "dct:format": {
+                      "@id": "HttpData-PUSH"
+                    },
+                    "dcat:accessService": {
+                      "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                      "@type": "dcat:DataService",
+                      "dcat:endpointDescription": "dspace:connector",
+                      "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                    }
+                  }
+                ]
+              },
+              {
+                "@id": "f3521137-49dd-443c-9c04-ef945dfd3b2d",
+                "@type": "dcat:Dataset",
+                "odrl:hasPolicy": [],
+                "dcat:distribution": [
+                  {
+                    "@type": "dcat:Distribution",
+                    "dct:format": {
+                      "@id": "HttpData-PULL"
+                    },
+                    "dcat:accessService": {
+                      "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                      "@type": "dcat:DataService",
+                      "dcat:endpointDescription": "dspace:connector",
+                      "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                    }
+                  }
+                ]
+              }
+            ],
             "dcat:distribution": [],
-            "id": "asset-1"
+            "dcat:service": {
+              "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+            },
+            "dspace:participantId": "BPNL000000000001"
           }
         ],
         "dcat:distribution": [],
         "dcat:service": {
-          "@id": "684635d3-acc8-4ff5-ba71-d1e968be5e3b",
+          "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
           "@type": "dcat:DataService",
           "dcat:endpointDescription": "dspace:connector",
-          "dcat:endpointUrl": "http://localhost:8192/api/dsp",
-          "dct:terms": "dspace:connector",
-          "dct:endpointUrl": "http://localhost:8192/api/dsp"
+          "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
         },
-        "dspace:participantId": "did:web:localhost%3A7093",
-        "participantId": "did:web:localhost%3A7093"
+        "dspace:participantId": "BPNL000000000001"
       }
     ],
     "dcat:distribution": [],
     "dcat:service": {
-      "@id": "8c99b5d6-0c46-455e-97b1-7b31f32a714b",
+      "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
       "@type": "dcat:DataService",
       "dcat:endpointDescription": "dspace:connector",
-      "dcat:endpointUrl": "http://localhost:8092/api/dsp",
-      "dct:terms": "dspace:connector",
-      "dct:endpointUrl": "http://localhost:8092/api/dsp"
+      "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
     },
-    "dspace:participantId": "did:web:localhost%3A7093",
-    "originator": "http://localhost:8092/api/dsp",
-    "participantId": "did:web:localhost%3A7093"
+    "dspace:participantId": "BPNL000000000001",
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "odrl": "http://www.w3.org/ns/odrl/2/",
+      "dcat": "http://www.w3.org/ns/dcat#",
+      "dct": "http://purl.org/dc/terms/",
+      "dspace": "https://w3id.org/dspace/v0.8/"
+    }
   }
 ]
 ```
 
-There is an additional optional query param `?flatten=true` that puts all `dataset` objects in a flat list for
-linear consumption. Note that the hierarchy and provenance of a single `dataset` can't be restored anymore.
+</details>
+
+Notice the `@type: "dcat:Catalog` of the first `dataset` entry. This indicates that the "outer" Catalog actually contains another Catalog:
+
+
+
+<details>
+  <summary>Flatten structure response example</summary>
+
+```json
+[
+  {
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
+    "@type": "dcat:Catalog",
+    "dcat:dataset": [
+      {
+        "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "HttpData-PULL"
+            },
+            "dcat:accessService": {
+              "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "HttpData-PUSH"
+            },
+            "dcat:accessService": {
+              "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+            }
+          },
+          {
+            "@id": "f3521137-49dd-443c-9c04-ef945dfd3b2d",
+            "@type": "dcat:Dataset",
+            "odrl:hasPolicy": [],
+            "dcat:distribution": [
+              {
+                "@type": "dcat:Distribution",
+                "dct:format": {
+                  "@id": "HttpData-PULL"
+                },
+                "dcat:accessService": {
+                  "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                  "@type": "dcat:DataService",
+                  "dcat:endpointDescription": "dspace:connector",
+                  "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dcat:distribution": [],
+    "dcat:service": [
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      },
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      },
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      },
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      }
+    ],
+    "dspace:participantId": "BPNL000000000SMT",
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "odrl": "http://www.w3.org/ns/odrl/2/",
+      "dcat": "http://www.w3.org/ns/dcat#",
+      "dct": "http://purl.org/dc/terms/",
+      "dspace": "https://w3id.org/dspace/v0.8/"
+    }
+  }
+]
+```
+</details>
+
 
 ## Implementation guidance
 
@@ -167,7 +383,7 @@ out-of-the-box!
 
 There are several steps a consumer EDC needs to take before being able to use it:
 
-### Create `CatalogAssets`
+### Crawl `CatalogAssets`
 
 `CatalogAssets` are assets that point to another catalog using hyperlinks. They can be thought of as pointers to another
 catalog. A catalog server (on the provider side) creates `CatalogAsset` via the Management API by using the following
@@ -187,6 +403,8 @@ request body:
   }
 }
 ```
+A Catalog Server can have CatalogAssets in addition to other "common" Assets.
+On the consumer side these should be crawled recursively and all catalogs jointed, forming the Federated Catalog.
 
 ### Enable and configure the crawler subsystem
 
