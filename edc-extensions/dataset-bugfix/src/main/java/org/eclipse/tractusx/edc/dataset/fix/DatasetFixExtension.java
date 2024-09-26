@@ -30,6 +30,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 
+import static jakarta.ws.rs.HttpMethod.GET;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATASET_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIBUTE;
@@ -46,9 +47,11 @@ public class DatasetFixExtension implements ServiceExtension {
 
     private static class DatasetFilter implements ContainerResponseFilter {
 
+        private static final String GET_DATASETS_PATH = "catalog/datasets/";
+
         @Override
         public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-            if (requestContext.getUriInfo().getPath().contains("catalog/datasets/") && requestContext.getMethod().equals("GET")) {
+            if (requestContext.getUriInfo().getPath().contains(GET_DATASETS_PATH) && requestContext.getMethod().equals(GET)) {
                 if (responseContext.getEntity() instanceof JsonObject jsonObject) {
                     if (jsonObject.getString(TYPE).equals(DCAT_DATASET_TYPE) &&
                             jsonObject.containsKey(ODRL_POLICY_ATTRIBUTE) &&
