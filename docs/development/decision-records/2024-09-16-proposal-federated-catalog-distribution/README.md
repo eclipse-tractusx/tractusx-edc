@@ -18,8 +18,7 @@ The Federated Catalog running as own instance can be performed either by running
 
 Regarding deployment, the Tractus-Connector Helm charts will be updated to include this service.  
 
-Relevant to highlight some potential challenges of the proposed approach. 
-- The Network Latency expected may be a concern, but not more than any other downstream dependencies of the service;
+Relevant to highlight a potential challenge of the proposed approach.
 - Having its own instance (that itself contains a cache) may use considerable computing resources (related with storage cost).
 
 To enable the Federated Catalog flow, please [see this table](https://github.com/eclipse-tractusx/tractusx-edc/blob/75bdacbad43e2cad352204ea28a359c6aac7adea/docs/development/management-domains/README.md#enable-and-configure-the-crawler-subsystem).
