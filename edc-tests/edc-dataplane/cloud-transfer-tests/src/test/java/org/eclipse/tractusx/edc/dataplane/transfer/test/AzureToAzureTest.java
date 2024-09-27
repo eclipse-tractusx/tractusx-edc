@@ -91,7 +91,7 @@ public class AzureToAzureTest {
             "AzureBlob-Dataplane",
             RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT),
             ":edc-tests:runtime:dataplane-cloud"
-    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AzureBlob-Dataplane", ConsoleMonitor.Level.DEBUG)));
+    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AzureBlob-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
      * two different endpoint templates for provider and consumer. Endpoint templates are configured globally.

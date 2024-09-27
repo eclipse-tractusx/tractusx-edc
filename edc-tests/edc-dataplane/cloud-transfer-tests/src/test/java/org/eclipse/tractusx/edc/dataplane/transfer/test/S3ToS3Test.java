@@ -93,7 +93,7 @@ public class S3ToS3Test {
             "AwsS3-Dataplane",
             RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT),
             ":edc-tests:runtime:dataplane-cloud"
-    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG)));
+    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
     @Container
     private final MinioContainer providerContainer = new MinioContainer();
     @Container
