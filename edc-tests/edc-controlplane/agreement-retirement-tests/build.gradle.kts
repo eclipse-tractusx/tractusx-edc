@@ -11,6 +11,7 @@ dependencies {
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
     testRuntimeOnly(libs.edc.transaction.local)
+    testImplementation(project(":edc-extensions:agreements:retirement-evaluation-spi"))
 }
 
 // do not publish

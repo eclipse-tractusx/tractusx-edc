@@ -22,8 +22,7 @@ package org.eclipse.tractusx.edc.agreements.retirement.function;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.policy.model.Rule;
-import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,14 +39,14 @@ class AgreementsRetirementFunctionTest {
     private AgreementsRetirementStore store;
     private AgreementsRetirementFunction function;
     private PolicyContext policyContext;
-    private Rule rule;
+    private Permission rule;
 
     @BeforeEach
     void setUp() {
         store = mock(AgreementsRetirementStore.class);
-        function = new AgreementsRetirementFunction(mock(Monitor.class), store);
+        function = new AgreementsRetirementFunction(store);
         policyContext = mock(PolicyContext.class);
-        rule = mock(Rule.class);
+        rule = mock(Permission.class);
     }
 
     @Test
@@ -61,7 +60,7 @@ class AgreementsRetirementFunctionTest {
     void verify_agreementExistsInPolicyContext(){
 
         var context = mock(PolicyContext.class);
-        function.evaluate(mock(Rule.class), context);
+        function.evaluate(rule, policyContext);
         verify(context).reportProblem("Tried to evaluate agreement retirement function but policyContext has no agreement defined.");
 
     }

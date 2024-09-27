@@ -19,13 +19,18 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement;
 
+import org.eclipse.edc.policy.engine.spi.PolicyEngine;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.agreements.retirement.function.AgreementsRetirementFunction;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
 
 import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension.NAME;
+import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension.POLICY_MONITOR_SCOPE;
 
 
 @Extension(value = NAME)
@@ -34,9 +39,15 @@ public class AgreementsRetirementFunctionExtension implements ServiceExtension {
     public static final String NAME = "Agreements Retirement Policy Function Extension";
 
     @Inject
-    AgreementsRetirementStore store;
+    private AgreementsRetirementStore store;
 
     @Inject
-    ServiceExtensionContext context;
+    private PolicyEngine policyEngine;
 
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        var function = new AgreementsRetirementFunction(store);
+        policyEngine.registerFunction(TRANSFER_SCOPE, Permission.class, function);
+        policyEngine.registerFunction(POLICY_MONITOR_SCOPE, Permission.class, function);
+    }
 }
