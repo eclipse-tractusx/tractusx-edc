@@ -22,23 +22,20 @@ package org.eclipse.tractusx.edc.agreements.retirement.function;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.RuleFunction;
-import org.eclipse.edc.policy.model.Rule;
-import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
 
 
-public class AgreementsRetirementFunction implements RuleFunction {
+public class AgreementsRetirementFunction implements RuleFunction<Permission> {
 
-    Monitor monitor;
-    AgreementsRetirementStore store;
+    private final AgreementsRetirementStore store;
 
-    AgreementsRetirementFunction(Monitor monitor, AgreementsRetirementStore store) {
-        this.monitor = monitor;
+    public AgreementsRetirementFunction(AgreementsRetirementStore store) {
         this.store = store;
     }
 
     @Override
-    public boolean evaluate(Rule rule, PolicyContext policyContext) {
+    public boolean evaluate(Permission rule, PolicyContext policyContext) {
         var agreement = policyContext.getContextData(ContractAgreement.class);
         var isActive = true;
         if (agreement == null) {

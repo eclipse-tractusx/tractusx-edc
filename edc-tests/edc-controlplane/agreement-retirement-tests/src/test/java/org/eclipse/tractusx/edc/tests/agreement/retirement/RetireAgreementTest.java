@@ -1,15 +1,12 @@
 package org.eclipse.tractusx.edc.tests.agreement.retirement;
 
 import jakarta.json.Json;
-import jakarta.json.JsonObjectBuilder;
-import net.minidev.json.JSONObject;
-import org.assertj.core.api.Assertions;
-import org.awaitility.Awaitility;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.AfterEach;
@@ -21,10 +18,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
 import java.util.Map;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -37,7 +32,6 @@ import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
-import static org.mockserver.model.HttpRequest.request;
 
 public class RetireAgreementTest {
 
@@ -56,6 +50,8 @@ public class RetireAgreementTest {
 
         ClientAndServer server;
 
+        protected abstract AgreementsRetirementStore getProviderAgreementsRetirementStore();
+
         @BeforeEach
         void setup() {
             server = ClientAndServer.startClientAndServer("localhost", getFreePort());
@@ -63,7 +59,7 @@ public class RetireAgreementTest {
 
         @Test
         @DisplayName("Verify all existing TPs related to an agreement are terminated upon its retirement")
-        void retireAgreement_shouldCloseTransferProcesses() throws IOException {
+        void retireAgreement_shouldCloseTransferProcesses() {
 
             var assetId = "api-asset-1";
 
@@ -82,25 +78,49 @@ public class RetireAgreementTest {
             var contractPolicy = PROVIDER.createPolicyDefinition(policy);
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
-            var contractAgreementId = CONSUMER.negotiateContract(PROVIDER, policy);
+            var edrsApi = CONSUMER.edrs();
 
-            var privateProperties = Json.createObjectBuilder().build();
-            var dataDestination = Json.createObjectBuilder().add("type", "HttpData").build();
-
-            var transferProcessId = CONSUMER.initiateTransfer(PROVIDER, contractAgreementId, privateProperties, dataDestination, "HttpData-PULL");
+            edrsApi.negotiateEdr(PROVIDER, assetId, Json.createArrayBuilder().build());
 
             await().pollInterval(ASYNC_POLL_INTERVAL)
                     .atMost(ASYNC_TIMEOUT)
                     .untilAsserted(() -> {
-                        String state = CONSUMER.getTransferProcessState(transferProcessId);
-                        Assertions.assertThat(state).isEqualTo(ContractNegotiationStates.FINALIZED.name());
+                        var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
+                        assertThat(edrCaches).hasSize(1);
                     });
+
+            var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
+
+            var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
+
+            var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
+
+            retireProviderAgreement(agreementId);
+
+            // verify existing TP on consumer retires
+
+            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
+
+            // verify no new TP can start for same contract agreement
+
+            var privateProperties = Json.createObjectBuilder().build();
+            var dataDestination = Json.createObjectBuilder().add("type", "HttpData").build();
+
+            var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, privateProperties, dataDestination, "HttpData-PULL");
+
+            CONSUMER.waitForTransferProcess(failedTransferId, TransferProcessStates.TERMINATED);
+
 
         }
 
         @AfterEach
         void teardown() throws IOException {
             server.stop();
+        }
+
+        private void retireProviderAgreement(String agreementId) {
+            var store = getProviderAgreementsRetirementStore();
+            store.save(agreementId, Instant.now().toString());
         }
     }
 
@@ -114,6 +134,9 @@ public class RetireAgreementTest {
         @RegisterExtension
         protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
+        @Override
+        protected AgreementsRetirementStore getProviderAgreementsRetirementStore(){ return PROVIDER_RUNTIME.getService(AgreementsRetirementStore.class); }
+
     }
 
     @Nested
@@ -125,6 +148,9 @@ public class RetireAgreementTest {
 
         @RegisterExtension
         protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+
+        @Override
+        protected AgreementsRetirementStore getProviderAgreementsRetirementStore(){ return PROVIDER_RUNTIME.getService(AgreementsRetirementStore.class); }
 
     }
 }
