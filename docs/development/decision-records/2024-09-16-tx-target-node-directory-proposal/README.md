@@ -2,7 +2,7 @@
 
 ## Decision
 
-A new service that will contain Connectors' URL's of each partner a member wants the offers from, acting as the **TargetNodeDirectory for the partner's FederatedCatalog**.
+A new extension in the FederatedCatalog that will have a db/cache containing the BPNL's and Connectors' URL's of each partner a member wants the offers from, acting as the TargetNodeDirectory for the partner's FederatedCatalog.
 
 
 ## Rationale
@@ -11,11 +11,10 @@ While considering new interventions in the Federated Catalog, this decision aims
 From the [documentation](https://github.com/eclipse-edc/FederatedCatalog/blob/e733355c6991ff633ee009bd5f35ced61e941da6/docs/developer/architecture/federated-catalog.architecture.md)
 > The Federated Catalog requires a list of Target Catalog Nodes, so it knows which endpoints to crawl. This list is provided by the TargetNodeDirectory. During the preparation of a crawl run, the ExecutionManager queries that directory and obtains the list of TCNs.
 
-To address this, the goal is the creation of an independent service responsible for exposing an API, retrieving and storing Connectors' URL's that a certain partner chooses. This new service would be called TargetNodeDirectoryService and the user will be able to host it. 
+The goal is the creation of an extension responsible for exposing an API, where a member can input the BPNL's of the participants from which the catalogs are wanted, and then it will retrieve and store the respective Connector URL's. This new extension would get the data from the Discovery Service, provided a BPNL, and will be named `DiscoveryServiceRetrieverExtension`. However, each member has control to retrieve the Connector URL's from a different source, just needing to create an extension.
+This solution allows the member to choose precisely the Target Catalog Nodes that interests them, resulting in reduced network calls and latency.  
 
-Users will input the Connectors' URL's of the connectors they want the catalogs from, through the API of the TargetNodeDirectoryService
-
-This solution allows the member to choose precisely the Target Catalog Nodes that interests them, resulting in reduced network calls and latency. Additionally, each member has control on how to host and manage this new service. Service changes do not affect other parties (unless contract changes) and it can be scaled independently.
+Additionally, if a Connector URL is registered (or unregistered) in the Discovery Service, the retriever will reflect it since it requests based on BPNL (which should not change) and the registered URL's will be returned.
 
 Other solution was also considered
 
@@ -24,9 +23,10 @@ Other solution was also considered
 
 ## Approach
 
-The user is able to obtain the Connectors' URL's (through the Discovery Service, as an example) and store them in the new service through its API. The API will allow to save a list of Connectors' URL's in bulk and the service is responsible to store that (in memory or in database). These can later be retrieved and crawled by the Federated Catalog.
+The user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through its API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). These can later be retrieved and crawled by the Federated Catalog.
 This solution improves on the default one of having the data in a static file since a dynamic approach would avoid downtime when a change is required.
 
-Finally, considering service deployment, a new chart can be created just for this new service (similar to the existing ones), being its usage only decided by the member. As so, a Dockerfile should exist to ease this approach (giving the user option of running it in a container or run a simple `jar`).
-
-Limitations of this solution are that each partner must have the Connectors' URL's beforehand and deal with the overhead of a new service, specially one with a persistence store.
+Some imitations of this solution are:
+- Each partner must have the BPNL beforehand. If a new Partner registers and an existing partner would want their catalog, the BPNL or Connectors' URL's of the new partner must be obtain first;
+- Deal with the overhead an additional persistence store.
+- The usage of the Discovery Service requires a technical user account to access it (must be requested).
