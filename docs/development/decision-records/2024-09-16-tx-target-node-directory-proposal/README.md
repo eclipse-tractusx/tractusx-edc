@@ -23,10 +23,11 @@ Other solution was also considered
 
 ## Approach
 
-The user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through its API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). These can later be retrieved and crawled by the Federated Catalog.
+The user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through its API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). The URL's can later be retrieved and crawled by the Federated Catalog.
+
 This solution improves on the default one of having the data in a static file since a dynamic approach would avoid downtime when a change is required.
 
 Some imitations of this solution are:
-- Each partner must have the BPNL beforehand. If a new Partner registers and an existing partner would want their catalog, the BPNL or Connectors' URL's of the new partner must be obtain first;
-- Deal with the overhead an additional persistence store.
+- Each partner must have the BPNLs beforehand. If a new Partner registers and an existing partner would want their catalog, the BPNL (or Connector URL's) of the new partner must be obtained first;
+- Deal with the overhead an additional persistence store;
 - The usage of the Discovery Service requires a technical user account to access it (must be requested).
