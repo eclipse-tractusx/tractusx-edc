@@ -54,6 +54,7 @@ include(":edc-extensions:data-flow-properties-provider")
 
 include("edc-extensions:agreements")
 include("edc-extensions:agreements:retirement-evaluation-core")
+include("edc-extensions:agreements:retirement-evaluation-api")
 include("edc-extensions:agreements:retirement-evaluation-spi")
 
 // extensions - data plane
@@ -68,6 +69,7 @@ include(":edc-tests:edc-controlplane:catalog-tests")
 include(":edc-tests:edc-controlplane:transfer-tests")
 include(":edc-tests:edc-controlplane:iatp-tests")
 include(":edc-tests:edc-controlplane:policy-tests")
+include("edc-tests:edc-controlplane:agreement-retirement-tests")
 include(":edc-tests:edc-controlplane:fixtures")
 include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
