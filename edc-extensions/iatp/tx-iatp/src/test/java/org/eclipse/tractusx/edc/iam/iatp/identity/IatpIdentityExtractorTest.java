@@ -62,21 +62,21 @@ class IatpIdentityExtractorTest {
     }
 
     @Test
-    void attributesFor_Fails_WhenCredentialNotFound() {
+    void attributesFor_fails_WhenCredentialNotFound() {
         assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", List.of(vc("FooCredential", Map.of("foo", "bar")))).build()))
                 .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Failed to fetch");
+                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'holderIdentifier'");
     }
 
     @Test
-    void attributesFor_Fails_whenNoVcClaims() {
+    void attributesFor_fails_whenNoVcClaims() {
         assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().build()))
                 .isInstanceOf(EdcException.class)
                 .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken did not contain a 'vc' claim");
     }
 
     @Test
-    void attributesFor_Fails_whenNullVcClaims() {
+    void attributesFor_fails_whenNullVcClaims() {
 
         assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", null).build()))
                 .isInstanceOf(EdcException.class)
@@ -84,14 +84,14 @@ class IatpIdentityExtractorTest {
     }
 
     @Test
-    void attributesFor_Fails_WhenVcClaimIsNotList() {
+    void attributesFor_fails_WhenVcClaimIsNotList() {
         assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", "wrong").build()))
                 .isInstanceOf(EdcException.class)
                 .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim, but the type is incorrect. Expected java.util.List, got java.lang.String.");
     }
 
     @Test
-    void attributesFor_Fails_WhenVcClaimsIsEmptyList() {
+    void attributesFor_fails_WhenVcClaimsIsEmptyList() {
         assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", List.of()).build()))
                 .isInstanceOf(EdcException.class)
                 .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim but it did not contain any VerifiableCredentials.");

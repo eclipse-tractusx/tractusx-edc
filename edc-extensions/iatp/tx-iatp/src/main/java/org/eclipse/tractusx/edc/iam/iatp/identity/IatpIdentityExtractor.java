@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.identity;
 
+import org.eclipse.edc.iam.identitytrust.spi.DcpParticipantAgentServiceExtension;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.agent.ParticipantAgentServiceExtension;
@@ -38,7 +39,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
  * Implementation of {@link ParticipantAgentServiceExtension} which extracts the identity of a participant
  * from the MembershipCredential
  */
-public class IatpIdentityExtractor implements ParticipantAgentServiceExtension {
+public class IatpIdentityExtractor implements DcpParticipantAgentServiceExtension {
 
     private static final String VC_CLAIM = "vc";
     private static final String IDENTITY_CREDENTIAL = "MembershipCredential";
@@ -56,7 +57,7 @@ public class IatpIdentityExtractor implements ParticipantAgentServiceExtension {
                 .findFirst()
                 .flatMap(this::getIdentifier)
                 .map(identity -> Map.of(PARTICIPANT_IDENTITY, identity))
-                .orElseThrow(() -> new EdcException("Failed to fetch %s property from %s credential".formatted(IDENTITY_PROPERTY, IDENTITY_CREDENTIAL)));
+                .orElseThrow(() -> new EdcException("Required credential type '%s' not present in ClaimToken, cannot extract property '%s'".formatted(IDENTITY_CREDENTIAL, IDENTITY_PROPERTY)));
 
 
     }
