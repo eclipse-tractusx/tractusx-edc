@@ -322,9 +322,6 @@ spec:
             - name: "configuration"
               mountPath: "/app/opentelemetry.properties"
               subPath: "opentelemetry.properties"
-            - name: "configuration"
-              mountPath: "/app/logging.properties"
-              subPath: "logging.properties"
             {{- if .Values.customCaCerts }}
             - name: custom-cacerts
               mountPath: /opt/java/openjdk/lib/security/cacerts
@@ -342,8 +339,6 @@ spec:
             items:
               - key: "opentelemetry.properties"
                 path: "opentelemetry.properties"
-              - key: "logging.properties"
-                path: "logging.properties"
         {{- if .Values.customCaCerts }}
         - name: custom-cacertificates
           configMap:

@@ -33,5 +33,3 @@ data:
   opentelemetry.properties: |-
     {{- .Values.controlplane.opentelemetry | nindent 4 }}
 
-  logging.properties: |-
-    {{- .Values.controlplane.logging | nindent 4 }}

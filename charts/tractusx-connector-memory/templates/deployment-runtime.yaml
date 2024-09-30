@@ -339,9 +339,6 @@ spec:
           {{- end }}
           {{- end }}
           volumeMounts:
-            - name: "configuration"
-              mountPath: "/app/logging.properties"
-              subPath: "logging.properties"
             {{- if .Values.customCaCerts }}
             - name: custom-cacerts
               mountPath: /opt/java/openjdk/lib/security/cacerts
@@ -350,12 +347,6 @@ spec:
             - name: "tmp"
               mountPath: "/tmp"
       volumes:
-        - name: "configuration"
-          configMap:
-            name: {{ include "txdc.fullname" . }}-runtime
-            items:
-              - key: "logging.properties"
-                path: "logging.properties"
         {{- if .Values.customCaCerts }}
         - name: custom-cacertificates
           configMap:
