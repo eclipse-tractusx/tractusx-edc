@@ -81,6 +81,10 @@ controlplane:
     # -- Defines if the JVM should wait with starting the application until someone connected to the debugging port.
     suspendOnStart: false
 
+  logs:
+    # -- Defines the log granularity of the default Console Monitor.
+    level: DEBUG
+
   livenessProbe:
     # -- Whether to enable kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
     enabled: true

@@ -141,6 +141,9 @@ spec:
             {{- end }}
           {{- end }}
 
+            - name: "EDC_LOG_LEVEL"
+            - value: {{ .Values.logs.level | required ".Values.logs.level is required" | quote }}
+
             ########################
             ## ID CONFIGURATION ##
             ########################

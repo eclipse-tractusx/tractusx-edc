@@ -27,6 +27,8 @@ ARG ADDITIONAL_FILES
 ARG APP_USER=docker
 ARG APP_UID=10100
 
+ENV EDC_LOG_LEVEL=DEBUG
+
 RUN addgroup --system "$APP_USER"
 
 RUN adduser \
@@ -47,13 +49,14 @@ COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
 
-CMD ["java", \
-     "-javaagent:/app/opentelemetry-javaagent.jar", \
-     "-Dedc.fs.config=/app/configuration.properties", \
-     "-Djava.util.logging.config.file=/app/logging.properties", \
-     "-Dotel.javaagent.configuration-file=/app/opentelemetry.properties", \
-     "-Dotel.metrics.exporter=prometheus", \
-     "-Dotel.exporter.prometheus.port=9090", \
-     "-Djava.security.egd=file:/dev/urandom", \
-     "-jar", \
-     "edc-runtime.jar"]
+CMD java \
+     -javaagent:/app/opentelemetry-javaagent.jar \
+     -Dedc.fs.config=/app/configuration.properties \
+     -Djava.util.logging.config.file=/app/logging.properties \
+     -Dotel.javaagent.configuration-file=/app/opentelemetry.properties \
+     -Dotel.metrics.exporter=prometheus \
+     -Dotel.exporter.prometheus.port=9090 \
+     -Djava.security.egd=file:/dev/urandom \
+     -jar \
+     edc-runtime.jar \
+     --log-level=$EDC_LOG_LEVEL
