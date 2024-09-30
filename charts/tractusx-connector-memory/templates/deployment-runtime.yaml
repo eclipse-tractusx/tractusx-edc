@@ -99,7 +99,7 @@ spec:
           {{- end }}
 
           imagePullPolicy: {{ .Values.runtime.image.pullPolicy }}
-          args: [ --log-level={{ .Values.runtime.logs.level | required ".Values.runtime.logs.level is required" | quote }} ]
+          args: [ --log-level={{ .Values.runtime.logs.level | required ".Values.runtime.logs.level is required" }} ]
           ports:
           {{- range $key,$value := .Values.runtime.endpoints }}
             - name: {{ $key }}
