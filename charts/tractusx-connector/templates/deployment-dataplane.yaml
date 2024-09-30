@@ -141,7 +141,7 @@ spec:
           {{- end }}
 
             - name: "EDC_LOG_LEVEL"
-            - value: {{ .Values.logs.level | required ".Values.dataplane.logs.level is required" | quote }}
+            - value: {{ .Values.dataplane.logs.level | required ".Values.dataplane.logs.level is required" | quote }}
 
             ########################
             ## ID CONFIGURATION ##
