@@ -98,7 +98,7 @@ spec:
           image: "tractusx/edc-dataplane-hashicorp-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.dataplane.image.pullPolicy }}
-          args: [ "--log-level={{ .Values.dataplane.logs.level | required ".Values.dataplane.logs.level is required" | quote }}" ]
+          args: [ --log-level={{ .Values.dataplane.logs.level | required ".Values.dataplane.logs.level is required" | quote }} ]
           ports:
           {{- range $key,$value := .Values.dataplane.endpoints }}
             - name: {{ $key }}
