@@ -23,7 +23,6 @@ import org.eclipse.edc.iam.identitytrust.spi.DcpParticipantAgentServiceExtension
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.iatp.identity.IatpIdentityExtractor;
 
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
@@ -40,9 +39,6 @@ public class IatpIdentityExtension implements ServiceExtension {
         return NAME;
     }
 
-    @Override
-    public void initialize(ServiceExtensionContext context) {
-    }
 
     /**
      * This provider method is mandatory, because it prevents the {@code DefaultDcpParticipantAgentServiceExtension} from being
