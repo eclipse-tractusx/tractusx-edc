@@ -221,4 +221,4 @@ edc-monitoring = ["edc-micrometer-core", "edc-micrometer-jersey", "edc-micromete
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]
 
 [plugins]
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.23" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.24" }
