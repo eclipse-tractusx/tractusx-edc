@@ -99,6 +99,7 @@ spec:
           image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
+          args: ["--log-level={{ .Values.controlplane.logs.level | required ".Values.controlplane.logs.level is required" | quote }}"]
           ports:
           {{- range $key,$value := .Values.controlplane.endpoints }}
             - name: {{ $key }}
@@ -141,8 +142,6 @@ spec:
             {{- end }}
           {{- end }}
 
-            - name: "EDC_LOG_LEVEL"
-            - value: {{ .Values.controlplane.logs.level | required ".Values.controlplane.logs.level is required" | quote }}
 
             ########################
             ## ID CONFIGURATION ##

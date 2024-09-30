@@ -99,6 +99,7 @@ spec:
           image: "tractusx/edc-controlplane-postgresql-azure-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
+          args: ["--log-level={{ .Values.controlplane.logs.level | required ".Values.controlplane.logs.level is required" | quote }}"]
           ports:
           {{- range $key,$value := .Values.controlplane.endpoints }}
             - name: {{ $key }}
@@ -140,9 +141,6 @@ spec:
                 {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.controlplane.debug.port }}
             {{- end }}
           {{- end }}
-
-            - name: "EDC_LOG_LEVEL"
-            - value: {{ .Values.controlplane.logs.level | required ".Values.controlplane.logs.level is required" | quote }}
 
             ########################
             ## ID CONFIGURATION ##

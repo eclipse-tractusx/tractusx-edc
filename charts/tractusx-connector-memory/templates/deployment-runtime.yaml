@@ -99,6 +99,7 @@ spec:
           {{- end }}
 
           imagePullPolicy: {{ .Values.runtime.image.pullPolicy }}
+          args: ["--log-level={{ .Values.runtime.logs.level | required ".Values.runtime.logs.level is required" | quote }}"]
           ports:
           {{- range $key,$value := .Values.runtime.endpoints }}
             - name: {{ $key }}
@@ -140,9 +141,6 @@ spec:
                 {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.runtime.debug.port }}
             {{- end }}
           {{- end }}
-
-            - name: "EDC_LOG_LEVEL"
-            - value: {{ .Values.runtime.logs.level | required ".Values.runtime.logs.level is required" | quote }}
 
             ########################
             ## ID CONFIGURATION ##
