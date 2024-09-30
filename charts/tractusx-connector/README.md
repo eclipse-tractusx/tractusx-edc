@@ -135,6 +135,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc3 \
 | controlplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | controlplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
+| controlplane.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | controlplane.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
 | controlplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | controlplane.podAnnotations | object | `{}` | additional annotations for the pod |
@@ -223,6 +224,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc3 \
 | dataplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | dataplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | dataplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
+| dataplane.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | dataplane.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
 | dataplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | dataplane.podAnnotations | object | `{}` | additional annotations for the pod |

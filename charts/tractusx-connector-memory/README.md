@@ -142,6 +142,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-r
 | runtime.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | runtime.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | runtime.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
+| runtime.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | runtime.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
 | runtime.podAnnotations | object | `{}` | additional annotations for the pod |
 | runtime.podLabels | object | `{}` | additional labels for the pod |
