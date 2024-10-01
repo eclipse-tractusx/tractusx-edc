@@ -26,7 +26,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.function.AgreementsRetirementFunction;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
 import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension.NAME;
 import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
