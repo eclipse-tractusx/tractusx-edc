@@ -23,13 +23,19 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.Contr
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,18 +56,11 @@ class AgreementsRetirementFunctionTest {
     }
 
     @Test
-    @DisplayName("XYZ")
-    void verify_functionIsRegisteredInPolicyMonitorAndTransferScope(){
-        assertThat(true).isTrue();
-    }
-
-    @Test
     @DisplayName("Verify if given agreement with ID can be recovered from policyContext")
     void verify_agreementExistsInPolicyContext(){
 
-        var context = mock(PolicyContext.class);
         function.evaluate(rule, policyContext);
-        verify(context).reportProblem("Tried to evaluate agreement retirement function but policyContext has no agreement defined.");
+        verify(policyContext).reportProblem("Tried to evaluate agreement retirement function but policyContext has no agreement defined.");
 
     }
 
@@ -69,10 +68,17 @@ class AgreementsRetirementFunctionTest {
     @DisplayName("Fails evaluation if agreement is retired")
     void fails_ifAgreementIsRetired(){
 
-        var agreement = buildAgreement();
+        var agreementId = "test-agreement-id";
+        var agreement = buildAgreement(agreementId);
+
+        var entry = AgreementsRetirementEntry.Builder.newInstance()
+                .withAgreementId(agreementId)
+                .withReason("mock-reason")
+                .build();
 
         when(policyContext.getContextData(ContractAgreement.class)).thenReturn(agreement);
-        when(store.findRetiredAgreement("mock-id")).thenReturn(StoreResult.success("mock-stamp"));
+        when(store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId())))
+                .thenReturn(StoreResult.success(List.of(entry)));
 
         var result = function.evaluate( rule, policyContext);
 
@@ -83,23 +89,32 @@ class AgreementsRetirementFunctionTest {
     @DisplayName("Passes evaluation if agreement is not retired")
     void passes_ifAgreementIsNotRetired(){
 
-        var agreement = buildAgreement();
-
-        when(policyContext.getContextData(ContractAgreement.class)).thenReturn(agreement);
-        when(store.findRetiredAgreement("mock-id")).thenReturn(StoreResult.notFound("mock-stamp"));
+        when(store.findRetiredAgreements(any(QuerySpec.class)))
+                .thenReturn(StoreResult.success(List.of()));
 
         var result = function.evaluate(rule, policyContext);
 
         assertThat(result).isTrue();
     }
 
-    private ContractAgreement buildAgreement(){
+    private ContractAgreement buildAgreement(String agreementId) {
         return ContractAgreement.Builder.newInstance()
-                .id("mock-id")
+                .id(agreementId)
                 .assetId("fake")
                 .consumerId("fake")
                 .providerId("fake")
                 .policy(mock(Policy.class))
                 .build();
+    }
+
+    private QuerySpec createFilterQueryByAgreementId(String agreementId) {
+        return QuerySpec.Builder.newInstance()
+                .filter(
+                        Criterion.Builder.newInstance()
+                                .operandLeft("agreementId")
+                                .operator("=")
+                                .operandRight(agreementId)
+                                .build()
+                ).build();
     }
 }

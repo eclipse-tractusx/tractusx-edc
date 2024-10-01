@@ -6,7 +6,8 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,7 +120,11 @@ public class RetireAgreementTest {
 
         private void retireProviderAgreement(String agreementId) {
             var store = getProviderAgreementsRetirementStore();
-            store.save(agreementId, Instant.now().toString());
+            var entry = AgreementsRetirementEntry.Builder.newInstance()
+                    .withAgreementId(agreementId)
+                    .withReason("very-long-reason")
+                    .build();
+            store.save(entry);
         }
     }
 

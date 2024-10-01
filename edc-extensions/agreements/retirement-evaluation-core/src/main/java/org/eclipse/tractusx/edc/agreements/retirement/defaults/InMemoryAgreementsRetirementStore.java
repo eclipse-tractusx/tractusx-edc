@@ -1,21 +1,34 @@
 package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 
+import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
+import org.eclipse.edc.spi.query.QueryResolver;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
-import java.util.HashMap;
+import org.eclipse.edc.store.ReflectionBasedQueryResolver;
+
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class InMemoryAgreementsRetirementStore implements AgreementsRetirementStore {
 
-    private final Map<String, String> cache = new HashMap<>();
+    private final QueryResolver<AgreementsRetirementEntry> queryResolver;
+    private final Map<String, AgreementsRetirementEntry> cache = new ConcurrentHashMap<>();
+
+    public InMemoryAgreementsRetirementStore(CriterionOperatorRegistry criterionOperatorRegistry) {
+        queryResolver = new ReflectionBasedQueryResolver<>(AgreementsRetirementEntry.class, criterionOperatorRegistry);
+    }
 
     @Override
-    public StoreResult<Void> save(String contractAgreementId, String timestamp) {
-        if (cache.containsKey(contractAgreementId)) {
-            return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(contractAgreementId));
+    public StoreResult<Void> save(AgreementsRetirementEntry entry) {
+        if (cache.containsKey(entry.getAgreementId())) {
+            return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(entry.getAgreementId()));
         }
-        cache.put(contractAgreementId, timestamp);
+        cache.put(entry.getAgreementId(), entry);
         return StoreResult.success();
     }
 
@@ -27,10 +40,7 @@ public class InMemoryAgreementsRetirementStore implements AgreementsRetirementSt
     }
 
     @Override
-    public StoreResult<String> findRetiredAgreement(String contractAgreementId) {
-        var entry = cache.get(contractAgreementId);
-        return entry == null ?
-                StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(contractAgreementId)) :
-                StoreResult.success(entry);
+    public StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec) {
+        return StoreResult.success(queryResolver.query(cache.values().stream(), querySpec).collect(Collectors.toList()));
     }
 }
