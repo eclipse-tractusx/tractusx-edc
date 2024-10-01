@@ -23,7 +23,9 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.Contr
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.RuleFunction;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
 
 public class AgreementsRetirementFunction implements RuleFunction<Permission> {
@@ -42,11 +44,23 @@ public class AgreementsRetirementFunction implements RuleFunction<Permission> {
             policyContext.reportProblem("Tried to evaluate agreement retirement function but policyContext has no agreement defined.");
             return isActive;
         }
-        var result = store.findRetiredAgreement(agreement.getId());
-        if (result.succeeded()) {
+        var result = store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId()));
+
+        if (!result.getContent().isEmpty()) {
             isActive = false;
         }
 
         return isActive;
+    }
+
+    private QuerySpec createFilterQueryByAgreementId(String agreementId) {
+        return QuerySpec.Builder.newInstance()
+                .filter(
+                        Criterion.Builder.newInstance()
+                                .operandLeft("agreementId")
+                                .operator("=")
+                                .operandRight(agreementId)
+                                .build()
+                ).build();
     }
 }

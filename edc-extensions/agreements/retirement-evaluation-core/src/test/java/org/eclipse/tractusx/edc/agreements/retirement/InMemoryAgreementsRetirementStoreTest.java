@@ -1,14 +1,14 @@
 package org.eclipse.tractusx.edc.agreements.retirement;
 
+import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.tractusx.edc.agreements.retirement.defaults.InMemoryAgreementsRetirementStore;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.store.AgreementsRetirementStoreTestBase;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
 
-    private final InMemoryAgreementsRetirementStore store = new InMemoryAgreementsRetirementStore();
+    private final InMemoryAgreementsRetirementStore store = new InMemoryAgreementsRetirementStore(CriterionOperatorRegistryImpl.ofDefaults());
 
     @Override
     protected AgreementsRetirementStore getStore() {
