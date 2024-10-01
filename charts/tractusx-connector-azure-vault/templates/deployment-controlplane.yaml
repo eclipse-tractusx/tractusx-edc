@@ -99,6 +99,7 @@ spec:
           image: "tractusx/edc-controlplane-postgresql-azure-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
+          args: [ --log-level={{ .Values.controlplane.logs.level | required ".Values.controlplane.logs.level is required" }} ]
           ports:
           {{- range $key,$value := .Values.controlplane.endpoints }}
             - name: {{ $key }}
@@ -321,9 +322,6 @@ spec:
             - name: "configuration"
               mountPath: "/app/opentelemetry.properties"
               subPath: "opentelemetry.properties"
-            - name: "configuration"
-              mountPath: "/app/logging.properties"
-              subPath: "logging.properties"
             {{- if .Values.customCaCerts }}
             - name: custom-cacerts
               mountPath: /opt/java/openjdk/lib/security/cacerts
@@ -341,8 +339,6 @@ spec:
             items:
               - key: "opentelemetry.properties"
                 path: "opentelemetry.properties"
-              - key: "logging.properties"
-                path: "logging.properties"
         {{- if .Values.customCaCerts }}
         - name: custom-cacertificates
           configMap:

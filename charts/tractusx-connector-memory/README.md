@@ -142,7 +142,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0-r
 | runtime.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | runtime.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | runtime.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
-| runtime.logging | string | `".level=INFO\norg.eclipse.edc.level=ALL\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
+| runtime.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | runtime.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
 | runtime.podAnnotations | object | `{}` | additional annotations for the pod |
 | runtime.podLabels | object | `{}` | additional labels for the pod |
