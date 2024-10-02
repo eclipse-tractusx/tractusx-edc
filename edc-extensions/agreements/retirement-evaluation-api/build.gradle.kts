@@ -11,6 +11,8 @@ dependencies {
 
     implementation(libs.jakarta.rsApi)
 
+    testImplementation(testFixtures(libs.edc.core.jersey))
+    testImplementation(libs.edc.spi.core)
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(project(":edc-extensions:agreements:retirement-evaluation-spi"))
