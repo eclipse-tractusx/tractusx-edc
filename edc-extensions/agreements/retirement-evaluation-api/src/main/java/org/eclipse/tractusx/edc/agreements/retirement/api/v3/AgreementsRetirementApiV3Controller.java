@@ -1,3 +1,22 @@
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.edc.agreements.retirement.api.v3;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -28,7 +47,7 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Path("/v3.1alpha/retireagreements")
-public class AgreementsRetirementAPIV3Controller implements AgreementsRetirementAPIV3 {
+public class AgreementsRetirementApiV3Controller implements AgreementsRetirementApiV3 {
 
     private final AgreementsRetirementStore service;
     private final TypeTransformerRegistry transformerRegistry;
@@ -36,7 +55,7 @@ public class AgreementsRetirementAPIV3Controller implements AgreementsRetirement
     private final Monitor monitor;
 
 
-    public AgreementsRetirementAPIV3Controller(AgreementsRetirementStore service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
+    public AgreementsRetirementApiV3Controller(AgreementsRetirementStore service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
         this.service = service;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
