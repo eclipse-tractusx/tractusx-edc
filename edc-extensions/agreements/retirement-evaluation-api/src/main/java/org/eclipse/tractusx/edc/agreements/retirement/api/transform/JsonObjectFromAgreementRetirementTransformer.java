@@ -12,7 +12,7 @@ public class JsonObjectFromAgreementRetirementTransformer extends AbstractJsonLd
 
     JsonBuilderFactory jsonFactory;
 
-    protected JsonObjectFromAgreementRetirementTransformer(JsonBuilderFactory jsonFactory) {
+    public JsonObjectFromAgreementRetirementTransformer(JsonBuilderFactory jsonFactory) {
         super(AgreementsRetirementEntry.class, JsonObject.class);
         this.jsonFactory = jsonFactory;
     }
