@@ -37,6 +37,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,11 +58,12 @@ class AgreementsRetirementFunctionTest {
     }
 
     @Test
-    @DisplayName("Verify if given agreement with ID can be recovered from policyContext")
+    @DisplayName("Evaluation passes if no agreement is found in policyContext")
     void verify_agreementExistsInPolicyContext(){
 
-        function.evaluate(rule, policyContext);
-        verify(policyContext).reportProblem("Tried to evaluate agreement retirement function but policyContext has no agreement defined.");
+        when(policyContext.getContextData(ContractAgreement.class))
+                .thenReturn(null);
+        assertThat(function.evaluate(rule, policyContext)).isTrue();
 
     }
 
@@ -82,7 +85,8 @@ class AgreementsRetirementFunctionTest {
 
         var result = function.evaluate( rule, policyContext);
 
-        assertThat(result).isFalse();
+        assertThat(result).isTrue();
+        verify(policyContext, times(1)).reportProblem(any());
     }
 
     @Test
@@ -95,6 +99,7 @@ class AgreementsRetirementFunctionTest {
         var result = function.evaluate(rule, policyContext);
 
         assertThat(result).isTrue();
+        verify(policyContext, never()).reportProblem(any());
     }
 
     private ContractAgreement buildAgreement(String agreementId) {
