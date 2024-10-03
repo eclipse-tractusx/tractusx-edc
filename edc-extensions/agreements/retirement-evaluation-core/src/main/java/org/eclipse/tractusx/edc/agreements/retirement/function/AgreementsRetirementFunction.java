@@ -39,18 +39,17 @@ public class AgreementsRetirementFunction implements RuleFunction<Permission> {
     @Override
     public boolean evaluate(Permission rule, PolicyContext policyContext) {
         var agreement = policyContext.getContextData(ContractAgreement.class);
-        var isActive = true;
         if (agreement == null) {
-            policyContext.reportProblem("Tried to evaluate agreement retirement function but policyContext has no agreement defined.");
-            return isActive;
+            return true;
         }
         var result = store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId()));
 
         if (!result.getContent().isEmpty()) {
-            isActive = false;
+            policyContext.reportProblem(String.format("Contract Agreement with ID=%s has been retired", agreement.getId()));
+
         }
 
-        return isActive;
+        return true;
     }
 
     private QuerySpec createFilterQueryByAgreementId(String agreementId) {
