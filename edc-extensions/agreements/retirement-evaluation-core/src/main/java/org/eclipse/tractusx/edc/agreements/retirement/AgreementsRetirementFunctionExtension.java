@@ -49,5 +49,7 @@ public class AgreementsRetirementFunctionExtension implements ServiceExtension {
         var function = new AgreementsRetirementFunction(store);
         policyEngine.registerFunction(TRANSFER_SCOPE, Permission.class, function);
         policyEngine.registerFunction(POLICY_MONITOR_SCOPE, Permission.class, function);
+        policyEngine.registerPostValidator(TRANSFER_SCOPE, (policy, policyContext) -> !policyContext.hasProblems());
+        policyEngine.registerPostValidator(POLICY_MONITOR_SCOPE, (policy, policyContext) -> !policyContext.hasProblems());
     }
 }
