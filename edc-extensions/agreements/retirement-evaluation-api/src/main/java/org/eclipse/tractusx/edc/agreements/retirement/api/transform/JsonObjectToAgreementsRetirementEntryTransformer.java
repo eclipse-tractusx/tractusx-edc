@@ -14,10 +14,11 @@ public class JsonObjectToAgreementsRetirementEntryTransformer extends AbstractJs
     }
 
     @Override
-    public @Nullable AgreementsRetirementEntry transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
+    public @Nullable AgreementsRetirementEntry transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext context) {
         return AgreementsRetirementEntry.Builder.newInstance()
-                .withAgreementId(jsonObject.getString(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID))
-                .withReason(jsonObject.getString(AgreementsRetirementEntry.AR_ENTRY_REASON))
+                .withAgreementId(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID), context))
+                .withAgreementId(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID), context))
+                .withReason(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_REASON), context))
                 .build();
     }
 }

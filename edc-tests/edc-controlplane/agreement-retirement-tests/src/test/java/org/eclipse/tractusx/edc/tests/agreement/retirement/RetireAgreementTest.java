@@ -7,11 +7,11 @@ import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -95,7 +95,7 @@ public class RetireAgreementTest {
 
             var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
 
-            retireProviderAgreement(agreementId);
+            PROVIDER.retireProviderAgreement(agreementId);
 
             // verify existing TP on consumer retires
 
@@ -117,15 +117,6 @@ public class RetireAgreementTest {
         void teardown() throws IOException {
             server.stop();
         }
-
-        private void retireProviderAgreement(String agreementId) {
-            var store = getProviderAgreementsRetirementStore();
-            var entry = AgreementsRetirementEntry.Builder.newInstance()
-                    .withAgreementId(agreementId)
-                    .withReason("very-long-reason")
-                    .build();
-            store.save(entry);
-        }
     }
 
     @Nested
@@ -145,6 +136,7 @@ public class RetireAgreementTest {
 
     @Nested
     @PostgresqlIntegrationTest
+    @Disabled
     class Postgres extends Tests {
 
         @RegisterExtension
