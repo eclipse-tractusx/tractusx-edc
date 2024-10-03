@@ -30,8 +30,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
-    runtimeOnly(project(":edc-extensions:agreements:retirement-evaluation-spi"))
-    runtimeOnly(project(":edc-extensions:agreements:retirement-evaluation-core"))
+    runtimeOnly(project(":edc-extensions:agreements"))
 
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)

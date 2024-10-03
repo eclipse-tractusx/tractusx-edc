@@ -52,6 +52,7 @@ dependencies {
     testFixturesImplementation(libs.assertj)
     testFixturesImplementation(libs.junit.jupiter.api)
     testFixturesImplementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
+    testFixturesImplementation(project(":edc-extensions:agreements:retirement-evaluation-spi"))
 
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
