@@ -45,7 +45,9 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
     public static final String NAME = "Agreements Retirement API Extension ";
 
     @Override
-    public String name() { return NAME; }
+    public String name() {
+        return NAME;
+    }
 
     @Inject
     private WebService webService;
@@ -59,7 +61,7 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
     private Monitor monitor;
 
     @Override
-    public void initialize(ServiceExtensionContext context){
+    public void initialize(ServiceExtensionContext context) {
         var jsonFactory = Json.createBuilderFactory(Map.of());
         var managementTypeTransformerRegistry = transformerRegistry.forContext("management-api");
 

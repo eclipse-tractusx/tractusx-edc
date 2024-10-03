@@ -33,7 +33,7 @@ public abstract class AgreementsRetirementStoreTestBase {
     private AgreementsRetirementStore store;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         store = getStore();
     }
 

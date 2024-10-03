@@ -25,7 +25,6 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.AfterEach;
@@ -68,8 +67,6 @@ public class RetireAgreementTest {
     abstract static class Tests {
 
         ClientAndServer server;
-
-        protected abstract AgreementsRetirementStore getProviderAgreementsRetirementStore();
 
         @BeforeEach
         void setup() {
@@ -148,9 +145,6 @@ public class RetireAgreementTest {
         @RegisterExtension
         protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
 
-        @Override
-        protected AgreementsRetirementStore getProviderAgreementsRetirementStore(){ return PROVIDER_RUNTIME.getService(AgreementsRetirementStore.class); }
-
     }
 
     @Nested
@@ -163,9 +157,6 @@ public class RetireAgreementTest {
 
         @RegisterExtension
         protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
-
-        @Override
-        protected AgreementsRetirementStore getProviderAgreementsRetirementStore(){ return PROVIDER_RUNTIME.getService(AgreementsRetirementStore.class); }
 
     }
 }

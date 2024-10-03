@@ -21,8 +21,8 @@ package org.eclipse.tractusx.edc.agreements.retirement.function;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
-import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -59,7 +59,7 @@ class AgreementsRetirementFunctionTest {
 
     @Test
     @DisplayName("Evaluation passes if no agreement is found in policyContext")
-    void verify_agreementExistsInPolicyContext(){
+    void verify_agreementExistsInPolicyContext() {
 
         when(policyContext.getContextData(ContractAgreement.class))
                 .thenReturn(null);
@@ -69,7 +69,7 @@ class AgreementsRetirementFunctionTest {
 
     @Test
     @DisplayName("Fails evaluation if agreement is retired")
-    void fails_ifAgreementIsRetired(){
+    void fails_ifAgreementIsRetired() {
 
         var agreementId = "test-agreement-id";
         var agreement = buildAgreement(agreementId);
@@ -83,7 +83,7 @@ class AgreementsRetirementFunctionTest {
         when(store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId())))
                 .thenReturn(StoreResult.success(List.of(entry)));
 
-        var result = function.evaluate( rule, policyContext);
+        var result = function.evaluate(rule, policyContext);
 
         assertThat(result).isTrue();
         verify(policyContext, times(1)).reportProblem(any());
@@ -91,7 +91,7 @@ class AgreementsRetirementFunctionTest {
 
     @Test
     @DisplayName("Passes evaluation if agreement is not retired")
-    void passes_ifAgreementIsNotRetired(){
+    void passes_ifAgreementIsNotRetired() {
 
         when(store.findRetiredAgreements(any(QuerySpec.class)))
                 .thenReturn(StoreResult.success(List.of()));
