@@ -23,10 +23,9 @@ import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.query.QueryResolver;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.edc.store.ReflectionBasedQueryResolver;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
-
-import org.eclipse.edc.store.ReflectionBasedQueryResolver;
 
 import java.util.List;
 import java.util.Map;

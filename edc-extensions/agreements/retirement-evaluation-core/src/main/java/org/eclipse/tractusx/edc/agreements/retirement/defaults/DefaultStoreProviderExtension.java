@@ -34,7 +34,7 @@ public class DefaultStoreProviderExtension implements ServiceExtension {
     CriterionOperatorRegistry criterionOperatorRegistry;
 
     @Provider(isDefault = true)
-    public AgreementsRetirementStore createInMemStore(){
+    public AgreementsRetirementStore createInMemStore() {
         return new InMemoryAgreementsRetirementStore(criterionOperatorRegistry);
     }
 

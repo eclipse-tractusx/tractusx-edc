@@ -23,7 +23,6 @@ import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
@@ -47,12 +46,11 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 
 /**
