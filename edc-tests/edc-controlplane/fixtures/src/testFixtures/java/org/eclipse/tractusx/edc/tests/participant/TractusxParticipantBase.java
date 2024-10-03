@@ -170,7 +170,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public void retireProviderAgreement(String agreementId) {
         var body = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE).build())
                 .add(TYPE, AR_ENTRY_TYPE)
                 .add(AR_ENTRY_AGREEMENT_ID, agreementId)
                 .add(AR_ENTRY_REASON, "long-reason")

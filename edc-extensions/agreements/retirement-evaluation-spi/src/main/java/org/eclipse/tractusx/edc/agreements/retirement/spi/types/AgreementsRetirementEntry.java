@@ -26,14 +26,16 @@ import java.time.Instant;
 
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+
 
 public class AgreementsRetirementEntry extends Entity {
 
     public static final String AR_ENTRY_TYPE = EDC_NAMESPACE + "AgreementsRetirementEntry";
 
     public static final String AR_ENTRY_AGREEMENT_ID = EDC_NAMESPACE + "agreementId";
-    public static final String AR_ENTRY_REASON = EDC_NAMESPACE + "reason";
-    public static final String AR_ENTRY_RETIREMENT_DATE = EDC_NAMESPACE + "agreementRetirementDate";
+    public static final String AR_ENTRY_REASON = TX_NAMESPACE + "reason";
+    public static final String AR_ENTRY_RETIREMENT_DATE = TX_NAMESPACE + "agreementRetirementDate";
 
     private String agreementId;
     private String reason;
