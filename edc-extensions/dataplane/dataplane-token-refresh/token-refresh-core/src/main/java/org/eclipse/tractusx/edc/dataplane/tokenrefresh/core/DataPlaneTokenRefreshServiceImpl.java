@@ -270,6 +270,11 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     }
 
     private Result<Void> deleteTokenData(AccessTokenData tokenData) {
+        var deletionResult = vault.deleteSecret(tokenData.id());
+        if (deletionResult.failed()) {
+            return deletionResult;
+        }
+
         var result = accessTokenDataStore.deleteById(tokenData.id());
         if (result.failed()) {
             return Result.failure(result.getFailureDetail());
