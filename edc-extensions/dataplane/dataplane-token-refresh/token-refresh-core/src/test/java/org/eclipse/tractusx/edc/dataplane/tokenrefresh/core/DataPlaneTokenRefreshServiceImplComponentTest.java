@@ -316,9 +316,10 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         var transferProcessId = "dummy-tp-id";
         var accessTokenData = new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
                 DataAddress.Builder.newInstance().type("type").build(), Map.of("process_id", transferProcessId));
+        var refreshToken = new RefreshToken("dummy-token", 0L, "dummy-refresh-endpoint");
 
         tokenDataStore.store(accessTokenData);
-        vault.storeSecret(tokenId, objectMapper.writeValueAsString(mock(RefreshToken.class)));
+        vault.storeSecret(tokenId, objectMapper.writeValueAsString(refreshToken));
 
         assertThat(tokenRefreshService.revoke(transferProcessId, "good-reason"))
                 .isSucceeded();
