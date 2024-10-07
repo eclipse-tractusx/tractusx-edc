@@ -13,6 +13,8 @@ Having a specific runtime incurs on additional overhead (new Helm Chart, as exam
 For TargetNodeDirectory it will be set by a new extension responsible for exposing an API, where a member can input the BPNL's of the participants from which the catalogs are wanted, and then it will retrieve and store the respective Connector URL's. This new extension would get the data from the Discovery Service, provided a BPNL, and will be named `DiscoveryServiceRetrieverExtension`. This solution allows the member to choose precisely the Target Catalog Nodes that interests them, resulting in reduced network calls and latency.
 Additionally, if a Connector URL is registered (or unregistered) in the Discovery Service, the retriever will reflect it since it requests based on BPNL (which should not change) and the registered URL's will be returned.
 
+This solution improves on the default one of having the data in a static file since a dynamic approach would avoid downtime when a change is required.
+
 Other solution for the TargetNodeDirectory was also considered
 - File in a S3 bucket (or different cloud provider's solution)
   - This solution was discarded due to one file for all instead of each partner having the data that respectively needs does not match the requirement and this solution would lock the usage of a proprietary tool (cloud provider) being harder to sustain in the long run.
@@ -25,7 +27,12 @@ Since the Federated Catalog will be a standalone runtime, the Tractus-Connector 
 To enable the Federated Catalog flow, please [see this table](https://github.com/eclipse-tractusx/tractusx-edc/blob/75bdacbad43e2cad352204ea28a359c6aac7adea/docs/development/management-domains/README.md#enable-and-configure-the-crawler-subsystem).
 
 For its TargetNodeDirectory, the user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through its API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). The URL's can later be retrieved and crawled by the Federated Catalog.
-This solution improves on the default one of having the data in a static file since a dynamic approach would avoid downtime when a change is required.
+
+The retrieval of Connector URL's through the Discovery Service is enabled by the endpoint:
+```
+POST: /api/administration/connectors/discovery
+```
+In which, the body of the request can contain the BPNL's related with participants from which the catalogs want to be obtained. If no BPNL is provided (empty list) then all Connector URL's will be returned by the Discovery Service.
 
 Some limitations of this TargetNodeDirectory solution are:
 - Each partner must have the BPNLs beforehand. If a new Partner registers and an existing partner would want their catalog, the BPNL (or Connector URL's) of the new partner must be obtained first;
