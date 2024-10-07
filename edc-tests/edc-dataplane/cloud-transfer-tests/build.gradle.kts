@@ -34,6 +34,7 @@ dependencies {
     testImplementation(libs.edc.auth.tokenbased)
     testImplementation(libs.edc.spi.dataplane.selector)
     testImplementation(libs.testcontainers.junit)
+    testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.edc.aws.s3.core)
     testImplementation(libs.aws.s3)
     testImplementation(libs.aws.s3transfer)

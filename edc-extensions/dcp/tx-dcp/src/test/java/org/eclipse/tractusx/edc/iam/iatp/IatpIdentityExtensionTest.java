@@ -20,31 +20,18 @@
 package org.eclipse.tractusx.edc.iam.iatp;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.agent.ParticipantAgentService;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.iatp.identity.IatpIdentityExtractor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class IatpIdentityExtensionTest {
 
-    private final ParticipantAgentService participantAgentService = mock();
-
-    @BeforeEach
-    void setup(ServiceExtensionContext context) {
-        context.registerService(ParticipantAgentService.class, participantAgentService);
-    }
-
     @Test
-    void initialize(ServiceExtensionContext context, IatpIdentityExtension extension) {
-        extension.initialize(context);
-        verify(participantAgentService).register(isA(IatpIdentityExtractor.class));
+    void initialize(IatpIdentityExtension extension) {
+        assertThat(extension.extractor()).isInstanceOf(IatpIdentityExtractor.class);
     }
 
 }

@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.tests.transfer;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
@@ -76,7 +75,8 @@ public class TransferWithTokenRefreshTest {
     private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), forConfig(PROVIDER.getConfiguration()), TransferWithTokenRefreshTest::providerInitiator);
+    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), forConfig(PROVIDER.getConfiguration()))
+            .registerServiceMock(BdrsClient.class, (c) -> CONSUMER.getDid());
     protected ClientAndServer server;
     private String privateBackendUrl;
 
@@ -86,10 +86,6 @@ public class TransferWithTokenRefreshTest {
         newConfig.put("edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY));
         newConfig.put("edc.dataplane.token.expiry.tolerance", "0");
         return newConfig;
-    }
-
-    private static void providerInitiator(EmbeddedRuntime runtime) {
-        runtime.registerServiceMock(BdrsClient.class, (c) -> CONSUMER.getDid());
     }
 
     @BeforeEach

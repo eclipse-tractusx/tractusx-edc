@@ -1,6 +1,6 @@
 # tractusx-connector
 
-![Version: 0.8.0-rc2](https://img.shields.io/badge/Version-0.8.0--rc2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc2](https://img.shields.io/badge/AppVersion-0.8.0--rc2-informational?style=flat-square)
+![Version: 0.8.0-rc3](https://img.shields.io/badge/Version-0.8.0--rc3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc3](https://img.shields.io/badge/AppVersion-0.8.0--rc3-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp Vault are included.
@@ -44,7 +44,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc2 \
+helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc3 \
      -f <path-to>/tractusx-connector-test.yaml
 ```
 
@@ -135,7 +135,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc2 \
 | controlplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | controlplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | controlplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
-| controlplane.logging | string | `".level=INFO\norg.eclipse.edc.level=ALL\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
+| controlplane.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | controlplane.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
 | controlplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | controlplane.podAnnotations | object | `{}` | additional annotations for the pod |
@@ -224,7 +224,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0-rc2 \
 | dataplane.livenessProbe.periodSeconds | int | `10` | this fields specifies that kubernetes should perform a liveness check every 10 seconds |
 | dataplane.livenessProbe.successThreshold | int | `1` | number of consecutive successes for the probe to be considered successful after having failed |
 | dataplane.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
-| dataplane.logging | string | `".level=INFO\norg.eclipse.edc.level=ALL\nhandlers=java.util.logging.ConsoleHandler\njava.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter\njava.util.logging.ConsoleHandler.level=ALL\njava.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n"` | configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html) |
+| dataplane.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | dataplane.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
 | dataplane.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | dataplane.podAnnotations | object | `{}` | additional annotations for the pod |

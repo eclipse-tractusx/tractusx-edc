@@ -19,8 +19,13 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import software.amazon.awssdk.regions.Region;
+
+import java.util.List;
+
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class TestConstants {
     // AZURE BLOB CONSTANTS
@@ -44,25 +49,30 @@ public class TestConstants {
     public static final String TESTFILE_NAME = "testfile.json";
     public static final String PREFIX_FOR_MUTIPLE_FILES = "m/";
 
-    public static DataAddress blobSourceAddress(String blobName) {
-        return DataAddress.Builder.newInstance()
-                .type("AzureStorage")
-                .property("container", AZBLOB_PROVIDER_CONTAINER_NAME)
-                .property("account", AZBLOB_PROVIDER_ACCOUNT_NAME)
-                .property("keyName", AZBLOB_PROVIDER_KEY_ALIAS)
-                .property("blobName", blobName)
-                .build();
+    public static JsonObjectBuilder blobSourceAddress(List<JsonObjectBuilder> additionalProperties) {
+        return Json.createObjectBuilder()
+                .add("dspace:endpointType", "AzureStorage")
+                .add("dspace:endpointProperties", Json.createArrayBuilder(additionalProperties)
+                        .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_PROVIDER_CONTAINER_NAME))
+                        .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_PROVIDER_ACCOUNT_NAME))
+                        .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_PROVIDER_KEY_ALIAS))
+                );
     }
 
-    public static DataAddress blobDestinationAddress(String blobName) {
-        return DataAddress.Builder.newInstance()
-                .type("AzureStorage")
-                .property("container", AZBLOB_CONSUMER_CONTAINER_NAME)
-                .property("account", AZBLOB_CONSUMER_ACCOUNT_NAME)
-                .property("blobName", blobName)
-                .property("keyName", AZBLOB_CONSUMER_KEY_ALIAS)
-                .build();
+    public static JsonObjectBuilder blobDestinationAddress(List<JsonObjectBuilder> additionalProperties) {
+        return Json.createObjectBuilder()
+                .add("dspace:endpointType", "AzureStorage")
+                .add("dspace:endpointProperties", Json.createArrayBuilder(additionalProperties)
+                        .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
+                        .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                        .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
+                );
     }
 
+    private static JsonObjectBuilder dspaceProperty(String name, String value) {
+        return Json.createObjectBuilder()
+                .add("dspace:name", name)
+                .add("dspace:value", value);
+    }
 
 }

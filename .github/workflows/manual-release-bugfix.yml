@@ -1,7 +1,5 @@
 #################################################################################
-#  Copyright (c) 2023 ZF Friedrichshafen AG
-#  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
-#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
@@ -20,16 +18,21 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-  
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "txdc.fullname" . }}-controlplane
-  namespace: {{ .Release.Namespace | default "default" | quote }}
-  labels:
-    {{- include "txdc.controlplane.labels" . | nindent 4 }}
-data:
-  opentelemetry.properties: |-
-    {{- .Values.controlplane.opentelemetry | nindent 4 }}
 
+---
+name: "Bugfix Release"
+run-name: "Release bugfix from ${{ github.ref_name }}"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # Gate: Skip if base is not bugfix branch
+  check-head:
+    name: "Check if head is bugfix and delegate to release workflow"
+    if: startsWith(github.ref_name, 'bugfix/')
+    uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
+      pages: write
+    secrets: inherit

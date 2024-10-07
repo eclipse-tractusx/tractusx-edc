@@ -27,14 +27,10 @@ on:
   push:
     branches:
       - main
-      - releases
-      - previews/*
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-  release:
-    types:
-      - published
+      - bugfix/*
   pull_request:
+    paths-ignore:
+      - docs/**
   workflow_dispatch:
 
   schedule:

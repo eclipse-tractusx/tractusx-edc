@@ -45,15 +45,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: "Setup Helm"
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.8.1
-
-      - name: "Setup Kubectl"
-        uses: azure/setup-kubectl@v4
-        with:
-          version: 'v1.28.2'
+      - uses: ./.github/actions/setup-helm
+      - uses: ./.github/actions/setup-kubectl
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.10.0

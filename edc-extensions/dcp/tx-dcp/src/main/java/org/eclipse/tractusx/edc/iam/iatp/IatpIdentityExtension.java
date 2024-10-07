@@ -19,11 +19,10 @@
 
 package org.eclipse.tractusx.edc.iam.iatp;
 
+import org.eclipse.edc.iam.identitytrust.spi.DcpParticipantAgentServiceExtension;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.agent.ParticipantAgentService;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.iatp.identity.IatpIdentityExtractor;
 
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
@@ -33,17 +32,21 @@ public class IatpIdentityExtension implements ServiceExtension {
 
 
     static final String NAME = "Tractusx IATP identity extension";
-    @Inject
-    private ParticipantAgentService participantAgentService;
+    private final IatpIdentityExtractor iatpIdentityExtractor = new IatpIdentityExtractor();
 
     @Override
     public String name() {
         return NAME;
     }
 
-    @Override
-    public void initialize(ServiceExtensionContext context) {
-        participantAgentService.register(new IatpIdentityExtractor());
+
+    /**
+     * This provider method is mandatory, because it prevents the {@code DefaultDcpParticipantAgentServiceExtension} from being
+     * registered, which would cause a race condition in the identity extractors
+     */
+    @Provider
+    public DcpParticipantAgentServiceExtension extractor() {
+        return iatpIdentityExtractor;
     }
 
 }

@@ -19,7 +19,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-FROM eclipse-temurin:22.0.2_9-jre-alpine
+FROM eclipse-temurin:23_37-jre-alpine
 ARG JAR
 ARG OTEL_JAR
 ARG ADDITIONAL_FILES
@@ -47,10 +47,9 @@ COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
 
-CMD ["java", \
+ENTRYPOINT ["java", \
      "-javaagent:/app/opentelemetry-javaagent.jar", \
      "-Dedc.fs.config=/app/configuration.properties", \
-     "-Djava.util.logging.config.file=/app/logging.properties", \
      "-Dotel.javaagent.configuration-file=/app/opentelemetry.properties", \
      "-Dotel.metrics.exporter=prometheus", \
      "-Dotel.exporter.prometheus.port=9090", \

@@ -2,27 +2,24 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.8.2-20240902-SNAPSHOT"
+edc = "0.10.0-20240929-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.2"
-aws = "2.27.21"
-azure-identity = "1.13.2"
-azure-storage-blob = "12.27.1"
+aws = "2.28.12"
+azure-identity = "1.13.3"
+azure-storage-blob = "12.28.0"
 bouncyCastle-jdk18on = "1.78.1"
-flyway = "10.17.3"
-jackson = "2.17.2"
+flyway = "10.18.0"
+jackson = "2.18.0"
 jakarta-json = "2.0.1"
 jupiter = "5.11.0"
-nimbus = "9.40"
+nimbus = "9.41.1"
 netty-mockserver = "5.15.0"
-okhttp = "4.12.0"
-opentelemetry = "2.7.0"
+opentelemetry = "2.8.0"
 postgres = "42.7.4"
 restAssured = "5.5.0"
 rsApi = "4.0.0"
-slf4j = "2.0.16"
 testcontainers = "1.20.1"
-tink = "1.15.0"
 titanium = "1.4.1"
 
 [libraries]
@@ -48,19 +45,14 @@ edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "e
 edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
 edc-spi-vc = { module = "org.eclipse.edc:verifiable-credentials-spi", version.ref = "edc" }
 edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
-edc-token-core = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
-edc-spi-oauth2 = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-build-plugin = { module = "org.eclipse.edc.edc-build:org.eclipse.edc.edc-build.gradle.plugin", version.ref = "edc" }
 edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", version.ref = "edc" }
 edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
-edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
-edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
-edc-core-api = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", version.ref = "edc" }
 edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
@@ -72,11 +64,7 @@ edc-api-control-config = { module = "org.eclipse.edc:control-api-configuration",
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
-edc-api-catalog = { module = "org.eclipse.edc:catalog-api", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
-edc-api-contractnegotiation = { module = "org.eclipse.edc:contract-negotiation-api", version.ref = "edc" }
-edc-api-dataplane = { module = "org.eclipse.edc:dataplane-api", version.ref = "edc" }
-edc-api-transferprocess = { module = "org.eclipse.edc:transfer-process-api", version.ref = "edc" }
 edc-api-controlplane = { module = "org.eclipse.edc:control-plane-api", version.ref = "edc" }
 edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
@@ -86,7 +74,6 @@ edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref
 edc-auth-configuration = { module = "org.eclipse.edc:auth-configuration", version.ref = "edc" }
 edc-transaction-local = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
-edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
 edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
@@ -96,13 +83,9 @@ edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-lib-cryptocommon = { module = "org.eclipse.edc:crypto-common-lib", version.ref = "edc" }
 edc-lib-http = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-lib-jersey-providers = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
-edc-lib-jsonld = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
-edc-lib-json = { module = "org.eclipse.edc:json-lib", version.ref = "edc" }
 edc-lib-jws2020 = { module = "org.eclipse.edc:jws2020-lib", version.ref = "edc" }
-edc-lib-policyengine = { module = "org.eclipse.edc:policy-engine-lib", version.ref = "edc" }
 edc-lib-query = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
 edc-lib-store = { module = "org.eclipse.edc:store-lib", version.ref = "edc" }
-edc-lib-statemachine = { module = "org.eclipse.edc:state-machine-lib", version.ref = "edc" }
 edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-lib-validator = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "edc" }
@@ -114,7 +97,6 @@ edc-sql-contract-negotiation = { module = "org.eclipse.edc:contract-negotiation-
 edc-sql-transferprocess = { module = "org.eclipse.edc:transfer-process-store-sql", version.ref = "edc" }
 edc-sql-policydef = { module = "org.eclipse.edc:policy-definition-store-sql", version.ref = "edc" }
 edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
-edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
 edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref = "edc" }
 edc-sql-policy-monitor = { module = "org.eclipse.edc:policy-monitor-store-sql", version.ref = "edc" }
 edc-sql-edrindex = { module = "org.eclipse.edc:edr-index-sql", version.ref = "edc" }
@@ -126,11 +108,7 @@ edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = 
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-edc-azure-blob-core = { module = "org.eclipse.edc.azure:azure-blob-core", version.ref = "edc" }
-edc-azure-test = { module = "org.eclipse.edc.azure:azure-test", version.ref = "edc" }
-
-# commented, because this module has been backported temporarily
-#edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
+edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
@@ -191,7 +169,6 @@ edc-data-plane-instance-store-sql = { module = "org.eclipse.edc:data-plane-insta
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-transfer = { module = "org.eclipse.edc:transfer-data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
-edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client", version.ref = "edc" }
 edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-iam = { module = "org.eclipse.edc:data-plane-iam", version.ref = "edc" }
@@ -199,7 +176,6 @@ edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc"
 
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
-edc-dpf-api-control = { module = "org.eclipse.edc:data-plane-control-api", version.ref = "edc" }
 edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
@@ -209,9 +185,7 @@ edc-data-plane-self-registration = { module = "org.eclipse.edc:data-plane-self-r
 edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref = "edc" }
 edc-micrometer-jersey = { module = "org.eclipse.edc:jersey-micrometer", version.ref = "edc" }
 edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.ref = "edc" }
-edc-monitor-jdklogger = { module = "org.eclipse.edc:monitor-jdk-logger", version.ref = "edc" }
 edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }
-edc-transfer-receiver = { module = "org.eclipse.edc:transfer-pull-http-receiver", version.ref = "edc" }
 edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", version.ref = "edc" }
 
 # other deps
@@ -223,34 +197,28 @@ aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", versio
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
-jackson-datatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
-testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
-tink = { module = "com.google.crypto.tink:tink", version.ref = "tink" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
 
 [bundles]
-edc-connector = ["edc.boot", "edc.core-connector", "edc.core-controlplane", "edc.api-observability"]
-edc-dpf = ["edc.dpf-transfer-signaling", "edc.dpf-selector-core", "edc.spi-dataplane-selector"]
+edc-dpf = ["edc-dpf-transfer-signaling", "edc-dpf-selector-core", "edc-spi-dataplane-selector"]
 edc-sqlstores = [
     "edc-sql-assetindex", "edc-sql-contract-definition", "edc-sql-contract-negotiation", "edc-sql-transferprocess",
     "edc-sql-policydef", "edc-sql-policy-monitor", "edc-sql-edrindex", "edc-transaction-local", "edc-fc-sql-cache",
     "edc-data-plane-instance-store-sql"
 ]
-edc-monitoring = ["edc.micrometer-core", "edc.micrometer-jersey", "edc.micrometer-jetty"]
+edc-monitoring = ["edc-micrometer-core", "edc-micrometer-jersey", "edc-micrometer-jetty"]
 edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]
 
 [plugins]
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.23" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.24" }

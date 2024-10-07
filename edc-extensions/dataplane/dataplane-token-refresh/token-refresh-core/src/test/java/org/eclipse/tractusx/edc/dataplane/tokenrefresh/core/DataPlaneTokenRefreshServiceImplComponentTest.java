@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -31,6 +32,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.boot.vault.InMemoryVault;
 import org.eclipse.edc.connector.dataplane.framework.store.InMemoryAccessTokenDataStore;
+import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
@@ -39,6 +41,7 @@ import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
+import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -77,6 +80,8 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     private final PrivateKeyResolver privateKeyResolver = mock();
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private InMemoryAccessTokenDataStore tokenDataStore;
+    private InMemoryVault vault;
+    private ObjectMapper objectMapper;
     private ECKey consumerKey;
     private ECKey providerKey;
 
@@ -89,7 +94,9 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
 
         var privateKey = providerKey.toPrivateKey();
 
+        objectMapper = new ObjectMapper();
         tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
+        vault = new InMemoryVault(mock());
         tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
                 new TokenValidationServiceImpl(),
                 didPkResolverMock,
@@ -103,8 +110,8 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 1,
                 300L,
                 () -> providerKey.getKeyID(),
-                new InMemoryVault(mock()),
-                new ObjectMapper());
+                vault,
+                objectMapper);
 
         when(privateKeyResolver.resolvePrivateKey(privateKeyAlias)).thenReturn(Result.success(privateKey));
         when(localPublicKeyService.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
@@ -301,6 +308,23 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         assertThat(tokenRefreshService.resolve(edr.getToken()))
                 .isFailed()
                 .detail().isEqualTo("AccessTokenData with ID '%s' does not exist.".formatted(tokenId));
+    }
+
+    @Test
+    void revoke_successful() throws JsonProcessingException {
+        var tokenId = "token-id";
+        var transferProcessId = "dummy-tp-id";
+        var accessTokenData = new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
+                DataAddress.Builder.newInstance().type("type").build(), Map.of("process_id", transferProcessId));
+        var refreshToken = new RefreshToken("dummy-token", 0L, "dummy-refresh-endpoint");
+
+        tokenDataStore.store(accessTokenData);
+        vault.storeSecret(tokenId, objectMapper.writeValueAsString(refreshToken));
+
+        assertThat(tokenRefreshService.revoke(transferProcessId, "good-reason"))
+                .isSucceeded();
+        assertThat(tokenDataStore.getById(tokenId)).isNull();
+        assertThat(vault.resolveSecret(tokenId)).isNull();
     }
 
     private JWTClaimsSet.Builder getAuthTokenClaims(String tokenId, String accessToken) {

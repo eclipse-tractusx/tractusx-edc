@@ -98,6 +98,7 @@ spec:
           image: "tractusx/edc-dataplane-azure-vault:{{ .Values.dataplane.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.dataplane.image.pullPolicy }}
+          args: [ --log-level={{ .Values.dataplane.logs.level | required ".Values.dataplane.logs.level is required" }} ]
           ports:
           {{- range $key,$value := .Values.dataplane.endpoints }}
             - name: {{ $key }}
@@ -304,9 +305,6 @@ spec:
             - name: "configuration"
               mountPath: "/app/opentelemetry.properties"
               subPath: "opentelemetry.properties"
-            - name: "configuration"
-              mountPath: "/app/logging.properties"
-              subPath: "logging.properties"
             {{- if .Values.customCaCerts }}
             - name: custom-cacerts
               mountPath: /opt/java/openjdk/lib/security/cacerts
@@ -324,8 +322,6 @@ spec:
             items:
               - key: "opentelemetry.properties"
                 path: "opentelemetry.properties"
-              - key: "logging.properties"
-                path: "logging.properties"
         {{- if .Values.customCaCerts }}
         - name: custom-cacertificates
           configMap:
