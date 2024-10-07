@@ -33,8 +33,56 @@ The retrieval of Connector URL's through the Discovery Service is enabled by the
 POST: /api/administration/connectors/discovery
 ```
 In which, the body of the request can contain the BPNL's related with participants from which the catalogs want to be obtained. If no BPNL is provided (empty list) then all Connector URL's will be returned by the Discovery Service.
+Information regarding the related API can be found [here](https://catenax-ev.github.io/docs/standards/CX-0001-EDCDiscoveryAPI#22-api-specification).
 
 Some limitations of this TargetNodeDirectory solution are:
 - Each partner must have the BPNLs beforehand. If a new Partner registers and an existing partner would want their catalog, the BPNL (or Connector URL's) of the new partner must be obtained first;
 - Deal with the overhead an additional persistence store;
 - The usage of the Discovery Service requires a technical user account to access it (must be requested).
+
+
+As indicated, the new service would have own API capable of:
+
+#### Save BPNL's
+Request body would contain a list of BPNL's, allowing to store in bulk.
+```
+[POST] /api/target-nodes
+```
+Request Body Example
+```json
+[ "BPNL000000000001","BPNL000000000002" ]
+```
+
+#### Remove a stored BPNL
+BPNL to be remvoed is sent as a path param.
+```
+[DELETE] /api/target-nodes/{bpnl}
+```
+#### Retrieve BPNL's
+Get BPNL's (value and connectors associated with it).
+```
+[POST] /api/target-nodes
+```
+Request Body Example
+```json
+[ "BPNL000000000001","BPNL000000000002" ]
+```
+Response Example
+```json
+[
+    {
+        "bpn": "BPNL000000000001",
+        "connectorEndpoint": [
+            "https://connector1/api/v1/dsp"
+        ]
+    },
+    {
+        "bpn": "BPNL000000000002",
+        "connectorEndpoint": [
+            "https://connector2/api/v1/dsp",
+            "https://connector3/api/v1/dsp",
+            "https://connector4/api/v1/dsp"
+        ]
+    }
+]
+```
