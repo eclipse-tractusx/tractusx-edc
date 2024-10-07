@@ -599,13 +599,19 @@ maven/mavencentral/org.jetbrains/annotations/17.0.0, Apache-2.0, approved, clear
 maven/mavencentral/org.jetbrains/annotations/25.0.0, , restricted, clearlydefined
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.0, EPL-2.0, approved, #15935
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.1, EPL-2.0, approved, #15935
+maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.2, EPL-2.0, approved, #15935
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.1, EPL-2.0, approved, #15939
+maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.2, EPL-2.0, approved, #15939
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.1, EPL-2.0, approved, #15940
+maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.2, EPL-2.0, approved, #15940
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.0, EPL-2.0, approved, #15936
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.1, EPL-2.0, approved, #15936
+maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.2, EPL-2.0, approved, #15936
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.1, EPL-2.0, approved, #15932
+maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.2, EPL-2.0, approved, #15932
 maven/mavencentral/org.junit/junit-bom/5.11.0, EPL-2.0, approved, #16062
 maven/mavencentral/org.junit/junit-bom/5.11.1, EPL-2.0, approved, #16062
+maven/mavencentral/org.junit/junit-bom/5.11.2, EPL-2.0, approved, #16062
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.latencyutils/LatencyUtils/2.0.3, CC0-1.0, approved, #15280
 maven/mavencentral/org.mock-server/mockserver-client-java/5.15.0, Apache-2.0 AND LGPL-3.0-only, approved, #9324
@@ -617,13 +623,13 @@ maven/mavencentral/org.mozilla/rhino/1.7.7.2, MPL-2.0 AND BSD-3-Clause AND ISC, 
 maven/mavencentral/org.objenesis/objenesis/3.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.opentest4j/opentest4j/1.3.0, Apache-2.0, approved, #9713
 maven/mavencentral/org.ow2.asm/asm-commons/9.5, BSD-3-Clause, approved, #7553
-maven/mavencentral/org.ow2.asm/asm-commons/9.7, BSD-3-Clause, approved, #14075
+maven/mavencentral/org.ow2.asm/asm-commons/9.7, BSD-3-Clause, approved, #16465
 maven/mavencentral/org.ow2.asm/asm-tree/9.5, BSD-3-Clause, approved, #7555
-maven/mavencentral/org.ow2.asm/asm-tree/9.7, BSD-3-Clause, approved, #14073
+maven/mavencentral/org.ow2.asm/asm-tree/9.7, BSD-3-Clause, approved, #16466
 maven/mavencentral/org.ow2.asm/asm/9.1, BSD-3-Clause, approved, CQ23029
 maven/mavencentral/org.ow2.asm/asm/9.5, BSD-3-Clause, approved, #7554
 maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
-maven/mavencentral/org.ow2.asm/asm/9.7, BSD-3-Clause, approved, #14076
+maven/mavencentral/org.ow2.asm/asm/9.7, BSD-3-Clause, approved, #16464
 maven/mavencentral/org.postgresql/postgresql/42.7.4, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.reflections/reflections/0.10.2, Apache-2.0 AND WTFPL, approved, clearlydefined
