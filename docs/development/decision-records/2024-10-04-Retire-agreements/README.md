@@ -26,7 +26,7 @@ In both cases, a failed policy evaluation leads to transfer process termination.
 
 An API will also be introduced to enable dataset providers to manage `AgreementRetirementEntry` entities in the `AgreementRetirementStore`.
 
-## AgreementRetirementEntry entity
+### AgreementRetirementEntry entity
 
 A new entity will be created to represent an agreement retirement. This entity contains the following attributes:
 
