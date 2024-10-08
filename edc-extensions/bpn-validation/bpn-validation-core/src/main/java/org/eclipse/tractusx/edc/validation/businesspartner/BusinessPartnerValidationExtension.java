@@ -29,7 +29,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import static org.eclipse.edc.connector.controlplane.contract.spi.offer.ContractDefinitionResolver.CATALOGING_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
@@ -57,7 +56,11 @@ import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
  */
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = { "policy", "contract" })
 public class BusinessPartnerValidationExtension implements ServiceExtension {
+
+    public static final String CATALOGING_SCOPE = "catalog";
+
     private static final String USE = "USE";
+
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
     @Inject
