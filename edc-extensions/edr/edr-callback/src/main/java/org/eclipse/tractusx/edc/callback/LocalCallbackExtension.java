@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolverRegistry;
-import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -28,8 +27,6 @@ import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackRegistry;
 
 import static org.eclipse.tractusx.edc.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
@@ -54,15 +51,6 @@ public class LocalCallbackExtension implements ServiceExtension {
     @Inject
     private Monitor monitor;
 
-    @Inject
-    private TransactionContext transactionContext;
-
-    @Inject
-    private ContractAgreementService agreementService;
-
-    @Inject
-    private TypeTransformerRegistry transformerRegistry;
-
     @Override
     public String name() {
         return NAME;
@@ -74,7 +62,7 @@ public class LocalCallbackExtension implements ServiceExtension {
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor));
 
         resolverRegistry.registerResolver(this::resolveProtocol);
-        registry.register(new InProcessCallbackMessageDispatcher(callbackRegistry));
+        registry.register(CALLBACK_EVENT_LOCAL, new InProcessCallbackMessageDispatcher(callbackRegistry));
 
     }
 

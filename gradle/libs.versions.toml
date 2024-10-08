@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.10.0-20240929-SNAPSHOT"
+edc = "0.10.0-20241006-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.2"
 aws = "2.28.12"
@@ -12,7 +12,7 @@ bouncyCastle-jdk18on = "1.78.1"
 flyway = "10.18.0"
 jackson = "2.18.0"
 jakarta-json = "2.0.1"
-jupiter = "5.11.0"
+jupiter = "5.11.2"
 nimbus = "9.41.1"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.8.0"
@@ -139,6 +139,7 @@ edc-identity-trust-sts-embedded = { module = "org.eclipse.edc:identity-trust-sts
 edc-identity-trust-sts-core = { module = "org.eclipse.edc:identity-trust-sts-core", version.ref = "edc" }
 edc-identity-trust-sts-api = { module = "org.eclipse.edc:identity-trust-sts-api", version.ref = "edc" }
 edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identity-trust-sts-client-configuration", version.ref = "edc" }
+edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
 
 # Federated Catalog modules
 edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
@@ -218,7 +219,12 @@ edc-sqlstores = [
     "edc-data-plane-instance-store-sql"
 ]
 edc-monitoring = ["edc-micrometer-core", "edc-micrometer-jersey", "edc-micrometer-jetty"]
-edc-sts = ["edc-identity-trust-sts-core", "edc-identity-trust-sts-api", "edc-identity-trust-sts-client-configuration"]
+edc-sts = [
+    "edc-identity-trust-sts-core",
+    "edc-identity-trust-sts-api",
+    "edc-identity-trust-sts-client-configuration",
+    "edc-sts-account-provisioner"
+]
 
 [plugins]
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.24" }
