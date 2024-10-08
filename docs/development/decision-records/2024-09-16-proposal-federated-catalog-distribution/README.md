@@ -61,7 +61,7 @@ BPNL to be remvoed is sent as a path param.
 #### Retrieve BPNL's
 Get BPNL's (value and connectors associated with it).
 ```
-[POST] /api/target-nodes
+[POST] /api/target-nodes/request
 ```
 Request Body Example
 ```json
