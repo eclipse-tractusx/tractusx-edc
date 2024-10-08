@@ -7,9 +7,10 @@ We will stop to provide an azure flavoured distribution of the connector.
 ## Rationale
 
 Two reasons are pushing toward this decision:
-- Tractus-X Connector is a reference implementation for Catena-X: so nothing should stop anybody to build and use their 
-  own Connector (also without using EDC), so there are no reasons for us to maintain more than one distribution.
-- Tractus-X is an open source software and we should focus on a distribution that involves OSS services.
+- Tractus-X Connector is the reference implementation for Catena-X: this project is not meant to satisfy different needs
+  but to show how an EDC Connector distribution for Catena-X can be assembled. Our focus should point toward maintaining
+  a single distribution.
+- Tractus-X is an open source software, and we should focus on a distribution that involves OSS services.
 
 ## Approach
 
