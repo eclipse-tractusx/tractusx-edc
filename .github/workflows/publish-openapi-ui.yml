@@ -91,6 +91,7 @@ jobs:
         with:
           output: dist/${{ env.VERSION }}
           spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Swagger UI stable version
         uses: Legion2/swagger-ui-action@v1
@@ -98,6 +99,7 @@ jobs:
         with:
           output: dist
           spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v4
         with:
