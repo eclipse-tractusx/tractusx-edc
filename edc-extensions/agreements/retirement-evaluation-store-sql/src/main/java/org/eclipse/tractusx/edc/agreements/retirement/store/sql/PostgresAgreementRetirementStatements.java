@@ -1,11 +1,9 @@
 package org.eclipse.tractusx.edc.agreements.retirement.store.sql;
 
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.sql.dialect.PostgresDialect;
 import org.eclipse.edc.sql.translation.PostgresqlOperatorTranslator;
 import org.eclipse.edc.sql.translation.SqlOperatorTranslator;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
-import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
 
@@ -24,8 +22,8 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
 
     @Override
     public String insertTemplate() {
-        return format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?%s)",
-                getTable(), getIdColumn(), getReasonColumn(), getRetirementDateColumn(), getFormatJsonOperator());
+        return format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
+                getTable(), getIdColumn(), getReasonColumn(), getRetirementDateColumn());
     }
 
     @Override
@@ -45,11 +43,7 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
 
     @Override
     public SqlQueryStatement createQuery(QuerySpec querySpec) {
-        return new SqlQueryStatement(findByIdTemplate(), querySpec, new AgreementRetirementMapping(this), operatorTranslator);
-    }
-
-    @NotNull
-    private String getFormatJsonOperator() {
-        return PostgresDialect.getJsonCastOperator();
+        var select = format("SELECT * FROM %s", getTable());
+        return new SqlQueryStatement(select, querySpec, new AgreementRetirementMapping(this), operatorTranslator);
     }
 }

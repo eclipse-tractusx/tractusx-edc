@@ -34,5 +34,5 @@ dependencies {
     testImplementation(libs.edc.transaction.local)
     testImplementation(testFixtures(libs.edc.core.sql))
     testImplementation(testFixtures(libs.edc.junit))
-    //testImplementation(testFixtures(project(":edc-extensions:retirement-evaluation:retirement-evaluation-core")))
+    testImplementation(testFixtures(project(":edc-extensions:agreements:retirement-evaluation-core")))
 }
