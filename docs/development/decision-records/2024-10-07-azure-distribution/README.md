@@ -2,15 +2,17 @@
 
 ## Decision
 
-We will stop to provide an azure flavoured distribution of the connector.
+We will stop providing all variants of the official Tractus-X EDC distributions that come pre-packaged with Azure Vault as HSM.
 
 ## Rationale
 
-Two reasons are pushing toward this decision:
+Different reasons are pushing toward this decision:
 - Tractus-X Connector is the reference implementation for Catena-X: this project is not meant to satisfy different needs
   but to show how an EDC Connector distribution for Catena-X can be assembled. Our focus should point toward maintaining
   a single distribution.
 - Tractus-X is an open source software, and we should focus on a distribution that involves OSS services.
+- For the past year there were no resources to stand up an integration test environment, i.e. an actual Azure Vault instance
+- There is no reason for favoritism toward Azure Vault over other services like AWS SecretsManager or similar
 
 ## Approach
 
