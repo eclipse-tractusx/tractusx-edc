@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS edc_lease
 COMMENT ON COLUMN edc_lease.leased_at IS 'posix timestamp of lease';
 COMMENT ON COLUMN edc_lease.lease_duration IS 'duration of lease in milliseconds';
 
-CREATE UNIQUE INDEX lease_lease_id_uindex
+CREATE UNIQUE INDEX IF NOT EXISTS lease_lease_id_uindex
     ON edc_lease (lease_id);
 
 --
@@ -69,22 +69,11 @@ CREATE TABLE IF NOT EXISTS edc_contract_negotiation
     lease_id              VARCHAR(255)
         CONSTRAINT contract_negotiation_lease_lease_id_fk REFERENCES edc_lease ON DELETE SET NULL
 );
-COMMENT ON COLUMN edc_contract_negotiation.contract_agreement_id IS 'ContractAgreement serialized as JSON';
-COMMENT ON COLUMN edc_contract_negotiation.contract_offers IS 'List<ContractOffer> serialized as JSON';
-COMMENT ON COLUMN edc_contract_negotiation.trace_context IS 'Map<String,String> serialized as JSON';
-
-CREATE INDEX IF NOT EXISTS contract_negotiation_correlationid_index
-    ON edc_contract_negotiation (correlation_id);
-CREATE UNIQUE INDEX IF NOT EXISTS contract_negotiation_id_uindex
-    ON edc_contract_negotiation (id);
-CREATE UNIQUE INDEX IF NOT EXISTS contract_agreement_id_uindex
-    ON edc_contract_agreement (id);
-
 
 CREATE TABLE IF NOT EXISTS edc_agreement_retirement
 (
-    contract_agreement_id   TEXT
+    contract_agreement_id     TEXT
         CONSTRAINT agreement_retirement_contract_agreement_id_fk REFERENCES edc_contract_agreement,
-    reason                  VARCHAR(255),
+    reason                    VARCHAR(255),
     agreement_retirement_date BIGINT NOT NULL
 );

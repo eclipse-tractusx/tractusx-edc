@@ -1,5 +1,8 @@
 package org.eclipse.tractusx.edc.agreements.retirement.store.sql;
 
+import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.sql.translation.SqlQueryStatement;
+
 /**
  * Statement templates and SQL table+column names required for the {@link SqlAgreementsRetirementStore}
  */
@@ -30,4 +33,6 @@ public interface SqlAgreementsRetirementStatements {
     String getCountByIdClause();
 
     String getCountVariableName();
+
+    SqlQueryStatement createQuery(QuerySpec querySpec);
 }

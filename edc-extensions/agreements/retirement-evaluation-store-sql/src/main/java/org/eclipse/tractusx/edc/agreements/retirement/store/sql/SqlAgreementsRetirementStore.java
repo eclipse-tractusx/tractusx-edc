@@ -66,27 +66,31 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         Objects.requireNonNull(querySpec);
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                /*
                 var statement = statements.createQuery(querySpec);
-                var result = queryExecutor.query(connection, true, this::mapAsset, statement.getQueryAsString(), statement.getParameters());
+                var result = queryExecutor.query(connection, true, this::mapAgreementsRetirement, statement.getQueryAsString(), statement.getParameters());
                 return StoreResult.success(result.collect(Collectors.toList()));
-
-                 */
-                return null;
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }
         });
     }
 
-    private boolean existsById(String assetId, Connection connection) {
+    private boolean existsById(String agreementId, Connection connection) {
         var sql = statements.getCountByIdClause();
-        try (var stream = queryExecutor.query(connection, false, this::mapRowCount, sql, assetId)) {
+        try (var stream = queryExecutor.query(connection, false, this::mapRowCount, sql, agreementId)) {
             return stream.findFirst().orElse(0) > 0;
         }
     }
 
     private int mapRowCount(ResultSet resultSet) throws SQLException {
         return resultSet.getInt(statements.getCountVariableName());
+    }
+
+    private AgreementsRetirementEntry mapAgreementsRetirement(ResultSet resultSet) throws SQLException {
+        return AgreementsRetirementEntry.Builder.newInstance()
+                .withAgreementId(resultSet.getString(statements.getIdColumn()))
+                .withReason(resultSet.getString(statements.getReasonColumn()))
+                .withAgreementRetirementDate(resultSet.getString(statements.getRetirementDateColumn()))
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-git package org.eclipse.tractusx.edc.agreements.retirement.store;
+package org.eclipse.tractusx.edc.agreements.retirement.store;
 
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;

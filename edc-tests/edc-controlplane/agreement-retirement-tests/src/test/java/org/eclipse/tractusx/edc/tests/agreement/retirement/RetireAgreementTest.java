@@ -151,7 +151,6 @@ public class RetireAgreementTest {
 
     @Nested
     @PostgresqlIntegrationTest
-    @Disabled
     class Postgres extends Tests {
 
         @RegisterExtension
