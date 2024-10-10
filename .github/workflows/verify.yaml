@@ -33,14 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: addnab/docker-run-action@v3
-        with:
-          image: jnorwood/helm-docs:v1.10.0
-          options: -v ${{ github.workspace }}/charts:/helm-docs
-          run: helm-docs
-
       - run: |
+          docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
+          
           if $(git diff --quiet --exit-code); then
             echo "Helm chart docs up to date"
           else
