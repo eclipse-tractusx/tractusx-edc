@@ -1,5 +1,7 @@
 # EDC Data-Plane with Azure Key Vault
 
+DEPRECATED: this module won't be available anymore after version 0.8.0
+
 This build of the EDC Data-Plane utilizes [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview) for secret storage.
 
 ## Building

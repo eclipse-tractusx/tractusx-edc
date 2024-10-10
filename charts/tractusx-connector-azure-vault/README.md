@@ -1,6 +1,10 @@
 # tractusx-connector-azure-vault
 
+> **:exclamation: This Helm Chart is deprecated!**
+
 ![Version: 0.8.0-rc4](https://img.shields.io/badge/Version-0.8.0--rc4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc4](https://img.shields.io/badge/AppVersion-0.8.0--rc4-informational?style=flat-square)
+
+DEPRECATED: this chart will be no more available after version 0.8.0
 
 A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
 Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
