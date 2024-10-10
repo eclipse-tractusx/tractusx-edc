@@ -1,12 +1,13 @@
 package org.eclipse.tractusx.edc.agreements.retirement.store.sql;
 
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.sql.statement.SqlStatements;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
 
 /**
  * Statement templates and SQL table+column names required for the {@link SqlAgreementsRetirementStore}
  */
-public interface SqlAgreementsRetirementStatements {
+public interface SqlAgreementsRetirementStatements extends SqlStatements {
 
     default String getIdColumn() {
         return "contract_agreement_id";

@@ -36,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SqlAgreementsRetirementStore extends AbstractSqlStore implements AgreementsRetirementStore {
@@ -57,13 +58,24 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
                 if (existsById(entry.getAgreementId(), connection)) {
                     return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(entry.getAgreementId()));
                 }
-                queryExecutor.execute(connection, statements.insertTemplate(), entry.getAgreementId(), entry.getReason(), new BigInteger(entry.getAgreementRetirementDate()));
+                //queryExecutor.execute(connection, statements.insertTemplate(), entry.getAgreementId(), entry.getReason(), new BigInteger(entry.getAgreementRetirementDate()));
                 //INSERT INTO testschema.edc_agreement_retirement (contract_agreement_id, reason, agreement_retirement_date) VALUES ('9e63cbde-7978-4ed9-9ab3-9eab2163bc87', 'long-reason', 1728493178461)
+                insert(connection, entry);
                 return StoreResult.success();
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }
         });
+    }
+
+    private void insert(Connection conn, AgreementsRetirementEntry entry) {
+        var insertStatement = statements.insertTemplate();
+        queryExecutor.execute(
+                conn,
+                insertStatement,
+                entry.getAgreementId(),
+                entry.getReason(),
+                new BigInteger(entry.getAgreementRetirementDate()));
     }
 
     @Override
@@ -90,6 +102,19 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
                 var statement = statements.createQuery(querySpec);
                 var result = queryExecutor.query(connection, true, this::mapAgreementsRetirement, statement.getQueryAsString(), statement.getParameters());
                 return StoreResult.success(result.collect(Collectors.toList()));
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
+    @Override
+    public StoreResult<Optional<AgreementsRetirementEntry>> findRetiredAgreements(String agreementId) {
+        Objects.requireNonNull(agreementId);
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                var result = queryExecutor.query(connection, false, this::mapAgreementsRetirement, statements.findByIdTemplate(), agreementId);
+                return StoreResult.success(result.findAny());
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }

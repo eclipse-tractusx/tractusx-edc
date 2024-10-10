@@ -25,6 +25,7 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
 import java.util.List;
+import java.util.Optional;
 
 @ExtensionPoint
 public interface AgreementsRetirementStore  {
@@ -37,4 +38,5 @@ public interface AgreementsRetirementStore  {
 
     StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec);
 
+    StoreResult<Optional<AgreementsRetirementEntry>> findRetiredAgreements(String agreementId);
 }

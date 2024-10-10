@@ -22,8 +22,11 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
 
     @Override
     public String insertTemplate() {
-        return format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
-                getTable(), getIdColumn(), getReasonColumn(), getRetirementDateColumn());
+        return executeStatement()
+                .column(getIdColumn())
+                .column(getReasonColumn())
+                .column(getRetirementDateColumn())
+                .insertInto(getTable());
     }
 
     @Override

@@ -29,6 +29,7 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -60,5 +61,10 @@ public class InMemoryAgreementsRetirementStore implements AgreementsRetirementSt
     @Override
     public StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec) {
         return StoreResult.success(queryResolver.query(cache.values().stream(), querySpec).collect(Collectors.toList()));
+    }
+
+    @Override
+    public StoreResult<Optional<AgreementsRetirementEntry>> findRetiredAgreements(String agreementId) {
+        return null;
     }
 }
