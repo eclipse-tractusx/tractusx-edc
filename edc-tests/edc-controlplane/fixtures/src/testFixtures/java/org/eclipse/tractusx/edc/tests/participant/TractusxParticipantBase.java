@@ -47,7 +47,11 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+
 
 /**
  * Base class for doing E2E tests with participants.
@@ -160,6 +164,21 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .body(body)
                 .when()
                 .post("/v3/business-partner-groups")
+                .then()
+                .statusCode(204);
+    }
+
+    public void retireProviderAgreement(String agreementId) {
+        var body = createObjectBuilder()
+                .add(TYPE, AR_ENTRY_TYPE)
+                .add(AR_ENTRY_AGREEMENT_ID, agreementId)
+                .add(AR_ENTRY_REASON, "long-reason")
+                .build();
+        managementEndpoint.baseRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/v3.1alpha/retireagreements")
                 .then()
                 .statusCode(204);
     }
