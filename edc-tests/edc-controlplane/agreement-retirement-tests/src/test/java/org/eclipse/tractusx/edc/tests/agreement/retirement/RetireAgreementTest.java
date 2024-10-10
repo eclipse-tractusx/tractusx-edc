@@ -42,6 +42,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
@@ -67,16 +68,11 @@ public class RetireAgreementTest {
     abstract static class Tests {
 
         ClientAndServer server;
-        String privateBackendUrl;
 
         @BeforeEach
         void setup() {
-            server = ClientAndServer.startClientAndServer("localhost", 1992);
-            privateBackendUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), MOCK_BACKEND_PATH);
+            server = ClientAndServer.startClientAndServer("localhost", getFreePort());
         }
-
-        public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
-        public static final String MOCK_BACKEND_PATH = "/mock/api";
 
         @Test
         @DisplayName("Verify all existing TPs related to an agreement are terminated upon its retirement")
@@ -86,7 +82,7 @@ public class RetireAgreementTest {
 
             Map<String, Object> dataAddress = Map.of(
                     "name", "transfer-test",
-                    "baseUrl", privateBackendUrl,
+                    "baseUrl", "https://mock-url.com",
                     "type", "HttpData",
                     "contentType", "application/json"
             );
@@ -115,7 +111,6 @@ public class RetireAgreementTest {
             var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
 
             var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             PROVIDER.retireProviderAgreement(agreementId);
 

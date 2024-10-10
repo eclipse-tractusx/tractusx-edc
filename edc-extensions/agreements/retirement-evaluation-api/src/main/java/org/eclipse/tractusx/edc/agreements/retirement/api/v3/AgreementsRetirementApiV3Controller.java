@@ -54,7 +54,6 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
     private final JsonObjectValidatorRegistry validator;
     private final Monitor monitor;
 
-
     public AgreementsRetirementApiV3Controller(AgreementsRetirementStore service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
         this.service = service;
         this.transformerRegistry = transformerRegistry;
@@ -107,7 +106,5 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
 
         service.save(retirementEntry).flatMap(ServiceResult::from)
                 .orElseThrow(exceptionMapper(AgreementsRetirementEntry.class, retirementEntry.getAgreementId()));
-
-
     }
 }

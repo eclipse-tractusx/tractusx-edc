@@ -25,10 +25,9 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
 import java.util.List;
-import java.util.Optional;
 
 @ExtensionPoint
-public interface AgreementsRetirementStore  {
+public interface AgreementsRetirementStore {
     String NOT_FOUND_TEMPLATE = "Contract Agreement with %s was not found on retirement list.";
     String ALREADY_EXISTS_TEMPLATE = "Contract Agreement %s is already retired.";
 
@@ -37,6 +36,4 @@ public interface AgreementsRetirementStore  {
     StoreResult<Void> delete(String contractAgreementId);
 
     StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec);
-
-    StoreResult<Optional<AgreementsRetirementEntry>> findRetiredAgreements(String agreementId);
 }

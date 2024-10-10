@@ -42,11 +42,10 @@ public class AgreementsRetirementFunction implements RuleFunction<Permission> {
         if (agreement == null) {
             return true;
         }
-        var result = store.findRetiredAgreements(agreement.getId());
+        var result = store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId()));
 
         if (!result.getContent().isEmpty()) {
             policyContext.reportProblem(String.format("Contract Agreement with ID=%s has been retired", agreement.getId()));
-
         }
 
         return true;
