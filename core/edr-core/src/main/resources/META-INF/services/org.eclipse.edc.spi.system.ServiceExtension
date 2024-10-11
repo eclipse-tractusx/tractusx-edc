@@ -18,3 +18,4 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.edr.core.EdrCoreServiceExtension
+org.eclipse.tractusx.edc.edr.store.index.SqlEdrLockExtension

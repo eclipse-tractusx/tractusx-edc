@@ -28,12 +28,10 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import org.eclipse.tractusx.edc.edr.spi.types.RefreshMode;
+import org.eclipse.tractusx.edc.edr.store.index.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
-import java.time.Instant;
 import java.util.List;
-
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 
 public class EdrServiceImpl implements EdrService {
 
@@ -41,12 +39,14 @@ public class EdrServiceImpl implements EdrService {
     private final TokenRefreshHandler tokenRefreshHandler;
     private final TransactionContext transactionContext;
     private final Monitor monitor;
+    private final EndpointDataReferenceLock edrLock;
 
-    public EdrServiceImpl(EndpointDataReferenceStore edrStore, TokenRefreshHandler tokenRefreshHandler, TransactionContext transactionContext, Monitor monitor) {
+    public EdrServiceImpl(EndpointDataReferenceStore edrStore, TokenRefreshHandler tokenRefreshHandler, TransactionContext transactionContext, Monitor monitor, EndpointDataReferenceLock edrLock) {
         this.edrStore = edrStore;
         this.tokenRefreshHandler = tokenRefreshHandler;
         this.transactionContext = transactionContext;
         this.monitor = monitor;
+        this.edrLock = edrLock;
     }
 
     @Override
@@ -74,10 +74,21 @@ public class EdrServiceImpl implements EdrService {
         if (edrEntry == null) {
             return ServiceResult.notFound("An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id));
         }
-        if (isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {
+        if (edrLock.isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {
             monitor.debug("Token expired, need to refresh.");
-            return tokenRefreshHandler.refreshToken(id, edr)
-                    .compose(updated -> updateEdr(edrEntry, updated));
+
+            return ServiceResult.from(edrLock.acquireLock(id, edr))
+                    .compose(shouldRefresh -> {
+                        if (!shouldRefresh) {
+                            monitor.debug("Token not expired, skipping refresh (maybe got refreshed in the meantime?)");
+                            return ServiceResult.success(edr);
+                        } else {
+                            monitor.debug("Token is definitely expired, refreshing...");
+                            return tokenRefreshHandler.refreshToken(id, edr)
+                                    .compose(updated -> updateEdr(edrEntry, updated));
+                        }
+                    });
+
         }
         return ServiceResult.success(edr);
     }
@@ -100,18 +111,5 @@ public class EdrServiceImpl implements EdrService {
         return ServiceResult.success(dataAddress);
     }
 
-    private boolean isExpired(DataAddress edr, EndpointDataReferenceEntry metadata) {
-        var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);
-        if (expiresInString == null) {
-            return false;
-        }
-
-        var expiresIn = Long.parseLong(expiresInString);
-        // createdAt is in millis, expires-in is in seconds
-        var expiresAt = metadata.getCreatedAt() / 1000L + expiresIn;
-        var expiresAtInstant = Instant.ofEpochSecond(expiresAt);
-
-        return expiresAtInstant.isBefore(Instant.now());
-    }
 
 }

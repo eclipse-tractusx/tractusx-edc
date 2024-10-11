@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.core.service.EdrServiceImpl;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
+import org.eclipse.tractusx.edc.edr.store.index.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 /**
@@ -49,6 +50,9 @@ public class EdrCoreServiceExtension implements ServiceExtension {
     @Inject
     private TransactionContext transactionContext;
 
+    @Inject
+    private EndpointDataReferenceLock edrLock;
+
     @Override
     public String name() {
         return NAME;
@@ -56,6 +60,6 @@ public class EdrCoreServiceExtension implements ServiceExtension {
 
     @Provider
     public EdrService edrService() {
-        return new EdrServiceImpl(edrStore, tokenRefreshHandler, transactionContext, monitor);
+        return new EdrServiceImpl(edrStore, tokenRefreshHandler, transactionContext, monitor, edrLock);
     }
 }
