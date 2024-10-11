@@ -17,21 +17,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.edr.store.index;
+package org.eclipse.tractusx.edc.edr.index.sql.lock;
 
 
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceEntryIndex;
-import org.eclipse.edc.edr.store.index.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 
 @Provides({ EndpointDataReferenceEntryIndex.class, EndpointDataReferenceLock.class })
 @Extension(value = "Database-level EDR Lock extension (PostgreSQL)")
@@ -61,7 +60,7 @@ public class SqlEdrLockExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
 
-        var statements = new PostgresDialectStatements();
+        var statements = new PostgresEdrLockStatements();
         var sqlStore = new SqlEdrLock(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, statements);
 
         context.registerService(EndpointDataReferenceLock.class, sqlStore);

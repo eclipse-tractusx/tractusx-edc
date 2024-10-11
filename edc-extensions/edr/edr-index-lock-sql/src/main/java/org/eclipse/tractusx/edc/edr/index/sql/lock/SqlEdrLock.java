@@ -17,11 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.edr.store.index;
+package org.eclipse.tractusx.edc.edr.index.sql.lock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
-import org.eclipse.edc.edr.store.index.sql.schema.EndpointDataReferenceEntryStatements;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -30,6 +29,7 @@ import org.eclipse.edc.sql.ResultSetMapper;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -39,10 +39,10 @@ import java.time.Instant;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 
 public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenceLock {
-    private final EndpointDataReferenceEntryStatements statements;
+    private final EdrLockStatements statements;
 
     public SqlEdrLock(DataSourceRegistry dataSourceRegistry, String dataSourceName, TransactionContext transactionContext,
-                      ObjectMapper objectMapper, QueryExecutor queryExecutor, EndpointDataReferenceEntryStatements statements) {
+                      ObjectMapper objectMapper, QueryExecutor queryExecutor, EdrLockStatements statements) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = statements;
     }
@@ -52,9 +52,9 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 debug("locking EDR entry row");
-                var sfu = "SELECT * FROM %s WHERE %s = ? FOR UPDATE;".formatted(statements.getEdrEntryTable(), statements.getTransferProcessIdColumn());
+                var sql = statements.getSelectForUpdateTemplate();
                 // this blocks until Postgres can acquire the row-level lock
-                var edrEntry = queryExecutor.single(connection, false, this::mapEdr, sfu, edrId);
+                var edrEntry = queryExecutor.single(connection, false, this::mapEdr, sql, edrId);
                 debug("EDR Entry: %s".formatted(edrEntry));
 
                 // check again, to abort

@@ -27,8 +27,8 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.core.service.EdrServiceImpl;
+import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
-import org.eclipse.tractusx.edc.edr.store.index.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 /**

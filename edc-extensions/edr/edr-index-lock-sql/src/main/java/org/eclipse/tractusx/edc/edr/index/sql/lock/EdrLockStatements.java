@@ -17,14 +17,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.edr.store.index;
+package org.eclipse.tractusx.edc.edr.index.sql.lock;
 
-import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
-import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 
-public interface EndpointDataReferenceLock {
-    StoreResult<Boolean> acquireLock(String edrId, DataAddress edr);
+public interface EdrLockStatements {
 
-    boolean isExpired(DataAddress edr, EndpointDataReferenceEntry edrEntry);
+    String getSelectForUpdateTemplate();
+
+    String getCreatedAtColumn();
+
+    String getAssetIdColumn();
+
+    String getTransferProcessIdColumn();
+
+    String getAgreementIdColumn();
+
+    String getProviderIdColumn();
+
+    String getContractNegotiationIdColumn();
 }

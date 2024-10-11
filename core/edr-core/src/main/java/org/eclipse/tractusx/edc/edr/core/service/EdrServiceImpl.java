@@ -26,9 +26,9 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import org.eclipse.tractusx.edc.edr.spi.types.RefreshMode;
-import org.eclipse.tractusx.edc.edr.store.index.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 import java.util.List;
