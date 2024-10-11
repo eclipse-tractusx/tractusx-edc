@@ -72,8 +72,8 @@ CREATE TABLE IF NOT EXISTS edc_contract_negotiation
 
 CREATE TABLE IF NOT EXISTS edc_agreement_retirement
 (
-    contract_agreement_id     VARCHAR      NOT NULL
-        CONSTRAINT agreement_retirement_contract_agreement_id_fk REFERENCES edc_contract_agreement PRIMARY KEY,
+    contract_agreement_id     VARCHAR      NOT NULL UNIQUE
+        CONSTRAINT agreement_retirement_contract_agreement_id_fk REFERENCES edc_contract_agreement,
     reason                    VARCHAR(255) NOT NULL,
     agreement_retirement_date BIGINT       NOT NULL
 );
