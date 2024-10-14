@@ -1,6 +1,8 @@
 # EDC Control-Plane PostgreSQL & Azure Key Vault
 
-This verison of the EDC Control-Plane is backed by [PostgreSQL](https://www.postgresql.org/) and [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview).
+DEPRECATED: this module won't be available anymore after version 0.8.0
+
+This version of the EDC Control-Plane is backed by [PostgreSQL](https://www.postgresql.org/) and [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview).
 
 ## Building
 

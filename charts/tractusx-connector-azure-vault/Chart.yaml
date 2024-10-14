@@ -24,7 +24,10 @@
 ---
 apiVersion: v2
 name: tractusx-connector-azure-vault
+deprecated: true
 description: |
+  DEPRECATED: this chart will be no more available after version 0.8.0
+
   A Helm chart for Tractus-X Eclipse Data Space Connector. The connector deployment consists of two runtime consists of a
   Control Plane and a Data Plane. Note that _no_ external dependencies such as a PostgreSQL database and Azure KeyVault are included.
 
@@ -42,13 +45,13 @@ type: application
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 
-version: 0.8.0-rc3
+version: 0.8.0-rc4
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 
-appVersion: "0.8.0-rc3"
+appVersion: "0.8.0-rc4"
 home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
 sources:
   - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector

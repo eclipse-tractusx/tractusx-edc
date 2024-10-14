@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.edc.ih.api.presentation)
     implementation(libs.edc.ih.keypairs)
     implementation(libs.edc.ih.participants)
+    implementation(libs.edc.sts.account.provisioner)
     implementation(libs.edc.ih.did)
     implementation(libs.edc.ih.core)
 
