@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.tests.edrv2;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -58,11 +59,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_AUTHORIZATION;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
@@ -157,14 +161,20 @@ public class EdrCacheApiEndToEndTest {
         void getEdrWithRefresh_subsequentRequestFails() throws InterruptedException {
 
             try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
-                // mock the provider dataplane's refresh endpoint
+                var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
+                var accessToken = createJwt(providerSigningKey, claims);
+                var refreshToken = createJwt(providerSigningKey, new JWTClaimsSet.Builder().build());
+                var tokenResponseBodyString = tokenResponseBody(accessToken, refreshToken);
+
                 client.when(request().withMethod("POST").withPath("/refresh/token").withBody(exact("")))
-                        .respond(response().withStatusCode(200).withDelay(Delay.milliseconds(5000)).withBody(tokenResponseBody()));
+                        .respond(response().withStatusCode(200).withDelay(Delay.milliseconds(5000)).withBody(tokenResponseBodyString));
 
                 storeEdr("test-id", true);
                 var numThreads = 50;
                 var jitter = 100; // maximum time between threads are spawned
                 var latch = new CountDownLatch(50);
+
+                var failed = new AtomicBoolean(false);
 
                 IntStream.range(0, numThreads)
                         .parallel()
@@ -173,22 +183,24 @@ public class EdrCacheApiEndToEndTest {
                             try {
                                 Thread.sleep(wait);
                                 new Thread(() -> {
-                                    System.out.printf("Launching Thread %s after %d millis%n", i, wait);
-                                    CONSUMER.edrs().getEdrWithRefresh("test-id", true)
-                                            .statusCode(200);
+                                    var tr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
+                                            .assertThat()
+                                            .statusCode(200)
+                                            .extract().asString();
                                     latch.countDown();
+                                    assertThat(tr).contains(accessToken);
+
                                 }).start();
                             } catch (InterruptedException e) {
+                                failed.set(true);
                                 throw new RuntimeException(e);
                             }
-
                         });
 
 
                 // assert the correct endpoint was called
-                System.out.println("waiting for latch");
                 latch.await();
-                System.out.println("all requests completed");
+                assertThat(failed.get()).isFalse();
 
                 client.verify(request()
                         .withQueryStringParameter("grant_type", "refresh_token")
@@ -344,9 +356,12 @@ public class EdrCacheApiEndToEndTest {
 
         private String tokenResponseBody() {
             var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
-
             var accessToken = createJwt(providerSigningKey, claims);
             var refreshToken = createJwt(providerSigningKey, new JWTClaimsSet.Builder().build());
+            return tokenResponseBody(accessToken, refreshToken);
+        }
+
+        private String tokenResponseBody(String accessToken, String refreshToken) {
             var response = new TokenResponse(accessToken, refreshToken, 300L, "bearer");
             try {
                 return mapper.writeValueAsString(response);
@@ -367,6 +382,7 @@ public class EdrCacheApiEndToEndTest {
                     .property(EDR_PROPERTY_REFRESH_ENDPOINT, refreshEndpoint)
                     .property(EDR_PROPERTY_REFRESH_AUDIENCE, refreshAudience)
                     .build();
+            System.out.println(edr.getStringProperty(EDC_NAMESPACE + "authorization"));
             var entry = EndpointDataReferenceEntry.Builder.newInstance()
                     .clock(isExpired ? // defaults to an expired token
                             Clock.fixed(Instant.now().minusSeconds(3600), ZoneId.systemDefault()) :
@@ -395,7 +411,7 @@ public class EdrCacheApiEndToEndTest {
 
     @Nested
     @EndToEndTest
-    static class InMemory extends Tests {
+    class InMemory extends Tests {
 
         @RegisterExtension
         protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getId(), with(CONSUMER.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:consumer")));

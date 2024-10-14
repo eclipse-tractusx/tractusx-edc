@@ -75,22 +75,22 @@ public class EdrServiceImpl implements EdrService {
             return ServiceResult.notFound("An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id));
         }
         if (edrLock.isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {
-            monitor.debug("Token expired, need to refresh.");
-
             return ServiceResult.from(edrLock.acquireLock(id, edr))
                     .compose(shouldRefresh -> {
                         if (!shouldRefresh) {
-                            monitor.debug("Token not expired, skipping refresh (maybe got refreshed in the meantime?)");
-                            return ServiceResult.success(edr);
+                            monitor.debug("Dont need to refresh. Will resolve existing.");
+                            var refreshedEdr = edrStore.resolveByTransferProcess(id);
+                            return ServiceResult.from(refreshedEdr);
                         } else {
-                            monitor.debug("Token is definitely expired, refreshing...");
+                            monitor.debug("Token expired, need to refresh.");
                             return tokenRefreshHandler.refreshToken(id, edr)
                                     .compose(updated -> updateEdr(edrEntry, updated));
                         }
                     });
-
         }
-        return ServiceResult.success(edr);
+        monitor.debug(edr.getStringProperty("https://w3id.org/edc/v0.0.1/ns/authorization"));
+        var refreshedEdr = edrStore.resolveByTransferProcess(id);
+        return ServiceResult.from(refreshedEdr);
     }
 
     private ServiceResult<DataAddress> updateEdr(EndpointDataReferenceEntry entry, DataAddress dataAddress) {
