@@ -25,12 +25,10 @@ import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.ResultSetMapper;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,18 +49,14 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
     public StoreResult<Boolean> acquireLock(String edrId, DataAddress edr) {
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                debug("locking EDR entry row");
                 var sql = statements.getSelectForUpdateTemplate();
                 // this blocks until Postgres can acquire the row-level lock
                 var edrEntry = queryExecutor.single(connection, false, this::mapEdr, sql, edrId);
-                debug("EDR Entry: %s".formatted(edrEntry));
 
                 // check again, to abort
                 if (!isExpired(edr, edrEntry)) {
-                    debug("EDR is not expired, skipping.");
                     return StoreResult.success(false);
                 }
-                debug("EDR entry is expired, requires refresh");
                 return StoreResult.success(true);
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
@@ -96,23 +90,4 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
                 .build();
     }
 
-    private void debug(String message) {
-        System.out.printf("[%s] - [%s] %s%n", Thread.currentThread().getName(), Instant.now(), message);
-    }
-
-    private @NotNull ResultSetMapper<EdrLockEntry> mapEdrEntry() {
-        return resultSet -> {
-            var rowId = resultSet.getString("edr_id");
-            var timestamp = resultSet.getLong("timestamp");
-            return new EdrLockEntry(rowId, timestamp);
-        };
-    }
-
-    private record EdrLockEntry(String rowId, long timestamp) {
-        private static final int MAXIMUM_LOCK_AGE_MILLIS = 60_000;
-
-        public boolean isExpired(Instant now) {
-            return now.toEpochMilli() - timestamp > MAXIMUM_LOCK_AGE_MILLIS;
-        }
-    }
 }
