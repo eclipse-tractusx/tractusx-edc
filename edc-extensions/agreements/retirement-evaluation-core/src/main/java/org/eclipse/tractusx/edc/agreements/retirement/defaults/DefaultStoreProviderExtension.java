@@ -27,8 +27,12 @@ import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
-@Extension("Provides a default Agreements")
+import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension.NAME;
+
+@Extension(NAME)
 public class DefaultStoreProviderExtension implements ServiceExtension {
+
+    private static final String NAME = "Default Agreements Store Provider Extension";
 
     @Inject
     CriterionOperatorRegistry criterionOperatorRegistry;

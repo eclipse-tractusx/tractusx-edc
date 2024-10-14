@@ -26,6 +26,8 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class JsonObjectToAgreementsRetirementEntryTransformer extends AbstractJsonLdTransformer<JsonObject, AgreementsRetirementEntry> {
 
     public JsonObjectToAgreementsRetirementEntryTransformer() {
@@ -38,7 +40,7 @@ public class JsonObjectToAgreementsRetirementEntryTransformer extends AbstractJs
         entryBuilder.withAgreementId(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID), context));
         entryBuilder.withReason(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_REASON), context));
         if (jsonObject.containsKey(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE)) {
-            entryBuilder.withAgreementRetirementDate(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE), context));
+            entryBuilder.withAgreementRetirementDate(Long.parseLong(Objects.requireNonNull(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE), context))));
         }
         return entryBuilder.build();
     }

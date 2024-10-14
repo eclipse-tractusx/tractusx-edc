@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class JsonObjectFromAgreementRetirementTransformer extends AbstractJsonLdTransformer<AgreementsRetirementEntry, JsonObject> {
 
-    JsonBuilderFactory jsonFactory;
+    private final JsonBuilderFactory jsonFactory;
 
     public JsonObjectFromAgreementRetirementTransformer(JsonBuilderFactory jsonFactory) {
         super(AgreementsRetirementEntry.class, JsonObject.class);
