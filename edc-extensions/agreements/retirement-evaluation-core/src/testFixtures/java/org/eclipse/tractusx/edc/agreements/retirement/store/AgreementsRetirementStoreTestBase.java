@@ -74,13 +74,20 @@ public abstract class AgreementsRetirementStoreTestBase {
         var entry = createRetiredAgreementEntry(agreementId, "mock-reason");
         store.save(entry);
         var delete = store.delete(agreementId);
-        assertThat(delete.succeeded()).withFailMessage(delete::getFailureDetail).isTrue();
+
+        assertThat(delete.succeeded()).isTrue();
+        assertThat(delete.getFailureDetail()).isNull();
+
     }
 
     @Test
     void delete_notExist() {
         var agreementId = "test-agreement-id";
-        assertThat(store.delete(agreementId).succeeded()).isFalse();
+        var delete = store.delete(agreementId);
+
+        assertThat(delete.succeeded()).isFalse();
+        assertThat(delete.getFailureDetail()).isEqualTo(AgreementsRetirementStore.NOT_FOUND_TEMPLATE.formatted(agreementId));
+
     }
 
     private AgreementsRetirementEntry createRetiredAgreementEntry(String agreementId, String reason) {
