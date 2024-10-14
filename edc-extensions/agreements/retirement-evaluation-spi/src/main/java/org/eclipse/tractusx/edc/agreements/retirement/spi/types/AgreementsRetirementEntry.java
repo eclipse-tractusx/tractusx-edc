@@ -22,8 +22,6 @@ package org.eclipse.tractusx.edc.agreements.retirement.spi.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.eclipse.edc.spi.entity.Entity;
 
-import java.time.Instant;
-
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
@@ -39,7 +37,7 @@ public class AgreementsRetirementEntry extends Entity {
 
     private String agreementId;
     private String reason;
-    private String agreementRetirementDate;
+    private long agreementRetirementDate = 0L;
 
     public AgreementsRetirementEntry() {}
 
@@ -51,7 +49,7 @@ public class AgreementsRetirementEntry extends Entity {
         return reason;
     }
 
-    public String getAgreementRetirementDate() {
+    public long getAgreementRetirementDate() {
         return agreementRetirementDate;
     }
 
@@ -76,7 +74,7 @@ public class AgreementsRetirementEntry extends Entity {
             return this;
         }
 
-        public Builder withAgreementRetirementDate(String agreementRetirementDate) {
+        public Builder withAgreementRetirementDate(long agreementRetirementDate) {
             this.entity.agreementRetirementDate = agreementRetirementDate;
             return this;
         }
@@ -92,8 +90,8 @@ public class AgreementsRetirementEntry extends Entity {
             requireNonNull(entity.agreementId, AR_ENTRY_AGREEMENT_ID);
             requireNonNull(entity.reason, AR_ENTRY_REASON);
 
-            if (entity.agreementRetirementDate == null) {
-                entity.agreementRetirementDate = Instant.now().toString();
+            if (entity.agreementRetirementDate == 0L) {
+                entity.agreementRetirementDate = this.entity.clock.instant().getEpochSecond();
             }
 
             return entity;
