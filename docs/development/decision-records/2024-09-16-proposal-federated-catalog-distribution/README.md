@@ -26,18 +26,19 @@ Since the Federated Catalog will be a standalone runtime, the Tractus-X EDC Conn
 To enable the Federated Catalog flow, please [see this table](https://github.com/eclipse-tractusx/tractusx-edc/blob/75bdacbad43e2cad352204ea28a359c6aac7adea/docs/development/management-domains/README.md#enable-and-configure-the-crawler-subsystem).
 
 For its TargetNodeDirectory, the user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through the new extensions' API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). The URL's can later be retrieved and crawled by the Federated Catalog.
+If no BPNL is saved (to be crawled) then the extension will not request data from the Discovery Service, since the number of catalogs in the space can be significant.
 
 The retrieval of Connector URL's through the Discovery Service is enabled by the endpoint:
 ```
 POST: /api/administration/connectors/discovery
 ```
-In which, the body of the request can contain the BPNL's related with participants from which the catalogs want to be obtained. If no BPNL is provided (empty list) then all Connector URL's will be returned by the Discovery Service.
+In which, the body of the request can contain the BPNL's related with participants from which the catalogs want to be obtained. Although the DiscoveryService allows to perform a request without providing BPNL's (empty list) it will not be done by the extension.
 Information regarding the related API can be found [here](https://catenax-ev.github.io/docs/standards/CX-0001-EDCDiscoveryAPI#22-api-specification).
 
 Some limitations of this TargetNodeDirectory solution are:
-- Each partner must have the BPNLs beforehand. If a new Partner registers and an existing partner would want their catalog, the BPNL (or Connector URL's) of the new partner must be obtained first;
+- Each partner must have the BPNLs beforehand. If a new Partner is registered and an existing partner would want their catalog, the BPNL (or Connector URL's) of the new partner must be obtained first and added through the new extension API;
 - Deal with the overhead an additional persistence store;
-- The usage of the Discovery Service requires a technical user account to access it (must be requested).
+- The usage of the Discovery Service requires a technical user account to access it (must be requested). After obtaining them, the credentials can be stored in the vault.
 
 
 As indicated, the new extension would have own API capable of:
