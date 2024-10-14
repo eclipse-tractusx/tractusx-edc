@@ -2,13 +2,12 @@
 
 ## Decision
 
-Federated Catalog will be deployable as a standalone component capable of crawling all the chosen catalogs and expose that data. The Tractus-Connector Helm charts will be updated to feature a new Federated Catalog deployment template.
-Regarding the TargetNodeDirectory, a new extension in the FederatedCatalog will have a db/cache containing the BPNL's and Connectors' URL's of each partner a member wants the offers from.
+The Federated Catalog will be deployed as a standalone component. The Tractus-X EDC Connector Helm charts will be updated to feature a new Federated Catalog deployment template.
+Regarding the TargetNodeDirectory, a new extension in the FederatedCatalog will have a db/cache containing the BPNL's and Connectors' URL's of each partner a member wants the offers from. The member defines the BPNL's through a new API exposed by the extension.
 
 ## Rationale
 
-Considering the Federated Catalog distribution, choosing a solution that decouples it from the Control Plane (like the one used for the Data Plane) and able to be scalable will future-proof the Federated Catalog as a feature and embraces wider usage.
-Having a specific runtime incurs on additional overhead (new Helm Chart, as example) and results in additional configuration complexity. Also, periodical crawling results in increased remote calls over time. However, being decoupled from the Control Plane, this solution permits the Federated Catalog to scale independently (based on own demand).
+While a standalone component (= K8S deployment) brings a slight increase in configuration complexity, its ability to be managed and scaled independently makes up for that.
 
 For TargetNodeDirectory it will be set by a new extension responsible for exposing an API, where a member can input the BPNL's of the participants from which the catalogs are wanted, and then it will retrieve and store the respective Connector URL's. This new extension would get the data from the Discovery Service, provided a BPNL, and will be named `DiscoveryServiceRetrieverExtension`. This solution allows the member to choose precisely the Target Catalog Nodes that interests them, resulting in reduced network calls and latency.
 Additionally, if a Connector URL is registered (or unregistered) in the Discovery Service, the retriever will reflect it since it requests based on BPNL (which should not change) and the registered URL's will be returned.
@@ -22,11 +21,11 @@ Other solution for the TargetNodeDirectory was also considered
 
 ## Approach
 
-Since the Federated Catalog will be a standalone runtime, the Tractus-Connector Helm charts will be updated to include the Federated Catalog as a separated deployment. The update will include the creation of a specific `deployment-federatedcatalog.yaml`, similar [to this one](https://github.com/eclipse-tractusx/tractusx-edc/blob/a263bf71a110245657131509d4b37d058a1d220d/charts/tractusx-connector-azure-vault/templates/deployment-dataplane.yaml#L47) (for `ingress` and `hpa` as well), for different scenarios (InMemory, PostreSQL, etc.). This results in added configuration complexity.
+Since the Federated Catalog will be a standalone runtime, the Tractus-X EDC Connector Helm charts will be updated to include the Federated Catalog as a separated deployment. The update will include the creation of a specific `deployment-federatedcatalog.yaml`, similar [to this one](https://github.com/eclipse-tractusx/tractusx-edc/blob/a263bf71a110245657131509d4b37d058a1d220d/charts/tractusx-connector-azure-vault/templates/deployment-dataplane.yaml#L47) (for `ingress` and `hpa` as well), for different scenarios (InMemory, PostreSQL, etc.). This results in added configuration complexity.
 
 To enable the Federated Catalog flow, please [see this table](https://github.com/eclipse-tractusx/tractusx-edc/blob/75bdacbad43e2cad352204ea28a359c6aac7adea/docs/development/management-domains/README.md#enable-and-configure-the-crawler-subsystem).
 
-For its TargetNodeDirectory, the user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through its API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). The URL's can later be retrieved and crawled by the Federated Catalog.
+For its TargetNodeDirectory, the user is able to obtain the Connectors' URL's through the Discovery Service and store them in the new extension through the new extensions' API. The API will allow to save a list of BPNLs (and Connectors' URL's if desired) and the `DiscoveryServiceRetrieverExtension` is responsible to retrieve the data and store it (in memory or in a database). The URL's can later be retrieved and crawled by the Federated Catalog.
 
 The retrieval of Connector URL's through the Discovery Service is enabled by the endpoint:
 ```
@@ -41,9 +40,10 @@ Some limitations of this TargetNodeDirectory solution are:
 - The usage of the Discovery Service requires a technical user account to access it (must be requested).
 
 
-As indicated, the new service would have own API capable of:
+As indicated, the new extension would have own API capable of:
 
 #### Save BPNL's
+A member can add a BPNL through this API from which the Connector URL's are needed. This extension will iterate over the listed BPNL's and query the Discovery Service.
 Request body would contain a list of BPNL's, allowing to store in bulk.
 ```
 [POST] /api/target-nodes
@@ -54,6 +54,7 @@ Request Body Example
 ```
 
 #### Remove a stored BPNL
+Once a member understands that they do not need the Catalogs from a certain BPNL, this can be removed.
 BPNL to be remvoed is sent as a path param.
 ```
 [DELETE] /api/target-nodes/{bpnl}
