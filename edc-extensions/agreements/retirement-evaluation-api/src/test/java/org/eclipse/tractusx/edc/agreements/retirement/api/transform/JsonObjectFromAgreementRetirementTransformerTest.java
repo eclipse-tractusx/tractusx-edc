@@ -54,7 +54,7 @@ class JsonObjectFromAgreementRetirementTransformerTest {
         assertThat(result).isNotNull();
         assertThat(result.getString(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID)).isEqualTo("agreementId");
         assertThat(result.getString(AgreementsRetirementEntry.AR_ENTRY_REASON)).isEqualTo("long-reason");
-        assertThat(result.getString(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE)).isNotNull();
+        assertThat(result.getJsonNumber(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE)).isNotNull();
         verify(context, never()).reportProblem(anyString());
     }
 
