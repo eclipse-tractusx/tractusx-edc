@@ -42,7 +42,7 @@ import static org.eclipse.tractusx.edc.agreements.retirement.api.AgreementsRetir
 @Extension(value = NAME)
 public class AgreementsRetirementApiExtension implements ServiceExtension {
 
-    public static final String NAME = "Agreements Retirement API ";
+    public static final String NAME = "Contract Agreement Retirement API ";
 
     @Override
     public String name() {

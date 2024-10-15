@@ -26,7 +26,9 @@ import static java.util.Objects.requireNonNull;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
-
+/**
+ * Representation of a Contract Agreement Retirement entry, to be stored in the {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
+ */
 public class AgreementsRetirementEntry extends Entity {
 
     public static final String AR_ENTRY_TYPE = EDC_NAMESPACE + "AgreementsRetirementEntry";

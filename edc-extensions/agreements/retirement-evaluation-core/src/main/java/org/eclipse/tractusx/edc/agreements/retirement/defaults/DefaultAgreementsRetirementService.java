@@ -31,6 +31,9 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 
 import java.util.List;
 
+/**
+ * Default implementation for a {@link AgreementsRetirementService}.
+ */
 public class DefaultAgreementsRetirementService implements AgreementsRetirementService {
 
     private final AgreementsRetirementStore store;

@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * In Memory implementation of a {@link AgreementsRetirementStore}.
+ */
 public class InMemoryAgreementsRetirementStore implements AgreementsRetirementStore {
 
     private final QueryResolver<AgreementsRetirementEntry> queryResolver;

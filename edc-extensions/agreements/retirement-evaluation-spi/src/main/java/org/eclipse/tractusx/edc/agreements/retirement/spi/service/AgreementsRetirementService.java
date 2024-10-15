@@ -26,13 +26,40 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 
 import java.util.List;
 
+/**
+ * Service interface that offers the necessary functionality for the Contract Agreement Retirement feature.
+ */
 public interface AgreementsRetirementService {
 
+    /**
+     * Within a given {@link PolicyContext}, verifies if the attached contract agreement exists in {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
+     *
+     * @param context a valid {@link PolicyContext}
+     * @return true if it exists, false otherwise.
+     */
     boolean isRetired(PolicyContext context);
 
+    /**
+     * Returns a list of {@link AgreementsRetirementEntry} entries matching a valid {@link QuerySpec}
+     *
+     * @param querySpec a valid {@link QuerySpec}
+     * @return a list of {@link AgreementsRetirementEntry}
+     */
     ServiceResult<List<AgreementsRetirementEntry>> findAll(QuerySpec querySpec);
 
+    /**
+     * Saves an {@link AgreementsRetirementEntry} in the {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
+     *
+     * @param entry a valid {@link AgreementsRetirementEntry}
+     * @return ServiceResult successs, or a conflict failure if it already exists.
+     */
     ServiceResult<Void> retireAgreement(AgreementsRetirementEntry entry);
 
+    /**
+     * Given a contract agreement id, removes its matching {@link AgreementsRetirementEntry} from the {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
+     *
+     * @param contractAgreementId the contract agreement id of the AgreementRetirementEntry to delete
+     * @return StoreResult success, not found failure if entry not found.
+     */
     ServiceResult<Void> reactivate(String contractAgreementId);
 }
