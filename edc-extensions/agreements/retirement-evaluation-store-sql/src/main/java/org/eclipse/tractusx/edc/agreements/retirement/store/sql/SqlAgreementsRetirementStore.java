@@ -102,7 +102,7 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
                 insertStatement,
                 entry.getAgreementId(),
                 entry.getReason(),
-                new BigInteger(entry.getAgreementRetirementDate()));
+                entry.getAgreementRetirementDate());
     }
 
     private boolean existsById(String agreementId, Connection connection) {
@@ -120,7 +120,7 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         return AgreementsRetirementEntry.Builder.newInstance()
                 .withAgreementId(resultSet.getString(statements.getIdColumn()))
                 .withReason(resultSet.getString(statements.getReasonColumn()))
-                .withAgreementRetirementDate(resultSet.getString(statements.getRetirementDateColumn()))
+                .withAgreementRetirementDate(Long.parseLong(resultSet.getString(statements.getRetirementDateColumn())))
                 .build();
     }
 }
