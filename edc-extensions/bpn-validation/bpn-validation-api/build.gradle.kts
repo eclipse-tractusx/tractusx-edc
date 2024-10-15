@@ -26,7 +26,9 @@ plugins {
 dependencies {
     implementation(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     implementation(project(":spi:core-spi"))
-    implementation(libs.edc.api.management)
+    implementation(libs.edc.api.management) {
+        exclude("org.eclipse.edc", "edr-cache-api")
+    }
     implementation(libs.jakarta.rsApi)
 
     testImplementation(testFixtures(libs.edc.core.jersey))
