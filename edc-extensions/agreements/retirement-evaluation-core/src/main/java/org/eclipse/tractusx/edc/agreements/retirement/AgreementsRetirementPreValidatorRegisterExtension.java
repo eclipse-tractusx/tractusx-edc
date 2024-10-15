@@ -28,11 +28,11 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsReti
 
 import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
 import static org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension.POLICY_MONITOR_SCOPE;
-import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension.NAME;
+import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension.NAME;
 
 
 @Extension(value = NAME)
-public class AgreementsRetirementFunctionExtension implements ServiceExtension {
+public class AgreementsRetirementPreValidatorRegisterExtension implements ServiceExtension {
 
     public static final String NAME = "Agreements Retirement Policy Function Extension";
 

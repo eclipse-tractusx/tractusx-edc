@@ -36,7 +36,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(DependencyInjectionExtension.class)
-class AgreementsRetirementFunctionExtensionTest {
+class AgreementsRetirementPreValidatorRegisterExtensionTest {
 
     private final PolicyEngine policyEngine = mock();
 
@@ -46,7 +46,7 @@ class AgreementsRetirementFunctionExtensionTest {
     }
 
     @Test
-    public void verify_functionIsRegisteredOnInitialization(ServiceExtensionContext context, AgreementsRetirementFunctionExtension extension) {
+    public void verify_functionIsRegisteredOnInitialization(ServiceExtensionContext context, AgreementsRetirementPreValidatorRegisterExtension extension) {
         extension.initialize(context);
 
         verify(policyEngine, times(1))

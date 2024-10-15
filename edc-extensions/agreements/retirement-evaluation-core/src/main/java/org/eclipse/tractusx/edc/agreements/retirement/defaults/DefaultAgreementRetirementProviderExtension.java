@@ -29,7 +29,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
-import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension.NAME;
+import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension.NAME;
 
 @Extension(NAME)
 public class DefaultAgreementRetirementProviderExtension implements ServiceExtension {
