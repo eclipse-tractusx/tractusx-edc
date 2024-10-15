@@ -23,7 +23,6 @@ package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -32,7 +31,7 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetire
 
 import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension.NAME;
 
-@Provides({AgreementsRetirementService.class, AgreementsRetirementStore.class})
+
 @Extension(NAME)
 public class DefaultAgreementRetirementProviderExtension implements ServiceExtension {
 
