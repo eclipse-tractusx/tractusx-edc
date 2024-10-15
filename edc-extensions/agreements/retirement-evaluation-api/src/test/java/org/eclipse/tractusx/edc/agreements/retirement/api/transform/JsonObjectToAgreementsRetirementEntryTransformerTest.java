@@ -25,7 +25,6 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 
 class JsonObjectToAgreementsRetirementEntryTransformerTest {
