@@ -31,12 +31,11 @@ import jakarta.ws.rs.Produces;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
@@ -49,13 +48,13 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 @Path("/v3.1alpha/retireagreements")
 public class AgreementsRetirementApiV3Controller implements AgreementsRetirementApiV3 {
 
-    private final AgreementsRetirementStore service;
+    private final AgreementsRetirementService service;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonObjectValidatorRegistry validator;
     private final Monitor monitor;
 
 
-    public AgreementsRetirementApiV3Controller(AgreementsRetirementStore service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
+    public AgreementsRetirementApiV3Controller(AgreementsRetirementService service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
         this.service = service;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
@@ -77,8 +76,7 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
                     .orElseThrow(InvalidRequestException::new);
         }
 
-        return service.findRetiredAgreements(querySpec)
-                .flatMap(ServiceResult::from)
+        return service.findAll(querySpec)
                 .orElseThrow(exceptionMapper(QuerySpec.class, null)).stream()
                 .map(it -> transformerRegistry.transform(it, JsonObject.class))
                 .peek(r -> r.onFailure(f -> monitor.warning(f.getFailureDetail())))
@@ -91,21 +89,19 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
     @Path("/{agreementId}")
     @Override
     public void reactivateRetiredV3(@PathParam("agreementId") String agreementId) {
-        service.delete(agreementId)
-                .flatMap(ServiceResult::from)
+        service.reactivate(agreementId)
                 .orElseThrow(exceptionMapper(AgreementsRetirementEntry.class, agreementId));
     }
 
     @POST
     @Override
     public void retireAgreementV3(@RequestBody JsonObject entry) {
-        // map JsonObject entry to AgreementRetirementEntry
         validator.validate(AgreementsRetirementEntry.AR_ENTRY_TYPE, entry).orElseThrow(ValidationFailureException::new);
 
         var retirementEntry = transformerRegistry.transform(entry, AgreementsRetirementEntry.class)
                 .orElseThrow(InvalidRequestException::new);
 
-        service.save(retirementEntry).flatMap(ServiceResult::from)
+        service.retireAgreement(retirementEntry)
                 .orElseThrow(exceptionMapper(AgreementsRetirementEntry.class, retirementEntry.getAgreementId()));
 
 

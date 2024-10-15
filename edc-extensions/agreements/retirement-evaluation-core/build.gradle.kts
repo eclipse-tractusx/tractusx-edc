@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.spi.boot)
     implementation(libs.edc.spi.policyengine)
     implementation(libs.edc.spi.contract)
+    implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.core.policy.monitor)
     implementation(libs.edc.lib.store)
     implementation(libs.edc.lib.query)

@@ -18,4 +18,4 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension
-org.eclipse.tractusx.edc.agreements.retirement.defaults.DefaultStoreProviderExtension
+org.eclipse.tractusx.edc.agreements.retirement.defaults.DefaultAgreementRetirementProviderExtension

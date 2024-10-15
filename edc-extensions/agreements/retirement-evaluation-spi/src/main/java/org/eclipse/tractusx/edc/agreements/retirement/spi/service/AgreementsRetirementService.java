@@ -17,15 +17,22 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.agreements.retirement.spi.service;
 
-dependencies {
-    api(libs.edc.spi.policyengine)
-    implementation(libs.edc.spi.core)
-    implementation(project(":spi:core-spi"))
+import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
-    testImplementation(libs.edc.junit)
+import java.util.List;
+
+public interface AgreementsRetirementService {
+
+    boolean isRetired(PolicyContext context);
+
+    ServiceResult<List<AgreementsRetirementEntry>> findAll(QuerySpec querySpec);
+
+    ServiceResult<Void> retireAgreement(AgreementsRetirementEntry entry);
+
+    ServiceResult<Void> reactivate(String contractAgreementId);
 }

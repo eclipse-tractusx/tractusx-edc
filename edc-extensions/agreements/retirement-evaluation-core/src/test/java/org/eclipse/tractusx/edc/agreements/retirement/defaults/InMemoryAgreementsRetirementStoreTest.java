@@ -17,10 +17,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.agreements.retirement;
+package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
-import org.eclipse.tractusx.edc.agreements.retirement.defaults.InMemoryAgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.store.AgreementsRetirementStoreTestBase;
 

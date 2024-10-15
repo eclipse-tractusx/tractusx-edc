@@ -25,21 +25,34 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
 import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementFunctionExtension.NAME;
 
 @Extension(NAME)
-public class DefaultStoreProviderExtension implements ServiceExtension {
+public class DefaultAgreementRetirementProviderExtension implements ServiceExtension {
 
     private static final String NAME = "Default Agreements Store Provider Extension";
 
     @Inject
     CriterionOperatorRegistry criterionOperatorRegistry;
 
+    @Inject
+    AgreementsRetirementStore agreementsRetirementStore;
+
+    @Inject
+    TransactionContext transactionContext;
+
     @Provider(isDefault = true)
     public AgreementsRetirementStore createInMemStore() {
         return new InMemoryAgreementsRetirementStore(criterionOperatorRegistry);
+    }
+
+    @Provider(isDefault = true)
+    public AgreementsRetirementService createDefaultAgreementRetirementService() {
+        return new DefaultAgreementsRetirementService(agreementsRetirementStore, transactionContext);
     }
 
 }

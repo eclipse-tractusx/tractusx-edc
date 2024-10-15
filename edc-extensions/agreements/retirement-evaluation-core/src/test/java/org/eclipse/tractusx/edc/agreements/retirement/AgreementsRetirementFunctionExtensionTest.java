@@ -22,9 +22,7 @@ package org.eclipse.tractusx.edc.agreements.retirement;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
-import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.agreements.retirement.function.AgreementsRetirementFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,8 +50,8 @@ class AgreementsRetirementFunctionExtensionTest {
         extension.initialize(context);
 
         verify(policyEngine, times(1))
-                .registerFunction(eq(TRANSFER_SCOPE), eq(Permission.class), any(AgreementsRetirementFunction.class));
+                .registerPreValidator(eq(TRANSFER_SCOPE), any());
         verify(policyEngine, times(1))
-                .registerFunction(eq(POLICY_MONITOR_SCOPE), eq(Permission.class), any(AgreementsRetirementFunction.class));
+                .registerPreValidator(eq(POLICY_MONITOR_SCOPE), any());
     }
 }

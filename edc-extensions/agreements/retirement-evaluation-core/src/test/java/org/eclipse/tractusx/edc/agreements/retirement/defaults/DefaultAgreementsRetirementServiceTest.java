@@ -17,15 +17,18 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.agreements.retirement.function;
+package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
-import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +36,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,34 +45,32 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class AgreementsRetirementFunctionTest {
+class DefaultAgreementsRetirementServiceTest {
 
-    private AgreementsRetirementStore store;
-    private AgreementsRetirementFunction function;
-    private PolicyContext policyContext;
-    private Permission rule;
+    private AgreementsRetirementService service;
+    private final PolicyContext policyContext = mock();
+    private final AgreementsRetirementStore store = mock();
+    private final TransactionContext transactionContext = new NoopTransactionContext();
 
     @BeforeEach
     void setUp() {
-        store = mock(AgreementsRetirementStore.class);
-        function = new AgreementsRetirementFunction(store);
-        policyContext = mock(PolicyContext.class);
-        rule = mock(Permission.class);
+        service = new DefaultAgreementsRetirementService(store, transactionContext);
     }
 
+
     @Test
-    @DisplayName("Evaluation passes if no agreement is found in policyContext")
+    @DisplayName("Verify agreement is not retired if no agreement is found in policyContext")
     void verify_agreementExistsInPolicyContext() {
 
         when(policyContext.getContextData(ContractAgreement.class))
                 .thenReturn(null);
-        assertThat(function.evaluate(rule, policyContext)).isTrue();
+        assertThat(service.isRetired(policyContext)).isFalse();
 
     }
 
     @Test
-    @DisplayName("Fails evaluation if agreement is retired")
-    void fails_ifAgreementIsRetired() {
+    @DisplayName("Returns true if agreement is retired")
+    void returnsTrue_ifAgreementIsRetired() {
 
         var agreementId = "test-agreement-id";
         var agreement = buildAgreement(agreementId);
@@ -84,23 +84,56 @@ class AgreementsRetirementFunctionTest {
         when(store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId())))
                 .thenReturn(StoreResult.success(List.of(entry)));
 
-        var result = function.evaluate(rule, policyContext);
+        var result = service.isRetired(policyContext);
 
         assertThat(result).isTrue();
         verify(policyContext, times(1)).reportProblem(any());
     }
 
     @Test
-    @DisplayName("Passes evaluation if agreement is not retired")
-    void passes_ifAgreementIsNotRetired() {
+    @DisplayName("Returns false if agreement is not retired")
+    void returnsFalse_ifAgreementIsNotRetired() {
 
         when(store.findRetiredAgreements(any(QuerySpec.class)))
                 .thenReturn(StoreResult.success(List.of()));
 
-        var result = function.evaluate(rule, policyContext);
+        var result = service.isRetired(policyContext);
 
-        assertThat(result).isTrue();
+        assertThat(result).isFalse();
         verify(policyContext, never()).reportProblem(any());
+    }
+
+    @Test
+    @DisplayName("Verify find all response")
+    void verify_findAll() {
+        var query = QuerySpec.Builder.newInstance().build();
+        when(store.findRetiredAgreements(query))
+                .thenReturn(StoreResult.success(List.of()));
+
+        var result = service.findAll(query);
+        assertThat(result.succeeded()).isEqualTo(ServiceResult.success(List.of()).succeeded());
+    }
+
+    @Test
+    @DisplayName("Verify reactivate response on failure")
+    void verify_reactivateResponseOnFailure() {
+        var query = QuerySpec.Builder.newInstance().build();
+        when(store.findRetiredAgreements(query))
+                .thenReturn(StoreResult.notFound("test"));
+
+        var result = service.findAll(query);
+        assertThat(result.getFailure().getReason()).isEqualTo(ServiceResult.notFound("test").getFailure().getReason());
+    }
+
+    @Test
+    @DisplayName("Verify retire response on failure")
+    void verify_retireResponseOnFailure() {
+        var query = QuerySpec.Builder.newInstance().build();
+        when(store.findRetiredAgreements(query))
+                .thenReturn(StoreResult.alreadyExists("test"));
+
+        var result = service.findAll(query);
+        assertThat(result.getFailure().getReason()).isEqualTo(ServiceResult.conflict("test").getFailure().getReason());
     }
 
     private ContractAgreement buildAgreement(String agreementId) {
@@ -123,4 +156,5 @@ class AgreementsRetirementFunctionTest {
                                 .build()
                 ).build();
     }
+
 }
