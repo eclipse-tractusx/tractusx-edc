@@ -17,15 +17,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 
-dependencies {
-    api(libs.edc.spi.policyengine)
-    implementation(libs.edc.spi.core)
-    implementation(project(":spi:core-spi"))
+import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.store.AgreementsRetirementStoreTestBase;
 
-    testImplementation(libs.edc.junit)
+
+public class InMemoryAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
+
+    private final InMemoryAgreementsRetirementStore store = new InMemoryAgreementsRetirementStore(CriterionOperatorRegistryImpl.ofDefaults());
+
+    @Override
+    protected AgreementsRetirementStore getStore() {
+        return store;
+    }
 }

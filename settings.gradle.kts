@@ -52,10 +52,10 @@ include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
 
-include("edc-extensions:agreements")
-include("edc-extensions:agreements:retirement-evaluation-core")
-include("edc-extensions:agreements:retirement-evaluation-api")
-include("edc-extensions:agreements:retirement-evaluation-spi")
+include(":edc-extensions:agreements")
+include(":edc-extensions:agreements:retirement-evaluation-core")
+include(":edc-extensions:agreements:retirement-evaluation-api")
+include(":edc-extensions:agreements:retirement-evaluation-spi")
 include("edc-extensions:agreements:retirement-evaluation-store-sql")
 
 // extensions - data plane

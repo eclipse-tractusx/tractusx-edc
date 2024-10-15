@@ -13,10 +13,10 @@ mechanisms, hence resulting in a new contract. The digital representation is no 
 
 Since contract agreements are immutable, the following approach was used to represent a contract agreement retirement.
 
-A policy function was introduced that checks if the attached contract agreement exists in the `AgreementRetirementStore`.
-If true, the evaluation is considered failed.
+A policy pre validator was introduced that checks if the attached contract agreement exists in the `AgreementRetirementStore`.
+If it exists, the validation is considered failed.
 
-This policy function is registered both in the `policy-monitor` and `transfer` scopes. In both cases, a failed policy evaluation
+This policy pre validator is registered both in the `policy-monitor` and `transfer` scopes. In both cases, a failed pre validation
 leads to transfer process termination.
 
 An API was created to enable dataset providers to manage `AgreementRetirementEntry` entities in the `AgreementRetirementStore` via an endpoint.

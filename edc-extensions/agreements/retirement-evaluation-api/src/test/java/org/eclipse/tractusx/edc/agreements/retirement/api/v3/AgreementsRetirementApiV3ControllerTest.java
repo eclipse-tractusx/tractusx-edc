@@ -27,11 +27,12 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.when;
 
 class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
 
-    private final AgreementsRetirementStore service = mock();
+    private final AgreementsRetirementService service = mock();
     private final TypeTransformerRegistry transformer = mock();
     private final JsonObjectValidatorRegistry validator = mock();
     private final Monitor monitor = mock();
@@ -70,7 +71,7 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
         when(transformer.transform(isA(AgreementsRetirementEntry.class), eq(JsonObject.class)))
                 .thenReturn(Result.success(createJsonRetirementEntry(agreement1)))
                 .thenReturn(Result.success(createJsonRetirementEntry(agreement2)));
-        when(service.findRetiredAgreements(any())).thenReturn(StoreResult.success(List.of(entry1, entry2)));
+        when(service.findAll(any())).thenReturn(ServiceResult.success(List.of(entry1, entry2)));
 
         baseRequest()
                 .contentType(ContentType.JSON)
@@ -95,8 +96,8 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
                 .thenReturn(Result.success(querySpec));
         when(transformer.transform(isA(AgreementsRetirementEntry.class), eq(JsonObject.class)))
                 .thenReturn(Result.success(createJsonRetirementEntry(agreement1)));
-        when(service.findRetiredAgreements(any()))
-                .thenReturn(StoreResult.success(List.of(entry1)));
+        when(service.findAll(any()))
+                .thenReturn(ServiceResult.success(List.of(entry1)));
 
         baseRequest()
                 .contentType(ContentType.JSON)
@@ -111,7 +112,7 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
     @Test
     void should_removeAgreement() {
         var agreementId = "test-agreement-id";
-        when(service.delete(agreementId)).thenReturn(StoreResult.success());
+        when(service.reactivate(agreementId)).thenReturn(ServiceResult.success());
         baseRequest()
                 .delete("/{id}", agreementId)
                 .then()
@@ -121,8 +122,8 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
     @Test
     void shouldNot_removeAgreementWhenNotExists() {
         var agreementId = "test-agreement-id";
-        when(service.delete(agreementId))
-                .thenReturn(StoreResult.notFound(String.format(AgreementsRetirementStore.NOT_FOUND_TEMPLATE, agreementId)));
+        when(service.reactivate(agreementId))
+                .thenReturn(ServiceResult.notFound(String.format(AgreementsRetirementStore.NOT_FOUND_TEMPLATE, agreementId)));
 
         baseRequest()
                 .delete("/{id}", agreementId)
@@ -138,8 +139,8 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
                 .thenReturn(ValidationResult.success());
         when(transformer.transform(isA(JsonObject.class), eq(AgreementsRetirementEntry.class)))
                 .thenReturn(Result.success(createRetirementEntry(agreementId)));
-        when(service.save(isA(AgreementsRetirementEntry.class)))
-                .thenReturn(StoreResult.success());
+        when(service.retireAgreement(isA(AgreementsRetirementEntry.class)))
+                .thenReturn(ServiceResult.success());
 
         baseRequest()
                 .contentType(ContentType.JSON)
@@ -157,8 +158,8 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
                 .thenReturn(ValidationResult.success());
         when(transformer.transform(isA(JsonObject.class), eq(AgreementsRetirementEntry.class)))
                 .thenReturn(Result.success(createRetirementEntry(agreementId)));
-        when(service.save(isA(AgreementsRetirementEntry.class)))
-                .thenReturn(StoreResult.alreadyExists(String.format(AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE, agreementId)));
+        when(service.retireAgreement(isA(AgreementsRetirementEntry.class)))
+                .thenReturn(ServiceResult.conflict(String.format(AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE, agreementId)));
 
         baseRequest()
                 .contentType(ContentType.JSON)

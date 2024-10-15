@@ -26,14 +26,36 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 
 import java.util.List;
 
+/**
+ * Interface for managing the storage point of {@link AgreementsRetirementEntry}.
+ */
 @ExtensionPoint
-public interface AgreementsRetirementStore {
+public interface AgreementsRetirementStore  {
     String NOT_FOUND_TEMPLATE = "Contract Agreement with %s was not found on retirement list.";
     String ALREADY_EXISTS_TEMPLATE = "Contract Agreement %s is already retired.";
 
+    /**
+     * Saves an AgreementsRetirementEntry in the store.
+     *
+     * @param entry {@link AgreementsRetirementEntry}
+     * @return StoreResult success, already exists failure if already exists
+     */
     StoreResult<Void> save(AgreementsRetirementEntry entry);
 
+    /**
+     * Deletes an AgreementsRetirementEntry from the store, given a contract agreement id.
+     *
+     * @param contractAgreementId the contract agreement id of the AgreementRetirementEntry to delete
+     * @return StoreResult success, not found failure if entry not found.
+     */
     StoreResult<Void> delete(String contractAgreementId);
 
+    /**
+     * Returns a list of AgreementRetirementEntry matching a query spec.
+     *
+     * @param querySpec a valid {@link QuerySpec}
+     * @return a list of AgreementRetirementEntry entries.
+     */
     StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec);
+
 }

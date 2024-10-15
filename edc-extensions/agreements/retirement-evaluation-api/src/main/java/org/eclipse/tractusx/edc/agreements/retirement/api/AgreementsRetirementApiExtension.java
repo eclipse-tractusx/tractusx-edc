@@ -32,7 +32,7 @@ import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.agreements.retirement.api.transform.JsonObjectFromAgreementRetirementTransformer;
 import org.eclipse.tractusx.edc.agreements.retirement.api.transform.JsonObjectToAgreementsRetirementEntryTransformer;
 import org.eclipse.tractusx.edc.agreements.retirement.api.v3.AgreementsRetirementApiV3Controller;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 
 import java.util.Map;
 
@@ -42,7 +42,7 @@ import static org.eclipse.tractusx.edc.agreements.retirement.api.AgreementsRetir
 @Extension(value = NAME)
 public class AgreementsRetirementApiExtension implements ServiceExtension {
 
-    public static final String NAME = "Agreements Retirement API Extension ";
+    public static final String NAME = "Contract Agreement Retirement API ";
 
     @Override
     public String name() {
@@ -56,7 +56,7 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
     @Inject
     private JsonObjectValidatorRegistry validator;
     @Inject
-    private AgreementsRetirementStore store;
+    private AgreementsRetirementService agreementsRetirementService;
     @Inject
     private Monitor monitor;
 
@@ -68,7 +68,7 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectFromAgreementRetirementTransformer(jsonFactory));
         managementTypeTransformerRegistry.register(new JsonObjectToAgreementsRetirementEntryTransformer());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(store, managementTypeTransformerRegistry, validator, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(agreementsRetirementService, managementTypeTransformerRegistry, validator, monitor));
     }
 
 }
