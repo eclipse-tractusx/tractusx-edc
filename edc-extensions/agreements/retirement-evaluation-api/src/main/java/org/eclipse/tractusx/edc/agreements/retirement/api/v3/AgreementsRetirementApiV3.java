@@ -77,9 +77,10 @@ public interface AgreementsRetirementApiV3 {
         public static final String EXAMPLE = """
                 {
                     "@context": {
-                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/"
                     },
-                    "@id": "contract-agreement-id",
+                    "edc:agreementId": "contract-agreement-id",
                     "tx:reason": "This contract agreement was retired since the physical counterpart is no longer valid."
                 }
                 """;
