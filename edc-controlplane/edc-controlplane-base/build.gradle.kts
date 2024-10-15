@@ -63,7 +63,9 @@ dependencies {
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.data.plane.selector.control.api)
 
-    runtimeOnly(libs.edc.api.management)
+    runtimeOnly(libs.edc.api.management) {
+        exclude("org.eclipse.edc", "edr-cache-api")
+    }
     runtimeOnly(libs.edc.api.controlplane)
     runtimeOnly(libs.edc.api.management.config)
     runtimeOnly(libs.edc.api.control.config)
