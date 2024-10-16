@@ -26,6 +26,8 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AgreementsRetirementStoreTestBase {
@@ -44,8 +46,8 @@ public abstract class AgreementsRetirementStoreTestBase {
         store.save(entry);
 
         var query = createFilterQueryByAgreementId(agreementId);
-        var result = store.findRetiredAgreements(query);
-        assertThat(result.getContent())
+        var retiredAgreements = store.findRetiredAgreements(query).collect(Collectors.toList());
+        assertThat(retiredAgreements)
                 .isNotNull()
                 .hasSize(1)
                 .first()
@@ -57,8 +59,8 @@ public abstract class AgreementsRetirementStoreTestBase {
     void findRetiredAgreement_notExists() {
         var agreementId = "test-agreement-not-exists";
         var query = createFilterQueryByAgreementId(agreementId);
-        var result = store.findRetiredAgreements(query);
-        assertThat(result.getContent()).isEmpty();
+        var result = store.findRetiredAgreements(query).collect(Collectors.toList());
+        assertThat(result).isEmpty();
     }
 
     @Test

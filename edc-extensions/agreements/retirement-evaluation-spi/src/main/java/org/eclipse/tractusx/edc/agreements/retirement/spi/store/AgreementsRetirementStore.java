@@ -25,6 +25,7 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Interface for managing the storage point of {@link AgreementsRetirementEntry}.
@@ -56,6 +57,6 @@ public interface AgreementsRetirementStore  {
      * @param querySpec a valid {@link QuerySpec}
      * @return a list of AgreementRetirementEntry entries.
      */
-    StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec);
+    Stream<AgreementsRetirementEntry> findRetiredAgreements(QuerySpec querySpec);
 
 }

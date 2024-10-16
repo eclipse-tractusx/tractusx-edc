@@ -35,6 +35,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,7 +66,7 @@ class AgreementsRetirementServiceImplTest {
                 .build();
 
         when(store.findRetiredAgreements(createFilterQueryByAgreementId(agreementId)))
-                .thenReturn(StoreResult.success(List.of(entry)));
+                .thenReturn(Stream.of(entry));
 
         var result = service.isRetired(agreementId);
 
@@ -77,7 +78,7 @@ class AgreementsRetirementServiceImplTest {
     void returnsFalse_ifAgreementIsNotRetired() {
 
         when(store.findRetiredAgreements(any(QuerySpec.class)))
-                .thenReturn(StoreResult.success(List.of()));
+                .thenReturn(Stream.of());
 
         var result = service.isRetired(anyString());
 
@@ -89,7 +90,7 @@ class AgreementsRetirementServiceImplTest {
     void verify_findAll() {
         var query = QuerySpec.Builder.newInstance().build();
         when(store.findRetiredAgreements(query))
-                .thenReturn(StoreResult.success(List.of()));
+                .thenReturn(Stream.of());
 
         var result = service.findAll(query);
         assertThat(result.succeeded()).isEqualTo(ServiceResult.success(List.of()).succeeded());
@@ -98,22 +99,20 @@ class AgreementsRetirementServiceImplTest {
     @Test
     @DisplayName("Verify reactivate response on failure")
     void verify_reactivateResponseOnFailure() {
-        var query = QuerySpec.Builder.newInstance().build();
-        when(store.findRetiredAgreements(query))
+        when(store.delete(any()))
                 .thenReturn(StoreResult.notFound("test"));
 
-        var result = service.findAll(query);
+        var result = service.reactivate(anyString());
         assertThat(result.getFailure().getReason()).isEqualTo(ServiceResult.notFound("test").getFailure().getReason());
     }
 
     @Test
     @DisplayName("Verify retire response on failure")
     void verify_retireResponseOnFailure() {
-        var query = QuerySpec.Builder.newInstance().build();
-        when(store.findRetiredAgreements(query))
+        when(store.save(any()))
                 .thenReturn(StoreResult.alreadyExists("test"));
 
-        var result = service.findAll(query);
+        var result = service.retireAgreement(any());
         assertThat(result.getFailure().getReason()).isEqualTo(ServiceResult.conflict("test").getFailure().getReason());
     }
 
