@@ -26,8 +26,6 @@ dependencies {
     implementation(libs.edc.spi.edrstore)
     implementation(libs.edc.spi.transactionspi)
 
-    implementation(libs.edc.sql.core)
-    implementation(libs.edc.sql.edrindex)
     implementation(libs.edc.spi.transaction.datasource)
 
     implementation(project(":spi:tokenrefresh-spi"))

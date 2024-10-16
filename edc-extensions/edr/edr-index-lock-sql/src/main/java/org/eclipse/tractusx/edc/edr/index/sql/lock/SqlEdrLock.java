@@ -79,6 +79,11 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
         return expiresAtInstant.isBefore(Instant.now());
     }
 
+    @Override
+    public void releaseLock(String edrId) {
+        return;
+    }
+
     private EndpointDataReferenceEntry mapEdr(ResultSet resultSet) throws SQLException {
         return EndpointDataReferenceEntry.Builder.newInstance()
                 .createdAt(resultSet.getLong(statements.getCreatedAtColumn()))

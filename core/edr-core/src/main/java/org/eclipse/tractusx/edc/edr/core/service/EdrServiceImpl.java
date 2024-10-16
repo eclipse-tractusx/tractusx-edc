@@ -80,6 +80,7 @@ public class EdrServiceImpl implements EdrService {
                         if (!shouldRefresh) {
                             monitor.debug("Dont need to refresh. Will resolve existing.");
                             var refreshedEdr = edrStore.resolveByTransferProcess(id);
+                            edrLock.releaseLock(id);
                             return ServiceResult.from(refreshedEdr);
                         } else {
                             monitor.debug("Token expired, need to refresh.");
@@ -104,6 +105,8 @@ public class EdrServiceImpl implements EdrService {
                 .build();
 
         var updateResult = edrStore.save(newEntry, dataAddress);
+
+        edrLock.releaseLock(newEntry.getTransferProcessId());
 
         if (updateResult.failed()) {
             return ServiceResult.fromFailure(updateResult);

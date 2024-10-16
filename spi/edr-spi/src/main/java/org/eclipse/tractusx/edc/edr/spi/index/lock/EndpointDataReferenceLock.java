@@ -27,4 +27,6 @@ public interface EndpointDataReferenceLock {
     StoreResult<Boolean> acquireLock(String edrId, DataAddress edr);
 
     boolean isExpired(DataAddress edr, EndpointDataReferenceEntry edrEntry);
+
+    void releaseLock(String edrId);
 }
