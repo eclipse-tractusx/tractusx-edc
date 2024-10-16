@@ -19,11 +19,8 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.service;
 
-import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -34,10 +31,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.edc.spi.result.ServiceFailure.Reason.CONFLICT;
+import static org.eclipse.edc.spi.result.ServiceFailure.Reason.NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -93,7 +92,8 @@ class AgreementsRetirementServiceImplTest {
                 .thenReturn(Stream.of());
 
         var result = service.findAll(query);
-        assertThat(result.succeeded()).isEqualTo(ServiceResult.success(List.of()).succeeded());
+        assertThat(result).isSucceeded();
+        assertThat(result.getContent()).hasSize(0);
     }
 
     @Test
@@ -103,7 +103,8 @@ class AgreementsRetirementServiceImplTest {
                 .thenReturn(StoreResult.notFound("test"));
 
         var result = service.reactivate(anyString());
-        assertThat(result.getFailure().getReason()).isEqualTo(ServiceResult.notFound("test").getFailure().getReason());
+        assertThat(result).isFailed();
+        assertThat(result.reason()).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -113,17 +114,8 @@ class AgreementsRetirementServiceImplTest {
                 .thenReturn(StoreResult.alreadyExists("test"));
 
         var result = service.retireAgreement(any());
-        assertThat(result.getFailure().getReason()).isEqualTo(ServiceResult.conflict("test").getFailure().getReason());
-    }
-
-    private ContractAgreement buildAgreement(String agreementId) {
-        return ContractAgreement.Builder.newInstance()
-                .id(agreementId)
-                .assetId("fake")
-                .consumerId("fake")
-                .providerId("fake")
-                .policy(mock(Policy.class))
-                .build();
+        assertThat(result).isFailed();
+        assertThat(result.reason()).isEqualTo(CONFLICT);
     }
 
     private QuerySpec createFilterQueryByAgreementId(String agreementId) {

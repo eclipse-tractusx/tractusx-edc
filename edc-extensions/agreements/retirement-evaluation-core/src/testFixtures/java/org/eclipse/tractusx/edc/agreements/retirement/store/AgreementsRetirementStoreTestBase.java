@@ -29,6 +29,9 @@ import org.junit.jupiter.api.Test;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_TEMPLATE;
 
 public abstract class AgreementsRetirementStoreTestBase {
 
@@ -65,9 +68,12 @@ public abstract class AgreementsRetirementStoreTestBase {
 
     @Test
     void save_whenExists() {
-        var entry = createRetiredAgreementEntry("test-agreement-id", "mock-reason");
+        var agreementId = "test-agreement-id";
+        var entry = createRetiredAgreementEntry(agreementId, "mock-reason");
         store.save(entry);
-        assertThat(store.save(entry).succeeded()).isFalse();
+        var result = store.save(entry);
+        assertThat(result).isFailed()
+                .detail().isEqualTo(ALREADY_EXISTS_TEMPLATE.formatted(agreementId));
     }
 
     @Test
@@ -77,8 +83,7 @@ public abstract class AgreementsRetirementStoreTestBase {
         store.save(entry);
         var delete = store.delete(agreementId);
 
-        assertThat(delete.succeeded()).isTrue();
-        assertThat(delete.getFailureDetail()).isNull();
+        assertThat(delete).isSucceeded();
 
     }
 
@@ -87,8 +92,8 @@ public abstract class AgreementsRetirementStoreTestBase {
         var agreementId = "test-agreement-id";
         var delete = store.delete(agreementId);
 
-        assertThat(delete.succeeded()).isFalse();
-        assertThat(delete.getFailureDetail()).isEqualTo(AgreementsRetirementStore.NOT_FOUND_TEMPLATE.formatted(agreementId));
+        assertThat(delete).isFailed()
+                .detail().isEqualTo(NOT_FOUND_TEMPLATE.formatted(agreementId));
 
     }
 
