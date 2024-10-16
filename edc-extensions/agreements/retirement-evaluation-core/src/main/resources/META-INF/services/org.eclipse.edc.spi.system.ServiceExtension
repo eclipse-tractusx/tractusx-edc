@@ -18,4 +18,5 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension
-org.eclipse.tractusx.edc.agreements.retirement.defaults.DefaultAgreementRetirementProviderExtension
+org.eclipse.tractusx.edc.agreements.retirement.defaults.DefaultAgreementRetirementStoreProviderExtension
+org.eclipse.tractusx.edc.agreements.retirement.defaults.DefaultAgreementRetirementServiceProviderExtension
