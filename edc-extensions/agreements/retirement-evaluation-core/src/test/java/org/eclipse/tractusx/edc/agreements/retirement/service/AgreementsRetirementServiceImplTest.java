@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.agreements.retirement.defaults;
+package org.eclipse.tractusx.edc.agreements.retirement.service;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.policy.model.Policy;
@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DefaultAgreementsRetirementServiceTest {
+class AgreementsRetirementServiceImplTest {
 
     private AgreementsRetirementService service;
     private final AgreementsRetirementStore store = mock();
@@ -50,7 +50,7 @@ class DefaultAgreementsRetirementServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new DefaultAgreementsRetirementService(store, transactionContext);
+        service = new AgreementsRetirementServiceImpl(store, transactionContext);
     }
 
     @Test
@@ -58,7 +58,6 @@ class DefaultAgreementsRetirementServiceTest {
     void returnsTrue_ifAgreementIsRetired() {
 
         var agreementId = "test-agreement-id";
-        var agreement = buildAgreement(agreementId);
 
         var entry = AgreementsRetirementEntry.Builder.newInstance()
                 .withAgreementId(agreementId)

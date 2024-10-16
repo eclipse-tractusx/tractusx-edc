@@ -27,6 +27,10 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
+
 public class JsonObjectFromAgreementRetirementTransformer extends AbstractJsonLdTransformer<AgreementsRetirementEntry, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
@@ -40,9 +44,9 @@ public class JsonObjectFromAgreementRetirementTransformer extends AbstractJsonLd
     @Override
     public @Nullable JsonObject transform(@NotNull AgreementsRetirementEntry entry, @NotNull TransformerContext transformerContext) {
         return jsonFactory.createObjectBuilder()
-                .add(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
-                .add(AgreementsRetirementEntry.AR_ENTRY_REASON, entry.getReason())
-                .add(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE, entry.getAgreementRetirementDate())
+                .add(AR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
+                .add(AR_ENTRY_REASON, entry.getReason())
+                .add(AR_ENTRY_RETIREMENT_DATE, entry.getAgreementRetirementDate())
                 .build();
 
     }

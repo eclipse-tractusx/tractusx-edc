@@ -33,7 +33,6 @@ import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
-import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +41,17 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERAND_LEFT;
+import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERAND_RIGHT;
+import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERATOR;
+import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_FILTER_EXPRESSION;
+import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_TEMPLATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -123,7 +133,7 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
     void shouldNot_removeAgreementWhenNotExists() {
         var agreementId = "test-agreement-id";
         when(service.reactivate(agreementId))
-                .thenReturn(ServiceResult.notFound(String.format(AgreementsRetirementStore.NOT_FOUND_TEMPLATE, agreementId)));
+                .thenReturn(ServiceResult.notFound(String.format(NOT_FOUND_TEMPLATE, agreementId)));
 
         baseRequest()
                 .delete("/{id}", agreementId)
@@ -159,7 +169,7 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
         when(transformer.transform(isA(JsonObject.class), eq(AgreementsRetirementEntry.class)))
                 .thenReturn(Result.success(createRetirementEntry(agreementId)));
         when(service.retireAgreement(isA(AgreementsRetirementEntry.class)))
-                .thenReturn(ServiceResult.conflict(String.format(AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE, agreementId)));
+                .thenReturn(ServiceResult.conflict(String.format(ALREADY_EXISTS_TEMPLATE, agreementId)));
 
         baseRequest()
                 .contentType(ContentType.JSON)
@@ -177,19 +187,19 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
 
     private JsonObject createFilterQuerySpecJson(String agreement1) {
         return Json.createObjectBuilder()
-                .add(TYPE, QuerySpec.EDC_QUERY_SPEC_TYPE)
-                .add(QuerySpec.EDC_QUERY_SPEC_FILTER_EXPRESSION,
+                .add(TYPE, EDC_QUERY_SPEC_TYPE)
+                .add(EDC_QUERY_SPEC_FILTER_EXPRESSION,
                         Json.createObjectBuilder()
-                                .add(Criterion.CRITERION_OPERAND_LEFT, AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID)
-                                .add(Criterion.CRITERION_OPERATOR, "=")
-                                .add(Criterion.CRITERION_OPERAND_RIGHT, agreement1)
+                                .add(CRITERION_OPERAND_LEFT, AR_ENTRY_AGREEMENT_ID)
+                                .add(CRITERION_OPERATOR, "=")
+                                .add(CRITERION_OPERAND_RIGHT, agreement1)
                                 .build())
                 .build();
     }
 
     private Criterion createFilterCriteria(String agreementId) {
         return Criterion.Builder.newInstance()
-                .operandLeft(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID)
+                .operandLeft(AR_ENTRY_AGREEMENT_ID)
                 .operator("=")
                 .operandRight(agreementId)
                 .build();
@@ -204,10 +214,10 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
 
     private JsonObject createJsonRetirementEntry(String agreementId) {
         return Json.createObjectBuilder()
-                .add(TYPE, AgreementsRetirementEntry.AR_ENTRY_TYPE)
-                .add(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID, agreementId)
-                .add(AgreementsRetirementEntry.AR_ENTRY_REASON, "long-reason")
-                .add(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE, Instant.now().toString())
+                .add(TYPE, AR_ENTRY_TYPE)
+                .add(AR_ENTRY_AGREEMENT_ID, agreementId)
+                .add(AR_ENTRY_REASON, "long-reason")
+                .add(AR_ENTRY_RETIREMENT_DATE, Instant.now().toString())
                 .build();
     }
 

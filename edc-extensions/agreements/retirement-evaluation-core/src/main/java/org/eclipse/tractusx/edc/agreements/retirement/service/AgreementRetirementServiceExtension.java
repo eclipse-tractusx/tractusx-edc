@@ -17,8 +17,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.agreements.retirement.defaults;
+package org.eclipse.tractusx.edc.agreements.retirement.service;
 
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -26,7 +27,17 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
-public class DefaultAgreementRetirementServiceProviderExtension implements ServiceExtension {
+import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension.NAME;
+
+@Extension(NAME)
+public class AgreementRetirementServiceExtension implements ServiceExtension {
+
+    private static final String NAME = "Agreement Retirement Service Extension";
+
+    @Override
+    public String name() {
+        return NAME;
+    }
 
     @Inject
     AgreementsRetirementStore store;
@@ -34,8 +45,8 @@ public class DefaultAgreementRetirementServiceProviderExtension implements Servi
     @Inject
     TransactionContext transactionContext;
 
-    @Provider(isDefault = true)
+    @Provider()
     public AgreementsRetirementService createInMemAgreementRetirementService() {
-        return new DefaultAgreementsRetirementService(store, transactionContext);
+        return new AgreementsRetirementServiceImpl(store, transactionContext);
     }
 }

@@ -17,45 +17,45 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.agreements.retirement.defaults;
+package org.eclipse.tractusx.edc.agreements.retirement.service;
 
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Default implementation for a {@link AgreementsRetirementService}.
+ * Implementation for the {@link AgreementsRetirementService}.
  */
-public class DefaultAgreementsRetirementService implements AgreementsRetirementService {
+public class AgreementsRetirementServiceImpl implements AgreementsRetirementService {
 
     private final AgreementsRetirementStore store;
     private final TransactionContext transactionContext;
 
-    public DefaultAgreementsRetirementService(AgreementsRetirementStore store, TransactionContext transactionContext) {
+    public AgreementsRetirementServiceImpl(AgreementsRetirementStore store, TransactionContext transactionContext) {
         this.store = store;
         this.transactionContext = transactionContext;
     }
 
     @Override
     public boolean isRetired(String agreementId) {
-        return transactionContext.execute(() -> {
-            var result = store.findRetiredAgreements(createFilterQueryByAgreementId(agreementId));
-            if (result.succeeded()) {
-                return !result.getContent().isEmpty();
-            }
-            return false;
-        });
+        return transactionContext.execute(() -> store.findRetiredAgreements(createFilterQueryByAgreementId(agreementId))
+                .findAny()
+                .isPresent());
     }
 
     @Override
     public ServiceResult<List<AgreementsRetirementEntry>> findAll(QuerySpec querySpec) {
-        return transactionContext.execute(() -> ServiceResult.from(store.findRetiredAgreements(querySpec)));
+        return transactionContext.execute(() -> ServiceResult.success(store.findRetiredAgreements(querySpec).collect(Collectors.toList())));
     }
 
     @Override
