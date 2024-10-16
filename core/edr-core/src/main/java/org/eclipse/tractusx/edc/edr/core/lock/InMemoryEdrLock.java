@@ -27,16 +27,19 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static java.lang.Thread.sleep;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 
 public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
     private final EndpointDataReferenceEntryIndex entryIndex;
     private final TransactionContext transactionContext;
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Set<String> lockedEdrs = new HashSet<>();
 
     public InMemoryEdrLock(EndpointDataReferenceEntryIndex entryIndex, TransactionContext transactionContext) {
         this.entryIndex = entryIndex;
@@ -46,21 +49,38 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
     @Override
     public StoreResult<Boolean> acquireLock(String edrId, DataAddress edr) {
 
+        lock.readLock().lock();
         try {
-            while (!lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
-                //wait until lock can be acquired
+            if (!lockedEdrs.contains(edrId)) {
+                lock.readLock().unlock();
+                lock.writeLock().lock();
+                var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
+                try {
+                    if (isExpired(edr, edrEntry) && !lockedEdrs.contains(edrId)) {
+                        lockedEdrs.add(edrId);
+                        return StoreResult.success(true);
+                    }
+                } finally {
+                    lock.readLock().lock();
+                    lock.writeLock().unlock();
+                }
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
-        var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
-
-        if (!isExpired(edr, edrEntry)) {
+            var timeout = 0;
+            while (lockedEdrs.contains(edrId) && timeout <= 15000) {
+                //block until updated
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                timeout += 1000;
+            }
             return StoreResult.success(false);
-        }
 
-        return StoreResult.success(true);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
@@ -78,6 +98,6 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
     @Override
     public void releaseLock(String edrId) {
-        lock.unlock();
+        lockedEdrs.remove(edrId);
     }
 }
