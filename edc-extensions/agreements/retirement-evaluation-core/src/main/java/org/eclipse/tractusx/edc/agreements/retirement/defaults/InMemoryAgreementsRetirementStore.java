@@ -27,10 +27,8 @@ import org.eclipse.edc.store.ReflectionBasedQueryResolver;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**

@@ -21,15 +21,12 @@ package org.eclipse.tractusx.edc.agreements.retirement.service;
 
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

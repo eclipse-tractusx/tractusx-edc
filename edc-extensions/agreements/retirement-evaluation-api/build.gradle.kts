@@ -25,7 +25,6 @@ plugins {
 dependencies {
 
     implementation(project(":edc-extensions:agreements:retirement-evaluation-spi"))
-    implementation(libs.edc.runtime.metamodel)
     implementation(libs.edc.api.management.config)
 
     implementation(libs.jakarta.rsApi)

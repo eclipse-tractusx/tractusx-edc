@@ -24,7 +24,6 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
