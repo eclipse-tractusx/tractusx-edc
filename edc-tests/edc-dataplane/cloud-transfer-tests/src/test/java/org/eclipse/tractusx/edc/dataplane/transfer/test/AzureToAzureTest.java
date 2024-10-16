@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -52,17 +51,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_KEY;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_CONTAINER_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_KEY_ALIAS;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_PROVIDER_ACCOUNT_KEY;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_PROVIDER_ACCOUNT_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_PROVIDER_CONTAINER_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_PROVIDER_KEY_ALIAS;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_CONTAINER_PORT;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_DOCKER_IMAGE;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.CONSUMER_AZURITE_ACCOUNT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PROVIDER_AZURITE_ACCOUNT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobDestinationAddress;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.blobSourceAddress;
@@ -92,22 +87,22 @@ public class AzureToAzureTest {
             RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT),
             ":edc-tests:runtime:dataplane-cloud"
     )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AzureBlob-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
+
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
      * two different endpoint templates for provider and consumer. Endpoint templates are configured globally.
      * Also, the host-port must be fixed/deterministic, as the {@code PROVIDER_RUNTIME} needs to know it in advance
      */
     @Container
-    private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(AZURITE_DOCKER_IMAGE)
-            .withFixedExposedPort(AZURITE_HOST_PORT, AZURITE_CONTAINER_PORT)
-            .withEnv("AZURITE_ACCOUNTS", AZBLOB_PROVIDER_ACCOUNT_NAME + ":" + AZBLOB_PROVIDER_ACCOUNT_KEY + ";" + AZBLOB_CONSUMER_ACCOUNT_NAME + ":" + AZBLOB_CONSUMER_ACCOUNT_KEY);
+    private final AzuriteContainer azuriteContainer = new AzuriteContainer(AZURITE_HOST_PORT, PROVIDER_AZURITE_ACCOUNT, CONSUMER_AZURITE_ACCOUNT);
+
     private AzureBlobHelper providerBlobHelper;
     private AzureBlobHelper consumerBlobHelper;
 
     @BeforeEach
     void setup() {
-        providerBlobHelper = new AzureBlobHelper(AZBLOB_PROVIDER_ACCOUNT_NAME, AZBLOB_PROVIDER_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(AZURITE_CONTAINER_PORT));
-        consumerBlobHelper = new AzureBlobHelper(AZBLOB_CONSUMER_ACCOUNT_NAME, AZBLOB_CONSUMER_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(AZURITE_CONTAINER_PORT));
+        providerBlobHelper = azuriteContainer.getHelper(PROVIDER_AZURITE_ACCOUNT);
+        consumerBlobHelper = azuriteContainer.getHelper(CONSUMER_AZURITE_ACCOUNT);
     }
 
     @Test
@@ -120,7 +115,7 @@ public class AzureToAzureTest {
         fileNames.forEach(filename -> providerBlobHelper.uploadBlob(sourceContainer, fileData, filename));
 
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
-        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
         vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
@@ -157,7 +152,7 @@ public class AzureToAzureTest {
         // create container in consumer's blob store
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
 
-        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
         vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
@@ -205,7 +200,7 @@ public class AzureToAzureTest {
         // create container in consumer's blob store
         consumerBlobHelper.createContainer(AZBLOB_CONSUMER_CONTAINER_NAME);
 
-        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
         vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
@@ -231,7 +226,7 @@ public class AzureToAzureTest {
     @Test
     void transferFolder_targetFolderNotExists_shouldCreate(Vault vault) {
 
-        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
         var sas = consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME);
         vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
@@ -275,7 +270,7 @@ public class AzureToAzureTest {
 
         providerBlobHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
 
-        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+        vault.storeSecret(AZBLOB_PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
         vault.storeSecret(AZBLOB_CONSUMER_KEY_ALIAS, """
                 {"sas": "%s","edctype":"dataspaceconnector:azuretoken"}
                 """.formatted(consumerBlobHelper.generateAccountSas(AZBLOB_CONSUMER_CONTAINER_NAME)));
@@ -292,7 +287,7 @@ public class AzureToAzureTest {
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class))
-                        .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, AZBLOB_CONSUMER_ACCOUNT_NAME)), isA(IOException.class)));
+                        .severe(contains("Error creating blob %s on account %s".formatted(TESTFILE_NAME, CONSUMER_AZURITE_ACCOUNT.name())), isA(IOException.class)));
     }
 
     private JsonObjectBuilder createFlowRequestBuilder(String blobName) {
