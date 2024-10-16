@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -39,33 +38,19 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DefaultAgreementsRetirementServiceTest {
 
     private AgreementsRetirementService service;
-    private final PolicyContext policyContext = mock();
     private final AgreementsRetirementStore store = mock();
     private final TransactionContext transactionContext = new NoopTransactionContext();
 
     @BeforeEach
     void setUp() {
         service = new DefaultAgreementsRetirementService(store, transactionContext);
-    }
-
-
-    @Test
-    @DisplayName("Verify agreement is not retired if no agreement is found in policyContext")
-    void verify_agreementExistsInPolicyContext() {
-
-        when(policyContext.getContextData(ContractAgreement.class))
-                .thenReturn(null);
-        assertThat(service.isRetired(policyContext)).isFalse();
-
     }
 
     @Test
@@ -80,14 +65,12 @@ class DefaultAgreementsRetirementServiceTest {
                 .withReason("mock-reason")
                 .build();
 
-        when(policyContext.getContextData(ContractAgreement.class)).thenReturn(agreement);
-        when(store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId())))
+        when(store.findRetiredAgreements(createFilterQueryByAgreementId(agreementId)))
                 .thenReturn(StoreResult.success(List.of(entry)));
 
-        var result = service.isRetired(policyContext);
+        var result = service.isRetired(agreementId);
 
         assertThat(result).isTrue();
-        verify(policyContext, times(1)).reportProblem(any());
     }
 
     @Test
@@ -97,10 +80,9 @@ class DefaultAgreementsRetirementServiceTest {
         when(store.findRetiredAgreements(any(QuerySpec.class)))
                 .thenReturn(StoreResult.success(List.of()));
 
-        var result = service.isRetired(policyContext);
+        var result = service.isRetired(anyString());
 
         assertThat(result).isFalse();
-        verify(policyContext, never()).reportProblem(any());
     }
 
     @Test

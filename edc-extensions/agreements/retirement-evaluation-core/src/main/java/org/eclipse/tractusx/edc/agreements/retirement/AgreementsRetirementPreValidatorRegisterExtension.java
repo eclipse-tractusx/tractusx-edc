@@ -44,7 +44,8 @@ public class AgreementsRetirementPreValidatorRegisterExtension implements Servic
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        policyEngine.registerPreValidator(TRANSFER_SCOPE, (policy, policyContext) -> !service.isRetired(policyContext));
-        policyEngine.registerPreValidator(POLICY_MONITOR_SCOPE, (policy, policyContext) -> !service.isRetired(policyContext));
+        var agreementRetirementValidator = new AgreementRetirementValidator(service);
+        policyEngine.registerPreValidator(TRANSFER_SCOPE, agreementRetirementValidator);
+        policyEngine.registerPreValidator(POLICY_MONITOR_SCOPE, agreementRetirementValidator);
     }
 }

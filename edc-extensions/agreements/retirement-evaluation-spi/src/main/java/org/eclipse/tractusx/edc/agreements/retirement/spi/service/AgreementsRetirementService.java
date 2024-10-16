@@ -34,10 +34,10 @@ public interface AgreementsRetirementService {
     /**
      * Within a given {@link PolicyContext}, verifies if the attached contract agreement exists in {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
      *
-     * @param context a valid {@link PolicyContext}
+     * @param agreementId the contract agreement id to verify
      * @return true if it exists, false otherwise.
      */
-    boolean isRetired(PolicyContext context);
+    boolean isRetired(String agreementId);
 
     /**
      * Returns a list of {@link AgreementsRetirementEntry} entries matching a valid {@link QuerySpec}

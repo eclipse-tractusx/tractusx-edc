@@ -19,8 +19,6 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.defaults;
 
-import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -45,15 +43,11 @@ public class DefaultAgreementsRetirementService implements AgreementsRetirementS
     }
 
     @Override
-    public boolean isRetired(PolicyContext context) {
+    public boolean isRetired(String agreementId) {
         return transactionContext.execute(() -> {
-            var agreement = context.getContextData(ContractAgreement.class);
-            if (agreement != null) {
-                var result = store.findRetiredAgreements(createFilterQueryByAgreementId(agreement.getId()));
-                if (!result.getContent().isEmpty()) {
-                    context.reportProblem(String.format("Contract Agreement with ID=%s has been retired", agreement.getId()));
-                    return true;
-                }
+            var result = store.findRetiredAgreements(createFilterQueryByAgreementId(agreementId));
+            if (result.succeeded()) {
+                return !result.getContent().isEmpty();
             }
             return false;
         });
