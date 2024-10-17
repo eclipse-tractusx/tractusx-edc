@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Helper class that internally uses Azure SDK classes to create containers, upload blobs, generate SAS tokens, etc.
  */
-class AzureBlobHelper {
+public class AzureBlobHelper {
     private final String accountName;
     private final String key;
     private final String host;

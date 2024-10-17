@@ -27,6 +27,7 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
+import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -35,7 +36,6 @@ import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.regions.Region;
@@ -55,10 +55,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_KEY;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_ACCOUNT_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_CONTAINER_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZBLOB_CONSUMER_KEY_ALIAS;
+import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.CONSUMER_AZURITE_ACCOUNT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
@@ -66,16 +65,13 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.lis
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
-@CloudTransferTest
+@EndToEndTest
 public class MultiCloudTest {
     // S3 test constants
     public static final String REGION = Region.US_WEST_2.id();
     public static final String BUCKET_NAME = S3_CONSUMER_BUCKET_NAME;
     public static final String BLOB_KEY_ALIAS = AZBLOB_CONSUMER_KEY_ALIAS;
 
-    // Azure Blob test constants
-    private static final String BLOB_ACCOUNT_NAME = AZBLOB_CONSUMER_ACCOUNT_NAME;
-    private static final String BLOB_ACCOUNT_KEY = AZBLOB_CONSUMER_ACCOUNT_KEY;
     private static final int AZURITE_HOST_PORT = getFreePort();
     private static final String BLOB_CONTAINER_NAME = AZBLOB_CONSUMER_CONTAINER_NAME;
 
@@ -93,9 +89,7 @@ public class MultiCloudTest {
     private final MinioContainer s3Container = new MinioContainer();
 
     @Container
-    private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(TestConstants.AZURITE_DOCKER_IMAGE)
-            .withFixedExposedPort(AZURITE_HOST_PORT, 10000)
-            .withEnv("AZURITE_ACCOUNTS", BLOB_ACCOUNT_NAME + ":" + BLOB_ACCOUNT_KEY);
+    private final AzuriteContainer azuriteContainer = new AzuriteContainer(AZURITE_HOST_PORT, CONSUMER_AZURITE_ACCOUNT);
 
     private AzureBlobHelper blobStoreHelper;
     private S3Client s3Client;
@@ -103,7 +97,7 @@ public class MultiCloudTest {
 
     @BeforeEach
     void setup() {
-        blobStoreHelper = new AzureBlobHelper(BLOB_ACCOUNT_NAME, BLOB_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(10000));
+        blobStoreHelper = azuriteContainer.getHelper(CONSUMER_AZURITE_ACCOUNT);
         s3EndpointOverride = "http://localhost:%s/".formatted(s3Container.getFirstMappedPort());
         var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(s3EndpointOverride))
@@ -121,7 +115,7 @@ public class MultiCloudTest {
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
         fileNames.forEach(filename -> blobStoreHelper.uploadBlob(sourceContainer, fileData, filename));
 
-        vault.storeSecret(BLOB_KEY_ALIAS, BLOB_ACCOUNT_KEY);
+        vault.storeSecret(BLOB_KEY_ALIAS, CONSUMER_AZURITE_ACCOUNT.key());
 
         var destinationBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
         assertThat(destinationBucket.sdkHttpResponse().isSuccessful()).isTrue();
@@ -135,7 +129,7 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", "AzureStorage")
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + "container", BLOB_CONTAINER_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + "account", BLOB_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name()))
                                 .add(dspaceProperty(EDC_NAMESPACE + "keyName", BLOB_KEY_ALIAS))
                                 .add(dspaceProperty(EDC_NAMESPACE + "blobPrefix", PREFIX_FOR_MUTIPLE_FILES))
                         )
@@ -176,7 +170,7 @@ public class MultiCloudTest {
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         var sourceContainer = blobStoreHelper.createContainer(BLOB_CONTAINER_NAME);
         blobStoreHelper.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
-        vault.storeSecret(BLOB_KEY_ALIAS, BLOB_ACCOUNT_KEY);
+        vault.storeSecret(BLOB_KEY_ALIAS, CONSUMER_AZURITE_ACCOUNT.key());
 
         var r = s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET_NAME).build());
         assertThat(r.sdkHttpResponse().isSuccessful()).isTrue();
@@ -190,7 +184,7 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", "AzureStorage")
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + "container", BLOB_CONTAINER_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + "account", BLOB_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name()))
                                 .add(dspaceProperty(EDC_NAMESPACE + "keyName", BLOB_KEY_ALIAS))
                                 .add(dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME))
                         )
@@ -268,7 +262,7 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", "AzureStorage")
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name()))
                                 .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
                         )
                 )
@@ -334,7 +328,7 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", "AzureStorage")
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name()))
                                 .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
                                 .add(dspaceProperty(EDC_NAMESPACE + "blobName", "NOME_TEST"))
                         )
@@ -391,7 +385,7 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", "AzureStorage")
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME))
+                                .add(dspaceProperty(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name()))
                                 .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
                                 .add(dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME))
                         )
