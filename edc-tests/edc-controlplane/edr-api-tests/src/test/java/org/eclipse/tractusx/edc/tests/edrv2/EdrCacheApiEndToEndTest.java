@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.tests.edrv2;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -62,11 +61,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_AUTHORIZATION;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
@@ -102,8 +99,8 @@ public class EdrCacheApiEndToEndTest {
 
 
     abstract static class Tests {
-        private final ObjectMapper mapper = new ObjectMapper();
         private final Random random = new Random();
+        private final ObjectMapper mapper = new ObjectMapper();
         private ClientAndServer mockedRefreshApi;
         private ECKey providerSigningKey;
         private String refreshEndpoint;
@@ -156,9 +153,9 @@ public class EdrCacheApiEndToEndTest {
             }
         }
 
-        @DisplayName("Verify HTTP 200 response and body when refreshing succeeds")
+        @DisplayName("When multiple requests to refresh, to different edrs, verify all return non expired token")
         @Test
-        void getEdrWithRefresh_subsequentRequestFails() throws InterruptedException {
+        void getEdrWithRefresh_subsequentRequestReturn() throws InterruptedException {
 
             try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
                 var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
@@ -169,7 +166,8 @@ public class EdrCacheApiEndToEndTest {
                 client.when(request().withMethod("POST").withPath("/refresh/token").withBody(exact("")))
                         .respond(response().withStatusCode(200).withDelay(Delay.milliseconds(5000)).withBody(tokenResponseBodyString));
 
-                storeEdr("test-id", true);
+                storeEdr("test-id-1", true);
+                storeEdr("test-id-2", true);
                 var numThreads = 50;
                 var jitter = 100; // maximum time between threads are spawned
                 var latch = new CountDownLatch(50);
@@ -183,29 +181,34 @@ public class EdrCacheApiEndToEndTest {
                             try {
                                 Thread.sleep(wait);
                                 new Thread(() -> {
-                                    var tr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
-                                            .assertThat()
-                                            .statusCode(200)
-                                            .extract().asString();
-                                    latch.countDown();
-                                    assertThat(tr).contains(accessToken);
+                                    var edrNumber = random.nextInt(1, 3);
+                                    try {
+                                        var tr = CONSUMER.edrs().getEdrWithRefresh("test-id-%s".formatted(edrNumber), true)
+                                                .assertThat()
+                                                .statusCode(200)
+                                                .extract().asString();
+
+                                        assertThat(tr).contains(accessToken);
+                                    } catch (AssertionError e) {
+                                        failed.set(true);
+                                    } finally {
+                                        latch.countDown();
+                                    }
+
 
                                 }).start();
-                            } catch (InterruptedException e) {
-                                failed.set(true);
+                            }  catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
                         });
 
-
-                // assert the correct endpoint was called
                 latch.await();
                 assertThat(failed.get()).isFalse();
 
                 client.verify(request()
                         .withQueryStringParameter("grant_type", "refresh_token")
                         .withMethod("POST")
-                        .withPath("/refresh/token"), VerificationTimes.exactly(1));
+                        .withPath("/refresh/token"), VerificationTimes.exactly(2));
 
             }
         }
@@ -382,7 +385,6 @@ public class EdrCacheApiEndToEndTest {
                     .property(EDR_PROPERTY_REFRESH_ENDPOINT, refreshEndpoint)
                     .property(EDR_PROPERTY_REFRESH_AUDIENCE, refreshAudience)
                     .build();
-            System.out.println(edr.getStringProperty(EDC_NAMESPACE + "authorization"));
             var entry = EndpointDataReferenceEntry.Builder.newInstance()
                     .clock(isExpired ? // defaults to an expired token
                             Clock.fixed(Instant.now().minusSeconds(3600), ZoneId.systemDefault()) :

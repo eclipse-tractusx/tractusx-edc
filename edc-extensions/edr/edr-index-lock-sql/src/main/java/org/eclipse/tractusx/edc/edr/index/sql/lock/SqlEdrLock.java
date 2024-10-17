@@ -53,7 +53,6 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
                 // this blocks until Postgres can acquire the row-level lock
                 var edrEntry = queryExecutor.single(connection, false, this::mapEdr, sql, edrId);
 
-                // check again, to abort
                 if (!isExpired(edr, edrEntry)) {
                     return StoreResult.success(false);
                 }
@@ -81,7 +80,7 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
 
     @Override
     public void releaseLock(String edrId) {
-        return;
+        // do nothing since the lock is implicitly released by the row update.
     }
 
     private EndpointDataReferenceEntry mapEdr(ResultSet resultSet) throws SQLException {

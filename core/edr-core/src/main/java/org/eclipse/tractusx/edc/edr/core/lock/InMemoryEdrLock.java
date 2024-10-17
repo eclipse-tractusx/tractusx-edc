@@ -36,6 +36,8 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRE
 
 public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
+    private static final int LOCK_TIMEOUT = 5000;
+
     private final EndpointDataReferenceEntryIndex entryIndex;
     private final TransactionContext transactionContext;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -48,7 +50,6 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
     @Override
     public StoreResult<Boolean> acquireLock(String edrId, DataAddress edr) {
-
         lock.readLock().lock();
         try {
             if (!lockedEdrs.contains(edrId)) {
@@ -67,10 +68,10 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
             }
 
             var timeout = 0;
-            while (lockedEdrs.contains(edrId) && timeout <= 15000) {
-                //block until updated
+            while (lockedEdrs.contains(edrId) && timeout <= LOCK_TIMEOUT) {
+                //block until row updated
                 try {
-                    sleep(1000);
+                    sleep(LOCK_TIMEOUT);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
