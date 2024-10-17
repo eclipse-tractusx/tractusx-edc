@@ -100,13 +100,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [ { dir: edc-tests/edc-controlplane/catalog-tests },
-                   { dir: edc-tests/edc-controlplane/edr-api-tests },
-                   { dir: edc-tests/edc-controlplane/iatp-tests },
-                   { dir: edc-tests/edc-controlplane/policy-tests },
-                   { dir: edc-tests/edc-controlplane/transfer-tests },
-                   { dir: edc-tests/edc-controlplane/agreement-retirement-tests },
-                   { dir: edc-tests/edc-dataplane/edc-dataplane-tokenrefresh-tests }
+        variant: [
+          { dir: edc-tests/edc-controlplane/catalog-tests },
+          { dir: edc-tests/edc-controlplane/edr-api-tests },
+          { dir: edc-tests/edc-controlplane/iatp-tests },
+          { dir: edc-tests/edc-controlplane/policy-tests },
+          { dir: edc-tests/edc-controlplane/transfer-tests },
+          { dir: edc-tests/edc-controlplane/agreement-retirement-tests },
+          { dir: edc-tests/edc-dataplane/edc-dataplane-tokenrefresh-tests },
+          { dir: edc-tests/edc-dataplane/cloud-transfer-tests },
+          { dir: edc-tests/edc-end2end },
         ]
     steps:
       - uses: actions/checkout@v4
@@ -114,7 +117,7 @@ jobs:
 
       - name: Run E2E tests (${{ matrix.variant.dir }})
         run: |
-          ./gradlew compileJava compileTestJava --refresh-dependencies
+          ./gradlew compileJava compileTestJava
           ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
 
   postgres-tests:
@@ -125,20 +128,3 @@ jobs:
 
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
-
-  cloud-transfer-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java
-
-      - name: Run Azure/S3 dataplane tests
-        run: |
-          ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/edc-dataplane test -DincludeTags="CloudTransferTest"
-
-      - name: Run Azure/S3 End-To-End tests
-        run: |
-          ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/edc-end2end test -DincludeTags="EndToEndTest"

@@ -30,7 +30,6 @@ import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -77,16 +76,12 @@ public class AzureToAzureEndToEndTest {
     protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), with(PROVIDER.getConfiguration(), AZURITE_HOST_PORT));
     @RegisterExtension
     protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), with(CONSUMER.getConfiguration(), AZURITE_HOST_PORT));
-    private static final String AZBLOB_PROVIDER_ACCOUNT_NAME = "provider";
-    private static final String AZBLOB_CONSUMER_ACCOUNT_NAME = "consumer";
-    private static final String AZBLOB_PROVIDER_ACCOUNT_KEY = Base64.encodeBase64String("provider-key".getBytes());
-    private static final String AZBLOB_CONSUMER_ACCOUNT_KEY = Base64.encodeBase64String("provider-key".getBytes());
-    private static final int AZURITE_CONTAINER_PORT = 10000;
     private static final String TESTFILE_NAME = "hello.txt";
+
+    private final AzuriteContainer.Account providerAzuriteAccount = new AzuriteContainer.Account("provider", Base64.encodeBase64String("provider-key".getBytes()));
+    private final AzuriteContainer.Account consumerAzuriteAccount = new AzuriteContainer.Account("consumer", Base64.encodeBase64String("consumer-key".getBytes()));
     @Container
-    private final FixedHostPortGenericContainer<?> azuriteContainer = new FixedHostPortGenericContainer<>(AZURITE_DOCKER_IMAGE)
-            .withFixedExposedPort(AZURITE_HOST_PORT, AZURITE_CONTAINER_PORT)
-            .withEnv("AZURITE_ACCOUNTS", AZBLOB_PROVIDER_ACCOUNT_NAME + ":" + AZBLOB_PROVIDER_ACCOUNT_KEY + ";" + AZBLOB_CONSUMER_ACCOUNT_NAME + ":" + AZBLOB_CONSUMER_ACCOUNT_KEY);
+    private final AzuriteContainer azuriteContainer = new AzuriteContainer(AZURITE_HOST_PORT, providerAzuriteAccount, consumerAzuriteAccount);
     private AzureBlobHelper providerBlobHelper;
     private AzureBlobHelper consumerBlobHelper;
 
@@ -110,13 +105,13 @@ public class AzureToAzureEndToEndTest {
     @BeforeEach
     void setup() {
         PROVIDER_RUNTIME.getService(Vault.class)
-                .storeSecret(PROVIDER_KEY_ALIAS, AZBLOB_PROVIDER_ACCOUNT_KEY);
+                .storeSecret(PROVIDER_KEY_ALIAS, providerAzuriteAccount.key());
 
         CONSUMER_RUNTIME.getService(Vault.class)
-                .storeSecret("%s-key1".formatted(AZBLOB_CONSUMER_ACCOUNT_NAME), AZBLOB_CONSUMER_ACCOUNT_KEY);
+                .storeSecret("%s-key1".formatted(consumerAzuriteAccount.name()), consumerAzuriteAccount.key());
 
-        providerBlobHelper = new AzureBlobHelper(AZBLOB_PROVIDER_ACCOUNT_NAME, AZBLOB_PROVIDER_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(AZURITE_CONTAINER_PORT));
-        consumerBlobHelper = new AzureBlobHelper(AZBLOB_CONSUMER_ACCOUNT_NAME, AZBLOB_CONSUMER_ACCOUNT_KEY, azuriteContainer.getHost(), azuriteContainer.getMappedPort(AZURITE_CONTAINER_PORT));
+        providerBlobHelper = azuriteContainer.getHelper(providerAzuriteAccount);
+        consumerBlobHelper = azuriteContainer.getHelper(consumerAzuriteAccount);
     }
 
     @Test
@@ -128,7 +123,7 @@ public class AzureToAzureEndToEndTest {
                 "@type", "DataAddress",
                 "type", "AzureStorage",
                 "container", PROVIDER_CONTAINER_NAME,
-                "account", AZBLOB_PROVIDER_ACCOUNT_NAME,
+                "account", providerAzuriteAccount.name(),
                 "blobPrefix", "folder/",
                 "keyName", PROVIDER_KEY_ALIAS
         );
@@ -150,7 +145,7 @@ public class AzureToAzureEndToEndTest {
                 .add(EDC_NAMESPACE + "type", "AzureStorage")
                 .add(EDC_NAMESPACE + "properties", createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AzureStorage")
-                        .add(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                        .add(EDC_NAMESPACE + "account", consumerAzuriteAccount.name())
                         .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
                         .add(EDC_NAMESPACE + "folderName", destfolder)
                         .build())
@@ -180,7 +175,7 @@ public class AzureToAzureEndToEndTest {
                 "@type", "DataAddress",
                 "type", "AzureStorage",
                 "container", PROVIDER_CONTAINER_NAME,
-                "account", AZBLOB_PROVIDER_ACCOUNT_NAME,
+                "account", providerAzuriteAccount.name(),
                 "blobPrefix", "folder/",
                 "keyName", PROVIDER_KEY_ALIAS
         );
@@ -201,7 +196,7 @@ public class AzureToAzureEndToEndTest {
                 .add(EDC_NAMESPACE + "type", "AzureStorage")
                 .add(EDC_NAMESPACE + "properties", createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AzureStorage")
-                        .add(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                        .add(EDC_NAMESPACE + "account", consumerAzuriteAccount.name())
                         .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
                         // .add(EDC_NAMESPACE + "folderName", destfolder) <-- no dest folder
                         .build())
@@ -231,7 +226,7 @@ public class AzureToAzureEndToEndTest {
                 "@type", "DataAddress",
                 "type", "AzureStorage",
                 "container", PROVIDER_CONTAINER_NAME,
-                "account", AZBLOB_PROVIDER_ACCOUNT_NAME,
+                "account", providerAzuriteAccount.name(),
                 "blobPrefix", "folder/",
                 "keyName", PROVIDER_KEY_ALIAS
         );
@@ -252,7 +247,7 @@ public class AzureToAzureEndToEndTest {
                 .add(EDC_NAMESPACE + "type", "AzureStorage")
                 .add(EDC_NAMESPACE + "properties", createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AzureStorage")
-                        .add(EDC_NAMESPACE + "account", AZBLOB_CONSUMER_ACCOUNT_NAME)
+                        .add(EDC_NAMESPACE + "account", consumerAzuriteAccount.name())
                         .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
                         .build())
                 .build();

@@ -42,6 +42,7 @@ import static jakarta.json.stream.JsonCollectors.toJsonArray;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
 import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
@@ -96,7 +97,7 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
     @POST
     @Override
     public void retireAgreementV3(@RequestBody JsonObject entry) {
-        validator.validate(AgreementsRetirementEntry.AR_ENTRY_TYPE, entry).orElseThrow(ValidationFailureException::new);
+        validator.validate(AR_ENTRY_TYPE, entry).orElseThrow(ValidationFailureException::new);
 
         var retirementEntry = transformerRegistry.transform(entry, AgreementsRetirementEntry.class)
                 .orElseThrow(InvalidRequestException::new);

@@ -17,35 +17,36 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.agreements.retirement;
+package org.eclipse.tractusx.edc.agreements.retirement.service;
 
-import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
-import static org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension.POLICY_MONITOR_SCOPE;
 import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension.NAME;
 
+@Extension(NAME)
+public class AgreementRetirementServiceExtension implements ServiceExtension {
 
-@Extension(value = NAME)
-public class AgreementsRetirementPreValidatorRegisterExtension implements ServiceExtension {
-
-    public static final String NAME = "Agreements Retirement Policy Function Extension";
-
-    @Inject
-    private AgreementsRetirementService service;
-
-    @Inject
-    private PolicyEngine policyEngine;
+    private static final String NAME = "Agreement Retirement Service Extension";
 
     @Override
-    public void initialize(ServiceExtensionContext context) {
-        var agreementRetirementValidator = new AgreementRetirementValidator(service);
-        policyEngine.registerPreValidator(TRANSFER_SCOPE, agreementRetirementValidator);
-        policyEngine.registerPreValidator(POLICY_MONITOR_SCOPE, agreementRetirementValidator);
+    public String name() {
+        return NAME;
+    }
+
+    @Inject
+    AgreementsRetirementStore store;
+
+    @Inject
+    TransactionContext transactionContext;
+
+    @Provider()
+    public AgreementsRetirementService createInMemAgreementRetirementService() {
+        return new AgreementsRetirementServiceImpl(store, transactionContext);
     }
 }

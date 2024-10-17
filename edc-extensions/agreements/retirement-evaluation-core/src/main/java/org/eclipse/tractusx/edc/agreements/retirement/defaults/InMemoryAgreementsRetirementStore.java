@@ -27,10 +27,9 @@ import org.eclipse.edc.store.ReflectionBasedQueryResolver;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * In Memory implementation of a {@link AgreementsRetirementStore}.
@@ -61,7 +60,7 @@ public class InMemoryAgreementsRetirementStore implements AgreementsRetirementSt
     }
 
     @Override
-    public StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec) {
-        return StoreResult.success(queryResolver.query(cache.values().stream(), querySpec).collect(Collectors.toList()));
+    public Stream<AgreementsRetirementEntry> findRetiredAgreements(QuerySpec querySpec) {
+        return queryResolver.query(cache.values().stream(), querySpec);
     }
 }

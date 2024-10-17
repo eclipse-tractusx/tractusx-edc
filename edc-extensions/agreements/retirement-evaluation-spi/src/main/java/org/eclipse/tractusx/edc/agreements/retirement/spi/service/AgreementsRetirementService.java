@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.spi.service;
 
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
@@ -32,12 +31,12 @@ import java.util.List;
 public interface AgreementsRetirementService {
 
     /**
-     * Within a given {@link PolicyContext}, verifies if the attached contract agreement exists in {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
+     * Given a contract agreement id, verifies if a corresponding {@link AgreementsRetirementEntry} exists in the {@link org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore}.
      *
-     * @param context a valid {@link PolicyContext}
+     * @param agreementId the contract agreement id to verify
      * @return true if it exists, false otherwise.
      */
-    boolean isRetired(PolicyContext context);
+    boolean isRetired(String agreementId);
 
     /**
      * Returns a list of {@link AgreementsRetirementEntry} entries matching a valid {@link QuerySpec}

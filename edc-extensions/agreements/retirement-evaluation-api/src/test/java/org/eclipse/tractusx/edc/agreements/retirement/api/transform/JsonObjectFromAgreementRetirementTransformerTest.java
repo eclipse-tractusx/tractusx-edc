@@ -28,6 +28,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,7 +38,7 @@ import static org.mockito.Mockito.verify;
 
 class JsonObjectFromAgreementRetirementTransformerTest {
 
-    JsonBuilderFactory factory = Json.createBuilderFactory(Map.of());
+    private final JsonBuilderFactory factory = Json.createBuilderFactory(Map.of());
 
     private final JsonObjectFromAgreementRetirementTransformer transformer = new JsonObjectFromAgreementRetirementTransformer(factory);
 
@@ -52,9 +55,9 @@ class JsonObjectFromAgreementRetirementTransformerTest {
         var result = transformer.transform(entry, context);
 
         assertThat(result).isNotNull();
-        assertThat(result.getString(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID)).isEqualTo("agreementId");
-        assertThat(result.getString(AgreementsRetirementEntry.AR_ENTRY_REASON)).isEqualTo("long-reason");
-        assertThat(result.getJsonNumber(AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE)).isNotNull();
+        assertThat(result.getString(AR_ENTRY_AGREEMENT_ID)).isEqualTo("agreementId");
+        assertThat(result.getString(AR_ENTRY_REASON)).isEqualTo("long-reason");
+        assertThat(result.getJsonNumber(AR_ENTRY_RETIREMENT_DATE)).isNotNull();
         verify(context, never()).reportProblem(anyString());
     }
 

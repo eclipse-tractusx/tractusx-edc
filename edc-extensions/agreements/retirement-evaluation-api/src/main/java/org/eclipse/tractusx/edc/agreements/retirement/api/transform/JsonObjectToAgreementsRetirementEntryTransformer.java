@@ -26,6 +26,8 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
 
 public class JsonObjectToAgreementsRetirementEntryTransformer extends AbstractJsonLdTransformer<JsonObject, AgreementsRetirementEntry> {
 
@@ -36,8 +38,8 @@ public class JsonObjectToAgreementsRetirementEntryTransformer extends AbstractJs
     @Override
     public @Nullable AgreementsRetirementEntry transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext context) {
         var entryBuilder = AgreementsRetirementEntry.Builder.newInstance();
-        entryBuilder.withAgreementId(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID), context));
-        entryBuilder.withReason(transformString(jsonObject.get(AgreementsRetirementEntry.AR_ENTRY_REASON), context));
+        entryBuilder.withAgreementId(transformString(jsonObject.get(AR_ENTRY_AGREEMENT_ID), context));
+        entryBuilder.withReason(transformString(jsonObject.get(AR_ENTRY_REASON), context));
         return entryBuilder.build();
     }
 }
