@@ -94,7 +94,7 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
                 return StoreResult.success(false);
             }
         } catch (InterruptedException e) {
-            Thread.interrupted();
+            Thread.currentThread().interrupt();
             throw new IllegalStateException(e);
         } finally {
             LOCK.writeLock().unlock();
