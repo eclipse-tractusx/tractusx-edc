@@ -117,7 +117,7 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         return AgreementsRetirementEntry.Builder.newInstance()
                 .withAgreementId(resultSet.getString(statements.getIdColumn()))
                 .withReason(resultSet.getString(statements.getReasonColumn()))
-                .withAgreementRetirementDate(Long.parseLong(resultSet.getString(statements.getRetirementDateColumn())))
+                .withAgreementRetirementDate(resultSet.getLong(statements.getRetirementDateColumn()))
                 .build();
     }
 }
