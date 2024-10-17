@@ -27,6 +27,7 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
+import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -64,7 +65,7 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.lis
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
-@CloudTransferTest
+@EndToEndTest
 public class MultiCloudTest {
     // S3 test constants
     public static final String REGION = Region.US_WEST_2.id();

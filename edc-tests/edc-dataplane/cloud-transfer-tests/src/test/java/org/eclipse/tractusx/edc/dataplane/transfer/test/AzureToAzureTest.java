@@ -23,6 +23,7 @@ import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
+import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -74,7 +75,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
  */
 @SuppressWarnings("resource")
 @Testcontainers
-@CloudTransferTest
+@EndToEndTest
 public class AzureToAzureTest {
 
     private static final int PROVIDER_CONTROL_PORT = getFreePort();

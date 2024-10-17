@@ -53,7 +53,7 @@ public class TestConstants {
                 .add("dspace:endpointProperties", Json.createArrayBuilder(additionalProperties)
                         .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_PROVIDER_CONTAINER_NAME))
                         .add(dspaceProperty(EDC_NAMESPACE + "account", PROVIDER_AZURITE_ACCOUNT.name()))
-                        .add(dspaceProperty(EDC_NAMESPACE + "keyName", PROVIDER_AZURITE_ACCOUNT.key()))
+                        .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_PROVIDER_KEY_ALIAS))
                 );
     }
 
@@ -63,7 +63,7 @@ public class TestConstants {
                 .add("dspace:endpointProperties", Json.createArrayBuilder(additionalProperties)
                         .add(dspaceProperty(EDC_NAMESPACE + "container", AZBLOB_CONSUMER_CONTAINER_NAME))
                         .add(dspaceProperty(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name()))
-                        .add(dspaceProperty(EDC_NAMESPACE + "keyName", CONSUMER_AZURITE_ACCOUNT.key()))
+                        .add(dspaceProperty(EDC_NAMESPACE + "keyName", AZBLOB_CONSUMER_KEY_ALIAS))
                 );
     }
 
