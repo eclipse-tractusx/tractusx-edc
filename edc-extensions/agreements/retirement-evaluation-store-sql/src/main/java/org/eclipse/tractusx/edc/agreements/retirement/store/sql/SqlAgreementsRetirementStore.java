@@ -33,9 +33,8 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetire
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SqlAgreementsRetirementStore extends AbstractSqlStore implements AgreementsRetirementStore {
 
@@ -81,13 +80,12 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
     }
 
     @Override
-    public StoreResult<List<AgreementsRetirementEntry>> findRetiredAgreements(QuerySpec querySpec) {
+    public Stream<AgreementsRetirementEntry> findRetiredAgreements(QuerySpec querySpec) {
         Objects.requireNonNull(querySpec);
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 var statement = statements.createQuery(querySpec);
-                var result = queryExecutor.query(connection, true, this::mapAgreementsRetirement, statement.getQueryAsString(), statement.getParameters());
-                return StoreResult.success(result.collect(Collectors.toList()));
+                return queryExecutor.query(connection, true, this::mapAgreementsRetirement, statement.getQueryAsString(), statement.getParameters());
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }
