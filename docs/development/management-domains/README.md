@@ -41,7 +41,7 @@ special [asset type](https://github.com/eclipse-edc/Connector/blob/main/docs/dev
 was introduced for this purpose.
 
 Every target node produces one `Catalog`, so in the end there is a `List<Catalog>` which contains all the assets that
-are available in a particular dataspace.
+are available in a particular dataspace. Like so, after the Federated Catalog Crawler retrieves all catalogs, an aggregation of all is made and one single root catalog is exposed, similar to a Catalog Server without CatalogAssets.
 
 ## The Federated Catalog QueryApi
 
@@ -57,68 +57,241 @@ POST /v1alpha/catalog/query
 }
 ```
 
-the response body contains a list of catalogs as JSON-LD array (`hasPolicy` omitted for legibility). Notice
-the `@type: "dcat:Catalog`
-of the first `dataset` entry. This indicates that the "outer" Catalog actually contains another Catalog:
+As mentioned, the returned catalog can be presented in Flat or Hierarchical structures. The latter presents the catalogs hierarchical structure, for example, having a dataset that in itself contains a catalog dataset (that can also contain a catalog and so on) can be clearly understood by the Hierarchical structure. The Flat structure streamlines this view by presenting all datasets from all catalogs at the same level.
+
+To retrieve the flatten structure, include the ```flatten=true``` query param in the previous request.
+
+The following shows an example of a hierarchical structure response followed by a flatten structure response example.
+
+<details>
+  <summary>Hierarchical structure response example</summary>
 
 ```json
 [
   {
-    "@id": "a6574324-8dd2-4169-adf1-f94423c5d213",
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
     "@type": "dcat:Catalog",
     "dcat:dataset": [
       {
-        "@id": "1af92996-0bb7-4bdd-b04e-938fe54fb27f",
+        "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1c",
         "@type": "dcat:Catalog",
         "dcat:dataset": [
           {
-            "@id": "asset-2",
+            "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
             "@type": "dcat:Dataset",
-            "odrl:hasPolicy": {
-            },
-            "dcat:distribution": [],
-            "id": "asset-2"
+            "odrl:hasPolicy": [],
+            "dcat:distribution": [
+              {
+                "@type": "dcat:Distribution",
+                "dct:format": {
+                  "@id": "HttpData-PULL"
+                },
+                "dcat:accessService": {
+                  "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                  "@type": "dcat:DataService",
+                  "dcat:endpointDescription": "dspace:connector",
+                  "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                }
+              }
+            ]
           },
           {
-            "@id": "asset-1",
-            "@type": "dcat:Dataset",
-            "odrl:hasPolicy": {
-            },
+            "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+            "@type": "dcat:Catalog",
+            "dcat:dataset": [
+              {
+                "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+                "@type": "dcat:Dataset",
+                "odrl:hasPolicy": [],
+                "dcat:distribution": [
+                  {
+                    "@type": "dcat:Distribution",
+                    "dct:format": {
+                      "@id": "HttpData-PUSH"
+                    },
+                    "dcat:accessService": {
+                      "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                      "@type": "dcat:DataService",
+                      "dcat:endpointDescription": "dspace:connector",
+                      "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                    }
+                  }
+                ]
+              },
+              {
+                "@id": "f3521137-49dd-443c-9c04-ef945dfd3b2d",
+                "@type": "dcat:Dataset",
+                "odrl:hasPolicy": [],
+                "dcat:distribution": [
+                  {
+                    "@type": "dcat:Distribution",
+                    "dct:format": {
+                      "@id": "HttpData-PULL"
+                    },
+                    "dcat:accessService": {
+                      "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                      "@type": "dcat:DataService",
+                      "dcat:endpointDescription": "dspace:connector",
+                      "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                    }
+                  }
+                ]
+              }
+            ],
             "dcat:distribution": [],
-            "id": "asset-1"
+            "dcat:service": {
+              "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+            },
+            "dspace:participantId": "BPNL000000000001"
           }
         ],
         "dcat:distribution": [],
         "dcat:service": {
-          "@id": "684635d3-acc8-4ff5-ba71-d1e968be5e3b",
+          "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
           "@type": "dcat:DataService",
           "dcat:endpointDescription": "dspace:connector",
-          "dcat:endpointUrl": "http://localhost:8192/api/dsp",
-          "dct:terms": "dspace:connector",
-          "dct:endpointUrl": "http://localhost:8192/api/dsp"
+          "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
         },
-        "dspace:participantId": "did:web:localhost%3A7093",
-        "participantId": "did:web:localhost%3A7093"
+        "dspace:participantId": "BPNL000000000001"
       }
     ],
     "dcat:distribution": [],
     "dcat:service": {
-      "@id": "8c99b5d6-0c46-455e-97b1-7b31f32a714b",
+      "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
       "@type": "dcat:DataService",
       "dcat:endpointDescription": "dspace:connector",
-      "dcat:endpointUrl": "http://localhost:8092/api/dsp",
-      "dct:terms": "dspace:connector",
-      "dct:endpointUrl": "http://localhost:8092/api/dsp"
+      "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
     },
-    "dspace:participantId": "did:web:localhost%3A7093",
-    "originator": "http://localhost:8092/api/dsp",
-    "participantId": "did:web:localhost%3A7093"
+    "dspace:participantId": "BPNL000000000001",
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "odrl": "http://www.w3.org/ns/odrl/2/",
+      "dcat": "http://www.w3.org/ns/dcat#",
+      "dct": "http://purl.org/dc/terms/",
+      "dspace": "https://w3id.org/dspace/v0.8/"
+    }
   }
 ]
 ```
 
-There is an additional optional query param `?flatten=true` that puts all `dataset` objects in a flat list for
-linear consumption. Note that the hierarchy and provenance of a single `dataset` can't be restored anymore.
+</details>
+
+Notice the `@type: "dcat:Catalog` of the first `dataset` entry. This indicates that the "outer" Catalog actually contains another Catalog:
+
+
+
+<details>
+  <summary>Flatten structure response example</summary>
+
+```json
+[
+  {
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
+    "@type": "dcat:Catalog",
+    "dcat:dataset": [
+      {
+        "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "HttpData-PULL"
+            },
+            "dcat:accessService": {
+              "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1d",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "HttpData-PUSH"
+            },
+            "dcat:accessService": {
+              "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+            }
+          },
+          {
+            "@id": "f3521137-49dd-443c-9c04-ef945dfd3b2d",
+            "@type": "dcat:Dataset",
+            "odrl:hasPolicy": [],
+            "dcat:distribution": [
+              {
+                "@type": "dcat:Distribution",
+                "dct:format": {
+                  "@id": "HttpData-PULL"
+                },
+                "dcat:accessService": {
+                  "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+                  "@type": "dcat:DataService",
+                  "dcat:endpointDescription": "dspace:connector",
+                  "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dcat:distribution": [],
+    "dcat:service": [
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      },
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      },
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      },
+      {
+        "@id": "53b87f7a-dd80-4461-90ae-d7badcb392fc",
+        "@type": "dcat:DataService",
+        "dcat:endpointDescription": "dspace:connector",
+        "dcat:endpointUrl": "http://provider-control-plane:8282/api/v1/dsp"
+      }
+    ],
+    "dspace:participantId": "BPNL000000000SMT",
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "odrl": "http://www.w3.org/ns/odrl/2/",
+      "dcat": "http://www.w3.org/ns/dcat#",
+      "dct": "http://purl.org/dc/terms/",
+      "dspace": "https://w3id.org/dspace/v0.8/"
+    }
+  }
+]
+```
+</details>
+
 
 ## Implementation guidance
 
@@ -129,7 +302,7 @@ out-of-the-box!
 
 There are several steps a consumer EDC needs to take before being able to use it:
 
-### Create `CatalogAssets`
+### Crawl `CatalogAssets`
 
 `CatalogAssets` are assets that point to another catalog using hyperlinks. They can be thought of as pointers to another
 catalog. A catalog server (on the provider side) creates `CatalogAsset` via the Management API by using the following
@@ -149,6 +322,8 @@ request body:
   }
 }
 ```
+A Catalog Server can have CatalogAssets in addition to other "common" Assets.
+On the consumer side these should be crawled recursively and all catalogs jointed, forming the Federated Catalog.
 
 ### Enable and configure the crawler subsystem
 
@@ -164,7 +339,9 @@ The following config values are used to configure the crawlers:
 | `web.http.catalog.path`                      | `controlplane.endpoints.catalog.path`       | /catalog      | URL path of the catalog QueryApi's web context                     |
 | `tx.edc.catalog.node.list.file`              | `controlplane.catalog.crawler.targetsFile ` |               | path to a JSON file that contains an array of `TargetNode` objects |
 
-all of these config values are optional and come preconfigured with defaults.
+all of these config values are optional and come preconfigured with defaults, except for `tx.edc.catalog.node.list.file`.
+
+To enable this feature, at least two properties must be updated to not use default values. These are the `edc.catalog.cache.execution.enabled` which must be enabled and `tx.edc.catalog.node.list.file` pointing to a TargetNodeDirectory (ex: local file with TargetNodes). Simply, the `TargetNodeDirectory` consists on a list containing all `TargetNodes` which can be subject to crawling (querying).
 
 ### Configure the target nodes
 
@@ -190,6 +367,88 @@ of `TargetNode` objects:
 ```
 
 On Kubernetes, a common way to achieve this is using ConfigMaps.
+
+## Manage Access
+
+Considering the [documented](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/management-domains/management-domains.md#21-access-control) possibility of attach access policies to sub-catalogs (CatalogAssets) using contract definitions, the Catalog Server can confirm permissions of the client credentials.
+An example of a CatalogAsset with dummy credentials.
+```json
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "CatalogAsset",
+  "@id": "catalog-asset-example-id",
+  "properties": {
+    "test": "some test"
+  },
+  "dataAddress": {
+    "type": "HttpData",
+    "@type": "DataAddress",
+    "baseUrl": "https://example-edc.com/api/dsp",
+    "credentials": "provided_credentials"
+  }
+}
+```
+
+Can be later be checked based on similar catalog response.
+```json
+[
+  {
+    "@id": "f3521137-49dd-443c-9c04-ef945dfd3b1a",
+    "@type": "dcat:Catalog",
+    "dspace:participantId": "BPNL000000000001",
+    "isCatalog": true,
+    "id": "catalog-asset-example-id",
+    "test": "some test",
+    "dcat:dataset": [
+      {
+        "@id": "catalog-asset-example-id",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": [
+          {
+            "@id": "",
+            "@type": "odrl:Offer",
+            "odrl:permission": {
+              "odrl:action": {
+                "@id": "USE"
+              },
+              "odrl:constraint": {
+                "odrl:leftOperand": {
+                  "@id": "credentials"
+                },
+                "odrl:operator": {
+                  "@id": "odrl:eq"
+                },
+                "odrl:rightOperand": "provided_credentials"
+              }
+            },
+            "odrl:prohibition": [],
+            "odrl:obligation": []
+          }
+        ],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "dct:format": {
+              "@id": "AzureStorage-PUSH"
+            },
+            "dcat:accessService": {
+              "@id": "3eb13e90-f5ed-46f5-9287-99fca35a722c",
+              "@type": "dcat:DataService",
+              "dcat:endpointDescription": "dspace:connector",
+              "dcat:endpointUrl": "https://some_edc/api/v1/dsp",
+              "dct:terms": "dspace:connector",
+              "dct:endpointUrl": "https://some_edc/api/v1/dsp",
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
 
 ## References
 
