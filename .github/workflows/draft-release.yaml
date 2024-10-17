@@ -1,0 +1,130 @@
+#################################################################################
+#  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+## This is the draft-release that was backported from the main branch!
+
+---
+name: "Draft Release"
+run-name: "Draft Release ${{ inputs.version }} from ${{ github.ref_name }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes. '
+        required: true
+
+jobs:
+  validate-and-prepare:
+    name: "Validate that tag does not already exist and prepare branch"
+    runs-on: ubuntu-latest
+    # allow to run also on bugfix branches. the variant on `main` does not have that.
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'bugfix/')  || startsWith(github.ref, 'refs/tags/') }}
+    outputs:
+      branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check-tag
+        name: "Check if tag exists"
+        run: |-
+
+          tag=$(git tag -l ${{ inputs.version }})
+
+          if [ ! -z $tag ];
+          then
+            echo "Tag already exists! Please choose another tag."
+            exit 1
+          fi
+      - id: resolve_branch
+        name: "Resolve branch prefix (release or bugfix)"
+        run: |
+          
+          if [[ ${{ github.ref_name }} == "main" ]];
+          then
+            echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch_name=bugfix/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  draft-new-release:
+    name: "Draft a new release"
+    runs-on: ubuntu-latest
+    needs: validate-and-prepare
+    permissions:
+      contents: write
+      packages: write
+      pages: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Release or Bugfix branch
+        run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
+      - name: Initialize mandatory git config
+        run: |
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+      - uses: ./.github/actions/setup-java
+      - name: Bump version in gradle.properties
+        run: |-
+          # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
+          sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
+          # replace the openapi version with the upcoming one
+          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ inputs.version }}/swagger.yaml#g' .tractusx
+        env:
+          GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
+          GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version in /charts
+        uses: mikefarah/yq@v4.44.3
+        with:
+          cmd: |-
+            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
+      - name: Update Chart READMEs
+        uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/charts:/helm-docs
+          run: |
+            helm-docs --log-level debug
+      - name: Commit manifest files
+        id: make-commit
+        run: |
+          git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
+          git commit --message "Prepare release ${{ inputs.version }}"
+
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Push new branch
+        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+      - name: Create pull request
+        if: ${{ github.ref_name == 'main' }}
+        uses: thomaseizinger/create-pull-request@1.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          head: ${{ needs.validate-and-prepare.outputs.branch_name }}
+          base: main
+          title: Release version ${{ inputs.version }}
+          reviewers: ${{ github.actor }}
+          body: |-
+            This PR was created in response to a manual trigger of the [draft release workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+            Versions have been bumped in [commit ${{ steps.make-commit.outputs.commit }}](${{ steps.make-commit.outputs.commit }}).
+
+            Merging this PR will create a GitHub release and upload any assets that are created as part of the release build.
