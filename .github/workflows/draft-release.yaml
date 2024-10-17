@@ -36,7 +36,7 @@ jobs:
     name: "Validate that tag does not already exist and prepare branch"
     runs-on: ubuntu-latest
     # allow to run also on bugfix branches. the variant on `main` does not have that.
-    if: ${{ github.ref_name == 'main' || startsWith(github_ref_name, 'bugfix/')  || startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'bugfix/')  || startsWith(github.ref, 'refs/tags/') }}
     outputs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
     steps:
