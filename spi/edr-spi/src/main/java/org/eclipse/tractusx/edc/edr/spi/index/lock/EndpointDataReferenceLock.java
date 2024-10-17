@@ -23,10 +23,24 @@ import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
+import java.time.Instant;
+
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
+
 public interface EndpointDataReferenceLock {
     StoreResult<Boolean> acquireLock(String edrId, DataAddress edr);
 
-    boolean isExpired(DataAddress edr, EndpointDataReferenceEntry edrEntry);
-
     void releaseLock(String edrId);
+
+    default boolean isExpired(DataAddress edr, EndpointDataReferenceEntry edrEntry)  {
+        var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);
+        if (expiresInString == null) {
+            return false;
+        }
+        var expiresIn = Long.parseLong(expiresInString);
+        var expiresAt = edrEntry.getCreatedAt() / 1000L + expiresIn;
+        var expiresAtInstant = Instant.ofEpochSecond(expiresAt);
+
+        return expiresAtInstant.isBefore(Instant.now());
+    }
 }

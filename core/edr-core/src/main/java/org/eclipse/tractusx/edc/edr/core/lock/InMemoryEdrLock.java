@@ -20,19 +20,16 @@
 package org.eclipse.tractusx.edc.edr.core.lock;
 
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceEntryIndex;
-import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.Thread.sleep;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 
 public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
@@ -82,19 +79,6 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
         } finally {
             lock.readLock().unlock();
         }
-    }
-
-    @Override
-    public boolean isExpired(DataAddress edr, EndpointDataReferenceEntry metadata) {
-        var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);
-        if (expiresInString == null) {
-            return false;
-        }
-        var expiresIn = Long.parseLong(expiresInString);
-        var expiresAt = metadata.getCreatedAt() / 1000L + expiresIn;
-        var expiresAtInstant = Instant.ofEpochSecond(expiresAt);
-
-        return expiresAtInstant.isBefore(Instant.now());
     }
 
     @Override

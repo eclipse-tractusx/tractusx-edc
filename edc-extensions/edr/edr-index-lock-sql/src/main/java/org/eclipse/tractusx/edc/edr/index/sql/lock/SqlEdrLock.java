@@ -32,9 +32,6 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
-
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 
 public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenceLock {
     private final EdrLockStatements statements;
@@ -61,21 +58,6 @@ public class SqlEdrLock extends AbstractSqlStore implements EndpointDataReferenc
                 throw new EdcPersistenceException(e);
             }
         });
-    }
-
-    @Override
-    public boolean isExpired(DataAddress edr, EndpointDataReferenceEntry metadata) {
-        var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);
-        if (expiresInString == null) {
-            return false;
-        }
-
-        var expiresIn = Long.parseLong(expiresInString);
-        // createdAt is in millis, expires-in is in seconds
-        var expiresAt = metadata.getCreatedAt() / 1000L + expiresIn;
-        var expiresAtInstant = Instant.ofEpochSecond(expiresAt);
-
-        return expiresAtInstant.isBefore(Instant.now());
     }
 
     @Override
