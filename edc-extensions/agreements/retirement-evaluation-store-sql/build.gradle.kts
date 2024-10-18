@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.core.sql)
+    implementation(libs.edc.sql.contract.negotiation)
 
 
     testImplementation(libs.edc.transaction.local)

@@ -44,6 +44,30 @@ public interface SqlAgreementsRetirementStatements extends SqlStatements {
         return "edc_agreement_retirement";
     }
 
+    default String getContractAgreementIdColumn() {
+        return "agr_id";
+    }
+
+    default String getProviderAgentColumn() {
+        return "provider_agent_id";
+    }
+
+    default String getConsumerAgentColumn() {
+        return "consumer_agent_id";
+    }
+
+    default String getAssetIdColumn() {
+        return "asset_id";
+    }
+
+    default String getPolicyColumn() {
+        return "policy";
+    }
+
+    default String getContractAgreementTable() {
+        return "edc_contract_agreement";
+    }
+
     String findByIdTemplate();
 
     String insertTemplate();
@@ -53,6 +77,8 @@ public interface SqlAgreementsRetirementStatements extends SqlStatements {
     String getCountByIdClause();
 
     String getCountVariableName();
+
+    String getFindContractAgreementTemplate();
 
     SqlQueryStatement createQuery(QuerySpec querySpec);
 }

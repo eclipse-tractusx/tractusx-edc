@@ -20,6 +20,8 @@
 package org.eclipse.tractusx.edc.agreements.retirement.store.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -38,13 +40,13 @@ import java.util.stream.Stream;
 
 public class SqlAgreementsRetirementStore extends AbstractSqlStore implements AgreementsRetirementStore {
 
-    private final SqlAgreementsRetirementStatements statements;
+    private final SqlAgreementsRetirementStatements agreementsRetirementStatements;
 
     public SqlAgreementsRetirementStore(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                         TransactionContext transactionContext, ObjectMapper objectMapper,
-                                        QueryExecutor queryExecutor, SqlAgreementsRetirementStatements statements) {
+                                        QueryExecutor queryExecutor, SqlAgreementsRetirementStatements agreementsRetirementStatements) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
-        this.statements = statements;
+        this.agreementsRetirementStatements = agreementsRetirementStatements;
     }
 
     @Override
@@ -52,9 +54,14 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         Objects.requireNonNull(entry);
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                if (existsById(entry.getAgreementId(), connection)) {
+                if (isRetired(entry.getAgreementId(), connection)) {
                     return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(entry.getAgreementId()));
                 }
+
+                if (!contractAgreementExists(entry.getAgreementId(), connection)) {
+                    return StoreResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId()));
+                }
+
                 insert(connection, entry);
                 return StoreResult.success();
             } catch (SQLException e) {
@@ -68,10 +75,10 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         Objects.requireNonNull(contractAgreementId);
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                if (!existsById(contractAgreementId, connection)) {
-                    return StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(contractAgreementId));
+                if (!isRetired(contractAgreementId, connection)) {
+                    return StoreResult.notFound(NOT_FOUND_IN_RETIREMENT_TEMPLATE.formatted(contractAgreementId));
                 }
-                queryExecutor.execute(connection, statements.getDeleteByIdTemplate(), contractAgreementId);
+                queryExecutor.execute(connection, agreementsRetirementStatements.getDeleteByIdTemplate(), contractAgreementId);
                 return StoreResult.success();
             } catch (Exception e) {
                 throw new EdcPersistenceException(e.getMessage(), e);
@@ -84,7 +91,7 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         Objects.requireNonNull(querySpec);
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                var statement = statements.createQuery(querySpec);
+                var statement = agreementsRetirementStatements.createQuery(querySpec);
                 return queryExecutor.query(connection, true, this::mapAgreementsRetirement, statement.getQueryAsString(), statement.getParameters());
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
@@ -93,7 +100,7 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
     }
 
     private void insert(Connection conn, AgreementsRetirementEntry entry) {
-        var insertStatement = statements.insertTemplate();
+        var insertStatement = agreementsRetirementStatements.insertTemplate();
         queryExecutor.execute(
                 conn,
                 insertStatement,
@@ -102,22 +109,38 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
                 entry.getAgreementRetirementDate());
     }
 
-    private boolean existsById(String agreementId, Connection connection) {
-        var sql = statements.getCountByIdClause();
+    private boolean isRetired(String agreementId, Connection connection) {
+        var sql = agreementsRetirementStatements.getCountByIdClause();
         try (var stream = queryExecutor.query(connection, false, this::mapRowCount, sql, agreementId)) {
             return stream.findFirst().orElse(0) > 0;
         }
     }
 
+    private boolean contractAgreementExists(String agreementId, Connection connection) {
+        var sql = agreementsRetirementStatements.getFindContractAgreementTemplate();
+        var contractAgreement = queryExecutor.single(connection, false, this::mapContractAgreement, sql, agreementId);
+        return contractAgreement != null;
+    }
+
     private int mapRowCount(ResultSet resultSet) throws SQLException {
-        return resultSet.getInt(statements.getCountVariableName());
+        return resultSet.getInt(agreementsRetirementStatements.getCountVariableName());
+    }
+
+    private ContractAgreement mapContractAgreement(ResultSet resultSet) throws SQLException {
+        return ContractAgreement.Builder.newInstance()
+                .id(resultSet.getString(agreementsRetirementStatements.getContractAgreementIdColumn()))
+                .providerId(resultSet.getString(agreementsRetirementStatements.getProviderAgentColumn()))
+                .consumerId(resultSet.getString(agreementsRetirementStatements.getConsumerAgentColumn()))
+                .assetId(resultSet.getString(agreementsRetirementStatements.getAssetIdColumn()))
+                .policy(fromJson(resultSet.getString(agreementsRetirementStatements.getPolicyColumn()), Policy.class))
+                .build();
     }
 
     private AgreementsRetirementEntry mapAgreementsRetirement(ResultSet resultSet) throws SQLException {
         return AgreementsRetirementEntry.Builder.newInstance()
-                .withAgreementId(resultSet.getString(statements.getIdColumn()))
-                .withReason(resultSet.getString(statements.getReasonColumn()))
-                .withAgreementRetirementDate(resultSet.getLong(statements.getRetirementDateColumn()))
+                .withAgreementId(resultSet.getString(agreementsRetirementStatements.getIdColumn()))
+                .withReason(resultSet.getString(agreementsRetirementStatements.getReasonColumn()))
+                .withAgreementRetirementDate(resultSet.getLong(agreementsRetirementStatements.getRetirementDateColumn()))
                 .build();
     }
 }

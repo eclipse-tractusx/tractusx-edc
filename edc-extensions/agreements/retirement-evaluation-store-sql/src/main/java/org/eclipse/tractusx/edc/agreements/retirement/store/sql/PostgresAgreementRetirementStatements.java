@@ -68,4 +68,9 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
         var select = format("SELECT * FROM %s", getTable());
         return new SqlQueryStatement(select, querySpec, new AgreementRetirementMapping(this), operatorTranslator);
     }
+
+    @Override
+    public String getFindContractAgreementTemplate() {
+        return format("SELECT * FROM %s where %s=?;", getContractAgreementTable(), getContractAgreementIdColumn());
+    }
 }

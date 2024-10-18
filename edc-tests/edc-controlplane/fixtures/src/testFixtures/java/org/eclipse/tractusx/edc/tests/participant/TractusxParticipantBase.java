@@ -168,7 +168,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .statusCode(204);
     }
 
-    public void retireProviderAgreement(String agreementId) {
+    public void retireProviderAgreement(String agreementId, int expectedStatusCode) {
         var body = createObjectBuilder()
                 .add(TYPE, AR_ENTRY_TYPE)
                 .add(AR_ENTRY_AGREEMENT_ID, agreementId)
@@ -180,7 +180,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .when()
                 .post("/v3.1alpha/retireagreements")
                 .then()
-                .statusCode(204);
+                .statusCode(expectedStatusCode);
     }
 
     /**

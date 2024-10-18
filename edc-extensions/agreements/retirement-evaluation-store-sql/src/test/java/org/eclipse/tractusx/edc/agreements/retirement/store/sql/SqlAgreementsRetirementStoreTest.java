@@ -51,6 +51,7 @@ class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase
 
     @AfterEach
     void tearDown(PostgresqlStoreSetupExtension extension) {
+        extension.runQuery("DROP TABLE " + statements.getContractAgreementTable() + " CASCADE");
         extension.runQuery("DROP TABLE " + statements.getTable() + " CASCADE");
     }
 

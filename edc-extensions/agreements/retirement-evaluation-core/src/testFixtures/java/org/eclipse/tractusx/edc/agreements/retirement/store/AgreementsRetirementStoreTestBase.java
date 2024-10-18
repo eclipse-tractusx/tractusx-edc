@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
-import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_TEMPLATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE;
 
 public abstract class AgreementsRetirementStoreTestBase {
 
@@ -85,7 +85,7 @@ public abstract class AgreementsRetirementStoreTestBase {
         var delete = getStore().delete(agreementId);
 
         assertThat(delete).isFailed()
-                .detail().isEqualTo(NOT_FOUND_TEMPLATE.formatted(agreementId));
+                .detail().isEqualTo(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(agreementId));
 
     }
 

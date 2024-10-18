@@ -55,7 +55,7 @@ public class InMemoryAgreementsRetirementStore implements AgreementsRetirementSt
     @Override
     public StoreResult<Void> delete(String contractAgreementId) {
         return cache.remove(contractAgreementId) == null ?
-                StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(contractAgreementId)) :
+                StoreResult.notFound(NOT_FOUND_IN_RETIREMENT_TEMPLATE.formatted(contractAgreementId)) :
                 StoreResult.success();
     }
 
