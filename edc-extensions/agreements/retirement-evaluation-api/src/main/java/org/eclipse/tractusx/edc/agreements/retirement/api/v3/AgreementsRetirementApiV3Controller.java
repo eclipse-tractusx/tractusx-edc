@@ -104,7 +104,5 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
 
         service.retireAgreement(retirementEntry)
                 .orElseThrow(exceptionMapper(AgreementsRetirementEntry.class, retirementEntry.getAgreementId()));
-
-
     }
 }

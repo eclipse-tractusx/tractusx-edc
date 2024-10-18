@@ -31,7 +31,8 @@ import java.util.stream.Stream;
  */
 @ExtensionPoint
 public interface AgreementsRetirementStore  {
-    String NOT_FOUND_TEMPLATE = "Contract Agreement with %s was not found on retirement list.";
+    String NOT_FOUND_IN_RETIREMENT_TEMPLATE = "Contract Agreement with %s was not found on retirement table.";
+    String NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE = "Contract Agreement with %s was not found on contract agreement table.";
     String ALREADY_EXISTS_TEMPLATE = "Contract Agreement %s is already retired.";
 
     /**
