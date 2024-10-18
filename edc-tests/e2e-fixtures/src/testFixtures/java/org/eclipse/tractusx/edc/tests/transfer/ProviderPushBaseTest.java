@@ -80,7 +80,11 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
 
         var destination = httpDataAddress(consumerUrl);
 
-        var transferProcessId = consumer().requestAsset(provider(), assetId, createObjectBuilder().build(), destination, "HttpData-PUSH");
+        var transferProcessId = consumer()
+                .requestAssetFrom(assetId, provider())
+                .withDestination(destination)
+                .withTransferType("HttpData-PUSH")
+                .execute();
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());

@@ -23,7 +23,7 @@ plugins {
 }
 
 dependencies {
-    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
+    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
 
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)

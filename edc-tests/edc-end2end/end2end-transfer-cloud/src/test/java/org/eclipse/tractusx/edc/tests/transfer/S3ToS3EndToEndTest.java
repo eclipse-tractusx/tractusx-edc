@@ -26,6 +26,7 @@ import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.tractusx.edc.tests.aws.MinioContainer;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.BeforeEach;
