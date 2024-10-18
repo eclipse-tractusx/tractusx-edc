@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
+import org.eclipse.tractusx.edc.tests.azure.AzuriteContainer;
 import software.amazon.awssdk.regions.Region;
 
 import java.util.List;
@@ -29,8 +30,6 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class TestConstants {
     // AZURE BLOB CONSTANTS
-    public static final String AZURITE_DOCKER_IMAGE = "mcr.microsoft.com/azure-storage/azurite";
-    public static final int AZURITE_CONTAINER_PORT = 10000;
     public static final AzuriteContainer.Account PROVIDER_AZURITE_ACCOUNT = new AzuriteContainer.Account("provider", "providerkey");
     public static final AzuriteContainer.Account CONSUMER_AZURITE_ACCOUNT = new AzuriteContainer.Account("consumer", "consumerkey");
     // alias under which the provider key is stored in the vault. must end with -key1

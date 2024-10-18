@@ -25,6 +25,8 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.tractusx.edc.tests.azure.AzureBlobHelper;
+import org.eclipse.tractusx.edc.tests.azure.AzuriteContainer;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.BeforeEach;

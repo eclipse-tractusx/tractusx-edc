@@ -43,6 +43,8 @@ dependencies {
         exclude("org.eclipse.edc", "vault-hashicorp")
     }
 
+    implementation(libs.postgres)
+
     implementation(libs.edc.core.controlplane)
     // for the controller
     implementation(libs.jakarta.rsApi)

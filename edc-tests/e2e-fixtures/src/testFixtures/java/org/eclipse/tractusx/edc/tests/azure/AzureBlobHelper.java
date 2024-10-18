@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,17 +15,21 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer;
+package org.eclipse.tractusx.edc.tests.azure;
 
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.sas.BlobContainerSasPermission;
+import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.StorageSharedKeyCredential;
 
+import java.io.InputStream;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -54,6 +58,10 @@ public class AzureBlobHelper {
         client.getBlobClient(targetBlobName).upload(data, true);
     }
 
+    public void uploadBlob(BlobContainerClient client, InputStream inputStream, String targetBlobName) {
+        client.getBlobClient(targetBlobName).upload(inputStream, true);
+    }
+
     public List<String> listBlobs(String container) {
         if (blobClient().listBlobContainers().stream().noneMatch(bci -> bci.getName().equalsIgnoreCase(container))) {
             return List.of();
@@ -75,4 +83,12 @@ public class AzureBlobHelper {
         }
         return blobServiceClient;
     }
+
+    public String generateAccountSas(String containerName) {
+        var expiry = OffsetDateTime.MAX.minusDays(1);
+        var permissions = BlobContainerSasPermission.parse("w");
+        var vals = new BlobServiceSasSignatureValues(expiry, permissions);
+        return blobClient().getBlobContainerClient(containerName).generateSas(vals);
+    }
+
 }
