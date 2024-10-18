@@ -56,7 +56,7 @@ public class EdrServiceImplTest {
 
     @BeforeEach
     void setup() {
-        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), mock());
+        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), mock(), mock());
     }
 
     @Test
