@@ -27,13 +27,11 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
-    private static final int LOCK_TIMEOUT = 10000;
     private static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
 
     private final EndpointDataReferenceEntryIndex entryIndex;
@@ -45,64 +43,43 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
         this.transactionContext = transactionContext;
     }
 
-    /*
-    * This InMemory variant tries to mimic the behaviour of a SELECT WITH FOR UPDATE sql query, which enables a row-level lock.
-    * The result is either true if the thread acquiring the lock should refresh the token or false if it was already refreshed by another thread.
-    * A map contains the locks for each row, which should be created by the first thread to get the rights to create it.
-    * The thread that gets the rights to refresh the EDR should leave this method with a row-level lock,
-    * which should be terminated by the same thread upon successful refresh.
-    * Another lock is used to synchronize the read and write to the row-level locks map.
-    *
-    * */
     @Override
     public StoreResult<Boolean> acquireLock(String edrId, DataAddress edr) {
-
         LOCK.writeLock().lock();
         try {
-            var rowLock = lockedEdrs.get(edrId);
+            var rowLock = lockedEdrs.computeIfAbsent(edrId, k -> new ReentrantReadWriteLock());
 
-            if (rowLock == null) {
-                rowLock = lockedEdrs.get(edrId);
-                if (rowLock != null) {
-                    LOCK.writeLock().unlock();
-                    rowLock.writeLock().tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
-                    LOCK.writeLock().lock(); // gets the write lock again because it might need to unlock it.
-                } else {
-                    var newRowLock = new ReentrantReadWriteLock();
-                    newRowLock.writeLock().lock();
-                    lockedEdrs.put(edrId, newRowLock);
-                }
-
-                var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
-                if (isExpired(edr, edrEntry)) {
-                    return StoreResult.success(true); // leaves with the row-level write lock
-                } else {
-                    lockedEdrs.get(edrId).writeLock().unlock();
-                    return StoreResult.success(false);
-                }
-            }
-            LOCK.writeLock().unlock();
-            rowLock.writeLock().tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
+            LOCK.writeLock().unlock(); // unlocks global lock before waiting
+            rowLock.writeLock().lock();
             LOCK.writeLock().lock();
-
-
+            // inner try loop for the row-level lock
             var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
             if (isExpired(edr, edrEntry)) {
-                return StoreResult.success(true); // leaves with the row-level write lock
-            } else {
-                rowLock.writeLock().unlock();
-                return StoreResult.success(false);
+                return StoreResult.success(true); // expired, should refresh
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(e);
+
+            releaseLock(edrId);
+            return StoreResult.success(false); // not expired, no need to refresh
         } finally {
             LOCK.writeLock().unlock();
         }
     }
 
+
     @Override
     public void releaseLock(String edrId) {
-        lockedEdrs.get(edrId).writeLock().unlock();
+        LOCK.writeLock().lock();
+        try {
+            var reentrantReadWriteLock = lockedEdrs.get(edrId);
+            if (reentrantReadWriteLock != null && reentrantReadWriteLock.writeLock().isHeldByCurrentThread()) {
+                reentrantReadWriteLock.writeLock().unlock();
+                if (!reentrantReadWriteLock.hasQueuedThreads()) {
+                    lockedEdrs.remove(edrId);
+                }
+            }
+        } finally {
+            LOCK.writeLock().unlock();
+        }
     }
+
 }

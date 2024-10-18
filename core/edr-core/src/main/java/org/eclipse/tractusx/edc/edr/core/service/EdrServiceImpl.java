@@ -75,18 +75,21 @@ public class EdrServiceImpl implements EdrService {
             return ServiceResult.notFound("An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id));
         }
         if (edrLock.isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {
-            return ServiceResult.from(edrLock.acquireLock(id, edr))
+            var result = ServiceResult.from(edrLock.acquireLock(id, edr))
                     .compose(shouldRefresh -> {
                         if (!shouldRefresh) {
                             monitor.debug("Dont need to refresh. Will resolve existing.");
                             var refreshedEdr = edrStore.resolveByTransferProcess(id);
                             return ServiceResult.from(refreshedEdr);
                         } else {
-                            monitor.debug("Token expired, need to refresh.");
+                            monitor.debug("Token '%s' expired, need to refresh.".formatted(id));
                             return tokenRefreshHandler.refreshToken(id, edr)
                                     .compose(updated -> updateEdr(edrEntry, updated));
                         }
                     });
+            edrLock.releaseLock(id);
+            return result;
+
         }
         var refreshedEdr = edrStore.resolveByTransferProcess(id);
         return ServiceResult.from(refreshedEdr);
@@ -104,7 +107,6 @@ public class EdrServiceImpl implements EdrService {
 
         var updateResult = edrStore.save(newEntry, dataAddress);
 
-        edrLock.releaseLock(newEntry.getTransferProcessId());
 
         if (updateResult.failed()) {
             return ServiceResult.fromFailure(updateResult);

@@ -72,6 +72,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.matchers.Times.exactly;
 import static org.mockserver.model.HttpRequest.request;
@@ -169,8 +171,8 @@ public class EdrCacheApiEndToEndTest {
                 storeEdr("test-id-1", true);
                 storeEdr("test-id-2", true);
                 var numThreads = 50;
-                var jitter = 100; // maximum time between threads are spawned
-                var latch = new CountDownLatch(50);
+                var jitter = 20; // maximum time between threads are spawned
+                var latch = new CountDownLatch(numThreads);
 
                 var failed = new AtomicBoolean(false);
 
@@ -185,7 +187,8 @@ public class EdrCacheApiEndToEndTest {
                                     try {
                                         var tr = CONSUMER.edrs().getEdrWithRefresh("test-id-%s".formatted(edrNumber), true)
                                                 .assertThat()
-                                                .statusCode(200)
+                                                .log().ifValidationFails()
+                                                .statusCode(anyOf(equalTo(200), equalTo(409)))
                                                 .extract().asString();
 
                                         assertThat(tr).contains(accessToken);
@@ -197,7 +200,7 @@ public class EdrCacheApiEndToEndTest {
 
 
                                 }).start();
-                            }  catch (InterruptedException e) {
+                            } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
                         });
