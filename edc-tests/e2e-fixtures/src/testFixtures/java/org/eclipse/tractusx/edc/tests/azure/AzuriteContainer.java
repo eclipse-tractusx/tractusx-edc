@@ -17,27 +17,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.dataplane.transfer.test;
+package org.eclipse.tractusx.edc.tests.azure;
 
 import org.testcontainers.containers.GenericContainer;
 
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZURITE_CONTAINER_PORT;
 
 public class AzuriteContainer extends GenericContainer<AzuriteContainer> {
 
+    private static final String IMAGE_NAME = "mcr.microsoft.com/azure-storage/azurite";
+    private final int containerPort = 10_000;
+
     public AzuriteContainer(int azuriteHostPort, Account... accounts) {
-        super(TestConstants.AZURITE_DOCKER_IMAGE);
-        var azuriteAccounts = Arrays.stream(accounts).map(it -> "%s:%s".formatted(it.name, it.key)).collect(joining(";"));
-        addEnv("AZURITE_ACCOUNTS", azuriteAccounts);
-        setPortBindings(List.of("%d:10000".formatted(azuriteHostPort)));
+        super(IMAGE_NAME);
+        addEnv("AZURITE_ACCOUNTS", stream(accounts).map(it -> "%s:%s".formatted(it.name, it.key)).collect(joining(";")));
+        setPortBindings(List.of("%d:%d".formatted(azuriteHostPort, containerPort)));
     }
 
     public AzureBlobHelper getHelper(Account account) {
-        return new AzureBlobHelper(account.name(), account.key(), getHost(), getMappedPort(AZURITE_CONTAINER_PORT));
+        return new AzureBlobHelper(account.name(), account.key(), getHost(), getMappedPort(containerPort));
     }
 
     public record Account(String name, String key) { }

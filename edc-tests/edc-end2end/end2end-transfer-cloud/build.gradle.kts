@@ -23,7 +23,7 @@ plugins {
 }
 
 dependencies {
-    testImplementation(testFixtures(project(":edc-tests:edc-controlplane:fixtures")))
+    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
@@ -33,7 +33,6 @@ dependencies {
     testImplementation(libs.edc.aws.s3.core)
     testImplementation(libs.aws.s3)
     testImplementation(libs.aws.s3transfer)
-    testImplementation(libs.azure.storage.blob)
 }
 
 // do not publish
