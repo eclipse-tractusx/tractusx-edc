@@ -34,15 +34,15 @@ import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.tests.aws.MinioContainer;
+import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
@@ -67,9 +67,6 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_CONSUMER_BUCKET_NAME;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_PROVIDER_BUCKET_NAME;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.S3_REGION;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
@@ -87,6 +84,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @EndToEndTest
 public class S3ToS3Test {
 
+    private static final String S3_REGION = Region.US_WEST_2.id();
     private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
     private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
 
@@ -96,10 +94,12 @@ public class S3ToS3Test {
             RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT),
             ":edc-tests:runtime:dataplane-cloud"
     )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
-    @Container
-    private final MinioContainer providerContainer = new MinioContainer();
-    @Container
-    private final MinioContainer consumerContainer = new MinioContainer();
+
+    @RegisterExtension
+    private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();
+
+    @RegisterExtension
+    private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
 
     private S3Client providerClient;
     private S3Client consumerClient;
@@ -108,31 +108,32 @@ public class S3ToS3Test {
 
     @BeforeEach
     void setup() {
-        providerEndpointOverride = "http://localhost:%s/".formatted(providerContainer.getFirstMappedPort());
+        providerEndpointOverride = "http://localhost:%s/".formatted(PROVIDER_CONTAINER.getPort());
         var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(providerContainer::getCredentials)
+                .credentialsProvider(PROVIDER_CONTAINER::getCredentials)
                 .build();
         providerClient = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(S3_REGION, providerEndpointOverride));
 
-        consumerEndpointOverride = "http://localhost:%s".formatted(consumerContainer.getFirstMappedPort());
+        consumerEndpointOverride = "http://localhost:%s".formatted(CONSUMER_CONTAINER.getPort());
         var consumerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(consumerEndpointOverride))
-                .credentialsProvider(consumerContainer::getCredentials)
+                .credentialsProvider(CONSUMER_CONTAINER::getCredentials)
                 .build();
         consumerClient = new AwsClientProviderImpl(consumerConfig).s3Client(S3ClientRequest.from(S3_REGION, consumerEndpointOverride));
     }
 
     @Test
     void transferMultipleFiles() {
-        var sourceBucket = providerClient.createBucket(CreateBucketRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).build());
+        var sourceBucketName = UUID.randomUUID().toString();
+        var sourceBucket = providerClient.createBucket(CreateBucketRequest.builder().bucket(sourceBucketName).build());
         assertThat(sourceBucket.sdkHttpResponse().isSuccessful()).isTrue();
         var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
 
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
         fileNames.forEach(filename -> putResponse.set(providerClient.putObject(PutObjectRequest.builder()
-                        .bucket(S3_PROVIDER_BUCKET_NAME)
+                        .bucket(sourceBucketName)
                         .key(filename)
                         .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
                 .sdkHttpResponse()
@@ -140,14 +141,15 @@ public class S3ToS3Test {
 
         assertThat(putResponse.get()).isTrue();
 
-        var destinationBucket = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
+        var destinationBucketName = UUID.randomUUID().toString();
+        var destinationBucket = consumerClient.createBucket(CreateBucketRequest.builder().bucket(destinationBucketName).build());
         assertThat(destinationBucket.sdkHttpResponse().isSuccessful()).isTrue();
         var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES));
 
         given().when()
                 .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(createDataFlowStartMessage(additionalSourceAddressProperties))
+                .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
@@ -155,24 +157,23 @@ public class S3ToS3Test {
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
                 .untilAsserted(() ->
-                        assertThat(listObjects(consumerClient, S3_CONSUMER_BUCKET_NAME))
+                        assertThat(listObjects(consumerClient, destinationBucketName))
                                 .isNotEmpty()
                                 .containsAll(filesNames));
     }
 
-
     @Test
     void transferFile_success() {
-
-        // create bucket in provider
-        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).build());
+        var sourceBucketName = UUID.randomUUID().toString();
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(sourceBucketName).build());
         assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
         // upload test file in provider
-        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
+        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(sourceBucketName).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
         assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
 
         // create bucket in consumer
-        var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
+        var destinationBucketName = UUID.randomUUID().toString();
+        var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(destinationBucketName).build());
         assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
 
         var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
@@ -180,7 +181,7 @@ public class S3ToS3Test {
         given().when()
                 .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(createDataFlowStartMessage(additionalSourceAddressProperties))
+                .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
@@ -188,7 +189,7 @@ public class S3ToS3Test {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
-                .untilAsserted(() -> assertThat(listObjects(consumerClient, S3_CONSUMER_BUCKET_NAME))
+                .untilAsserted(() -> assertThat(listObjects(consumerClient, destinationBucketName))
                         .isNotEmpty()
                         .contains(TESTFILE_NAME));
     }
@@ -196,10 +197,11 @@ public class S3ToS3Test {
     @Test
     void transferFile_targetContainerNotExist_shouldFail() {
         // create bucket in provider
-        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).build());
+        var sourceBucketName = UUID.randomUUID().toString();
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(sourceBucketName).build());
         assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
         // upload test file in provider
-        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
+        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(sourceBucketName).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
         assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
 
         // do not create bucket in consumer -> will fail!
@@ -209,7 +211,7 @@ public class S3ToS3Test {
         given().when()
                 .baseUri(START_DATAFLOW_URL)
                 .contentType(ContentType.JSON)
-                .body(createDataFlowStartMessage(additionalSourceAddressProperties))
+                .body(createDataFlowStartMessage(sourceBucketName, "not-existent-bucket", additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
@@ -231,12 +233,14 @@ public class S3ToS3Test {
         var file = createSparseFile(sizeBytes);
 
         // create bucket in provider
-        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).build());
+        var sourceBucketName = UUID.randomUUID().toString();
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(sourceBucketName).build());
         assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
         // upload test file in provider
-        uploadLargeFile(file, S3_PROVIDER_BUCKET_NAME, TESTFILE_NAME).thenAccept(completedUpload -> {
+        uploadLargeFile(file, sourceBucketName, TESTFILE_NAME).thenAccept(completedUpload -> {
             // create bucket in consumer
-            var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
+            var destinationBucketName = UUID.randomUUID().toString();
+            var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(destinationBucketName).build());
             assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
 
             var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
@@ -244,7 +248,7 @@ public class S3ToS3Test {
             given().when()
                     .baseUri(START_DATAFLOW_URL)
                     .contentType(ContentType.JSON)
-                    .body(createDataFlowStartMessage(additionalSourceAddressProperties))
+                    .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties))
                     .post()
                     .then()
                     .statusCode(200);
@@ -252,7 +256,7 @@ public class S3ToS3Test {
 
             await().pollInterval(Duration.ofSeconds(2))
                     .atMost(Duration.ofSeconds(60))
-                    .untilAsserted(() -> assertThat(listObjects(consumerClient, S3_CONSUMER_BUCKET_NAME))
+                    .untilAsserted(() -> assertThat(listObjects(consumerClient, destinationBucketName))
                             .isNotEmpty()
                             .contains(TESTFILE_NAME));
         });
@@ -263,7 +267,7 @@ public class S3ToS3Test {
 
         var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(providerContainer::getCredentials)
+                .credentialsProvider(PROVIDER_CONTAINER::getCredentials)
                 .build();
         var asyncClient = new AwsClientProviderImpl(providerConfig).s3AsyncClient(S3_REGION);
         var tm = S3TransferManager.builder()
@@ -280,7 +284,7 @@ public class S3ToS3Test {
         return upload.completionFuture();
     }
 
-    private JsonObject createDataFlowStartMessage(List<JsonObjectBuilder> additionalSourceAddressProperties) {
+    private JsonObject createDataFlowStartMessage(String sourceBucketName, String destinationBucketName, List<JsonObjectBuilder> additionalSourceAddressProperties) {
         return Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
                 .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
@@ -290,9 +294,9 @@ public class S3ToS3Test {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder(additionalSourceAddressProperties)
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_REGION))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, S3_PROVIDER_BUCKET_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, providerContainer.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, providerContainer.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, sourceBucketName))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, PROVIDER_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, PROVIDER_CONTAINER.getCredentials().secretAccessKey()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, providerEndpointOverride))
                         )
                 )
@@ -301,9 +305,9 @@ public class S3ToS3Test {
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_REGION))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, S3_CONSUMER_BUCKET_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, consumerContainer.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, consumerContainer.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, destinationBucketName))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, CONSUMER_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, CONSUMER_CONTAINER.getCredentials().secretAccessKey()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, consumerEndpointOverride))
                         )
                 )

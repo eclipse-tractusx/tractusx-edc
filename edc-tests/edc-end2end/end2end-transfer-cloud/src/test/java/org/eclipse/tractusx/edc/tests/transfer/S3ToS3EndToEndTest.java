@@ -26,24 +26,22 @@ import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.eclipse.tractusx.edc.tests.aws.MinioContainer;
+import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -77,14 +75,14 @@ public class S3ToS3EndToEndTest {
     protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
     @RegisterExtension
     protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+
     private static final String S3_REGION = Region.US_WEST_2.id();
-    private static final String S3_PROVIDER_BUCKET_NAME = "provider-bucket";
-    private static final String S3_CONSUMER_BUCKET_NAME = "consumer-bucket" + System.currentTimeMillis();
     private static final String TESTFILE_NAME = "hello.txt";
-    @Container
-    private final MinioContainer providerContainer = new MinioContainer();
-    @Container
-    private final MinioContainer consumerContainer = new MinioContainer();
+
+    @RegisterExtension
+    private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();
+    @RegisterExtension
+    private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
 
     private S3Client providerClient;
     private S3Client consumerClient;
@@ -93,17 +91,17 @@ public class S3ToS3EndToEndTest {
 
     @BeforeEach
     void setup() {
-        providerEndpointOverride = "http://localhost:%s/".formatted(providerContainer.getFirstMappedPort());
+        providerEndpointOverride = "http://localhost:%s/".formatted(PROVIDER_CONTAINER.getPort());
         var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(providerContainer::getCredentials)
+                .credentialsProvider(PROVIDER_CONTAINER::getCredentials)
                 .build();
         providerClient = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(S3_REGION, providerEndpointOverride));
 
-        consumerEndpointOverride = "http://localhost:%s".formatted(consumerContainer.getFirstMappedPort());
+        consumerEndpointOverride = "http://localhost:%s".formatted(CONSUMER_CONTAINER.getPort());
         var consumerConfig = AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(consumerEndpointOverride))
-                .credentialsProvider(consumerContainer::getCredentials)
+                .credentialsProvider(CONSUMER_CONTAINER::getCredentials)
                 .build();
         consumerClient = new AwsClientProviderImpl(consumerConfig).s3Client(S3ClientRequest.from(S3_REGION, consumerEndpointOverride));
     }
@@ -113,14 +111,16 @@ public class S3ToS3EndToEndTest {
         var assetId = "s3-test-asset";
 
         // create bucket in provider
-        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).build());
+        var sourceBucketName = UUID.randomUUID().toString();
+        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(sourceBucketName).build());
         assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
         // upload test file in provider
-        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(S3_PROVIDER_BUCKET_NAME).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
+        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(sourceBucketName).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
         assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
 
         // create bucket in consumer
-        var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build());
+        var destinationBucketName = UUID.randomUUID().toString();
+        var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(destinationBucketName).build());
         assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
 
         Map<String, Object> dataAddress = Map.of(
@@ -129,9 +129,9 @@ public class S3ToS3EndToEndTest {
                 "type", "AmazonS3",
                 "objectName", TESTFILE_NAME,
                 "region", S3_REGION,
-                "bucketName", S3_PROVIDER_BUCKET_NAME,
-                "accessKeyId", providerContainer.getCredentials().accessKeyId(),
-                "secretAccessKey", providerContainer.getCredentials().secretAccessKey(),
+                "bucketName", sourceBucketName,
+                "accessKeyId", PROVIDER_CONTAINER.getCredentials().accessKeyId(),
+                "secretAccessKey", PROVIDER_CONTAINER.getCredentials().secretAccessKey(),
                 "endpointOverride", providerEndpointOverride
         );
 
@@ -148,10 +148,10 @@ public class S3ToS3EndToEndTest {
                         .add(EDC_NAMESPACE + "type", "AmazonS3")
                         .add(EDC_NAMESPACE + "objectName", TESTFILE_NAME)
                         .add(EDC_NAMESPACE + "region", S3_REGION)
-                        .add(EDC_NAMESPACE + "bucketName", S3_CONSUMER_BUCKET_NAME)
+                        .add(EDC_NAMESPACE + "bucketName", destinationBucketName)
                         .add(EDC_NAMESPACE + "endpointOverride", consumerEndpointOverride)
-                        .add(EDC_NAMESPACE + "accessKeyId", consumerContainer.getCredentials().accessKeyId())
-                        .add(EDC_NAMESPACE + "secretAccessKey", consumerContainer.getCredentials().secretAccessKey())
+                        .add(EDC_NAMESPACE + "accessKeyId", CONSUMER_CONTAINER.getCredentials().accessKeyId())
+                        .add(EDC_NAMESPACE + "secretAccessKey", CONSUMER_CONTAINER.getCredentials().secretAccessKey())
                         .build()
                 ).build();
 
@@ -164,7 +164,7 @@ public class S3ToS3EndToEndTest {
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
-            var rq = ListObjectsRequest.builder().bucket(S3_CONSUMER_BUCKET_NAME).build();
+            var rq = ListObjectsRequest.builder().bucket(destinationBucketName).build();
             assertThat(consumerClient.listObjects(rq).contents()).isNotEmpty();
         });
     }
@@ -175,11 +175,6 @@ public class S3ToS3EndToEndTest {
 
     public TractusxParticipantBase consumer() {
         return CONSUMER;
-    }
-
-    private List<String> listObjects(S3Client consumerClient, String bucketName) {
-        var response = consumerClient.listObjects(ListObjectsRequest.builder().bucket(bucketName).build());
-        return response.contents().stream().map(S3Object::key).toList();
     }
 
 }
