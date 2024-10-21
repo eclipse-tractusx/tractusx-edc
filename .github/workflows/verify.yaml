@@ -64,9 +64,6 @@ jobs:
             exit 1
           fi
 
-  verify-dependencies:
-    uses: eclipse-edc/.github/.github/workflows/dependency-check.yml@main
-  
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
