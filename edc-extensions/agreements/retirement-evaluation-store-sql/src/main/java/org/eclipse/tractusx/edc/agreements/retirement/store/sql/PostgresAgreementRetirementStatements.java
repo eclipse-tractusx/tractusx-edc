@@ -35,11 +35,6 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
     }
 
     @Override
-    public String findByIdTemplate() {
-        return format("SELECT * from %s WHERE %s = ?", getTable(), getIdColumn());
-    }
-
-    @Override
     public String insertTemplate() {
         return executeStatement()
                 .column(getIdColumn())
@@ -67,10 +62,5 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
     public SqlQueryStatement createQuery(QuerySpec querySpec) {
         var select = format("SELECT * FROM %s", getTable());
         return new SqlQueryStatement(select, querySpec, new AgreementRetirementMapping(this), operatorTranslator);
-    }
-
-    @Override
-    public String getFindContractAgreementTemplate() {
-        return format("SELECT * FROM %s where %s=?;", getContractAgreementTable(), getContractAgreementIdColumn());
     }
 }

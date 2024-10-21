@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.core.sql)
     implementation(libs.edc.sql.contract.negotiation)
+    implementation(libs.edc.spi.controlplane)
 
 
     testImplementation(libs.edc.transaction.local)

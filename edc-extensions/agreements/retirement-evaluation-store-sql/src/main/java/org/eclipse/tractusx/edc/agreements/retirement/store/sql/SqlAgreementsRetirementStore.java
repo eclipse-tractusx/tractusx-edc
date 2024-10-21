@@ -20,8 +20,7 @@
 package org.eclipse.tractusx.edc.agreements.retirement.store.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -41,12 +40,15 @@ import java.util.stream.Stream;
 public class SqlAgreementsRetirementStore extends AbstractSqlStore implements AgreementsRetirementStore {
 
     private final SqlAgreementsRetirementStatements agreementsRetirementStatements;
+    private final ContractAgreementService contractAgreementService;
 
     public SqlAgreementsRetirementStore(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                         TransactionContext transactionContext, ObjectMapper objectMapper,
-                                        QueryExecutor queryExecutor, SqlAgreementsRetirementStatements agreementsRetirementStatements) {
+                                        QueryExecutor queryExecutor, SqlAgreementsRetirementStatements agreementsRetirementStatements,
+                                        ContractAgreementService contractAgreementService) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.agreementsRetirementStatements = agreementsRetirementStatements;
+        this.contractAgreementService = contractAgreementService;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
                     return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(entry.getAgreementId()));
                 }
 
-                if (!contractAgreementExists(entry.getAgreementId(), connection)) {
+                if (!contractAgreementExists(entry.getAgreementId())) {
                     return StoreResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId()));
                 }
 
@@ -116,24 +118,13 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         }
     }
 
-    private boolean contractAgreementExists(String agreementId, Connection connection) {
-        var sql = agreementsRetirementStatements.getFindContractAgreementTemplate();
-        var contractAgreement = queryExecutor.single(connection, false, this::mapContractAgreement, sql, agreementId);
+    private boolean contractAgreementExists(String agreementId) {
+        var contractAgreement = contractAgreementService.findById(agreementId);
         return contractAgreement != null;
     }
 
     private int mapRowCount(ResultSet resultSet) throws SQLException {
         return resultSet.getInt(agreementsRetirementStatements.getCountVariableName());
-    }
-
-    private ContractAgreement mapContractAgreement(ResultSet resultSet) throws SQLException {
-        return ContractAgreement.Builder.newInstance()
-                .id(resultSet.getString(agreementsRetirementStatements.getContractAgreementIdColumn()))
-                .providerId(resultSet.getString(agreementsRetirementStatements.getProviderAgentColumn()))
-                .consumerId(resultSet.getString(agreementsRetirementStatements.getConsumerAgentColumn()))
-                .assetId(resultSet.getString(agreementsRetirementStatements.getAssetIdColumn()))
-                .policy(fromJson(resultSet.getString(agreementsRetirementStatements.getPolicyColumn()), Policy.class))
-                .build();
     }
 
     private AgreementsRetirementEntry mapAgreementsRetirement(ResultSet resultSet) throws SQLException {
