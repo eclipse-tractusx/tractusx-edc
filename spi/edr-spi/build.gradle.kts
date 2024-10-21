@@ -28,10 +28,12 @@ dependencies {
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.edrstore)
 
+    testFixturesImplementation(project(":spi:core-spi"))
     testFixturesImplementation(libs.edc.junit)
     testFixturesImplementation(libs.junit.jupiter.api)
     testFixturesImplementation(libs.assertj)
     testFixturesImplementation(libs.awaitility)
+    testFixturesImplementation(libs.edc.spi.edrstore)
 
 }
 

@@ -54,12 +54,8 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
             LOCK.writeLock().lock();
             // inner try loop for the row-level lock
             var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
-            if (isExpired(edr, edrEntry)) {
-                return StoreResult.success(true); // expired, should refresh
-            }
 
-            releaseLock(edrId);
-            return StoreResult.success(false); // not expired, no need to refresh
+            return StoreResult.success(isExpired(edr, edrEntry));
         } finally {
             LOCK.writeLock().unlock();
         }
@@ -67,16 +63,22 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
 
     @Override
-    public void releaseLock(String edrId) {
+    public StoreResult<Void> releaseLock(String edrId) {
         LOCK.writeLock().lock();
         try {
             var reentrantReadWriteLock = lockedEdrs.get(edrId);
-            if (reentrantReadWriteLock != null && reentrantReadWriteLock.writeLock().isHeldByCurrentThread()) {
+            if (reentrantReadWriteLock == null) {
+                return StoreResult.generalError("Could not release row-lock because it does not exist");
+            }
+            if (reentrantReadWriteLock.writeLock().isHeldByCurrentThread()) {
                 reentrantReadWriteLock.writeLock().unlock();
                 if (!reentrantReadWriteLock.hasQueuedThreads()) {
                     lockedEdrs.remove(edrId);
                 }
             }
+            return StoreResult.success();
+
+
         } finally {
             LOCK.writeLock().unlock();
         }

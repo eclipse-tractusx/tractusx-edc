@@ -87,7 +87,8 @@ public class EdrServiceImpl implements EdrService {
                                     .compose(updated -> updateEdr(edrEntry, updated));
                         }
                     });
-            edrLock.releaseLock(id);
+            edrLock.releaseLock(id)
+                    .onFailure(error -> monitor.warning("Error releasing lock: %s".formatted(error)));
             return result;
 
         }

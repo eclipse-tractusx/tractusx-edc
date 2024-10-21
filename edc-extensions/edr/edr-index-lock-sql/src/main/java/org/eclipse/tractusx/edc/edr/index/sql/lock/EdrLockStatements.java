@@ -24,6 +24,8 @@ public interface EdrLockStatements {
 
     String getSelectForUpdateTemplate();
 
+    String getEdrEntryTableName();
+
     String getCreatedAtColumn();
 
     String getAssetIdColumn();

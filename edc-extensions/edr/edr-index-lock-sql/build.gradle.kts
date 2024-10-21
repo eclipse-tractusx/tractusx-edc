@@ -35,4 +35,8 @@ dependencies {
 
     implementation(project(":spi:core-spi"))
     implementation(project(":spi:edr-spi"))
+
+    testImplementation(testFixtures(project(":spi:edr-spi")))
+    testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.junit))
 }

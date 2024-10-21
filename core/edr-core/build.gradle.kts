@@ -33,6 +33,8 @@ dependencies {
     implementation(project(":spi:core-spi"))
 
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.core.edrstore)
+    testImplementation(libs.edc.lib.query)
     testImplementation(libs.awaitility)
     testImplementation(testFixtures(project(":spi:edr-spi")))
 

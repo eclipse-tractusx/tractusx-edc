@@ -30,7 +30,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRE
 public interface EndpointDataReferenceLock {
     StoreResult<Boolean> acquireLock(String edrId, DataAddress edr);
 
-    void releaseLock(String edrId);
+    StoreResult<Void> releaseLock(String edrId);
 
     default boolean isExpired(DataAddress edr, EndpointDataReferenceEntry edrEntry)  {
         var expiresInString = edr.getStringProperty(EDR_PROPERTY_EXPIRES_IN);

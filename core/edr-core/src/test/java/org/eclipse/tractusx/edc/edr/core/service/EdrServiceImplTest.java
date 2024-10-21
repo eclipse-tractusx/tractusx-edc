@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class EdrServiceImplTest {
+class EdrServiceImplTest {
 
     private final TokenRefreshHandler tokenRefreshHandler = mock();
     private final EndpointDataReferenceStore edrStore = mock();
@@ -86,7 +86,7 @@ public class EdrServiceImplTest {
         verify(edrStore).resolveByTransferProcess(transferProcess);
 
         verifyNoMoreInteractions(edrStore);
-        verifyNoInteractions(tokenRefreshHandler);
+        verifyNoInteractions(tokenRefreshHandler, edrLock);
     }
 
     @Test
@@ -106,8 +106,9 @@ public class EdrServiceImplTest {
 
         verify(edrStore, times(2)).resolveByTransferProcess(transferProcess);
         verify(edrStore).findById(transferProcess);
+        verify(edrLock).isExpired(edr, edrEntry);
 
-        verifyNoMoreInteractions(edrStore);
+        verifyNoMoreInteractions(edrStore, edrLock);
         verifyNoInteractions(tokenRefreshHandler);
     }
 
@@ -136,8 +137,11 @@ public class EdrServiceImplTest {
         verify(edrStore).findById(transferProcess);
         verify(edrStore).save(captor.capture(), eq(refreshedEdr));
         verify(tokenRefreshHandler).refreshToken(eq(transferProcess), any());
+        verify(edrLock).isExpired(any(), any());
+        verify(edrLock).acquireLock(any(), any());
+        verify(edrLock).releaseLock(transferProcess);
 
-        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler, edrLock);
 
         Assertions.assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(entry);
     }
@@ -164,10 +168,13 @@ public class EdrServiceImplTest {
 
         verify(edrStore, times(2)).resolveByTransferProcess(transferProcess);
         verify(edrStore).findById(transferProcess);
+        verify(edrLock).isExpired(any(), any());
+        verify(edrLock).acquireLock(any(), any());
+        verify(edrLock).releaseLock(transferProcess);
 
         Assertions.assertThat(result.getContent()).isEqualTo(refreshedEdr);
 
-        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler, edrLock);
     }
 
     @Test
@@ -195,8 +202,11 @@ public class EdrServiceImplTest {
         verify(edrStore).findById(transferProcess);
         verify(edrStore).save(captor.capture(), eq(refreshedEdr));
         verify(tokenRefreshHandler).refreshToken(eq(transferProcess), any());
+        verify(edrLock).isExpired(any(), any());
+        verify(edrLock).acquireLock(any(), any());
+        verify(edrLock).releaseLock(transferProcess);
 
-        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler, edrLock);
 
         Assertions.assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(entry);
 

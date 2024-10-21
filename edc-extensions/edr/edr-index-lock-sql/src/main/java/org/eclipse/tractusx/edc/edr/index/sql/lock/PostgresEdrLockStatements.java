@@ -69,4 +69,9 @@ public class PostgresEdrLockStatements implements EdrLockStatements {
         return edrEntryStatements.getContractNegotiationIdColumn();
     }
 
+    @Override
+    public String getEdrEntryTableName() {
+        return edrEntryStatements.getEdrEntryTable();
+    }
+
 }
