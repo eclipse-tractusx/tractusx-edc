@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.policy.cx.membership;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,31 +37,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class MembershipConstraintFunctionTest {
+class MembershipCredentialConstraintFunctionTest {
 
-    private final MembershipCredentialConstraintFunction function = new MembershipCredentialConstraintFunction();
+    private final ParticipantAgent participantAgent = mock();
+    private final MembershipCredentialConstraintFunction<PolicyContext> function = new MembershipCredentialConstraintFunction<>() {
+        @Override
+        protected ParticipantAgent getParticipantAgent(PolicyContext context) {
+            return participantAgent;
+        }
+    };
     private final PolicyContext context = mock();
-    private ParticipantAgent participantAgent;
-
-    @BeforeEach
-    void setup() {
-        participantAgent = mock(ParticipantAgent.class);
-        when(context.getContextData(eq(ParticipantAgent.class)))
-                .thenReturn(participantAgent);
-    }
 
     @Test
     void evaluate_leftOperandInvalid() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createMembershipCredential().build())));
         assertThat(function.evaluate(CX_POLICY_NS + "foobar", Operator.EQ, "active", null, context)).isFalse();
         verify(context).reportProblem(startsWith("Invalid left-operand: must be 'Membership', but was"));
-    }
-
-    @Test
-    void evaluate_noParticipantAgentOnContext() {
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(null);
-        assertThat(function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem("Required PolicyContext data not found: org.eclipse.edc.spi.agent.ParticipantAgent");
     }
 
     @Test

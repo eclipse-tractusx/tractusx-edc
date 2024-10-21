@@ -20,6 +20,8 @@
 package org.eclipse.tractusx.edc.agreements.retirement;
 
 
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.connector.policy.monitor.spi.PolicyMonitorContext;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -27,8 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
-import static org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension.POLICY_MONITOR_SCOPE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -50,8 +50,8 @@ class AgreementsRetirementPreValidatorRegisterExtensionTest {
         extension.initialize(context);
 
         verify(policyEngine, times(1))
-                .registerPreValidator(eq(TRANSFER_SCOPE), any());
+                .registerPreValidator(eq(TransferProcessPolicyContext.class), any());
         verify(policyEngine, times(1))
-                .registerPreValidator(eq(POLICY_MONITOR_SCOPE), any());
+                .registerPreValidator(eq(PolicyMonitorContext.class), any());
     }
 }

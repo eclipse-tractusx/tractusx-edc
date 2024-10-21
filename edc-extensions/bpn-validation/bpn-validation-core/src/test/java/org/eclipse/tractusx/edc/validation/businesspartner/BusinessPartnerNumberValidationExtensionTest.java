@@ -33,6 +33,7 @@ import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartne
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,22 +52,17 @@ class BusinessPartnerNumberValidationExtensionTest {
 
     @Test
     void testRegisterPermissionFunction(ServiceExtensionContext context, BusinessPartnerNumberValidationExtension extension) {
-
-        // invoke
         extension.initialize(context);
 
-        // verify
         verify(policyEngine, times(3))
                 .registerFunction(
-                        anyString(),
+                        isA(Class.class),
                         eq(Permission.class),
                         eq(BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
-
-        // verify
         verify(policyEngine, times(3))
                 .registerFunction(
-                        anyString(),
+                        isA(Class.class),
                         eq(Permission.class),
                         eq(TX_BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());

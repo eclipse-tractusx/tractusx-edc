@@ -19,7 +19,10 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
@@ -42,7 +45,7 @@ import static org.eclipse.edc.spi.result.Result.success;
 /**
  * AtomicConstraintFunction to validate business partner numbers for edc permissions.
  */
-public class BusinessPartnerNumberPermissionFunction implements AtomicConstraintFunction<Permission> {
+public class BusinessPartnerNumberPermissionFunction {
 
     private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
             EQ,
@@ -55,8 +58,22 @@ public class BusinessPartnerNumberPermissionFunction implements AtomicConstraint
             Operator.HAS_PART
     );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext context) {
+    public AtomicConstraintRuleFunction<Permission, TransferProcessPolicyContext> transferProcess() {
+        return (operator, rightValue, permission, context) ->
+                evaluate(operator, rightValue, context.agent(), context);
+    }
+
+    public AtomicConstraintRuleFunction<Permission, ContractNegotiationPolicyContext> contractNegotiation() {
+        return (operator, rightValue, permission, context) ->
+                evaluate(operator, rightValue, context.agent(), context);
+    }
+
+    public AtomicConstraintRuleFunction<Permission, CatalogPolicyContext> catalog() {
+        return (operator, rightValue, permission, context) ->
+                evaluate(operator, rightValue, context.agent(), context);
+    }
+
+    public boolean evaluate(Operator operator, Object rightValue, ParticipantAgent participantAgent, PolicyContext context) {
 
         if (!SUPPORTED_OPERATORS.contains(operator)) {
             var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
@@ -64,7 +81,6 @@ public class BusinessPartnerNumberPermissionFunction implements AtomicConstraint
             return false;
         }
 
-        var participantAgent = context.getContextData(ParticipantAgent.class);
         if (participantAgent == null) {
             context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
             return false;
@@ -101,7 +117,7 @@ public class BusinessPartnerNumberPermissionFunction implements AtomicConstraint
     }
 
     private Result<Boolean> checkListContains(String identity, Object rightValue, Operator operator) {
-        if (rightValue instanceof List numbers) {
+        if (rightValue instanceof List<?> numbers) {
             return success(numbers.contains(identity));
         }
         return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));

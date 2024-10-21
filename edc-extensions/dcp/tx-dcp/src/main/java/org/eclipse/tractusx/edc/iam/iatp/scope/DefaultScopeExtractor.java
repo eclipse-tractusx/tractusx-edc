@@ -19,24 +19,24 @@
 
 package org.eclipse.tractusx.edc.iam.iatp.scope;
 
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.policy.context.request.spi.RequestPolicyContext;
+import org.eclipse.edc.policy.engine.spi.PolicyValidatorRule;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.RequestScope;
 
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import static java.lang.String.format;
 
 /**
  * Extract for TX default scopes e.g. MembershipCredential scope
  */
-public record DefaultScopeExtractor(Set<String> defaultScopes) implements BiFunction<Policy, PolicyContext, Boolean> {
+public record DefaultScopeExtractor<C extends RequestPolicyContext>(Set<String> defaultScopes) implements PolicyValidatorRule<C> {
 
     @Override
-    public Boolean apply(Policy policy, PolicyContext policyContext) {
-        var scopes = policyContext.getContextData(RequestScope.Builder.class);
+    public Boolean apply(Policy policy, RequestPolicyContext policyContext) {
+        var scopes = policyContext.requestScopeBuilder();
         if (scopes == null) {
             throw new EdcException(format("%s not set in policy context", RequestScope.Builder.class.getName()));
         }

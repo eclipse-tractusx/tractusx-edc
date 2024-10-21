@@ -20,14 +20,11 @@
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
-import org.eclipse.edc.policy.model.AtomicConstraint;
-import org.eclipse.edc.policy.model.LiteralExpression;
+import org.eclipse.edc.policy.engine.spi.PolicyContextImpl;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -54,12 +51,8 @@ import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
 import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
-import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
-import static org.mockito.ArgumentMatchers.endsWith;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BusinessPartnerGroupFunctionTest {
@@ -67,48 +60,48 @@ class BusinessPartnerGroupFunctionTest {
     public static final String TEST_GROUP_1 = "test-group-1";
     public static final String TEST_GROUP_2 = "test-group-2";
     private static final String TEST_BPN = "BPN000TEST";
-    private final PolicyContext context = mock();
-    private BusinessPartnerGroupFunction function;
-    private BusinessPartnerStore store;
-
-    @BeforeEach
-    void setUp() {
-        store = mock();
-        function = new BusinessPartnerGroupFunction(store);
-    }
+    private final PolicyContext context = new PolicyContextImpl() {
+        @Override
+        public String scope() {
+            return "any";
+        }
+    };
+    private final BusinessPartnerStore store = mock();
+    private final BusinessPartnerGroupFunction function = new BusinessPartnerGroupFunction(store);
 
     @Test
     @DisplayName("PolicyContext does not carry ParticipantAgent")
     void evaluate_noParticipantAgentOnContext() {
-        reset(context);
-        assertThat(function.evaluate(EQ, "test-group", createPermission(EQ, List.of()), context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent not found on PolicyContext"));
+        var result = function.evaluate(EQ, "test-group", null, context);
+
+        assertThat(result).isFalse();
+
+        assertThat(context.getProblems()).containsOnly("ParticipantAgent not found on PolicyContext");
     }
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)
     @DisplayName("Invalid operators, expect report in policy context")
     void evaluate_invalidOperator(Operator invalidOperator) {
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of()));
-        assertThat(function.evaluate(invalidOperator, "test-group", createPermission(invalidOperator, List.of()), context)).isFalse();
-        verify(context).reportProblem(endsWith("but was [" + invalidOperator.name() + "]"));
+        var agent = new ParticipantAgent(Map.of(), Map.of());
+
+        var result = function.evaluate(invalidOperator, "test-group", agent, context);
+
+        assertThat(result).isFalse();
+        assertThat(context.getProblems()).hasSize(1).anyMatch(it -> it.endsWith("but was [" + invalidOperator.name() + "]"));
     }
 
-    @Test
+    @ParameterizedTest
+    @ArgumentsSource(RightOperandNotStringNorCollection.class)
     @DisplayName("Right-hand operand is not String or Collection<?>")
-    void evaluate_rightOperandNotStringOrCollection() {
+    void evaluate_rightOperandNotStringOrCollection(Object rightValue) {
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(List.of("test-group")));
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
 
-        assertThat(function.evaluate(EQ, 42, createPermission(EQ, List.of("test-group")), context)).isFalse();
-        assertThat(function.evaluate(EQ, 42L, createPermission(EQ, List.of("test-group")), context)).isFalse();
-        assertThat(function.evaluate(EQ, true, createPermission(EQ, List.of("test-group")), context)).isFalse();
-        assertThat(function.evaluate(EQ, new Object(), createPermission(EQ, List.of("test-group")), context)).isFalse();
+        var result = function.evaluate(EQ, rightValue, agent, context);
 
-        verify(context).reportProblem("Right operand expected to be either String or a Collection, but was " + Integer.class);
-        verify(context).reportProblem("Right operand expected to be either String or a Collection, but was " + Long.class);
-        verify(context).reportProblem("Right operand expected to be either String or a Collection, but was " + Boolean.class);
-        verify(context).reportProblem("Right operand expected to be either String or a Collection, but was " + Object.class);
+        assertThat(result).isFalse();
+        assertThat(context.getProblems()).containsOnly("Right operand expected to be either String or a Collection, but was " + rightValue.getClass());
     }
 
     @ParameterizedTest(name = "{1} :: {0}")
@@ -116,20 +109,24 @@ class BusinessPartnerGroupFunctionTest {
     @DisplayName("Valid operators, evaluating different circumstances")
     void evaluate_validOperator(String ignored, Operator operator, List<String> assignedBpn, boolean expectedOutcome) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
+
+        var result = function.evaluate(operator, allowedGroups, agent, context);
+
+        assertThat(result).isEqualTo(expectedOutcome);
     }
 
     @Test
     void evaluate_failedResolveForBpn_shouldBeFalse() {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        var operator = EQ;
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isFalse();
-        verify(context).reportProblem("foobar");
+        var result = function.evaluate(EQ, allowedGroups, agent, context);
+
+        assertThat(result).isFalse();
+        assertThat(context.getProblems()).containsOnly("foobar");
     }
 
     @ArgumentsSource(OperatorForEmptyGroupsProvider.class)
@@ -137,25 +134,17 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_groupsAssignedButNoGroupsSentToEvaluate(Operator operator, List<String> assignedBpnGroups,
                                                           boolean expectedOutcome) {
         List<String> allowedGroups = List.of();
-
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN)));
+        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpnGroups));
 
-        assertThat(function.evaluate(operator, allowedGroups, createPermission(operator, allowedGroups), context)).isEqualTo(expectedOutcome);
-    }
+        var result = function.evaluate(operator, allowedGroups, agent, context);
 
-    private Permission createPermission(Operator op, List<String> rightOperand) {
-        return Permission.Builder.newInstance()
-                .constraint(AtomicConstraint.Builder.newInstance()
-                        .leftExpression(new LiteralExpression(BUSINESS_PARTNER_CONSTRAINT_KEY))
-                        .operator(op)
-                        .rightExpression(new LiteralExpression(rightOperand)).build())
-                .build();
+        assertThat(result).isEqualTo(expectedOutcome);
     }
 
     private static class InvalidOperatorProvider implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(GEQ),
                     Arguments.of(GT),
@@ -224,4 +213,18 @@ class BusinessPartnerGroupFunctionTest {
             );
         }
     }
+
+    private static class RightOperandNotStringNorCollection implements ArgumentsProvider {
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                    arguments(42),
+                    arguments(42L),
+                    arguments(true),
+                    arguments(new Object())
+            );
+        }
+    }
+
 }

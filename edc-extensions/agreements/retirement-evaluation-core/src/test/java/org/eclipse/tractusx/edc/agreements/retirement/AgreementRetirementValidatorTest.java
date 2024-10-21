@@ -40,7 +40,6 @@ class AgreementRetirementValidatorTest {
 
     private AgreementRetirementValidator validator;
     private final AgreementsRetirementService service = mock();
-    private final Policy policy = mock();
     private final PolicyContext context = mock();
 
     @BeforeEach
@@ -51,11 +50,7 @@ class AgreementRetirementValidatorTest {
     @Test
     @DisplayName("Verify validator returns true if no agreement is found in policyContext")
     public void verify_agreementExistsInPolicyContext() {
-
-        when(context.getContextData(ContractAgreement.class))
-                .thenReturn(null);
-        assertThat(validator.apply(policy, context)).isTrue();
-
+        assertThat(validator.validate(null, context)).isTrue();
     }
 
     @Test
@@ -63,12 +58,10 @@ class AgreementRetirementValidatorTest {
         var agreementId = "test-agreement";
         var agreement = buildAgreement(agreementId);
 
-        when(context.getContextData(ContractAgreement.class))
-                .thenReturn(agreement);
         when(service.isRetired(agreementId))
                 .thenReturn(true);
 
-        var result = validator.apply(policy, context);
+        var result = validator.validate(agreement, context);
 
         assertThat(result).isFalse();
         verify(context, times(1)).reportProblem(anyString());
@@ -79,12 +72,10 @@ class AgreementRetirementValidatorTest {
         var agreementId = "test-agreement";
         var agreement = buildAgreement(agreementId);
 
-        when(context.getContextData(ContractAgreement.class))
-                .thenReturn(agreement);
         when(service.isRetired(agreementId))
                 .thenReturn(false);
 
-        var result = validator.apply(policy, context);
+        var result = validator.validate(agreement, context);
 
         assertThat(result).isTrue();
         verify(context, never()).reportProblem(anyString());
