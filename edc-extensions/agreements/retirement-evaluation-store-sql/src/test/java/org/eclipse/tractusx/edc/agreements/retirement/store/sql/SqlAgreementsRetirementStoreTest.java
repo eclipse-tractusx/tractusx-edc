@@ -38,20 +38,25 @@ import java.nio.file.Paths;
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
 
+    private static final String CONTRACT_AGREEMENT_TABLE = "edc_contract_agreement";
+    private static final String CONTRACT_NEGOTIATION_TABLE = "edc_contract_negotiation";
     private final TypeManager typeManager = new JacksonTypeManager();
     private final SqlAgreementsRetirementStatements statements = new PostgresAgreementRetirementStatements();
     private SqlAgreementsRetirementStore store;
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
-        store = new SqlAgreementsRetirementStore(extension.getDataSourceRegistry(), extension.getDatasourceName(), extension.getTransactionContext(), typeManager.getMapper(), queryExecutor, statements);
+        store = new SqlAgreementsRetirementStore(extension.getDataSourceRegistry(), extension.getDatasourceName(),
+                extension.getTransactionContext(), typeManager.getMapper(), queryExecutor, statements);
+
         var schema = Files.readString(Paths.get("./docs/schema.sql"));
         extension.runQuery(schema);
     }
 
     @AfterEach
     void tearDown(PostgresqlStoreSetupExtension extension) {
-        extension.runQuery("DROP TABLE " + statements.getContractAgreementTable() + " CASCADE");
+        extension.runQuery("DROP TABLE " + CONTRACT_AGREEMENT_TABLE + " CASCADE");
+        extension.runQuery("DROP TABLE " + CONTRACT_NEGOTIATION_TABLE + " CASCADE");
         extension.runQuery("DROP TABLE " + statements.getTable() + " CASCADE");
     }
 

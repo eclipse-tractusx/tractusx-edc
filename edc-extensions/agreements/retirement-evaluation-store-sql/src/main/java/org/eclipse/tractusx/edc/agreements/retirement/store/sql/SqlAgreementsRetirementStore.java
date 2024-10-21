@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.agreements.retirement.store.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -40,15 +39,12 @@ import java.util.stream.Stream;
 public class SqlAgreementsRetirementStore extends AbstractSqlStore implements AgreementsRetirementStore {
 
     private final SqlAgreementsRetirementStatements agreementsRetirementStatements;
-    private final ContractAgreementService contractAgreementService;
 
     public SqlAgreementsRetirementStore(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                         TransactionContext transactionContext, ObjectMapper objectMapper,
-                                        QueryExecutor queryExecutor, SqlAgreementsRetirementStatements agreementsRetirementStatements,
-                                        ContractAgreementService contractAgreementService) {
+                                        QueryExecutor queryExecutor, SqlAgreementsRetirementStatements agreementsRetirementStatements) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.agreementsRetirementStatements = agreementsRetirementStatements;
-        this.contractAgreementService = contractAgreementService;
     }
 
     @Override
@@ -58,10 +54,6 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
             try (var connection = getConnection()) {
                 if (isRetired(entry.getAgreementId(), connection)) {
                     return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(entry.getAgreementId()));
-                }
-
-                if (!contractAgreementExists(entry.getAgreementId())) {
-                    return StoreResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId()));
                 }
 
                 insert(connection, entry);
@@ -116,11 +108,6 @@ public class SqlAgreementsRetirementStore extends AbstractSqlStore implements Ag
         try (var stream = queryExecutor.query(connection, false, this::mapRowCount, sql, agreementId)) {
             return stream.findFirst().orElse(0) > 0;
         }
-    }
-
-    private boolean contractAgreementExists(String agreementId) {
-        var contractAgreement = contractAgreementService.findById(agreementId);
-        return contractAgreement != null;
     }
 
     private int mapRowCount(ResultSet resultSet) throws SQLException {

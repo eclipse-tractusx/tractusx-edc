@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.store;
 
-import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -58,14 +57,11 @@ public class SqlAgreementsRetirementStoreExtension implements ServiceExtension {
     @Inject(required = false)
     private SqlAgreementsRetirementStatements statements;
 
-    @Inject
-    private ContractAgreementService contractAgreementService;
-
     @Provider
     public AgreementsRetirementStore sqlStore(ServiceExtensionContext context) {
         var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
         return new SqlAgreementsRetirementStore(dataSourceRegistry, dataSourceName, transactionContext,
-                typeManager.getMapper(), queryExecutor, getStatements(), contractAgreementService);
+                typeManager.getMapper(), queryExecutor, getStatements());
     }
 
     @Override
