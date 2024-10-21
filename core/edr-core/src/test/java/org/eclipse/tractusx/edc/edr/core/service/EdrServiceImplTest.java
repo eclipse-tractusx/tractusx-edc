@@ -127,6 +127,7 @@ class EdrServiceImplTest {
         when(edrLock.acquireLock(any(), any())).thenReturn(StoreResult.success(true));
         when(tokenRefreshHandler.refreshToken(eq(transferProcess), any())).thenReturn(ServiceResult.success(refreshedEdr));
         when(edrStore.save(any(), eq(refreshedEdr))).thenReturn(StoreResult.success());
+        when(edrLock.releaseLock(transferProcess)).thenReturn(StoreResult.success());
 
         var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
 
@@ -161,6 +162,7 @@ class EdrServiceImplTest {
         when(edrLock.isExpired(any(), any())).thenReturn(true);
         when(edrLock.acquireLock(any(), any())).thenReturn(StoreResult.success(false));
         when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(refreshedEdr));
+        when(edrLock.releaseLock(transferProcess)).thenReturn(StoreResult.success());
 
         var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
 
@@ -192,6 +194,7 @@ class EdrServiceImplTest {
         when(edrLock.acquireLock(any(), any())).thenReturn(StoreResult.success(false));
         when(tokenRefreshHandler.refreshToken(eq(transferProcess), any())).thenReturn(ServiceResult.success(refreshedEdr));
         when(edrStore.save(any(), eq(refreshedEdr))).thenReturn(StoreResult.success());
+        when(edrLock.releaseLock(transferProcess)).thenReturn(StoreResult.success());
 
         var result = edrService.resolveByTransferProcess(transferProcess, FORCE_REFRESH);
 
