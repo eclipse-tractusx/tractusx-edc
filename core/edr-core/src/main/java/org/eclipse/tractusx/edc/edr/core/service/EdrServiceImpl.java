@@ -77,7 +77,7 @@ public class EdrServiceImpl implements EdrService {
         if (edrLock.isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {
             var result = ServiceResult.from(edrLock.acquireLock(id, edr))
                     .compose(shouldRefresh -> {
-                        if (!shouldRefresh) {
+                        if (!shouldRefresh && !mode.equals(RefreshMode.FORCE_REFRESH)) {
                             monitor.debug("Dont need to refresh. Will resolve existing.");
                             var refreshedEdr = edrStore.resolveByTransferProcess(id);
                             return ServiceResult.from(refreshedEdr);
