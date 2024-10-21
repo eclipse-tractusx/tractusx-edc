@@ -19,7 +19,11 @@
 
 package org.eclipse.tractusx.edc.policy.cx.membership;
 
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
@@ -35,11 +39,40 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  * This constraint function checks that a MembershipCredential is present in a list of {@link VerifiableCredential}
  * objects extracted from a {@link ParticipantAgent} which is expected to be present on the {@link PolicyContext}.
  */
-public class MembershipCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
+public abstract class MembershipCredentialConstraintFunction<C extends PolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String MEMBERSHIP_LITERAL = "Membership";
 
+
+    public static DynamicAtomicConstraintRuleFunction<Permission, TransferProcessPolicyContext> transferProcess() {
+        return new MembershipCredentialConstraintFunction<>() {
+            @Override
+            protected ParticipantAgent getParticipantAgent(TransferProcessPolicyContext context) {
+                return context.agent();
+            }
+        };
+    }
+
+    public static DynamicAtomicConstraintRuleFunction<Permission, ContractNegotiationPolicyContext> contractNegotiation() {
+        return new MembershipCredentialConstraintFunction<>() {
+            @Override
+            protected ParticipantAgent getParticipantAgent(ContractNegotiationPolicyContext context) {
+                return context.agent();
+            }
+        };
+    }
+
+    public static DynamicAtomicConstraintRuleFunction<Permission, CatalogPolicyContext> catalog() {
+        return new MembershipCredentialConstraintFunction<>() {
+            @Override
+            protected ParticipantAgent getParticipantAgent(CatalogPolicyContext context) {
+                return context.agent();
+            }
+        };
+    }
+
+
     @Override
-    public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
+    public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, C context) {
         if (!ACTIVE.equals(rightOperand)) {
             context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
             return false;
@@ -49,11 +82,7 @@ public class MembershipCredentialConstraintFunction extends AbstractDynamicCrede
             return false;
         }
         // make sure the ParticipantAgent is there
-        var participantAgent = context.getContextData(ParticipantAgent.class);
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
-            return false;
-        }
+        var participantAgent = getParticipantAgent(context);
 
         var credentialResult = getCredentialList(participantAgent);
         if (credentialResult.failed()) {

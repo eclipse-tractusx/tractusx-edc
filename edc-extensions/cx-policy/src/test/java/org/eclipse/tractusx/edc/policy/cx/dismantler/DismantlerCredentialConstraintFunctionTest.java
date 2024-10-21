@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.policy.cx.dismantler;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,31 +46,22 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class DismantlerConstraintFunctionTest {
+class DismantlerCredentialConstraintFunctionTest {
 
-    private final DismantlerCredentialConstraintFunction function = new DismantlerCredentialConstraintFunction();
+    private final ParticipantAgent participantAgent = mock();
+    private final DismantlerCredentialConstraintFunction<PolicyContext> function = new DismantlerCredentialConstraintFunction<>() {
+        @Override
+        protected ParticipantAgent getParticipantAgent(PolicyContext context) {
+            return participantAgent;
+        }
+    };
     private final PolicyContext context = mock();
-    private ParticipantAgent participantAgent;
-
-    @BeforeEach
-    void setup() {
-        participantAgent = mock(ParticipantAgent.class);
-        when(context.getContextData(eq(ParticipantAgent.class)))
-                .thenReturn(participantAgent);
-    }
 
     @Test
     void evaluate_leftOperandInvalid() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Tatra", "Moskvich").build())));
         assertThat(function.evaluate("foobar", Operator.EQ, "active", null, context)).isFalse();
         verify(context).reportProblem(eq("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was 'foobar'"));
-    }
-
-    @Test
-    void evaluate_noParticipantAgentOnContext() {
-        when(context.getContextData(eq(ParticipantAgent.class))).thenReturn(null);
-        assertThat(function.evaluate("Dismantler", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem("Required PolicyContext data not found: org.eclipse.edc.spi.agent.ParticipantAgent");
     }
 
     @Test

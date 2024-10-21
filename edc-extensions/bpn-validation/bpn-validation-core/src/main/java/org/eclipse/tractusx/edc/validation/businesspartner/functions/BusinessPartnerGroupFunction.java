@@ -19,7 +19,10 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
@@ -31,6 +34,7 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerSt
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -77,7 +81,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  *
  * @see BusinessPartnerStore
  */
-public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
+public class BusinessPartnerGroupFunction {
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
@@ -93,6 +97,21 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
 
+    public AtomicConstraintRuleFunction<Permission, TransferProcessPolicyContext> transferProcess() {
+        return (operator, rightValue, permission, context) ->
+                evaluate(operator, rightValue, context.agent(), context);
+    }
+
+    public AtomicConstraintRuleFunction<Permission, ContractNegotiationPolicyContext> contractNegotiation() {
+        return (operator, rightValue, permission, context) ->
+                evaluate(operator, rightValue, context.agent(), context);
+    }
+
+    public AtomicConstraintRuleFunction<Permission, CatalogPolicyContext> catalog() {
+        return (operator, rightValue, permission, context) ->
+                evaluate(operator, rightValue, context.agent(), context);
+    }
+
     /**
      * Policy evaluation function that checks whether a given BusinessPartnerNumber is covered by a given policy.
      * The evaluation is prematurely aborted (returns {@code false}) if:
@@ -103,10 +122,7 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
      *     <li>The right value is anything other than {@link String} or {@link Collection}</li>
      * </ul>
      */
-    @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext policyContext) {
-        var participantAgent = policyContext.getContextData(ParticipantAgent.class);
-
+    public boolean evaluate(Operator operator, Object rightValue, ParticipantAgent participantAgent, PolicyContext policyContext) {
         // No participant agent found in context
         if (participantAgent == null) {
             policyContext.reportProblem("ParticipantAgent not found on PolicyContext");
@@ -153,11 +169,11 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
         return null;
     }
-    
+
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         // checks whether both lists overlap
-        return bpnGroupHolder.allowedGroups.containsAll(assigned);
+        return new HashSet<>(bpnGroupHolder.allowedGroups).containsAll(assigned);
     }
 
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
@@ -189,4 +205,5 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
      */
     private record BpnGroupHolder(List<String> assignedGroups, List<String> allowedGroups) {
     }
+
 }

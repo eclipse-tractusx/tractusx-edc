@@ -19,6 +19,8 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.connector.policy.monitor.spi.PolicyMonitorContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -26,8 +28,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
-import static org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension.POLICY_MONITOR_SCOPE;
 import static org.eclipse.tractusx.edc.agreements.retirement.AgreementsRetirementPreValidatorRegisterExtension.NAME;
 
 
@@ -44,8 +44,8 @@ public class AgreementsRetirementPreValidatorRegisterExtension implements Servic
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var agreementRetirementValidator = new AgreementRetirementValidator(service);
-        policyEngine.registerPreValidator(TRANSFER_SCOPE, agreementRetirementValidator);
-        policyEngine.registerPreValidator(POLICY_MONITOR_SCOPE, agreementRetirementValidator);
+        var validator = new AgreementRetirementValidator(service);
+        policyEngine.registerPreValidator(TransferProcessPolicyContext.class, validator.transferProcess());
+        policyEngine.registerPreValidator(PolicyMonitorContext.class, validator.policyMonitor());
     }
 }

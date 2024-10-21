@@ -19,6 +19,9 @@
 
 package org.eclipse.tractusx.edc.iam.iatp;
 
+import org.eclipse.edc.policy.context.request.spi.RequestCatalogPolicyContext;
+import org.eclipse.edc.policy.context.request.spi.RequestContractNegotiationPolicyContext;
+import org.eclipse.edc.policy.context.request.spi.RequestTransferProcessPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -68,12 +71,10 @@ public class IatpDefaultScopeExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var contextMappingFunction = new DefaultScopeExtractor(defaultScopes(context));
-        policyEngine.registerPostValidator(CATALOG_REQUEST_SCOPE, contextMappingFunction);
-        policyEngine.registerPostValidator(NEGOTIATION_REQUEST_SCOPE, contextMappingFunction);
-        policyEngine.registerPostValidator(TRANSFER_PROCESS_REQUEST_SCOPE, contextMappingFunction);
+        policyEngine.registerPostValidator(RequestCatalogPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
+        policyEngine.registerPostValidator(RequestContractNegotiationPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
+        policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
     }
-
 
     private Set<String> defaultScopes(ServiceExtensionContext context) {
         var config = context.getConfig(TX_IATP_DEFAULT_SCOPE_PREFIX);

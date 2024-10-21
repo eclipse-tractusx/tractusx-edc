@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.transfer)
     implementation(libs.edc.spi.catalog)
+    implementation(libs.edc.spi.request.policy.context)
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
 
