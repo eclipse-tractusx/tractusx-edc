@@ -28,6 +28,7 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.edr.spi.testfixtures.index.lock.EndpointDataReferenceLockBaseTest;
 import org.junit.jupiter.api.BeforeEach;
 
+
 @ComponentTest
 class InMemoryEdrLockTest extends EndpointDataReferenceLockBaseTest {
 
@@ -39,11 +40,10 @@ class InMemoryEdrLockTest extends EndpointDataReferenceLockBaseTest {
         var entryIndex = new InMemoryEndpointDataReferenceEntryIndex(CriterionOperatorRegistryImpl.ofDefaults());
         edrLock = new InMemoryEdrLock(entryIndex, transactionContext);
         entryIndex.save(edrEntry("mock", ACQUIRE_LOCK_TP));
-
     }
 
     @Override
     protected EndpointDataReferenceLock getStore() {
-        return this.edrLock;
+        return edrLock;
     }
 }

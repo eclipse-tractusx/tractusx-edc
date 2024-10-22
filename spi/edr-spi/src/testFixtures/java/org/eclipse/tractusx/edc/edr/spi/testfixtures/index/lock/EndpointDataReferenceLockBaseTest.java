@@ -40,7 +40,7 @@ public abstract class EndpointDataReferenceLockBaseTest {
 
     @Test
     @DisplayName("Verify acquireLock returns true when expired and leaves with lock")
-    protected void verify_acquireLockReturnsTrueWhenExpired() {
+    void verify_acquireLockReturnsTrueWhenExpired() {
 
         var result = getStore().acquireLock(ACQUIRE_LOCK_TP, edr("-1000"));
 
@@ -51,13 +51,26 @@ public abstract class EndpointDataReferenceLockBaseTest {
 
     @Test
     @DisplayName("Verify acquireLock returns false when not expired and leaves with lock")
-    protected void verify_acquireLockReturnsFalseWhenNotExpired() {
+    void verify_acquireLockReturnsFalseWhenNotExpired() {
 
-        var result = getStore().acquireLock(ACQUIRE_LOCK_TP, edr("2000"));
+        var edr = edr("2000");
+
+        var result = getStore().acquireLock(ACQUIRE_LOCK_TP, edr);
 
         assertThat(result).isSucceeded();
         assertThat(result.getContent()).isFalse();
         assertThat(getStore().releaseLock(ACQUIRE_LOCK_TP)).isSucceeded();
+
+    }
+
+    @Test
+    @DisplayName("Verify release lock returns true when release")
+    void verify_releaseLockReturnsSuccessWhenReleased() {
+
+        getStore().acquireLock(ACQUIRE_LOCK_TP, edr("2000"));
+
+        var result = getStore().releaseLock(ACQUIRE_LOCK_TP);
+        assertThat(result).isSucceeded();
 
     }
 
