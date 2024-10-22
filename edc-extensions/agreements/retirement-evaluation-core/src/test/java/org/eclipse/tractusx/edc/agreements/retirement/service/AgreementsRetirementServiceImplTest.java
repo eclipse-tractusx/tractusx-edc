@@ -19,11 +19,10 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.service;
 
-import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -53,11 +51,11 @@ class AgreementsRetirementServiceImplTest {
     private AgreementsRetirementService service;
     private final AgreementsRetirementStore store = mock();
     private final TransactionContext transactionContext = new NoopTransactionContext();
-    private final ContractNegotiationService contractNegotiationService = mock();
+    private final ContractAgreementService contractAgreementService = mock();
 
     @BeforeEach
     void setUp() {
-        service = new AgreementsRetirementServiceImpl(store, transactionContext, contractNegotiationService);
+        service = new AgreementsRetirementServiceImpl(store, transactionContext, contractAgreementService);
     }
 
     @Test
@@ -118,8 +116,8 @@ class AgreementsRetirementServiceImplTest {
     @DisplayName("Verify retire response on failure")
     void verify_retireResponseOnFailure() {
         when(store.save(any())).thenReturn(StoreResult.alreadyExists("test"));
-        var contractNegotiation = mock(ContractNegotiation.class);
-        when(contractNegotiationService.search(any())).thenReturn(ServiceResult.success(List.of(contractNegotiation)));
+        var contractAgreement = mock(ContractAgreement.class);
+        when(contractAgreementService.findById(anyString())).thenReturn(contractAgreement);
 
         var result = service.retireAgreement(createAgreementsRetirementEntry());
         assertThat(result).isFailed();

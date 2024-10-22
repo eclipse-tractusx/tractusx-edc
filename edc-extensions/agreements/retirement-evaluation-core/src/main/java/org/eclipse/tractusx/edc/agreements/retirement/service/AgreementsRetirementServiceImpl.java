@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.service;
 
-import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -40,12 +40,12 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
 
     private final AgreementsRetirementStore store;
     private final TransactionContext transactionContext;
-    private final ContractNegotiationService contractNegotiationService;
+    private final ContractAgreementService contractAgreementService;
 
-    public AgreementsRetirementServiceImpl(AgreementsRetirementStore store, TransactionContext transactionContext, ContractNegotiationService contractNegotiationService) {
+    public AgreementsRetirementServiceImpl(AgreementsRetirementStore store, TransactionContext transactionContext, ContractAgreementService contractAgreementService) {
         this.store = store;
         this.transactionContext = transactionContext;
-        this.contractNegotiationService = contractNegotiationService;
+        this.contractAgreementService = contractAgreementService;
     }
 
     @Override
@@ -62,9 +62,10 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
 
     @Override
     public ServiceResult<Void> retireAgreement(AgreementsRetirementEntry entry) {
-        return contractAgreementExists(entry.getAgreementId()) ?
-                transactionContext.execute(() -> ServiceResult.from(store.save(entry)))
-                : ServiceResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId()));
+        return transactionContext.execute(() ->
+                contractAgreementExists(entry.getAgreementId())
+                        ? ServiceResult.from(store.save(entry))
+                        : ServiceResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId())));
     }
 
     @Override
@@ -84,13 +85,6 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
     }
 
     private boolean contractAgreementExists(String agreementId) {
-        var querySpec = QuerySpec.Builder.newInstance()
-                .filter(Criterion.Builder.newInstance()
-                        .operandLeft("contractAgreement.id")
-                        .operator("=")
-                        .operandRight(agreementId)
-                        .build()).build();
-        var contractAgreement = contractNegotiationService.search(querySpec);
-        return !contractAgreement.getContent().isEmpty();
+        return contractAgreementService.findById(agreementId) != null;
     }
 }

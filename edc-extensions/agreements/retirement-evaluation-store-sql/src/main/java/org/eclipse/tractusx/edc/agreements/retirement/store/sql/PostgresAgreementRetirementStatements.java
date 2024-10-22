@@ -45,7 +45,7 @@ public class PostgresAgreementRetirementStatements implements SqlAgreementsRetir
 
     @Override
     public String getDeleteByIdTemplate() {
-        return format("DELETE FROM %s WHERE %s = ?", getTable(), getIdColumn());
+        return executeStatement().delete(getTable(), getIdColumn());
     }
 
     @Override

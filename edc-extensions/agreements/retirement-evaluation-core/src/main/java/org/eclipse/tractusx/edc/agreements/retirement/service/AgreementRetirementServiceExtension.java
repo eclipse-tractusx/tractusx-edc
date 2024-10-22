@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.service;
 
-import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -47,10 +47,10 @@ public class AgreementRetirementServiceExtension implements ServiceExtension {
     TransactionContext transactionContext;
 
     @Inject
-    ContractNegotiationService contractNegotiationService;
+    ContractAgreementService contractAgreementService;
 
     @Provider()
     public AgreementsRetirementService createInMemAgreementRetirementService() {
-        return new AgreementsRetirementServiceImpl(store, transactionContext, contractNegotiationService);
+        return new AgreementsRetirementServiceImpl(store, transactionContext, contractAgreementService);
     }
 }

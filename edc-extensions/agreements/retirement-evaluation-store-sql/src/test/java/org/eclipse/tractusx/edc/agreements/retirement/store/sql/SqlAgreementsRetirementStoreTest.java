@@ -38,8 +38,6 @@ import java.nio.file.Paths;
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
 
-    private static final String CONTRACT_AGREEMENT_TABLE = "edc_contract_agreement";
-    private static final String CONTRACT_NEGOTIATION_TABLE = "edc_contract_negotiation";
     private final TypeManager typeManager = new JacksonTypeManager();
     private final SqlAgreementsRetirementStatements statements = new PostgresAgreementRetirementStatements();
     private SqlAgreementsRetirementStore store;
@@ -55,8 +53,6 @@ class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase
 
     @AfterEach
     void tearDown(PostgresqlStoreSetupExtension extension) {
-        extension.runQuery("DROP TABLE " + CONTRACT_AGREEMENT_TABLE + " CASCADE");
-        extension.runQuery("DROP TABLE " + CONTRACT_NEGOTIATION_TABLE + " CASCADE");
         extension.runQuery("DROP TABLE " + statements.getTable() + " CASCADE");
     }
 

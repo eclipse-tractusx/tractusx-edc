@@ -34,12 +34,13 @@ import org.eclipse.tractusx.edc.agreements.retirement.store.sql.PostgresAgreemen
 import org.eclipse.tractusx.edc.agreements.retirement.store.sql.SqlAgreementsRetirementStatements;
 import org.eclipse.tractusx.edc.agreements.retirement.store.sql.SqlAgreementsRetirementStore;
 
-@Extension("Registers an SQL implementation for the ContractAgreementStore")
+@Extension(value = SqlAgreementsRetirementStoreExtension.NAME)
 public class SqlAgreementsRetirementStoreExtension implements ServiceExtension {
 
-    private static final String NAME = "SQL Agreement Retirement Store.";
+    protected static final String NAME = "SQL Agreement Retirement Store.";
+    private static final String DEFAULT_DATASOURCE_NAME = "agreementretirement";
 
-    @Setting(value = "Datasource name for the SQL AgreementsRetirement store")
+    @Setting(value = "Datasource name for the SQL AgreementsRetirement store", defaultValue = DEFAULT_DATASOURCE_NAME)
     private static final String DATASOURCE_SETTING_NAME = "tx.edc.sql.store.agreementretirement.datasource";
 
     @Inject
