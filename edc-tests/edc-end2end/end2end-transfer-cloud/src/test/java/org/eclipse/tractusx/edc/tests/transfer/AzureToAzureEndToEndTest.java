@@ -25,18 +25,18 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.tests.azure.AzureBlobHelper;
-import org.eclipse.tractusx.edc.tests.azure.AzuriteContainer;
+import org.eclipse.tractusx.edc.tests.azure.AzureBlobClient;
+import org.eclipse.tractusx.edc.tests.azure.AzuriteExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,9 +61,6 @@ import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 @EndToEndTest
 public class AzureToAzureEndToEndTest {
 
-    public static final String AZURITE_DOCKER_IMAGE = "mcr.microsoft.com/azure-storage/azurite";
-    public static final String CONSUMER_CONTAINER_NAME = "consumer-container";
-    public static final String PROVIDER_CONTAINER_NAME = "provider-container";
     public static final String PROVIDER_KEY_ALIAS = "provider-key-alias";
     protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
@@ -78,14 +75,17 @@ public class AzureToAzureEndToEndTest {
     protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), with(PROVIDER.getConfiguration(), AZURITE_HOST_PORT));
     @RegisterExtension
     protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), with(CONSUMER.getConfiguration(), AZURITE_HOST_PORT));
+
+    private static final AzuriteExtension.Account PROVIDER_AZURITE_ACCOUNT = new AzuriteExtension.Account("provider", Base64.encodeBase64String("provider-key".getBytes()));
+    private static final AzuriteExtension.Account CONSUMER_AZURITE_ACCOUNT = new AzuriteExtension.Account("consumer", Base64.encodeBase64String("consumer-key".getBytes()));
+
+    @RegisterExtension
+    private static final AzuriteExtension AZURITE_CONTAINER = new AzuriteExtension(AZURITE_HOST_PORT, PROVIDER_AZURITE_ACCOUNT, CONSUMER_AZURITE_ACCOUNT);
+
     private static final String TESTFILE_NAME = "hello.txt";
 
-    private final AzuriteContainer.Account providerAzuriteAccount = new AzuriteContainer.Account("provider", Base64.encodeBase64String("provider-key".getBytes()));
-    private final AzuriteContainer.Account consumerAzuriteAccount = new AzuriteContainer.Account("consumer", Base64.encodeBase64String("consumer-key".getBytes()));
-    @Container
-    private final AzuriteContainer azuriteContainer = new AzuriteContainer(AZURITE_HOST_PORT, providerAzuriteAccount, consumerAzuriteAccount);
-    private AzureBlobHelper providerBlobHelper;
-    private AzureBlobHelper consumerBlobHelper;
+    private AzureBlobClient providerBlobHelper;
+    private AzureBlobClient consumerBlobHelper;
 
     private static Map<String, String> with(Map<String, String> configuration, int port) {
         configuration.putAll(new HashMap<>() {
@@ -107,34 +107,36 @@ public class AzureToAzureEndToEndTest {
     @BeforeEach
     void setup() {
         PROVIDER_RUNTIME.getService(Vault.class)
-                .storeSecret(PROVIDER_KEY_ALIAS, providerAzuriteAccount.key());
+                .storeSecret(PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
 
         CONSUMER_RUNTIME.getService(Vault.class)
-                .storeSecret("%s-key1".formatted(consumerAzuriteAccount.name()), consumerAzuriteAccount.key());
+                .storeSecret("%s-key1".formatted(CONSUMER_AZURITE_ACCOUNT.name()), CONSUMER_AZURITE_ACCOUNT.key());
 
-        providerBlobHelper = azuriteContainer.getHelper(providerAzuriteAccount);
-        consumerBlobHelper = azuriteContainer.getHelper(consumerAzuriteAccount);
+        providerBlobHelper = AZURITE_CONTAINER.getClientFor(PROVIDER_AZURITE_ACCOUNT);
+        consumerBlobHelper = AZURITE_CONTAINER.getClientFor(CONSUMER_AZURITE_ACCOUNT);
     }
 
     @Test
     void azureBlobPush_withDestFolder() {
         var assetId = "felix-blob-test-asset";
 
+        var sourceContainerName = UUID.randomUUID().toString();
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",
                 "@type", "DataAddress",
                 "type", "AzureStorage",
-                "container", PROVIDER_CONTAINER_NAME,
-                "account", providerAzuriteAccount.name(),
+                "container", sourceContainerName,
+                "account", PROVIDER_AZURITE_ACCOUNT.name(),
                 "blobPrefix", "folder/",
                 "keyName", PROVIDER_KEY_ALIAS
         );
 
         // upload file to provider's blob store
-        var sourceContainer = providerBlobHelper.createContainer(PROVIDER_CONTAINER_NAME);
+        var sourceContainer = providerBlobHelper.createContainer(sourceContainerName);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/" + TESTFILE_NAME);
-        consumerBlobHelper.createContainer(CONSUMER_CONTAINER_NAME);
+        var destinationContainerName = UUID.randomUUID().toString();
+        consumerBlobHelper.createContainer(destinationContainerName);
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
@@ -147,8 +149,8 @@ public class AzureToAzureEndToEndTest {
                 .add(EDC_NAMESPACE + "type", "AzureStorage")
                 .add(EDC_NAMESPACE + "properties", createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AzureStorage")
-                        .add(EDC_NAMESPACE + "account", consumerAzuriteAccount.name())
-                        .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
+                        .add(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name())
+                        .add(EDC_NAMESPACE + "container", destinationContainerName)
                         .add(EDC_NAMESPACE + "folderName", destfolder)
                         .build())
                 .build();
@@ -163,7 +165,7 @@ public class AzureToAzureEndToEndTest {
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
-            assertThat(consumerBlobHelper.listBlobs(CONSUMER_CONTAINER_NAME))
+            assertThat(consumerBlobHelper.listBlobs(destinationContainerName))
                     .contains("%s/folder/%s".formatted(destfolder, TESTFILE_NAME));
         });
     }
@@ -172,21 +174,23 @@ public class AzureToAzureEndToEndTest {
     void azureBlobPush_withoutDestFolder() {
         var assetId = "felix-blob-test-asset";
 
+        var sourceContainerName = UUID.randomUUID().toString();
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",
                 "@type", "DataAddress",
                 "type", "AzureStorage",
-                "container", PROVIDER_CONTAINER_NAME,
-                "account", providerAzuriteAccount.name(),
+                "container", sourceContainerName,
+                "account", PROVIDER_AZURITE_ACCOUNT.name(),
                 "blobPrefix", "folder/",
                 "keyName", PROVIDER_KEY_ALIAS
         );
 
         // upload file to provider's blob store
-        var sourceContainer = providerBlobHelper.createContainer(PROVIDER_CONTAINER_NAME);
+        var sourceContainer = providerBlobHelper.createContainer(sourceContainerName);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/" + TESTFILE_NAME);
-        consumerBlobHelper.createContainer(CONSUMER_CONTAINER_NAME);
+        var destinationContainerName = UUID.randomUUID().toString();
+        consumerBlobHelper.createContainer(destinationContainerName);
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
@@ -198,8 +202,8 @@ public class AzureToAzureEndToEndTest {
                 .add(EDC_NAMESPACE + "type", "AzureStorage")
                 .add(EDC_NAMESPACE + "properties", createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AzureStorage")
-                        .add(EDC_NAMESPACE + "account", consumerAzuriteAccount.name())
-                        .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
+                        .add(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name())
+                        .add(EDC_NAMESPACE + "container", destinationContainerName)
                         // .add(EDC_NAMESPACE + "folderName", destfolder) <-- no dest folder
                         .build())
                 .build();
@@ -214,7 +218,7 @@ public class AzureToAzureEndToEndTest {
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
-            assertThat(consumerBlobHelper.listBlobs(CONSUMER_CONTAINER_NAME))
+            assertThat(consumerBlobHelper.listBlobs(destinationContainerName))
                     .contains("folder/%s".formatted(TESTFILE_NAME));
         });
     }
@@ -223,34 +227,35 @@ public class AzureToAzureEndToEndTest {
     void azureBlobPush_containerNotExist() {
         var assetId = "blob-test-asset";
 
+        var sourceContainerName = UUID.randomUUID().toString();
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",
                 "@type", "DataAddress",
                 "type", "AzureStorage",
-                "container", PROVIDER_CONTAINER_NAME,
-                "account", providerAzuriteAccount.name(),
+                "container", sourceContainerName,
+                "account", PROVIDER_AZURITE_ACCOUNT.name(),
                 "blobPrefix", "folder/",
                 "keyName", PROVIDER_KEY_ALIAS
         );
 
         // upload file to provider's blob store
-        var sourceContainer = providerBlobHelper.createContainer(PROVIDER_CONTAINER_NAME);
+        var sourceContainer = providerBlobHelper.createContainer(sourceContainerName);
         var fileData = BinaryData.fromString(TestUtils.getResourceFileContentAsString(TESTFILE_NAME));
         providerBlobHelper.uploadBlob(sourceContainer, fileData, "folder/" + TESTFILE_NAME);
-        // consumerBlobHelper.createContainer(CONSUMER_CONTAINER_NAME); <-- container is not created
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
         var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
+        var destinationContainerName = UUID.randomUUID().toString();
         var destination = createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
                 .add(EDC_NAMESPACE + "type", "AzureStorage")
                 .add(EDC_NAMESPACE + "properties", createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AzureStorage")
-                        .add(EDC_NAMESPACE + "account", consumerAzuriteAccount.name())
-                        .add(EDC_NAMESPACE + "container", CONSUMER_CONTAINER_NAME)
+                        .add(EDC_NAMESPACE + "account", CONSUMER_AZURITE_ACCOUNT.name())
+                        .add(EDC_NAMESPACE + "container", destinationContainerName)
                         .build())
                 .build();
 
@@ -264,7 +269,7 @@ public class AzureToAzureEndToEndTest {
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
-            assertThat(consumerBlobHelper.listBlobs(CONSUMER_CONTAINER_NAME))
+            assertThat(consumerBlobHelper.listBlobs(destinationContainerName))
                     .contains("folder/%s".formatted(TESTFILE_NAME));
         });
     }

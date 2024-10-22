@@ -36,14 +36,14 @@ import java.util.List;
 /**
  * Helper class that internally uses Azure SDK classes to create containers, upload blobs, generate SAS tokens, etc.
  */
-public class AzureBlobHelper {
+public class AzureBlobClient {
     private final String accountName;
     private final String key;
     private final String host;
     private final int port;
     private BlobServiceClient blobServiceClient;
 
-    AzureBlobHelper(String accountName, String key, String host, int port) {
+    AzureBlobClient(String accountName, String key, String host, int port) {
         this.accountName = accountName;
         this.key = key;
         this.host = host;
