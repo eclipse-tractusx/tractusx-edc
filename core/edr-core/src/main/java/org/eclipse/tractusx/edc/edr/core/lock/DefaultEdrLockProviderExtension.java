@@ -23,12 +23,10 @@ import org.eclipse.edc.edr.spi.store.EndpointDataReferenceEntryIndex;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 
-@Provides({EndpointDataReferenceLock.class})
 @Extension("Provides A Default EdrLock Provider")
 public class DefaultEdrLockProviderExtension implements ServiceExtension {
 

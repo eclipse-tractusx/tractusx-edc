@@ -69,8 +69,8 @@ public abstract class EndpointDataReferenceLockBaseTest {
     }
 
     @Test
-    @DisplayName("Verify isExpired Returns true when not expired")
-    void verify_isExpiredReturnTrueWhenNotExpired() {
+    @DisplayName("Verify isExpired Returns false when not expired")
+    void verify_isExpiredReturnFalseWhenNotExpired() {
         var result = getStore().isExpired(edr("1000"), edrEntry("mock", "mock"));
         assertThat(result).isFalse();
     }

@@ -32,8 +32,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
-    private static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
-
     private final EndpointDataReferenceEntryIndex entryIndex;
     private final TransactionContext transactionContext;
     private final Map<String, ReentrantReadWriteLock> lockedEdrs = new ConcurrentHashMap<>();
@@ -45,43 +43,34 @@ public class InMemoryEdrLock implements EndpointDataReferenceLock {
 
     @Override
     public StoreResult<Boolean> acquireLock(String edrId, DataAddress edr) {
-        LOCK.writeLock().lock();
-        try {
-            var rowLock = lockedEdrs.computeIfAbsent(edrId, k -> new ReentrantReadWriteLock());
 
-            LOCK.writeLock().unlock(); // unlocks global lock before waiting
-            rowLock.writeLock().lock();
-            LOCK.writeLock().lock();
-            // inner try loop for the row-level lock
-            var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
+        var rowLock = lockedEdrs.computeIfAbsent(edrId, k -> new ReentrantReadWriteLock());
 
-            return StoreResult.success(isExpired(edr, edrEntry));
-        } finally {
-            LOCK.writeLock().unlock();
-        }
+        rowLock.writeLock().lock();
+
+        // inner try loop for the row-level lock
+        var edrEntry = transactionContext.execute(() -> entryIndex.findById(edrId));
+
+        return StoreResult.success(isExpired(edr, edrEntry));
+
     }
 
 
     @Override
     public StoreResult<Void> releaseLock(String edrId) {
-        LOCK.writeLock().lock();
-        try {
-            var reentrantReadWriteLock = lockedEdrs.get(edrId);
-            if (reentrantReadWriteLock == null) {
-                return StoreResult.generalError("Could not release row-lock because it does not exist");
-            }
-            if (reentrantReadWriteLock.writeLock().isHeldByCurrentThread()) {
-                reentrantReadWriteLock.writeLock().unlock();
-                if (!reentrantReadWriteLock.hasQueuedThreads()) {
-                    lockedEdrs.remove(edrId);
-                }
-            }
-            return StoreResult.success();
 
-
-        } finally {
-            LOCK.writeLock().unlock();
+        var reentrantReadWriteLock = lockedEdrs.get(edrId);
+        if (reentrantReadWriteLock == null) {
+            return StoreResult.generalError("Could not release row-lock because it does not exist");
         }
+        if (reentrantReadWriteLock.writeLock().isHeldByCurrentThread()) {
+            reentrantReadWriteLock.writeLock().unlock();
+            if (!reentrantReadWriteLock.hasQueuedThreads()) {
+                lockedEdrs.remove(edrId);
+            }
+        }
+        return StoreResult.success();
+
     }
 
 }
