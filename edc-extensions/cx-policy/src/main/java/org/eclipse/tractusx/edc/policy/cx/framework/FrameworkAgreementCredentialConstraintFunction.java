@@ -19,15 +19,10 @@
 
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
-import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
-import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintRuleFunction;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
@@ -57,36 +52,9 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  * policy is considered <strong>not fulfilled</strong>. Note that if the {@code version} is specified, it <strong>must</strong> be satisfied by the <strong>same</strong>
  * credential that satisfies the {@code subtype} requirement.
  */
-public abstract class FrameworkAgreementCredentialConstraintFunction<C extends PolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
+public class FrameworkAgreementCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
-
-    public static DynamicAtomicConstraintRuleFunction<Permission, TransferProcessPolicyContext> transferProcess() {
-        return new FrameworkAgreementCredentialConstraintFunction<>() {
-            @Override
-            protected ParticipantAgent getParticipantAgent(TransferProcessPolicyContext context) {
-                return context.agent();
-            }
-        };
-    }
-
-    public static DynamicAtomicConstraintRuleFunction<Permission, ContractNegotiationPolicyContext> contractNegotiation() {
-        return new FrameworkAgreementCredentialConstraintFunction<>() {
-            @Override
-            protected ParticipantAgent getParticipantAgent(ContractNegotiationPolicyContext context) {
-                return context.agent();
-            }
-        };
-    }
-
-    public static DynamicAtomicConstraintRuleFunction<Permission, CatalogPolicyContext> catalog() {
-        return new FrameworkAgreementCredentialConstraintFunction<>() {
-            @Override
-            protected ParticipantAgent getParticipantAgent(CatalogPolicyContext context) {
-                return context.agent();
-            }
-        };
-    }
 
     /**
      * Evaluates the constraint's left-operand and right-operand against a list of {@link VerifiableCredential} objects.
@@ -95,13 +63,13 @@ public abstract class FrameworkAgreementCredentialConstraintFunction<C extends P
      * @param operator   the operation Must be {@link Operator#EQ} or {@link Operator#NEQ}
      * @param rightValue the right-side expression for the constraint. Must be a string that is either {@code "active":[version]} or {@code subtype[:version]}.
      * @param permission the permission associated with the constraint. Ignored by this function.
-     * @param context    the policy context. Must contain the {@link ParticipantAgent}, which in turn must contain a list of {@link VerifiableCredential} stored
+     * @param context    the policy context. Must contain the {@link org.eclipse.edc.participant.spi.ParticipantAgent}, which in turn must contain a list of {@link VerifiableCredential} stored
      *                   in its claims using the {@code "vc"} key.
      * @return true if at least one credential satisfied the requirement imposed by the constraint.
      */
     @Override
     public boolean evaluate(Object leftValue, Operator operator, Object rightValue, Permission permission, C context) {
-        var participantAgent = getParticipantAgent(context);
+        var participantAgent = context.participantAgent();
 
         if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
             return false;

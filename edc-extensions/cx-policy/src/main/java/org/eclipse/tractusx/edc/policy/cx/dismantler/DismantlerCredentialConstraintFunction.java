@@ -20,15 +20,11 @@
 package org.eclipse.tractusx.edc.policy.cx.dismantler;
 
 import jakarta.json.JsonObject;
-import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
-import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintRuleFunction;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +50,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  *     <li>allowedBrands: whether an existing DismantlerCredential permits the vehicle brands required by the constraint</li>
  * </ul>
  */
-public abstract class DismantlerCredentialConstraintFunction<C extends PolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
+public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
 
     public static final String ALLOWED_VEHICLE_BRANDS_LITERAL = "allowedVehicleBrands";
     public static final String DISMANTLER_LITERAL = "Dismantler";
@@ -62,38 +58,11 @@ public abstract class DismantlerCredentialConstraintFunction<C extends PolicyCon
     public static final String RIGHT_OPERAND_LIST_SEPARATOR = ",";
     private static final String ALLOWED_ACTIVITIES_LITERAL = "activityType";
 
-    public static DynamicAtomicConstraintRuleFunction<Permission, TransferProcessPolicyContext> transferProcess() {
-        return new DismantlerCredentialConstraintFunction<>() {
-            @Override
-            protected ParticipantAgent getParticipantAgent(TransferProcessPolicyContext context) {
-                return context.agent();
-            }
-        };
-    }
-
-    public static DynamicAtomicConstraintRuleFunction<Permission, ContractNegotiationPolicyContext> contractNegotiation() {
-        return new DismantlerCredentialConstraintFunction<>() {
-            @Override
-            protected ParticipantAgent getParticipantAgent(ContractNegotiationPolicyContext context) {
-                return context.agent();
-            }
-        };
-    }
-
-    public static DynamicAtomicConstraintRuleFunction<Permission, CatalogPolicyContext> catalog() {
-        return new DismantlerCredentialConstraintFunction<>() {
-            @Override
-            protected ParticipantAgent getParticipantAgent(CatalogPolicyContext context) {
-                return context.agent();
-            }
-        };
-    }
-
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, C context) {
         Predicate<VerifiableCredential> predicate;
 
-        var participantAgent = getParticipantAgent(context);
+        var participantAgent = context.participantAgent();
 
         // check if the participant agent contains the correct data
         var vcListResult = getCredentialList(participantAgent);

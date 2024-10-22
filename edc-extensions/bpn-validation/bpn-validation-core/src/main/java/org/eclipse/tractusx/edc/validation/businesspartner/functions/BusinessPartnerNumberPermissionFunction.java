@@ -19,14 +19,11 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +42,7 @@ import static org.eclipse.edc.spi.result.Result.success;
 /**
  * AtomicConstraintFunction to validate business partner numbers for edc permissions.
  */
-public class BusinessPartnerNumberPermissionFunction {
+public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
 
     private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
             EQ,
@@ -58,31 +55,13 @@ public class BusinessPartnerNumberPermissionFunction {
             Operator.HAS_PART
     );
 
-    public AtomicConstraintRuleFunction<Permission, TransferProcessPolicyContext> transferProcess() {
-        return (operator, rightValue, permission, context) ->
-                evaluate(operator, rightValue, context.agent(), context);
-    }
-
-    public AtomicConstraintRuleFunction<Permission, ContractNegotiationPolicyContext> contractNegotiation() {
-        return (operator, rightValue, permission, context) ->
-                evaluate(operator, rightValue, context.agent(), context);
-    }
-
-    public AtomicConstraintRuleFunction<Permission, CatalogPolicyContext> catalog() {
-        return (operator, rightValue, permission, context) ->
-                evaluate(operator, rightValue, context.agent(), context);
-    }
-
-    public boolean evaluate(Operator operator, Object rightValue, ParticipantAgent participantAgent, PolicyContext context) {
+    @Override
+    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, ParticipantAgentPolicyContext context) {
+        var participantAgent = context.participantAgent();
 
         if (!SUPPORTED_OPERATORS.contains(operator)) {
             var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
             context.reportProblem(message);
-            return false;
-        }
-
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
             return false;
         }
 
@@ -93,16 +72,16 @@ public class BusinessPartnerNumberPermissionFunction {
         }
 
         return switch (operator) {
-            case EQ, IS_ALL_OF -> checkEquality(identity, rightValue, operator)
+            case EQ, IS_ALL_OF -> checkEquality(identity, rightOperand, operator)
                     .orElse(reportFailure(context));
-            case NEQ -> checkEquality(identity, rightValue, operator)
+            case NEQ -> checkEquality(identity, rightOperand, operator)
                     .map(b -> !b)
                     .orElse(reportFailure(context));
-            case HAS_PART -> checkStringContains(identity, rightValue)
+            case HAS_PART -> checkStringContains(identity, rightOperand)
                     .orElse(reportFailure(context));
             case IN, IS_A, IS_ANY_OF ->
-                    checkListContains(identity, rightValue, operator).orElse(reportFailure(context));
-            case IS_NONE_OF -> checkListContains(identity, rightValue, operator)
+                    checkListContains(identity, rightOperand, operator).orElse(reportFailure(context));
+            case IS_NONE_OF -> checkListContains(identity, rightOperand, operator)
                     .map(b -> !b)
                     .orElse(reportFailure(context));
             default -> false;
@@ -120,14 +99,16 @@ public class BusinessPartnerNumberPermissionFunction {
         if (rightValue instanceof List<?> numbers) {
             return success(numbers.contains(identity));
         }
-        return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+        return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
+                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 
     private Result<Boolean> checkStringContains(String identity, Object rightValue) {
         if (rightValue instanceof String bpnString) {
             return success(identity.contains(bpnString));
         }
-        return failure("Invalid right-value: operator '%s' requires a 'String' but got a '%s'".formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+        return failure("Invalid right-value: operator '%s' requires a 'String' but got a '%s'"
+                .formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -137,6 +118,7 @@ public class BusinessPartnerNumberPermissionFunction {
         } else if (rightValue instanceof List bpnList) {
             return success(bpnList.stream().allMatch(bpn -> Objects.equals(identity, bpn)));
         }
-        return failure("Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'".formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+        return failure("Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'"
+                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 }

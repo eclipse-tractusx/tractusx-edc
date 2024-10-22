@@ -35,6 +35,7 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.token.InMemoryJtiValidationStore;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
@@ -69,7 +70,7 @@ public class ParticipantRuntime extends EmbeddedRuntime {
 
             registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider((k) -> Result.success(privateKey))),
                     () -> privateAlias,
-                    () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis()));
+                    () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis(), new InMemoryJtiValidationStore()));
             registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);

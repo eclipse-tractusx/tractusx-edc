@@ -29,6 +29,7 @@ dependencies {
     api(libs.edc.spi.core)
     implementation(libs.edc.spi.catalog)
     implementation(libs.edc.spi.contract)
+    implementation(libs.edc.spi.participant)
     implementation(libs.edc.spi.policy)
     implementation(libs.edc.spi.policyengine)
 

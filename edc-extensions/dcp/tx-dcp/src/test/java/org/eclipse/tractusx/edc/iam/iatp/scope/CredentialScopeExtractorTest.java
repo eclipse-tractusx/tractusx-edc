@@ -27,7 +27,6 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractO
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferRequestMessage;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferTerminationMessage;
 import org.eclipse.edc.policy.context.request.spi.RequestPolicyContext;
-import org.eclipse.edc.policy.engine.spi.PolicyContextImpl;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.iam.RequestContext;
 import org.eclipse.edc.spi.iam.RequestScope;
@@ -93,15 +92,6 @@ public class CredentialScopeExtractorTest {
         assertThat(scopes).isEmpty();
     }
 
-    @Test
-    void verify_extractScope_contextNotRequestType() {
-        var ctx = new NotRequestPolicyContext();
-
-        var scopes = extractor.extractScopes("wrong", null, null, ctx);
-
-        assertThat(scopes).isEmpty();
-    }
-
     private static class SupportedMessages implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
@@ -137,11 +127,4 @@ public class CredentialScopeExtractorTest {
         }
     }
 
-    private static class NotRequestPolicyContext extends PolicyContextImpl {
-
-        @Override
-        public String scope() {
-            return "any";
-        }
-    }
 }

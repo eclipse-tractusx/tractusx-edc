@@ -19,9 +19,10 @@
 
 package org.eclipse.tractusx.edc.policy.cx.dismantler;
 
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,50 +39,40 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createDismantlerCredential;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPlainDismantlerCredential;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DismantlerCredentialConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final DismantlerCredentialConstraintFunction<PolicyContext> function = new DismantlerCredentialConstraintFunction<>() {
-        @Override
-        protected ParticipantAgent getParticipantAgent(PolicyContext context) {
-            return participantAgent;
-        }
-    };
-    private final PolicyContext context = mock();
+    private final DismantlerCredentialConstraintFunction<ParticipantAgentPolicyContext> function = new DismantlerCredentialConstraintFunction<>();
+    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate_leftOperandInvalid() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Tatra", "Moskvich").build())));
         assertThat(function.evaluate("foobar", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem(eq("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was 'foobar'"));
+        assertThat(context.getProblems()).containsOnly("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was 'foobar'");
     }
 
     @Test
     void evaluate_noVcClaimOnParticipantAgent() {
         assertThat(function.evaluate("Dismantler", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent did not contain a 'vc' claim."));
+        assertThat(context.getProblems()).containsOnly("ParticipantAgent did not contain a 'vc' claim.");
     }
 
     @Test
     void evaluate_vcClaimEmpty() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of()));
         assertThat(function.evaluate("Dismantler", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent contains a 'vc' claim but it did not contain any VerifiableCredentials."));
+        assertThat(context.getProblems()).containsOnly("ParticipantAgent contains a 'vc' claim but it did not contain any VerifiableCredentials.");
     }
 
     @Test
     void evaluate_vcClaimNotList() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", new Object()));
         assertThat(function.evaluate("Dismantler", Operator.EQ, "active", null, context)).isFalse();
-        verify(context).reportProblem(eq("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, received java.lang.Object."));
+        assertThat(context.getProblems()).containsOnly("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, received java.lang.Object.");
     }
 
     @Nested
@@ -131,7 +122,7 @@ class DismantlerCredentialConstraintFunctionTest {
         void evaluate_rightOperandInvalid() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createPcfCredential().build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", Operator.EQ, "invalid", null, context)).isFalse();
-            verify(context).reportProblem("Right-operand must be equal to 'active', but was 'invalid'");
+            assertThat(context.getProblems()).containsOnly("Right-operand must be equal to 'active', but was 'invalid'");
         }
     }
 
@@ -157,7 +148,7 @@ class DismantlerCredentialConstraintFunctionTest {
         void evaluate_eq_list_notSatisfied() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Tatra", "Moskvich", "Lada").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Tatra", "Moskvich"), null, context)).isFalse();
-            verify(context, never()).reportProblem(anyString());
+            assertThat(context.getProblems()).isEmpty();
         }
 
         @DisplayName("Constraint (scalar) must match credential EXACTLY")
@@ -172,7 +163,7 @@ class DismantlerCredentialConstraintFunctionTest {
         void evaluate_eq_scalar_notSatisfied() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Tatra").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, "Yugo", null, context)).isFalse();
-            verify(context, never()).reportProblem(anyString());
+            assertThat(context.getProblems()).isEmpty();
         }
 
         @DisplayName("Constraint and credential must be DISJOINT")
@@ -264,7 +255,7 @@ class DismantlerCredentialConstraintFunctionTest {
 
             assertThat(illegalOp).allSatisfy(op -> {
                 assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", op, List.of("Gaz", "Moskvich"), null, context)).isFalse();
-                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
+                assertThat(context.getProblems()).contains("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
             });
         }
 
@@ -279,7 +270,7 @@ class DismantlerCredentialConstraintFunctionTest {
 
             assertThat(invalidOperators).allSatisfy(op -> {
                 assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", op, "Moskvich", null, context)).isFalse();
-                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
+                assertThat(context.getProblems()).contains("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
             });
         }
 
@@ -288,7 +279,7 @@ class DismantlerCredentialConstraintFunctionTest {
         void evaluate_righOpInvalidType() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential("Gaz", "Yugo").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.allowedBrands", IN, Map.of("foo", "bar"), null, context)).isFalse();
-            verify(context).reportProblem(startsWith("Invalid right-operand type: expected String or List, but received:"));
+            assertThat(context.getProblems()).hasSize(1).allMatch(it -> it.startsWith("Invalid right-operand type: expected String or List, but received:"));
         }
     }
 
@@ -314,8 +305,11 @@ class DismantlerCredentialConstraintFunctionTest {
         @Test
         void evaluate_eq_list_notSatisfied() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential(brands, "vehicleDismantle", "vehicleScrap").build())));
-            assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.activityType", Operator.EQ, List.of("vehicleRefurbish"), null, context)).isFalse();
-            verify(context, never()).reportProblem(anyString());
+
+            var result = function.evaluate(CX_POLICY_NS + "Dismantler.activityType", Operator.EQ, List.of("vehicleRefurbish"), null, context);
+
+            assertThat(result).isFalse();
+            assertThat(context.getProblems()).hasSize(0);
         }
 
         @DisplayName("Constraint (scalar) must match credential EXACTLY")
@@ -330,7 +324,7 @@ class DismantlerCredentialConstraintFunctionTest {
         void evaluate_eq_scalar_notSatisfied() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential(brands, "vehicleDismantle").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.activityType", Operator.EQ, "vehicleScrap", null, context)).isFalse();
-            verify(context, never()).reportProblem(anyString());
+            assertThat(context.getProblems()).isEmpty();
         }
 
         @DisplayName("Constraint and credential must be DISJOINT")
@@ -437,7 +431,7 @@ class DismantlerCredentialConstraintFunctionTest {
 
             assertThat(invalidOperators).allSatisfy(op -> {
                 assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.activityType", op, "vehicleDismantle", null, context)).isFalse();
-                verify(context).reportProblem("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
+                assertThat(context.getProblems()).contains("Invalid operator: this constraint only allows the following operators: [EQ, NEQ], but received '%s'.".formatted(op));
             });
         }
 
@@ -446,7 +440,7 @@ class DismantlerCredentialConstraintFunctionTest {
         void evaluate_righOpInvalidType() {
             when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDismantlerCredential(brands, "vehicleDismantle").build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler.activityType", IN, Map.of("foo", "bar"), null, context)).isFalse();
-            verify(context).reportProblem(startsWith("Invalid right-operand type: expected String or List, but received:"));
+            assertThat(context.getProblems()).hasSize(1).allMatch(it -> it.startsWith("Invalid right-operand type: expected String or List, but received:"));
         }
     }
 }
