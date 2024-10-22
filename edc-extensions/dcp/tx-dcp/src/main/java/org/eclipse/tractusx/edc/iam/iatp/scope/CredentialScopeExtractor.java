@@ -24,7 +24,6 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.Con
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferRequestMessage;
 import org.eclipse.edc.iam.identitytrust.spi.scope.ScopeExtractor;
 import org.eclipse.edc.policy.context.request.spi.RequestPolicyContext;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.iam.RequestContext;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -57,21 +56,15 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     }
 
     @Override
-    public Set<String> extractScopes(Object leftValue, Operator operator, Object rightValue, PolicyContext context) {
-        if (context instanceof RequestPolicyContext requestPolicyContext) {
+    public Set<String> extractScopes(Object leftValue, Operator operator, Object rightValue, RequestPolicyContext context) {
+        var requestContext = context.requestContext();
 
-            var requestContext = requestPolicyContext.requestContext();
+        if (requestContext != null) {
 
-            if (requestContext != null) {
-
-                if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_NS) && isMessageSupported(requestContext)) {
-                    leftOperand = leftOperand.replace(CX_POLICY_NS, "");
-                    var credentialType = extractCredentialType(leftOperand, rightValue);
-                    return Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType))));
-                }
-
-            } else {
-                monitor.warning("RequestContext not found in the PolicyContext: scope cannot be extracted from the policy. Defaulting to empty scopes");
+            if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_NS) && isMessageSupported(requestContext)) {
+                leftOperand = leftOperand.replace(CX_POLICY_NS, "");
+                var credentialType = extractCredentialType(leftOperand, rightValue);
+                return Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType))));
             }
 
         } else {

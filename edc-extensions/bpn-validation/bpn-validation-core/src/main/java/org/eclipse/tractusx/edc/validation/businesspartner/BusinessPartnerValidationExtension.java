@@ -75,11 +75,10 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var function = new BusinessPartnerGroupFunction(store);
 
-        bindToScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, function.transferProcess());
-        bindToScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, function.contractNegotiation());
-        bindToScope(CATALOG_SCOPE, CatalogPolicyContext.class, function.catalog());
+        bindToScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupFunction<>(store));
+        bindToScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupFunction<>(store));
+        bindToScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupFunction<>(store));
     }
 
     private <C extends PolicyContext> void bindToScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {

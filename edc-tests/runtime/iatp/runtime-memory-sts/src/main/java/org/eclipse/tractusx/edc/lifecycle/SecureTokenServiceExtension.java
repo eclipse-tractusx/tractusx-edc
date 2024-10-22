@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.lifecycle;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
+import org.eclipse.edc.jwt.validation.jti.JtiValidationStore;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -46,12 +47,15 @@ public class SecureTokenServiceExtension implements ServiceExtension {
     @Inject
     private JwsSignerProvider jwsSignerProvider;
 
+    @Inject
+    private JtiValidationStore jtiValidationStore;
+
     @Provider
     public SecureTokenService createEmbeddedSts(ServiceExtensionContext context) {
         var tokenExpiration = context.getSetting(STS_TOKEN_EXPIRATION, DEFAULT_STS_TOKEN_EXPIRATION_MIN);
         var publicKeyId = context.getSetting(STS_PUBLIC_KEY_ID, null);
         var privKeyAlias = context.getSetting(STS_PRIVATE_KEY_ALIAS, null);
 
-        return new EmbeddedSecureTokenService(new JwtGenerationService(jwsSignerProvider), () -> privKeyAlias, () -> publicKeyId, clock, TimeUnit.MINUTES.toSeconds(tokenExpiration));
+        return new EmbeddedSecureTokenService(new JwtGenerationService(jwsSignerProvider), () -> privKeyAlias, () -> publicKeyId, clock, TimeUnit.MINUTES.toSeconds(tokenExpiration), jtiValidationStore);
     }
 }

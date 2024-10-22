@@ -76,19 +76,18 @@ public class CxPolicyExtension implements ServiceExtension {
         registerBindings(bindingRegistry);
     }
 
-
     public static void registerFunctions(PolicyEngine engine) {
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, DismantlerCredentialConstraintFunction.catalog());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, DismantlerCredentialConstraintFunction.contractNegotiation());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, DismantlerCredentialConstraintFunction.transferProcess());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, FrameworkAgreementCredentialConstraintFunction.catalog());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, FrameworkAgreementCredentialConstraintFunction.contractNegotiation());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, FrameworkAgreementCredentialConstraintFunction.transferProcess());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, MembershipCredentialConstraintFunction.catalog());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, MembershipCredentialConstraintFunction.contractNegotiation());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, MembershipCredentialConstraintFunction.transferProcess());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {

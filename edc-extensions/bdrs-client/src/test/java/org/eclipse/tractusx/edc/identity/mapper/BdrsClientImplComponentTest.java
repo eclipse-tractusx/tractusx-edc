@@ -40,11 +40,13 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.jwt.validation.jti.JtiValidationStore;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.token.InMemoryJtiValidationStore;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,6 +125,7 @@ class BdrsClientImplComponentTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final CredentialServiceClient csMock = mock();
     private final PrivateKeyResolver privateKeyResolver = mock();
+    private final JtiValidationStore validationStore = new InMemoryJtiValidationStore();
 
     private BdrsClientImpl client;
     private ECKey vpHolderKey;
@@ -136,7 +139,7 @@ class BdrsClientImplComponentTest {
         vpHolderKey = ECKey.parse(Files.readString(Path.of(SHARED_TEMP_DIR, HOLDER_NAME + "/key.json")));
 
         var pk = vpHolderKey.toPrivateKey();
-        var sts = new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider(privateKeyResolver)), () -> privateKeyAlias, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10);
+        var sts = new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider(privateKeyResolver)), () -> privateKeyAlias, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10, validationStore);
 
         var directoryPort = BDRS_SERVER_CONTAINER.getMappedPort(8082);
         client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,

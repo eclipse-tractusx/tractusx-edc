@@ -19,10 +19,10 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
-import org.eclipse.edc.policy.engine.spi.PolicyContextImpl;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.policy.model.Permission;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,19 +40,15 @@ import static org.mockito.Mockito.when;
 
 class BusinessPartnerNumberPermissionFunctionTest {
 
-    private final PolicyContext policyContext = new PolicyContextImpl() {
-        @Override
-        public String scope() {
-            return "any";
-        }
-    };
     private final ParticipantAgent participantAgent = mock();
-    private final BusinessPartnerNumberPermissionFunction validation = new BusinessPartnerNumberPermissionFunction();
+    private final Permission unusedPermission = Permission.Builder.newInstance().build();
+    private final ParticipantAgentPolicyContext policyContext = new TestParticipantAgentPolicyContext(participantAgent);
+    private final BusinessPartnerNumberPermissionFunction<TestParticipantAgentPolicyContext> validation = new BusinessPartnerNumberPermissionFunction<>();
 
     @ParameterizedTest(name = "Illegal Operator {0}")
     @ArgumentsSource(IllegalOperatorProvider.class)
     void testFailsOnUnsupportedOperations(Operator illegalOperator) {
-        var result = validation.evaluate(illegalOperator, "foo", participantAgent, policyContext);
+        var result = validation.evaluate(illegalOperator, "foo", unusedPermission, policyContext);
 
         assertFalse(result);
         assertThat(policyContext.getProblems()).hasSize(1)
@@ -62,7 +58,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
     @Test
     void testFailsOnUnsupportedRightValue() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        var result = validation.evaluate(Operator.EQ, 1, participantAgent, policyContext);
+        var result = validation.evaluate(Operator.EQ, 1, unusedPermission, policyContext);
 
         assertFalse(result);
         assertThat(policyContext.getProblems()).hasSize(1)
@@ -71,7 +67,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
 
     @Test
     void testValidationFailsIdentityIsMissing() {
-        var result = validation.evaluate(Operator.EQ, "foo", participantAgent, policyContext);
+        var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
 
         assertThat(result).isFalse();
         assertThat(policyContext.getProblems()).hasSize(1)
@@ -79,19 +75,10 @@ class BusinessPartnerNumberPermissionFunctionTest {
     }
 
     @Test
-    void testValidationFailsParticipantAgentMissing() {
-        var result = validation.evaluate(Operator.EQ, "foo", null, policyContext);
-
-        assertThat(result).isFalse();
-        assertThat(policyContext.getProblems()).hasSize(1)
-                .anyMatch(it -> it.contains("Required PolicyContext data not found"));
-    }
-
-    @Test
     void testValidationWhenSingleParticipantIsValid() {
         when(participantAgent.getIdentity()).thenReturn("foo");
 
-        var result = validation.evaluate(Operator.EQ, "foo", participantAgent, policyContext);
+        var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
 
         assertThat(result).isTrue();
     }
@@ -100,7 +87,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
     void testValidationFailsInvalidIdentity() {
         when(participantAgent.getIdentity()).thenReturn("bar");
 
-        var result = validation.evaluate(Operator.EQ, "foo", participantAgent, policyContext);
+        var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
 
         assertThat(result).isFalse();
     }
@@ -109,31 +96,31 @@ class BusinessPartnerNumberPermissionFunctionTest {
     void testValidationForMultipleParticipants() {
         when(participantAgent.getIdentity()).thenReturn("quazz");
 
-        assertThat(validation.evaluate(Operator.IN, List.of("foo", "bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IN, List.of(1, "foo"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IN, List.of("bar", "bar"), participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IN, List.of("foo", "bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IN, List.of(1, "foo"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IN, List.of("bar", "bar"), unusedPermission, policyContext)).isFalse();
     }
 
     @Test
     void evaluate_neq() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.NEQ, "bar", participantAgent, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.NEQ, "bar", unusedPermission, policyContext)).isTrue();
 
         // these two should report a problem
-        assertThat(validation.evaluate(Operator.NEQ, 1, participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.NEQ, List.of("foo", "bar"), participantAgent, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.NEQ, 1, unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.NEQ, List.of("foo", "bar"), unusedPermission, policyContext)).isTrue();
     }
 
     @Test
     void evaluate_hasPart() {
         when(participantAgent.getIdentity()).thenReturn("quizzquazz");
-        assertThat(validation.evaluate(Operator.HAS_PART, "quizz", participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.HAS_PART, "quazz", participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.HAS_PART, "zzqua", participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.HAS_PART, "zzqui", participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.HAS_PART, "Quizz", participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.HAS_PART, List.of("quizz"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.HAS_PART, List.of("quizz", "quazz"), participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.HAS_PART, "quizz", unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.HAS_PART, "quazz", unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.HAS_PART, "zzqua", unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.HAS_PART, "zzqui", unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.HAS_PART, "Quizz", unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.HAS_PART, List.of("quizz"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.HAS_PART, List.of("quizz", "quazz"), unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).hasSize(2)
                 .allMatch(it -> it.startsWith("Invalid right-value: operator 'HAS_PART' requires a 'String' but got a"));
     }
@@ -141,20 +128,20 @@ class BusinessPartnerNumberPermissionFunctionTest {
     @Test
     void evaluate_in() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IN, List.of("foo", "bar"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IN, List.of("foo"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IN, List.of("bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IN, "bar", participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IN, List.of("foo", "bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IN, List.of("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IN, List.of("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IN, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IN' requires a 'List' but got a 'java.lang.String'");
     }
 
     @Test
     void evaluate_isAnyOf() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("foo", "bar"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("foo"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, "bar", participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("foo", "bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_ANY_OF' requires a 'List' but got a 'java.lang.String'");
 
     }
@@ -162,29 +149,29 @@ class BusinessPartnerNumberPermissionFunctionTest {
     @Test
     void evaluate_isA() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IS_A, List.of("foo", "bar"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_A, List.of("foo"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_A, List.of("bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_A, "bar", participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_A, List.of("foo", "bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_A, List.of("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_A, List.of("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_A, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_A' requires a 'List' but got a 'java.lang.String'");
     }
 
     @Test
     void evaluate_isAllOf() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo", "bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_ALL_OF, "bar", participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo", "bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, "bar", unusedPermission, policyContext)).isFalse();
     }
 
     @Test
     void evaluate_isNoneOf() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("foo", "bar"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("foo"), participantAgent, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("bar"), participantAgent, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, "bar", participantAgent, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("foo", "bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("foo"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_NONE_OF' requires a 'List' but got a 'java.lang.String'");
     }
 
@@ -199,4 +186,5 @@ class BusinessPartnerNumberPermissionFunctionTest {
             );
         }
     }
+
 }

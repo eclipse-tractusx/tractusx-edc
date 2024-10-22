@@ -75,11 +75,10 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var function = new BusinessPartnerNumberPermissionFunction();
 
-        bindToScope(TransferProcessPolicyContext.class, function.transferProcess(), TRANSFER_SCOPE);
-        bindToScope(ContractNegotiationPolicyContext.class, function.contractNegotiation(), NEGOTIATION_SCOPE);
-        bindToScope(CatalogPolicyContext.class, function.catalog(), CATALOG_SCOPE);
+        bindToScope(TransferProcessPolicyContext.class, new BusinessPartnerNumberPermissionFunction<>(), TRANSFER_SCOPE);
+        bindToScope(ContractNegotiationPolicyContext.class, new BusinessPartnerNumberPermissionFunction<>(), NEGOTIATION_SCOPE);
+        bindToScope(CatalogPolicyContext.class, new BusinessPartnerNumberPermissionFunction<>(), CATALOG_SCOPE);
     }
 
     private <C extends PolicyContext> void bindToScope(Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function, String scope) {

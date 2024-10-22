@@ -21,11 +21,12 @@ package org.eclipse.tractusx.edc.policy.cx.common;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
 
 import java.util.Collection;
@@ -36,13 +37,11 @@ import java.util.Optional;
  * This is a base class for dynamically bound Tractus-X constraint evaluation functions that implements some basic common functionality and defines some
  * common constants
  */
-public abstract class AbstractDynamicCredentialConstraintFunction<C extends PolicyContext> implements DynamicAtomicConstraintRuleFunction<Permission, C> {
+public abstract class AbstractDynamicCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> implements DynamicAtomicConstraintRuleFunction<Permission, C> {
     public static final String VC_CLAIM = "vc";
     public static final String ACTIVE = "active";
     public static final String CREDENTIAL_LITERAL = "Credential";
     protected static final Collection<Operator> EQUALITY_OPERATORS = List.of(Operator.EQ, Operator.NEQ);
-
-    protected abstract ParticipantAgent getParticipantAgent(C context);
 
     protected boolean checkOperator(Operator actual, PolicyContext context, Collection<Operator> expectedOperators) {
         if (!expectedOperators.contains(actual)) {

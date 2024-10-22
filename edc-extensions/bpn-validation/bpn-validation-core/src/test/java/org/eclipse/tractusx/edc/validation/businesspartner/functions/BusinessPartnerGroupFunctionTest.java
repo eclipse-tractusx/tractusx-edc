@@ -19,10 +19,10 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
-import org.eclipse.edc.policy.engine.spi.PolicyContextImpl;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +50,6 @@ import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
-import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,24 +59,11 @@ class BusinessPartnerGroupFunctionTest {
     public static final String TEST_GROUP_1 = "test-group-1";
     public static final String TEST_GROUP_2 = "test-group-2";
     private static final String TEST_BPN = "BPN000TEST";
-    private final PolicyContext context = new PolicyContextImpl() {
-        @Override
-        public String scope() {
-            return "any";
-        }
-    };
     private final BusinessPartnerStore store = mock();
-    private final BusinessPartnerGroupFunction function = new BusinessPartnerGroupFunction(store);
-
-    @Test
-    @DisplayName("PolicyContext does not carry ParticipantAgent")
-    void evaluate_noParticipantAgentOnContext() {
-        var result = function.evaluate(EQ, "test-group", null, context);
-
-        assertThat(result).isFalse();
-
-        assertThat(context.getProblems()).containsOnly("ParticipantAgent not found on PolicyContext");
-    }
+    private final ParticipantAgent agent = mock();
+    private final Permission unusedPermission = Permission.Builder.newInstance().build();
+    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(agent);
+    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store);
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)
@@ -85,7 +71,7 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_invalidOperator(Operator invalidOperator) {
         var agent = new ParticipantAgent(Map.of(), Map.of());
 
-        var result = function.evaluate(invalidOperator, "test-group", agent, context);
+        var result = function.evaluate(invalidOperator, "test-group", unusedPermission, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).hasSize(1).anyMatch(it -> it.endsWith("but was [" + invalidOperator.name() + "]"));
@@ -96,9 +82,9 @@ class BusinessPartnerGroupFunctionTest {
     @DisplayName("Right-hand operand is not String or Collection<?>")
     void evaluate_rightOperandNotStringOrCollection(Object rightValue) {
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(List.of("test-group")));
-        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
+        when(agent.getIdentity()).thenReturn(TEST_BPN);
 
-        var result = function.evaluate(EQ, rightValue, agent, context);
+        var result = function.evaluate(EQ, rightValue, unusedPermission, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("Right operand expected to be either String or a Collection, but was " + rightValue.getClass());
@@ -109,10 +95,10 @@ class BusinessPartnerGroupFunctionTest {
     @DisplayName("Valid operators, evaluating different circumstances")
     void evaluate_validOperator(String ignored, Operator operator, List<String> assignedBpn, boolean expectedOutcome) {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpn));
+        when(agent.getIdentity()).thenReturn(TEST_BPN);
 
-        var result = function.evaluate(operator, allowedGroups, agent, context);
+        var result = function.evaluate(operator, allowedGroups, unusedPermission, context);
 
         assertThat(result).isEqualTo(expectedOutcome);
     }
@@ -120,10 +106,10 @@ class BusinessPartnerGroupFunctionTest {
     @Test
     void evaluate_failedResolveForBpn_shouldBeFalse() {
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
-        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
+        when(agent.getIdentity()).thenReturn(TEST_BPN);
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
-        var result = function.evaluate(EQ, allowedGroups, agent, context);
+        var result = function.evaluate(EQ, allowedGroups, unusedPermission, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("foobar");
@@ -134,10 +120,10 @@ class BusinessPartnerGroupFunctionTest {
     void evaluate_groupsAssignedButNoGroupsSentToEvaluate(Operator operator, List<String> assignedBpnGroups,
                                                           boolean expectedOutcome) {
         List<String> allowedGroups = List.of();
-        var agent = new ParticipantAgent(Map.of(), Map.of(PARTICIPANT_IDENTITY, TEST_BPN));
+        when(agent.getIdentity()).thenReturn(TEST_BPN);
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(assignedBpnGroups));
 
-        var result = function.evaluate(operator, allowedGroups, agent, context);
+        var result = function.evaluate(operator, allowedGroups, unusedPermission, context);
 
         assertThat(result).isEqualTo(expectedOutcome);
     }
