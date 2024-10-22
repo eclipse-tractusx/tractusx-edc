@@ -92,7 +92,7 @@ public interface BusinessPartnerGroupApiV3 {
                     "@context": {
                         "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
                     },
-                    "@id": "tx:BPN000001234",
+                    "@id": "BPN000001234",
                     "tx:groups": ["group1", "group2", "group3"]
                 }
                 """;
