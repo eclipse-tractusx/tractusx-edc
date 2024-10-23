@@ -24,10 +24,12 @@ import org.eclipse.edc.edr.spi.store.EndpointDataReferenceEntryIndex;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.configuration.DataSourceName;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
@@ -37,10 +39,11 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 public class SqlEdrLockExtension implements ServiceExtension {
 
 
-    public static final String DEFAULT_DATASOURCE_NAME = "edr";
-
     @Deprecated(since = "0.8.1")
     public static final String DATASOURCE_SETTING_NAME = "edc.datasource.edr.name";
+
+    @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
+    public static final String DATASOURCE_NAME = "edc.sql.store.edr.datasource";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -58,7 +61,7 @@ public class SqlEdrLockExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DEFAULT_DATASOURCE_NAME);
+        var dataSourceName = DataSourceName.getDataSourceName(DATASOURCE_NAME, DATASOURCE_SETTING_NAME, context.getConfig(), context.getMonitor());
 
         var statements = new PostgresEdrLockStatements();
         var sqlStore = new SqlEdrLock(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, statements);

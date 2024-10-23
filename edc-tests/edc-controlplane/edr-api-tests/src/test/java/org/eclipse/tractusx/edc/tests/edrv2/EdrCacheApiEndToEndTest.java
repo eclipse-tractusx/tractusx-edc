@@ -40,10 +40,12 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
+import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.client.MockServerClient;
@@ -326,7 +328,7 @@ public class EdrCacheApiEndToEndTest {
 
         @Test
         void refreshEdr_whenNotFound() {
-            var edr = CONSUMER.edrs().refreshEdr("does-not-exist")
+            CONSUMER.edrs().refreshEdr("does-not-exist")
                     .statusCode(404);
         }
 
@@ -432,7 +434,11 @@ public class EdrCacheApiEndToEndTest {
     class Postgres extends Tests {
 
         @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        @Order(0)
+        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName());
+
+        @RegisterExtension
+        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
 
         @Override
