@@ -47,7 +47,7 @@ import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERATOR;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_FILTER_EXPRESSION;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
-import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_TEMPLATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_RETIREMENT_TEMPLATE;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
@@ -133,7 +133,7 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
     void shouldNot_removeAgreementWhenNotExists() {
         var agreementId = "test-agreement-id";
         when(service.reactivate(agreementId))
-                .thenReturn(ServiceResult.notFound(String.format(NOT_FOUND_TEMPLATE, agreementId)));
+                .thenReturn(ServiceResult.notFound(String.format(NOT_FOUND_IN_RETIREMENT_TEMPLATE, agreementId)));
 
         baseRequest()
                 .delete("/{id}", agreementId)

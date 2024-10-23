@@ -56,6 +56,7 @@ include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
 include(":edc-extensions:agreements:retirement-evaluation-api")
 include(":edc-extensions:agreements:retirement-evaluation-spi")
+include(":edc-extensions:agreements:retirement-evaluation-store-sql")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")

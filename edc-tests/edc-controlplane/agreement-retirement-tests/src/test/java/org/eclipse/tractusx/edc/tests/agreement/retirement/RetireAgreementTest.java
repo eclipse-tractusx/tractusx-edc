@@ -30,7 +30,6 @@ import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -40,6 +39,7 @@ import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -113,7 +113,8 @@ public class RetireAgreementTest {
 
             var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
 
-            PROVIDER.retireProviderAgreement(agreementId);
+            var response = PROVIDER.retireProviderAgreement(agreementId);
+            response.statusCode(204);
 
             // verify existing TP on consumer retires
 
@@ -129,6 +130,11 @@ public class RetireAgreementTest {
             CONSUMER.waitForTransferProcess(failedTransferId, TransferProcessStates.TERMINATED);
 
 
+        }
+
+        @Test
+        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
+            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
         }
 
         @AfterEach
@@ -151,7 +157,6 @@ public class RetireAgreementTest {
 
     @Nested
     @PostgresqlIntegrationTest
-    @Disabled
     class Postgres extends Tests {
 
         @RegisterExtension
