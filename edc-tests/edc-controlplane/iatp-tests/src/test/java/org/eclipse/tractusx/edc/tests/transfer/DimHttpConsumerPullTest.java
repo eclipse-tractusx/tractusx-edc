@@ -27,6 +27,7 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.token.InMemoryJtiValidationStore;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
@@ -65,7 +66,7 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     }
 
     private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant iatpDimParticipant) {
-        return new EmbeddedSecureTokenService(tokenGenerationService, iatpDimParticipant::getPrivateKeyAlias, publicIdSupplier(iatpDimParticipant), Clock.systemUTC(), 60 * 60);
+        return new EmbeddedSecureTokenService(tokenGenerationService, iatpDimParticipant::getPrivateKeyAlias, publicIdSupplier(iatpDimParticipant), Clock.systemUTC(), 60 * 60, new InMemoryJtiValidationStore());
     }
 
     private static Supplier<String> publicIdSupplier(IatpParticipant participant) {

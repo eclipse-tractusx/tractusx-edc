@@ -20,10 +20,11 @@
 package org.eclipse.tractusx.edc.policy.cx.membership;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
 
@@ -35,11 +36,11 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  * This constraint function checks that a MembershipCredential is present in a list of {@link VerifiableCredential}
  * objects extracted from a {@link ParticipantAgent} which is expected to be present on the {@link PolicyContext}.
  */
-public class MembershipCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
+public class MembershipCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String MEMBERSHIP_LITERAL = "Membership";
 
     @Override
-    public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
+    public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, C context) {
         if (!ACTIVE.equals(rightOperand)) {
             context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
             return false;
@@ -49,11 +50,7 @@ public class MembershipCredentialConstraintFunction extends AbstractDynamicCrede
             return false;
         }
         // make sure the ParticipantAgent is there
-        var participantAgent = context.getContextData(ParticipantAgent.class);
-        if (participantAgent == null) {
-            context.reportProblem("Required PolicyContext data not found: " + ParticipantAgent.class.getName());
-            return false;
-        }
+        var participantAgent = context.participantAgent();
 
         var credentialResult = getCredentialList(participantAgent);
         if (credentialResult.failed()) {

@@ -19,6 +19,11 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
 
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
+import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
@@ -28,12 +33,12 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerNumberPermissionFunction;
 
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext.CATALOG_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext.NEGOTIATION_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.NAME;
-import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerValidationExtension.CATALOGING_SCOPE;
 
 /**
  * Business partner number evaluation function.
@@ -71,22 +76,19 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        var permissionFunction = new BusinessPartnerNumberPermissionFunction();
-
-        bindToScope(permissionFunction, TRANSFER_SCOPE);
-        bindToScope(permissionFunction, NEGOTIATION_SCOPE);
-        bindToScope(permissionFunction, CATALOGING_SCOPE);
-
+        bindToScope(TransferProcessPolicyContext.class, new BusinessPartnerNumberPermissionFunction<>(), TRANSFER_SCOPE);
+        bindToScope(ContractNegotiationPolicyContext.class, new BusinessPartnerNumberPermissionFunction<>(), NEGOTIATION_SCOPE);
+        bindToScope(CatalogPolicyContext.class, new BusinessPartnerNumberPermissionFunction<>(), CATALOG_SCOPE);
     }
 
-    private void bindToScope(BusinessPartnerNumberPermissionFunction permissionFunction, String scope) {
+    private <C extends PolicyContext> void bindToScope(Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function, String scope) {
         ruleBindingRegistry.bind("USE", scope);
         ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
         ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
         ruleBindingRegistry.bind(TX_BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
 
-        policyEngine.registerFunction(scope, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
-        policyEngine.registerFunction(scope, Permission.class, TX_BUSINESS_PARTNER_CONSTRAINT_KEY, permissionFunction);
+        policyEngine.registerFunction(contextType, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
+        policyEngine.registerFunction(contextType, Permission.class, TX_BUSINESS_PARTNER_CONSTRAINT_KEY, function);
     }
 
 }

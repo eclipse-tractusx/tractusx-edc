@@ -20,10 +20,9 @@
 package org.eclipse.tractusx.edc.policy.cx.framework;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
@@ -53,7 +52,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  * policy is considered <strong>not fulfilled</strong>. Note that if the {@code version} is specified, it <strong>must</strong> be satisfied by the <strong>same</strong>
  * credential that satisfies the {@code subtype} requirement.
  */
-public class FrameworkAgreementCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
+public class FrameworkAgreementCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
 
@@ -63,13 +62,14 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
      * @param leftValue  the left-side expression for the constraint. Must be either {@code FrameworkAgreement} or {@code FrameworkAgreement.subtype}.
      * @param operator   the operation Must be {@link Operator#EQ} or {@link Operator#NEQ}
      * @param rightValue the right-side expression for the constraint. Must be a string that is either {@code "active":[version]} or {@code subtype[:version]}.
-     * @param rule       the rule associated with the constraint. Ignored by this function.
-     * @param context    the policy context. Must contain the {@link ParticipantAgent}, which in turn must contain a list of {@link VerifiableCredential} stored
+     * @param permission the permission associated with the constraint. Ignored by this function.
+     * @param context    the policy context. Must contain the {@link org.eclipse.edc.participant.spi.ParticipantAgent}, which in turn must contain a list of {@link VerifiableCredential} stored
      *                   in its claims using the {@code "vc"} key.
      * @return true if at least one credential satisfied the requirement imposed by the constraint.
      */
     @Override
-    public boolean evaluate(Object leftValue, Operator operator, Object rightValue, Permission rule, PolicyContext context) {
+    public boolean evaluate(Object leftValue, Operator operator, Object rightValue, Permission permission, C context) {
+        var participantAgent = context.participantAgent();
 
         if (!checkOperator(operator, context, EQUALITY_OPERATORS)) {
             return false;
@@ -78,12 +78,6 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
         // we do not support list-type right-operands
         if (!(leftValue instanceof String) || !(rightValue instanceof String)) {
             context.reportProblem("Both the right- and left-operand must be of type String but were '%s' and '%s', respectively.".formatted(leftValue.getClass(), rightValue.getClass()));
-            return false;
-        }
-
-        var participantAgent = extractParticipantAgent(context);
-        if (participantAgent.failed()) {
-            context.reportProblem(participantAgent.getFailureDetail());
             return false;
         }
 
@@ -106,7 +100,7 @@ public class FrameworkAgreementCredentialConstraintFunction extends AbstractDyna
             return false;
         }
 
-        var vcListResult = getCredentialList(participantAgent.getContent());
+        var vcListResult = getCredentialList(participantAgent);
         if (vcListResult.failed()) { // couldn't extract credential list from agent
             context.reportProblem(vcListResult.getFailureDetail());
             return false;

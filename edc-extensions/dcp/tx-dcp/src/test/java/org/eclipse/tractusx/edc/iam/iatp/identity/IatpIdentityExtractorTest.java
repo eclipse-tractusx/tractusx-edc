@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.spi.agent.ParticipantAgent.PARTICIPANT_IDENTITY;
+import static org.eclipse.edc.participant.spi.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
 class IatpIdentityExtractorTest {

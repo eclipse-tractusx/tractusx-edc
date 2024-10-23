@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.dismantler;
 
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
@@ -49,7 +50,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  *     <li>allowedBrands: whether an existing DismantlerCredential permits the vehicle brands required by the constraint</li>
  * </ul>
  */
-public class DismantlerCredentialConstraintFunction extends AbstractDynamicCredentialConstraintFunction {
+public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
 
     public static final String ALLOWED_VEHICLE_BRANDS_LITERAL = "allowedVehicleBrands";
     public static final String DISMANTLER_LITERAL = "Dismantler";
@@ -58,18 +59,13 @@ public class DismantlerCredentialConstraintFunction extends AbstractDynamicCrede
     private static final String ALLOWED_ACTIVITIES_LITERAL = "activityType";
 
     @Override
-    public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, PolicyContext context) {
+    public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, C context) {
         Predicate<VerifiableCredential> predicate;
 
-        // make sure the ParticipantAgent is there
-        var participantAgent = extractParticipantAgent(context);
-        if (participantAgent.failed()) {
-            context.reportProblem(participantAgent.getFailureDetail());
-            return false;
-        }
+        var participantAgent = context.participantAgent();
 
         // check if the participant agent contains the correct data
-        var vcListResult = getCredentialList(participantAgent.getContent());
+        var vcListResult = getCredentialList(participantAgent);
         if (vcListResult.failed()) { // couldn't extract credential list from agent
             context.reportProblem(vcListResult.getFailureDetail());
             return false;

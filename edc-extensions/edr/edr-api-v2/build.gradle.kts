@@ -29,7 +29,9 @@ dependencies {
     implementation(project(":spi:core-spi"))
     implementation(project(":spi:tokenrefresh-spi"))
 
-    implementation(libs.edc.api.management)
+    implementation(libs.edc.api.management){
+        exclude("org.eclipse.edc", "edr-cache-api")
+    }
     implementation(libs.edc.api.core)
     implementation(libs.edc.lib.validator)
     implementation(libs.edc.spi.edrstore)

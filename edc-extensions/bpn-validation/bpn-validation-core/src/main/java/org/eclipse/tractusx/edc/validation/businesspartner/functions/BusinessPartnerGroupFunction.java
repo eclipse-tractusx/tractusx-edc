@@ -19,18 +19,18 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.functions;
 
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
-import org.eclipse.edc.spi.result.StoreFailure;
-import org.eclipse.edc.spi.result.StoreFailure.Reason;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -77,7 +77,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  *
  * @see BusinessPartnerStore
  */
-public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Permission> {
+public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
@@ -93,30 +93,13 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
 
-    /**
-     * Policy evaluation function that checks whether a given BusinessPartnerNumber is covered by a given policy.
-     * The evaluation is prematurely aborted (returns {@code false}) if:
-     * <ul>
-     *     <li>No {@link ParticipantAgent} was found on the {@link PolicyContext}</li>
-     *     <li>The operator is invalid. Check {@link BusinessPartnerGroupFunction#ALLOWED_OPERATORS} for valid operators.</li>
-     *     <li>No database entry was found for the BPN (taken from the {@link ParticipantAgent}) and the {@link StoreFailure#getReason()} is different than {@link Reason#NOT_FOUND}</li>
-     *     <li>The right value is anything other than {@link String} or {@link Collection}</li>
-     * </ul>
-     */
     @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission rule, PolicyContext policyContext) {
-        var participantAgent = policyContext.getContextData(ParticipantAgent.class);
-
-        // No participant agent found in context
-        if (participantAgent == null) {
-            policyContext.reportProblem("ParticipantAgent not found on PolicyContext");
-            return false;
-        }
-
+    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C context) {
+        var participantAgent = context.participantAgent();
         // invalid operator
         if (!ALLOWED_OPERATORS.contains(operator)) {
             var ops = ALLOWED_OPERATORS.stream().map(Enum::name).collect(Collectors.joining(", "));
-            policyContext.reportProblem(format("Operator must be one of [%s] but was [%s]", ops, operator.name()));
+            context.reportProblem(format("Operator must be one of [%s] but was [%s]", ops, operator.name()));
             return false;
         }
 
@@ -127,18 +110,18 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
 
         // BPN not found in database
         if (groups.failed()) {
-            policyContext.reportProblem(groups.getFailureDetail());
+            context.reportProblem(groups.getFailureDetail());
             return false;
         }
 
         // right-operand is anything other than String or Collection
-        var rightOperand = parseRightOperand(rightValue, policyContext);
-        if (rightOperand == null) {
+        var rightOperand1 = parseRightOperand(rightOperand, context);
+        if (rightOperand1 == null) {
             return false;
         }
 
         //call evaluator function
-        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand));
+        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand1));
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
@@ -153,11 +136,11 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
         return null;
     }
-    
+
     private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         // checks whether both lists overlap
-        return bpnGroupHolder.allowedGroups.containsAll(assigned);
+        return new HashSet<>(bpnGroupHolder.allowedGroups).containsAll(assigned);
     }
 
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
@@ -189,4 +172,5 @@ public class BusinessPartnerGroupFunction implements AtomicConstraintFunction<Pe
      */
     private record BpnGroupHolder(List<String> assignedGroups, List<String> allowedGroups) {
     }
+
 }

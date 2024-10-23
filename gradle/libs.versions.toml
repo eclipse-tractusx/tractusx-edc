@@ -2,12 +2,12 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.10.0-20241006-SNAPSHOT"
+edc = "0.10.0-20241022-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.2"
 aws = "2.28.12"
 azure-identity = "1.14.0"
-azure-storage-blob = "12.28.0"
+azure-storage-blob = "12.28.1"
 bouncyCastle-jdk18on = "1.78.1"
 flyway = "10.19.0"
 jackson = "2.18.0"
@@ -29,7 +29,9 @@ edc-spi-transfer = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc
 edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
+edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
+edc-spi-request-policy-context = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
 edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
@@ -202,6 +204,7 @@ jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakar
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
@@ -227,4 +230,4 @@ edc-sts = [
 ]
 
 [plugins]
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.24" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.25" }

@@ -19,6 +19,11 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner;
 
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
+import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
@@ -29,9 +34,11 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.NEGOTIATION_SCOPE;
-import static org.eclipse.edc.connector.controlplane.contract.spi.validation.ContractValidationService.TRANSFER_SCOPE;
+import static org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext.CATALOG_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext.NEGOTIATION_SCOPE;
+import static org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
+import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
 
 /**
  * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction} for the following scopes:
@@ -57,8 +64,6 @@ import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = { "policy", "contract" })
 public class BusinessPartnerValidationExtension implements ServiceExtension {
 
-    public static final String CATALOGING_SCOPE = "catalog";
-
     private static final String USE = "USE";
 
     @Inject
@@ -70,18 +75,18 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var function = new BusinessPartnerGroupFunction(store);
 
-        bindToScope(function, TRANSFER_SCOPE);
-        bindToScope(function, NEGOTIATION_SCOPE);
-        bindToScope(function, CATALOGING_SCOPE);
+        bindToScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupFunction<>(store));
+        bindToScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupFunction<>(store));
+        bindToScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupFunction<>(store));
     }
 
-    private void bindToScope(BusinessPartnerGroupFunction function, String scope) {
+    private <C extends PolicyContext> void bindToScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {
         ruleBindingRegistry.bind(USE, scope);
         ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
-        ruleBindingRegistry.bind(BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
+        ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
 
-        policyEngine.registerFunction(scope, Permission.class, BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY, function);
+        policyEngine.registerFunction(contextType, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
     }
+
 }

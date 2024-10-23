@@ -19,21 +19,45 @@
 
 package org.eclipse.tractusx.edc.policy.cx;
 
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
+import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 
-import static org.eclipse.tractusx.edc.policy.cx.CxPolicyRegistration.registerBindings;
-import static org.eclipse.tractusx.edc.policy.cx.CxPolicyRegistration.registerFunctions;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
 
 
 /**
  * Provides implementations of standard CX usage policies.
  */
+@Extension(CxPolicyExtension.NAME)
 public class CxPolicyExtension implements ServiceExtension {
-    private static final String NAME = "CX Policy";
+
+    public static final String NAME = "CX Policy";
+    private static final Set<String> RULE_SCOPES = Set.of(CATALOG_REQUEST_SCOPE, NEGOTIATION_REQUEST_SCOPE,
+            TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
 
     @Inject
     private PolicyEngine policyEngine;
@@ -50,5 +74,32 @@ public class CxPolicyExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         registerFunctions(policyEngine);
         registerBindings(bindingRegistry);
+    }
+
+    public static void registerFunctions(PolicyEngine engine) {
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+    }
+
+    public static void registerBindings(RuleBindingRegistry registry) {
+        registry.dynamicBind(s -> {
+            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL).anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
+                return RULE_SCOPES;
+            }
+            return Set.of();
+        });
+
+        registry.bind(ODRL_SCHEMA + "use", CATALOG_SCOPE);
+        registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
+        registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
     }
 }

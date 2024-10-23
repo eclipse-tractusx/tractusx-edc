@@ -26,10 +26,10 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.Con
 import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferRequestMessage;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferTerminationMessage;
-import org.eclipse.edc.policy.engine.spi.PolicyContextImpl;
+import org.eclipse.edc.policy.context.request.spi.RequestPolicyContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.iam.RequestContext;
-import org.eclipse.edc.spi.iam.TokenParameters;
+import org.eclipse.edc.spi.iam.RequestScope;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.tractusx.edc.edr.spi.CoreConstants;
@@ -63,30 +63,32 @@ public class CredentialScopeExtractorTest {
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(SupportedMessages.class)
     void verify_extractScopes(RemoteMessage message) {
-        var builder = TokenParameters.Builder.newInstance();
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
-        var ctx = PolicyContextImpl.Builder.newInstance().additional(TokenParameters.Builder.class, builder).additional(RequestContext.class, requestContext).build();
+        var ctx = new TestRequestPolicyContext(requestContext, null);
+
         var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
+
         assertThat(scopes).contains(CREDENTIAL_TYPE_NAMESPACE + ":PfcCredential:read");
     }
-
 
     @DisplayName("Scope extractor with not supported messages")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(NotSupportedMessages.class)
     void verify_extractScopes_isEmpty_whenNotSupportedMessages(RemoteMessage message) {
-        var builder = TokenParameters.Builder.newInstance();
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
-        var ctx = PolicyContextImpl.Builder.newInstance().additional(TokenParameters.Builder.class, builder).additional(RequestContext.class, requestContext).build();
+        var ctx = new TestRequestPolicyContext(requestContext, null);
+
         var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
+
         assertThat(scopes).isEmpty();
     }
 
     @Test
     void verify_extractScope_Empty() {
-        var builder = TokenParameters.Builder.newInstance();
-        var ctx = PolicyContextImpl.Builder.newInstance().additional(TokenParameters.Builder.class, builder).build();
+        var ctx = new TestRequestPolicyContext(null, null);
+
         var scopes = extractor.extractScopes("wrong", null, null, ctx);
+
         assertThat(scopes).isEmpty();
     }
 
@@ -112,4 +114,17 @@ public class CredentialScopeExtractorTest {
             );
         }
     }
+
+    private static class TestRequestPolicyContext extends RequestPolicyContext {
+
+        protected TestRequestPolicyContext(RequestContext requestContext, RequestScope.Builder requestScopeBuilder) {
+            super(requestContext, requestScopeBuilder);
+        }
+
+        @Override
+        public String scope() {
+            return "request.any";
+        }
+    }
+
 }

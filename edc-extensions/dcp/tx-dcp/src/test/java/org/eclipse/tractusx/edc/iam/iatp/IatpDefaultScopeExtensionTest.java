@@ -20,6 +20,9 @@
 package org.eclipse.tractusx.edc.iam.iatp;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.policy.context.request.spi.RequestCatalogPolicyContext;
+import org.eclipse.edc.policy.context.request.spi.RequestContractNegotiationPolicyContext;
+import org.eclipse.edc.policy.context.request.spi.RequestTransferProcessPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -35,9 +38,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.CATALOG_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NEGOTIATION_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -59,9 +59,9 @@ public class IatpDefaultScopeExtensionTest {
     void initialize(ServiceExtensionContext context, IatpDefaultScopeExtension extension) {
         extension.initialize(context);
 
-        verify(policyEngine).registerPostValidator(eq(CATALOG_REQUEST_SCOPE), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
-        verify(policyEngine).registerPostValidator(eq(NEGOTIATION_REQUEST_SCOPE), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
-        verify(policyEngine).registerPostValidator(eq(TRANSFER_PROCESS_REQUEST_SCOPE), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
+        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
+        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
+        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
     }
 
     @Test
@@ -79,9 +79,9 @@ public class IatpDefaultScopeExtensionTest {
 
         var expectedScopes = Set.of("org.test.alias.foo:FooCredential:read", "org.test.alias.bar:BarCredential:write");
 
-        verify(policyEngine).registerPostValidator(eq(CATALOG_REQUEST_SCOPE), argThat(new ScopeMatcher(expectedScopes)));
-        verify(policyEngine).registerPostValidator(eq(NEGOTIATION_REQUEST_SCOPE), argThat(new ScopeMatcher(expectedScopes)));
-        verify(policyEngine).registerPostValidator(eq(TRANSFER_PROCESS_REQUEST_SCOPE), argThat(new ScopeMatcher(expectedScopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(expectedScopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(expectedScopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(expectedScopes)));
     }
 
     @Test
