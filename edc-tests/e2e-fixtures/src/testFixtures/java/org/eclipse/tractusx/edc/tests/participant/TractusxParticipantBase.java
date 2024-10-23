@@ -168,34 +168,18 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .statusCode(204);
     }
 
-    public void retireProviderAgreement(String agreementId) {
+    public ValidatableResponse retireProviderAgreement(String agreementId) {
         var body = createObjectBuilder()
                 .add(TYPE, AR_ENTRY_TYPE)
                 .add(AR_ENTRY_AGREEMENT_ID, agreementId)
                 .add(AR_ENTRY_REASON, "long-reason")
                 .build();
-        managementEndpoint.baseRequest()
+        return managementEndpoint.baseRequest()
                 .contentType(JSON)
                 .body(body)
                 .when()
                 .post("/v3.1alpha/retireagreements")
-                .then()
-                .statusCode(204);
-    }
-
-    public void retireProviderAgreementBadRequest(String agreementId) {
-        var body = createObjectBuilder()
-                .add(TYPE, AR_ENTRY_TYPE)
-                .add(AR_ENTRY_AGREEMENT_ID, agreementId)
-                .add(AR_ENTRY_REASON, "long-reason")
-                .build();
-        managementEndpoint.baseRequest()
-                .contentType(JSON)
-                .body(body)
-                .when()
-                .post("/v3.1alpha/retireagreements")
-                .then()
-                .statusCode(404);
+                .then();
     }
 
     /**

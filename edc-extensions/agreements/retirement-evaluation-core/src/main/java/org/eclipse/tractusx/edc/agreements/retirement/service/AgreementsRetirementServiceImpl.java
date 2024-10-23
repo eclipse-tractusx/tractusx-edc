@@ -63,7 +63,7 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
     @Override
     public ServiceResult<Void> retireAgreement(AgreementsRetirementEntry entry) {
         return transactionContext.execute(() ->
-                contractAgreementExists(entry.getAgreementId())
+                contractAgreementService.findById(entry.getAgreementId()) != null
                         ? ServiceResult.from(store.save(entry))
                         : ServiceResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId())));
     }
@@ -82,9 +82,5 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
                                 .operandRight(agreementId)
                                 .build()
                 ).build();
-    }
-
-    private boolean contractAgreementExists(String agreementId) {
-        return contractAgreementService.findById(agreementId) != null;
     }
 }

@@ -113,7 +113,8 @@ public class RetireAgreementTest {
 
             var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
 
-            PROVIDER.retireProviderAgreement(agreementId);
+            var response = PROVIDER.retireProviderAgreement(agreementId);
+            response.statusCode(204);
 
             // verify existing TP on consumer retires
 
@@ -132,8 +133,8 @@ public class RetireAgreementTest {
         }
 
         @Test
-        void retireAgreement_shouldFailIfTryingToRetireNonExistingId() {
-            PROVIDER.retireProviderAgreementBadRequest(UUID.randomUUID().toString());
+        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
+            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
         }
 
         @AfterEach

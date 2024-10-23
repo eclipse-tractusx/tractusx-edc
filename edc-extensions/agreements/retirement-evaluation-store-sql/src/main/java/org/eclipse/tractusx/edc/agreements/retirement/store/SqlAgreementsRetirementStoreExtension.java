@@ -38,9 +38,8 @@ import org.eclipse.tractusx.edc.agreements.retirement.store.sql.SqlAgreementsRet
 public class SqlAgreementsRetirementStoreExtension implements ServiceExtension {
 
     protected static final String NAME = "SQL Agreement Retirement Store.";
-    private static final String DEFAULT_DATASOURCE_NAME = "agreementretirement";
 
-    @Setting(value = "Datasource name for the SQL AgreementsRetirement store", defaultValue = DEFAULT_DATASOURCE_NAME)
+    @Setting(value = "Datasource name for the SQL AgreementsRetirement store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     private static final String DATASOURCE_SETTING_NAME = "tx.edc.sql.store.agreementretirement.datasource";
 
     @Inject
