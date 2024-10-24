@@ -35,6 +35,7 @@ dependencies {
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.lib.cryptocommon)
     testFixturesApi(libs.edc.lib.jws2020)
+    testFixturesApi(libs.edc.lib.token)
     testFixturesApi(libs.edc.lib.util)
     testFixturesApi(libs.edc.aws.s3.core)
     testFixturesApi(libs.edc.spi.edrstore)

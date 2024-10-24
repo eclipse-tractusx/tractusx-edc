@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.bundles.edc.sts)
 
     implementation(libs.edc.identity.trust.sts.embedded)
+    implementation(libs.edc.lib.token)
     implementation(libs.edc.core.token)
 
     implementation(libs.edc.ih.core)
