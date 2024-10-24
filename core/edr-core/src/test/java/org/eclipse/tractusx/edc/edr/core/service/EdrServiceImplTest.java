@@ -27,8 +27,10 @@ import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -43,20 +45,22 @@ import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class EdrServiceImplTest {
+class EdrServiceImplTest {
 
     private final TokenRefreshHandler tokenRefreshHandler = mock();
     private final EndpointDataReferenceStore edrStore = mock();
+    private final EndpointDataReferenceLock edrLock = mock();
     private EdrServiceImpl edrService;
 
     @BeforeEach
     void setup() {
-        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), mock());
+        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), mock(), edrLock);
     }
 
     @Test
@@ -82,7 +86,7 @@ public class EdrServiceImplTest {
         verify(edrStore).resolveByTransferProcess(transferProcess);
 
         verifyNoMoreInteractions(edrStore);
-        verifyNoInteractions(tokenRefreshHandler);
+        verifyNoInteractions(tokenRefreshHandler, edrLock);
     }
 
     @Test
@@ -90,17 +94,21 @@ public class EdrServiceImplTest {
 
         var transferProcess = "tp";
         var assetId = "assetId";
-        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr("1000")));
-        when(edrStore.findById(transferProcess)).thenReturn(edrEntry(assetId, transferProcess));
+        var edrEntry = edrEntry(assetId, transferProcess);
+        var edr = edr("1000");
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr));
+        when(edrStore.findById(transferProcess)).thenReturn(edrEntry);
+        when(edrLock.isExpired(edr, edrEntry)).thenReturn(false);
 
         var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
 
         assertThat(result).isSucceeded();
 
-        verify(edrStore).resolveByTransferProcess(transferProcess);
+        verify(edrStore, times(2)).resolveByTransferProcess(transferProcess);
         verify(edrStore).findById(transferProcess);
+        verify(edrLock).isExpired(edr, edrEntry);
 
-        verifyNoMoreInteractions(edrStore);
+        verifyNoMoreInteractions(edrStore, edrLock);
         verifyNoInteractions(tokenRefreshHandler);
     }
 
@@ -110,12 +118,16 @@ public class EdrServiceImplTest {
         var transferProcess = "tp";
         var assetId = "assetId";
         var entry = edrEntry(assetId, transferProcess);
+        var expiredEdr = edr("-1000");
         var refreshedEdr = edr();
 
-        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr("-1000")));
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(expiredEdr));
         when(edrStore.findById(transferProcess)).thenReturn(entry);
+        when(edrLock.isExpired(any(), any())).thenReturn(true);
+        when(edrLock.acquireLock(any(), any())).thenReturn(StoreResult.success(true));
         when(tokenRefreshHandler.refreshToken(eq(transferProcess), any())).thenReturn(ServiceResult.success(refreshedEdr));
         when(edrStore.save(any(), eq(refreshedEdr))).thenReturn(StoreResult.success());
+        when(edrLock.releaseLock(transferProcess)).thenReturn(StoreResult.success());
 
         var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
 
@@ -126,10 +138,45 @@ public class EdrServiceImplTest {
         verify(edrStore).findById(transferProcess);
         verify(edrStore).save(captor.capture(), eq(refreshedEdr));
         verify(tokenRefreshHandler).refreshToken(eq(transferProcess), any());
+        verify(edrLock).isExpired(any(), any());
+        verify(edrLock).acquireLock(any(), any());
+        verify(edrLock).releaseLock(transferProcess);
 
-        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler, edrLock);
 
         Assertions.assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(entry);
+    }
+
+    @Test
+    @DisplayName("Resolve an EDR which initially was expired but was refreshed in the meantime")
+    void resolveByTransferProcess_whenRefreshExpiredButWasAlreadyRefreshed() {
+
+        var transferProcess = "tp";
+        var assetId = "assetId";
+        var entry = edrEntry(assetId, transferProcess);
+        var expiredEdr = edr("-1000");
+        var refreshedEdr = edr();
+
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(expiredEdr));
+        when(edrStore.findById(transferProcess)).thenReturn(entry);
+        when(edrLock.isExpired(any(), any())).thenReturn(true);
+        when(edrLock.acquireLock(any(), any())).thenReturn(StoreResult.success(false));
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(refreshedEdr));
+        when(edrLock.releaseLock(transferProcess)).thenReturn(StoreResult.success());
+
+        var result = edrService.resolveByTransferProcess(transferProcess, AUTO_REFRESH);
+
+        assertThat(result).isSucceeded();
+
+        verify(edrStore, times(2)).resolveByTransferProcess(transferProcess);
+        verify(edrStore).findById(transferProcess);
+        verify(edrLock).isExpired(any(), any());
+        verify(edrLock).acquireLock(any(), any());
+        verify(edrLock).releaseLock(transferProcess);
+
+        Assertions.assertThat(result.getContent()).isEqualTo(refreshedEdr);
+
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler, edrLock);
     }
 
     @Test
@@ -138,11 +185,16 @@ public class EdrServiceImplTest {
         var transferProcess = "tp";
         var assetId = "assetId";
         var entry = edrEntry(assetId, transferProcess);
+        var edr = edr("1000");
         var refreshedEdr = edr();
-        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr("1000")));
+
+        when(edrStore.resolveByTransferProcess(transferProcess)).thenReturn(StoreResult.success(edr));
         when(edrStore.findById(transferProcess)).thenReturn(entry);
+        when(edrLock.isExpired(any(), any())).thenReturn(false);
+        when(edrLock.acquireLock(any(), any())).thenReturn(StoreResult.success(false));
         when(tokenRefreshHandler.refreshToken(eq(transferProcess), any())).thenReturn(ServiceResult.success(refreshedEdr));
         when(edrStore.save(any(), eq(refreshedEdr))).thenReturn(StoreResult.success());
+        when(edrLock.releaseLock(transferProcess)).thenReturn(StoreResult.success());
 
         var result = edrService.resolveByTransferProcess(transferProcess, FORCE_REFRESH);
 
@@ -153,8 +205,11 @@ public class EdrServiceImplTest {
         verify(edrStore).findById(transferProcess);
         verify(edrStore).save(captor.capture(), eq(refreshedEdr));
         verify(tokenRefreshHandler).refreshToken(eq(transferProcess), any());
+        verify(edrLock).isExpired(any(), any());
+        verify(edrLock).acquireLock(any(), any());
+        verify(edrLock).releaseLock(transferProcess);
 
-        verifyNoMoreInteractions(edrStore, tokenRefreshHandler);
+        verifyNoMoreInteractions(edrStore, tokenRefreshHandler, edrLock);
 
         Assertions.assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(entry);
 

@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,25 +15,28 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 plugins {
     `java-library`
-    `java-test-fixtures`
 }
+
 
 dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.contract)
+
+    implementation(libs.edc.lib.util)
+    implementation(libs.edc.sql.core)
+    implementation(libs.edc.sql.edrindex)
+    implementation(libs.edc.spi.transactionspi)
+    implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.spi.edrstore)
+    api(libs.edc.spi.edrstore)
 
-    testFixturesImplementation(project(":spi:core-spi"))
-    testFixturesImplementation(libs.edc.junit)
-    testFixturesImplementation(libs.junit.jupiter.api)
-    testFixturesImplementation(libs.assertj)
-    testFixturesImplementation(libs.awaitility)
-    testFixturesImplementation(libs.edc.spi.edrstore)
 
+    implementation(project(":spi:core-spi"))
+    implementation(project(":spi:edr-spi"))
+
+    testImplementation(testFixtures(project(":spi:edr-spi")))
+    testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.junit))
 }
-

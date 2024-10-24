@@ -31,6 +31,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:migrations::control-plane-migration"))
     runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
     runtimeOnly(project(":edc-extensions:agreements:retirement-evaluation-store-sql"))
+    runtimeOnly(project(":edc-extensions:edr:edr-index-lock-sql"))
     runtimeOnly(libs.edc.vault.hashicorp)
     runtimeOnly(libs.bundles.edc.sqlstores)
     runtimeOnly(libs.edc.transaction.local)

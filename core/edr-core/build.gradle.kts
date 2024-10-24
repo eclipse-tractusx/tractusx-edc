@@ -26,11 +26,15 @@ dependencies {
     implementation(libs.edc.spi.edrstore)
     implementation(libs.edc.spi.transactionspi)
 
+    implementation(libs.edc.spi.transaction.datasource)
+
     implementation(project(":spi:tokenrefresh-spi"))
     implementation(project(":spi:edr-spi"))
     implementation(project(":spi:core-spi"))
 
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.core.edrstore)
+    testImplementation(libs.edc.lib.query)
     testImplementation(libs.awaitility)
     testImplementation(testFixtures(project(":spi:edr-spi")))
 
