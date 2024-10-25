@@ -12,7 +12,7 @@ https://github.com/eclipse-tractusx/tractusx-edc/discussions/1579
   * [3. Deprecation cleanup](#3-deprecation-cleanup)
   * [4. New Contract Agreements Retirement Feature](#4-new-contract-agreements-retirement-feature)
   * [5. Application program arguments](#5-application-program-arguments)
-    * [5.1 Changing Log Level via TractusX helm charts](#51-changing-log-level-via-tractusx-helm-charts)
+    * [5.1. Changing Log Level via TractusX helm charts](#51-changing-log-level-via-tractusx-helm-charts)
 <!-- TOC -->
 
 ## 1. New datasource configuration
@@ -80,7 +80,7 @@ The supported program arguments and their behavior are:
   Possible log levels are
   `[SEVERE, WARNING, INFO, DEBUG]`.
 
-### 5.1 Changing Log Level via TractusX helm charts
+### 5.1. Changing Log Level via TractusX helm charts
 
 If you use the TractusX helm charts, you can change the log level of the default Console Monitor by changing the
 `logs.level` configuration in `values.yml` of you chart. The default level is set as `DEBUG` by default.
