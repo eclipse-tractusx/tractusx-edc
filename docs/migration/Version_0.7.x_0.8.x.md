@@ -82,11 +82,11 @@ The supported program arguments and their behavior are:
 ### 5.1. Changing Log Level via TractusX helm charts
 
 If you use the TractusX helm charts, you can change the log level of the default Console Monitor by changing the
-`logs.level` configuration in `values.yml` of you chart. The default level is set as `DEBUG` by default.
+`logs.level` configuration in `values.yml` of you chart (example below). The default level is set as `DEBUG` by default.
 
 https://github.com/eclipse-tractusx/tractusx-edc/blob/03df535b822f7e6430032feb3775280e123b03cc/charts/tractusx-connector-memory/values.yaml#L77-L79
 
-The old log level configurations were removed (bellow), as they were not used by the connector in any way and could
+The old log level configurations were removed (below), as they were not used by the connector in any way and could
 induce the user
 of the helm charts in error.
 
