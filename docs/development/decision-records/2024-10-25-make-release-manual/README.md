@@ -2,11 +2,11 @@
 
 ## Decision
 
-The release workflow will now require a manual activation vs being automatically triggered via a PR merge event.
+The release workflow will now require a manual activation vs. being automatically triggered via a PR merge event.
 
 ## Rationale
 
-Having an automatic trigger has two different implications:
+Having an automatic trigger has a couple of implications:
 
 - GH only allows for the `on pull_request` event to be of type `closed`. This works fine when a PR is merged but will
   also trigger
@@ -17,11 +17,12 @@ Having an automatic trigger has two different implications:
   workflow.
   Conditionals are in place that prevent the workflow from actually running, however the workflow run history is filled
   with skipped run logs.
+
+Additionally:
 - We keep a dedicated `manual-release-bugfix` workflow to manually trigger a bugfix release because it is done under
   different conditions.
   This workflow re-uses the main release workflow. There is no need to keep the `manual-release-bugfix` workflow if the
-  main release
-  workflow is manually triggered.
+  main release workflow is manually triggered.
 - Workflow can only be triggered by commiters so control over releases and its conditions is guaranteed.
 
 ## Approach
