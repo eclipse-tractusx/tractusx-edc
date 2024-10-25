@@ -68,8 +68,7 @@ file.
 ## 5. Application program arguments
 
 When using the distributed tractusx-edc docker images, you can now specify program arguments that will change how the
-Connector
-behaves. Example:
+Connector behaves. Example:
 
 `docker run edc-runtime-memory:0.8.0 --no-color`
 
