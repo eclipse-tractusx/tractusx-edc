@@ -56,6 +56,7 @@ dependencies {
 
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.core.token)
     runtimeOnly(libs.edc.core.policy.monitor)
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.auth.tokenbased)
