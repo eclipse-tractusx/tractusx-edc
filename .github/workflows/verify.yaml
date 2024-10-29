@@ -106,6 +106,7 @@ jobs:
           { dir: edc-tests/edc-controlplane/iatp-tests },
           { dir: edc-tests/edc-controlplane/policy-tests },
           { dir: edc-tests/edc-controlplane/transfer-tests },
+          { dir: edc-tests/edc-controlplane/agreement-retirement-tests },
           { dir: edc-tests/edc-dataplane/edc-dataplane-tokenrefresh-tests },
           { dir: edc-tests/edc-dataplane/cloud-transfer-tests },
           { dir: edc-tests/edc-end2end },

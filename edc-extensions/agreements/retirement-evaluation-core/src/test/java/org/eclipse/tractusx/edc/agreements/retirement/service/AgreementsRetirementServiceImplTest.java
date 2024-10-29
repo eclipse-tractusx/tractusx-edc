@@ -19,6 +19,8 @@
 
 package org.eclipse.tractusx.edc.agreements.retirement.service;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -31,6 +33,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,10 +51,11 @@ class AgreementsRetirementServiceImplTest {
     private AgreementsRetirementService service;
     private final AgreementsRetirementStore store = mock();
     private final TransactionContext transactionContext = new NoopTransactionContext();
+    private final ContractAgreementService contractAgreementService = mock();
 
     @BeforeEach
     void setUp() {
-        service = new AgreementsRetirementServiceImpl(store, transactionContext);
+        service = new AgreementsRetirementServiceImpl(store, transactionContext, contractAgreementService);
     }
 
     @Test
@@ -110,12 +115,21 @@ class AgreementsRetirementServiceImplTest {
     @Test
     @DisplayName("Verify retire response on failure")
     void verify_retireResponseOnFailure() {
-        when(store.save(any()))
-                .thenReturn(StoreResult.alreadyExists("test"));
+        when(store.save(any())).thenReturn(StoreResult.alreadyExists("test"));
+        var contractAgreement = mock(ContractAgreement.class);
+        when(contractAgreementService.findById(anyString())).thenReturn(contractAgreement);
 
-        var result = service.retireAgreement(any());
+        var result = service.retireAgreement(createAgreementsRetirementEntry());
         assertThat(result).isFailed();
         assertThat(result.reason()).isEqualTo(CONFLICT);
+    }
+
+    private static AgreementsRetirementEntry createAgreementsRetirementEntry() {
+        return AgreementsRetirementEntry.Builder.newInstance()
+                .withAgreementId(UUID.randomUUID().toString())
+                .withReason("some-reason")
+                .withAgreementRetirementDate(Instant.now().toEpochMilli())
+                .build();
     }
 
     private QuerySpec createFilterQueryByAgreementId(String agreementId) {

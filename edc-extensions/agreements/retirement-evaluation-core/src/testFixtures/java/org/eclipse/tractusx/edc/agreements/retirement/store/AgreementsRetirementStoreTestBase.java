@@ -23,7 +23,6 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
@@ -31,25 +30,18 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
-import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_TEMPLATE;
+import static org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_RETIREMENT_TEMPLATE;
 
 public abstract class AgreementsRetirementStoreTestBase {
-
-    private AgreementsRetirementStore store;
-
-    @BeforeEach
-    void setup() {
-        store = getStore();
-    }
 
     @Test
     void findRetiredAgreement() {
         var agreementId = "test-agreement-id";
         var entry = createRetiredAgreementEntry(agreementId, "mock-reason");
-        store.save(entry);
+        getStore().save(entry);
 
         var query = createFilterQueryByAgreementId(agreementId);
-        var retiredAgreements = store.findRetiredAgreements(query).collect(Collectors.toList());
+        var retiredAgreements = getStore().findRetiredAgreements(query).collect(Collectors.toList());
         assertThat(retiredAgreements)
                 .isNotNull()
                 .hasSize(1)
@@ -62,7 +54,7 @@ public abstract class AgreementsRetirementStoreTestBase {
     void findRetiredAgreement_notExists() {
         var agreementId = "test-agreement-not-exists";
         var query = createFilterQueryByAgreementId(agreementId);
-        var result = store.findRetiredAgreements(query).collect(Collectors.toList());
+        var result = getStore().findRetiredAgreements(query).collect(Collectors.toList());
         assertThat(result).isEmpty();
     }
 
@@ -70,8 +62,8 @@ public abstract class AgreementsRetirementStoreTestBase {
     void save_whenExists() {
         var agreementId = "test-agreement-id";
         var entry = createRetiredAgreementEntry(agreementId, "mock-reason");
-        store.save(entry);
-        var result = store.save(entry);
+        getStore().save(entry);
+        var result = getStore().save(entry);
         assertThat(result).isFailed()
                 .detail().isEqualTo(ALREADY_EXISTS_TEMPLATE.formatted(agreementId));
     }
@@ -80,8 +72,8 @@ public abstract class AgreementsRetirementStoreTestBase {
     void delete() {
         var agreementId = "test-agreement-id";
         var entry = createRetiredAgreementEntry(agreementId, "mock-reason");
-        store.save(entry);
-        var delete = store.delete(agreementId);
+        getStore().save(entry);
+        var delete = getStore().delete(agreementId);
 
         assertThat(delete).isSucceeded();
 
@@ -90,11 +82,10 @@ public abstract class AgreementsRetirementStoreTestBase {
     @Test
     void delete_notExist() {
         var agreementId = "test-agreement-id";
-        var delete = store.delete(agreementId);
+        var delete = getStore().delete(agreementId);
 
         assertThat(delete).isFailed()
-                .detail().isEqualTo(NOT_FOUND_TEMPLATE.formatted(agreementId));
-
+                .detail().isEqualTo(NOT_FOUND_IN_RETIREMENT_TEMPLATE.formatted(agreementId));
     }
 
     private AgreementsRetirementEntry createRetiredAgreementEntry(String agreementId, String reason) {

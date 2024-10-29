@@ -254,14 +254,17 @@ Once the EDR has been negotiated and stored, the data can be fetched in two ways
 
 ## Provider Data Plane
 
-Once the right EDR has been identified using the EDR Management API the current asset/agreement/transfer-process that
-you want to transfer, we can use the `endpoint`, `authorization` to make the request. If the HTTP [Asset](01_assets.md) 
-has been configured to proxy also HTTP verb, query parameters and path segments, they will be forwarded to the backend from the 
-Provider Data Plane:
+Once the right EDR has been identified using the EDR Management API via the correct asset/agreement/transfer-process that
+you want to transfer, we can use the `endpoint` and `authorization` information from the EDR to make the request. 
+In the example below, the `endpoint` is used as the Host to which the request is sent and the `authorization` is used as the 
+token in the authorization header.
+
+Note: If the HTTP [Asset](01_assets.md) has been configured to proxy also HTTP verb, query parameters and path segments, 
+they will be forwarded to the backend by the Provider Data Plane:
 
 ```http request
 GET /subroute?foo=bar HTTP/1.1
-Host: https://consumer-data.plane/api/public
+Host: https://provider-data.plane/api/public
 Authorization: {{TOKEN}}
 Content-Type: application/json
 ```

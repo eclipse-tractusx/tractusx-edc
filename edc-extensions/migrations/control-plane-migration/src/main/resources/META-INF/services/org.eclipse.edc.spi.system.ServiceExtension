@@ -20,6 +20,7 @@
 
 
 org.eclipse.tractusx.edc.postgresql.migration.AssetPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.AgreementRetirementPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.BusinessGroupPostgresMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.ContractDefinitionPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension
