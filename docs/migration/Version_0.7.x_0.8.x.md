@@ -10,6 +10,9 @@ https://github.com/eclipse-tractusx/tractusx-edc/discussions/1579
     * [2.1. Control plane:](#21-control-plane)
     * [2.2. Data plane:](#22-data-plane)
   * [3. Deprecation cleanup](#3-deprecation-cleanup)
+  * [4. New Contract Agreements Retirement Feature](#4-new-contract-agreements-retirement-feature)
+  * [5. Application program arguments](#5-application-program-arguments)
+    * [5.1. Changing Log Level via TractusX helm charts](#51-changing-log-level-via-tractusx-helm-charts)
 <!-- TOC -->
 
 ## 1. New datasource configuration
@@ -48,3 +51,52 @@ There were many deprecations deleted after some time, mostly regarding `spi`s, s
 
 If you noticed and took care of everything that was logged as `WARNING` (which we strongly recommend) you shouldn't find
 any other difficulties.
+
+## 4. New Contract Agreements Retirement Feature
+
+A new extension was added that allows a dataspace participant to prematurely retire an active contract agreement.
+Once a contract agreement is retired, all existing transfer processes will be terminated. New transfer process requests,
+using the retired contract agreement, will also fail to start.
+
+The extension adds a set of API endpoints that allow the dataspace participant to manage its retired contract
+agreements.
+API details can be found in the OpenAPI specification.
+
+Further details about the extension can be found in the extension [README](../../edc-extensions/agreements/README.md)
+file.
+
+## 5. Application program arguments
+
+When using the distributed tractusx-edc docker images, you can now specify program arguments that will change how the
+Connector behaves. Example:
+
+`docker run edc-runtime-memory:0.8.0 --no-color`
+
+The supported program arguments and their behavior are:
+
+- Removing the coloring option of the default Console Monitor logs by using the program argument `--no-color`.
+- Changing the Connectors' default Console Monitor log levels by using the program argument `--log-level=WARNING`.
+  Possible log levels are
+  `[SEVERE, WARNING, INFO, DEBUG]`.
+
+### 5.1. Changing Log Level via TractusX helm charts
+
+If you use the TractusX helm charts, you can change the log level of the default Console Monitor by changing the
+`logs.level` configuration in `values.yml` of you chart (example below). The default level is set as `DEBUG` by default.
+
+https://github.com/eclipse-tractusx/tractusx-edc/blob/03df535b822f7e6430032feb3775280e123b03cc/charts/tractusx-connector-memory/values.yaml#L77-L79
+
+The old log level configurations were removed (below), as they were not used by the connector in any way and could
+induce the user
+of the helm charts in error.
+
+```diff
+#-- configuration of the [Java Util Logging Facade](https://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html)
+-logging: |-
+-.level=INFO
+-org.eclipse.edc.level=ALL
+-handlers=java.util.logging.ConsoleHandler
+-java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+-java.util.logging.ConsoleHandler.level=ALL
+-java.util.logging.SimpleFormatter.format=[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] [%4$-7s] %5$s%6$s%n
+```
