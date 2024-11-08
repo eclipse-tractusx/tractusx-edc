@@ -28,9 +28,7 @@ Both previously mentioned evaluation functions are bound to the following scopes
 
 This policy states, that a certain BPN must, may or must not be member of a certain group. Groups may be represented as
 scalar, or as comma-separated lists. For semantic expression, the following ODRL operators are
-supported: 
-- `eq`
-- `neq`
+supported:
 - `isPartOf`
 - `isAllOf`
 - `isAnyOf`

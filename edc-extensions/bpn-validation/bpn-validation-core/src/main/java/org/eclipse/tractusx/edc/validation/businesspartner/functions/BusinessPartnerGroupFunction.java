@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -85,10 +86,8 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
 
     public BusinessPartnerGroupFunction(BusinessPartnerStore store) {
         this.store = store;
-        OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
-        OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
-        OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIn);
+        OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIsAnyOf);
+        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
         OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
@@ -115,13 +114,13 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         }
 
         // right-operand is anything other than String or Collection
-        var rightOperand1 = parseRightOperand(rightOperand, context);
-        if (rightOperand1 == null) {
+        var parsedRightOperand = parseRightOperand(rightOperand, context);
+        if (parsedRightOperand == null) {
             return false;
         }
 
         //call evaluator function
-        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand1));
+        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(new HashSet<>(assignedGroups), new HashSet<>(parsedRightOperand)));
     }
 
     private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
@@ -137,18 +136,10 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         return null;
     }
 
-    private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
+    private Boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
-        // checks whether both lists overlap
-        return new HashSet<>(bpnGroupHolder.allowedGroups).containsAll(assigned);
-    }
-
-    private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
-        return !evaluateEquals(bpnGroupHolder);
-    }
-
-    private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
-        return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
+        var allowed = bpnGroupHolder.allowedGroups;
+        return (assigned.isEmpty() || !allowed.isEmpty()) && new HashSet<>(assigned).containsAll(bpnGroupHolder.allowedGroups);
     }
 
     private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
@@ -170,7 +161,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     /**
      * Internal utility class to hold the list of assigned groups for a BPN, and the list of groups specified in the policy ("allowed groups").
      */
-    private record BpnGroupHolder(List<String> assignedGroups, List<String> allowedGroups) {
+    private record BpnGroupHolder(Set<String> assignedGroups, Set<String> allowedGroups) {
     }
 
 }
