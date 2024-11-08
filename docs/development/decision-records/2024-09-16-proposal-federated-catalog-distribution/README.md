@@ -3,7 +3,7 @@
 ## Decision
 
 The Federated Catalog will be deployed as a standalone component. The Tractus-X EDC Connector Helm charts will be updated to feature a new Federated Catalog deployment template.
-Regarding the TargetNodeDirectory, a new extension in the FederatedCatalog will have a db/cache containing the DID's of each partner a member wants the offers from. The member defines the DID's through a new API exposed by the extension.
+Regarding the TargetNodeDirectory, a new extension in the FederatedCatalog will expose an API to allow adding participant's identifiers which will be used to obtain the respective data from the Discovery Service.
 
 ## Rationale
 
