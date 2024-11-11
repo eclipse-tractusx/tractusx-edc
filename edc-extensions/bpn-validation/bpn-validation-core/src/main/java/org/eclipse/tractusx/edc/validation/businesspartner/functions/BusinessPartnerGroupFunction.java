@@ -139,7 +139,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private Boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         var allowed = bpnGroupHolder.allowedGroups;
-        return (assigned.isEmpty() || !allowed.isEmpty()) && new HashSet<>(assigned).containsAll(bpnGroupHolder.allowedGroups);
+        return (assigned.isEmpty() || !allowed.isEmpty()) && new HashSet<>(assigned).containsAll(allowed);
     }
 
     private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
@@ -159,7 +159,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     }
 
     /**
-     * Internal utility class to hold the list of assigned groups for a BPN, and the list of groups specified in the policy ("allowed groups").
+     * Internal utility class to hold the collection of assigned groups for a BPN, and the collection of groups specified in the policy ("allowed groups").
      */
     private record BpnGroupHolder(Set<String> assignedGroups, Set<String> allowedGroups) {
     }
