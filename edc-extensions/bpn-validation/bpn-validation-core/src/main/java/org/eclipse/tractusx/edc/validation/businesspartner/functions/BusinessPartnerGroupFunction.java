@@ -27,7 +27,6 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -131,11 +130,21 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
             return Set.of(tokens);
         }
         if (rightValue instanceof Collection<?>) {
-            return ((Collection<?>) rightValue).stream().map(Object::toString).toList();
+            return ((Collection<?>) rightValue).stream().map(Object::toString).collect(Collectors.toSet());
         }
 
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
         return null;
+    }
+
+    @Deprecated(since = "0.8.1")
+    private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
+        return !evaluateEquals(bpnGroupHolder);
+    }
+
+    @Deprecated(since = "0.8.1")
+    private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
+        return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
     }
 
     private Boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
