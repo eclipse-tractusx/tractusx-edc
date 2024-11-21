@@ -86,6 +86,8 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
 
     public BusinessPartnerGroupFunction(BusinessPartnerStore store) {
         this.store = store;
+        OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
+        OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIsAnyOf);
         OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
         OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
@@ -123,10 +125,10 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(new HashSet<>(assignedGroups), new HashSet<>(parsedRightOperand)));
     }
 
-    private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
+    private Set<String> parseRightOperand(Object rightValue, PolicyContext context) {
         if (rightValue instanceof String value) {
             var tokens = value.split(",");
-            return Arrays.asList(tokens);
+            return Set.of(tokens);
         }
         if (rightValue instanceof Collection<?>) {
             return ((Collection<?>) rightValue).stream().map(Object::toString).toList();
@@ -139,7 +141,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private Boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
         var assigned = bpnGroupHolder.assignedGroups;
         var allowed = bpnGroupHolder.allowedGroups;
-        return (assigned.isEmpty() || !allowed.isEmpty()) && new HashSet<>(assigned).containsAll(allowed);
+        return (assigned.isEmpty() || !allowed.isEmpty()) && assigned.containsAll(allowed);
     }
 
     private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
@@ -150,7 +152,6 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         var allowedGroups = bpnGroupHolder.allowedGroups;
         return bpnGroupHolder.assignedGroups
                 .stream()
-                .distinct()
                 .anyMatch(allowedGroups::contains);
     }
 
