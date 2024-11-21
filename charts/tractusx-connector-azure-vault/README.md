@@ -2,7 +2,7 @@
 
 > **:exclamation: This Helm Chart is deprecated!**
 
-![Version: 0.8.0-rc6](https://img.shields.io/badge/Version-0.8.0--rc6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0-rc6](https://img.shields.io/badge/AppVersion-0.8.0--rc6-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.0](https://img.shields.io/badge/AppVersion-0.8.0-informational?style=flat-square)
 
 DEPRECATED: this chart will be no more available after version 0.8.0
 
@@ -48,7 +48,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.8.0-rc6 \
+helm install my-release tractusx-edc/tractusx-connector-azure-vault --version 0.8.0 \
      -f <path-to>/tractusx-connector-azure-vault-test.yaml \
      --set vault.azure.name=$AZURE_VAULT_NAME \
      --set vault.azure.client=$AZURE_CLIENT_ID \
