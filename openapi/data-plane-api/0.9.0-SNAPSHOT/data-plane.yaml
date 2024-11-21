@@ -1,0 +1,292 @@
+openapi: 3.0.1
+info:
+  title: Tractus-X EDC data-plane API
+  description: Tractus-X EDC data-plane API Documentation
+  version: 0.9.0-SNAPSHOT
+servers:
+- url: /
+tags:
+- name: Data Plane public API
+  description: "The public API of the Data Plane is a data proxy enabling a data consumer\
+    \ to actively querydata from the provider data source (e.g. backend Rest API,\
+    \ internal database...) through its Data Planeinstance. Thus the Data Plane is\
+    \ the only entry/output door for the data, which avoids the provider to exposedirectly\
+    \ its data externally.The Data Plane public API being a proxy, it supports all\
+    \ verbs (i.e. GET, POST, PUT, PATCH, DELETE), whichcan then conveyed until the\
+    \ data source is required. This is especially useful when the actual data sourceis\
+    \ a Rest API itself.In the same manner, any set of arbitrary query parameters,\
+    \ path parameters and request body are supported (in the limits fixed by the HTTP\
+    \ server) and can also conveyed to the actual data source."
+paths:
+  /aas/request:
+    post:
+      tags:
+      - Data Plane Proxy API
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/AssetRequest"
+      responses:
+        default:
+          description: Requests asset data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetRequest"
+  /check/health:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: checkHealth
+      responses:
+        "200":
+          description: The runtime is working properly.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /check/liveness:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: getLiveness
+      responses:
+        "200":
+          description: The runtime is working properly.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /check/readiness:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a readiness probe to determine whether the runtime is
+        able to accept requests.
+      operationId: getReadiness
+      responses:
+        "200":
+          description: The runtime is able to accept requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /check/startup:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a startup probe to determine whether the runtime has completed
+        startup.
+      operationId: getStartup
+      responses:
+        "200":
+          description: The runtime has completed startup.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /token:
+    post:
+      tags:
+      - Token Refresh API
+      description: Resolves all groups for a particular BPN
+      operationId: refreshToken
+      parameters:
+      - name: grant_type
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: refresh_token
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "The access token and refresh token were updated. Expiry should\
+            \ be interpreted as starting from the time of message reception, allowing\
+            \ for some leeway."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "400":
+          description: "Request body was malformed, query parameters were missing,\
+            \ etc."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "401":
+          description: "The token could not be refreshed due to an authentication\
+            \ error, either the refresh token or the Authorization header were invalid."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+  /{any}:
+    get:
+      tags:
+      - Data Plane public API
+      description: Send `GET` data query to the Data Plane.
+      operationId: get
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+    put:
+      tags:
+      - Data Plane public API
+      description: Send `PUT` data query to the Data Plane.
+      operationId: put
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+    post:
+      tags:
+      - Data Plane public API
+      description: Send `POST` data query to the Data Plane.
+      operationId: post
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+    delete:
+      tags:
+      - Data Plane public API
+      description: Send `DELETE` data query to the Data Plane.
+      operationId: delete
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+    head:
+      tags:
+      - Data Plane public API
+      description: Send `HEAD` data query to the Data Plane.
+      operationId: head
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+    patch:
+      tags:
+      - Data Plane public API
+      description: Send `PATCH` data query to the Data Plane.
+      operationId: patch
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+components:
+  schemas:
+    ApiErrorDetail:
+      type: object
+      properties:
+        invalidValue:
+          type: object
+        message:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+    AssetRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+        pathSegments:
+          type: string
+        providerId:
+          type: string
+        queryParams:
+          type: string
+        transferProcessId:
+          type: string
+    Failure:
+      type: object
+      properties:
+        failureDetail:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+    HealthCheckResult:
+      type: object
+      properties:
+        component:
+          type: string
+        failure:
+          $ref: "#/components/schemas/Failure"
+        isHealthy:
+          type: boolean
+    HealthStatus:
+      type: object
+      properties:
+        componentResults:
+          type: array
+          items:
+            $ref: "#/components/schemas/HealthCheckResult"
+        isSystemHealthy:
+          type: boolean
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires:
+          type: integer
+          format: int64
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+  securitySchemes:
+    Authentication:
+      type: http
+      description: Self-Issued ID token containing a token
+      scheme: bearer
+      bearerFormat: JWT
