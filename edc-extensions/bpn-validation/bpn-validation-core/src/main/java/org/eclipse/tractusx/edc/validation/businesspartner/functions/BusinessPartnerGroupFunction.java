@@ -124,7 +124,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         }
 
         //call evaluator function
-        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(new HashSet<>(assignedGroups), new HashSet<>(parsedRightOperand)));
+        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(new HashSet<>(assignedGroups), parsedRightOperand));
     }
 
     private Set<String> parseRightOperand(Object rightValue, PolicyContext context) {

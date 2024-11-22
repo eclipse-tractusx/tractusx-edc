@@ -75,7 +75,7 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var monitor = context.getMonitor();
+        var monitor = context.getMonitor().withPrefix("BusinessPartnerGroupFunction");
         bindToScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupFunction<>(store, monitor));
         bindToScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupFunction<>(store, monitor));
         bindToScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupFunction<>(store, monitor));
