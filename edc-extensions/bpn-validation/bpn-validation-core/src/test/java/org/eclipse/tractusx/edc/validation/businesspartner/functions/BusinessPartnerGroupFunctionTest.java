@@ -35,7 +35,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,7 +68,6 @@ class BusinessPartnerGroupFunctionTest {
     @ArgumentsSource(InvalidOperatorProvider.class)
     @DisplayName("Invalid operators, expect report in policy context")
     void evaluate_invalidOperator(Operator invalidOperator) {
-        var agent = new ParticipantAgent(Map.of(), Map.of());
 
         var result = function.evaluate(invalidOperator, "test-group", unusedPermission, context);
 
