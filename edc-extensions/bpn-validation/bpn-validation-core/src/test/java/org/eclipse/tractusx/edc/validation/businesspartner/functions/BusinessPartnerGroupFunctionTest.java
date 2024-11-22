@@ -23,6 +23,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 import org.junit.jupiter.api.DisplayName;
@@ -59,9 +60,10 @@ class BusinessPartnerGroupFunctionTest {
     private static final String TEST_BPN = "BPN000TEST";
     private final BusinessPartnerStore store = mock();
     private final ParticipantAgent agent = mock();
+    private final Monitor monitor = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(agent);
-    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store);
+    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store, monitor);
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)

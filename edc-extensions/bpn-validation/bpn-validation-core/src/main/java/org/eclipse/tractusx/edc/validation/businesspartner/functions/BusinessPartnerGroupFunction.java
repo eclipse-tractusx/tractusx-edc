@@ -25,6 +25,7 @@ import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
 import java.util.Collection;
@@ -82,9 +83,11 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
+    private final Monitor monitor;
 
-    public BusinessPartnerGroupFunction(BusinessPartnerStore store) {
+    public BusinessPartnerGroupFunction(BusinessPartnerStore store, Monitor monitor) {
         this.store = store;
+        this.monitor = monitor;
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIsAnyOf);
@@ -138,12 +141,15 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     }
 
     @Deprecated(since = "0.8.1")
+    @Deprecated(since = "0.9.0")
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
+        monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(NEQ, IS_NONE_OF));
         return !evaluateEquals(bpnGroupHolder);
     }
 
-    @Deprecated(since = "0.8.1")
+    @Deprecated(since = "0.9.0")
     private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
+        monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(EQ, IS_ALL_OF));
         return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
     }
 
