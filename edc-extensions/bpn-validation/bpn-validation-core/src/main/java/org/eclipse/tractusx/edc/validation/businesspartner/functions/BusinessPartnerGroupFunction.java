@@ -140,7 +140,6 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         return null;
     }
 
-    @Deprecated(since = "0.8.1")
     @Deprecated(since = "0.9.0")
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
         monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(NEQ, IS_NONE_OF));
