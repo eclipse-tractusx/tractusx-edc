@@ -663,11 +663,11 @@ maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-C
 maven/mavencentral/software.amazon.awssdk/annotations/2.28.26, Apache-2.0, approved, #16522
 maven/mavencentral/software.amazon.awssdk/annotations/2.29.9, Apache-2.0, approved, #17015
 maven/mavencentral/software.amazon.awssdk/apache-client/2.28.26, Apache-2.0, approved, #16533
-maven/mavencentral/software.amazon.awssdk/apache-client/2.29.9, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/apache-client/2.29.9, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/arns/2.28.26, Apache-2.0, approved, #16519
 maven/mavencentral/software.amazon.awssdk/arns/2.29.9, Apache-2.0, approved, #16994
 maven/mavencentral/software.amazon.awssdk/auth/2.28.26, Apache-2.0, approved, #16541
-maven/mavencentral/software.amazon.awssdk/auth/2.29.9, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/auth/2.29.9, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/aws-core/2.28.26, Apache-2.0, approved, #16534
 maven/mavencentral/software.amazon.awssdk/aws-core/2.29.9, Apache-2.0, approved, #17095
 maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.28.26, Apache-2.0, approved, #16507
@@ -711,7 +711,7 @@ maven/mavencentral/software.amazon.awssdk/retries-spi/2.28.26, Apache-2.0, appro
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.29.9, Apache-2.0, approved, #16997
 maven/mavencentral/software.amazon.awssdk/retries/2.28.26, Apache-2.0, approved, #16495
 maven/mavencentral/software.amazon.awssdk/retries/2.29.9, Apache-2.0, approved, #17009
-maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.29.9, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.29.9, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/s3/2.28.26, Apache-2.0, approved, #16505
 maven/mavencentral/software.amazon.awssdk/s3/2.29.9, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.28.26, Apache-2.0, approved, #16532
