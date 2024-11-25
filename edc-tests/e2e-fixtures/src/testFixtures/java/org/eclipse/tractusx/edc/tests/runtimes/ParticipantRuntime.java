@@ -23,7 +23,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
-import org.eclipse.edc.boot.system.injection.InjectionContainer;
+import org.eclipse.edc.boot.system.DependencyGraph;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
@@ -33,7 +33,6 @@ import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.token.InMemoryJtiValidationStore;
 import org.eclipse.edc.token.JwtGenerationService;
@@ -42,7 +41,6 @@ import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,8 +81,8 @@ public class ParticipantRuntime extends EmbeddedRuntime {
     }
 
     @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        super.bootExtensions(context, serviceExtensions);
+    protected void bootExtensions(ServiceExtensionContext context, DependencyGraph dependencyGraph) {
+        super.bootExtensions(context, dependencyGraph);
         wiper = new DataWiper(context);
         registerConsumerPullKeys(runtimeKeyPair);
     }

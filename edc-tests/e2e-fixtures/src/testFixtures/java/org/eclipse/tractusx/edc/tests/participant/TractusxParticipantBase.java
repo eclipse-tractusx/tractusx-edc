@@ -125,6 +125,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.dataplane.api.public.baseurl", "http://localhost:%d/api/public/v2/data".formatted(dataPlanePublic.getPort()));
                 put("edc.catalog.cache.execution.delay.seconds", "2");
                 put("edc.catalog.cache.execution.period.seconds", "2");
+                put("edc.policy.validation.enabled", "true");
             }
         };
     }

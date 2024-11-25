@@ -177,7 +177,10 @@ controlplane:
       initialDelay:
       # -- File path to a JSON file containing TargetNode entries
       targetsFile:
-
+  # -- configuration for policy engine
+  policy:
+    validation:
+      enabled: true
 
   service:
     # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.

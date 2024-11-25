@@ -313,6 +313,12 @@ spec:
             - name: "TX_EDC_CATALOG_NODE_LIST_FILE"
               value: {{ .Values.runtime.catalog.crawler.targetsFile }}
 
+            ###################
+            ## POLICY ENGINE ##
+            ###################
+            - name: "EDC_POLICY_VALIDATION_ENABLED"
+              value: {{ .Values.runtime.policy.validation.enabled | quote }}
+
             ######################################
             ## Additional environment variables ##
             ######################################

@@ -145,6 +145,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0 \
 | controlplane.podSecurityContext.runAsGroup | int | `10001` | Processes within a pod will belong to this guid |
 | controlplane.podSecurityContext.runAsUser | int | `10001` | Runs all processes within a pod with a special uid |
 | controlplane.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Restrict a Container's Syscalls with seccomp |
+| controlplane.policy | object | `{"validation":{"enabled":true}}` | configuration for policy engine |
 | controlplane.readinessProbe.enabled | bool | `true` | Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | controlplane.readinessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | controlplane.readinessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first readiness check |

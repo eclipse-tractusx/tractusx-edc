@@ -20,17 +20,15 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
 import com.nimbusds.jose.jwk.JWK;
-import org.eclipse.edc.boot.system.injection.InjectionContainer;
+import org.eclipse.edc.boot.system.DependencyGraph;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.runtimes.DataWiper;
 
 import java.security.KeyPair;
-import java.util.List;
 import java.util.Map;
 
 
@@ -52,8 +50,8 @@ public class IatpParticipantRuntime extends EmbeddedRuntime {
 
 
     @Override
-    protected void bootExtensions(ServiceExtensionContext context, List<InjectionContainer<ServiceExtension>> serviceExtensions) {
-        super.bootExtensions(context, serviceExtensions);
+    protected void bootExtensions(ServiceExtensionContext context, DependencyGraph dependencyGraph) {
+        super.bootExtensions(context, dependencyGraph);
         wiper = new CredentialWiper(getContext());
         registerConsumerPullKeys(runtimeKeyPair);
     }

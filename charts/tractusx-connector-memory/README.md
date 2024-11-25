@@ -151,6 +151,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.8.0 \
 | runtime.podSecurityContext.runAsGroup | int | `10001` | Processes within a pod will belong to this guid |
 | runtime.podSecurityContext.runAsUser | int | `10001` | Runs all processes within a pod with a special uid |
 | runtime.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Restrict a Container's Syscalls with seccomp |
+| runtime.policy | object | `{"validation":{"enabled":true}}` | configuration for policy engine |
 | runtime.readinessProbe.enabled | bool | `true` | Whether to enable kubernetes [readiness-probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | runtime.readinessProbe.failureThreshold | int | `6` | when a probe fails kubernetes will try 6 times before giving up |
 | runtime.readinessProbe.initialDelaySeconds | int | `30` | seconds to wait before performing the first readiness check |
