@@ -28,13 +28,15 @@ Both previously mentioned evaluation functions are bound to the following scopes
 
 This policy states, that a certain BPN must, may or must not be member of a certain group. Groups may be represented as
 scalar, or as comma-separated lists. For semantic expression, the following ODRL operators are
-supported: 
+supported:
 - `eq`
 - `neq`
 - `isPartOf`
 - `isAllOf`
 - `isAnyOf`
 - `isNoneOf` 
+
+The `eq` and `neq` operators are **deprecated** in favor of `isAllOf`, `isAnyOf` and `isNoneOf` operators.
 
 The following example demonstrates a full JSON-LD structure in expanded form, containing such a constraint.
 

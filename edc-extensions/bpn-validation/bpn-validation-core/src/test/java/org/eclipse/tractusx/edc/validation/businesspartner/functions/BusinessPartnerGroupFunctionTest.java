@@ -23,6 +23,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,15 +61,15 @@ class BusinessPartnerGroupFunctionTest {
     private static final String TEST_BPN = "BPN000TEST";
     private final BusinessPartnerStore store = mock();
     private final ParticipantAgent agent = mock();
+    private final Monitor monitor = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(agent);
-    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store);
+    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store, monitor);
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)
     @DisplayName("Invalid operators, expect report in policy context")
     void evaluate_invalidOperator(Operator invalidOperator) {
-        var agent = new ParticipantAgent(Map.of(), Map.of());
 
         var result = function.evaluate(invalidOperator, "test-group", unusedPermission, context);
 
@@ -84,7 +84,7 @@ class BusinessPartnerGroupFunctionTest {
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(List.of("test-group")));
         when(agent.getIdentity()).thenReturn(TEST_BPN);
 
-        var result = function.evaluate(EQ, rightValue, unusedPermission, context);
+        var result = function.evaluate(IS_ANY_OF, rightValue, unusedPermission, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("Right operand expected to be either String or a Collection, but was " + rightValue.getClass());
@@ -109,7 +109,7 @@ class BusinessPartnerGroupFunctionTest {
         when(agent.getIdentity()).thenReturn(TEST_BPN);
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.notFound("foobar"));
 
-        var result = function.evaluate(EQ, allowedGroups, unusedPermission, context);
+        var result = function.evaluate(IS_ANY_OF, allowedGroups, unusedPermission, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("foobar");
@@ -156,14 +156,14 @@ class BusinessPartnerGroupFunctionTest {
                     Arguments.of("Empty groups", NEQ, List.of(), true),
 
                     Arguments.of("Matching groups", IN, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IN, List.of(TEST_GROUP_1, "different-group"), false),
+                    Arguments.of("Overlapping groups", IN, List.of(TEST_GROUP_1, "different-group"), true),
                     Arguments.of("Disjoint groups", IN, List.of("different-group", "another-different-group"), false),
 
                     Arguments.of("Disjoint groups", IS_ALL_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), false),
+                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), true),
                     Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1, "different-group"), false),
-                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), true),
+                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), false),
 
                     Arguments.of("Disjoint groups", IS_ANY_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ANY_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),

@@ -25,14 +25,15 @@ import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -82,13 +83,15 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
+    private final Monitor monitor;
 
-    public BusinessPartnerGroupFunction(BusinessPartnerStore store) {
+    public BusinessPartnerGroupFunction(BusinessPartnerStore store, Monitor monitor) {
         this.store = store;
+        this.monitor = monitor;
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
-        OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIn);
-        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIn);
+        OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIsAnyOf);
+        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
         OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
@@ -115,40 +118,44 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         }
 
         // right-operand is anything other than String or Collection
-        var rightOperand1 = parseRightOperand(rightOperand, context);
-        if (rightOperand1 == null) {
+        var parsedRightOperand = parseRightOperand(rightOperand, context);
+        if (parsedRightOperand == null) {
             return false;
         }
 
         //call evaluator function
-        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(assignedGroups, rightOperand1));
+        return OPERATOR_EVALUATOR_MAP.get(operator).apply(new BpnGroupHolder(new HashSet<>(assignedGroups), parsedRightOperand));
     }
 
-    private List<String> parseRightOperand(Object rightValue, PolicyContext context) {
+    private Set<String> parseRightOperand(Object rightValue, PolicyContext context) {
         if (rightValue instanceof String value) {
             var tokens = value.split(",");
-            return Arrays.asList(tokens);
+            return Set.of(tokens);
         }
         if (rightValue instanceof Collection<?>) {
-            return ((Collection<?>) rightValue).stream().map(Object::toString).toList();
+            return ((Collection<?>) rightValue).stream().map(Object::toString).collect(Collectors.toSet());
         }
 
         context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
         return null;
     }
 
-    private Boolean evaluateIn(BpnGroupHolder bpnGroupHolder) {
-        var assigned = bpnGroupHolder.assignedGroups;
-        // checks whether both lists overlap
-        return new HashSet<>(bpnGroupHolder.allowedGroups).containsAll(assigned);
-    }
-
+    @Deprecated(since = "0.9.0")
     private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
-        return !evaluateEquals(bpnGroupHolder);
+        monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(NEQ, IS_NONE_OF));
+        return !bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
     }
 
+    @Deprecated(since = "0.9.0")
     private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
+        monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(EQ, IS_ALL_OF));
         return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
+    }
+
+    private Boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
+        var assigned = bpnGroupHolder.assignedGroups;
+        var allowed = bpnGroupHolder.allowedGroups;
+        return (assigned.isEmpty() || !allowed.isEmpty()) && assigned.containsAll(allowed);
     }
 
     private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
@@ -159,7 +166,6 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         var allowedGroups = bpnGroupHolder.allowedGroups;
         return bpnGroupHolder.assignedGroups
                 .stream()
-                .distinct()
                 .anyMatch(allowedGroups::contains);
     }
 
@@ -168,9 +174,9 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     }
 
     /**
-     * Internal utility class to hold the list of assigned groups for a BPN, and the list of groups specified in the policy ("allowed groups").
+     * Internal utility class to hold the collection of assigned groups for a BPN, and the collection of groups specified in the policy ("allowed groups").
      */
-    private record BpnGroupHolder(List<String> assignedGroups, List<String> allowedGroups) {
+    private record BpnGroupHolder(Set<String> assignedGroups, Set<String> allowedGroups) {
     }
 
 }
