@@ -299,8 +299,6 @@ spec:
             ######################################
             ## Additional environment variables ##
             ######################################
-            - name: "EDC_POLICY_VALIDATION_ENABLED"
-              value: {{ .Values.controlplane.policy.validation.enabled | quote }}
             - name: "EDC_RUNTIME_ID"
               value: {{ include "txdc.fullname" .}}-controlplane
           {{- range $key, $value := .Values.controlplane.envValueFrom }}
