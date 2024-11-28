@@ -203,7 +203,6 @@ public class DimSecureTokenService implements SecureTokenService {
         var result = mappings.entrySet().stream()
                 .map((entry -> mapClaim(claims, entry)))
                 .peek(inner -> inner.onSuccess(mapped -> payload.put(mapped.getKey(), mapped.getValue())))
-                .map(Result::mapTo)
                 .reduce(Result::merge)
                 .orElseGet(() -> Result.success(null));
 

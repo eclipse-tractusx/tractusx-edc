@@ -120,7 +120,7 @@ class BdrsClientImpl implements BdrsClient {
     private Result<Void> updateCache() {
         var membershipCredToken = createMembershipPresentation();
         if (membershipCredToken.failed()) {
-            return membershipCredToken.mapTo();
+            return membershipCredToken.mapFailure();
         }
 
         var request = new Request.Builder()
