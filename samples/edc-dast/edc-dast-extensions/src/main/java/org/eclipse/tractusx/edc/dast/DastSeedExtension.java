@@ -55,7 +55,6 @@ import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
@@ -106,8 +105,7 @@ public class DastSeedExtension implements ServiceExtension {
     }
 
     @Override
-    public void initialize(ServiceExtensionContext context) {
-        ServiceExtension.super.initialize(context);
+    public void prepare() {
         var keyPair = generateKeyPair();
         var participantKey = getKeyPairAsJwk(keyPair, METHOD_ID);
 
@@ -164,10 +162,12 @@ public class DastSeedExtension implements ServiceExtension {
                 .keyId(KEY)
                 .publicKeyJwk(participantKey.toPublicJWK().toJSONObject())
                 .privateKeyAlias(PRIVATE_METHOD_ID)
+                .active(true)
                 .build();
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
                 .participantId(DID)
+                .active(true)
                 .did(DID)
                 .key(key)
                 .build();
@@ -206,7 +206,7 @@ public class DastSeedExtension implements ServiceExtension {
     private String toBase64(String s) {
         return Base64.getUrlEncoder().encodeToString(s.getBytes());
     }
-    
+
     private KeyPair generateKeyPair() {
         try {
             KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
