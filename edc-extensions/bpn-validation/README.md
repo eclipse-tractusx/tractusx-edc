@@ -155,12 +155,9 @@ In case multiple BPNs are to be white-listed, the policy would contain multiple 
 The second policy expresses that the BPN of the participant in question must be either `"BPN00001234"`
 *or* `"BPN00005678"`.
 
-### Deprecation warning
+### Usage warning
 
-The Business Partner Number Policy is not recommended for production use because it is severely limited in terms of
-scalability and maintainability. Everytime a new participant onboards onto or off-boards from the dataspace, every
-existing participant would have to either enter new contract definitions, effectively duplicating them, or update *all
-existing policies*. That would be a significant maintenance and migration effort.
+The Business Partner Number Policy is _not_ recommended for production use because it is severely limited in terms of
+scalability and maintainability. Everytime a new participant shall be added to a contract definition the data provider would need to create new contract definitions, effectively duplicating them. This is because policies can't be changed after a contract that contains the policy has been negotiated with the first partner. That would be a significant maintenance and migration effort.
 
-For that reason, the Business Partner Number Policy is marked as deprecated, and is scheduled for removal in EDC 0.6.x.
-Please consider upgrading your environment at your earliest convenience.
+> **_NOTE:_**  The Business Partner Number Policy was marked for deprecation but will be kept as it is convenient to use for simple use-cases and testing.  
