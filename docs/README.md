@@ -26,12 +26,6 @@ The three supported setups are.
   - Planes:
     - [Control Plane](../edc-controlplane/edc-controlplane-postgresql-hashicorp-vault/README.md)
     - [Data Plane](../edc-dataplane/edc-dataplane-hashicorp-vault/README.md)
-- Setup 3: PostgreSQL & Azure Vault
-  - PostgreSQL persistence
-  - Azure Key Vault
-  - Planes:
-    - [Control Plane](../edc-controlplane/edc-controlplane-postgresql-azure-vault/README.md)
-    - [Data Plane](../edc-dataplane/edc-dataplane-azure-vault/README.md)
 
 ## Recommended Documentation
 

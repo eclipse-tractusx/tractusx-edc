@@ -85,9 +85,7 @@ jobs:
       matrix:
         image:
           - edc-runtime-memory
-          - edc-controlplane-postgresql-azure-vault
           - edc-controlplane-postgresql-hashicorp-vault
-          - edc-dataplane-azure-vault
           - edc-dataplane-hashicorp-vault
     steps:
       - uses: actions/checkout@v4

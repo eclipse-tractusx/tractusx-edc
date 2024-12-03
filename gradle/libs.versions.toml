@@ -6,7 +6,6 @@ edc = "0.11.0-20241127-SNAPSHOT"
 assertj = "3.26.3"
 awaitility = "4.2.2"
 aws = "2.29.24"
-azure-identity = "1.14.2"
 azure-storage-blob = "12.29.0"
 bouncyCastle-jdk18on = "1.79"
 flyway = "11.0.0"
@@ -108,9 +107,7 @@ edc-sql-accesstokendata = { module = "org.eclipse.edc:accesstokendata-store-sql"
 edc-sql-dataplane = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
 
 # azure stuff
-edc-azure-vault = { module = "org.eclipse.edc.azure:vault-azure", version.ref = "edc" }
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
-edc-azure-identity = { module = "com.azure:azure-identity", version.ref = "azure-identity" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
 edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
 

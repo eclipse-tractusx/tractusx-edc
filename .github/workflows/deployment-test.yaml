@@ -27,20 +27,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  secret-presence:
-    runs-on: ubuntu-latest
-    outputs:
-      AZURE_KV_CREDS: ${{ steps.secret-presence.outputs.AZURE_KV_CREDS }}
-    steps:
-      - name: Check whether secrets exist
-        id: secret-presence
-        run: |
-          [ ! -z "${{ secrets.AZURE_TENANT_ID }}" ] && 
-          [ ! -z "${{ secrets.AZURE_CLIENT_ID }}" ] && 
-          [ ! -z "${{ secrets.AZURE_CLIENT_SECRET }}" ] && 
-          [ ! -z "${{ secrets.AZURE_VAULT_NAME }}" ]  && 
-          echo "AZURE_KV_CREDS=true" >> $GITHUB_OUTPUT
-          exit 0
 
   test-prepare:
     runs-on: ubuntu-latest
