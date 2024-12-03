@@ -91,12 +91,10 @@ include(":edc-tests:edc-end2end:end2end-transfer-cloud")
 include(":edc-controlplane")
 include(":edc-controlplane:edc-controlplane-base")
 include(":edc-controlplane:edc-runtime-memory")
-include(":edc-controlplane:edc-controlplane-postgresql-azure-vault")
 include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
 
 // modules for dataplane artifacts
 include(":edc-dataplane")
-include(":edc-dataplane:edc-dataplane-azure-vault")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 
