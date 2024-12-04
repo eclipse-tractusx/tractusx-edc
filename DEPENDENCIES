@@ -298,7 +298,7 @@ maven/mavencentral/org.apache.velocity.tools/velocity-tools-generic/3.1, Apache-
 maven/mavencentral/org.apache.velocity/velocity-engine-core/2.3, Apache-2.0, approved, #2478
 maven/mavencentral/org.apache.velocity/velocity-engine-scripting/2.3, Apache-2.0 AND BSD-3-Clause, approved, #15744
 maven/mavencentral/org.apache.xbean/xbean-reflect/3.7, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, #17641
 maven/mavencentral/org.assertj/assertj-core/3.26.3, Apache-2.0, approved, #14886
 maven/mavencentral/org.awaitility/awaitility/4.2.2, Apache-2.0, approved, #14178
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.72, MIT, approved, #3789
@@ -565,7 +565,7 @@ maven/mavencentral/org.glassfish/jakarta.json/2.0.1, EPL-2.0 OR GPL-2.0-only wit
 maven/mavencentral/org.hamcrest/hamcrest-core/1.3, BSD-2-Clause, approved, CQ11429
 maven/mavencentral/org.hamcrest/hamcrest-core/2.2, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.hamcrest/hamcrest/2.1, BSD-3-Clause, approved, clearlydefined
-maven/mavencentral/org.hamcrest/hamcrest/2.2, BSD-3-Clause, approved, clearlydefined
+maven/mavencentral/org.hamcrest/hamcrest/2.2, None, restricted, #17677
 maven/mavencentral/org.hdrhistogram/HdrHistogram/2.2.2, BSD-2-Clause AND CC0-1.0 AND CC0-1.0, approved, #14828
 maven/mavencentral/org.jacoco/org.jacoco.agent/0.8.12, EPL-2.0, approved, CQ23285
 maven/mavencentral/org.jacoco/org.jacoco.ant/0.8.12, EPL-2.0, approved, #1068
@@ -630,12 +630,12 @@ maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-C
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
 maven/mavencentral/software.amazon.awssdk/annotations/2.29.15, Apache-2.0, approved, #17015
 maven/mavencentral/software.amazon.awssdk/annotations/2.29.24, Apache-2.0, approved, #17015
-maven/mavencentral/software.amazon.awssdk/apache-client/2.29.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/apache-client/2.29.24, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/apache-client/2.29.15, Apache-2.0, approved, #17627
+maven/mavencentral/software.amazon.awssdk/apache-client/2.29.24, Apache-2.0, approved, #17627
 maven/mavencentral/software.amazon.awssdk/arns/2.29.15, Apache-2.0, approved, #16994
 maven/mavencentral/software.amazon.awssdk/arns/2.29.24, Apache-2.0, approved, #16994
-maven/mavencentral/software.amazon.awssdk/auth/2.29.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/auth/2.29.24, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/auth/2.29.15, Apache-2.0, approved, #17626
+maven/mavencentral/software.amazon.awssdk/auth/2.29.24, Apache-2.0, approved, #17626
 maven/mavencentral/software.amazon.awssdk/aws-core/2.29.15, Apache-2.0, approved, #17095
 maven/mavencentral/software.amazon.awssdk/aws-core/2.29.24, Apache-2.0, approved, #17095
 maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.29.15, Apache-2.0, approved, #16999
@@ -673,20 +673,20 @@ maven/mavencentral/software.amazon.awssdk/profiles/2.29.15, Apache-2.0, approved
 maven/mavencentral/software.amazon.awssdk/profiles/2.29.24, Apache-2.0, approved, #17012
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.29.15, Apache-2.0, approved, #17000
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.29.24, Apache-2.0, approved, #17000
-maven/mavencentral/software.amazon.awssdk/regions/2.29.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/regions/2.29.24, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/regions/2.29.15, Apache-2.0, approved, #17631
+maven/mavencentral/software.amazon.awssdk/regions/2.29.24, Apache-2.0, approved, #17631
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.29.15, Apache-2.0, approved, #16997
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.29.24, Apache-2.0, approved, #16997
 maven/mavencentral/software.amazon.awssdk/retries/2.29.15, Apache-2.0, approved, #17009
 maven/mavencentral/software.amazon.awssdk/retries/2.29.24, Apache-2.0, approved, #17009
 maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.29.24, , restricted, clearlydefined
-maven/mavencentral/software.amazon.awssdk/s3/2.29.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/s3/2.29.24, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3/2.29.15, Apache-2.0, approved, #17629
+maven/mavencentral/software.amazon.awssdk/s3/2.29.24, Apache-2.0, approved, #17629
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.29.15, Apache-2.0, approved, #17016
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.29.24, Apache-2.0, approved, #17016
-maven/mavencentral/software.amazon.awssdk/sts/2.29.15, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sts/2.29.15, Apache-2.0, approved, #17630
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.29.15, Apache-2.0, approved, #17008
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.29.24, Apache-2.0, approved, #17008
-maven/mavencentral/software.amazon.awssdk/utils/2.29.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/utils/2.29.24, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/utils/2.29.15, Apache-2.0, approved, #17625
+maven/mavencentral/software.amazon.awssdk/utils/2.29.24, Apache-2.0, approved, #17625
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, clearlydefined

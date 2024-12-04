@@ -38,6 +38,9 @@ For those who are not using either the Helm Charts or the provided [`migration` 
 - [federated catalog - init schema](../../edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/federatedcatalog/V0_0_1__Init_FederatedCatalogCache_Database_Schema.sql)
 - [policy monitor - create state index](../../edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/policy-monitor/V0_0_2__Alter_PolicyMonitor_CreateStateIndex.sql)
 - [policy definition - add profiles column](../../edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/policy/V0_0_5__Add_Profiles.sql)
+  - **WARNING**: in version 0.8.0 this could give runtime errors, eventually you can manually run the query contained in the 
+    [subsequent migration](../../edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/policy/V0_0_6__Avoid_null_profiles.sql).
+    The migration fix will be available from 0.8.1 on.  
 - [transfer process - create state index](../../edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/transferprocess/V0_0_16__Alter_TransferProcess_CreateStateIndex.sql)
 
 ### 2.2. Data plane:
