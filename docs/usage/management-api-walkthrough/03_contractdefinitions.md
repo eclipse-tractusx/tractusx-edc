@@ -88,6 +88,22 @@ part of the `edc:QuerySpec` objects that also allow pagination:
 - `POST /v3/policydefinitions/request`
 - `POST /v3/contractdefinitions/request`
 
+## Using Private Properties as Asset Selectors
+When using a private property as an asset selector, the property defined in the left operator must be prefixed as follows: `"privateProperties.'https://w3id.org/edc/v0.0.1/ns/myCommonProperty'"`.  
+
+```json
+{
+  "assetsSelector":
+    {
+      "@type": "Criterion",
+      "operandLeft": "privateProperties.'https://w3id.org/edc/v0.0.1/ns/myCommonProperty'",
+      "operator": "=",
+      "operandRight": "sharedValue"
+    }
+}
+```
+
+
 ## Side-Effects
 
 The [Domain Model](../README) shows the basic connection between the core concepts of
@@ -99,6 +115,7 @@ After contract definition, an EDC will automatically allow data access if a requ
 
 Contract Definitions thus must be created with great care. It is essential to align the backend-credentials with the
 Access and Contract Policies to manage access consistently from the Dataspace to the backend data.
+
 
 ## Notice
 
