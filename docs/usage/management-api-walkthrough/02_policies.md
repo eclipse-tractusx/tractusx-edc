@@ -327,16 +327,19 @@ that the EDC interprets policies it can't evaluate as true by default. A couple 
 
 ```json
 {
-  "@context": {
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
+  "@context": [
+    "http://www.w3.org/ns/odrl.jsonld",
+    {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
   "@type": "PolicyDefinition",
-  "@id": "{% uuid 'v4' %}",
+  "@id": "{{POLICY_ID}}",
   "policy": {
-    "@type": "Policy",
-    "odrl:permission": [
+    "@type": "Set",
+    "permission": [
       {
-        "odrl:action": "use"
+        "action": "use"
       }
     ]
   }
