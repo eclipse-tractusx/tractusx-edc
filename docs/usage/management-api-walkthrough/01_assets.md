@@ -40,8 +40,10 @@ However, there it won't be styled as an `edc:asset` but as a `dcat:DataSet`. Add
 add `properties` and `privateProperties` to the Asset. The former are exposed in the catalog to potential Data
 Consumers.
 Private properties, however, can only be seen by the Data Provider (for example via the /v3/assets/request endpoint)
-along with the properties. There are conventions in the Catena-X Dataspace how Data Providers should set properties. This enables
-Data Consumers to decide what Data Offers they want to negotiate for. This matters especially when the Data Consumer has to add URL-segements or
+along with the properties. There are conventions in the Catena-X Dataspace how Data Providers should set properties.
+This enables
+Data Consumers to decide what Data Offers they want to negotiate for. This matters especially when the Data Consumer has
+to add URL-segements or
 HTTP bodies to its requests. The value entered as the Asset's `@id` will automatically be added as a redundant `edc:id`
 property.
 
@@ -83,10 +85,12 @@ request will be manipulated by the Data Plane - to what degree depends on the co
     "oauth2:clientSecretKey": "{{ _.sec_name_vault }}",
     "proxyQueryParams": "true",
     "proxyPath": "false",
-    "proxyMethod": "true"
+    "proxyMethod": "true",
+    "header:customHeaderKey": "custom-header-value"
   }
 }
 ```
+
 The following table shall explain a selection of the parameters. There's a whole lot more in the source code but these
 have proven to enable an integration that's quite complete from a functional view.
 
@@ -104,12 +108,12 @@ have proven to enable an integration that's quite complete from a functional vie
 | `oauth2:tokenUrl`        | If the backend is secured by an oauth2 authentication mechanism, the Data Plane will request an access token at this URL.                                                                                                                                                                                                                                                                                          | no        | null    |
 | `oauth2:clientId`        | This is the clientId of the (technical) user that the credential was created for by the backend application.                                                                                                                                                                                                                                                                                                       | no        | null    |
 | `oauth2:clientSecretKey` | The Data Provider must store his backend-issued client-secret in a Vault. The key under which the Data Plane can retrieve the secret's value is configured in this field.                                                                                                                                                                                                                                          | no        | null    |
+| `header:customHeaderKey` | If the Data Provider wants to attach a static header to the request that the Provider Data Plane forwards to the backend, this can be achieved using the header name prefixed with `header:` and the constant value as the value.                                                                                                                                                                                  | no        | null    |
 
-For all URLs that are registered (like the `tokenUrl` and the `baseUrl`) it is advisable to set them to a domain 
+For all URLs that are registered (like the `tokenUrl` and the `baseUrl`) it is advisable to set them to a domain
 controlled by the Data Provider himself. If the service is hosted by a Business Application Provider (like in a SaaS
-scenario), that service should be redirected to through a proxy. That way, in a migration scenario, the existing Assets 
+scenario), that service should be redirected to through a proxy. That way, in a migration scenario, the existing Assets
 can be preserved by reconfiguring the proxy to pointing to the new service.
-
 
 ## Notice
 
