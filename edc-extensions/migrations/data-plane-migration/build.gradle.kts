@@ -27,7 +27,7 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.sql.assetindex)
-    implementation(libs.edc.sql.core)
+    implementation(libs.edc.lib.sql)
     runtimeOnly(libs.postgres)
 
     implementation(libs.flyway.core)
@@ -37,5 +37,5 @@ dependencies {
     runtimeOnly(libs.flyway.database.postgres)
 
     testImplementation(libs.edc.junit)
-    testImplementation(testFixtures(libs.edc.sql.core))
+    testImplementation(testFixtures(libs.edc.sql.test.fixtures))
 }

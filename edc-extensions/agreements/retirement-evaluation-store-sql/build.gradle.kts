@@ -28,13 +28,13 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.spi.transactionspi)
-    implementation(libs.edc.core.sql)
+    implementation(libs.edc.lib.sql)
     implementation(libs.edc.sql.contract.negotiation)
     implementation(libs.edc.spi.controlplane)
 
 
     testImplementation(libs.edc.transaction.local)
-    testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(libs.edc.junit))
     testImplementation(testFixtures(project(":edc-extensions:agreements:retirement-evaluation-core")))
 }
