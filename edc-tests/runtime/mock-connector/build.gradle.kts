@@ -38,6 +38,7 @@ dependencies {
     runtimeOnly(libs.edc.boot)
     runtimeOnly(libs.edc.api.management) {
         exclude("org.eclipse.edc", "edr-cache-api")
+        exclude("org.eclipse.edc", "protocol-version-api")
     }
     runtimeOnly(libs.edc.api.management.config)
 
