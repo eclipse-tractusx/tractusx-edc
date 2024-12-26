@@ -25,7 +25,7 @@ plugins {
 dependencies {
 
     implementation(libs.edc.lib.util)
-    implementation(libs.edc.sql.core)
+    implementation(libs.edc.lib.sql)
     implementation(libs.edc.sql.edrindex)
     implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.spi.transaction.datasource)
@@ -37,6 +37,6 @@ dependencies {
     implementation(project(":spi:edr-spi"))
 
     testImplementation(testFixtures(project(":spi:edr-spi")))
-    testImplementation(testFixtures(libs.edc.core.sql))
+    testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(libs.edc.junit))
 }
