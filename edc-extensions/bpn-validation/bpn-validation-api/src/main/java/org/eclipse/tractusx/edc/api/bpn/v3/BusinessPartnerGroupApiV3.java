@@ -93,7 +93,7 @@ public interface BusinessPartnerGroupApiV3 {
                         "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
                     },
                     "@id": "BPN000001234",
-                    "tx:groups": ["group1", "group2", "group3"]
+                    "tx:groups": "group1,group2,group3"
                 }
                 """;
     }
