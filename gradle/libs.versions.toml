@@ -59,7 +59,6 @@ edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", vers
 edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
-edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
 edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
