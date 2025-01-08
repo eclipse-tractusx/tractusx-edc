@@ -33,6 +33,7 @@ dependencies {
     runtimeOnly(libs.edc.sql.edrindex)
     runtimeOnly(libs.edc.sql.dataplane)
     runtimeOnly(libs.postgres)
+    runtimeOnly(libs.edc.core.sql)
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

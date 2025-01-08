@@ -55,7 +55,7 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
         private final String accessKeyId = "test-access-key";
         private final String secretAccessKey = UUID.randomUUID().toString();
 
-        public MinioContainer() {
+        MinioContainer() {
             super("bitnami/minio");
             addEnv("MINIO_ROOT_USER", accessKeyId);
             addEnv("MINIO_ROOT_PASSWORD", secretAccessKey);

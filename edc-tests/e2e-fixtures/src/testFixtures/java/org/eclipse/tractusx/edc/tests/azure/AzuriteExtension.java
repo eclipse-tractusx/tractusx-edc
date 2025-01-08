@@ -58,7 +58,7 @@ public class AzuriteExtension implements BeforeAllCallback, AfterAllCallback {
         private static final String IMAGE_NAME = "mcr.microsoft.com/azure-storage/azurite";
         private final int containerPort = 10_000;
 
-        public AzuriteContainer(int azuriteHostPort, Account... accounts) {
+        AzuriteContainer(int azuriteHostPort, Account... accounts) {
             super(IMAGE_NAME);
             addEnv("AZURITE_ACCOUNTS", stream(accounts).map(it -> "%s:%s".formatted(it.name(), it.key())).collect(joining(";")));
             setPortBindings(List.of("%d:%d".formatted(azuriteHostPort, containerPort)));
