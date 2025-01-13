@@ -51,17 +51,18 @@ import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibili
  */
 @Extension(value = DataPlaneProxyConsumerApiExtension.NAME)
 public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
-    public static final int DEFAULT_THREAD_POOL = 10;
+
+    public static final String NAME = "Data Plane Proxy Consumer API";
+    private static final String PROXY = "proxy";
+    private static final int DEFAULT_PROXY_PORT = 8186;
+    private static final String DEFAULT_PROXY_PATH = "/proxy";
+    private static final int DEFAULT_THREAD_POOL = 10;
+
     @Setting("Vault alias for the Consumer Proxy API key")
     public static final String AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS = "tx.edc.dpf.consumer.proxy.auth.apikey.alias";
     @Setting("API key for the Consumer Proxy API")
     public static final String AUTH_SETTING_CONSUMER_PROXY_APIKEY = "tx.edc.dpf.consumer.proxy.auth.apikey";
-    static final String NAME = "Data Plane Proxy Consumer API";
-    private static final int DEFAULT_PROXY_PORT = 8186;
-    private static final String CONSUMER_API_ALIAS = "consumer.api";
-    private static final String DEFAULT_PROXY_PATH = "/proxy";
-    private static final String PROXY = "proxy";
-    private static final String CONSUMER_CONFIG_KEY = "web.http.proxy";
+
     @Setting(value = "Data plane proxy API consumer port", type = "int")
     private static final String CONSUMER_PORT = "tx.edc.dpf.consumer.proxy.port";
     @Deprecated(since = "0.7.1")
@@ -93,7 +94,6 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     @Inject
     private PortMappingRegistry portMappingRegistry;
 
-
     private ExecutorService executorService;
 
     @Override
@@ -112,13 +112,13 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
         executorService = newFixedThreadPool(poolSize);
 
         var authenticationService = createAuthenticationService(context);
-        apiAuthenticationRegistry.register(CONSUMER_API_ALIAS, authenticationService);
+        apiAuthenticationRegistry.register(PROXY, authenticationService);
 
-        var authenticationFilter = new AuthenticationRequestFilter(apiAuthenticationRegistry, CONSUMER_API_ALIAS);
-        webService.registerResource(CONSUMER_API_ALIAS, authenticationFilter);
+        var authenticationFilter = new AuthenticationRequestFilter(apiAuthenticationRegistry, PROXY);
+        webService.registerResource(PROXY, authenticationFilter);
 
-        webService.registerResource(CONSUMER_API_ALIAS, new ClientErrorExceptionMapper());
-        webService.registerResource(CONSUMER_API_ALIAS, new ConsumerAssetRequestController(edrService, pipelineService, executorService, monitor));
+        webService.registerResource(PROXY, new ClientErrorExceptionMapper());
+        webService.registerResource(PROXY, new ConsumerAssetRequestController(edrService, pipelineService, executorService, monitor));
     }
 
     @Override
