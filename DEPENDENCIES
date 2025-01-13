@@ -599,11 +599,8 @@ maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.3, EPL-2.0, appro
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.4, EPL-2.0, approved, #15939
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.3, EPL-2.0, approved, #15940
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.4, EPL-2.0, approved, #15940
-maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.3, EPL-2.0, approved, #15936
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.4, EPL-2.0, approved, #15936
-maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.3, EPL-2.0, approved, #15932
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.4, EPL-2.0, approved, #15932
-maven/mavencentral/org.junit/junit-bom/5.11.3, EPL-2.0, approved, #16062
 maven/mavencentral/org.junit/junit-bom/5.11.4, EPL-2.0, approved, #16062
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.latencyutils/LatencyUtils/2.0.3, CC0-1.0, approved, #15280
