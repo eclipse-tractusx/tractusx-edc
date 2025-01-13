@@ -163,9 +163,9 @@ spec:
 
             - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
               value: {{ .Values.runtime.endpoints.proxy.authKey | required ".Values.runtime.endpoints.proxy.authKey is required" | quote }}
-            - name: "WEB_HTTP_DEFAULT_PORT"
+            - name: "WEB_HTTP_PORT"
               value: {{ .Values.runtime.endpoints.default.port | quote }}
-            - name: "WEB_HTTP_DEFAULT_PATH"
+            - name: "WEB_HTTP_PATH"
               value: {{ .Values.runtime.endpoints.default.path | quote }}
             {{- if or (eq (substr 0 3 .Values.runtime.image.tag) "0.1") (eq (substr 0 3 .Values.runtime.image.tag) "0.2") }}
             # WEB_HTTP_DATA_PORT is renamed to WEB_HTTP_MANAGEMENT_PORT from version 0.2.1 and newer

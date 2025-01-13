@@ -346,7 +346,6 @@ runtime:
     # -- targetAverageUtilization of memory provided to a pod
     targetMemoryUtilizationPercentage: 80
 
-
   # -- [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes
   nodeSelector: {}
   # -- [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes

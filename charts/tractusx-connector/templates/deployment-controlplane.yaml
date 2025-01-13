@@ -162,9 +162,9 @@ spec:
               value: {{ .Values.controlplane.endpoints.management.authKey | required ".Values.controlplane.endpoints.management.authKey is required" | quote }}
             {{- end }}
 
-            - name: "WEB_HTTP_DEFAULT_PORT"
+            - name: "WEB_HTTP_PORT"
               value: {{ .Values.controlplane.endpoints.default.port | quote }}
-            - name: "WEB_HTTP_DEFAULT_PATH"
+            - name: "WEB_HTTP_PATH"
               value: {{ .Values.controlplane.endpoints.default.path | quote }}
             - name: "WEB_HTTP_MANAGEMENT_PORT"
               value: {{ .Values.controlplane.endpoints.management.port | quote }}

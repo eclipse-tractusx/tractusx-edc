@@ -50,8 +50,8 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
     @Override
     public Map<String, String> getConfiguration() {
         var cfg = new HashMap<>(super.getConfiguration());
-        cfg.put("web.http.resolution.port", String.valueOf(csService.getPort()));
-        cfg.put("web.http.resolution.path", csService.getPath());
+        cfg.put("web.http.presentation.port", String.valueOf(csService.getPort()));
+        cfg.put("web.http.presentation.path", csService.getPath());
         if (dimUri != null) {
             cfg.put("tx.edc.iam.sts.dim.url", dimUri.toString());
         }
