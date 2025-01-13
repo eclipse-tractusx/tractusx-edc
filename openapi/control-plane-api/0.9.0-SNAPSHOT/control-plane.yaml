@@ -3376,7 +3376,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Protocol Version"
+                $ref: "#/components/schemas/ProtocolVersion"
 components:
   schemas:
     ApiErrorDetail:
@@ -4128,7 +4128,7 @@ components:
         - error2
     Properties:
       type: object
-    Protocol Version:
+    ProtocolVersion:
       type: object
       description: Protocol Version
       example:
