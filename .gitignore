@@ -112,4 +112,7 @@ buildNumber.properties
 **/*.lock
 **/*.tgz
 
+# Generated bin folders
+**/bin/
+
 edc-tests/miw-tests/src/test/resources/docker-environment/postgres_data/
