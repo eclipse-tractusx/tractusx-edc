@@ -154,9 +154,9 @@ spec:
             #######
             - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
               value: {{ .Values.dataplane.endpoints.proxy.authKey | required ".Values.dataplane.endpoints.proxy.authKey is required" | quote }}
-            - name: "WEB_HTTP_DEFAULT_PORT"
+            - name: "WEB_HTTP_PORT"
               value: {{ .Values.dataplane.endpoints.default.port | quote }}
-            - name: "WEB_HTTP_DEFAULT_PATH"
+            - name: "WEB_HTTP_PATH"
               value: {{ .Values.dataplane.endpoints.default.path | quote }}
             - name: "WEB_HTTP_CONTROL_PORT"
               value: {{ .Values.dataplane.endpoints.control.port | quote }}

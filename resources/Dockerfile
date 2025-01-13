@@ -49,10 +49,8 @@ HEALTHCHECK NONE
 
 ENTRYPOINT ["java", \
      "-javaagent:/app/opentelemetry-javaagent.jar", \
-     "-Dedc.fs.config=/app/configuration.properties", \
      "-Dotel.javaagent.configuration-file=/app/opentelemetry.properties", \
-     "-Dotel.metrics.exporter=prometheus", \
-     "-Dotel.exporter.prometheus.port=9090", \
+     "-Dedc.fs.config=/app/configuration.properties", \
      "-Djava.security.egd=file:/dev/urandom", \
      "-jar", \
      "edc-runtime.jar"]

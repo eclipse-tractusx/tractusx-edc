@@ -56,11 +56,10 @@ jobs:
           helm repo add tractusx https://eclipse-tractusx.github.io/charts/dev
           helm repo update tractusx
 
-      ## Skip 0.6.0 when doing the compatibility check ref https://github.com/eclipse-tractusx/tractusx-edc/issues/1082
       - name: "Get latest released version"
         id: get-version
         run: |
-          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l -o json | jq -r 'map(select(.version !="0.6.0")) | first | .version') 
+          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l -o json | jq -r 'first | .version')
           echo "Last official release is $RELEASED_VERSION"
           echo "RELEASE=$RELEASED_VERSION" >> $GITHUB_ENV
           exit 0
