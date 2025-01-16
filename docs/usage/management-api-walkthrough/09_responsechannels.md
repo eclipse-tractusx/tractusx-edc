@@ -9,21 +9,17 @@ The EDC Connector enables such bidirectional flow of information.
 As of writing of this document, a known workaround is in place to enable the same level of communication. The provider
 creates an additional dataset offer, offering its consumer access to an endpoint where messages can be received via HTTP
 POST requests. Albeit the creation of unnecessary offers, it is not advisable to use case architects setup their use
-cases
-in such manner, as per the dataspace reference architecture the flow of data should always happen in the direction of
-the
-consumer from the provider.
+cases in such manner, as per the dataspace reference architecture the flow of data should always happen in the direction
+of the consumer from the provider.
 
 Using a transfer process response channel guarantees compliance and eliminates unnecessary dataset offers and all the
-extra
-steps needed to obtain access to the underlying endpoints.
+extra steps needed to obtain access to the underlying endpoints.
 
 ## HTTP response channels
 
 The HTTP wire protocol is the only supported protocol for response data communication as of now. Given the bellow
-mentioned
-considerations, and by following the bellow demonstrated process, a dataspace consumer can send response messages to a
-provider.
+mentioned considerations, and by following the bellow demonstrated process, a dataspace consumer can send response
+messages to a provider.
 
 ## Requirements
 
@@ -44,10 +40,8 @@ edc.dataplane.api.public.response.baseurl
 
 Given the above requirements are met, the consumer client is able to start a transfer process and indicate the intention
 to receive response channel information is its EDR. For this to happen, the transferType attribute of the transfer
-process
-request needs to include the type of the response channel protocol. Since HTTP is the only supported protocol,
-`HttpData`
-is the response type to be used.
+process request needs to include the type of the response channel protocol. Since HTTP is the only supported protocol,
+`HttpData` is the response type to be used.
 
 As an example, for this transfer process request:
 
@@ -102,8 +96,7 @@ using `responseChannel-endpoint` instead of `endpoint` and `responseChannel-auth
 ## Current limitations
 
 - The same `baseUrl` of the provider data offer will be used as the response channel `baseUrl`. The same backend
-  application
-  should be able to handle this request.
+  application should be able to handle this request.
 - If the provider data offer has a data address of any type other than `HttpData`, the response channel won't work.
 
 ## Notice
