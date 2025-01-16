@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,25 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-dataplane:edc-dataplane-core"))
-    implementation(project(":edc-dataplane:edc-dataplane-base"))
-    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault"))
+
+    api(libs.edc.spi.core)
+    api(libs.edc.spi.web)
+    api(libs.edc.controlplane.apiclient)
+    api(libs.edc.spi.dataplane.dataplane)
+    api(libs.edc.state.machine)
+    api(libs.edc.lib.query)
+
+    runtimeOnly(libs.edc.spi.token)
+    runtimeOnly(libs.edc.lib.util)
+    runtimeOnly(libs.edc.dpf.util)
+
+    implementation(libs.edc.lib.store)
+    implementation(libs.opentelemetry.instrumentation.annotations)
+
+    runtimeOnly(libs.edc.lib.query)
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.awaitility)
+    testImplementation(testFixtures(libs.edc.spi.dataplane.dataplane))
 }
+
+

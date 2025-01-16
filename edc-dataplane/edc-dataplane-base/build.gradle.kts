@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":core:edr-core"))
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-core"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
@@ -41,7 +42,6 @@ dependencies {
 
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
 
-    runtimeOnly(libs.edc.dpf.core)
     runtimeOnly(libs.edc.dpf.iam)
     runtimeOnly(libs.edc.controlplane.apiclient)
 

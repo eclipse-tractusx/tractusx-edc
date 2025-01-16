@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,12 +17,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.edc.connector.dataplane.framework.store;
 
-dependencies {
-    implementation(project(":edc-dataplane:edc-dataplane-core"))
-    implementation(project(":edc-dataplane:edc-dataplane-base"))
-    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault"))
+import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
+import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataTestBase;
+import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
+
+class InMemoryAccessTokenDataStoreTest extends AccessTokenDataTestBase {
+    private final InMemoryAccessTokenDataStore store = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
+
+    @Override
+    protected AccessTokenDataStore getStore() {
+        return store;
+    }
 }

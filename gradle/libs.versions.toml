@@ -93,6 +93,7 @@ edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "e
 edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-lib-validator = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
+edc-state-machine = { module = "org.eclipse.edc:state-machine-lib", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
@@ -173,7 +174,6 @@ edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", versi
 edc-spi-dataplane-transfer = { module = "org.eclipse.edc:transfer-data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
 edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
-edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-dpf-iam = { module = "org.eclipse.edc:data-plane-iam", version.ref = "edc" }
 edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 
@@ -207,6 +207,7 @@ junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.re
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
+opentelemetry-instrumentation-annotations = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations", version.ref = "opentelemetry" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }

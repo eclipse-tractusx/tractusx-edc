@@ -95,6 +95,7 @@ include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
 
 // modules for dataplane artifacts
 include(":edc-dataplane")
+include(":edc-dataplane:edc-dataplane-core")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 

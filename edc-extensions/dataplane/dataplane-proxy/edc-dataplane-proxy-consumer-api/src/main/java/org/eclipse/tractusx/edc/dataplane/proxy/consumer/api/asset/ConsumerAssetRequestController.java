@@ -69,7 +69,6 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     public static final String EDR_ERROR_MESSAGE = "No EDR for transfer process: %s : %s";
     private static final String ASYNC_TYPE = "async";
     private static final String HEADER_AUTHORIZATION = "header:authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
     private final EdrService edrService;
     private final TransferService transferService;
     private final Monitor monitor;

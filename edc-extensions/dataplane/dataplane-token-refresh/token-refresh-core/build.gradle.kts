@@ -38,7 +38,7 @@ dependencies {
     implementation(libs.edc.lib.token)
 
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.dpf.core)
+    testImplementation(project(":edc-dataplane:edc-dataplane-core"))
     testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.lib.boot)
     testImplementation(libs.edc.lib.token)
