@@ -94,7 +94,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
     @Override
     public Result<DataFlowResponseMessage> start(DataFlowStartMessage startMessage) {
         var dataFlowBuilder = DataFlow.Builder.newInstance()
-                .id(startMessage.getProcessId()) // todo: is this the tpi?
+                .id(startMessage.getProcessId())
                 .source(startMessage.getSourceDataAddress())
                 .destination(startMessage.getDestinationDataAddress())
                 .callbackAddress(startMessage.getCallbackAddress())
@@ -261,12 +261,10 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
         dataFlow.transitionToStarted(runtimeId);
         monitor.info("UPDATE dataflow %s. RuntimeId %s, UpdatedAt %s".formatted(dataFlow.getId(), dataFlow.getRuntimeId(), dataFlow.getUpdatedAt()));
         update(dataFlow);
-        var transferProcessId = dataFlow.getId();
 
         return entityRetryProcessFactory.doAsyncProcess(dataFlow, () -> transferService.transfer(request))
                 .entityRetrieve(id -> store.findByIdAndLease(id).orElse(f -> null))
                 .onSuccess((f, r) -> {
-                    //todo: do I have here the transfer process id???
 
                     if (f.getState() != STARTED.code()) {
                         return;

@@ -112,8 +112,8 @@ public class PipelineServiceImpl implements PipelineService {
 
         var source = sourceFactory.createSource(request);
         sources.put(request.getProcessId(), source);
-        monitor.debug(() -> format("Transferring asset %s from %s to %s for DataFlow %s.",
-                request.getAssetId(), request.getSourceDataAddress().getType(), request.getDestinationDataAddress().getType(), request.getProcessId()));
+        monitor.debug(() -> format("Transferring from %s to %s for DataFlow %s.",
+                request.getSourceDataAddress().getType(), request.getDestinationDataAddress().getType(), request.getProcessId()));
         return sink.transfer(source)
                 .thenApply(result -> {
                     terminate(request.getProcessId());
