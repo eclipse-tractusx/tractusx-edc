@@ -23,7 +23,7 @@ A complete sequence including `TransferRequestMessage` is shown here:
 - `(1)`Consumer send `TransferRequestMessage`
 - `(2)` Provider sends `DataFlowStartMessage` to its own DataPlane via the Signaling API
 - `(3)` Provider's DataPlane creates an `EndPointDataReference` (
-  see [here](https://eclipse-edc.github.io/documentation/for-contributors/data-plane/data-plane-signaling/#1-dataaddress-and-endpointdatareference)
+  see [here](https://eclipse-edc.github.io/documentation/for-contributors/data-plane/data-plane-signaling/#323-access-token-generation)
   for an example)
 - `(4)` Provider's ControlPlane receives `EndpointDataReference` (= EDR)
 - `(5)` Provider sends `TransferStartMessage` that contains the `EndpointDataReference` to the Consumer via DSP.
@@ -34,7 +34,7 @@ A complete sequence including `TransferRequestMessage` is shown here:
 
 _TOKEN EXPIRES_
 
-- `(8)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#31-client-authentication))
+- `(8)` The `TokenRefreshHandler` module creates the `authentication_token`
 - `(9)` The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API
 - `(10)` Provider performs authentication checks, creates a new `access_token` and a new `refresh_token`, updates
   internal records and sends the response back.
@@ -57,7 +57,7 @@ This is called "lazy refresh".
 ![](./AutomaticRefresh.drawio.png)
 
 - `(1)`: Consumer data plane receives HTTP 401 indicating an auth failure
-- `(2)`: The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#31-client-authentication))
+- `(2)`: The `TokenRefreshHandler` module creates the `authentication_token`
 - `(3)`: The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API.
 
 Note that if the token-refresh call also fails with an HTTP 4xx error code, the token must be regarded as invalid and
