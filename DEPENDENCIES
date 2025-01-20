@@ -74,7 +74,7 @@ maven/mavencentral/com.google.code.gson/gson/2.10.1, Apache-2.0, approved, #6159
 maven/mavencentral/com.google.crypto.tink/tink/1.15.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.11.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.22.0, Apache-2.0, approved, #10661
-maven/mavencentral/com.google.errorprone/error_prone_annotations/2.36.0, Apache-2.0, approved, #17302
+maven/mavencentral/com.google.errorprone/error_prone_annotations/2.36.0, Apache-2.0, approved, #18702
 maven/mavencentral/com.google.guava/failureaccess/1.0.1, Apache-2.0, approved, CQ22654
 maven/mavencentral/com.google.guava/failureaccess/1.0.2, Apache-2.0, approved, CQ22654
 maven/mavencentral/com.google.guava/guava/28.1-android, Apache-2.0, approved, clearlydefined
@@ -553,8 +553,8 @@ maven/mavencentral/org.eclipse.jetty/jetty-util/11.0.24, EPL-2.0 OR Apache-2.0, 
 maven/mavencentral/org.eclipse.jetty/jetty-webapp/11.0.24, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-xml/11.0.24, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
-maven/mavencentral/org.flywaydb/flyway-core/11.1.1, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/11.1.1, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/11.1.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/11.1.1, NOASSERTION, restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
