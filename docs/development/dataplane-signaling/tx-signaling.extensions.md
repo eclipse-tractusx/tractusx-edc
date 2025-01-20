@@ -6,7 +6,7 @@ that extends the DataPlane Signaling framework.
 ## Overview
 
 The provider DataPlane exposes a new public facing API called the "Refresh API". Its purpose is to accept a refresh
-token and an authentication token (see documentation [here]()), perform validity checks and then respond with a new
+token and an authentication token (see documentation [here](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#3-the-refresh-request)), perform validity checks and then respond with a new
 refresh token similar to this:
 
 ```json
@@ -23,7 +23,7 @@ A complete sequence including `TransferRequestMessage` is shown here:
 - `(1)`Consumer send `TransferRequestMessage`
 - `(2)` Provider sends `DataFlowStartMessage` to its own DataPlane via the Signaling API
 - `(3)` Provider's DataPlane creates an `EndPointDataReference` (
-  see [here](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md#2-updates-to-thedataaddress-format)
+  see [here](https://eclipse-edc.github.io/documentation/for-contributors/data-plane/data-plane-signaling/#1-dataaddress-and-endpointdatareference)
   for an example)
 - `(4)` Provider's ControlPlane receives `EndpointDataReference` (= EDR)
 - `(5)` Provider sends `TransferStartMessage` that contains the `EndpointDataReference` to the Consumer via DSP.
@@ -34,7 +34,7 @@ A complete sequence including `TransferRequestMessage` is shown here:
 
 _TOKEN EXPIRES_
 
-- `(8)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
+- `(8)` The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#31-client-authentication))
 - `(9)` The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API
 - `(10)` Provider performs authentication checks, creates a new `access_token` and a new `refresh_token`, updates
   internal records and sends the response back.
@@ -57,13 +57,13 @@ This is called "lazy refresh".
 ![](./AutomaticRefresh.drawio.png)
 
 - `(1)`: Consumer data plane receives HTTP 401 indicating an auth failure
-- `(2)`: The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation]())
+- `(2)`: The `TokenRefreshHandler` module creates the `authentication_token` (see [documentation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md#31-client-authentication))
 - `(3)`: The `TokenRefreshHandler` module sends token refresh request to provider's public Refresh API.
 
 Note that if the token-refresh call also fails with an HTTP 4xx error code, the token must be regarded as invalid and
 not authorized. An expired contract agreement or an unsatisfied policy could be reasons for that (
 see [decision record](https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-09-07-policy-monitor)
-and [documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/policy-monitor.md)).
+and [documentation](https://eclipse-edc.github.io/documentation/for-contributors/control-plane/policy-monitor/)).
 
 Alternatively, implementations of the `TokenRefreshHandler` could choose to proactively refresh the token if nearing
 expiry instead of "letting it fail" first. _This is transparent to the client application._
