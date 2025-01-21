@@ -94,6 +94,9 @@ To use the response channel the same process as for any other transfer using an 
 - The same `baseUrl` of the provider data offer will be used as the response channel `baseUrl`. The same backend
   application should be able to handle this request.
 - If the provider data offer has a data address of any type other than `HttpData`, the response channel won't work.
+- There is no manner to specify if and which assets have response channels associated. If the functionality is
+  enabled by the connector operator, an `HttpData` response channel distribution type will be made available for every
+  asset offered by the dataspace provider, even if the underlying asset data address type is not `HttpData`.
 
 ## Notice
 
