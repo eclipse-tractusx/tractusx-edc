@@ -122,7 +122,7 @@ public class ParticipantEdrApi {
                 .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
                 .build();
 
-        var requestBody = createEdrNegotiationRequest(other.getProtocolEndpoint().getUrl().toString(), policy, callbacks);
+        var requestBody = createEdrNegotiationRequest(other.getControlPlaneProtocol().toString(), policy, callbacks);
 
 
         var response = baseEdrRequest()
@@ -229,6 +229,6 @@ public class ParticipantEdrApi {
     }
 
     private RequestSpecification baseEdrRequest() {
-        return participant.getManagementEndpoint().baseRequest().contentType(JSON);
+        return participant.baseManagementRequest().contentType(JSON);
     }
 }
