@@ -165,6 +165,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
         baseManagementRequest()
+                .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -180,6 +181,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(AR_ENTRY_REASON, "long-reason")
                 .build();
         return baseManagementRequest()
+                .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .body(body)
                 .when()
