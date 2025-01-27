@@ -35,7 +35,7 @@ public class VersionServiceStub extends AbstractServiceStub implements VersionSe
 
     @Override
     public CompletableFuture<StatusResult<byte[]>> requestVersions(ProtocolVersionRequest request) {
-        return responseQueue.getNext(CompletableFuture.class, "Error retrieving ProtocolVersions: %s")
+        return responseQueue.getNext(CompletableFuture.class, "Error retrieving VersionService status result: %s")
                 .orElseThrow(InvalidRequestException::new);
     }
 }
