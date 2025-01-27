@@ -27,6 +27,7 @@ import org.eclipse.edc.connector.controlplane.services.spi.contractdefinition.Co
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionProtocolService;
+import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -46,6 +47,7 @@ import org.eclipse.tractusx.edc.mock.services.ContractNegotiationServiceStub;
 import org.eclipse.tractusx.edc.mock.services.PolicyDefinitionServiceStub;
 import org.eclipse.tractusx.edc.mock.services.TransferProcessServiceStub;
 import org.eclipse.tractusx.edc.mock.services.VersionProtocolServiceStub;
+import org.eclipse.tractusx.edc.mock.services.VersionServiceStub;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -123,6 +125,11 @@ public class MockServiceExtension implements ServiceExtension {
     @Provider
     public VersionProtocolService mockVersionProtocolService() {
         return new VersionProtocolServiceStub(new ResponseQueue(recordedRequests, monitor));
+    }
+
+    @Provider
+    public VersionService mockVersionService() {
+        return new VersionServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
 }
