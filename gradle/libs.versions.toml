@@ -230,4 +230,4 @@ edc-sts = [
 ]
 
 [plugins]
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.27" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.28" }
