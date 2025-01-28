@@ -248,7 +248,7 @@ spec:
             ## VAULT ##
             ###########
 
-            # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/hashicorp-vault
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/vault-hashicorp
             - name: "EDC_VAULT_HASHICORP_URL"
               value: {{ tpl .Values.vault.hashicorp.url . | quote }}
             - name: "EDC_VAULT_HASHICORP_TOKEN"
@@ -263,6 +263,10 @@ spec:
               value: {{ .Values.vault.hashicorp.paths.secret | quote }}
             - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
               value: {{ .Values.vault.hashicorp.paths.health | quote }}
+            {{- if .Values.vault.hashicorp.paths.folder }}
+            - name: "EDC_VAULT_HASHICORP_FOLDER"
+              value: {{ .Values.vault.hashicorp.paths.folder | quote }}
+            {{- end }}
 
 
             ###############################
