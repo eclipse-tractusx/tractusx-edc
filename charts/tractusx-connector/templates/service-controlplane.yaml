@@ -55,6 +55,10 @@ spec:
       targetPort: protocol
       protocol: TCP
       name: protocol
+    - port: {{ .Values.controlplane.endpoints.catalog.port }}
+      targetPort: catalog
+      protocol: TCP
+      name: catalog
     - port: {{ .Values.controlplane.endpoints.metrics.port }}
       targetPort: metrics
       protocol: TCP
