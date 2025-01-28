@@ -98,7 +98,7 @@ public class FederatedCatalogTest {
         @Override
         public List<TargetNode> getAll() {
             return participants.stream()
-                    .map(p -> new TargetNode(p.getDid(), p.getBpn(), p.getProtocolEndpoint().getUrl().toString(), List.of("dataspace-protocol-http")))
+                    .map(p -> new TargetNode(p.getDid(), p.getBpn(), p.getControlPlaneProtocol().toString(), List.of("dataspace-protocol-http")))
                     .collect(Collectors.toList());
         }
 

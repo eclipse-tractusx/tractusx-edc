@@ -88,7 +88,7 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
         }
 
         @Override
-        public TractusxIatpParticipantBase build() {
+        public P build() {
             super.build();
             Objects.requireNonNull(participant.stsUri, "STS URI should not be null");
             Objects.requireNonNull(participant.trustedIssuer, "Trusted issuer cannot be null");
