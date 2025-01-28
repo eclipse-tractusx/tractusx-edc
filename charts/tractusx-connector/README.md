@@ -297,6 +297,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.8.0 \
 | tests.hookDeletePolicy | string | `"before-hook-creation,hook-succeeded"` | Configure the hook-delete-policy for Helm tests |
 | vault.hashicorp.healthCheck.enabled | bool | `true` |  |
 | vault.hashicorp.healthCheck.standbyOk | bool | `true` |  |
+| vault.hashicorp.paths.folder | string | `""` |  |
 | vault.hashicorp.paths.health | string | `"/v1/sys/health"` |  |
 | vault.hashicorp.paths.secret | string | `"/v1/secret"` |  |
 | vault.hashicorp.timeout | int | `30` |  |
