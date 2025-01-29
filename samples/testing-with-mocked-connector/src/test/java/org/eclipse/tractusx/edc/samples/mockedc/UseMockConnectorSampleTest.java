@@ -117,6 +117,28 @@ public class UseMockConnectorSampleTest {
         assertThat(errorObject.get("message").toString()).contains("This user is not authorized, This is just a second error message");
     }
 
+    @Test
+    void test_getProtocolVersions() {
+        setupNextResponse("versions.request.json");
+        mgmtRequest()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                          "@context": {
+                            "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+                          },
+                        "@type": "QuerySpec",
+                        "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "http://provider-control-plane:8282/api/v1/dsp",
+                        "https://w3id.org/edc/v0.0.1/ns/counterPartyId": "providerId",
+                        "https://w3id.org/edc/v0.0.1/ns/protocol": "dataspace-protocol-http"
+                        }
+                        """)
+                .post("/v4alpha/protocol-versions/request")
+                .then()
+                .log().ifError()
+                .statusCode(200);
+    }
+
     private void setupNextResponse(String resourceFileName) {
         var json = TestUtils.getResourceFileContentAsString(resourceFileName);
 
