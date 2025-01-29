@@ -22,18 +22,8 @@
     }
   },
   "output": {
-    "class": "java.util.concurrent.CompletableFuture",
+    "class": "java.lang.Object",
     "data": {
-      "protocolVersions": [
-        {
-          "version": "2024/1",
-          "path": "/2024/1"
-        },
-        {
-          "version": "v0.8",
-          "path": "/"
-        }
-      ]
     }
   }
 }
