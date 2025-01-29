@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.mock.services;
 import org.eclipse.edc.connector.controlplane.protocolversion.spi.ProtocolVersionRequest;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
 import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.concurrent.CompletableFuture;
