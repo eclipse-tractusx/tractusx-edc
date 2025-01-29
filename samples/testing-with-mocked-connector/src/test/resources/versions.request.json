@@ -4,26 +4,12 @@
   "input": {
     "class": "org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest",
     "data": {
-      "@context": {
-        "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-        "edc": "https://w3id.org/edc/v0.0.1/ns/"
-      },
-      "@type": "ProtocolVersionRequest",
-      "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "http://provider-control-plane:8282/api/v1/dsp",
-      "https://w3id.org/edc/v0.0.1/ns/counterPartyId": "providerId",
-      "https://w3id.org/edc/v0.0.1/ns/protocol": "dataspace-protocol-http",
-      "querySpec": {
-        "offset": 0,
-        "limit": 50,
-        "sortOrder": "DESC",
-        "sortField": "fieldName",
-        "filterExpression": []
-      }
+      "offset": 0,
+      "sortOrder": "DESC"
     }
   },
   "output": {
-    "class": "java.lang.Object",
-    "data": {
-    }
+    "class": "java.util.concurrent.CompletableFuture",
+    "data": {}
   }
 }
