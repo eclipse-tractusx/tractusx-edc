@@ -618,6 +618,7 @@ vault:
     paths:
       secret: /v1/secret
       health: /v1/sys/health
+      folder: ""
 
 networkPolicy:
   # -- If `true` network policy will be created to restrict access to control- and dataplane
