@@ -36,6 +36,7 @@ public class VersionServiceStub extends AbstractServiceStub implements VersionSe
     public CompletableFuture<StatusResult<byte[]>> requestVersions(ProtocolVersionRequest request) {
         var nextInQueue = responseQueue.getNext(byte[].class, "Error retrieving VersionService status result: %s");
         var result = StatusResult.success(nextInQueue.getContent());
-        return CompletableFuture.completedFuture(result);
+        var resultHardcoded = StatusResult.success(new byte[]{ 91, 123, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 34, 118, 101, 114, 115, 105, 111, 110, 34, 58, 32, 34, 50, 48, 50, 52, 47, 49, 34, 44, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 34, 112, 97, 116, 104, 34, 58, 32, 34, 47, 50, 48, 50, 52, 47, 49, 34, 10, 32, 32, 32, 32, 32, 32, 32, 32, 125, 93, 10 });
+        return CompletableFuture.completedFuture(resultHardcoded);
     }
 }

@@ -2,7 +2,7 @@
   "name": "Version API",
   "description": "test description",
   "input": {
-    "class": "org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest",
+    "class": "org.eclipse.edc.connector.controlplane.protocolversion.spi.ProtocolVersionRequest",
     "data": {
       "offset": 0,
       "sortOrder": "DESC"

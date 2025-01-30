@@ -120,7 +120,7 @@ public class UseMockConnectorSampleTest {
     @Test
     void test_getProtocolVersions() {
         setupNextResponse("versions.request.json");
-        mgmtRequest()
+        var response = mgmtRequest()
                 .contentType(ContentType.JSON)
                 .body("""
                         {
@@ -136,7 +136,14 @@ public class UseMockConnectorSampleTest {
                 .post("/v4alpha/protocol-versions/request")
                 .then()
                 .log().ifError()
-                .statusCode(200);
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).asJsonObject().get("version").equals("2024/1"));
+        assertThat(response.get(0).asJsonObject().get("path").equals("/2024/1"));
     }
 
     private void setupNextResponse(String resourceFileName) {
