@@ -9,7 +9,10 @@
     }
   },
   "output": {
-    "class": "java.util.concurrent.CompletableFuture",
-    "data": {}
+    "class": "org.eclipse.edc.connector.controlplane.services.spi.protocol.ProtocolVersion",
+    "data": {
+      "version": "2024/1",
+      "path": "/2024/1"
+    }
   }
 }
