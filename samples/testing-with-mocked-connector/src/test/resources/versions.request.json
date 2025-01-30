@@ -9,10 +9,18 @@
     }
   },
   "output": {
-    "class": "org.eclipse.edc.connector.controlplane.services.spi.protocol.ProtocolVersion",
+    "class": "org.eclipse.edc.connector.controlplane.services.spi.protocol.ProtocolVersions",
     "data": {
-      "version": "2024/1",
-      "path": "/2024/1"
+      "protocolVersions": [
+        {
+          "version": "2024/1",
+          "path": "/2024/1"
+        },
+        {
+          "version": "v0.8",
+          "path": "/"
+        }
+      ]
     }
   }
 }

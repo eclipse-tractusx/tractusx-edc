@@ -143,8 +143,8 @@ public class UseMockConnectorSampleTest {
 
         var value = new String(response);
 
-        assertThat(response != null);
-        assertThat(value.contains("version"));
+        assertThat(value.contains("version=2024/1, path=/2024/1"));
+        assertThat(value.contains("version=v0.8, path=/"));
     }
 
     private void setupNextResponse(String resourceFileName) {
