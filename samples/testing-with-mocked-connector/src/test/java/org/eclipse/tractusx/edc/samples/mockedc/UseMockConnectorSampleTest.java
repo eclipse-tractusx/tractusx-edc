@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.samples.mockedc;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,12 +140,15 @@ public class UseMockConnectorSampleTest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .asByteArray();
+                .as(JsonObject.class);
 
-        var value = new String(response);
+        var protocolVersions = response.get("protocolVersions").asJsonArray();
 
-        assertThat(value.contains("version=2024/1, path=/2024/1"));
-        assertThat(value.contains("version=v0.8, path=/"));
+        assertThat(protocolVersions).hasSize(2);
+        assertThat(protocolVersions.getJsonObject(0).getJsonString("version").getString()).isEqualTo("2024/1");
+        assertThat(protocolVersions.getJsonObject(0).getJsonString("path").getString()).isEqualTo("/2024/1");
+        assertThat(protocolVersions.getJsonObject(1).getJsonString("version").getString()).isEqualTo("v0.8");
+        assertThat(protocolVersions.getJsonObject(1).getJsonString("path").getString()).isEqualTo("/");
     }
 
     private void setupNextResponse(String resourceFileName) {

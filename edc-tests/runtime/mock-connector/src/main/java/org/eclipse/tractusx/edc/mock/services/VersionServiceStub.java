@@ -19,15 +19,20 @@
 
 package org.eclipse.tractusx.edc.mock.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.controlplane.protocolversion.spi.ProtocolVersionRequest;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.ProtocolVersions;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.concurrent.CompletableFuture;
 
 public class VersionServiceStub extends AbstractServiceStub implements VersionService {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public VersionServiceStub(ResponseQueue responseQueue) {
         super(responseQueue);
@@ -36,7 +41,12 @@ public class VersionServiceStub extends AbstractServiceStub implements VersionSe
     @Override
     public CompletableFuture<StatusResult<byte[]>> requestVersions(ProtocolVersionRequest request) {
         var nextInQueue = responseQueue.getNext(ProtocolVersions.class, "Error retrieving VersionService status result: %s");
-        var result = StatusResult.success(nextInQueue.getContent().toString().getBytes());
-        return CompletableFuture.completedFuture(result);
+        try {
+            var protocolVersions = objectMapper.writeValueAsString(nextInQueue.getContent());
+            var result = StatusResult.success(protocolVersions.getBytes());
+            return CompletableFuture.completedFuture(result);
+        } catch (JsonProcessingException e) {
+            throw new EdcException(e);
+        }
     }
 }
