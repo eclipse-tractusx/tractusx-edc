@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.samples.mockedc;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,6 +116,39 @@ public class UseMockConnectorSampleTest {
         assertThat(assetArray).hasSize(1);
         var errorObject = assetArray.get(0).asJsonObject();
         assertThat(errorObject.get("message").toString()).contains("This user is not authorized, This is just a second error message");
+    }
+
+    @Test
+    void test_getProtocolVersions() {
+        setupNextResponse("versions.request.json");
+        var response = mgmtRequest()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                          "@context": {
+                            "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+                          },
+                        "@type": "QuerySpec",
+                        "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "http://provider-control-plane:8282/api/v1/dsp",
+                        "https://w3id.org/edc/v0.0.1/ns/counterPartyId": "providerId",
+                        "https://w3id.org/edc/v0.0.1/ns/protocol": "dataspace-protocol-http"
+                        }
+                        """)
+                .post("/v4alpha/protocol-versions/request")
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonObject.class);
+
+        var protocolVersions = response.get("protocolVersions").asJsonArray();
+
+        assertThat(protocolVersions).hasSize(2);
+        assertThat(protocolVersions.getJsonObject(0).getJsonString("version").getString()).isEqualTo("2024/1");
+        assertThat(protocolVersions.getJsonObject(0).getJsonString("path").getString()).isEqualTo("/2024/1");
+        assertThat(protocolVersions.getJsonObject(1).getJsonString("version").getString()).isEqualTo("v0.8");
+        assertThat(protocolVersions.getJsonObject(1).getJsonString("path").getString()).isEqualTo("/");
     }
 
     private void setupNextResponse(String resourceFileName) {
