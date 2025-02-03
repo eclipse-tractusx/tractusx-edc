@@ -62,6 +62,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public static final Duration ASYNC_TIMEOUT = ofSeconds(120);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
     private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
+    private static final String API_KEY_HEADER_NAME = "x-api-key";
     protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
@@ -72,6 +73,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     protected ParticipantConsumerDataPlaneApi dataPlane;
     protected String did;
     protected Endpoint federatedCatalog;
+
+    public TractusxParticipantBase() {
+        this.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));
+    }
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
