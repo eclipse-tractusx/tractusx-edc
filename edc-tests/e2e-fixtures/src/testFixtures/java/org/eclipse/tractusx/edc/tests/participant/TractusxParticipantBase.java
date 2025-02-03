@@ -82,10 +82,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return getId();
     }
 
-    public URI getControlPlaneProtocol() {
-        return controlPlaneProtocol.get();
-    }
-
     /**
      * Returns the base configuration
      */

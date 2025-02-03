@@ -43,7 +43,6 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIB
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetFirstPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEdrNegotiationRequest;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.MANAGEMENT_API_KEY;
 
 /**
  * E2E test helper for the EDR APIs
@@ -123,7 +122,9 @@ public class ParticipantEdrApi {
                 .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
                 .build();
 
-        var requestBody = createEdrNegotiationRequest(other.getControlPlaneProtocol().toString(), policy, callbacks);
+        var connectorAddress = other.getConfiguration().get("edc.dsp.callback.address");
+
+        var requestBody = createEdrNegotiationRequest(connectorAddress, policy, callbacks);
 
 
         var response = baseEdrRequest()
@@ -230,6 +231,6 @@ public class ParticipantEdrApi {
     }
 
     private RequestSpecification baseEdrRequest() {
-        return participant.baseManagementRequest().header("x-api-key", MANAGEMENT_API_KEY).contentType(JSON);
+        return participant.baseManagementRequest().contentType(JSON);
     }
 }
