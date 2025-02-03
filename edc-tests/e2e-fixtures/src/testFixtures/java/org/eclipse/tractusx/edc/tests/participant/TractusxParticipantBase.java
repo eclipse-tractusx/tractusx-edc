@@ -74,10 +74,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     protected String did;
     protected Endpoint federatedCatalog;
 
-    public TractusxParticipantBase() {
-        this.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));
-    }
-
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
     }
@@ -170,7 +166,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
         baseManagementRequest()
-                .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -186,7 +181,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(AR_ENTRY_REASON, "long-reason")
                 .build();
         return baseManagementRequest()
-                .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -270,6 +264,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             }
 
             participant.federatedCatalog = new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/catalog"), Map.of("x-api-key", MANAGEMENT_API_KEY));
+            participant.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));
             super.timeout(ASYNC_TIMEOUT);
             super.build();
 
