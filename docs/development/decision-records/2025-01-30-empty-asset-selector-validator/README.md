@@ -23,9 +23,9 @@ such exposure can be achieved by applying the following approach.
   `https://w3id.org/edc/v0.0.1/ns/ContractDefinition` type. This validator should replace the one provided by default
   by the contract definitions api.
 - The registration of the new `JsonObjectValidator` should be conditioned to setting the connector configuration
-  `tx.edc.validator.contractdefinitions.blockemptyassetselector=true`
+  `tx.edc.validator.contractdefinitions.block-empty-assets-selector=true`
 - Implement the new `JsonObjectValidator` which should behave similarly to the existing
   `ContractDefinitionValidator` except it should fail the validation in case the creation/update of a contract
-  definition introduces an empty `assetSelector` properties.
+  definition introduces an empty `assetSelector` properties and the mentioned new toggle is enabled.
 
 
