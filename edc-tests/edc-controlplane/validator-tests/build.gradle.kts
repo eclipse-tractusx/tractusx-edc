@@ -23,12 +23,9 @@ plugins {
 }
 
 dependencies {
-    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
 
-    testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
-    testImplementation(libs.awaitility)
 
     testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
 }
