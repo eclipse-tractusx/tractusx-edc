@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.validators.contractdefinitions;
+package org.eclipse.tractusx.edc.validators.emptyassetselector;
 
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
