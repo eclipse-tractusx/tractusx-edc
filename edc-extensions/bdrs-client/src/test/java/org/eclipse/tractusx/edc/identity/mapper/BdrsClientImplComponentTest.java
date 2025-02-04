@@ -165,7 +165,7 @@ class BdrsClientImplComponentTest {
     void resolve_withInvalidCredential(String token) {
         // prime STS and CS
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(token, CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(token, CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
 
         assertThatThrownBy(() -> client.resolve("BPN1")).isInstanceOf(EdcException.class)
                 .hasMessageContaining("code: 401, message: Unauthorized");
@@ -182,7 +182,7 @@ class BdrsClientImplComponentTest {
         var presentation = createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
         assertThatThrownBy(() -> client.resolve("BPN1"))
                 .isInstanceOf(EdcException.class)
@@ -200,7 +200,7 @@ class BdrsClientImplComponentTest {
         var presentation = createJwt(spoofedKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
         assertThatThrownBy(() -> client.resolve("BPN1"))
                 .isInstanceOf(EdcException.class)
@@ -217,7 +217,7 @@ class BdrsClientImplComponentTest {
         var presentation = createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
         assertThatNoException().describedAs(BDRS_SERVER_CONTAINER::getLogs)
                 .isThrownBy(() -> client.resolve("BPN1"));
@@ -234,7 +234,7 @@ class BdrsClientImplComponentTest {
         var presentation = createJwt(vpHolderKey, HOLDER_DID, null, "bdrs-server-audience", Map.of("vp", asMap(VP_CONTENT_EXAMPLE.formatted(HOLDER_DID, "\"" + membershipCredential + "\""))));
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.JWT, null))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
         assertThatThrownBy(() -> client.resolve("BPN1"))
                 .isInstanceOf(EdcException.class)
