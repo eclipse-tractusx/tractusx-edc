@@ -17,4 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.validators.contractdefinitions.EmptyAssetSelectorBlockerExtension
+org.eclipse.tractusx.edc.validators.emptyassetselector.EmptyAssetSelectorBlockerExtension

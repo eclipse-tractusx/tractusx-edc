@@ -23,5 +23,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-extensions:validators:contractdefinitions"))
+    implementation(project(":edc-extensions:validators:empty-asset-selector"))
 }
