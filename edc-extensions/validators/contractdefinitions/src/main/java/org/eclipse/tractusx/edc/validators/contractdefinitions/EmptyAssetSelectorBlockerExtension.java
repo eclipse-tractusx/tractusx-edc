@@ -22,9 +22,9 @@ package org.eclipse.tractusx.edc.validators.contractdefinitions;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_TYPE;
@@ -36,14 +36,17 @@ public class EmptyAssetSelectorBlockerExtension implements ServiceExtension {
 
     private static final String BLOCKER_DISABLED = "false";
 
-    @Setting(description = "Block contract definitions to be created/update with empty asset selector.", defaultValue = BLOCKER_DISABLED, key = "tx.edc.validator.contractdefinitions.blockemptyassetselector")
+    @Setting(description = "Block contract definitions from being created/updated with an empty asset selector.", defaultValue = BLOCKER_DISABLED, key = "tx.edc.validator.contractdefinitions.block-empty-asset-selector")
     private boolean blockerEnabled;
 
     @Inject
     JsonObjectValidatorRegistry validatorRegistry;
 
     @Inject
-    private CriterionOperatorRegistry criterionOperatorRegistry;
+    CriterionOperatorRegistry criterionOperatorRegistry;
+
+    @Inject
+    Monitor monitor;
 
     @Override
     public String name() {
@@ -51,9 +54,9 @@ public class EmptyAssetSelectorBlockerExtension implements ServiceExtension {
     }
 
     @Override
-    public void initialize(ServiceExtensionContext context) {
+    public void start() {
         if (blockerEnabled) {
-            context.getMonitor().info("Empty Asset Selector Blocker is enabled.");
+            monitor.info("Empty Asset Selector Blocker is enabled.");
             validatorRegistry.register(CONTRACT_DEFINITION_TYPE, EmptyAssetSelectorValidator.instance(criterionOperatorRegistry));
         }
     }

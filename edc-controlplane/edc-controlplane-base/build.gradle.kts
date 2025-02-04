@@ -92,4 +92,7 @@ dependencies {
     runtimeOnly(libs.edc.fc.core)
     runtimeOnly(libs.edc.fc.api)
 
+    //Has to be added last
+    runtimeOnly(project(":edc-extensions:validators:contractdefinitions"))
+
 }
