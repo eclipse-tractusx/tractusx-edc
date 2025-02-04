@@ -107,6 +107,7 @@ class BdrsClientImplComponentTest {
             .withEnv("WEB_HTTP_PORT", "8080")
             .withEnv("WEB_HTTP_DIRECTORY_PATH", "/api/directory")
             .withEnv("WEB_HTTP_DIRECTORY_PORT", "8082")
+            .withEnv("EDC_IAM_ISSUER_ID", "any")
             .withEnv("EDC_IAM_DID_WEB_USE_HTTPS", "false")
             .withEnv("EDC_IAM_TRUSTED-ISSUER_ISSUER_ID", "did:web:%s:%s".formatted(NGINX_CONTAINER_NAME, ISSUER_NAME))
             .withNetwork(DOCKER_NETWORK)
