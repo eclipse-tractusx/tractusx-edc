@@ -128,7 +128,3 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
-include("edc-extensions:validators")
-findProject(":edc-extensions:validators")?.name = "validators"
-include("edc-extensions:validators:contractdefinitions")
-findProject(":edc-extensions:validators:contractdefinitions")?.name = "contractdefinitions"
