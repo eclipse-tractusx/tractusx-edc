@@ -62,6 +62,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public static final Duration ASYNC_TIMEOUT = ofSeconds(120);
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
     private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
+    private static final String API_KEY_HEADER_NAME = "x-api-key";
     protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
     private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
@@ -91,17 +92,17 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.participant.id", id);
                 put("web.http.port", String.valueOf(controlPlaneDefault.getPort()));
                 put("web.http.path", "/api");
-                put("web.http.protocol.port", String.valueOf(protocolEndpoint.getUrl().getPort()));
-                put("web.http.protocol.path", protocolEndpoint.getUrl().getPath());
-                put("web.http.management.port", String.valueOf(managementEndpoint.getUrl().getPort()));
-                put("web.http.management.path", managementEndpoint.getUrl().getPath());
+                put("web.http.protocol.port", String.valueOf(controlPlaneProtocol.get().getPort()));
+                put("web.http.protocol.path", controlPlaneProtocol.get().getPath());
+                put("web.http.management.port", String.valueOf(controlPlaneManagement.get().getPort()));
+                put("web.http.management.path", controlPlaneManagement.get().getPath());
                 put("web.http.control.port", String.valueOf(controlPlaneControl.getPort()));
                 put("web.http.control.path", controlPlaneControl.getPath());
                 put("web.http.catalog.port", String.valueOf(federatedCatalog.getUrl().getPort()));
                 put("web.http.catalog.path", federatedCatalog.getUrl().getPath());
                 put("web.http.catalog.auth.type", "tokenbased");
                 put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
-                put("edc.dsp.callback.address", protocolEndpoint.getUrl().toString());
+                put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());
                 put("edc.api.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
@@ -160,7 +161,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(ID, bpn)
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
-        managementEndpoint.baseRequest()
+        baseManagementRequest()
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -175,7 +176,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(AR_ENTRY_AGREEMENT_ID, agreementId)
                 .add(AR_ENTRY_REASON, "long-reason")
                 .build();
-        return managementEndpoint.baseRequest()
+        return baseManagementRequest()
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -243,7 +244,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
-
         protected Builder(P participant) {
             super(participant);
         }
@@ -254,14 +254,13 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         }
 
         @Override
-        public TractusxParticipantBase build() {
+        public P build() {
             if (participant.did == null) {
                 participant.did = "did:web:" + participant.name.toLowerCase();
             }
 
             participant.federatedCatalog = new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/catalog"), Map.of("x-api-key", MANAGEMENT_API_KEY));
-            super.managementEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/management"), Map.of("x-api-key", MANAGEMENT_API_KEY)));
-            super.protocolEndpoint(new Endpoint(URI.create("http://localhost:" + getFreePort() + "/protocol")));
+            participant.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));
             super.timeout(ASYNC_TIMEOUT);
             super.build();
 

@@ -97,7 +97,7 @@ class BdrsClientImplTest {
         // prime STS and CS
         when(stsMock.createToken(anyMap(), notNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("my-fancy-sitoken").build()));
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
-                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(TEST_VP_CONTENT, CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
+                .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(TEST_VP_CONTENT, CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
 
     }
 
@@ -178,8 +178,8 @@ class BdrsClientImplTest {
     @Test
     void getData_whenPresentationQueryReturnsTooManyVps() {
         var presentations = List.of(
-                new VerifiablePresentationContainer(TEST_VP_CONTENT, CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()),
-                new VerifiablePresentationContainer("test-raw-vp-2", CredentialFormat.JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()));
+                new VerifiablePresentationContainer(TEST_VP_CONTENT, CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()),
+                new VerifiablePresentationContainer("test-raw-vp-2", CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()));
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.success(presentations));
 

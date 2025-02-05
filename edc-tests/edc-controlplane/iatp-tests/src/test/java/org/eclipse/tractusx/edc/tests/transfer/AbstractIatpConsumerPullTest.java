@@ -236,7 +236,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                         .participantId(did)
                         .holderId(bpn)
-                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JWT, newCred))
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
@@ -297,7 +297,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                         .participantId(did)
                         .holderId(bpn)
-                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.JWT, newCred))
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 

@@ -234,7 +234,7 @@ public class DastSeedExtension implements ServiceExtension {
                 .issuerId(DID)
                 .participantId(DID)
                 .holderId(DID)
-                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JWT, credential))
+                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.VC1_0_JWT, credential))
                 .build();
     }
 

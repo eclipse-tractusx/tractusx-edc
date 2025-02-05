@@ -103,7 +103,7 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .issuerId(didUrl())
                 .participantId(did)
                 .holderId(bpn)
-                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.JWT, credential))
+                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.VC1_0_JWT, credential))
                 .build();
 
     }
