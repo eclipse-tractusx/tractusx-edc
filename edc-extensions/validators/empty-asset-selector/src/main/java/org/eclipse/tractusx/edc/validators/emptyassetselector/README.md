@@ -1,9 +1,8 @@
 # Contract Definitions Validator: Empty Asset Selector
 
-The goal of this extension is to provide a replacement validator for contract definitions entities.
-This validator is used to validate incoming request payloads to the contract definitions data management API endpoint.
-When enabled, it prevents incoming requests that create or update contract definitions, when no asset selector is
-provided.
+The goal of this extension is to provide a replacement validator for contract definition entities.
+It is used to validate requests that create or update contract definitions via the data management API endpoint.
+When enabled, it prevents contract definitions with no asset selector, or an empty one, from being created.
 
 This extension is included with the standard tractusx-edc distribution, but is disabled by default. To enable it,
 you can set `tx.edc.validator.contractdefinitions.block-empty-asset-selector`to `true` in your connector configuration.
@@ -42,7 +41,7 @@ Similarly, this will also fail:
 ```
 
 However, it's possible to bypass this behavior and force the creation of a contract definition with an
-empty asset selector. For that a specific private property as to be defined, as demonstrated below.
+empty asset selector. For that a specific private property has to be defined, as demonstrated below.
 
 ```json
 {
