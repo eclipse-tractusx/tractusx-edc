@@ -35,10 +35,15 @@ import java.util.Map;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
+import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ASSETS_SELECTOR;
+import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
+import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_PRIVATE_PROPERTIES;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
@@ -59,7 +64,7 @@ public class EmptyAssetSelectorValidatorTest {
         @DisplayName("Provider gets 400 when no asset selector is used")
         void shouldFail_whenContractDefinitionHasNoAssetSelector() {
 
-            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", null);
+            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", null, false);
 
             requestResponse.statusCode(400)
                     .body("message", contains("mandatory array '%s' is missing".formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
@@ -70,10 +75,20 @@ public class EmptyAssetSelectorValidatorTest {
         @DisplayName("Provider gets 400 when empty asset selector is used")
         void shouldFail_whenContractDefinitionHasEmptyAssetSelector() {
 
-            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", createArrayBuilder().build());
+            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", createArrayBuilder().build(), false);
 
             requestResponse.statusCode(400)
                     .body("message", contains("array '%s' should at least contains '1' elements".formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
+
+        }
+
+        @Test
+        @DisplayName("Provider gets 200 when no asset selector but bypass is used")
+        void shouldPass_whenContractDefinitionHasBypass() {
+
+            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", null, true);
+
+            requestResponse.statusCode(200);
 
         }
 
@@ -90,21 +105,27 @@ public class EmptyAssetSelectorValidatorTest {
                             .build())
                     .build();
 
-            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", assetSelector);
+            var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", assetSelector, false);
 
             requestResponse.statusCode(200);
 
         }
 
-        private ValidatableResponse createContractDefinitionRequest(String definitionId, String accessPolicyId, String contractPolicyId, JsonArray criterionArray) {
+        private ValidatableResponse createContractDefinitionRequest(String definitionId, String accessPolicyId, String contractPolicyId, JsonArray criterionArray, boolean addBypass) {
             var requestBody = createObjectBuilder()
+                    .add(CONTEXT, createObjectBuilder().add(EDC_PREFIX, EDC_NAMESPACE))
                     .add(ID, definitionId)
                     .add(TYPE, EDC_NAMESPACE + "ContractDefinition")
-                    .add(EDC_NAMESPACE + "accessPolicyId", accessPolicyId)
-                    .add(EDC_NAMESPACE + "contractPolicyId", contractPolicyId);
+                    .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, accessPolicyId)
+                    .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, contractPolicyId);
 
             if (criterionArray != null) {
-                requestBody.add(EDC_NAMESPACE + "assetsSelector", criterionArray);
+                requestBody.add(CONTRACT_DEFINITION_ASSETS_SELECTOR, criterionArray);
+            }
+
+            if (addBypass) {
+                var object = createArrayBuilder().add(createObjectBuilder().add("allowEmpty", "assetSelector"));
+                requestBody.add(CONTRACT_DEFINITION_PRIVATE_PROPERTIES, object);
             }
 
             return PROVIDER.getManagementEndpoint().baseRequest()
