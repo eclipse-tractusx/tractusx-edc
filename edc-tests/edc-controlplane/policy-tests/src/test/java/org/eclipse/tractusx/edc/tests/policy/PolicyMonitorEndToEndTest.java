@@ -32,11 +32,14 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Map;
 import java.util.UUID;
 
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.TERMINATED;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
@@ -77,8 +80,16 @@ public class PolicyMonitorEndToEndTest {
             var policyId = PROVIDER.createPolicyDefinition(policy);
             PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
+            var httpDataDestination = createObjectBuilder()
+                    .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                    .add(EDC_NAMESPACE + "type", "HttpData")
+                    .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                            .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
+                            .build())
+                    .build();
 
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                    .withDestination(httpDataDestination).execute();
             await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
                 var state = CONSUMER.getTransferProcessState(transferProcessId);
                 assertThat(state).isEqualTo(STARTED.name());
