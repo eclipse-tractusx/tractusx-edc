@@ -5,7 +5,7 @@ format.version = "1.1"
 edc = "0.11.1"
 assertj = "3.27.3"
 awaitility = "4.2.2"
-aws = "2.30.14"
+aws = "2.30.16"
 azure-storage-blob = "12.29.0"
 bouncyCastle-jdk18on = "1.80"
 flyway = "11.3.1"
@@ -19,7 +19,7 @@ postgres = "42.7.5"
 restAssured = "5.5.0"
 rsApi = "4.0.0"
 testcontainers = "1.20.4"
-titanium = "1.4.1"
+titanium = "1.5.0"
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
