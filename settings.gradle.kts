@@ -52,7 +52,6 @@ include(":edc-extensions:cx-policy")
 include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
-include(":edc-extensions:validators")
 include(":edc-extensions:validators:empty-asset-selector")
 
 include(":edc-extensions:agreements")

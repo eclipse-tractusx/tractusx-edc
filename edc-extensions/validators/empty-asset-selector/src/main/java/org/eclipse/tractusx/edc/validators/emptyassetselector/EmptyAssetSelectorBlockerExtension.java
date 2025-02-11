@@ -56,7 +56,7 @@ public class EmptyAssetSelectorBlockerExtension implements ServiceExtension {
     @Override
     public void start() {
         if (blockerEnabled) {
-            monitor.info("Empty Asset Selector Blocker is enabled.");
+            monitor.info("ContractDefinition validator that blocks empty assetsSelector has been enabled");
             validatorRegistry.register(CONTRACT_DEFINITION_TYPE, EmptyAssetSelectorValidator.instance(criterionOperatorRegistry));
         }
     }
