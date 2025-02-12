@@ -34,11 +34,9 @@ import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ASSETS_SELECTOR;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
-import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_PRIVATE_PROPERTIES;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERAND_LEFT;
 import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERAND_RIGHT;
 import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERATOR;
@@ -70,38 +68,6 @@ class EmptyAssetSelectorValidatorTest {
         var result = validator.validate(contractDefinition);
 
         assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void shouldPass_whenBypassIsUsed() {
-
-        var contractDefinition = createObjectBuilder()
-                .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, value("accessPolicyId"))
-                .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, value("accessPolicyId"))
-                .add(CONTRACT_DEFINITION_PRIVATE_PROPERTIES, createArrayBuilder().add(createObjectBuilder().add(EDC_NAMESPACE + "allowEmpty", value("assetSelector"))))
-                .build();
-
-        var result = validator.validate(contractDefinition);
-
-        assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void shouldFail_whenIncorrectBypass() {
-
-        var contractDefinition = createObjectBuilder()
-                .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, value("accessPolicyId"))
-                .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, value("accessPolicyId"))
-                .add(CONTRACT_DEFINITION_PRIVATE_PROPERTIES, createArrayBuilder().add(createObjectBuilder().add(EDC_NAMESPACE + "anyProp", value("anyValue"))))
-                .add(CONTRACT_DEFINITION_ASSETS_SELECTOR, createArrayBuilder().build())
-                .build();
-
-        var result = validator.validate(contractDefinition);
-
-        assertThat(result).isFailed().extracting(ValidationFailure::getViolations).asInstanceOf(list(Violation.class))
-                .isNotEmpty()
-                .anySatisfy(violation -> Assertions.assertThat(violation.path()).isEqualTo(CONTRACT_DEFINITION_ASSETS_SELECTOR))
-                .anySatisfy(violation -> Assertions.assertThat(violation.message()).contains("should at least contains '1' elements"));
     }
 
     @Test

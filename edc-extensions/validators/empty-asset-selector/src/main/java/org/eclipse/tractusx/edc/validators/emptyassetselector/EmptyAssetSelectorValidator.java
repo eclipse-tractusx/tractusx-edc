@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.validators.emptyassetselector;
 
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
+import org.eclipse.edc.validator.jsonobject.validators.MandatoryArray;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
 import org.eclipse.edc.validator.jsonobject.validators.OptionalIdNotBlank;
 import org.eclipse.edc.validator.jsonobject.validators.model.CriterionValidator;
@@ -36,7 +37,7 @@ public class EmptyAssetSelectorValidator {
                 .verifyId(OptionalIdNotBlank::new)
                 .verify(CONTRACT_DEFINITION_ACCESSPOLICY_ID, MandatoryValue::new)
                 .verify(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, MandatoryValue::new)
-                .verify(CONTRACT_DEFINITION_ASSETS_SELECTOR, MandatoryIfNotBypass::new)
+                .verify(CONTRACT_DEFINITION_ASSETS_SELECTOR, MandatoryArray.min(1))
                 .verifyArrayItem(CONTRACT_DEFINITION_ASSETS_SELECTOR, path -> CriterionValidator.instance(path, criterionOperatorRegistry))
                 .build();
     }
