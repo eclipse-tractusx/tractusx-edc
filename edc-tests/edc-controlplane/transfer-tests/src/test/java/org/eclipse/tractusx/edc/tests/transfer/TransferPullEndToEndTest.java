@@ -35,8 +35,11 @@ import org.mockserver.verify.VerificationTimes;
 
 import java.util.Map;
 
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
@@ -87,7 +90,8 @@ public class TransferPullEndToEndTest {
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
             var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                    .withDestination(httpDataDestination()).execute();
 
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
@@ -143,7 +147,8 @@ public class TransferPullEndToEndTest {
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
             var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                    .withDestination(httpDataDestination()).execute();
 
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
@@ -164,6 +169,16 @@ public class TransferPullEndToEndTest {
             var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403).extract().body().asString();
             server.verify(requestDefinition, VerificationTimes.exactly(1));
 
+        }
+
+        private JsonObject httpDataDestination() {
+            return createObjectBuilder()
+                    .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                    .add(EDC_NAMESPACE + "type", "HttpData")
+                    .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                            .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
+                            .build())
+                    .build();
         }
 
         protected JsonObject inForcePolicy() {

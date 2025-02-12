@@ -86,6 +86,7 @@ dependencies {
 
     // cloud provisioner extensions
     runtimeOnly(libs.edc.azure.blob.provision)
+    runtimeOnly(libs.edc.aws.provision.s3)
 
     // Federated Catalog Crawler + Query API
     runtimeOnly(project(":edc-extensions:federated-catalog"))

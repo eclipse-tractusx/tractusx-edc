@@ -55,9 +55,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -139,7 +142,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -325,6 +329,16 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     protected abstract RuntimeExtension consumerRuntime();
 
     protected abstract RuntimeExtension providerRuntime();
+
+    private JsonObject httpDataDestination() {
+        return createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                        .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
+                        .build())
+                .build();
+    }
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
         @Override
