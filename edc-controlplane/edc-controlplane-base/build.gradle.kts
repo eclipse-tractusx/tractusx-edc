@@ -31,6 +31,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(project(":edc-extensions:agreements"))
+    runtimeOnly(project(":edc-extensions:validators:empty-asset-selector"))
 
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)
@@ -91,5 +92,6 @@ dependencies {
     runtimeOnly(project(":edc-extensions:federated-catalog"))
     runtimeOnly(libs.edc.fc.core)
     runtimeOnly(libs.edc.fc.api)
+
 
 }
