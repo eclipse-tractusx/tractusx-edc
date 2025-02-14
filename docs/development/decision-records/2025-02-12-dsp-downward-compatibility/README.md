@@ -2,19 +2,37 @@
 
 ## Decision
 
-DSP assets, like the catalog, which are forwarded directly to a caller through the management api, have to be kept downward compatible as long as the DSP version through which the asset is retrieved is supported. There is no compatibility requirement between two different DSP versions concerning such assets.
+For a given DSP protocol version *N*, there is no restriction concerning backward compatibility towards the previous
+versions (*N-1*) implementation of the DSP protocol.
 
-Relevant assets are:
-- Catalog returned by...
-- ...
+During the support of a certain DSP version *N*, the implementation has to be strictly backward compatible, i.e.,
+for two successive connector versions *X-1* and *X* that support both the DSP version *N*, if one participant changes
+from connector version *X-1* to version *X*, another dataspace participant using any compatible connector version and
+third party tools that use this connector can continue to transfer data to and from that participant without the need
+to do any changes in his setup.
 
 ## Rationale
 
-DSP assets which are directly received by a caller of a management api endpoint is data that is transfered between two dataspace participants and creates a direct relationship between the calling application and the provider connector. As this is the case, the breaking change requirements of Catena-X has to be fulfilled. The requirement states that a consumer can continuously consume data from the provider without the need to be forced to update his system due to a change of the provider service stack. This requires that such assets must not change in a way, that existing properties vanish from the returned data.
+In general, the breaking change requirement of Catena-X has to be fulfilled as expressed in the
+[Operating model](https://catenax-ev.github.io/docs/operating-model/how-life-cycle-management). The requirement states
+that a dataspace participant can continuously exchange data with another particpant without the need to be forced to
+update his system due to a change of the other participants service stack. This requires that data sent between
+consumer and provider must not change in a breaking fashion. Additions to a data model are in general not seen as
+breaking change.
 
-As a consumer participant is capable to ensure the usage of a connector with a certain set of DSP versions supported, he is capable to use applications that are capable to support all potential data formats received by the different supported DSP versions. Therefore, the asset data models supported in two different DSP versions are not related and therefore no compatibility requirement is needed between those.
+As a dataspace participant is able to control the connector version to use and thereby the DSP version offered in the
+dataspace independently from other participants, there is no need for backward compatibility constraints between the
+implementations of different DSP versions.
 
 ## Approach
 
-- The compatibility tests are enriched by tests that ensure the detection of changes in the corresponding DSP assets.
-- If changes are detected a manual check that the downward compatibility is kept is executed.
+- The compatibility tests are enriched by tests that ensure the detection of breaking changes in relevant data models
+  defined by the DSP protocol.
+  This is achieved by tests which compare the returned data models to an expected result of the data model. There are
+  two options to use for the comparison of exchanged data models:
+  - For simpler data models, the expected data model is a handcrafted instance of the model that contains the minimum
+    properties expected and the comparison checks that the returned data model is a superset of the expected model.
+  - For more complex data models that are build deterministically, the expected result is recorded in an initial test
+    run and later test executions are compared to the recorded model. If a mismatch occurs, the returned data model
+    is compared to the expectation and if the change is reasonable the expected data model is recorded again to reflect
+    the now relevant changes.
