@@ -8,12 +8,10 @@ This document is not a comprehensive feature list.
 
 
 <!-- TOC -->
-
 * [Migration Guide `0.8.x -> 0.9.x`](#migration-guide-08x---09x)
-    * [1. Strict Policy Definition Validation](#1-strict-policy-definition-validation)
-    * [2. Removal of Azure based distributions](#2-removal-of-azure-based-distributions)
-    * [3. Removed BPNL Group operators](#3-removed-bpnl-group-operators)
-
+  * [1. Strict Policy Definition Validation](#1-strict-policy-definition-validation)
+  * [2. Removal of Azure based distributions](#2-removal-of-azure-based-distributions)
+  * [3. Updated and Deprecated BPNL Group operators](#3-updated-and-deprecated-bpnl-group-operators)
 <!-- TOC -->
 
 ## 1. Strict Policy Definition Validation
@@ -40,7 +38,7 @@ distributed any longer.
 If you installation relied on any tractusx-edc `azure-vault` distribution (either docker image or helm chart), please
 be notified that you will no longer find a distribution for this or future releases.
 
-## 3. Removed BPNL Group operators
+## 3. Updated and Deprecated BPNL Group operators
 
 Special attention is necessary towards policy definitions that contain BPNL group constrains using either the `eq` or
 `neq` operators. These have been deprecated in favor of the `isAllOf`, `isAnyOf` and `isNoneOf` operators.
