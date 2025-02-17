@@ -6,12 +6,12 @@ to another.
 
 This document is not a comprehensive feature list.
 
-
 <!-- TOC -->
 * [Migration Guide `0.8.x -> 0.9.x`](#migration-guide-08x---09x)
   * [1. Strict Policy Definition Validation](#1-strict-policy-definition-validation)
   * [2. Removal of Azure based distributions](#2-removal-of-azure-based-distributions)
   * [3. Updated and Deprecated BPNL Group operators](#3-updated-and-deprecated-bpnl-group-operators)
+  * [4. Database Migrations](#4-database-migrations)
 <!-- TOC -->
 
 ## 1. Strict Policy Definition Validation
@@ -49,3 +49,11 @@ The `isAllOf` now checks if a certain BPNL is assigned to all the groups allowed
 
 The `IN` operator was also fixed, since it evaluated the same as the faulty `isAllOf` operator.
 It now performs the same as the `isAnyOf` operator.
+
+## 4. Store Migrations
+
+For connector operators who maintain specific flyway migration files, please be aware of new migrations added
+in these PRs:
+
+- https://github.com/eclipse-tractusx/tractusx-edc/pull/1706
+- https://github.com/eclipse-tractusx/tractusx-edc/pull/1713
