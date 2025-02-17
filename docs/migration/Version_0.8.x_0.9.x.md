@@ -11,12 +11,12 @@ This document is not a comprehensive feature list.
   * [1. Strict Policy Definition Validation](#1-strict-policy-definition-validation)
   * [2. Removal of Azure based distributions](#2-removal-of-azure-based-distributions)
   * [3. Updated and Deprecated BPNL Group operators](#3-updated-and-deprecated-bpnl-group-operators)
-  * [4. Database Migrations](#4-database-migrations)
+  * [4. Store Migrations](#4-store-migrations)
 <!-- TOC -->
 
 ## 1. Strict Policy Definition Validation
 
-A new feature was added with EDC 0.11.0 that requires the connector to perform a deeper validation of a
+A new feature was added with upstream EDC 0.11.0 that requires the connector to perform a deeper validation of a
 policy definition during its creation/update. This feature prevents any new policy definition of having:
 
 - an action, within a rule, that doesn't bound to any evaluation scope
@@ -33,15 +33,17 @@ or environment variable via the following config:
 ## 2. Removal of Azure based distributions
 
 As they were previously marked for deprecation, the azure based distributions were effectively removed and WILL NOT be
-distributed any longer.
+distributed any longer. Be aware this has nothing to do with the cloud related extensions we support, such as Azure blob
+or AWS S3 provisioners and dataplanes. Those are still included as part of the base tractusx-edc distribution.
 
 If you installation relied on any tractusx-edc `azure-vault` distribution (either docker image or helm chart), please
-be notified that you will no longer find a distribution for this or future releases.
+also be aware that you will no longer find a distribution for this or future releases.
 
 ## 3. Updated and Deprecated BPNL Group operators
 
 Special attention is necessary towards policy definitions that contain BPNL group constrains using either the `eq` or
-`neq` operators. These have been deprecated in favor of the `isAllOf`, `isAnyOf` and `isNoneOf` operators.
+`neq` operators. These have been deprecated in favor of the `isAllOf`, `isAnyOf` and `isNoneOf` operators which are the
+proper operators for sets.
 
 Additionally, the behavior of the `isAllOf` operator has been fixed since it previously failed validation for BPNLs
 that were assigned to 3 distinct groups, 2 of which were the same as listed in the policy constrain.
