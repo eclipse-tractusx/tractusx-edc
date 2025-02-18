@@ -24,11 +24,11 @@ policy definition during its creation/update. This feature prevents any new poli
 
 On simpler terms, it prevents the creation of any policy definition which will evaluate nothing.
 
-This feature is enabled by default in the distributed tractusx-edc helm charts.
-If you don't use the distributed helm chart, and you still require this feature, it can be enabled via configuration
-or environment variable via the following config:
+This feature is enabled by default in the distributed tractusx-edc helm charts. In order to disable the feature or
+if you don't use the distributed helm chart, and you want to enable this feature, it can be toggled via configuration
+or environment variable using the following config:
 
-`edc.policy.validation.enabled=true`
+`edc.policy.validation.enabled=true|false`
 
 ## 2. Removal of Azure based distributions
 
