@@ -32,9 +32,10 @@ or environment variable via the following config:
 
 ## 2. Removal of Azure based distributions
 
-As they were previously marked for deprecation, the azure based distributions were effectively removed and WILL NOT be
-distributed any longer. Be aware this has nothing to do with the cloud related extensions we support, such as Azure blob
-or AWS S3 provisioners and dataplanes. Those are still included as part of the base tractusx-edc distribution.
+As they were previously marked for deprecation, the azure vault based distributions were effectively removed and WILL
+NOT
+be distributed any longer. Be aware this has nothing to do with the cloud related extensions we support, such as Azure
+blob or AWS S3 provisioners and dataplanes. Those are still included as part of the base tractusx-edc distribution.ß
 
 If you installation relied on any tractusx-edc `azure-vault` distribution (either docker image or helm chart), please
 also be aware that you will no longer find a distribution for this or future releases.
