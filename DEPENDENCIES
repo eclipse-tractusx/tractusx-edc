@@ -570,7 +570,7 @@ maven/mavencentral/org.eclipse.jetty/jetty-util/11.0.24, EPL-2.0 OR Apache-2.0, 
 maven/mavencentral/org.eclipse.jetty/jetty-webapp/11.0.24, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-xml/11.0.24, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
-maven/mavencentral/org.flywaydb/flyway-core/11.3.2, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/11.3.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.flywaydb/flyway-database-postgresql/11.3.2, , restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -660,7 +660,7 @@ maven/mavencentral/org.yaml/snakeyaml/2.4, Apache-2.0, approved, #19469
 maven/mavencentral/software.amazon.awssdk/annotations/2.29.50, Apache-2.0, approved, #17015
 maven/mavencentral/software.amazon.awssdk/annotations/2.30.21, Apache-2.0, approved, #19166
 maven/mavencentral/software.amazon.awssdk/apache-client/2.29.50, Apache-2.0, approved, #17627
-maven/mavencentral/software.amazon.awssdk/apache-client/2.30.21, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/apache-client/2.30.21, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/arns/2.29.50, Apache-2.0, approved, #16994
 maven/mavencentral/software.amazon.awssdk/arns/2.30.21, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/auth/2.29.50, Apache-2.0, approved, #17626
@@ -672,7 +672,7 @@ maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.30.21, Apache-2.0
 maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.29.50, Apache-2.0, approved, #17004
 maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.30.21, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/checksums-spi/2.29.50, Apache-2.0, approved, #17010
-maven/mavencentral/software.amazon.awssdk/checksums-spi/2.30.21, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/checksums-spi/2.30.21, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/checksums/2.29.50, Apache-2.0, approved, #17003
 maven/mavencentral/software.amazon.awssdk/checksums/2.30.21, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/crt-core/2.29.50, Apache-2.0, approved, #17002
@@ -680,9 +680,9 @@ maven/mavencentral/software.amazon.awssdk/crt-core/2.30.21, , restricted, clearl
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.29.50, Apache-2.0, approved, #16996
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.30.21, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.29.50, Apache-2.0, approved, #16995
-maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.30.21, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.30.21, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.29.50, Apache-2.0, approved, #17001
-maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.30.21, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.30.21, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.29.50, Apache-2.0, approved, #17005
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.30.21, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth/2.29.50, Apache-2.0, approved, #16998
@@ -717,5 +717,5 @@ maven/mavencentral/software.amazon.awssdk/sts/2.29.50, Apache-2.0, approved, #17
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.29.50, Apache-2.0, approved, #17008
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.30.21, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/utils/2.29.50, Apache-2.0, approved, #17625
-maven/mavencentral/software.amazon.awssdk/utils/2.30.21, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/utils/2.30.21, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, clearlydefined
