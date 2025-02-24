@@ -63,7 +63,7 @@ allprojects {
         implementation("org.slf4j:slf4j-api:2.0.16")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.11.4"))
+        testImplementation(platform("org.junit:junit-bom:5.12.0"))
 
         constraints {
             implementation("org.yaml:snakeyaml:2.4") {
