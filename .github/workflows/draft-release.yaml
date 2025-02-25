@@ -84,6 +84,15 @@ jobs:
         run: |
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
+
+      - uses: .github/actions/generate-dependencies-file
+        if: ${{ github.ref_name == 'main' }}
+        with:
+          run: strict
+
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+
       - uses: ./.github/actions/setup-java
       - name: Bump version in gradle.properties
         run: |-
@@ -109,7 +118,7 @@ jobs:
       - name: Commit manifest files
         id: make-commit
         run: |
-          git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
+          git add DEPENDENCIES NOTICE.md gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
           git commit --message "Prepare release ${{ inputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
