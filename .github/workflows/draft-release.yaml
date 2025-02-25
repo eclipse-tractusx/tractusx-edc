@@ -85,10 +85,7 @@ jobs:
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
 
-      - uses: .github/actions/generate-dependencies-file
-        if: ${{ github.ref_name == 'main' }}
-        with:
-          run: strict
+      - uses: ./.github/workflows/generate-and-publish-dependencies.yaml
 
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
