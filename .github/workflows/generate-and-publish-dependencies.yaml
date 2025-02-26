@@ -47,7 +47,7 @@ jobs:
         shell: bash
         run: |
           mkdir public
-          mv DEPENDENCIES public/
+          cp DEPENDENCIES public/
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
