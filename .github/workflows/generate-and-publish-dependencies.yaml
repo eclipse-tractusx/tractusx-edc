@@ -21,6 +21,8 @@
 name: "Generate DEPENDENCIES file and publish to GitHub pages"
 
 on:
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
   push:
     branches:
