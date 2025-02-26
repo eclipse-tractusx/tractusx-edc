@@ -43,6 +43,8 @@ jobs:
         run: |
           ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq > dependency-list
           cat dependency-list
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Run dash
         id: run-dash
