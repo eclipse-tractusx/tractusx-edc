@@ -44,7 +44,7 @@ This project leverages the following third party content.
 
 - OpenTelemetry Agent v1.32.0: <https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v1.32.0>
 
-For additional dependencies, see [DEPENDENCIES](https://github.com/eclipse-tractusx/tractusx-edc/blob/aedbf25ff6d319aa53b3fde429f329d3c5df3bc6/DEPENDENCIES) file.
+For additional dependencies, see [DEPENDENCIES](./DEPENDENCIES) file.
 
 ## Cryptography
 
