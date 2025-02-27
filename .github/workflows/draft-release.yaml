@@ -88,9 +88,7 @@ jobs:
       - uses: ./.github/workflows/generate-and-publish-dependencies.yaml
 
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-        run: |
-          commit_hash="1234567890123456789012345678901234567890"
-          sed -i "s|\(https://github.com/eclipse-tractusx/tractusx-edc/blob/\)[a-f0-9]\{40\}/DEPENDENCIES|\1$commit_hash/DEPENDENCIES|g" NOTICE.md
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
 
       - uses: ./.github/actions/setup-java
       - name: Bump version in gradle.properties
