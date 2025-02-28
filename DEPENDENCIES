@@ -716,7 +716,7 @@ maven/mavencentral/software.amazon.awssdk/retries-spi/2.29.50, Apache-2.0, appro
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.30.26, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries/2.29.50, Apache-2.0, approved, #17009
 maven/mavencentral/software.amazon.awssdk/retries/2.30.26, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.30.26, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.30.26, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/s3/2.29.50, Apache-2.0, approved, #17629
 maven/mavencentral/software.amazon.awssdk/s3/2.30.26, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.29.50, Apache-2.0, approved, #17016
