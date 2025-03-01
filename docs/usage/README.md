@@ -3,10 +3,6 @@
 The Domain Model explains on a high level the concepts that the EDC introduces. As a lot of the terminology maps to
 endpoints of the EDC Management API, it is preliminary for understanding the [Management API Walkthrough](management-api-walkthrough/README.md).
 
-![domain-model](images/domain-model.png)
-
-> The shown picture illustrates only a generic view of the Domain Model and is not intended to show all aspects of the project.
-
 ## Asset
 
 An asset represents data (databases, files, cache information, etc.) which should be published and shared between
@@ -29,7 +25,6 @@ Contract definitions associate a policy with assets. A `ContractDefinition` obje
 policy, and an asset selector which links the contract to one or more assets.
 
 Its [API is documented](management-api-walkthrough/03_contractdefinitions.md) in the Management API Walkthrough.
-
 
 ### Contract offer
 
