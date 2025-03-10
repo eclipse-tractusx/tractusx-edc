@@ -1,25 +1,34 @@
-# Integration of Allure report tool for End-to-End Testing Transparency for release process
+# Integration of Allure Report tool for End-to-End Testing Transparency for release process
 
 ## Decision
 
-Integrate [Allure report tool](https://allurereport.org/) into Tractusx-edc project's end-to-end testing framework to provide transparent and detailed test results. 
-The reports will be published to GitHub Pages and its URL will be included in the GitHub release notes for easy access and 
-review by stakeholders detailed test results, ensuring clarity on what has been tested.
+Integrate [Allure Report](https://allurereport.org/) into Tractusx-edc project's end-to-end testing framework to provide test reports on 
+milestone builds like releases or release candidates.  
+The reports will be published to GitHub Pages and the report URL will be included in the GitHub release notes for easy 
+access.
 
 ## Rationale
 
-- **Enhanced Transparency:** 
-Allure provides detailed and visually appealing test reports that offer insights into test execution, including 
-description, steps, attachments, and history, making it easier to understand what was tested and the outcomes.
-- **Compatibility with JUnit5:** 
-As we use JUnit5, Allure's native support for this testing framework ensures seamless integration without requiring 
-significant changes to our existing setup.
-- **Static HTML Reports:** 
-Allure generates standalone HTML reports that are ideal for hosting on GitHub Pages, requiring no additional tools for 
-clients to view them.
-- **Client Accessibility:** 
-Publishing the reports to GitHub Pages and linking them in GitHub releases allows clients to easily access and review 
-the test coverage and results, fostering trust and clear communication.
+The current release process provides only very limited and developer-oriented means to validate the quality assurance 
+measures taken during the release process. To improve the availability of quality assurance information for pure 
+adopters of the Tractus-X EDC, a test reporting solution should provide an easy-to-read documentation of what has been 
+tested, along with a clear statement that the tests were successful. The data presented in the test report is retrieved 
+as static information defined in the code, together with test results achieved during the release build.
+
+Several test reporting tools have been evaluated:
+- [Report Portal](https://github.com/reportportal): Offers real-time monitoring and historical data tracking, 
+but requires a dedicated server setup and is not ideal for generating static test reports for releases.
+- [Extent Reports](https://github.com/extent-framework/extentreports-java): Previously a widely used reporting tool, 
+it has been deprecated and replaced by [ChainTest](https://github.com/anshooarora/chaintest). 
+However, ChainTest is still under development, making it an uncertain choice at this time.
+- [Test Reporter](https://github.com/ctrf-io/github-test-reporter):  A GitHub Action-based tool designed to generate 
+customizable test reports and display historical trends. While it provides basic test results and insights, it lacks the 
+rich visual features and static HTML report generation needed for hosting on platforms like GitHub Pages.
+- [Allure Report](https://github.com/allure-framework) : Provides visually rich, static HTML reports, seamless integration with JUnit5, and easy hosting 
+on GitHub Pages, making it a strong candidate for transparent test reporting in the release process.
+
+The evaluation result promotes the selection of Allure Test Report due to the most balanced solution, combining rich 
+reports, ease of integration, and client accessibility.
 
 ## Approach
 
