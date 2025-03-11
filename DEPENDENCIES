@@ -201,9 +201,9 @@ maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.48, Apache-2.0
 maven/mavencentral/io.projectreactor/reactor-core/3.4.41, Apache-2.0, approved, #7517
 maven/mavencentral/io.prometheus/simpleclient/0.16.0, Apache-2.0 AND CC0-1.0, approved, #19721
 maven/mavencentral/io.prometheus/simpleclient_common/0.16.0, Apache-2.0, approved, #19730
-maven/mavencentral/io.prometheus/simpleclient_httpserver/0.16.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.prometheus/simpleclient_httpserver/0.16.0, Apache-2.0, approved, #20015
 maven/mavencentral/io.prometheus/simpleclient_tracer_common/0.16.0, Apache-2.0, approved, #19716
-maven/mavencentral/io.prometheus/simpleclient_tracer_otel/0.16.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.prometheus/simpleclient_tracer_otel/0.16.0, Apache-2.0, approved, #20002
 maven/mavencentral/io.prometheus/simpleclient_tracer_otel_agent/0.16.0, Apache-2.0, approved, #19706
 maven/mavencentral/io.rest-assured/json-path/5.5.1, Apache-2.0, approved, #19524
 maven/mavencentral/io.rest-assured/rest-assured-common/5.5.1, Apache-2.0, approved, #19522
@@ -323,7 +323,7 @@ maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.79, MIT AND CC0-1.0, approv
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.79, MIT, approved, #16965
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.12.0, MIT, approved, clearlydefined
-maven/mavencentral/org.checkerframework/checker-qual/3.42.0, MIT, approved, clearlydefined
+maven/mavencentral/org.checkerframework/checker-qual/3.42.0, MIT, approved, #20003
 maven/mavencentral/org.checkerframework/checker-qual/3.48.3, MIT, approved, #17162
 maven/mavencentral/org.codehaus.plexus/plexus-classworlds/2.6.0, Apache-2.0 AND Plexus, approved, CQ22821
 maven/mavencentral/org.codehaus.plexus/plexus-component-annotations/2.1.0, Apache-2.0, approved, #809
