@@ -31,8 +31,9 @@ endpoints are currently versioned independently of each other.
 
 ## OpenAPI
 
-The most recent OpenApi documentation can be found on SwaggerHub:  
-https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/
+The most recent OpenApi documentation can be found on gh-pages:
+[Control Plane-Api](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/#/) and
+[Data Plane-Api](https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/#/).
 
 ## Brief JSON-LD Introduction
 
@@ -104,11 +105,13 @@ given they are not part of the following list:
 - [Eclipse-EDC Samples](https://github.com/eclipse-edc/Samples): This repo includes a wide variety of setups - many of
   which
   go beyond this Kit in scope but not in detail.
-- openApi-definitions
-    - [tractusx-edc](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.5.1-SNAPSHOT)
-    - components-edc: There's separate pages for
-      the [Management-API](https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api) and
-      the [Control-API](https://app.swaggerhub.com/apis/eclipse-edc-bot/control-api).
+- openApi-definitions: 
+  - tractusx-edc: There's separate pages for
+    the [Control Plane-Api](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/#/) and
+    the [Data Plane-Api](https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/#/).
+  - components-edc: There's separate pages for
+  the [Management-API](https://eclipse-edc.github.io/Connector/openapi/management-api/#/) and
+  the [Control-API](https://eclipse-edc.github.io/Connector/openapi/control-api/#/).
 
 ## Notice
 
