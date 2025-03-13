@@ -24,7 +24,7 @@ However, ChainTest is still under development, making it an uncertain choice at 
 - [Test Reporter](https://github.com/ctrf-io/github-test-reporter):  A GitHub Action-based tool designed to generate 
 customizable test reports and display historical trends. While it provides basic test results and insights, it lacks the 
 rich visual features and static HTML report generation needed for hosting on platforms like GitHub Pages.
-- [Allure Report](https://github.com/allure-framework) : Provides visually rich, static HTML reports, seamless integration with JUnit5, and easy hosting 
+- [Allure Report](https://github.com/allure-framework): Provides visually rich, static HTML reports, seamless integration with JUnit5, and easy hosting 
 on GitHub Pages, making it a strong candidate for transparent test reporting in the release process.
 
 The evaluation result promotes the selection of Allure Test Report due to the most balanced solution, combining rich 
