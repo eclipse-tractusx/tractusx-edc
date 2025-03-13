@@ -6,9 +6,9 @@ We will discontinue publishing OpenAPI documentation to SwaggerHub.
 
 ## Rationale
 
-Since OpenAPI documentation is already being published on [GitHub Pages](https://github.com/eclipse-tractusx/tractusx-edc/tree/gh-pages/openapi)
-maintaining it on SwaggerHub is redundant. Supporting both approaches adds unnecessary complexity. The reasoning behind 
-choosing GitHub Pages as the preferred approach is detailed [here](https://github.com/eclipse-tractusx/tractusx-edc/issues/1409).
+Since the project decided to publish OpenAPI documentation on [GitHub Pages](https://github.com/eclipse-tractusx/tractusx-edc/tree/gh-pages/openapi) 
+maintaining it on SwaggerHub is obsolete. The reasoning behind choosing GitHub Pages as the preferred approach is 
+detailed [here](https://github.com/eclipse-tractusx/tractusx-edc/issues/1409).
 
 ## Approach
 
