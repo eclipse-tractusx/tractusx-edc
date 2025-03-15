@@ -79,7 +79,7 @@ which constraint functions is called to evaluate the policy. Here, it is the `Bu
 
 The `bpn-evaluation` module provides a simple CRUD REST API to manipulate associations between BPN and group. Each BPN is stored
 in an internal database together with the groups that it was assigned. The OpenAPI specification can be
-found [here](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc).
+found [here](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.9.0/) and [here](https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/0.9.0/) .
 
 ## Business Partner Number Policy [not recommended]
 
