@@ -36,8 +36,6 @@ reports, ease of integration, and client accessibility.
 - Integrate the necessary Allure dependencies into the project to support JUnit5 tests.
 - Configure test settings so that Allure result files are generated during test execution, but delay report generation
 until a release is initiated.
-- Optionally, enhance test code with Allure-specific annotations such as `@DisplayName`, `@Description` and `@Step`
-  for selected tests that require more detailed execution information.
 2) Create GitHub Actions workflow to automate the process during release publishing:
 - Run the end-to-end tests.
 - Generate the Allure report.
