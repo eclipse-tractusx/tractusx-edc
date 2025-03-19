@@ -84,9 +84,9 @@ jobs:
         run: |
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
+      - uses: ./.github/actions/setup-java
       - name: Check dependencies before release
         uses: ./.github/workflows/check-dependencies.yaml
-      - uses: ./.github/actions/setup-java
       - name: Bump version in gradle.properties
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
@@ -111,7 +111,7 @@ jobs:
       - name: Commit manifest files
         id: make-commit
         run: |
-          git add DEPENDENCIES gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
+          git add .
           git commit --message "Prepare release ${{ inputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

@@ -30,9 +30,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/setup-java
-
     - name: Generate dependency list
       shell: bash
       run: |
