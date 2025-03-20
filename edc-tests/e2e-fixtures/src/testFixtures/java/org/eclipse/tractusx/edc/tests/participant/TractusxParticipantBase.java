@@ -96,6 +96,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.protocol.path", controlPlaneProtocol.get().getPath());
                 put("web.http.management.port", String.valueOf(controlPlaneManagement.get().getPort()));
                 put("web.http.management.path", controlPlaneManagement.get().getPath());
+                put("web.http.management.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.control.port", String.valueOf(controlPlaneControl.getPort()));
                 put("web.http.control.path", controlPlaneControl.getPath());
                 put("web.http.catalog.port", String.valueOf(federatedCatalog.getUrl().getPort()));
@@ -103,7 +104,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.catalog.auth.type", "tokenbased");
                 put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
                 put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());
-                put("edc.api.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.public.path", "/api/public");
                 put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
                 put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());

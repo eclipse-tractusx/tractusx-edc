@@ -52,6 +52,8 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
         var cfg = new HashMap<>(super.getConfiguration());
         cfg.put("web.http.presentation.port", String.valueOf(csService.getPort()));
         cfg.put("web.http.presentation.path", csService.getPath());
+        cfg.put("web.http.credentials.port", String.valueOf(getFreePort()));
+        cfg.put("web.http.credentials.path", "/credentials");
         if (dimUri != null) {
             cfg.put("tx.edc.iam.sts.dim.url", dimUri.toString());
         }

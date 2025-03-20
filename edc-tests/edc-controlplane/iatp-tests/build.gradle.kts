@@ -24,16 +24,15 @@ plugins {
 
 dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
-    testImplementation(libs.edc.identity.trust.sts.embedded)
     testImplementation(libs.edc.ih.did)
     testImplementation(libs.edc.ih.spi)
-    testImplementation(libs.edc.ih.spi.store)
     testImplementation(libs.edc.ih.spi.participant.context)
     testImplementation(libs.edc.ih.spi.credentials)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.identity.vc.ldp)
     testImplementation(libs.edc.lib.jws2020)
+    testImplementation(libs.edc.sts.core)
     testRuntimeOnly(libs.edc.transaction.local)
 
     // 3rd party libs

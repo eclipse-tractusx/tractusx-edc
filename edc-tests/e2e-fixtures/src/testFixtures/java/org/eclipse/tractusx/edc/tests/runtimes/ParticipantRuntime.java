@@ -25,22 +25,15 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import org.eclipse.edc.boot.system.DependencyGraph;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
-import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.token.InMemoryJtiValidationStore;
-import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
 
-import java.time.Clock;
-import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -66,9 +59,9 @@ public class ParticipantRuntime extends EmbeddedRuntime {
             KeyPool.register(kid, runtimeKeyPair.toKeyPair());
             var privateKey = runtimeKeyPair.toPrivateKey();
 
-            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider((k) -> Result.success(privateKey))),
-                    () -> privateAlias,
-                    () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis(), new InMemoryJtiValidationStore()));
+            //            registerServiceMock(SecureTokenService.class, new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider((k) -> Result.success(privateKey))),
+            //                    () -> privateAlias,
+            //                    () -> kid, Clock.systemUTC(), Duration.ofMinutes(10).toMillis(), new InMemoryJtiValidationStore()));
             registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);

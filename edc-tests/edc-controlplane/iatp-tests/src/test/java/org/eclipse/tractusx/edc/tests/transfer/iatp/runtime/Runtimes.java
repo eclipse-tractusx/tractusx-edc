@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 
 import java.security.KeyPair;
 import java.util.Map;
