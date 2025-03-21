@@ -73,13 +73,13 @@ public class CredentialSpoofTest implements IatpParticipants {
             .build();
 
     @RegisterExtension
-    protected static final RuntimeExtension MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.iatpConfiguration(PROVIDER, CONSUMER), MALICIOUS_ACTOR.getKeyPair());
+    protected static final RuntimeExtension MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.getKeyPair(), () -> MALICIOUS_ACTOR.iatpConfig(PROVIDER, CONSUMER));
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER, MALICIOUS_ACTOR), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER, MALICIOUS_ACTOR));
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER, MALICIOUS_ACTOR), PROVIDER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER, MALICIOUS_ACTOR));
     @RegisterExtension
-    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER, MALICIOUS_ACTOR), STS.getKeyPair());
+    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER, MALICIOUS_ACTOR));
     private static final Integer MOCKED_CS_SERVICE_PORT = getFreePort();
     protected ClientAndServer server;
 

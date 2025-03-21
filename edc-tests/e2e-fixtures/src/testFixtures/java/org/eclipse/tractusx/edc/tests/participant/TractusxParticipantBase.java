@@ -21,8 +21,11 @@ package org.eclipse.tractusx.edc.tests.participant;
 
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
@@ -35,6 +38,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
@@ -63,16 +67,13 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public static final Duration ASYNC_POLL_INTERVAL = ofSeconds(1);
     private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
     private static final String API_KEY_HEADER_NAME = "x-api-key";
-    protected final URI dataPlaneProxy = URI.create("http://localhost:" + getFreePort());
-    private final URI controlPlaneDefault = URI.create("http://localhost:" + getFreePort());
-    private final URI controlPlaneControl = URI.create("http://localhost:" + getFreePort() + "/control");
-    private final URI backendProviderProxy = URI.create("http://localhost:" + getFreePort() + "/events");
-    private final URI dataPlanePublic = URI.create("http://localhost:" + getFreePort() + "/public");
+    protected final LazySupplier<URI> dataPlaneProxy = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
+    private final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
+    private final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
     protected ParticipantConsumerDataPlaneApi dataPlane;
     protected String did;
-    protected Endpoint federatedCatalog;
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
@@ -82,53 +83,49 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return getId();
     }
 
-    /**
-     * Returns the base configuration
-     */
-    public Map<String, String> getConfiguration() {
-        return new HashMap<>() {
+    public Config getConfig() {
+        var settings = new HashMap<String, String>() {
             {
                 put("edc.runtime.id", name);
                 put("edc.participant.id", id);
-                put("web.http.port", String.valueOf(controlPlaneDefault.getPort()));
+                put("web.http.port", String.valueOf(getFreePort()));
                 put("web.http.path", "/api");
                 put("web.http.protocol.port", String.valueOf(controlPlaneProtocol.get().getPort()));
                 put("web.http.protocol.path", controlPlaneProtocol.get().getPath());
                 put("web.http.management.port", String.valueOf(controlPlaneManagement.get().getPort()));
                 put("web.http.management.path", controlPlaneManagement.get().getPath());
                 put("web.http.management.auth.key", MANAGEMENT_API_KEY);
-                put("web.http.control.port", String.valueOf(controlPlaneControl.getPort()));
-                put("web.http.control.path", controlPlaneControl.getPath());
-                put("web.http.catalog.port", String.valueOf(federatedCatalog.getUrl().getPort()));
-                put("web.http.catalog.path", federatedCatalog.getUrl().getPath());
+                put("web.http.control.port", String.valueOf(getFreePort()));
+                put("web.http.control.path", "/control");
+                put("web.http.catalog.port", String.valueOf(federatedCatalog.get().getPort()));
+                put("web.http.catalog.path", federatedCatalog.get().getPath());
                 put("web.http.catalog.auth.type", "tokenbased");
                 put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
                 put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());
-                put("web.http.public.path", "/api/public");
-                put("web.http.public.port", String.valueOf(dataPlanePublic.getPort()));
+                put("web.http.public.path", dataPlanePublic.get().getPath());
+                put("web.http.public.port", String.valueOf(dataPlanePublic.get().getPort()));
                 put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
                 put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
-                put("tx.edc.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.getPort()));
+                put("tx.edc.dpf.consumer.proxy.port", String.valueOf(dataPlaneProxy.get().getPort()));
                 put("tx.edc.dpf.consumer.proxy.auth.apikey", CONSUMER_PROXY_API_KEY);
-                put("edc.receiver.http.dynamic.endpoint", "http://localhost:" + controlPlaneDefault.getPort() + "/api/consumer/datareference");
                 put("tractusx.businesspartnervalidation.log.agreement.validation", "true");
                 put("edc.agent.identity.key", "BusinessPartnerNumber");
-                put("tx.dpf.proxy.gateway.aas.proxied.path", backendProviderProxy.toString());
-                put("tx.dpf.proxy.gateway.aas.authorization.type", "none");
                 put("edc.iam.issuer.id", getDid());
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-clientid");
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
                 put("tx.edc.iam.sts.dim.url", "http://sts.example.com");
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
-                put("edc.dataplane.api.public.baseurl", "http://localhost:%d/api/public/v2/data".formatted(dataPlanePublic.getPort()));
+                put("edc.dataplane.api.public.baseurl", "http://localhost:%d%s/v2/data".formatted(dataPlanePublic.get().getPort(), dataPlanePublic.get().getPath()));
                 put("edc.catalog.cache.execution.delay.seconds", "2");
                 put("edc.catalog.cache.execution.period.seconds", "2");
                 put("edc.policy.validation.enabled", "true");
             }
         };
+
+        return ConfigFactory.fromMap(settings);
     }
 
     /**
@@ -215,11 +212,13 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.id)
-                .add("counterPartyAddress", provider.federatedCatalog.getUrl().toString())
+                .add("counterPartyAddress", provider.federatedCatalog.get().toString())
                 .add("protocol", protocol);
 
 
-        return provider.federatedCatalog.baseRequest()
+        return given()
+                .baseUri(federatedCatalog.get().toString())
+                .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
@@ -234,7 +233,9 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TYPE, "QuerySpec");
 
 
-        return federatedCatalog.baseRequest()
+        return given()
+                .baseUri(federatedCatalog.get().toString())
+                .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
@@ -259,14 +260,13 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 participant.did = "did:web:" + participant.name.toLowerCase();
             }
 
-            participant.federatedCatalog = new Endpoint(URI.create("http://localhost:" + getFreePort() + "/api/catalog"), Map.of("x-api-key", MANAGEMENT_API_KEY));
             participant.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));
             super.timeout(ASYNC_TIMEOUT);
             super.build();
 
             this.participant.edrs = new ParticipantEdrApi(participant);
             this.participant.data = new ParticipantDataApi();
-            this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(new Endpoint(this.participant.dataPlaneProxy, Map.of("x-api-key", CONSUMER_PROXY_API_KEY)));
+            this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(this.participant.dataPlaneProxy, Map.of("x-api-key", CONSUMER_PROXY_API_KEY));
             return participant;
         }
     }

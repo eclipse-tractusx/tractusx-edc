@@ -20,11 +20,12 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,33 +42,37 @@ public class StsParticipant extends TractusxParticipantBase {
     private StsParticipant() {
     }
 
-    public Map<String, String> stsConfiguration(IatpParticipant... participants) {
-        var stsConfiguration = new HashMap<>(super.getConfiguration());
+    public Config stsConfig(IatpParticipant... participants) {
+        var additionalSettings = Map.of(
+                "web.http.sts.port", String.valueOf(stsUri.getPort()),
+                "web.http.sts.path", stsUri.getPath(),
+                "tx.vault.seed.secrets", "client_secret_alias:client_secret"
+        );
 
-        stsConfiguration.put("web.http.sts.port", String.valueOf(stsUri.getPort()));
-        stsConfiguration.put("web.http.sts.path", stsUri.getPath());
-        stsConfiguration.put("tx.vault.seed.secrets", "client_secret_alias:client_secret");
+        var baseConfig = super.getConfig()
+                .merge(ConfigFactory.fromMap(additionalSettings));
 
-        Arrays.stream(participants).forEach(participant -> {
-            var prefix = format("edc.iam.sts.clients.%s", participant.getName().toLowerCase());
-            stsConfiguration.put(prefix + ".name", participant.getName());
-            stsConfiguration.put(prefix + ".id", UUID.randomUUID().toString());
-            stsConfiguration.put(prefix + ".client_id", participant.getBpn());
-            stsConfiguration.put(prefix + ".did", participant.getDid());
-            stsConfiguration.put(prefix + ".secret.alias", "client_secret_alias");
-            stsConfiguration.put(prefix + ".private-key.alias", participant.verificationId());
-            stsConfiguration.put(prefix + ".public-key.reference", participant.verificationId());
-        });
-
-        return stsConfiguration;
+        return Arrays.stream(participants)
+                .map(participant -> {
+                    var prefix = format("edc.iam.sts.clients.%s", participant.getName().toLowerCase());
+                    return Map.of(
+                            prefix + ".name", participant.getName(),
+                            prefix + ".id", UUID.randomUUID().toString(),
+                            prefix + ".client_id", participant.getBpn(),
+                            prefix + ".did", participant.getDid(),
+                            prefix + ".secret.alias", "client_secret_alias",
+                            prefix + ".private-key.alias", participant.verificationId(),
+                            prefix + ".public-key.reference", participant.verificationId()
+                    );
+                })
+                .map(ConfigFactory::fromMap)
+                .reduce(baseConfig, Config::merge);
     }
-
 
     @Override
     public String getFullKeyId() {
         return "sts-" + getKeyId();
     }
-
 
     public URI stsUri() {
         return stsUri;

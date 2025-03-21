@@ -23,22 +23,18 @@ import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.identitytrust.sts.spi.service.StsAccountService;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
-import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.token.InMemoryJtiValidationStore;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,11 +43,9 @@ import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
 import java.time.Clock;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.UUID;
 
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
@@ -63,9 +57,9 @@ import static org.mockserver.model.HttpRequest.request;
 public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER));
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private static ClientAndServer oauthServer;
     private static ClientAndServer dimServer;
@@ -78,10 +72,8 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @BeforeAll
     static void prepare() {
-
         var consumerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(CONSUMER_RUNTIME.getService(PrivateKeyResolver.class)));
         var providerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(PROVIDER_RUNTIME.getService(PrivateKeyResolver.class)));
-
 
         var generatorServices = Map.of(
                 CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER),
@@ -94,16 +86,22 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
         dimServer = ClientAndServer.startClientAndServer(DIM_URI.getPort());
         dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
-
     }
 
     private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant participant) {
         StsAccountService stsAccountService = mock();
         when(stsAccountService.findById(participant.getDid())).thenAnswer(i -> {
+            var dummyId = UUID.randomUUID().toString();
             var account = StsAccount.Builder.newInstance()
+                    .id(dummyId)
+                    .clientId(participant.getDid())
+                    .name(participant.getName())
+                    .did(participant.getDid())
+                    .secretAlias(dummyId)
                     .privateKeyAlias(participant.getPrivateKeyAlias())
                     .publicKeyReference(participant.verificationId())
                     .build();
+
             return ServiceResult.success(account);
         });
         return new EmbeddedSecureTokenService(
@@ -112,14 +110,7 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
                 tokenGenerationService,
                 Clock.systemUTC(),
                 stsAccountService
-//                participant::getPrivateKeyAlias,
-//                publicIdSupplier(participant),
-//                new InMemoryJtiValidationStore()
-                );
-    }
-
-    private static Supplier<String> publicIdSupplier(IatpParticipant participant) {
-        return participant::verificationId;
+        );
     }
 
     // credentials etc get wiped after every, so the need to be created before every test

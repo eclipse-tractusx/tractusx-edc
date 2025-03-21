@@ -41,7 +41,6 @@ dependencies {
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.lib.cryptocommon)
     testImplementation(libs.edc.lib.token)
-    testImplementation(libs.edc.sts.core)
     testImplementation(libs.testcontainers.junit)
     testImplementation(testFixtures(libs.edc.identity.vc.jwt)) // JwtCreationUtils
 }

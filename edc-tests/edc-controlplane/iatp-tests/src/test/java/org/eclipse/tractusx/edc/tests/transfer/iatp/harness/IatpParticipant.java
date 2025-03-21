@@ -19,22 +19,24 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 
 import java.net.URI;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class IatpParticipant extends TractusxIatpParticipantBase {
 
-    protected final URI csService = URI.create("http://localhost:" + getFreePort() + "/api/resolution");
+    protected final LazySupplier<URI> csService = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/resolution"));
     protected URI dimUri;
 
     private DidDocument didDocument;
@@ -48,16 +50,14 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
     }
 
     @Override
-    public Map<String, String> getConfiguration() {
-        var cfg = new HashMap<>(super.getConfiguration());
-        cfg.put("web.http.presentation.port", String.valueOf(csService.getPort()));
-        cfg.put("web.http.presentation.path", csService.getPath());
-        cfg.put("web.http.credentials.port", String.valueOf(getFreePort()));
-        cfg.put("web.http.credentials.path", "/credentials");
+    public Config getConfig() {
+        var settings = new HashMap<String, String>();
+        settings.put("web.http.credentials.port", String.valueOf(csService.get().getPort()));
+        settings.put("web.http.credentials.path", csService.get().getPath());
         if (dimUri != null) {
-            cfg.put("tx.edc.iam.sts.dim.url", dimUri.toString());
+            settings.put("tx.edc.iam.sts.dim.url", dimUri.toString());
         }
-        return cfg;
+        return super.getConfig().merge(ConfigFactory.fromMap(settings));
     }
 
     public static class Builder extends TractusxIatpParticipantBase.Builder<IatpParticipant, Builder> {
@@ -86,7 +86,7 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
             var service = new Service();
             service.setId("#credential-service");
             service.setType("CredentialService");
-            service.setServiceEndpoint(participant.csService + "/v1/participants/" + toBase64(participant.did));
+            service.setServiceEndpoint(participant.csService.get() + "/v1/participants/" + toBase64(participant.did));
 
             var ecKey = participant.getKeyPairAsJwk();
 

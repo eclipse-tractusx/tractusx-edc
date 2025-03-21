@@ -42,7 +42,6 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
-    // for the controller
     implementation(libs.jakarta.rsApi)
 }
 

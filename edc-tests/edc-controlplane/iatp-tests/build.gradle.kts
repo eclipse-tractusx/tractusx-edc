@@ -35,7 +35,6 @@ dependencies {
     testImplementation(libs.edc.sts.core)
     testRuntimeOnly(libs.edc.transaction.local)
 
-    // 3rd party libs
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
