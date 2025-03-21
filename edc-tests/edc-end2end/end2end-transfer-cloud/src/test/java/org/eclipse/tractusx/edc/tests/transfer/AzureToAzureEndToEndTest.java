@@ -25,6 +25,8 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.azure.AzureBlobClient;
 import org.eclipse.tractusx.edc.tests.azure.AzuriteExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
@@ -34,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,10 +72,14 @@ public class AzureToAzureEndToEndTest {
             .id(PROVIDER_BPN)
             .build();
     private static final int AZURITE_HOST_PORT = getFreePort();
+
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), with(PROVIDER.getConfiguration(), AZURITE_HOST_PORT));
+    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(),
+            () -> PROVIDER.getConfig().merge(additionalAzureConfig()));
+
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), with(CONSUMER.getConfiguration(), AZURITE_HOST_PORT));
+    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(),
+            () -> CONSUMER.getConfig().merge(additionalAzureConfig()));
 
     private static final AzuriteExtension.Account PROVIDER_AZURITE_ACCOUNT = new AzuriteExtension.Account("provider", Base64.encodeBase64String("provider-key".getBytes()));
     private static final AzuriteExtension.Account CONSUMER_AZURITE_ACCOUNT = new AzuriteExtension.Account("consumer", Base64.encodeBase64String("consumer-key".getBytes()));
@@ -87,13 +92,8 @@ public class AzureToAzureEndToEndTest {
     private AzureBlobClient providerBlobHelper;
     private AzureBlobClient consumerBlobHelper;
 
-    private static Map<String, String> with(Map<String, String> configuration, int port) {
-        configuration.putAll(new HashMap<>() {
-            {
-                put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + port + "/%s"); // set the Azure Blob endpoint template
-            }
-        });
-        return configuration;
+    private static Config additionalAzureConfig() {
+        return ConfigFactory.fromMap(Map.of("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_HOST_PORT + "/%s"));
     }
 
     public TractusxParticipantBase provider() {

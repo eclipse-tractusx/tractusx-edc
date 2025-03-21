@@ -20,29 +20,30 @@
 package org.eclipse.tractusx.edc.tests;
 
 import io.restassured.http.ContentType;
-import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 
+import java.net.URI;
 import java.util.Map;
 
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * E2E test helper for fetching the data
  */
 public class ParticipantConsumerDataPlaneApi {
 
+    private final LazySupplier<URI> dataPlaneProxy;
+    private final Map<String, String> headers;
 
-    private final Participant.Endpoint dataPlaneProxy;
-
-    public ParticipantConsumerDataPlaneApi(Participant.Endpoint dataPlaneProxy) {
-
+    public ParticipantConsumerDataPlaneApi(LazySupplier<URI> dataPlaneProxy, Map<String, String> headers) {
         this.dataPlaneProxy = dataPlaneProxy;
+        this.headers = headers;
     }
 
-
     public String pullData(Map<String, String> body) {
-        var response = dataPlaneProxy.baseRequest()
+        var response = given().baseUri(dataPlaneProxy.get().toString())
+                .headers(headers)
                 .body(body)
                 .contentType(ContentType.JSON)
                 .post("/proxy/aas/request");
