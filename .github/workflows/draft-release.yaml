@@ -86,7 +86,9 @@ jobs:
           git config user.email "tractusx-bot@eclipse.org"
       - uses: ./.github/actions/setup-java
       - name: Check dependencies before release
-        uses: ./.github/workflows/check-dependencies.yaml
+        uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: strict
       - name: Bump version in gradle.properties
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
