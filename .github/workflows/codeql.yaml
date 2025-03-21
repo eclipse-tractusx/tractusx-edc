@@ -76,6 +76,8 @@ jobs:
       - name: Build Production Code
         run: |
           ./gradlew compileJava --no-daemon
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

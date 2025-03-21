@@ -45,6 +45,8 @@ jobs:
 
       - name: Generate openapi spec
         run: ./gradlew resolve
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: openapi-spec
@@ -81,10 +83,14 @@ jobs:
         run: |
           ./gradlew -p ${{ matrix.apiGroup.folder }} downloadOpenapi
           cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/${{ matrix.apiGroup.name }}
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Merge API specs
         run: |
           ./gradlew -Pversion=${{ env.VERSION }} -PapiTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" -PapiDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" :mergeApiSpec --input=./resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=./resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Generate Swagger UI current version
         uses: Legion2/swagger-ui-action@v1
