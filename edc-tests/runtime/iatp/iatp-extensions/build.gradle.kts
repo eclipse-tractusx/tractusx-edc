@@ -22,7 +22,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.ih.spi.store)
+    implementation(libs.edc.ih.spi)
     implementation(libs.edc.spi.jsonld)
     implementation(project(":spi:core-spi"))
 }

@@ -98,7 +98,7 @@ public class FederatedCatalogTest {
         @Override
         public List<TargetNode> getAll() {
             return participants.stream()
-                    .map(p -> new TargetNode(p.getDid(), p.getBpn(), p.getConfiguration().get("edc.dsp.callback.address"), List.of("dataspace-protocol-http")))
+                    .map(p -> new TargetNode(p.getDid(), p.getBpn(), p.getProtocolUrl(), List.of("dataspace-protocol-http")))
                     .collect(Collectors.toList());
         }
 
@@ -113,10 +113,10 @@ public class FederatedCatalogTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
 
         @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
 
 
         static {
