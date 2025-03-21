@@ -159,6 +159,7 @@ paths:
           description: Access token is expired or invalid
         "500":
           description: Failed to transfer data
+      deprecated: true
     put:
       tags:
       - Data Plane public API
@@ -171,6 +172,7 @@ paths:
           description: Access token is expired or invalid
         "500":
           description: Failed to transfer data
+      deprecated: true
     post:
       tags:
       - Data Plane public API
@@ -183,6 +185,7 @@ paths:
           description: Access token is expired or invalid
         "500":
           description: Failed to transfer data
+      deprecated: true
     delete:
       tags:
       - Data Plane public API
@@ -195,6 +198,7 @@ paths:
           description: Access token is expired or invalid
         "500":
           description: Failed to transfer data
+      deprecated: true
     head:
       tags:
       - Data Plane public API
@@ -207,6 +211,7 @@ paths:
           description: Access token is expired or invalid
         "500":
           description: Failed to transfer data
+      deprecated: true
     patch:
       tags:
       - Data Plane public API
@@ -219,6 +224,7 @@ paths:
           description: Access token is expired or invalid
         "500":
           description: Failed to transfer data
+      deprecated: true
 components:
   schemas:
     ApiErrorDetail:
