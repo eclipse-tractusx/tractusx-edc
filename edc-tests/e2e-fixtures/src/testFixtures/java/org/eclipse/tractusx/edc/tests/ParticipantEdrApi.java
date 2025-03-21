@@ -122,7 +122,7 @@ public class ParticipantEdrApi {
                 .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
                 .build();
 
-        var connectorAddress = other.getConfiguration().get("edc.dsp.callback.address");
+        var connectorAddress = other.getProtocolUrl();
 
         var requestBody = createEdrNegotiationRequest(connectorAddress, policy, callbacks);
 

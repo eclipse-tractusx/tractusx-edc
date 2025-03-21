@@ -33,9 +33,6 @@ dependencies {
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
-    // use an embedded STS
-    runtimeOnly(libs.edc.identity.trust.sts.embedded)
-
     implementation(project(":edc-tests:runtime:extensions"))
 
     // use basic (all in-mem) data plane
@@ -45,7 +42,6 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
-    // for the controller
     implementation(libs.jakarta.rsApi)
 }
 

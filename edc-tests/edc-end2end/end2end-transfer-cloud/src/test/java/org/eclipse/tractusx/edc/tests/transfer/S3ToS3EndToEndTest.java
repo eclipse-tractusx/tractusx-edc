@@ -72,9 +72,9 @@ public class S3ToS3EndToEndTest {
             .id(PROVIDER_BPN)
             .build();
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
 
     private static final String S3_REGION = Region.US_WEST_2.id();
     private static final String TESTFILE_NAME = "hello.txt";

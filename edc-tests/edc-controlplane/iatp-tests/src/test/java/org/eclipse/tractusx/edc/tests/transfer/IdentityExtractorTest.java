@@ -46,7 +46,7 @@ import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatp
 public class IdentityExtractorTest implements IatpParticipants {
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
 
     @Test
     void verifyCorrectParticipantAgentId(ParticipantAgentService participantAgentService) {

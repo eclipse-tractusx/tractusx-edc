@@ -19,9 +19,11 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+
 import java.net.URI;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -36,29 +38,32 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
     protected String stsClientSecret;
     protected String trustedIssuer;
 
-    public Map<String, String> iatpConfiguration(TractusxIatpParticipantBase... others) {
-        var iatpConfiguration = new HashMap<>(getConfiguration()) {
-            {
+    public Config iatpConfig(TractusxIatpParticipantBase... others) {
+        var additionalSettings = Map.of(
+                "edc.iam.sts.oauth.token.url", stsUri + "/token",
+                "edc.iam.sts.oauth.client.id", getDid(),
+                "edc.iam.sts.oauth.client.secret.alias", "client_secret_alias",
+                "edc.ih.iam.id", getDid(),
+                "tx.edc.vault.seed.secrets", "client_secret_alias:%s".formatted(stsClientSecret),
+                "edc.ih.iam.publickey.alias", getFullKeyId(),
+                "edc.agent.identity.key", "client_id",
+                "edc.iam.trusted-issuer.issuer.id", trustedIssuer,
+                "edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias(),
+                "edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId()
+        );
 
-                put("edc.iam.sts.oauth.token.url", stsUri + "/token");
-                put("edc.iam.sts.oauth.client.id", stsClientId);
-                put("edc.iam.sts.oauth.client.secret.alias", "client_secret_alias");
-                put("edc.ih.iam.id", getDid());
-                put("tx.edc.vault.seed.secrets", "client_secret_alias:%s".formatted(stsClientSecret));
-                put("edc.ih.iam.publickey.alias", getFullKeyId());
-                put("edc.agent.identity.key", "client_id");
-                put("edc.iam.trusted-issuer.issuer.id", trustedIssuer);
-                put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
-                put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
-            }
-        };
+        var baseConfig = getConfig().merge(ConfigFactory.fromMap(additionalSettings));
 
-        Stream.concat(Stream.of(this), Arrays.stream(others)).forEach(p -> {
-            var prefix = "tx.edc.iam.iatp.audiences.%s".formatted(p.getName().toLowerCase());
-            iatpConfiguration.put("%s.from".formatted(prefix), p.getBpn());
-            iatpConfiguration.put("%s.to".formatted(prefix), p.getDid());
-        });
-        return iatpConfiguration;
+        return Stream.concat(Stream.of(this), Arrays.stream(others))
+                .map(p -> {
+                    var prefix = "tx.edc.iam.iatp.audiences.%s".formatted(p.getName().toLowerCase());
+                    return Map.of(
+                            "%s.from".formatted(prefix), p.getBpn(),
+                            "%s.to".formatted(prefix), p.getDid()
+                    );
+                })
+                .map(ConfigFactory::fromMap)
+                .reduce(baseConfig, Config::merge);
     }
 
     public static class Builder<P extends TractusxIatpParticipantBase, B extends Builder<P, B>> extends TractusxParticipantBase.Builder<P, B> {

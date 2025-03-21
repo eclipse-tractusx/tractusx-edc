@@ -26,8 +26,8 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialStatus;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
-import org.eclipse.edc.identityhub.spi.store.CredentialStore;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
@@ -234,7 +234,6 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-                        .participantId(did)
                         .holderId(bpn)
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
@@ -295,7 +294,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-                        .participantId(did)
+                        .participantContextId(did)
                         .holderId(bpn)
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())

@@ -1,6 +1,12 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## Current Releases 
+See https://github.com/eclipse-tractusx/tractusx-edc/releases for the releases and the changes (bugfixes, new features, improvements, documentation and other changes) introduced with each release. 
+
+
+--- 
+## Historic Releases
+All notable changes to this project historically were documented in this file.
 
 ## [0.5.3] - 2023-11-10
 

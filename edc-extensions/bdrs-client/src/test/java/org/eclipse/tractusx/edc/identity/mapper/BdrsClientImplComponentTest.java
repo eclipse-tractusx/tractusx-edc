@@ -35,19 +35,15 @@ import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
 import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
-import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
+import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
-import org.eclipse.edc.jwt.validation.jti.JtiValidationStore;
-import org.eclipse.edc.keys.spi.PrivateKeyResolver;
-import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.token.InMemoryJtiValidationStore;
-import org.eclipse.edc.token.JwtGenerationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,7 +60,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Date;
 import java.text.ParseException;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -78,6 +73,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils.createJwt;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -100,7 +96,7 @@ class BdrsClientImplComponentTest {
     private static final Network DOCKER_NETWORK = Network.newNetwork();
     @Container
     private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory")
-            .withEnv("EDC_API_AUTH_KEY", "password")
+            .withEnv("EDC_HTTP_MANAGEMENT_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
             .withEnv("WEB_HTTP_PATH", "/api")
@@ -125,23 +121,19 @@ class BdrsClientImplComponentTest {
     private final Monitor monitor = mock();
     private final ObjectMapper mapper = new ObjectMapper();
     private final CredentialServiceClient csMock = mock();
-    private final PrivateKeyResolver privateKeyResolver = mock();
-    private final JtiValidationStore validationStore = new InMemoryJtiValidationStore();
 
     private BdrsClientImpl client;
     private ECKey vpHolderKey;
     private ECKey vcIssuerKey;
 
     @BeforeEach
-    void setup() throws JOSEException, IOException, ParseException {
+    void setup() throws IOException, ParseException {
 
-        var privateKeyAlias = "privateKeyAlias";
         vcIssuerKey = ECKey.parse(Files.readString(Path.of(SHARED_TEMP_DIR, ISSUER_NAME + "/key.json")));
         vpHolderKey = ECKey.parse(Files.readString(Path.of(SHARED_TEMP_DIR, HOLDER_NAME + "/key.json")));
 
-        var pk = vpHolderKey.toPrivateKey();
-        var sts = new EmbeddedSecureTokenService(new JwtGenerationService(new DefaultJwsSignerProvider(privateKeyResolver)), () -> privateKeyAlias, () -> vpHolderKey.getKeyID(), Clock.systemUTC(), 10, validationStore);
-
+        SecureTokenService secureTokenService = mock();
+        when(secureTokenService.createToken(any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         var directoryPort = BDRS_SERVER_CONTAINER.getMappedPort(8082);
         client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,
                 "did:web:self",
@@ -149,10 +141,9 @@ class BdrsClientImplComponentTest {
                 new EdcHttpClientImpl(new OkHttpClient(), RetryPolicy.ofDefaults(), monitor),
                 monitor,
                 mapper,
-                sts,
+                secureTokenService,
                 csMock);
 
-        when(privateKeyResolver.resolvePrivateKey(privateKeyAlias)).thenReturn(Result.success(pk));
         // need to wait until healthy, otherwise BDRS will respond with a 404
         await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {
             assertThat(BDRS_SERVER_CONTAINER.isHealthy()).isTrue();
@@ -222,7 +213,6 @@ class BdrsClientImplComponentTest {
         assertThatNoException().describedAs(BDRS_SERVER_CONTAINER::getLogs)
                 .isThrownBy(() -> client.resolve("BPN1"));
     }
-
 
     @Test
     void resolve_withExpiredMembership() {

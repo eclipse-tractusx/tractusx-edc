@@ -47,8 +47,8 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialC
 import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
-import org.eclipse.edc.identityhub.spi.store.CredentialStore;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
@@ -232,7 +232,7 @@ public class DastSeedExtension implements ServiceExtension {
         var rawVc = createJwtVc(vcJson, DID, jwk);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(DID)
-                .participantId(DID)
+                .participantContextId(DID)
                 .holderId(DID)
                 .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.VC1_0_JWT, credential))
                 .build();

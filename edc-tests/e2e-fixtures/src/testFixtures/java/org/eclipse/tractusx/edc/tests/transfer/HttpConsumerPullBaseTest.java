@@ -61,7 +61,6 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
     void transferData_privateBackend() {
         var assetId = "api-asset-1";
 
-
         Map<String, Object> dataAddress = Map.of(
                 "baseUrl", privateBackendUrl,
                 "type", "HttpData",

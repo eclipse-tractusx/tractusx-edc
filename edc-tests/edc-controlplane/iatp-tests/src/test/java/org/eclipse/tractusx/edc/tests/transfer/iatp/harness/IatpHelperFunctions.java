@@ -25,11 +25,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
+import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
+import org.eclipse.edc.iam.identitytrust.sts.spi.store.StsAccountStore;
 import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
-import org.eclipse.edc.identityhub.spi.store.CredentialStore;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
@@ -91,9 +93,7 @@ public class IatpHelperFunctions {
 
     public static void configureParticipant(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtimeExtension, Map<String, DidDocument> didDocs, RuntimeExtension stsRuntimeExtension) {
 
-        if (stsRuntimeExtension != null) {
-            stsRuntimeExtension.getService(Vault.class).storeSecret(participant.verificationId(), participant.getPrivateKeyAsString());
-        }
+
         var participantContextService = runtimeExtension.getService(ParticipantContextService.class);
         var vault = runtimeExtension.getService(Vault.class);
         var didResolverRegistry = runtimeExtension.getService(DidResolverRegistry.class);
@@ -118,6 +118,21 @@ public class IatpHelperFunctions {
         vault.storeSecret(participant.getPrivateKeyAlias(), participant.getPrivateKeyAsString());
 
         storeCredentials(issuer, participant, runtimeExtension);
+
+        if (stsRuntimeExtension != null) {
+            stsRuntimeExtension.getService(Vault.class).storeSecret(participant.verificationId(), participant.getPrivateKeyAsString());
+            stsRuntimeExtension.getService(Vault.class).storeSecret(participant.getPrivateKeyAlias(), participant.getPrivateKeyAsString());
+            var account = StsAccount.Builder.newInstance()
+                    .id(participant.getId())
+                    .name(participant.getName())
+                    .clientId(participant.getDid())
+                    .did(participant.getDid())
+                    .privateKeyAlias(key.getPrivateKeyAlias())
+                    .publicKeyReference(participant.getFullKeyId())
+                    .secretAlias("client_secret_alias")
+                    .build();
+            stsRuntimeExtension.getService(StsAccountStore.class).create(account);
+        }
     }
 
     private static void storeCredentials(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtime) {

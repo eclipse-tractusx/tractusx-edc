@@ -34,20 +34,17 @@ import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.stsR
 @EndToEndTest
 public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
+    @RegisterExtension
+    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.iatpConfiguration(PROVIDER), CONSUMER.getKeyPair());
+    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER));
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.iatpConfiguration(CONSUMER), PROVIDER.getKeyPair());
-
-    @RegisterExtension
-    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.stsConfiguration(CONSUMER, PROVIDER), STS.getKeyPair());
+    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER));
 
     @BeforeEach
     void prepare() {
-
-        // create the DIDs cache
         var dids = new HashMap<String, DidDocument>();
         dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
         dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
@@ -55,7 +52,6 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
 
         configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, STS_RUNTIME);
         configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, STS_RUNTIME);
-
     }
 
     @Override

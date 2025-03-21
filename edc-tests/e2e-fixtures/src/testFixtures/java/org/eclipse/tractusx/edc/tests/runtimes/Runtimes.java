@@ -19,21 +19,30 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
-import java.util.Map;
+import java.util.function.Supplier;
 
 public interface Runtimes {
 
-    static RuntimeExtension memoryRuntime(String runtimeName, String bpn, Map<String, String> properties) {
-        return new ParticipantRuntimeExtension(":edc-tests:runtime:runtime-memory", runtimeName, bpn, properties);
+    static RuntimeExtension memoryRuntime(String runtimeName, String bpn, Supplier<Config> configurationProvider) {
+        return new ParticipantRuntimeExtension(
+                new EmbeddedRuntime(runtimeName, ":edc-tests:runtime:runtime-memory")
+                        .configurationProvider(configurationProvider)
+                        .registerServiceMock(IdentityService.class, new MockBpnIdentityService(bpn))
+        );
     }
 
     static RuntimeExtension pgRuntime(TractusxParticipantBase participant, PostgresExtension postgres) {
-        var configuration = participant.getConfiguration();
-        configuration.putAll(postgres.getConfiguration(participant.getName()));
-        return new ParticipantRuntimeExtension(":edc-tests:runtime:runtime-postgresql",
-                participant.getName(), participant.getBpn(), configuration);
+        return new ParticipantRuntimeExtension(
+                new EmbeddedRuntime(participant.getName(), ":edc-tests:runtime:runtime-postgresql")
+                        .configurationProvider(() -> participant.getConfig().merge(postgres.getConfig(participant.getName())))
+                        .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
+        );
     }
 }

@@ -7,13 +7,15 @@ While the **Data Plane** handles the actual Data Transfer, the **Control Plane**
 - Contract Offering & Contract Negotiation
 - Data Transfer Coordination / Management
 
-The only API that is protected by some kind of security mechanism is the Data Management API. At the time of writing this is done by a simple API key.
-The key value must be configured in `edc.api.auth.key`. All requests to the Data Management API must have `X-Api-Key` header with the key value.
+The only API that is protected by some kind of security mechanism is the Management API. At the time of writing this is
+done by a simple API key.
+The key value must be configured in `web.http.management.auth.key`. All requests to the Management API must have 
+`X-Api-Key` header with the key value.
 
 Example:
 
 ```bash
-curl -X GET <URL> --header "X-Api-Key: <edc.api.auth.key>"
+curl -X GET <URL> --header "X-Api-Key: <web.http.management.auth.key>"
 ```
 
 ## Security

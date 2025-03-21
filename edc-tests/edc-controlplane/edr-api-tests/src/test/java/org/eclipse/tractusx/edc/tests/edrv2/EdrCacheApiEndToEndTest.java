@@ -37,6 +37,7 @@ import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
@@ -56,7 +57,6 @@ import org.mockserver.verify.VerificationTimes;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -89,18 +89,11 @@ import static org.mockserver.model.StringBody.exact;
  */
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
-
-
-    protected static Map<String, String> with(Map<String, String> original, Map<String, String> additional) {
-        var newMap = new HashMap<>(original);
-        newMap.putAll(additional);
-        return newMap;
-    }
-
 
     abstract static class Tests {
         private final Random random = new Random();
@@ -421,7 +414,8 @@ public class EdrCacheApiEndToEndTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getId(), with(CONSUMER.getConfiguration(), Map.of("edc.iam.issuer.id", "did:web:consumer")));
+        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getId(), () ->
+                CONSUMER.getConfig().merge(ConfigFactory.fromMap(Map.of("edc.iam.issuer.id", "did:web:consumer"))));
 
         @Override
         protected EndpointDataReferenceStore getStore() {

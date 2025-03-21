@@ -24,6 +24,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -128,13 +129,11 @@ public class EmptyAssetSelectorValidatorTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), enrichConfiguration());
-
-        private static Map<String, String> enrichConfiguration() {
-            var configuration = PROVIDER.getConfiguration();
-            configuration.put("tx.edc.validator.contractdefinitions.block-empty-asset-selector", "true");
-            return configuration;
-        }
+        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(),
+                () -> PROVIDER.getConfig().merge(ConfigFactory.fromMap(
+                        Map.of("tx.edc.validator.contractdefinitions.block-empty-asset-selector", "true"))
+                )
+        );
 
     }
 

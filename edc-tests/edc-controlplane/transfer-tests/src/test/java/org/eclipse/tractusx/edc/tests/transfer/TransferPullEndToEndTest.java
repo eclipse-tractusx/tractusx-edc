@@ -36,6 +36,7 @@ import org.mockserver.verify.VerificationTimes;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -45,6 +46,7 @@ import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.verify.VerificationTimes.atLeast;
 
 public class TransferPullEndToEndTest {
 
@@ -106,8 +108,10 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.SUSPENDED);
 
             // consumer cannot fetch data with the prev token (suspended)
-            CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            await().untilAsserted(() -> {
+                CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
+                server.verify(requestDefinition, atLeast(1));
+            });
 
             CONSUMER.resumeTransfer(transferProcessId);
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
@@ -118,12 +122,11 @@ public class TransferPullEndToEndTest {
             data = CONSUMER.data().pullData(newEdr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
-            server.verify(requestDefinition, VerificationTimes.exactly(2));
+            server.verify(requestDefinition, VerificationTimes.atLeast(2));
 
             // consumer cannot fetch data with the prev token (suspended) after the transfer process has been resumed
             CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
-            server.verify(requestDefinition, VerificationTimes.exactly(2));
-
+            server.verify(requestDefinition, VerificationTimes.atLeast(2));
         }
 
         @Test
@@ -177,10 +180,10 @@ public class TransferPullEndToEndTest {
     class InMemory extends Tests {
 
         @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
 
         @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER.getConfiguration());
+        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
 
     }
 

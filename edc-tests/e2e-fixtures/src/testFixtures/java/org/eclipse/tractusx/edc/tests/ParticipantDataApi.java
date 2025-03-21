@@ -49,7 +49,6 @@ public class ParticipantDataApi {
                 .extract().body().asString();
     }
 
-
     /**
      * Pull the data with an {@link DataAddress}
      *

@@ -19,6 +19,8 @@
 
 package org.eclipse.tractusx.edc.tests.runtimes;
 
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -68,6 +70,12 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
     public void afterAll(ExtensionContext context) {
         postgreSqlContainer.stop();
         postgreSqlContainer.close();
+    }
+
+    public Config getConfig(String databaseName) {
+        var settings = getConfiguration(databaseName);
+
+        return ConfigFactory.fromMap(settings);
     }
 
     public Map<String, String> getConfiguration(String databaseName) {

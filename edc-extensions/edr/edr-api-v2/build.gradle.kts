@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.edc.api.management){
         exclude("org.eclipse.edc", "edr-cache-api")
     }
-    implementation(libs.edc.api.core)
+    implementation(libs.edc.lib.api)
     implementation(libs.edc.lib.validator)
     implementation(libs.edc.spi.edrstore)
     implementation(libs.jakarta.rsApi)

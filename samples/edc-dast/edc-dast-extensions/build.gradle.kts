@@ -27,7 +27,6 @@ dependencies {
     implementation(libs.edc.lib.token)
     implementation(libs.edc.core.token)
     implementation(libs.edc.ih.spi)
-    implementation(libs.edc.ih.spi.store)
     implementation(libs.edc.ih.spi.participant.context)
     implementation(libs.edc.ih.spi.credentials)
 }
