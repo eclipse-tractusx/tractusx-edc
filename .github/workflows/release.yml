@@ -139,7 +139,7 @@ jobs:
     permissions:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
-    needs: [ validation ]
+    needs: [ github-release ]
     uses: ./.github/workflows/allure-report.yml
     secrets: inherit
     with:
