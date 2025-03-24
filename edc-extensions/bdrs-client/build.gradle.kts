@@ -38,7 +38,6 @@ dependencies {
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.edc.junit)
     testImplementation(libs.awaitility)
-    testImplementation(libs.edc.identity.trust.sts.embedded)
     testImplementation(libs.edc.core.token)
     testImplementation(libs.edc.lib.cryptocommon)
     testImplementation(libs.edc.lib.token)

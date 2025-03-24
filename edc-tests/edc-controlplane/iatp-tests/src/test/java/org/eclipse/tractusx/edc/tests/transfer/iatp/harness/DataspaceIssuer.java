@@ -101,7 +101,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         var rawVc = createJwtVc(vcJson, did);
         return VerifiableCredentialResource.Builder.newInstance()
                 .issuerId(didUrl())
-                .participantId(did)
+                .participantContextId(did)
                 .holderId(bpn)
                 .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.VC1_0_JWT, credential))
                 .build();

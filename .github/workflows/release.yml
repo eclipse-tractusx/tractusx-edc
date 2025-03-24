@@ -122,17 +122,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           is_latest: ${{ github.ref_name == 'main' }}
 
-  # Release: Publish specs to SwaggerHub
-  publish-to-swaggerhub:
-    name: "Publish OpenAPI spec to Swaggerhub"
-    permissions:
-      contents: read
-    needs: [ validation ]
-    uses: ./.github/workflows/publish-swaggerhub.yaml
-    with:
-      downstream-version: ${{ needs.validation.outputs.RELEASE_VERSION }}
-    secrets: inherit
-
   # Release: Publish specs to GitHub Pages
   publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"

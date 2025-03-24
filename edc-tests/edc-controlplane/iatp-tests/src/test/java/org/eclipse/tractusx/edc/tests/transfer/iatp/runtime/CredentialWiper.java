@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
-import org.eclipse.edc.identityhub.spi.store.CredentialStore;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;

@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers;
 
-import org.eclipse.edc.iam.identitytrust.sts.embedded.EmbeddedSecureTokenService;
+import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -46,18 +46,17 @@ public class DimDispatcher implements ExpectationResponseCallback {
     private final String path;
     private final Map<String, EmbeddedSecureTokenService> secureTokenServices;
 
+    public DimDispatcher(Map<String, EmbeddedSecureTokenService> secureTokenServices) {
+        this("/", secureTokenServices);
+    }
+
     public DimDispatcher(String path, Map<String, EmbeddedSecureTokenService> secureTokenServices) {
         this.path = path;
         this.secureTokenServices = secureTokenServices;
     }
 
-    public DimDispatcher(Map<String, EmbeddedSecureTokenService> secureTokenServices) {
-        this("/", secureTokenServices);
-    }
-
-
     @Override
-    public HttpResponse handle(HttpRequest httpRequest) throws Exception {
+    public HttpResponse handle(HttpRequest httpRequest) {
         if (httpRequest.getPath().getValue().split("\\?")[0].equals(path)) {
 
             var body = MAPPER.readValue(httpRequest.getBody().getRawBytes(), Map.class);
@@ -82,7 +81,7 @@ public class DimDispatcher implements ExpectationResponseCallback {
         var claims = Map.of(ISSUER, issuer, SUBJECT, issuer, AUDIENCE, audience);
 
         var sts = secureTokenServices.get(issuer);
-        var token = sts.createToken(claims, scope)
+        var token = sts.createToken(issuer, claims, scope)
                 .map(TokenRepresentation::getToken)
                 .orElseThrow(failure -> new RuntimeException(failure.getFailureDetail()));
 
@@ -102,7 +101,7 @@ public class DimDispatcher implements ExpectationResponseCallback {
                 PRESENTATION_TOKEN_CLAIM, accessToken);
 
         var sts = secureTokenServices.get(issuer);
-        var token = sts.createToken(claims, null)
+        var token = sts.createToken(issuer, claims, null)
                 .map(TokenRepresentation::getToken)
                 .orElseThrow(failure -> new RuntimeException(failure.getFailureDetail()));
 
