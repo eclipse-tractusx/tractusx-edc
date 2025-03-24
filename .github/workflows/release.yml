@@ -143,3 +143,15 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+
+  # Release: Generate Allure report
+  allure-report:
+    name: "Generate Allure report"
+    permissions:
+      contents: write
+    if: needs.validation.outputs.RELEASE_VERSION
+    needs: [ validation ]
+    uses: ./.github/workflows/allure-report.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
