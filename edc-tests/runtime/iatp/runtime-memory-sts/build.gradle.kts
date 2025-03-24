@@ -38,10 +38,11 @@ dependencies {
     implementation(libs.jakarta.rsApi)
     implementation(libs.bundles.edc.sts)
 
-    implementation(libs.edc.identity.trust.sts.embedded)
     implementation(libs.edc.lib.token)
+    implementation(libs.edc.core.connector)
     implementation(libs.edc.core.token)
 
+    implementation(libs.edc.ih.common.core)
     implementation(libs.edc.ih.core)
     implementation(libs.edc.ih.keypairs)
     implementation(libs.edc.ih.participants)

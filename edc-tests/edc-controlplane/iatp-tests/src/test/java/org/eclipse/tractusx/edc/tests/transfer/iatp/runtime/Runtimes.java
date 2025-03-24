@@ -19,33 +19,32 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.system.configuration.Config;
 
 import java.security.KeyPair;
-import java.util.Map;
+import java.util.function.Supplier;
 
 public interface Runtimes {
 
-    static RuntimeExtension dimRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
-        return new IatpParticipantRuntimeExtension(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih",
-                name,
-                properties,
-                keyPair);
+    static RuntimeExtension dimRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih", keyPair, configurationProvider);
     }
 
-    static RuntimeExtension iatpRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
-        return new IatpParticipantRuntimeExtension(":edc-tests:runtime:iatp:runtime-memory-iatp-ih",
-                name,
-                properties,
-                keyPair);
+    static RuntimeExtension iatpRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-ih", keyPair, configurationProvider);
     }
 
-    static RuntimeExtension stsRuntime(String name, Map<String, String> properties, KeyPair keyPair) {
+    static RuntimeExtension stsRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-sts", keyPair, configurationProvider);
+    }
+
+    private static RuntimeExtension genericRuntime(String name, String moduleName, KeyPair keyPair, Supplier<Config> configurationProvider) {
         return new IatpParticipantRuntimeExtension(
-                ":edc-tests:runtime:iatp:runtime-memory-sts",
-                name,
-                properties,
-                keyPair);
+                new EmbeddedRuntime(name, moduleName).configurationProvider(configurationProvider),
+                keyPair
+        );
     }
 
 }

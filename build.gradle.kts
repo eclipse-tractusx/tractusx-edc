@@ -26,6 +26,7 @@ plugins {
     `java-library`
     `maven-publish`
     `jacoco-report-aggregation`
+    `java-test-fixtures`
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.bmuschko.docker-remote-api") version "9.4.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
@@ -60,12 +61,14 @@ allprojects {
         mavenCentral()
     }
     dependencies {
+
         implementation("org.slf4j:slf4j-api:2.0.16")
         // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
         // and the one expected by IntelliJ
         testImplementation(platform("org.junit:junit-bom:5.11.4"))
 
         constraints {
+            plugins.apply("org.gradle.java-test-fixtures")
             implementation("org.yaml:snakeyaml:2.4") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
@@ -73,10 +76,16 @@ allprojects {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
             implementation("com.azure:azure-core-http-netty:1.15.10") {
-                because("Depends on netty-handler:4.1.115.Final that has a vunlnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
+                because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
             implementation("software.amazon.awssdk:netty-nio-client:2.30.36") {
-                because("Depends on netty-handler:4.1.115.Final that has a vunlnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
+                because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
+            }
+            testImplementation("com.networknt:json-schema-validator:1.5.6") {
+                because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
+            }
+            testFixturesApi("com.networknt:json-schema-validator:1.5.6") {
+                because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
             }
         }
     }

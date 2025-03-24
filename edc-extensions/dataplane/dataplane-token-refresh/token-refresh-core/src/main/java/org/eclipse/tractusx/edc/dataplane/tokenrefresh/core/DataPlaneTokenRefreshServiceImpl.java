@@ -130,7 +130,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         accessTokenAuthorizationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
-                new ExpirationIssuedAtValidationRule(clock, tokenExpiryToleranceSeconds));
+                new ExpirationIssuedAtValidationRule(clock, tokenExpiryToleranceSeconds, false));
     }
 
     /**

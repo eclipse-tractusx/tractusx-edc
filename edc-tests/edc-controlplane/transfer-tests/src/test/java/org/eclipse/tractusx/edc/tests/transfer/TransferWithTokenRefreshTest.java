@@ -23,6 +23,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +34,6 @@ import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -71,22 +71,18 @@ public class TransferWithTokenRefreshTest {
             .build();
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER.getConfiguration());
+    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
     private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), forConfig(PROVIDER.getConfiguration()))
+    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), () ->
+            PROVIDER.getConfig().merge(ConfigFactory.fromMap(Map.of(
+                    "edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY),
+                    "edc.dataplane.token.expiry.tolerance", "0"
+            ))))
             .registerServiceMock(BdrsClient.class, (c) -> CONSUMER.getDid());
     protected ClientAndServer server;
     private String privateBackendUrl;
-
-
-    private static Map<String, String> forConfig(Map<String, String> originalConfig) {
-        var newConfig = new HashMap<>(originalConfig);
-        newConfig.put("edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY));
-        newConfig.put("edc.dataplane.token.expiry.tolerance", "0");
-        return newConfig;
-    }
 
     @BeforeEach
     void setup() {

@@ -31,7 +31,6 @@ dependencies {
 
 
     testFixturesApi(libs.edc.core.token)
-    testFixturesApi(libs.edc.identity.trust.sts.embedded)
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.lib.cryptocommon)
     testFixturesApi(libs.edc.lib.jws2020)

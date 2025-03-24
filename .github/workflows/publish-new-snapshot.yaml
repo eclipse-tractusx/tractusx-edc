@@ -109,17 +109,6 @@ jobs:
     with:
       version: ${{ needs.determine-version.outputs.VERSION }}
 
-  publish-to-swaggerhub:
-    name: "Publish OpenAPI spec to Swaggerhub"
-    permissions:
-      contents: read
-    needs: [ secret-presence, determine-version ]
-    if: needs.secret-presence.outputs.HAS_SWAGGER
-    uses: ./.github/workflows/publish-swaggerhub.yaml
-    secrets: inherit
-    with:
-      downstream-version: ${{ needs.determine-version.outputs.VERSION }}
-
   publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"
     permissions:
