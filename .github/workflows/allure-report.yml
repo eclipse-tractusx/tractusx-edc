@@ -45,13 +45,13 @@ jobs:
 
     steps:
       -   name: Checkout repository
-          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+          uses: actions/checkout@v4
 
       -   name: Set up JDK
           uses: ./.github/actions/setup-java
 
       -   name: Cache Gradle dependencies
-          uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf #v4.2.2
+          uses: actions/cache@v4
           with:
             path: |
               ~/.gradle/caches
@@ -64,13 +64,13 @@ jobs:
            ./gradlew test -DincludeTags="EndToEndTest"
 
       -   name: Checkout gh-pages branch
-          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+          uses: actions/checkout@v4
           with:
             ref: gh-pages
             path: gh-pages
 
       -   name: Build Allure test report
-          uses: simple-elf/allure-report-action@f841fec0e421b5d7d8e807dedfb03efb8cf30303 #v1.12
+          uses: simple-elf/allure-report-action@v1.12
           with:
             gh_pages: gh-pages
             allure_results: build/allure-results
@@ -86,14 +86,14 @@ jobs:
             cp -R allure-report/* "$TARGET_FOLDER/"
 
       -   name: Publish Allure test report to gh-pages
-          uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
+          uses: peaceiris/actions-gh-pages@v4
           with:
             github_token: ${{ secrets.GITHUB_TOKEN }}
             publish_branch: gh-pages
             publish_dir: gh-pages
 
       -   name: Update Release Notes with Allure Report Link
-          uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
+          uses: actions/github-script@v7.0.1
           with:
             script: |
               const { owner, repo } = context.repo;
