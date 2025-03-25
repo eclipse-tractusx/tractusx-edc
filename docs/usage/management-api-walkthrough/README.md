@@ -34,7 +34,7 @@ endpoints are currently versioned independently of each other.
 The most recent OpenApi documentation can be found on gh-pages:
 [Control Plane-Api](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/) and
 [Data Plane-Api](https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/).
-To reference a specific OpenAPI version(starting from 0.8.0), append the desired version number `X.X.X` to the url.
+To reference a specific OpenAPI version (starting from 0.8.0), append the desired version number `X.X.X` to the url.
 
 ## Brief JSON-LD Introduction
 
