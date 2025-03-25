@@ -118,7 +118,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
                 put("tx.edc.iam.sts.dim.url", "http://sts.example.com");
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
-                put("edc.dataplane.api.public.baseurl", "http://localhost:%d%s/v2/data".formatted(dataPlanePublic.get().getPort(), dataPlanePublic.get().getPath()));
+                put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(dataPlanePublic.get()));
                 put("edc.catalog.cache.execution.delay.seconds", "2");
                 put("edc.catalog.cache.execution.period.seconds", "2");
                 put("edc.policy.validation.enabled", "true");

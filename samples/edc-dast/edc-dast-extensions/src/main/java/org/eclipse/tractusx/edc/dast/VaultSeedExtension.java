@@ -1,4 +1,4 @@
-/********************************************************************************
+/*
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,11 +15,10 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.lifecycle;
+package org.eclipse.tractusx.edc.dast;
 
-import org.eclipse.edc.runtime.metamodel.annotation.BaseExtension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.Vault;
@@ -28,23 +27,18 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import java.util.stream.Stream;
 
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
-
-@BaseExtension
 public class VaultSeedExtension implements ServiceExtension {
-    @Setting
-    private static final String TX_VAULT_SEED = "tx.edc.vault.seed.secrets";
-    @Deprecated(since = "0.7.1")
-    private static final String TX_VAULT_SEED_DEPRECATED = "tx.vault.seed.secrets";
+
+    @Setting(key = "tx.edc.vault.seed.secrets", required = false)
+    private String txVaultSeed;
 
     @Inject
     private Vault vault;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var seedSecrets = propertyCompatibility(context, TX_VAULT_SEED, TX_VAULT_SEED_DEPRECATED, null);
-        if (seedSecrets != null) {
-            Stream.of(seedSecrets.split(";"))
+        if (txVaultSeed != null) {
+            Stream.of(txVaultSeed.split(";"))
                     .filter(pair -> pair.contains(":"))
                     .map(kvp -> kvp.split(":", 2))
                     .filter(kvp -> kvp.length >= 2)

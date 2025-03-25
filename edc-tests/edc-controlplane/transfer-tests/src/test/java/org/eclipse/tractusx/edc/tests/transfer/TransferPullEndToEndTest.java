@@ -50,7 +50,7 @@ import static org.mockserver.verify.VerificationTimes.atLeast;
 
 public class TransferPullEndToEndTest {
 
-    abstract static class Tests extends HttpConsumerPullBaseTest {
+    abstract static class Tests extends ConsumerPullBaseTest {
 
         protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
                 .name(CONSUMER_NAME)
@@ -70,7 +70,6 @@ public class TransferPullEndToEndTest {
         public TractusxParticipantBase consumer() {
             return CONSUMER;
         }
-
 
         @Test
         void transferData_withSuspendResume() {

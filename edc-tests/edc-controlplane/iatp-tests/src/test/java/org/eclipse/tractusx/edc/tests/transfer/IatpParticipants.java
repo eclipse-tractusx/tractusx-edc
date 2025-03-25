@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
@@ -33,7 +34,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 
 public interface IatpParticipants {
 
-    URI DIM_URI = URI.create("http://localhost:" + getFreePort());
+    LazySupplier<URI> DIM_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
     DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer();
     StsParticipant STS = StsParticipant.Builder.newInstance()
             .id("STS")
@@ -44,7 +45,6 @@ public interface IatpParticipants {
             .id(CONSUMER_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
-            .stsClientSecret("client_secret")
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
             .did(did(CONSUMER_NAME))
@@ -55,7 +55,6 @@ public interface IatpParticipants {
             .id(PROVIDER_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
-            .stsClientSecret("client_secret")
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
             .did(did(PROVIDER_NAME))
