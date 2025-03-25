@@ -324,6 +324,7 @@ maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.72, MIT, approved, #3789
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.80, MIT, approved, #18697
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.72, MIT AND CC0-1.0, approved, #3538
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.80, MIT AND CC0-1.0, approved, #18694
+maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.72, MIT, approved, #3790
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.12.0, MIT, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.48.3, MIT, approved, #17162
@@ -398,7 +399,6 @@ maven/mavencentral/org.eclipse.edc/data-plane-http-spi/0.12.0, Apache-2.0, appro
 maven/mavencentral/org.eclipse.edc/data-plane-http/0.12.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-iam/0.12.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-instance-store-sql/0.12.0, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/data-plane-public-api-v2/0.12.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-client/0.12.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-control-api/0.12.0, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-selector-core/0.12.0, Apache-2.0, approved, technology.edc
