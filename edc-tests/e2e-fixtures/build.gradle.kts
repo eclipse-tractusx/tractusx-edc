@@ -43,13 +43,10 @@ dependencies {
     testFixturesApi(libs.edc.spi.transfer)
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))
 
-    testFixturesApi(libs.assertj)
     testFixturesApi(libs.awaitility)
     testFixturesApi(libs.aws.s3)
     testFixturesApi(libs.azure.storage.blob)
     testFixturesApi(libs.jakartaJson)
-    testFixturesApi(libs.junit.jupiter.api)
-    testFixturesApi(libs.junit.jupiter.params)
     testFixturesApi(libs.netty.mockserver)
     testFixturesApi(libs.postgres)
     testFixturesApi(libs.restAssured)
