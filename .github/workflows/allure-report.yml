@@ -50,14 +50,6 @@ jobs:
       -   name: Set up JDK
           uses: ./.github/actions/setup-java
 
-      -   name: Cache Gradle dependencies
-          uses: actions/cache@v4
-          with:
-            path: |
-              ~/.gradle/caches
-              ~/.gradle/wrapper
-            key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
-
       -   name: Run end-to-end-tests
           run: |
            ./gradlew compileJava compileTestJava
