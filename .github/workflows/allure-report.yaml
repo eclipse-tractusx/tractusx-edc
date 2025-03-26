@@ -72,7 +72,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_branch: gh-pages
+          publish_dir: gh-pages
 
       - name: Update Release Notes with Allure Report Link
         uses: actions/github-script@v7
