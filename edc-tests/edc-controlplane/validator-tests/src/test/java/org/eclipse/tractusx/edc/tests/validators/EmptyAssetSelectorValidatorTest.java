@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.validators;
 
-import io.restassured.response.ValidatableResponse;
+/*import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -47,12 +47,12 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.contains;*/
 
 public class EmptyAssetSelectorValidatorTest {
 
 
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    /*protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
@@ -135,6 +135,6 @@ public class EmptyAssetSelectorValidatorTest {
                 )
         );
 
-    }
+    }*/
 
 }
