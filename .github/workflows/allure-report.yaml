@@ -53,7 +53,8 @@ jobs:
       -   name: Run end-to-end-tests
           run: |
             ./gradlew compileJava compileTestJava
-            ./gradlew test -DincludeTags="EndToEndTest"
+            ./gradlew test --tests "org.eclipse.tractusx.edc.tests.transfer.TransferPullEndToEndTest" -DincludeTags="EndToEndTest"
+
       -   name: Checkout gh-pages branch
           uses: actions/checkout@v4
           with:
