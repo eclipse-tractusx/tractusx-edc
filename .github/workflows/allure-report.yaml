@@ -68,21 +68,11 @@ jobs:
           allure_results: build/allure-results
           allure_report: release-reports/${{ inputs.version }}
 
-#      -   name: Prepare Report Directory
-#          run: |
-#            TARGET_FOLDER="gh-pages/reports/${{ inputs.version }}"
-#            if [ -d "$TARGET_FOLDER" ]; then
-#                echo "Removing existing report at ${TARGET_DIR}"
-#                rm -rf "$TARGET_FOLDER"
-#            fi
-#            mkdir -p "$TARGET_FOLDER"
-#            cp -R allure-report/* "$TARGET_FOLDER/"
       - name: Publish Allure test report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
-          keep_files: true
 
       - name: Update Release Notes with Allure Report Link
         uses: actions/github-script@v7
