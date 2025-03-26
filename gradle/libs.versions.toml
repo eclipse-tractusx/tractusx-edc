@@ -191,7 +191,7 @@ edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.re
 edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", version.ref = "edc" }
 
 # other deps
-
+allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
@@ -212,7 +212,6 @@ restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssu
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
-allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
 
 [bundles]
 edc-dpf = ["edc-dpf-transfer-signaling", "edc-dpf-selector-core", "edc-spi-dataplane-selector"]

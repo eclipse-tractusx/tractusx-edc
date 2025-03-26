@@ -44,65 +44,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      -   name: Checkout repository
-          uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      -   name: Set up JDK
-          uses: ./.github/actions/setup-java
+      - name: Set up JDK
+        uses: ./.github/actions/setup-java
 
-      -   name: Run end-to-end-tests
-          run: |
-           ./gradlew compileJava compileTestJava
-           ./gradlew test -DincludeTags="EndToEndTest"
+      - name: Run end-to-end-tests
+        run: |
+          ./gradlew compileJava compileTestJava
+          ./gradlew test -DincludeTags="EndToEndTest"
 
-      -   name: Checkout gh-pages branch
-          uses: actions/checkout@v4
-          with:
-            ref: gh-pages
-            path: gh-pages
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-      -   name: Build Allure test report
-          uses: simple-elf/allure-report-action@v1.12
-          with:
-            gh_pages: gh-pages
-            allure_results: build/allure-results
+      - name: Build Allure test report
+        uses: simple-elf/allure-report-action@v1.12
+        with:
+          gh_pages: gh-pages
+          allure_results: build/allure-results
+          allure_report: release-reports/${{ inputs.version }}
 
-      -   name: Prepare Report Directory
-          run: |
-            TARGET_FOLDER="gh-pages/reports/${{ inputs.version }}"
-            if [ -d "$TARGET_FOLDER" ]; then
-                echo "Removing existing report at ${TARGET_DIR}"
-                rm -rf "$TARGET_FOLDER"
-            fi
-            mkdir -p "$TARGET_FOLDER"
-            cp -R allure-report/* "$TARGET_FOLDER/"
+      - name: Publish Allure test report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: gh-pages
 
-      -   name: Publish Allure test report to gh-pages
-          uses: peaceiris/actions-gh-pages@v4
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_branch: gh-pages
-            publish_dir: gh-pages
-
-      -   name: Update Release Notes with Allure Report Link
-          uses: actions/github-script@v7.0.1
-          with:
-            script: |
-              const { owner, repo } = context.repo;
-              const version = "${{ inputs.version }}";
-              
-              const { data: release } = await github.rest.repos.getReleaseByTag({
-                owner,
-                repo,
-                tag: version
-              });
-              
-              const reportUrl = `https://${owner}.github.io/${repo}/reports/${version}/`;
-              const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
-              
-              await github.rest.repos.updateRelease({
-                owner,
-                repo,
-                release_id: release.id,
-                body: newBody
-              });
+      - name: Update Release Notes with Allure Report Link
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const version = "${{ inputs.version }}";
+            
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: version
+            });
+            
+            const reportUrl = `https://${owner}.github.io/${repo}/release-reports/${version}/`;
+            const reportPattern = /\*\*Test Report:\*\* \[View Report\]\([^)]+\)/;
+            let newBody;
+            
+            if (reportPattern.test(release.body)) {
+              newBody = release.body.replace(reportPattern, `**Test Report:** [View Report](${reportUrl})`);
+            } else {
+              newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
+            }
+            
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              body: newBody
+            });
