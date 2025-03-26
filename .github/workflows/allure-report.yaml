@@ -52,7 +52,6 @@ jobs:
 
       -   name: Run end-to-end-tests
           run: |
-          run: |
             ./gradlew test --tests "org.eclipse.tractusx.edc.tests.transfer.TransferPullEndToEndTest" -DincludeTags="EndToEndTest"
 
       -   name: Checkout gh-pages branch
