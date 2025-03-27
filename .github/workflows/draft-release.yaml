@@ -93,8 +93,6 @@ jobs:
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
           sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-          # replace the openapi version with the upcoming one
-          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ inputs.version }}/swagger.yaml#g' .tractusx
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
