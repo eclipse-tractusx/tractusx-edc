@@ -18,14 +18,11 @@
 #################################################################################
 
 
-name: "Generate and check DEPENDENCIES"
+name: "Generate DEPENDENCIES file and publish to GitHub pages"
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -39,3 +36,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/generate-and-check-dependencies
+      - name: Prepare to publish
+        shell: bash
+        run: |
+          mkdir public
+          cp DEPENDENCIES public/
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
+          keep_files: true
