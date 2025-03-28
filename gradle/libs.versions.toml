@@ -17,7 +17,7 @@ postgres = "42.7.5"
 restAssured = "5.5.1"
 rsApi = "4.0.0"
 testcontainers = "1.20.5"
-titanium = "1.5.0"
+titanium = "1.6.0"
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
