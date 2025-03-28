@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
@@ -33,18 +34,16 @@ import java.util.stream.Stream;
  */
 public abstract class TractusxIatpParticipantBase extends TractusxParticipantBase {
 
-    protected URI stsUri;
+    protected LazySupplier<URI> stsUri;
     protected String stsClientId;
-    protected String stsClientSecret;
     protected String trustedIssuer;
 
     public Config iatpConfig(TractusxIatpParticipantBase... others) {
         var additionalSettings = Map.of(
-                "edc.iam.sts.oauth.token.url", stsUri + "/token",
+                "edc.iam.sts.oauth.token.url", stsUri.get() + "/token",
                 "edc.iam.sts.oauth.client.id", getDid(),
                 "edc.iam.sts.oauth.client.secret.alias", "client_secret_alias",
                 "edc.ih.iam.id", getDid(),
-                "tx.edc.vault.seed.secrets", "client_secret_alias:%s".formatted(stsClientSecret),
                 "edc.ih.iam.publickey.alias", getFullKeyId(),
                 "edc.agent.identity.key", "client_id",
                 "edc.iam.trusted-issuer.issuer.id", trustedIssuer,
@@ -72,18 +71,13 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
             super(participant);
         }
 
-        public B stsUri(URI stsUri) {
+        public B stsUri(LazySupplier<URI> stsUri) {
             participant.stsUri = stsUri;
             return self();
         }
 
         public B stsClientId(String stsClientId) {
             participant.stsClientId = stsClientId;
-            return self();
-        }
-
-        public B stsClientSecret(String stsClientSecret) {
-            participant.stsClientSecret = stsClientSecret;
             return self();
         }
 
@@ -102,9 +96,6 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
                 participant.stsClientId = participant.id;
             }
 
-            if (participant.stsClientSecret == null) {
-                participant.stsClientSecret = "clientSecret";
-            }
             return participant;
         }
     }

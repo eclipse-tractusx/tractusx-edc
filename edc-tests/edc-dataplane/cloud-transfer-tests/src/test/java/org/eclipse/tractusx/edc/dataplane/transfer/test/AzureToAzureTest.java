@@ -23,6 +23,7 @@ import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
@@ -42,6 +43,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -75,16 +77,15 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @EndToEndTest
 public class AzureToAzureTest {
 
-    private static final int PROVIDER_CONTROL_PORT = getFreePort();
-    private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
+    private static final LazySupplier<URI> CONTROL_API_URI = new LazySupplier<>(() -> URI.create("http://localhost:%s/control".formatted(getFreePort())));
+    private static final LazySupplier<URI> START_DATAFLOW_URI = new LazySupplier<>(() -> URI.create("%s/v1/dataflows".formatted(CONTROL_API_URI.get())));
     private static final int AZURITE_HOST_PORT = getFreePort();
 
     @RegisterExtension
     protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
             "AzureBlob-Dataplane",
-            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT),
             ":edc-tests:runtime:dataplane-cloud"
-    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AzureBlob-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
+    ).configurationProvider(() -> RuntimeConfig.Azure.blobstoreDataplaneConfig(CONTROL_API_URI, AZURITE_HOST_PORT))).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AzureBlob-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
 
     /**
      * Currently we have to use one container to host both consumer and provider accounts, because we cannot handle
@@ -126,7 +127,7 @@ public class AzureToAzureTest {
         ).build();
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
@@ -160,7 +161,7 @@ public class AzureToAzureTest {
                 """.formatted(consumerBlobHelper.generateAccountSas(destinationContainerName)));
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createFlowRequestBuilder(
                         blobAddress(sourceContainerName, PROVIDER_AZURITE_ACCOUNT.name(), AZBLOB_PROVIDER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME)),
@@ -213,7 +214,7 @@ public class AzureToAzureTest {
                 """.formatted(consumerBlobHelper.generateAccountSas(destinationContainerName)));
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createFlowRequestBuilder(
                         blobAddress(sourceContainerName, PROVIDER_AZURITE_ACCOUNT.name(), AZBLOB_PROVIDER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", blobName)),
@@ -260,7 +261,7 @@ public class AzureToAzureTest {
         ).build();
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
@@ -290,7 +291,7 @@ public class AzureToAzureTest {
                 """.formatted(consumerBlobHelper.generateAccountSas(destinationContainerName)));
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(
                     createFlowRequestBuilder(

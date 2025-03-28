@@ -34,7 +34,6 @@ dependencies {
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
 
-    implementation(project(":edc-tests:runtime:extensions"))
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     // use basic (all in-mem) data plane

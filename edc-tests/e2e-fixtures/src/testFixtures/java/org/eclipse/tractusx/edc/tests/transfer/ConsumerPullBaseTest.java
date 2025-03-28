@@ -43,7 +43,7 @@ import static org.mockserver.model.HttpResponse.response;
 /**
  * Base tests for Http PULL scenario
  */
-public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
+public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
 
     public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
     public static final String MOCK_BACKEND_PATH = "/mock/api";
@@ -108,7 +108,6 @@ public abstract class HttpConsumerPullBaseTest implements ParticipantAwareTest {
     @Test
     void transferData_privateBackend_withConsumerDataPlane() {
         var assetId = "api-asset-1";
-
 
         Map<String, Object> dataAddress = Map.of(
                 "baseUrl", privateBackendUrl,

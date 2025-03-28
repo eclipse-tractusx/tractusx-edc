@@ -32,7 +32,6 @@ import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
 
@@ -41,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 public class IatpHelperFunctions {
+
     public static JsonObject createVc(String issuer, String type, JsonObject subjectSupplier) {
         return createVcBuilder(issuer, type, subjectSupplier)
                 .build();
@@ -137,16 +137,15 @@ public class IatpHelperFunctions {
 
     private static void storeCredentials(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtime) {
         var credentialStore = runtime.getService(CredentialStore.class);
-        var jsonLd = runtime.getService(JsonLd.class);
-        issueCredentials(issuer, participant, jsonLd).forEach(credentialStore::create);
+        issueCredentials(issuer, participant).forEach(credentialStore::create);
     }
 
-    private static List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer, IatpParticipant participant, JsonLd jsonLd) {
+    private static List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer, IatpParticipant participant) {
         return List.of(
-                issuer.issueMembershipCredential(participant.getDid(), participant.getBpn(), jsonLd),
-                issuer.issueDismantlerCredential(participant.getDid(), participant.getBpn(), jsonLd),
-                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), jsonLd, "PcfCredential"),
-                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), jsonLd, "DataExchangeGovernanceCredential"));
+                issuer.issueMembershipCredential(participant.getDid(), participant.getBpn()),
+                issuer.issueDismantlerCredential(participant.getDid(), participant.getBpn()),
+                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), "PcfCredential"),
+                issuer.issueFrameworkCredential(participant.getDid(), participant.getBpn(), "DataExchangeGovernanceCredential"));
 
     }
 }
