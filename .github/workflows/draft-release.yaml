@@ -89,6 +89,8 @@ jobs:
         uses: ./.github/actions/generate-and-check-dependencies
         with:
           run: strict
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Bump version in gradle.properties
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
