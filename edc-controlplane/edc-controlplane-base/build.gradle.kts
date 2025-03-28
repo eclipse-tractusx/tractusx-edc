@@ -60,6 +60,7 @@ dependencies {
     runtimeOnly(libs.edc.core.token)
     runtimeOnly(libs.edc.core.policy.monitor)
     runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.auth.oauth2.client)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.auth.delegated)
     runtimeOnly(libs.edc.auth.configuration)
@@ -81,7 +82,6 @@ dependencies {
 
     runtimeOnly(libs.edc.ext.http)
     runtimeOnly(libs.bundles.edc.monitoring)
-    runtimeOnly(libs.edc.transfer.dynamicreceiver)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.event)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 

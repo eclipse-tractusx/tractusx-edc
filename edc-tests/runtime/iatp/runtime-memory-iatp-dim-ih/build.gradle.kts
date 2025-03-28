@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "bdrs-client")
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
+        exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
     }
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:cx-policy"))
@@ -44,7 +45,6 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.core.identitytrust)
     implementation(libs.edc.core.did)
     implementation(libs.edc.identity.trust.transform)
     implementation(libs.edc.identity.trust.issuers.configuration)
@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.edc.ih.participants)
     implementation(libs.edc.sts.account.provisioner)
     implementation(libs.edc.ih.did)
+    implementation(libs.edc.ih.common.core)
     implementation(libs.edc.ih.core)
 
     // for the controller

@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.iatp.ih;
 
-import org.eclipse.edc.identityhub.spi.ScopeToCriterionTransformer;
+import org.eclipse.edc.identityhub.spi.transformation.ScopeToCriterionTransformer;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.result.Result;
 

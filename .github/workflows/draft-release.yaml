@@ -85,12 +85,16 @@ jobs:
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
       - uses: ./.github/actions/setup-java
+      - name: Check dependencies before release
+        uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: strict
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Bump version in gradle.properties
         run: |-
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
           sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-          # replace the openapi version with the upcoming one
-          sed -i 's#tractusx-edc/.*/swagger.yaml#tractusx-edc/${{ inputs.version }}/swagger.yaml#g' .tractusx
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -109,7 +113,7 @@ jobs:
       - name: Commit manifest files
         id: make-commit
         run: |
-          git add gradle.properties $(find charts -name Chart.yaml) $(find charts -name README.md)
+          git add .
           git commit --message "Prepare release ${{ inputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

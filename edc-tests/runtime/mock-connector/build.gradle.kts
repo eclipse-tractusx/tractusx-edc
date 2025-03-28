@@ -48,7 +48,6 @@ dependencies {
     runtimeOnly(libs.edc.ext.jsonld)
 
     testImplementation(libs.edc.junit)
-    testImplementation(libs.assertj)
 }
 
 application {

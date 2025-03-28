@@ -2,8 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.11.1"
-assertj = "3.27.3"
+edc = "0.12.0"
 awaitility = "4.2.2"
 aws = "2.31.1"
 azure-storage-blob = "12.30.0"
@@ -11,7 +10,6 @@ bouncyCastle-jdk18on = "1.80"
 flyway = "11.4.0"
 jackson = "2.18.2"
 jakarta-json = "2.0.1"
-jupiter = "5.11.4"
 nimbus = "10.0.2"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.13.3"
@@ -81,6 +79,7 @@ edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-dat
 edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
 
 # EDC lib dependencies
+edc-lib-api = { module = "org.eclipse.edc:api-lib", version.ref = "edc" }
 edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-lib-cryptocommon = { module = "org.eclipse.edc:crypto-common-lib", version.ref = "edc" }
 edc-lib-http = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
@@ -137,10 +136,8 @@ edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-
 
 edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
 edc-identity-trust-sts-remote-lib = { module = "org.eclipse.edc:identity-trust-sts-remote-lib", version.ref = "edc" }
-edc-identity-trust-sts-embedded = { module = "org.eclipse.edc:identity-trust-sts-embedded", version.ref = "edc" }
-edc-identity-trust-sts-core = { module = "org.eclipse.edc:identity-trust-sts-core", version.ref = "edc" }
-edc-identity-trust-sts-api = { module = "org.eclipse.edc:identity-trust-sts-api", version.ref = "edc" }
-edc-identity-trust-sts-client-configuration = { module = "org.eclipse.edc:identity-trust-sts-client-configuration", version.ref = "edc" }
+edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
+edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
 
 # Federated Catalog modules
@@ -152,7 +149,6 @@ edc-fc-sql-cache = { module = "org.eclipse.edc:federated-catalog-cache-sql", ver
 ## IH for testing
 
 edc-ih-api-presentation = { module = "org.eclipse.edc:presentation-api", version.ref = "edc" }
-edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
 edc-ih-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-ih-spi-participant-context = { module = "org.eclipse.edc:participant-context-spi", version.ref = "edc" }
 edc-ih-spi-credentials = { module = "org.eclipse.edc:verifiable-credential-spi", version.ref = "edc" }
@@ -160,6 +156,7 @@ edc-ih-keypairs = { module = "org.eclipse.edc:identity-hub-keypairs", version.re
 edc-ih-participants = { module = "org.eclipse.edc:identity-hub-participants", version.ref = "edc" }
 edc-ih-did = { module = "org.eclipse.edc:identity-hub-did", version.ref = "edc" }
 edc-ih-core = { module = "org.eclipse.edc:identity-hub-core", version.ref = "edc" }
+edc-ih-common-core = { module = "org.eclipse.edc:common-core", version.ref = "edc" }
 
 # Data plane selector
 edc-spi-dataplane-selector = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
@@ -170,7 +167,6 @@ edc-data-plane-instance-store-sql = { module = "org.eclipse.edc:data-plane-insta
 
 # DPF modules
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
-edc-spi-dataplane-transfer = { module = "org.eclipse.edc:transfer-data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
 edc-dpf-transfer-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
@@ -179,7 +175,6 @@ edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc"
 
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
-edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
 edc-data-plane-self-registration = { module = "org.eclipse.edc:data-plane-self-registration", version.ref = "edc" }
@@ -188,12 +183,10 @@ edc-data-plane-self-registration = { module = "org.eclipse.edc:data-plane-self-r
 edc-micrometer-core = { module = "org.eclipse.edc:micrometer-core", version.ref = "edc" }
 edc-micrometer-jersey = { module = "org.eclipse.edc:jersey-micrometer", version.ref = "edc" }
 edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.ref = "edc" }
-edc-transfer-dynamicreceiver = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }
 edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", version.ref = "edc" }
 
 # other deps
 
-assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
@@ -203,8 +196,6 @@ flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql",
 jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
@@ -223,9 +214,8 @@ edc-sqlstores = [
 ]
 edc-monitoring = ["edc-micrometer-core", "edc-micrometer-jersey", "edc-micrometer-jetty"]
 edc-sts = [
-    "edc-identity-trust-sts-core",
-    "edc-identity-trust-sts-api",
-    "edc-identity-trust-sts-client-configuration",
+    "edc-sts-core",
+    "edc-sts-api",
     "edc-sts-account-provisioner"
 ]
 
