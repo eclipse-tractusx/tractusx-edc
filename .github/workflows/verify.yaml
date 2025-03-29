@@ -120,10 +120,16 @@ jobs:
           ./gradlew compileJava compileTestJava
           ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
 
+      - name: Set sanitized artifact name
+        id: sanitize
+        run: |
+          SANITIZED_NAME=$(echo "${{ matrix.variant.dir }}" | tr '/' '-')
+          echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
+
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
+          name: allure-results-${{ env.ARTIFACT_NAME }}
           path: ${{ matrix.variant.dir }}/build/allure-results
 
   postgres-tests:
