@@ -37,7 +37,7 @@ jobs:
   validation:
     name: "Check if repository is not fork AND head is release OR base is bugfix"
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'eclipse-tractusx/tractusx-edc' && (startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')) }}
+    if: ${{ startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/') }}
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
@@ -47,64 +47,6 @@ jobs:
         run: |
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-  # Release: Maven Artifacts
-  maven-release:
-    name: Publish extension's release version to maven repository
-    needs: [ validation ]
-    permissions:
-      contents: read
-    if: needs.validation.outputs.RELEASE_VERSION
-    uses: ./.github/workflows/trigger-maven-publish.yaml
-    secrets: inherit
-    with:
-      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
-
-  # Release: docker images
-  docker-release:
-    name: Publish Docker images
-    needs: [ validation ]
-    if: needs.validation.outputs.RELEASE_VERSION
-    uses: ./.github/workflows/trigger-docker-publish.yaml
-    secrets: inherit
-    with:
-      docker_tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
-
-  # Release: Helm charts
-  helm-release:
-    name: Publish helm charts
-    needs: [ validation ]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-
-    if: needs.validation.outputs.RELEASE_VERSION
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-helm
-      - name: Package helm, update index.yaml and push to gh-pages
-        run: |
-          # Prepare git env
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-
-          # Package all charts
-          find charts -name Chart.yaml -not -path "./edc-tests/*" | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
-
-          git checkout gh-pages || git checkout -b gh-pages
-          git pull --rebase origin gh-pages
-
-          # Generate helm repo index.yaml
-          helm repo index . --merge index.yaml --url https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/
-
-          # Commit and push to gh-pages
-          git add index.yaml helm-charts
-          git commit -s -m "Release ${{ needs.validation.outputs.RELEASE_VERSION }}"
-
-          git push origin gh-pages
 
   # Release: GitHub tag & release; Starts a new development cycle if latest release;
   github-release:
@@ -121,17 +63,6 @@ jobs:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           is_latest: ${{ github.ref_name == 'main' }}
-
-  # Release: Publish specs to GitHub Pages
-  publish-openapi-to-gh-pages:
-    name: "Publish OpenAPI UI spec GitHub Pages"
-    permissions:
-      contents: write
-    needs: [ validation ]
-    uses: ./.github/workflows/publish-openapi-ui.yml
-    secrets: inherit
-    with:
-      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
 
   # Release: Generate Allure report
   allure-report:
