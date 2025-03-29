@@ -123,7 +123,7 @@ jobs:
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ matrix.variant.dir }}
+          name: allure-results
           path: ${{ matrix.variant.dir }}/build/allure-results
 
   postgres-tests:
