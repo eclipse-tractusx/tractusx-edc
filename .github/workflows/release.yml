@@ -51,7 +51,7 @@ jobs:
   # Release: GitHub tag & release; Starts a new development cycle if latest release;
   github-release:
     name: Publish new github release
-    needs: [ validation, maven-release, docker-release, helm-release ]
+    needs: [ validation ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
