@@ -66,17 +66,51 @@ jobs:
 
   verify:
     name: "verify"
-    needs: [ github-release ]
+    needs: [ validation, github-release ]
     uses: ./.github/workflows/verify.yaml
 
   # Release: Generate Allure report
-  allure-report:
-    name: "Generate Allure report"
-    permissions:
-      contents: write
-    if: needs.validation.outputs.RELEASE_VERSION
-    needs: [ github-release ]
-    uses: ./.github/workflows/allure-report.yml
-    secrets: inherit
-    with:
-      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+#  allure-report:
+#    name: "Generate Allure report"
+#    permissions:
+#      contents: write
+#    if: needs.validation.outputs.RELEASE_VERSION
+#    needs: [ verify ]
+#    uses: ./.github/workflows/allure-report.yml
+#    secrets: inherit
+#    with:
+#      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+
+  publish-report:
+    needs: [ validation, verify ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Allure Report ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report-zip
+
+      - name: Unzip Allure Report
+        run: |
+          unzip allure-report-zip/allure-report.zip -d allure-report
+
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
+
+      - name: Publish Allure test report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-reports/${{ needs.validation.outputs.RELEASE_VERSION }}
+          keep_files: true
+
+
+
+

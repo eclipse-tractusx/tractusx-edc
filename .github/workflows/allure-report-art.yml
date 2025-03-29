@@ -1,0 +1,63 @@
+#################################################################################
+#  Copyright (c) 2025 Cofinity-X
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+
+---
+name: generate allure report
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  generate-allure-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: allure-results
+
+      - name: Build Allure test report
+        uses: jcleigh/allure-single-file-report-action@6643467e7e337db164784d9dd9fbfa0c06699efd #v1.0.0
+        with:
+          allure_report: allure-report
+          allure_results: allure-results
+
+      - name: Archive Allure Report Artifact
+        run: |
+          set -e
+          zip -r allure-report.zip allure-report
+
+      - name: Upload Allure Report as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report.zip
