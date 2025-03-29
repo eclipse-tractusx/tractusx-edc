@@ -29,7 +29,7 @@ on:
     types:
       - closed
 
-  #workflow_call:
+  workflow_call:
 
 
 jobs:
@@ -63,6 +63,11 @@ jobs:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           is_latest: ${{ github.ref_name == 'main' }}
+
+  verify:
+    name: "verify"
+    needs: [ github-release ]
+    uses: ./.github/workflows/verify.yml
 
   # Release: Generate Allure report
   allure-report:
