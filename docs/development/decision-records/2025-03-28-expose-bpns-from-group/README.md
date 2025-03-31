@@ -6,7 +6,7 @@ TractusX-EDC will expose the BPNs  in a BPN Group provided a Group identifier. F
 
 ## Rationale
 
-Currently, to obtain the list of BPN groups belonging to a certain BPN, there is a need to perform the [request](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.9.0/#/Business%20Partner%20Group/resolveV3) ```GET /business-partner-groups/{bpn}``` which resolves all groups of a specific BPN.
+Currently, to obtain the list of BPN groups belonging to a certain BPN, there is a need to perform the [request](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.9.0/#/Business%20Partner%20Group/resolveV3) ```GET /business-partner-groups/{bpn}``` in the `BusinessPartnerGroup` api which resolves all groups of a specific BPN. However, the contrary is not possible, meaning that to obtain all the BPNs in a BPN Group it is required to make the mentioned request to all BPN's in a space and then iterate over to see the associated groups.
 
 This process is very heavy to compute, specially on the client side since it needs to always be searching for new BPNs and check if existing BPNs were added or removed to a BPN Group.
 
