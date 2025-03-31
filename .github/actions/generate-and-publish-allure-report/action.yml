@@ -44,22 +44,17 @@ runs:
         merge-multiple: true
         path: allure-results
 
-    - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: gh-pages
-
     - name: Build Allure test report
       uses: simple-elf/allure-report-action@v1.12
       with:
         gh_pages: gh-pages
         allure_results: allure-results
-        allure_report: Allure-reports/${{ inputs.version }}
+        allure_report: ${{ inputs.version }}
 
     - name: Publish Allure test report to gh-pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ inputs.token }}
-        publish_branch: gh-pages
-        publish_dir: gh-pages
+        publish_dir: ./${{ inputs.version }}
+        destination_dir: allure-reports/${{ inputs.version }}
+        keep_files: false

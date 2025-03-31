@@ -169,40 +169,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-#      - name: Generate and publish Allure report
-##        uses: ./.github/actions/generate-and-publish-allure-report
-##        with:
-##          version: ${{ github.ref_name }}
-##          token: ${{ secrets.GITHUB_TOKEN }}
-##          allure_results: allure-results
-
-      - name: Download Allure results
-        uses: actions/download-artifact@v4
+      - name: Generate and publish Allure report
+        uses: ./.github/actions/generate-and-publish-allure-report
         with:
-          pattern: allure-results-*
-          merge-multiple: true
-          path: allure-results
-
-      - name: List collected files
-        run: ls -R allure-results
-
-#      - name: Checkout gh-pages branch
-#        uses: actions/checkout@v4
-#        with:
-#          ref: gh-pages
-#          path: gh-pages
-
-      - name: Build Allure test report
-        uses: simple-elf/allure-report-action@v1.12
-        with:
-          gh_pages: gh-pages
+          version: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           allure_results: allure-results
-          allure_report: ${{ github.ref_name }}
 
-      - name: Publish Allure test report to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./${{ github.ref_name }}
-          destination_dir: Allure-reports1/${{ github.ref_name }}
-          keep_files: false
+#      - name: Download Allure results
+#        uses: actions/download-artifact@v4
+#        with:
+#          pattern: allure-results-*
+#          merge-multiple: true
+#          path: allure-results
+#
+#      - name: List collected files
+#        run: ls -R allure-results
+#
+#      - name: Build Allure test report
+#        uses: simple-elf/allure-report-action@v1.12
+#        with:
+#          gh_pages: gh-pages
+#          allure_results: allure-results
+#          allure_report: ${{ github.ref_name }}
+#
+#      - name: Publish Allure test report to gh-pages
+#        uses: peaceiris/actions-gh-pages@v4
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          publish_dir: ./${{ github.ref_name }}
+#          destination_dir: allure-reports/${{ github.ref_name }}
+#          keep_files: false
