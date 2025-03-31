@@ -164,7 +164,7 @@ jobs:
 
   generate-allure-report:
     runs-on: ubuntu-latest
-    needs: collect-allure-results
+    needs: end-to-end-tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
