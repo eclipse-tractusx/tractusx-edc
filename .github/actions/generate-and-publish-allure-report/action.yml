@@ -29,8 +29,8 @@ inputs:
     description: "Github token"
   allure_results:
     required: true
-    type: string
     description: "Allure results artifact name"
+    type: string
 
 runs:
   using: "composite"
