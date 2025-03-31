@@ -74,7 +74,7 @@ jobs:
     name: "Update Release Notes with Allure Report Link"
     permissions:
       contents: write
-    needs: run-all-tests
+    needs: [ validation, run-all-tests ]
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
@@ -82,23 +82,23 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-#            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
+            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
             
-#            const { data: release } = await github.rest.repos.getReleaseByTag({
-#              owner,
-#              repo,
-#              tag: version
-#            });
-#
-#            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${{ github.ref_name }}/`;
-#            const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
-#
-#            await github.rest.repos.updateRelease({
-#              owner,
-#              repo,
-#              release_id: release.id,
-#              body: newBody
-#            });
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: version
+            });
+
+            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${{ github.ref_name }}/`;
+            const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              body: newBody
+            });
   # Release: Generate Allure report
 #  allure-report:
 #    name: "Generate Allure report"
