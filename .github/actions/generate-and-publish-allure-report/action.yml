@@ -35,29 +35,29 @@ runs:
   steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Download Allure results
-      uses: actions/download-artifact@v4
-      with:
-        name: ${{ inputs.allure_results }}
-        path: allure-results
-
-    - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: gh-pages
-
-    - name: Build Allure test report
-      uses: simple-elf/allure-report-action@v1.12
-      with:
-        gh_pages: gh-pages
-        allure_results: allure-results
-        allure_report: Allure-reports/${{ inputs.version }}
-
-    - name: Publish Allure test report to gh-pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ inputs.token }}
-        publish_branch: gh-pages
-        publish_dir: gh-pages
+#
+#    - name: Download Allure results
+#      uses: actions/download-artifact@v4
+#      with:
+#        name: ${{ inputs.allure_results }}
+#        path: allure-results
+#
+#    - name: Checkout gh-pages branch
+#      uses: actions/checkout@v4
+#      with:
+#        ref: gh-pages
+#        path: gh-pages
+#
+#    - name: Build Allure test report
+#      uses: simple-elf/allure-report-action@v1.12
+#      with:
+#        gh_pages: gh-pages
+#        allure_results: allure-results
+#        allure_report: Allure-reports/${{ inputs.version }}
+#
+#    - name: Publish Allure test report to gh-pages
+#      uses: peaceiris/actions-gh-pages@v4
+#      with:
+#        github_token: ${{ inputs.token }}
+#        publish_branch: gh-pages
+#        publish_dir: gh-pages
