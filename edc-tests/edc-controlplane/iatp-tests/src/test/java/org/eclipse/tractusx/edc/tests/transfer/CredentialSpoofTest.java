@@ -66,7 +66,6 @@ public class CredentialSpoofTest implements IatpParticipants {
             .id(MALICIOUS_ACTOR_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(MALICIOUS_ACTOR_BPN)
-            .stsClientSecret("client_secret")
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
             .did(IatpParticipants.did(MALICIOUS_ACTOR_NAME))

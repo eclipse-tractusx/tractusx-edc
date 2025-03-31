@@ -30,7 +30,6 @@ dependencies {
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(project(":core:json-ld-core"))
-    implementation(project(":edc-tests:runtime:extensions"))
 
     implementation(libs.edc.iam.mock)
     implementation(libs.edc.spi.keys)

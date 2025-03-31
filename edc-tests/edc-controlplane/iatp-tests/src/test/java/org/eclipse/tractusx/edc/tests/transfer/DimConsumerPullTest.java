@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
@@ -33,6 +34,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.junit.jupiter.api.AfterAll;
@@ -42,11 +44,17 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
+import java.net.URI;
 import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
 import static org.mockito.Mockito.mock;
@@ -54,21 +62,37 @@ import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 
 @EndToEndTest
-public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
+public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
+
+    protected static final LazySupplier<URI> DIM_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
+
+    protected static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
+            .stsUri(STS.stsUri())
+            .stsClientId(CONSUMER_BPN)
+            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+            .dimUri(DIM_URI)
+            .did(did(CONSUMER_NAME))
+            .build();
+    protected static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
+            .stsUri(STS.stsUri())
+            .stsClientId(PROVIDER_BPN)
+            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+            .dimUri(DIM_URI)
+            .did(did(PROVIDER_NAME))
+            .build();
 
     @RegisterExtension
     protected static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
     @RegisterExtension
     protected static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER));
+
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private static ClientAndServer oauthServer;
     private static ClientAndServer dimServer;
-
-    @AfterAll
-    static void unwind() {
-        oauthServer.stop();
-        dimServer.stop();
-    }
 
     @BeforeAll
     static void prepare() {
@@ -79,13 +103,20 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
                 CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER),
                 PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER));
 
-        oauthServer = ClientAndServer.startClientAndServer(STS.stsUri().getPort());
+        var stsUri = STS.stsUri().get();
+        oauthServer = ClientAndServer.startClientAndServer(stsUri.getPort());
 
-        oauthServer.when(request().withMethod("POST").withPath(STS.stsUri().getPath() + "/token"))
+        oauthServer.when(request().withMethod("POST").withPath(stsUri.getPath() + "/token"))
                 .respond(HttpResponse.response(MAPPER.writeValueAsString(Map.of("access_token", "token"))));
 
-        dimServer = ClientAndServer.startClientAndServer(DIM_URI.getPort());
+        dimServer = ClientAndServer.startClientAndServer(DIM_URI.get().getPort());
         dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
+    }
+
+    @AfterAll
+    static void unwind() {
+        oauthServer.stop();
+        dimServer.stop();
     }
 
     private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant participant) {
@@ -134,5 +165,15 @@ public class DimHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     @Override
     protected RuntimeExtension providerRuntime() {
         return PROVIDER_RUNTIME;
+    }
+
+    @Override
+    public TractusxParticipantBase provider() {
+        return PROVIDER;
+    }
+
+    @Override
+    public TractusxParticipantBase consumer() {
+        return CONSUMER;
     }
 }

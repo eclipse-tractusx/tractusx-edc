@@ -22,26 +22,54 @@ package org.eclipse.tractusx.edc.tests.transfer;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.tractusx.edc.tests.extension.VaultSeedExtension;
+import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.stsRuntime;
 
 @EndToEndTest
-public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
+public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
+
+    protected static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
+            .stsUri(STS.stsUri())
+            .stsClientId(CONSUMER_BPN)
+            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+            .did(did(CONSUMER_NAME))
+            .build();
+    protected static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
+            .stsUri(STS.stsUri())
+            .stsClientId(PROVIDER_BPN)
+            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+            .did(did(PROVIDER_NAME))
+            .build();
 
     @RegisterExtension
     protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER));
+    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER))
+            .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
 
     @RegisterExtension
-    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER));
+    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER))
+            .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
 
     @BeforeEach
     void prepare() {
@@ -62,5 +90,15 @@ public class StsHttpConsumerPullTest extends AbstractIatpConsumerPullTest {
     @Override
     protected RuntimeExtension providerRuntime() {
         return PROVIDER_RUNTIME;
+    }
+
+    @Override
+    public TractusxParticipantBase provider() {
+        return PROVIDER;
+    }
+
+    @Override
+    public TractusxParticipantBase consumer() {
+        return CONSUMER;
     }
 }

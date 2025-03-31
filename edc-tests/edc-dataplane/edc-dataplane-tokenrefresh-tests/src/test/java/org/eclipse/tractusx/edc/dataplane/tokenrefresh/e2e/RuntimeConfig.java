@@ -20,10 +20,12 @@
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.e2e;
 
 import io.restassured.specification.RequestSpecification;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -34,23 +36,17 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
  */
 public class RuntimeConfig {
 
-    private final Endpoint publicApi = new Endpoint(URI.create("http://localhost:%d/public".formatted(getFreePort())));
-    private final Endpoint controlApi = new Endpoint(URI.create("http://localhost:%d/control".formatted(getFreePort())));
-    private final Endpoint refreshApi = publicApi;
-    private final Endpoint defaultApi = new Endpoint(URI.create("http://localhost:%d/api".formatted(getFreePort())));
+    private final LazySupplier<URI> publicApi = new LazySupplier<>(() -> URI.create("http://localhost:%d/public".formatted(getFreePort())));
 
-    /**
-     * Configures the data plane token endpoint, and all relevant HTTP contexts
-     */
-    public Map<String, String> baseConfig() {
-        return new HashMap<>() {
+    public Config getConfig() {
+        var settings = new HashMap<String, String>() {
             {
-                put("web.http.path", defaultApi.url().getPath());
-                put("web.http.port", String.valueOf(defaultApi.url().getPort()));
-                put("web.http.public.path", publicApi.url().getPath());
-                put("web.http.public.port", String.valueOf(publicApi.url().getPort()));
-                put("web.http.control.path", controlApi.url().getPath());
-                put("web.http.control.port", String.valueOf(controlApi.url().getPort()));
+                put("web.http.path", "/api");
+                put("web.http.port", String.valueOf(getFreePort()));
+                put("web.http.public.path", publicApi.get().getPath());
+                put("web.http.public.port", String.valueOf(publicApi.get().getPort()));
+                put("web.http.control.path", "/control");
+                put("web.http.control.port", String.valueOf(getFreePort()));
                 put("edc.dpf.selector.url", "http://not-used/feature");
                 put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
@@ -60,33 +56,12 @@ public class RuntimeConfig {
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
             }
         };
+
+        return ConfigFactory.fromMap(settings);
     }
 
-    public Endpoint getPublicApi() {
-        return publicApi;
-    }
-
-    public Endpoint getControlApi() {
-        return controlApi;
-    }
-
-    public Endpoint getRefreshApi() {
-        return refreshApi;
-    }
-
-    public Endpoint getDefaultApi() {
-        return defaultApi;
-    }
-
-    public record Endpoint(URI url, Map<String, String> headers) {
-        public Endpoint(URI url) {
-            this(url, Map.of());
-        }
-
-        public RequestSpecification baseRequest() {
-            return given().baseUri(url.toString()).headers(headers);
-        }
-
+    public RequestSpecification basePublicApiRequest() {
+        return given().baseUri(publicApi.get().toString());
     }
 
 }

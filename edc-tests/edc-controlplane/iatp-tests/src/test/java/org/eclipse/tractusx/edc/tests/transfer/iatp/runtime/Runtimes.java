@@ -21,23 +21,29 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.tractusx.edc.tests.extension.VaultSeedExtension;
 
 import java.security.KeyPair;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public interface Runtimes {
 
     static RuntimeExtension dimRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
-        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih", keyPair, configurationProvider);
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih", keyPair, configurationProvider)
+                .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
     }
 
     static RuntimeExtension iatpRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
-        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-ih", keyPair, configurationProvider);
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-ih", keyPair, configurationProvider)
+                .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
     }
 
     static RuntimeExtension stsRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
-        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-sts", keyPair, configurationProvider);
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-sts", keyPair, configurationProvider)
+                .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
     }
 
     private static RuntimeExtension genericRuntime(String name, String moduleName, KeyPair keyPair, Supplier<Config> configurationProvider) {

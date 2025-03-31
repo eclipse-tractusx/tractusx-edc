@@ -76,14 +76,12 @@ include(":edc-tests:edc-controlplane:iatp-tests")
 include(":edc-tests:edc-controlplane:policy-tests")
 include(":edc-tests:edc-controlplane:agreement-retirement-tests")
 include(":edc-tests:edc-controlplane:validator-tests")
-include(":edc-tests:runtime:extensions")
 include(":edc-tests:runtime:runtime-memory")
 include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
 include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
@@ -121,7 +119,7 @@ pluginManagement {
 
 plugins {
     id("com.gradle.develocity") version "3.19.2"
-    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.1"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.2.1"
 }
 
 dependencyResolutionManagement {
