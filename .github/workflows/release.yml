@@ -69,6 +69,36 @@ jobs:
     needs: [ validation, github-release ]
     uses: ./.github/workflows/verify.yaml
 
+  # Release: Update Release Notes with Allure Report Link
+  allure-report:
+    name: "Update Release Notes with Allure Report Link"
+    permissions:
+      contents: write
+    needs: [ verify ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const version = "${{ inputs.version }}";
+
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: version
+            });
+
+            const reportUrl = `https://${owner}.github.io/${repo}/Allure-reports/${{ github.ref_name }}/`;
+            const reportPattern = /\*\*Test Report:\*\* \[View Report\]\([^)]+\)/;
+            let body = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;;
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              body: body
+            });
   # Release: Generate Allure report
 #  allure-report:
 #    name: "Generate Allure report"
@@ -81,36 +111,35 @@ jobs:
 #    with:
 #      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
 
-  publish-report:
-    needs: [ validation, verify ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Allure Report ZIP
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report-zip
-
-      - name: Unzip Allure Report
-        run: |
-          unzip allure-report-zip/allure-report.zip -d allure-report
-
-      - name: Deploy Allure Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-report
-
-      - name: Publish Allure test report to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-reports/${{ needs.validation.outputs.RELEASE_VERSION }}
-          keep_files: true
-
+#  publish-report:
+#    needs: [ validation, verify ]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Download Allure Report ZIP
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: allure-report
+#          path: allure-report-zip
+#
+#      - name: Unzip Allure Report
+#        run: |
+#          unzip allure-report-zip/allure-report.zip -d allure-report
+#
+#      - name: Deploy Allure Report to GitHub Pages
+#        uses: peaceiris/actions-gh-pages@v3
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          publish_dir: allure-report
+#
+#      - name: Publish Allure test report to gh-pages
+#        uses: peaceiris/actions-gh-pages@v4
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          publish_dir: ./allure-reports/${{ needs.validation.outputs.RELEASE_VERSION }}
+#          keep_files: true
 
 
 

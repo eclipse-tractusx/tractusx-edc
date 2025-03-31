@@ -161,24 +161,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Allure results
-        uses: actions/download-artifact@v4
+      - uses: ./.github/actions/generate-and-publish-allure-report
         with:
-          name: ${{ inputs.artifact_name }}
-          path: allure-results
-
-      - name: Build Allure test report
-        uses: jcleigh/allure-single-file-report-action@6643467e7e337db164784d9dd9fbfa0c06699efd #v1.0.0
-        with:
-          allure_report: allure-report
-          allure_results: allure-results
-
-      - name: Archive Allure Report Artifact
-        run: |
-          set -e
-          zip -r allure-report.zip allure-report
-
-      - name: Upload Allure Report as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report.zip
+          version: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          is_latest: ${{ allure-results }}
