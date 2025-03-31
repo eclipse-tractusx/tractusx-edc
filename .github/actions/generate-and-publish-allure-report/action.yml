@@ -23,14 +23,12 @@ inputs:
   version:
     required: true
     description: "Version of the Tractus-X EDC release"
-    type: string
   token:
     required: true
     description: "Github token"
   allure_results:
     required: true
     description: "Allure results artifact name"
-    type: string
 
 runs:
   using: "composite"
