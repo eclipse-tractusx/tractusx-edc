@@ -140,16 +140,27 @@ jobs:
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
 
-  collect-allure-results:
-    runs-on: ubuntu-latest
-    needs: end-to-end-tests
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: allure-results
+#  collect-allure-results:
+#    runs-on: ubuntu-latest
+#    needs: end-to-end-tests
+#    steps:
+#      - uses: actions/download-artifact@v4
+#        with:
+#          path: allure-results
+#
+#      - name: List collected files
+#        run: ls -R allure-results
 
-      - name: List collected files
-        run: ls -R allure-results
+#  merge-artifacts:
+#    runs-on: ubuntu-latest
+#    needs: end-to-end-tests
+#    steps:
+#      - name: Merge Artifacts
+#        uses: actions/upload-artifact/merge@v4
+#        with:
+#          name: allure-results
+#          pattern: allure-results-*
+
 
   generate-allure-report:
     runs-on: ubuntu-latest

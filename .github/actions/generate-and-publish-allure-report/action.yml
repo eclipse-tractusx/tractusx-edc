@@ -40,7 +40,8 @@ runs:
     - name: Download Allure results
       uses: actions/download-artifact@v4
       with:
-        name: ${{ inputs.allure_results }}
+        pattern: ${{ inputs.allure_results }}-*
+        merge-multiple: true
         path: allure-results
 
     - name: Checkout gh-pages branch
