@@ -160,7 +160,7 @@ jobs:
 
       - name: Download Allure results
         uses: ./.github/actions/generate-and-publish-allure-report
-#        with:
-#          version: ${{ github.ref_name }}
+        with:
+          version: ${{ github.ref_name }}
 #          token: ${{ secrets.GITHUB_TOKEN }}
 #          allure_results: ${{ allure-results }}
