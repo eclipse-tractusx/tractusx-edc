@@ -186,22 +186,21 @@ jobs:
       - name: List collected files
         run: ls -R allure-results
 
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: gh-pages
+#      - name: Checkout gh-pages branch
+#        uses: actions/checkout@v4
+#        with:
+#          ref: gh-pages
+#          path: gh-pages
 
       - name: Build Allure test report
         uses: simple-elf/allure-report-action@v1.12
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: Allure-reports/${{ github.ref_name }}
+          allure_report: public/Allure-reports/${{ github.ref_name }}
 
       - name: Publish Allure test report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: gh-pages
+          publish_dir: ./public
