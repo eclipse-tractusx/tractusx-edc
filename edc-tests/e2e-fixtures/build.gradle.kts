@@ -51,6 +51,7 @@ dependencies {
     testFixturesApi(libs.postgres)
     testFixturesApi(libs.restAssured)
     testFixturesApi(libs.testcontainers.junit)
+    testFixturesApi(libs.testcontainers.minio)
     testFixturesApi(libs.testcontainers.postgres)
 }
 

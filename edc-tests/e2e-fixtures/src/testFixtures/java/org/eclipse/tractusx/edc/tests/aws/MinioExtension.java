@@ -27,7 +27,7 @@ import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MinIOContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.regions.Region;
@@ -48,7 +48,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String S3_REGION = Region.US_WEST_2.id();
-    private final MinioContainer minioContainer = new MinioContainer();
+
+    private final String accessKeyId = "test-access-key";
+    private final String secretAccessKey = UUID.randomUUID().toString();
+    private final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
+            .withEnv("MINIO_ROOT_USER", accessKeyId)
+            .withEnv("MINIO_ROOT_PASSWORD", secretAccessKey)
+            .withExposedPorts(9000)
+            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
     private final LazySupplier<AwsClientProvider> clientProvider = new LazySupplier<>(() ->
             new AwsClientProviderImpl(getConfiguration()));
 
@@ -63,7 +70,7 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
     }
 
     public AwsCredentials getCredentials() {
-        return minioContainer.getCredentials();
+        return AwsBasicCredentials.create(accessKeyId, secretAccessKey);
     }
 
     public String getEndpointOverride() {
@@ -106,20 +113,4 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
                 .build();
     }
 
-    private static class MinioContainer extends GenericContainer<MinioContainer> {
-
-        private final String accessKeyId = "test-access-key";
-        private final String secretAccessKey = UUID.randomUUID().toString();
-
-        MinioContainer() {
-            super("bitnami/minio");
-            addEnv("MINIO_ROOT_USER", accessKeyId);
-            addEnv("MINIO_ROOT_PASSWORD", secretAccessKey);
-            addExposedPort(9000);
-        }
-
-        public AwsBasicCredentials getCredentials() {
-            return AwsBasicCredentials.create(accessKeyId, secretAccessKey);
-        }
-    }
 }

@@ -139,6 +139,6 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
-        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
+        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}

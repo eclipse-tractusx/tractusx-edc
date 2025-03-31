@@ -30,15 +30,12 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
-import org.eclipse.edc.spi.monitor.ConsoleMonitor;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedUpload;
@@ -64,10 +61,6 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.createSparseFile;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
@@ -86,9 +79,9 @@ public class S3ToS3Test {
             new EmbeddedRuntime("AwsS3-Dataplane", ":edc-tests:runtime:dataplane-cloud")
                     .configurationProvider(() -> RuntimeConfig.S3.s3dataplaneConfig(CONTROL_API_URI))
                     .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-//                            "edc.dataplane.aws.sink.chunk.size.mb", "200"
+                            "edc.dataplane.aws.sink.chunk.size.mb", "50"
                     )))
-    ).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
+    );
 
     @RegisterExtension
     private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();
@@ -149,29 +142,30 @@ public class S3ToS3Test {
     }
 
     @Test
-    void transferFile_targetContainerNotExist_shouldFail() {
+    void shouldFail_whenDestinationBucketDoesNotExist() {
         var sourceBucketName = PROVIDER_CONTAINER.createBucket();
         PROVIDER_CONTAINER.uploadObjectOnBucket(sourceBucketName, TESTFILE_NAME, getFileFromResourceName(TESTFILE_NAME).toPath());
 
-        // do not create bucket in consumer -> will fail!
         var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
+        var processId = UUID.randomUUID().toString();
         given().when()
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
-                .body(createDataFlowStartMessage(sourceBucketName, "not-existent-bucket", additionalSourceAddressProperties, UUID.randomUUID().toString()))
+                .body(createDataFlowStartMessage(sourceBucketName, "not-existent-bucket", additionalSourceAddressProperties, processId))
                 .post()
                 .then()
                 .statusCode(200);
 
-        await().pollInterval(Duration.ofSeconds(2))
-                .atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class)).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
-                        isA(NoSuchBucketException.class)));
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+            var dataFlow = DATAPLANE_RUNTIME.getService(DataPlaneStore.class).findById(processId);
+            assertThat(dataFlow.stateAsString()).isEqualTo(NOTIFIED.name());
+            assertThat(dataFlow.getErrorDetail()).contains("The specified bucket does not exist");
+        });
     }
 
     @Test
-    void transferFile_OneGb() {
+    void shouldTransferOneGbFile() {
         var oneGigabyte = Math.pow(2, 30);
         var file = createSparseFile((long) oneGigabyte);
 
@@ -195,7 +189,7 @@ public class S3ToS3Test {
         });
 
         assertThat(future).succeedsWithin(Duration.ofSeconds(10));
-        await().atMost(Duration.ofSeconds(60)).untilAsserted(() -> {
+        await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
             var dataFlow = DATAPLANE_RUNTIME.getService(DataPlaneStore.class).findById(processId);
             assertThat(dataFlow.stateAsString()).isEqualTo(NOTIFIED.name());
             assertThat(dataFlow.getErrorDetail()).isNull();
