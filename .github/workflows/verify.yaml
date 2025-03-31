@@ -156,8 +156,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: collect-allure-results
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/generate-and-publish-allure-report
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Allure results
+        uses: ./.github/actions/generate-and-publish-allure-report
         with:
           version: ${{ github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
