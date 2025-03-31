@@ -147,9 +147,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v8
+
       - name: Generate and publish Allure report
         uses: ./.github/actions/generate-and-publish-allure-report
         with:
-          version: ${{ github.head_ref }}
+          version: ${{ steps.branch-name.outputs.current_branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allure_results: allure-results
