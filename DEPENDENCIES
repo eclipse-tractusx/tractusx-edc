@@ -666,8 +666,8 @@ maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-C
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
 maven/mavencentral/org.yaml/snakeyaml/2.4, Apache-2.0, approved, #19469
 maven/mavencentral/software.amazon.awssdk/annotations/2.30.2, Apache-2.0, approved, #19166
-maven/mavencentral/software.amazon.awssdk/annotations/2.30.36, Apache-2.0, approved, #19166
 maven/mavencentral/software.amazon.awssdk/annotations/2.31.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/annotations/2.31.11, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/apache-client/2.30.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/apache-client/2.31.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/arns/2.30.2, Apache-2.0, approved, #19917
@@ -697,19 +697,19 @@ maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.31.1, Apache-2.0, appr
 maven/mavencentral/software.amazon.awssdk/http-auth/2.30.2, Apache-2.0, approved, #19911
 maven/mavencentral/software.amazon.awssdk/http-auth/2.31.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.30.2, Apache-2.0, approved, #19169
-maven/mavencentral/software.amazon.awssdk/http-client-spi/2.30.36, Apache-2.0, approved, #19169
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.31.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-client-spi/2.31.11, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/iam/2.30.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.30.2, Apache-2.0, approved, #19914
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.31.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/json-utils/2.30.2, Apache-2.0, approved, #19918
 maven/mavencentral/software.amazon.awssdk/json-utils/2.31.1, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.30.2, Apache-2.0, approved, #19919
-maven/mavencentral/software.amazon.awssdk/metrics-spi/2.30.36, Apache-2.0, approved, #19919
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.31.1, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/metrics-spi/2.31.11, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.30.2, Apache-2.0, approved, #19163
-maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.30.36, Apache-2.0, approved, #19163
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.31.1, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.31.11, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/profiles/2.30.2, Apache-2.0, approved, #19171
 maven/mavencentral/software.amazon.awssdk/profiles/2.31.1, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.30.2, Apache-2.0, approved, #19168
@@ -729,6 +729,6 @@ maven/mavencentral/software.amazon.awssdk/sts/2.30.2, Apache-2.0, approved, clea
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.30.2, Apache-2.0, approved, #19920
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.31.1, Apache-2.0 AND BSD-2-Clause AND MIT, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/utils/2.30.2, Apache-2.0, approved, #19905
-maven/mavencentral/software.amazon.awssdk/utils/2.30.36, Apache-2.0, approved, #19905
 maven/mavencentral/software.amazon.awssdk/utils/2.31.1, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/utils/2.31.11, , restricted, clearlydefined
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, #19691
