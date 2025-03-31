@@ -65,9 +65,9 @@ jobs:
           is_latest: ${{ github.ref_name == 'main' }}
 
   verify:
-    name: "run-all-tests"
+    name: "verify"
     needs: [ validation, github-release ]
-    uses: ./.github/workflows/run-all-tests.yml
+    uses: ./.github/workflows/verify.yaml
 
   # Release: Update Release Notes with Allure Report Link
   allure-report:
