@@ -72,16 +72,16 @@ jobs:
   # Release: Update Release Notes with Allure Report Link
   allure-report:
     name: "Update Release Notes with Allure Report Link"
-    needs: [ validation, run-all-tests ]
+#    needs: [ validation, run-all-tests ]
     permissions:
       contents: write
-    if: needs.validation.outputs.RELEASE_VERSION
+#    if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
+#      - uses: actions/github-script@v7
+#        with:
+#          script: |
+#            const { owner, repo } = context.repo;
 #            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
             
 #            const { data: release } = await github.rest.repos.getReleaseByTag({
