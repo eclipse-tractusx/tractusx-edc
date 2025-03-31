@@ -65,9 +65,9 @@ jobs:
           is_latest: ${{ github.ref_name == 'main' }}
 
   verify:
-    name: "verify"
+    name: "run-all-tests"
     needs: [ validation, github-release ]
-    uses: ./.github/workflows/verify.yaml
+    uses: ./.github/workflows/run-all-tests.yml
 
   # Release: Update Release Notes with Allure Report Link
   allure-report:
@@ -89,7 +89,7 @@ jobs:
               tag: version
             });
 
-            const reportUrl = `https://${owner}.github.io/${repo}/Allure-reports/${{ github.ref_name }}/`;
+            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${{ github.ref_name }}/`;
             const reportPattern = /\*\*Test Report:\*\* \[View Report\]\([^)]+\)/;
             let body = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;;
 
