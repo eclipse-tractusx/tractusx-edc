@@ -78,7 +78,7 @@ allprojects {
             implementation("com.azure:azure-core-http-netty:1.15.10") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
-            implementation("software.amazon.awssdk:netty-nio-client:2.30.36") {
+            implementation("software.amazon.awssdk:netty-nio-client:2.31.11") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
             testImplementation("com.networknt:json-schema-validator:1.5.6") {
