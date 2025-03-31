@@ -120,6 +120,17 @@ jobs:
           ./gradlew compileJava compileTestJava
           ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
 
+      - name: Set sanitized artifact name
+        run: |
+          SANITIZED_NAME=$(echo "${{ matrix.variant.dir }}" | tr '/' '-')
+          echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ env.ARTIFACT_NAME }}
+          path: ${{ matrix.variant.dir }}/build/allure-results
+
   postgres-tests:
     runs-on: ubuntu-latest
     steps:
@@ -128,3 +139,22 @@ jobs:
 
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
+
+  generate-allure-report:
+    runs-on: ubuntu-latest
+    needs: end-to-end-tests
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v8
+
+      - name: Generate and publish Allure report
+        uses: ./.github/actions/generate-and-publish-allure-report
+        with:
+          version: ${{ steps.branch-name.outputs.current_branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allure_results: allure-results
