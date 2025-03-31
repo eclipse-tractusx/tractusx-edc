@@ -19,16 +19,16 @@
 
 name: "Generate and publish Allure report"
 description: "Generate and publish Allure report"
-inputs:
-  version:
-    required: true
-    description: "Version of the Tractus-X EDC release"
-  token:
-    required: true
-    description: "Github token"
-  allure_results:
-    required: true
-    description: "Allure results artifact name"
+#inputs:
+#  version:
+#    required: true
+#    description: "Version of the Tractus-X EDC release"
+#  token:
+#    required: true
+#    description: "Github token"
+#  allure_results:
+#    required: true
+#    description: "Allure results artifact name"
 
 runs:
   using: "composite"
