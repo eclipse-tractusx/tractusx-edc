@@ -82,7 +82,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
+#            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
             
 #            const { data: release } = await github.rest.repos.getReleaseByTag({
 #              owner,
