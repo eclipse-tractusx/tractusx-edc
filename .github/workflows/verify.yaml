@@ -150,6 +150,6 @@ jobs:
       - name: Generate and publish Allure report
         uses: ./.github/actions/generate-and-publish-allure-report
         with:
-          version: ${{ github.ref_name }}
+          version: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allure_results: allure-results

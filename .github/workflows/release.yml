@@ -91,7 +91,7 @@ jobs:
               tag: version
             });
 
-            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${{ github.ref_name }}/`;
+            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${{ github.head_ref }}/`;
             const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
 
             await github.rest.repos.updateRelease({
