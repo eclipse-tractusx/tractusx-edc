@@ -64,7 +64,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           is_latest: ${{ github.ref_name == 'main' }}
 
-  verify:
+  run-all-tests:
     name: "run-all-tests"
     needs: [ validation, github-release ]
     uses: ./.github/workflows/run-all-tests.yml
@@ -74,7 +74,8 @@ jobs:
     name: "Update Release Notes with Allure Report Link"
     permissions:
       contents: write
-    needs: [ verify ]
+    needs: run-all-tests
+    if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
       - uses: actions/github-script@v7
@@ -89,15 +90,8 @@ jobs:
               tag: version
             });
             
-            const reportUrl = `https://${owner}.github.io/${repo}/release-reports/${{ github.ref_name }}/`;
-            const reportPattern = /\*\*Test Report:\*\* \[View Report\]\([^)]+\)/;
-            let newBody;
-            
-            if (reportPattern.test(release.body)) {
-              newBody = release.body.replace(reportPattern, `**Test Report:** [View Report](${reportUrl})`);
-            } else {
-              newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
-            }
+            const reportUrl = `https://${owner}.github.io/${repo}/reports/${{ github.ref_name }}/`;
+            const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
             
             await github.rest.repos.updateRelease({
               owner,
