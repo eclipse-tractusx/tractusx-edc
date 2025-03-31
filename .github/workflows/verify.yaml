@@ -155,7 +155,6 @@ jobs:
     steps:
       - name: Checkout repository
       - uses: actions/checkout@v4
-
       - name: Download Allure results
       - uses: ./.github/actions/generate-and-publish-allure-report
         with:
