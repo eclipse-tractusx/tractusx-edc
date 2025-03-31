@@ -19,15 +19,10 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
-import java.util.List;
 
 public class TestFunctions {
     public static File createSparseFile(long sizeBytes) {
@@ -44,8 +39,4 @@ public class TestFunctions {
 
     }
 
-    public static List<String> listObjects(S3Client consumerClient, String bucketName) {
-        var response = consumerClient.listObjects(ListObjectsRequest.builder().bucket(bucketName).build());
-        return response.contents().stream().map(S3Object::key).toList();
-    }
 }

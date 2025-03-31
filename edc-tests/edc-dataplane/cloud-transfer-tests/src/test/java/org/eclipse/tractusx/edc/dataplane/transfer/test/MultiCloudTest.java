@@ -38,9 +38,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.net.URI;
 import java.time.Duration;
@@ -58,7 +55,6 @@ import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.AZB
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.CONSUMER_AZURITE_ACCOUNT;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.PREFIX_FOR_MUTIPLE_FILES;
 import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestConstants.TESTFILE_NAME;
-import static org.eclipse.tractusx.edc.dataplane.transfer.test.TestFunctions.listObjects;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
@@ -84,12 +80,10 @@ public class MultiCloudTest {
     private static final AzuriteExtension AZURITE_CONTAINER = new AzuriteExtension(AZURITE_HOST_PORT, CONSUMER_AZURITE_ACCOUNT);
 
     private AzureBlobClient blobStoreClient;
-    private S3Client s3Client;
 
     @BeforeEach
     void setup() {
         blobStoreClient = AZURITE_CONTAINER.getClientFor(CONSUMER_AZURITE_ACCOUNT);
-        s3Client = MINIO_CONTAINER.s3Client();
     }
 
     @Test
@@ -104,9 +98,7 @@ public class MultiCloudTest {
 
         vault.storeSecret(BLOB_KEY_ALIAS, CONSUMER_AZURITE_ACCOUNT.key());
 
-        var bucketName = UUID.randomUUID().toString();
-        var destinationBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
-        assertThat(destinationBucket.sdkHttpResponse().isSuccessful()).isTrue();
+        var bucketName = MINIO_CONTAINER.createBucket();
 
         var request = Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
@@ -148,9 +140,8 @@ public class MultiCloudTest {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
-                .untilAsserted(() -> assertThat(listObjects(s3Client, bucketName))
-                        .isNotEmpty()
-                        .containsAll(filesNames));
+                .untilAsserted(() -> assertThat(MINIO_CONTAINER.listObjects(bucketName))
+                        .isNotEmpty().containsAll(filesNames));
     }
 
     @Test
@@ -161,9 +152,7 @@ public class MultiCloudTest {
         blobStoreClient.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
         vault.storeSecret(BLOB_KEY_ALIAS, CONSUMER_AZURITE_ACCOUNT.key());
 
-        var bucketName = UUID.randomUUID().toString();
-        var r = s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
-        assertThat(r.sdkHttpResponse().isSuccessful()).isTrue();
+        var bucketName = MINIO_CONTAINER.createBucket();
 
         var request = Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
@@ -204,29 +193,19 @@ public class MultiCloudTest {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
-                .untilAsserted(() -> assertThat(listObjects(s3Client, bucketName))
-                        .isNotEmpty()
-                        .contains(TESTFILE_NAME));
+                .untilAsserted(() -> assertThat(MINIO_CONTAINER.listObjects(bucketName))
+                        .isNotEmpty().contains(TESTFILE_NAME));
     }
 
 
     @Test
     void transferFile_s3ToAzureMultipleFiles(Vault vault) {
-        var bucketName = UUID.randomUUID().toString();
-        var sourceBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
-        assertThat(sourceBucket.sdkHttpResponse().isSuccessful()).isTrue();
+        var bucketName = MINIO_CONTAINER.createBucket();
 
-        var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
-
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename -> putResponse.set(s3Client.putObject(PutObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(filename)
-                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
-                .sdkHttpResponse()
-                .isSuccessful() && putResponse.get()));
-        assertThat(putResponse.get()).isTrue();
+        fileNames.forEach(filename -> MINIO_CONTAINER
+                .uploadObjectOnBucket(bucketName, filename, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath()));
 
         var containerName = UUID.randomUUID().toString();
         blobStoreClient.createContainer(containerName);
@@ -279,20 +258,14 @@ public class MultiCloudTest {
 
     @Test
     void transferFile_s3ToAzureMultipleFiles_whenConsumerDefinesBloblName_success(Vault vault) {
-        var bucketName = UUID.randomUUID().toString();
-        var sourceBucket = s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
-        assertThat(sourceBucket.sdkHttpResponse().isSuccessful()).isTrue();
+        var bucketName = MINIO_CONTAINER.createBucket();
 
         var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
 
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename -> putResponse.set(s3Client.putObject(PutObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(filename)
-                        .build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath())
-                .sdkHttpResponse()
-                .isSuccessful() && putResponse.get()));
+        fileNames.forEach(filename -> MINIO_CONTAINER
+                .uploadObjectOnBucket(bucketName, filename, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath()));
 
         assertThat(putResponse.get()).isTrue();
 
@@ -349,11 +322,8 @@ public class MultiCloudTest {
 
     @Test
     void transferFile_s3ToAzure(Vault vault) {
-        var bucketName = UUID.randomUUID().toString();
-        var b1 = s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
-        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
-        var putResponse = s3Client.putObject(PutObjectRequest.builder().bucket(bucketName).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
-        assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
+        var bucketName = MINIO_CONTAINER.createBucket();
+        MINIO_CONTAINER.uploadObjectOnBucket(bucketName, TESTFILE_NAME, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
 
         var containerName = UUID.randomUUID().toString();
         blobStoreClient.createContainer(containerName);

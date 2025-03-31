@@ -33,9 +33,17 @@ import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
 
@@ -72,6 +80,23 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
 
     public String getS3region() {
         return S3_REGION;
+    }
+
+    public String createBucket() {
+        var bucketName = UUID.randomUUID().toString();
+        var response = s3Client().createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+        assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
+        return bucketName;
+    }
+
+    public void uploadObjectOnBucket(String bucketName, String key, Path filePath) {
+        var response = s3Client().putObject(PutObjectRequest.builder().bucket(bucketName).key(key).build(), filePath);
+        assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
+    }
+
+    public List<String> listObjects(String bucketName) {
+        return s3Client().listObjects(ListObjectsRequest.builder().bucket(bucketName).build())
+                .contents().stream().map(S3Object::key).toList();
     }
 
     private AwsClientProviderConfiguration getConfiguration() {
