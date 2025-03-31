@@ -169,9 +169,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+#      - name: Generate and publish Allure report
+##        uses: ./.github/actions/generate-and-publish-allure-report
+##        with:
+##          version: ${{ github.ref_name }}
+##          token: ${{ secrets.GITHUB_TOKEN }}
+##          allure_results: allure-results
+
       - name: Download Allure results
-        uses: ./.github/actions/generate-and-publish-allure-report
+        uses: actions/download-artifact@v4
         with:
-          version: ${{ github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: ${{ inputs.allure_results }}-*
+          merge-multiple: true
+          path: allure-results
+
+      - name: List collected files
+        run: ls -R allure-results
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build Allure test report
+        uses: simple-elf/allure-report-action@v1.12
+        with:
+          gh_pages: gh-pages
           allure_results: allure-results
+          allure_report: Allure-reports/${{ inputs.version }}
+
+      - name: Publish Allure test report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ inputs.token }}
+          publish_branch: gh-pages
+          publish_dir: gh-pages
