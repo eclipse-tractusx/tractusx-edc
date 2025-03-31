@@ -197,10 +197,10 @@ jobs:
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: public/Allure-reports/${{ github.ref_name }}
+          allure_report: Allure-reports/${{ github.ref_name }}
 
       - name: Publish Allure test report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: .
