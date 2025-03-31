@@ -179,7 +179,7 @@ jobs:
       - name: Download Allure results
         uses: actions/download-artifact@v4
         with:
-          pattern: ${{ inputs.allure_results }}-*
+          pattern: allure-results-*
           merge-multiple: true
           path: allure-results
 
@@ -197,11 +197,11 @@ jobs:
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: Allure-reports/${{ inputs.version }}
+          allure_report: Allure-reports/${{ github.ref_name }}
 
       - name: Publish Allure test report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ inputs.token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: gh-pages
