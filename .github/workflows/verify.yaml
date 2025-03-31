@@ -203,6 +203,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .${{ github.ref_name }}
+          publish_dir: ./${{ github.ref_name }}
           destination_dir: Allure-reports1/${{ github.ref_name }}
           keep_files: false
