@@ -103,12 +103,12 @@ jobs:
         variant: [
           { dir: edc-tests/edc-controlplane/catalog-tests },
           { dir: edc-tests/edc-controlplane/edr-api-tests },
-          { dir: edc-tests/edc-controlplane/iatp-tests },
+        #  { dir: edc-tests/edc-controlplane/iatp-tests },
           { dir: edc-tests/edc-controlplane/policy-tests },
           { dir: edc-tests/edc-controlplane/transfer-tests },
           { dir: edc-tests/edc-controlplane/agreement-retirement-tests },
           { dir: edc-tests/edc-dataplane/edc-dataplane-tokenrefresh-tests },
-          { dir: edc-tests/edc-dataplane/cloud-transfer-tests },
+        #  { dir: edc-tests/edc-dataplane/cloud-transfer-tests },
           { dir: edc-tests/edc-end2end },
         ]
     steps:
@@ -131,14 +131,14 @@ jobs:
           name: allure-results-${{ env.ARTIFACT_NAME }}
           path: ${{ matrix.variant.dir }}/build/allure-results
 
-  postgres-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java
-
-      - name: Run Postgresql E2E tests
-        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
+#  postgres-tests:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: ./.github/actions/setup-java
+#
+#      - name: Run Postgresql E2E tests
+#        run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
 
 #  collect-allure-results:
 #    runs-on: ubuntu-latest

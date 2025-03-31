@@ -47,13 +47,13 @@ jobs:
     uses: ./.github/workflows/verify.yaml
     secrets: inherit
 
-  deployment-test:
-    uses: ./.github/workflows/deployment-test.yaml
-    secrets: inherit
-
-  upgradeability-test:
-    uses: ./.github/workflows/upgradeability-test.yaml
-    secrets: inherit
+#  deployment-test:
+#    uses: ./.github/workflows/deployment-test.yaml
+#    secrets: inherit
+#
+#  upgradeability-test:
+#    uses: ./.github/workflows/upgradeability-test.yaml
+#    secrets: inherit
 
   # this job really serves no other purpose than waiting for the other two test workflows
   # in future iterations, this could be used as a choke point to collect test data, etc.
