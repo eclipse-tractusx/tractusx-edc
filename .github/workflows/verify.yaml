@@ -162,5 +162,5 @@ jobs:
         uses: ./.github/actions/generate-and-publish-allure-report
         with:
           version: ${{ github.ref_name }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 #          allure_results: ${{ allure-results }}
