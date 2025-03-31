@@ -141,28 +141,28 @@ jobs:
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
 
-  collect-allure-results:
-    runs-on: ubuntu-latest
-    needs: end-to-end-tests
-    steps:
-      - name: Download all artifacts
-      - uses: actions/download-artifact@v4
-        with:
-          path: allure-results
-
-      - name: List collected files
-        run: ls -R allure-results
-
-  generate-allure-report:
-    runs-on: ubuntu-latest
-    needs: collect-allure-results
-    steps:
-      - name: Checkout repository
-      - uses: actions/checkout@v4
-
-      - name: Download Allure results
-      - uses: ./.github/actions/generate-and-publish-allure-report
-        with:
-          version: ${{ github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allure_results: ${{ allure-results }}
+#  collect-allure-results:
+#    runs-on: ubuntu-latest
+#    needs: end-to-end-tests
+#    steps:
+#      - name: Download all artifacts
+#      - uses: actions/download-artifact@v4
+#        with:
+#          path: allure-results
+#
+#      - name: List collected files
+#        run: ls -R allure-results
+#
+#  generate-allure-report:
+#    runs-on: ubuntu-latest
+#    needs: collect-allure-results
+#    steps:
+#      - name: Checkout repository
+#      - uses: actions/checkout@v4
+#
+#      - name: Download Allure results
+#      - uses: ./.github/actions/generate-and-publish-allure-report
+#        with:
+#          version: ${{ github.ref_name }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          allure_results: ${{ allure-results }}
