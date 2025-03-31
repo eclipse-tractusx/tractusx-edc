@@ -165,4 +165,4 @@ jobs:
         with:
           version: ${{ github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          is_latest: ${{ allure-results }}
+          allure_results: ${{ allure-results }}
