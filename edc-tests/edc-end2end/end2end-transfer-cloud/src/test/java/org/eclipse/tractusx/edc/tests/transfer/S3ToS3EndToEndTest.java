@@ -29,13 +29,8 @@ import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -77,25 +72,14 @@ public class S3ToS3EndToEndTest {
     @RegisterExtension
     private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
 
-    private final S3Client providerClient = PROVIDER_CONTAINER.s3Client();
-    private final S3Client consumerClient = CONSUMER_CONTAINER.s3Client();
-
     @Test
     void transferFile_success() {
         var assetId = "s3-test-asset";
 
-        // create bucket in provider
-        var sourceBucketName = UUID.randomUUID().toString();
-        var b1 = providerClient.createBucket(CreateBucketRequest.builder().bucket(sourceBucketName).build());
-        assertThat(b1.sdkHttpResponse().isSuccessful()).isTrue();
-        // upload test file in provider
-        var putResponse = providerClient.putObject(PutObjectRequest.builder().bucket(sourceBucketName).key(TESTFILE_NAME).build(), TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
-        assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
+        var sourceBucketName = PROVIDER_CONTAINER.createBucket();
+        PROVIDER_CONTAINER.uploadObjectOnBucket(sourceBucketName, TESTFILE_NAME, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
 
-        // create bucket in consumer
-        var destinationBucketName = UUID.randomUUID().toString();
-        var b2 = consumerClient.createBucket(CreateBucketRequest.builder().bucket(destinationBucketName).build());
-        assertThat(b2.sdkHttpResponse().isSuccessful()).isTrue();
+        var destinationBucketName = CONSUMER_CONTAINER.createBucket();
 
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",
@@ -113,7 +97,6 @@ public class S3ToS3EndToEndTest {
         provider().createAsset(assetId, Map.of(), dataAddress);
         var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
-
 
         var destination = Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
@@ -138,8 +121,7 @@ public class S3ToS3EndToEndTest {
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
-            var rq = ListObjectsRequest.builder().bucket(destinationBucketName).build();
-            assertThat(consumerClient.listObjects(rq).contents()).isNotEmpty();
+            assertThat(CONSUMER_CONTAINER.listObjects(destinationBucketName)).isNotEmpty();
         });
     }
 

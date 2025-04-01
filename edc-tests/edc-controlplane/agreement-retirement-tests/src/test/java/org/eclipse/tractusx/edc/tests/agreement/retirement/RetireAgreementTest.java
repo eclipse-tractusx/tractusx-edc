@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -78,7 +77,6 @@ public class RetireAgreementTest {
         @Test
         @DisplayName("Verify all existing TPs related to an agreement are terminated upon its retirement")
         void retireAgreement_shouldCloseTransferProcesses() {
-
             var assetId = "api-asset-1";
 
             Map<String, Object> dataAddress = Map.of(
@@ -128,8 +126,6 @@ public class RetireAgreementTest {
             var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, privateProperties, dataDestination, "HttpData-PULL");
 
             CONSUMER.waitForTransferProcess(failedTransferId, TransferProcessStates.TERMINATED);
-
-
         }
 
         @Test
@@ -138,7 +134,7 @@ public class RetireAgreementTest {
         }
 
         @AfterEach
-        void teardown() throws IOException {
+        void teardown() {
             server.stop();
         }
     }
