@@ -2,7 +2,7 @@
 
 ## Decision
 
-TractusX-EDC will expose the BPNs  in a BPN Group provided a Group identifier. For this a new endpoint will be created in the `BusinessPartnerGroupApi`.
+TractusX-EDC will expose an endpoint that will provide the BPNs contained in a BPN Group given the BPN Group identifier.
 
 ## Rationale
 
@@ -15,7 +15,7 @@ So having a new endpoint that returns which BPNs are present in a BPN Group allo
 
 ## Approach
 
-1. In `BusinessPartnerGroupApiV3` create a new GET endpoint able to resolve all BPNs for a particular BPN group given this group name. The group name should be a path param (appending `/group/{group}`).
+1. In `BusinessPartnerGroupApiV3` create a new GET endpoint able to resolve all BPNs for a particular BPN group given this group identifier. The group identifier should be a path param (appending `/group/{group}`).
 2. Response of the new endpoint should follow the format of the other read endpoint, updated to reflect the groups instead, similar to the next.
 ```
 {
@@ -33,6 +33,6 @@ So having a new endpoint that returns which BPNs are present in a BPN Group allo
     2. Populate the groups table with the groups in the `edc_business_partner_group` table (by parsing the groups json array);
     3. Create and populate a many-to-many junction table relating the BPNs listed in the `edc_business_partner_group` table and the new groups table; 
     4. Update the statement templates in the [`PostgresBusinessPartnerGroupStatements`](https://github.com/eclipse-tractusx/tractusx-edc/blob/0.9.0/edc-extensions/bpn-validation/business-partner-store-sql/src/main/java/org/eclipse/tractusx/edc/validation/businesspartner/store/sql/PostgresBusinessPartnerGroupStatements.java) to target the updated logic;
-    5. Adapt the `BaseBusinessPartnerGroupApiController` CUD operations to target the `edc_business_partner_group` and the new BPN Groups table.
+    5. Adapt the `BaseBusinessPartnerGroupApiController` CRUD operations to target the `edc_business_partner_group` and the new BPN Groups table.
     6. After all this, [the column groups](https://github.com/eclipse-tractusx/tractusx-edc/blob/0.9.0/edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/bpn/V0_0_1__Init_BusinessGroup_Schema.sql#L20) in the table `edc_business_partner_group` can be dropped.
 
