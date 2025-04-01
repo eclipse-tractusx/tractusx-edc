@@ -51,12 +51,10 @@ import static org.hamcrest.Matchers.contains;
 
 public class EmptyAssetSelectorValidatorTest {
 
-
     protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
-
 
     abstract static class Tests {
 
@@ -113,7 +111,7 @@ public class EmptyAssetSelectorValidatorTest {
                 requestBody.add(CONTRACT_DEFINITION_ASSETS_SELECTOR, criterionArray);
             }
 
-            return PROVIDER.getManagementEndpoint().baseRequest()
+            return PROVIDER.baseManagementRequest()
                     .contentType(JSON)
                     .body(requestBody.build())
                     .when()

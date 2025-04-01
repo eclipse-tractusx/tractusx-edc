@@ -87,7 +87,6 @@ import static org.mockserver.model.StringBody.exact;
  * performs as expected.
  * The provider data plane is mocked with a {@link ClientAndServer}.
  */
-@EndToEndTest
 public class EdrCacheApiEndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()

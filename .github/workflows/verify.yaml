@@ -105,30 +105,32 @@ jobs:
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
+  prepare-end-to-end-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.outputStep.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: get api groups and create matrix for next job
+        id: outputStep
+        run: |
+          DIRS=$(ls -l edc-tests/e2e | grep '^d' | awk '{print $9}' | sed ':a; N; $!ba; s/\n/","/g' | sed 's/.*/["&"]/')
+          echo "matrix={\"dir\": ${DIRS}}" >> $GITHUB_OUTPUT
+
   end-to-end-tests:
     runs-on: ubuntu-latest
+    needs: prepare-end-to-end-tests
     strategy:
       fail-fast: false
-      matrix:
-        variant: [
-          { dir: edc-tests/edc-controlplane/catalog-tests },
-          { dir: edc-tests/edc-controlplane/edr-api-tests },
-          { dir: edc-tests/edc-controlplane/iatp-tests },
-          { dir: edc-tests/edc-controlplane/policy-tests },
-          { dir: edc-tests/edc-controlplane/transfer-tests },
-          { dir: edc-tests/edc-controlplane/agreement-retirement-tests },
-          { dir: edc-tests/edc-dataplane/edc-dataplane-tokenrefresh-tests },
-          { dir: edc-tests/edc-dataplane/cloud-transfer-tests },
-          { dir: edc-tests/edc-end2end },
-        ]
+      matrix: ${{ fromJson(needs.prepare-end-to-end-tests.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
 
-      - name: Run E2E tests (${{ matrix.variant.dir }})
+      - name: Run E2E tests (${{ matrix.dir }})
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
+          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
