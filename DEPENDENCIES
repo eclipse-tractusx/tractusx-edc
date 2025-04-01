@@ -652,6 +652,7 @@ maven/mavencentral/org.testcontainers/jdbc/1.20.5, Apache-2.0, approved, #16621
 maven/mavencentral/org.testcontainers/jdbc/1.20.6, Apache-2.0, approved, #16621
 maven/mavencentral/org.testcontainers/junit-jupiter/1.20.5, MIT, approved, #16552
 maven/mavencentral/org.testcontainers/junit-jupiter/1.20.6, MIT, approved, #16552
+maven/mavencentral/org.testcontainers/minio/1.20.5, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/postgresql/1.20.5, MIT, approved, #16627
 maven/mavencentral/org.testcontainers/postgresql/1.20.6, MIT, approved, #16627
 maven/mavencentral/org.testcontainers/testcontainers/1.20.5, MIT, approved, #15747
