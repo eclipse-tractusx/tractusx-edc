@@ -27,12 +27,6 @@ So having a new endpoint that returns which BPNs are present in a BPN Group allo
 	"@context": {...}
 }
 ```
-3. Using the `BusinessPartnerStore` include a new operation that resolves the BPNs for a BPN Group and the change is reflected in the two existing implementations (In Memory and SQL).
-4. Adapt the DB schema by adding a SQL migration that includes a new relationship table for BPNs and BPN groups. 
-    1. Create a table for the BPN groups (where the group name is unique);
-    2. Populate the groups table with the groups in the `edc_business_partner_group` table (by parsing the groups json array);
-    3. Create and populate a many-to-many junction table relating the BPNs listed in the `edc_business_partner_group` table and the new groups table; 
-    4. Update the statement templates in the [`PostgresBusinessPartnerGroupStatements`](https://github.com/eclipse-tractusx/tractusx-edc/blob/0.9.0/edc-extensions/bpn-validation/business-partner-store-sql/src/main/java/org/eclipse/tractusx/edc/validation/businesspartner/store/sql/PostgresBusinessPartnerGroupStatements.java) to target the updated logic;
-    5. Adapt the `BaseBusinessPartnerGroupApiController` CRUD operations to target the `edc_business_partner_group` and the new BPN Groups table.
-    6. After all this, [the column groups](https://github.com/eclipse-tractusx/tractusx-edc/blob/0.9.0/edc-extensions/migrations/control-plane-migration/src/main/resources/org/eclipse/tractusx/edc/postgresql/migration/bpn/V0_0_1__Init_BusinessGroup_Schema.sql#L20) in the table `edc_business_partner_group` can be dropped.
+3. Create a query targeting the `edc_business_partner_group` table to evaluate and extract the BPN groups associated with a given BPN.
+4. Using the `BusinessPartnerStore` include a new operation that resolves the BPNs for a BPN Group and the change is reflected in the two existing implementations (In Memory and SQL).
 
