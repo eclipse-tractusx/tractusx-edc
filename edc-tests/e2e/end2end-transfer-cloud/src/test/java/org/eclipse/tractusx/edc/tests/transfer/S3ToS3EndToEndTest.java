@@ -26,9 +26,10 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
+import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Map;
 
@@ -43,29 +44,34 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
+import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 /**
  * This test is intended to verify transfers within the same cloud provider, i.e. S3-to-S3.
  * It spins up a fully-fledged dataplane and issues the DataFlowStartMessage via the data plane's Control API
  */
-@Testcontainers
 @EndToEndTest
 public class S3ToS3EndToEndTest {
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+
+    private static final String TESTFILE_NAME = "hello.txt";
+
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
-    @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
-    @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
 
-    private static final String TESTFILE_NAME = "hello.txt";
+    @RegisterExtension
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(PROVIDER.getName(), CONSUMER.getName());
+
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES, PROVIDER::getConfig);
+    @RegisterExtension
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES, CONSUMER::getConfig);
 
     @RegisterExtension
     private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();

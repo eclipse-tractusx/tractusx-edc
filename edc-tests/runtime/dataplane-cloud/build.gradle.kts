@@ -37,7 +37,6 @@ application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
 
-// do not publish
 edcBuild {
     publish.set(false)
 }

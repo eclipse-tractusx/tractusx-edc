@@ -26,8 +26,10 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
+import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
@@ -47,7 +49,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
+import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -59,29 +61,35 @@ import static org.mockserver.model.HttpResponse.response;
 @EndToEndTest
 public class TransferWithTokenRefreshTest {
 
-    public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
-    public static final String MOCK_BACKEND_PATH = "/mock/api";
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+    private static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
+    private static final String MOCK_BACKEND_PATH = "/mock/api";
+    private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
+
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
-    private static final Long VERY_SHORT_TOKEN_EXPIRY = 3L;
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(PROVIDER.getName(), CONSUMER.getName());
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), () ->
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
+
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES, () ->
             PROVIDER.getConfig().merge(ConfigFactory.fromMap(Map.of(
                     "edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY),
                     "edc.dataplane.token.expiry.tolerance", "0"
             ))))
             .registerServiceMock(BdrsClient.class, (c) -> CONSUMER.getDid());
-    protected ClientAndServer server;
+
+    private ClientAndServer server;
     private String privateBackendUrl;
 
     @BeforeEach
