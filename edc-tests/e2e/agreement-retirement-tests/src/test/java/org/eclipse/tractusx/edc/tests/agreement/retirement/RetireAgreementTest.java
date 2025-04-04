@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.tests.agreement.retirement;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
@@ -31,7 +30,6 @@ import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -49,121 +47,100 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
+@EndToEndTest
 public class RetireAgreementTest {
 
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
 
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
 
+    @RegisterExtension
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
 
-    abstract static class Tests {
+    @RegisterExtension
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
-        ClientAndServer server;
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
-        @BeforeEach
-        void setup() {
-            server = ClientAndServer.startClientAndServer("localhost", getFreePort());
-        }
+    private ClientAndServer server;
 
-        @Test
-        @DisplayName("Verify all existing TPs related to an agreement are terminated upon its retirement")
-        void retireAgreement_shouldCloseTransferProcesses() {
-            var assetId = "api-asset-1";
-
-            Map<String, Object> dataAddress = Map.of(
-                    "name", "transfer-test",
-                    "baseUrl", "https://mock-url.com",
-                    "type", "HttpData",
-                    "contentType", "application/json"
-            );
-
-            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-
-            PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
-            var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1"));
-            var policy = PolicyHelperFunctions.frameworkPolicy(Map.of());
-            var contractPolicy = PROVIDER.createPolicyDefinition(policy);
-            PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
-
-            var edrsApi = CONSUMER.edrs();
-
-            edrsApi.negotiateEdr(PROVIDER, assetId, Json.createArrayBuilder().build());
-
-            await().pollInterval(ASYNC_POLL_INTERVAL)
-                    .atMost(ASYNC_TIMEOUT)
-                    .untilAsserted(() -> {
-                        var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
-                        assertThat(edrCaches).hasSize(1);
-                    });
-
-            var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
-
-            var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
-
-            var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
-
-            var response = PROVIDER.retireProviderAgreement(agreementId);
-            response.statusCode(204);
-
-            // verify existing TP on consumer retires
-
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
-
-            // verify no new TP can start for same contract agreement
-
-            var privateProperties = Json.createObjectBuilder().build();
-            var dataDestination = Json.createObjectBuilder().add("type", "HttpData").build();
-
-            var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, privateProperties, dataDestination, "HttpData-PULL");
-
-            CONSUMER.waitForTransferProcess(failedTransferId, TransferProcessStates.TERMINATED);
-        }
-
-        @Test
-        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
-            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
-        }
-
-        @AfterEach
-        void teardown() {
-            server.stop();
-        }
+    @BeforeEach
+    void setup() {
+        server = ClientAndServer.startClientAndServer("localhost", getFreePort());
     }
 
-    @Nested
-    @EndToEndTest
-    class InMemory extends Tests {
+    @Test
+    @DisplayName("Verify all existing TPs related to an agreement are terminated upon its retirement")
+    void retireAgreement_shouldCloseTransferProcesses() {
+        var assetId = "api-asset-1";
 
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", "https://mock-url.com",
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
 
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
+        PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
+        var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1"));
+        var policy = PolicyHelperFunctions.frameworkPolicy(Map.of());
+        var contractPolicy = PROVIDER.createPolicyDefinition(policy);
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
+
+        var edrsApi = CONSUMER.edrs();
+
+        edrsApi.negotiateEdr(PROVIDER, assetId, Json.createArrayBuilder().build());
+
+        await().pollInterval(ASYNC_POLL_INTERVAL)
+                .atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> {
+                    var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
+                    assertThat(edrCaches).hasSize(1);
+                });
+
+        var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
+
+        var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
+
+        var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
+
+        var response = PROVIDER.retireProviderAgreement(agreementId);
+        response.statusCode(204);
+
+        // verify existing TP on consumer retires
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
+
+        // verify no new TP can start for same contract agreement
+
+        var privateProperties = Json.createObjectBuilder().build();
+        var dataDestination = Json.createObjectBuilder().add("type", "HttpData").build();
+
+        var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, privateProperties, dataDestination, "HttpData-PULL");
+
+        CONSUMER.waitForTransferProcess(failedTransferId, TransferProcessStates.TERMINATED);
     }
 
-    @Nested
-    @PostgresqlIntegrationTest
-    class Postgres extends Tests {
-
-        @RegisterExtension
-        @Order(0)
-        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-
+    @Test
+    void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
+        PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
     }
+
+    @AfterEach
+    void teardown() {
+        server.stop();
+    }
+
 }

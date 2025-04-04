@@ -20,12 +20,10 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -33,59 +31,38 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
-public class TransferPushEndToEndTest {
+@EndToEndTest
+public class TransferPushEndToEndTest extends ProviderPushBaseTest {
 
-    abstract static class Tests extends ProviderPushBaseTest {
+    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
+            .build();
+    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
+            .build();
 
-        protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
-                .name(CONSUMER_NAME)
-                .id(CONSUMER_BPN)
-                .build();
-        protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
-                .name(PROVIDER_NAME)
-                .id(PROVIDER_BPN)
-                .build();
+    @RegisterExtension
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
 
-        @Override
-        public TractusxParticipantBase provider() {
-            return PROVIDER;
-        }
+    @RegisterExtension
+    protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
-        @Override
-        public TractusxParticipantBase consumer() {
-            return CONSUMER;
-        }
+    @RegisterExtension
+    protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
+    @Override
+    public TractusxParticipantBase provider() {
+        return PROVIDER;
     }
 
-    @Nested
-    @EndToEndTest
-    class InMemory extends Tests {
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
-
+    @Override
+    public TractusxParticipantBase consumer() {
+        return CONSUMER;
     }
 
-    @Nested
-    @PostgresqlIntegrationTest
-    class Postgres extends Tests {
-
-        @RegisterExtension
-        @Order(0)
-        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-
-    }
 }

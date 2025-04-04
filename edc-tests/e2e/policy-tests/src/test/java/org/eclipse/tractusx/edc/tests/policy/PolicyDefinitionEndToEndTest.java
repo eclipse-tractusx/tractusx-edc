@@ -21,13 +21,11 @@ package org.eclipse.tractusx.edc.tests.policy;
 
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -48,38 +46,44 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
+@EndToEndTest
 public class PolicyDefinitionEndToEndTest {
 
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
 
 
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
 
-    abstract static class Tests {
+    @RegisterExtension
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
 
-        @DisplayName("Policy is accepted")
-        @ParameterizedTest(name = "{1}")
-        @ArgumentsSource(ValidContractPolicyProvider.class)
-        void shouldAcceptValidPolicyDefinitions(JsonObject policy, String description) {
-            PROVIDER.createPolicyDefinition(policy);
-        }
+    @RegisterExtension
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
-        @DisplayName("Policy is accepted")
-        @ParameterizedTest(name = "{1}")
-        @ArgumentsSource(InValidContractPolicyProvider.class)
-        void shouldNotAcceptInvalidValidPolicyDefinitions(JsonObject policy, String description) {
-            assertThatThrownBy(() -> PROVIDER.createPolicyDefinition(policy));
-        }
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
+    @DisplayName("Policy is accepted")
+    @ParameterizedTest(name = "{1}")
+    @ArgumentsSource(ValidContractPolicyProvider.class)
+    void shouldAcceptValidPolicyDefinitions(JsonObject policy, String description) {
+        PROVIDER.createPolicyDefinition(policy);
+    }
+
+    @DisplayName("Policy is accepted")
+    @ParameterizedTest(name = "{1}")
+    @ArgumentsSource(InValidContractPolicyProvider.class)
+    void shouldNotAcceptInvalidValidPolicyDefinitions(JsonObject policy, String description) {
+        assertThatThrownBy(() -> PROVIDER.createPolicyDefinition(policy));
     }
 
     private abstract static class BaseContractPolicyProvider implements ArgumentsProvider {
@@ -130,31 +134,4 @@ public class PolicyDefinitionEndToEndTest {
         }
     }
 
-    @Nested
-    @EndToEndTest
-    class InMemory extends Tests {
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
-
-    }
-
-    @Nested
-    @PostgresqlIntegrationTest
-    class Postgres extends Tests {
-
-        @RegisterExtension
-        @Order(0)
-        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-
-    }
 }

@@ -27,8 +27,6 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
-
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
 }
 
 // do not publish

@@ -24,29 +24,17 @@ plugins {
 
 
 dependencies {
-
-    // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude(module = "json-ld-core")
-        exclude(module = "tx-dcp-sts-dim")
-        exclude(group = "org.eclipse.edc", "vault-hashicorp")
-        exclude(module = "tx-dcp")
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
+        exclude("org.eclipse.edc", "vault-hashicorp")
+        exclude(module = "tx-dcp")
+        exclude(module = "tx-dcp-sts-dim")
     }
 
-    // use basic (all in-mem) data plane
     runtimeOnly(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
-        exclude("org.eclipse.edc", "api-observability")
         exclude("org.eclipse.edc", "data-plane-selector-client")
         exclude("org.eclipse.edc", "vault-hashicorp")
     }
-
-    implementation(libs.postgres)
-
-    implementation(libs.edc.core.controlplane)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-    runtimeOnly(libs.edc.transaction.local)
 }
 
 application {

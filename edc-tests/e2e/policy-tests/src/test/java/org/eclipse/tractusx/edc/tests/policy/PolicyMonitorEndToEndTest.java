@@ -20,11 +20,9 @@
 package org.eclipse.tractusx.edc.tests.policy;
 
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -42,81 +40,60 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
+@EndToEndTest
 public class PolicyMonitorEndToEndTest {
 
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
 
 
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
 
-    abstract static class Tests {
+    @RegisterExtension
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
 
-        @Test
-        void shouldTerminateTransfer_whenPolicyExpires() {
-            var assetId = UUID.randomUUID().toString();
+    @RegisterExtension
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
-            Map<String, Object> dataAddress = Map.of(
-                    "name", "transfer-test",
-                    "baseUrl", "http://localhost:8080",
-                    "type", "HttpData",
-                    "contentType", "application/json",
-                    "proxyQueryParams", "true"
-            );
-            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
-            var policy = inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
-            var policyId = PROVIDER.createPolicyDefinition(policy);
-            PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+    @Test
+    void shouldTerminateTransfer_whenPolicyExpires() {
+        var assetId = UUID.randomUUID().toString();
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", "http://localhost:8080",
+                "type", "HttpData",
+                "contentType", "application/json",
+                "proxyQueryParams", "true"
+        );
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var policy = inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
+        var policyId = PROVIDER.createPolicyDefinition(policy);
+        PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
 
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
-            await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-                var state = CONSUMER.getTransferProcessState(transferProcessId);
-                assertThat(state).isEqualTo(STARTED.name());
-            });
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
+            assertThat(state).isEqualTo(STARTED.name());
+        });
 
-            await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-                var state = CONSUMER.getTransferProcessState(transferProcessId);
-                assertThat(state).isEqualTo(TERMINATED.name());
-            });
-        }
-
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
+            assertThat(state).isEqualTo(TERMINATED.name());
+        });
     }
 
-    @Nested
-    @EndToEndTest
-    class InMemory extends Tests {
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
-
-    }
-
-    @Nested
-    @PostgresqlIntegrationTest
-    class Postgres extends Tests {
-
-        @RegisterExtension
-        @Order(0)
-        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-
-    }
 }

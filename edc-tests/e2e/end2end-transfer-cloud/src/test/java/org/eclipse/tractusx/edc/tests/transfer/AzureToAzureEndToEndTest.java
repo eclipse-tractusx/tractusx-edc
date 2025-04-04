@@ -21,20 +21,23 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import com.azure.core.util.BinaryData;
 import org.apache.commons.codec.binary.Base64;
+import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageResourceDefinition;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.tests.azure.AzureBlobClient;
 import org.eclipse.tractusx.edc.tests.azure.AzuriteExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
+import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Map;
 import java.util.UUID;
@@ -52,33 +55,36 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
+import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 /**
  * This test runs through a contract negotiation and transfer process phase, then transfers files from an Az Blob container
  * to another Az blob container
  */
-@Testcontainers
 @EndToEndTest
 public class AzureToAzureEndToEndTest {
 
     public static final String PROVIDER_KEY_ALIAS = "provider-key-alias";
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .build();
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .build();
     private static final int AZURITE_HOST_PORT = getFreePort();
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(),
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(PROVIDER.getName(), CONSUMER.getName());
+
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES,
             () -> PROVIDER.getConfig().merge(additionalAzureConfig()));
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(),
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES,
             () -> CONSUMER.getConfig().merge(additionalAzureConfig()));
 
     private static final AzuriteExtension.Account PROVIDER_AZURITE_ACCOUNT = new AzuriteExtension.Account("provider", Base64.encodeBase64String("provider-key".getBytes()));
@@ -106,6 +112,8 @@ public class AzureToAzureEndToEndTest {
 
     @BeforeEach
     void setup() {
+        CONSUMER_RUNTIME.getService(TypeManager.class).registerTypes(ObjectStorageResourceDefinition.class);
+
         PROVIDER_RUNTIME.getService(Vault.class)
                 .storeSecret(PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
 
