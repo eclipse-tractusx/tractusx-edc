@@ -19,6 +19,11 @@
 
 package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,13 +37,13 @@ public class RuntimeConfig {
     /**
      * Configures the data plane token endpoint, and all relevant HTTP contexts
      */
-    public static Map<String, String> baseConfig(String controlPath, int controlPort) {
-        return new HashMap<>() {
+    private static Config baseConfig(LazySupplier<URI> controlApi) {
+        return ConfigFactory.fromMap(new HashMap<>() {
             {
                 put("web.http.path", "/api");
                 put("web.http.port", String.valueOf(getFreePort()));
-                put("web.http.control.path", controlPath);
-                put("web.http.control.port", String.valueOf(controlPort));
+                put("web.http.control.path", controlApi.get().getPath());
+                put("web.http.control.port", String.valueOf(controlApi.get().getPort()));
                 put("web.http.public.path", "/public");
                 put("web.http.public.port", String.valueOf(getFreePort()));
                 put("web.http.consumer.api.path", "/api/consumer");
@@ -53,36 +58,25 @@ public class RuntimeConfig {
                 put("edc.transfer.proxy.token.verifier.publickey.alias", "not-used-but-mandatory");
                 put("edc.transfer.proxy.token.signer.privatekey.alias", "not-used-but-mandatory");
             }
-        };
+        });
     }
 
     /**
      * Azure specific configuration, e.g. access credentials, blobstore endpoint templates, etc.
      */
     public static class Azure {
-        /**
-         * Creates a configuration for a Provider runtime, running Azure ingress and egress
-         *
-         * @param controlPath       the controlPath of the control API
-         * @param controlPort       the port of the control API
-         * @param mappedAzuritePort the host port for the Blob endpoint template.
-         */
-        public static Map<String, String> blobstoreDataplaneConfig(String controlPath, int controlPort, Integer mappedAzuritePort) {
-            var base = baseConfig(controlPath, controlPort);
 
-            base.putAll(new HashMap<>() {
-                {
-                    put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + mappedAzuritePort + "/%s");
-                }
-            });
-            return base;
+        public static Config blobstoreDataplaneConfig(LazySupplier<URI> controlApi, Integer mappedAzuritePort) {
+            return baseConfig(controlApi).merge(ConfigFactory.fromMap(Map.of(
+                    "edc.blobstore.endpoint.template", "http://127.0.0.1:" + mappedAzuritePort + "/%s"
+            )));
         }
     }
 
     public static class S3 {
 
-        public static Map<String, String> s3dataplaneConfig(String controlPath, int controlPort) {
-            return baseConfig(controlPath, controlPort);
+        public static Config s3dataplaneConfig(LazySupplier<URI> controlApi) {
+            return baseConfig(controlApi);
         }
     }
 }

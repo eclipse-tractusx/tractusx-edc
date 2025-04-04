@@ -20,26 +20,20 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.Json;
-import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
-import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
-import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
@@ -76,7 +70,6 @@ public class S3ToS3EndToEndTest {
     @RegisterExtension
     protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
 
-    private static final String S3_REGION = Region.US_WEST_2.id();
     private static final String TESTFILE_NAME = "hello.txt";
 
     @RegisterExtension
@@ -84,27 +77,8 @@ public class S3ToS3EndToEndTest {
     @RegisterExtension
     private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
 
-    private S3Client providerClient;
-    private S3Client consumerClient;
-    private String providerEndpointOverride;
-    private String consumerEndpointOverride;
-
-    @BeforeEach
-    void setup() {
-        providerEndpointOverride = "http://localhost:%s/".formatted(PROVIDER_CONTAINER.getPort());
-        var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(PROVIDER_CONTAINER::getCredentials)
-                .build();
-        providerClient = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(S3_REGION, providerEndpointOverride));
-
-        consumerEndpointOverride = "http://localhost:%s".formatted(CONSUMER_CONTAINER.getPort());
-        var consumerConfig = AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(consumerEndpointOverride))
-                .credentialsProvider(CONSUMER_CONTAINER::getCredentials)
-                .build();
-        consumerClient = new AwsClientProviderImpl(consumerConfig).s3Client(S3ClientRequest.from(S3_REGION, consumerEndpointOverride));
-    }
+    private final S3Client providerClient = PROVIDER_CONTAINER.s3Client();
+    private final S3Client consumerClient = CONSUMER_CONTAINER.s3Client();
 
     @Test
     void transferFile_success() {
@@ -128,11 +102,11 @@ public class S3ToS3EndToEndTest {
                 "@type", "DataAddress",
                 "type", "AmazonS3",
                 "objectName", TESTFILE_NAME,
-                "region", S3_REGION,
+                "region", PROVIDER_CONTAINER.getS3region(),
                 "bucketName", sourceBucketName,
                 "accessKeyId", PROVIDER_CONTAINER.getCredentials().accessKeyId(),
                 "secretAccessKey", PROVIDER_CONTAINER.getCredentials().secretAccessKey(),
-                "endpointOverride", providerEndpointOverride
+                "endpointOverride", PROVIDER_CONTAINER.getEndpointOverride()
         );
 
         // create objects in EDC
@@ -147,9 +121,9 @@ public class S3ToS3EndToEndTest {
                 .add(EDC_NAMESPACE + "properties", Json.createObjectBuilder()
                         .add(EDC_NAMESPACE + "type", "AmazonS3")
                         .add(EDC_NAMESPACE + "objectName", TESTFILE_NAME)
-                        .add(EDC_NAMESPACE + "region", S3_REGION)
+                        .add(EDC_NAMESPACE + "region", CONSUMER_CONTAINER.getS3region())
                         .add(EDC_NAMESPACE + "bucketName", destinationBucketName)
-                        .add(EDC_NAMESPACE + "endpointOverride", consumerEndpointOverride)
+                        .add(EDC_NAMESPACE + "endpointOverride", CONSUMER_CONTAINER.getEndpointOverride())
                         .add(EDC_NAMESPACE + "accessKeyId", CONSUMER_CONTAINER.getCredentials().accessKeyId())
                         .add(EDC_NAMESPACE + "secretAccessKey", CONSUMER_CONTAINER.getCredentials().secretAccessKey())
                         .build()

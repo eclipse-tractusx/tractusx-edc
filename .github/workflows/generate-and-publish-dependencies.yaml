@@ -18,14 +18,11 @@
 #################################################################################
 
 
-name: "3rd Party dependency check (Eclipse Dash)"
+name: "Generate DEPENDENCIES file and publish to GitHub pages"
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -38,25 +35,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java
-
-      - name: generate dependency list
+      - uses: ./.github/actions/generate-and-check-dependencies
+      - name: Prepare to publish
+        shell: bash
         run: |
-          ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq > dependency-list
-          cat dependency-list
-
-      - name: Run dash
-        id: run-dash
-        uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@main
+          mkdir public
+          cp DEPENDENCIES public/
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          dash_input: dependency-list
-          dependencies_file: DEPENDENCIES
-          fail_on_out_of_date: true
-          fail_on_rejected: true
-          fail_on_restricted: false
-
-      - name: print generated file
-        if: failure()
-        run: |
-          echo "=== Please copy the following content back to DEPENDENCIES ==="
-          cat DEPENDENCIES
-          echo "=== end of content ==="
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
+          keep_files: true

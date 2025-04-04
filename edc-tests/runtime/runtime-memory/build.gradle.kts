@@ -33,8 +33,6 @@ dependencies {
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
 
-    implementation(project(":edc-tests:runtime:extensions"))
-
     // use basic (all in-mem) data plane
     runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "api-observability")

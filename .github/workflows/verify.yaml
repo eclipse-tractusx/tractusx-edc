@@ -53,6 +53,8 @@ jobs:
       - name: Run Checkstyle
         run: |
           ./gradlew checkstyleMain checkstyleTest
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   verify-javadoc:
     runs-on: ubuntu-latest
@@ -62,6 +64,8 @@ jobs:
 
       - name: Run Javadoc
         run: ./gradlew javadoc
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   unit-tests:
     runs-on: ubuntu-latest
@@ -72,6 +76,8 @@ jobs:
 
       - name: Run Unit tests
         run: ./gradlew test
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -84,6 +90,8 @@ jobs:
         run: |
           ./gradlew :edc-tests:runtime:mock-connector:dockerize
           ./gradlew test -DincludeTags="ComponentTest"
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   api-tests:
     runs-on: ubuntu-latest
@@ -94,6 +102,8 @@ jobs:
 
       - name: Run API tests
         run: ./gradlew test -DincludeTags="ApiTest"
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   end-to-end-tests:
     runs-on: ubuntu-latest
@@ -119,6 +129,8 @@ jobs:
         run: |
           ./gradlew compileJava compileTestJava
           ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Set sanitized artifact name
         run: |
@@ -139,6 +151,8 @@ jobs:
 
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" --refresh-dependencies
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   generate-allure-report:
     runs-on: ubuntu-latest

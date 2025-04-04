@@ -28,14 +28,11 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StatusList2021;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +44,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockserver.verify.VerificationTimes;
 
-import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -60,10 +56,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVcBuilder;
@@ -73,48 +65,16 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseTest {
+public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest {
 
-    protected static final URI DIM_URI = URI.create("http://localhost:" + getFreePort());
     protected static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer();
     protected static final StsParticipant STS = StsParticipant.Builder.newInstance()
             .id("STS")
             .name("STS")
             .build();
-    protected static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
-            .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
-            .stsUri(STS.stsUri())
-            .stsClientId(CONSUMER_BPN)
-            .stsClientSecret("client_secret")
-            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .dimUri(DIM_URI)
-            .did(did(CONSUMER_NAME))
-            .build();
-    protected static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
-            .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
-            .stsUri(STS.stsUri())
-            .stsClientId(PROVIDER_BPN)
-            .stsClientSecret("client_secret")
-            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .dimUri(DIM_URI)
-            .did(did(PROVIDER_NAME))
-            .build();
 
-    private static String did(String name) {
+    protected static String did(String name) {
         return "did:example:" + name.toLowerCase();
-    }
-
-
-    @Override
-    public TractusxParticipantBase provider() {
-        return PROVIDER;
-    }
-
-    @Override
-    public TractusxParticipantBase consumer() {
-        return CONSUMER;
     }
 
     @DisplayName("Contract policy is fulfilled")
@@ -134,12 +94,12 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 "authCode", authCode
         );
 
-        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+        provider().createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy);
-        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL").execute();
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -147,7 +107,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tpState = CONSUMER.getTransferProcessState(transferProcessId);
+                    var tpState = consumer().getTransferProcessState(transferProcessId);
                     assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
                 });
 
@@ -156,7 +116,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    edr.set(CONSUMER.edrs().getEdr(transferProcessId));
+                    edr.set(consumer().edrs().getEdr(transferProcessId));
                     assertThat(edr).isNotNull();
                 });
 
@@ -188,17 +148,17 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 "authCode", authCode
         );
 
-        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+        provider().createAsset(assetId, Map.of(), dataAddress);
 
-        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy);
-        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var negotiationId = CONSUMER.initContractNegotiation(PROVIDER, assetId);
+        var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var negotiationId = consumer().initContractNegotiation(provider(), assetId);
 
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var contractNegotiationState = CONSUMER.getContractNegotiationState(negotiationId);
+                    var contractNegotiationState = consumer().getContractNegotiationState(negotiationId);
                     assertThat(contractNegotiationState).isEqualTo("TERMINATED");
                 });
     }
@@ -224,8 +184,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .expirationDate(expirationDate)
                 .build();
 
-        var did = CONSUMER.getDid();
-        var bpn = CONSUMER.getBpn();
+        var did = consumer().getDid();
+        var bpn = consumer().getBpn();
         var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("expirationDate", expirationDate.toString());
 
@@ -242,7 +202,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
 
         // verify the failed catalog request
         try {
-            CONSUMER.getCatalog(PROVIDER)
+            consumer().getCatalog(provider())
                     .log().ifError()
                     .statusCode(not(200));
         } finally {
@@ -256,7 +216,6 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
     void catalogRequest_whenCredentialRevoked() {
         //update the membership credential to contain a `credentialStatus` with a revocation
         var store = consumerRuntime().getService(CredentialStore.class);
-        var jsonLd = consumerRuntime().getService(JsonLd.class);
         var port = getFreePort();
 
         var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
@@ -278,8 +237,8 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
                 .issuanceDate(existingCred.getVerifiableCredential().credential().getIssuanceDate())
                 .build();
 
-        var did = CONSUMER.getDid();
-        var bpn = CONSUMER.getBpn();
+        var did = consumer().getDid();
+        var bpn = consumer().getBpn();
         var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("credentialStatus", Json.createObjectBuilder()
                 .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
@@ -307,7 +266,7 @@ public abstract class AbstractIatpConsumerPullTest extends HttpConsumerPullBaseT
             revocationServer.when(request().withPath("/status/list/7")).respond(response().withBody(slCred.toJsonObject().toString()));
 
             // verify the failed catalog request
-            CONSUMER.getCatalog(PROVIDER)
+            consumer().getCatalog(provider())
                     .log().ifValidationFails()
                     .statusCode(not(200));
         } finally {

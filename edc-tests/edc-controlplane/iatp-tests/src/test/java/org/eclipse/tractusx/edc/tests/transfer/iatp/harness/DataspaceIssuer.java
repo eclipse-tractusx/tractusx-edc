@@ -27,7 +27,6 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.jwk.ECKey;
-import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.json.Json;
@@ -40,11 +39,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
-import org.eclipse.edc.jsonld.spi.JsonLd;
-import org.eclipse.edc.security.signature.jws2020.JsonWebKeyPair;
-import org.eclipse.edc.security.signature.jws2020.Jws2020ProofDraft;
 import org.eclipse.edc.security.signature.jws2020.Jws2020SignatureSuite;
-import org.eclipse.edc.verifiablecredentials.linkeddata.LdpIssuer;
 import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 
 import java.net.URI;
@@ -59,7 +54,6 @@ import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVc;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.frameworkAgreementSubject;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.membershipSubject;
-import static org.mockito.Mockito.mock;
 
 /**
  * Dataspace issuer configurations
@@ -89,7 +83,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         return DATASPACE_ISSUER + "#" + getKeyId();
     }
 
-    public VerifiableCredentialResource issueCredential(String did, String bpn, JsonLd jsonLd, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObject subjectSupplier) {
+    public VerifiableCredentialResource issueCredential(String did, String bpn, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObject subjectSupplier) {
         var credential = VerifiableCredential.Builder.newInstance()
                 .type(type)
                 .credentialSubject(credentialSubjectSupplier.get())
@@ -108,15 +102,15 @@ public class DataspaceIssuer extends IdentityParticipant {
 
     }
 
-    public VerifiableCredentialResource issueMembershipCredential(String did, String bpn, JsonLd jsonLd) {
-        return issueCredential(did, bpn, jsonLd, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
+    public VerifiableCredentialResource issueMembershipCredential(String did, String bpn) {
+        return issueCredential(did, bpn, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", bpn)
                         .build(),
                 membershipSubject(did, bpn));
     }
 
-    public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn, JsonLd jsonLd) {
-        return issueCredential(did, bpn, jsonLd, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
+    public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn) {
+        return issueCredential(did, bpn, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
                         .id(did)
                         .claim("holderIdentifier", bpn)
                         .claim("activityType", "vehicleDismantle")
@@ -131,8 +125,8 @@ public class DataspaceIssuer extends IdentityParticipant {
                         .build());
     }
 
-    public VerifiableCredentialResource issueFrameworkCredential(String did, String bpn, JsonLd jsonLd, String credentialType) {
-        return issueCredential(did, bpn, jsonLd, credentialType, () -> CredentialSubject.Builder.newInstance()
+    public VerifiableCredentialResource issueFrameworkCredential(String did, String bpn, String credentialType) {
+        return issueCredential(did, bpn, credentialType, () -> CredentialSubject.Builder.newInstance()
                         .claim("holderIdentifier", bpn)
                         .build(),
                 frameworkAgreementSubject(did, bpn, credentialType));
@@ -142,30 +136,6 @@ public class DataspaceIssuer extends IdentityParticipant {
     @Override
     public String getFullKeyId() {
         return verificationId();
-    }
-
-    public String createLdpVc(JsonLd jsonLd, JsonObject verifiableCredential) {
-        var issuer = LdpIssuer.Builder.newInstance()
-                .jsonLd(jsonLd)
-                .monitor(mock())
-                .build();
-
-        var proofDraft = Jws2020ProofDraft.Builder.newInstance()
-                .proofPurpose(ASSERTION_METHOD)
-                .verificationMethod(new JsonWebKeyPair(URI.create(verificationId()), null, null, null))
-                .created(Instant.now())
-                .mapper(MAPPER)
-                .build();
-
-        var key = getKeyPairAsJwk();
-
-        var result = issuer.signDocument(jws2020suite, verifiableCredential, createKeyPair(key, verificationId()), proofDraft).orElseThrow(err -> new RuntimeException(err.getFailureDetail()));
-
-        try {
-            return MAPPER.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public String createJwtVc(JsonObject verifiableCredential, String participantDid) {
@@ -203,11 +173,6 @@ public class DataspaceIssuer extends IdentityParticipant {
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private com.apicatalog.ld.signature.key.KeyPair createKeyPair(JWK jwk, String id) {
-        var type = URI.create("https://w3id.org/security#JsonWebKey2020");
-        return new JsonWebKeyPair(URI.create(id), type, null, jwk);
     }
 
     private DidDocument generateDidDocument() {

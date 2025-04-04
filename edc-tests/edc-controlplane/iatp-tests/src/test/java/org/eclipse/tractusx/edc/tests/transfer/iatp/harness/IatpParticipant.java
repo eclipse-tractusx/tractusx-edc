@@ -37,7 +37,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 public class IatpParticipant extends TractusxIatpParticipantBase {
 
     protected final LazySupplier<URI> csService = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/resolution"));
-    protected URI dimUri;
+    protected LazySupplier<URI> dimUri;
 
     private DidDocument didDocument;
 
@@ -55,7 +55,7 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
         settings.put("web.http.credentials.port", String.valueOf(csService.get().getPort()));
         settings.put("web.http.credentials.path", csService.get().getPath());
         if (dimUri != null) {
-            settings.put("tx.edc.iam.sts.dim.url", dimUri.toString());
+            settings.put("tx.edc.iam.sts.dim.url", dimUri.get().toString());
         }
         return super.getConfig().merge(ConfigFactory.fromMap(settings));
     }
@@ -77,7 +77,7 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
             return participant;
         }
 
-        public Builder dimUri(URI dimUri) {
+        public Builder dimUri(LazySupplier<URI> dimUri) {
             participant.dimUri = dimUri;
             return self();
         }
@@ -104,7 +104,6 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
                     .verificationMethod(List.of(verificationMethod))
                     .build();
         }
-
 
         private String toBase64(String s) {
             return Base64.getUrlEncoder().encodeToString(s.getBytes());

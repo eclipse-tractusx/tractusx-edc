@@ -23,10 +23,8 @@ import com.azure.core.util.BinaryData;
 import io.restassured.http.ContentType;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
-import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
-import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
-import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
@@ -40,7 +38,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -67,22 +64,18 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @Testcontainers
 @EndToEndTest
 public class MultiCloudTest {
-    // S3 test constants
-    public static final String REGION = Region.US_WEST_2.id();
+
     public static final String BLOB_KEY_ALIAS = AZBLOB_CONSUMER_KEY_ALIAS;
 
     private static final int AZURITE_HOST_PORT = getFreePort();
 
-    // General constants, containers etc.
-    private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
-    private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
+    private static final LazySupplier<URI> CONTROL_API_URI = new LazySupplier<>(() -> URI.create("http://localhost:%s/control".formatted(getFreePort())));
+    private static final LazySupplier<URI> START_DATAFLOW_URI = new LazySupplier<>(() -> URI.create("%s/v1/dataflows".formatted(CONTROL_API_URI.get())));
 
     @RegisterExtension
-    protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
-            "MultiCloud-Dataplane",
-            RuntimeConfig.Azure.blobstoreDataplaneConfig("/control", PROVIDER_CONTROL_PORT, AZURITE_HOST_PORT),
-            ":edc-tests:runtime:dataplane-cloud"
-    ));
+    protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(
+            new EmbeddedRuntime("MultiCloud-Dataplane", ":edc-tests:runtime:dataplane-cloud")
+                    .configurationProvider(() -> RuntimeConfig.Azure.blobstoreDataplaneConfig(CONTROL_API_URI, AZURITE_HOST_PORT)));
 
     @RegisterExtension
     private static final MinioExtension MINIO_CONTAINER = new MinioExtension();
@@ -92,17 +85,11 @@ public class MultiCloudTest {
 
     private AzureBlobClient blobStoreClient;
     private S3Client s3Client;
-    private String s3EndpointOverride;
 
     @BeforeEach
     void setup() {
         blobStoreClient = AZURITE_CONTAINER.getClientFor(CONSUMER_AZURITE_ACCOUNT);
-        s3EndpointOverride = "http://localhost:%s/".formatted(MINIO_CONTAINER.getPort());
-        var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(s3EndpointOverride))
-                .credentialsProvider(MINIO_CONTAINER::getCredentials)
-                .build();
-        s3Client = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(REGION, s3EndpointOverride));
+        s3Client = MINIO_CONTAINER.s3Client();
     }
 
     @Test
@@ -138,11 +125,11 @@ public class MultiCloudTest {
                 .add("destinationDataAddress", Json.createObjectBuilder()
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("flowType", "PUSH")
@@ -151,7 +138,7 @@ public class MultiCloudTest {
 
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
@@ -195,11 +182,11 @@ public class MultiCloudTest {
                 .add("destinationDataAddress", Json.createObjectBuilder()
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("flowType", "PUSH")
@@ -207,7 +194,7 @@ public class MultiCloudTest {
                 .build();
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
@@ -256,11 +243,11 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("destinationDataAddress", Json.createObjectBuilder()
@@ -276,7 +263,7 @@ public class MultiCloudTest {
                 .build();
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
@@ -324,11 +311,11 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("destinationDataAddress", Json.createObjectBuilder()
@@ -346,7 +333,7 @@ public class MultiCloudTest {
 
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()
@@ -383,11 +370,11 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, s3EndpointOverride))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("destinationDataAddress", Json.createObjectBuilder()
@@ -404,7 +391,7 @@ public class MultiCloudTest {
                 .build();
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .post()

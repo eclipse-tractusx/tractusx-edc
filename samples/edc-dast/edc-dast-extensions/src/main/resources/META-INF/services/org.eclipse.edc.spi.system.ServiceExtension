@@ -18,3 +18,4 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.dast.DastSeedExtension
+org.eclipse.tractusx.edc.dast.VaultSeedExtension

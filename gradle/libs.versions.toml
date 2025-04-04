@@ -12,7 +12,6 @@ bouncyCastle-jdk18on = "1.80"
 flyway = "11.4.0"
 jackson = "2.18.2"
 jakarta-json = "2.0.1"
-jupiter = "5.11.4"
 nimbus = "10.0.2"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.13.3"
@@ -20,7 +19,7 @@ postgres = "42.7.5"
 restAssured = "5.5.1"
 rsApi = "4.0.0"
 testcontainers = "1.20.5"
-titanium = "1.5.0"
+titanium = "1.6.0"
 
 
 [libraries]
@@ -179,7 +178,6 @@ edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc"
 
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 edc-dpf-oauth2 = { module = "org.eclipse.edc:data-plane-http-oauth2", version.ref = "edc" }
-edc-dpf-api-public-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 
 edc-dpf-api-signaling = { module = "org.eclipse.edc:data-plane-signaling-api", version.ref = "edc" }
 edc-data-plane-self-registration = { module = "org.eclipse.edc:data-plane-self-registration", version.ref = "edc" }
@@ -202,8 +200,6 @@ flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql",
 jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
@@ -228,4 +224,4 @@ edc-sts = [
 ]
 
 [plugins]
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.28" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.29" }

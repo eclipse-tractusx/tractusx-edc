@@ -23,10 +23,8 @@ import io.restassured.http.ContentType;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
-import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
-import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
@@ -35,14 +33,12 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
@@ -84,16 +80,14 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @EndToEndTest
 public class S3ToS3Test {
 
-    private static final String S3_REGION = Region.US_WEST_2.id();
-    private static final int PROVIDER_CONTROL_PORT = getFreePort(); // port of the control api
-    private static final String START_DATAFLOW_URL = "http://localhost:%s/control/v1/dataflows".formatted(PROVIDER_CONTROL_PORT);
+    private static final LazySupplier<URI> CONTROL_API_URI = new LazySupplier<>(() -> URI.create("http://localhost:%s/control".formatted(getFreePort())));
+    private static final LazySupplier<URI> START_DATAFLOW_URI = new LazySupplier<>(() -> URI.create("%s/v1/dataflows".formatted(CONTROL_API_URI.get())));
 
     @RegisterExtension
-    protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
-            "AwsS3-Dataplane",
-            RuntimeConfig.S3.s3dataplaneConfig("/control", PROVIDER_CONTROL_PORT),
-            ":edc-tests:runtime:dataplane-cloud"
-    )).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
+    protected static final RuntimeExtension DATAPLANE_RUNTIME = new RuntimePerClassExtension(
+            new EmbeddedRuntime("AwsS3-Dataplane", ":edc-tests:runtime:dataplane-cloud")
+                    .configurationProvider(() -> RuntimeConfig.S3.s3dataplaneConfig(CONTROL_API_URI))
+    ).registerServiceMock(Monitor.class, spy(new ConsoleMonitor("AwsS3-Dataplane", ConsoleMonitor.Level.DEBUG, true)));
 
     @RegisterExtension
     private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();
@@ -101,27 +95,10 @@ public class S3ToS3Test {
     @RegisterExtension
     private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
 
-    private S3Client providerClient;
-    private S3Client consumerClient;
-    private String providerEndpointOverride;
-    private String consumerEndpointOverride;
-
-    @BeforeEach
-    void setup() {
-        providerEndpointOverride = "http://localhost:%s/".formatted(PROVIDER_CONTAINER.getPort());
-        var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(PROVIDER_CONTAINER::getCredentials)
-                .build();
-        providerClient = new AwsClientProviderImpl(providerConfig).s3Client(S3ClientRequest.from(S3_REGION, providerEndpointOverride));
-
-        consumerEndpointOverride = "http://localhost:%s".formatted(CONSUMER_CONTAINER.getPort());
-        var consumerConfig = AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(consumerEndpointOverride))
-                .credentialsProvider(CONSUMER_CONTAINER::getCredentials)
-                .build();
-        consumerClient = new AwsClientProviderImpl(consumerConfig).s3Client(S3ClientRequest.from(S3_REGION, consumerEndpointOverride));
-    }
+    private final S3Client providerClient = PROVIDER_CONTAINER.s3Client();
+    private final S3Client consumerClient = CONSUMER_CONTAINER.s3Client();
+    private final String providerEndpointOverride = PROVIDER_CONTAINER.getEndpointOverride();
+    private final String consumerEndpointOverride = CONSUMER_CONTAINER.getEndpointOverride();
 
     @Test
     void transferMultipleFiles() {
@@ -147,7 +124,7 @@ public class S3ToS3Test {
         var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES));
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties))
                 .post()
@@ -179,7 +156,7 @@ public class S3ToS3Test {
         var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties))
                 .post()
@@ -205,19 +182,16 @@ public class S3ToS3Test {
         assertThat(putResponse.sdkHttpResponse().isSuccessful()).isTrue();
 
         // do not create bucket in consumer -> will fail!
-
         var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
         given().when()
-                .baseUri(START_DATAFLOW_URL)
+                .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createDataFlowStartMessage(sourceBucketName, "not-existent-bucket", additionalSourceAddressProperties))
                 .post()
                 .then()
                 .statusCode(200);
 
-
-        // wait until the data plane logs an exception that it cannot transfer the file
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> verify(DATAPLANE_RUNTIME.getService(Monitor.class)).severe(startsWith("Failed to upload the %s object: The specified bucket does not exist".formatted(TESTFILE_NAME)),
@@ -246,7 +220,7 @@ public class S3ToS3Test {
             var additionalSourceAddressProperties = List.of(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME));
 
             given().when()
-                    .baseUri(START_DATAFLOW_URL)
+                    .baseUri(START_DATAFLOW_URI.get().toString())
                     .contentType(ContentType.JSON)
                     .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties))
                     .post()
@@ -264,24 +238,13 @@ public class S3ToS3Test {
     }
 
     private CompletableFuture<CompletedUpload> uploadLargeFile(File file, String bucketName, String fileName) {
+        var transferManager = S3TransferManager.builder().s3Client(PROVIDER_CONTAINER.s3AsyncClient()).build();
 
-        var providerConfig = AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(providerEndpointOverride))
-                .credentialsProvider(PROVIDER_CONTAINER::getCredentials)
-                .build();
-        var asyncClient = new AwsClientProviderImpl(providerConfig).s3AsyncClient(S3_REGION);
-        var tm = S3TransferManager.builder()
-                .s3Client(asyncClient)
-                .build();
-
-        // TransferManager processes all transfers asynchronously,
-        // so this call returns immediately.
-        var upload = tm.upload(UploadRequest.builder()
+        return transferManager.upload(UploadRequest.builder()
                 .putObjectRequest(PutObjectRequest.builder().key(fileName).bucket(bucketName).build())
                 .requestBody(AsyncRequestBody.fromFile(file))
-                .build());
-
-        return upload.completionFuture();
+                .build())
+                .completionFuture();
     }
 
     private JsonObject createDataFlowStartMessage(String sourceBucketName, String destinationBucketName, List<JsonObjectBuilder> additionalSourceAddressProperties) {
@@ -293,7 +256,7 @@ public class S3ToS3Test {
                 .add("sourceDataAddress", Json.createObjectBuilder()
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder(additionalSourceAddressProperties)
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, PROVIDER_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, sourceBucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, PROVIDER_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, PROVIDER_CONTAINER.getCredentials().secretAccessKey()))
@@ -304,7 +267,7 @@ public class S3ToS3Test {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_REGION))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, PROVIDER_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, destinationBucketName))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, CONSUMER_CONTAINER.getCredentials().accessKeyId()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, CONSUMER_CONTAINER.getCredentials().secretAccessKey()))

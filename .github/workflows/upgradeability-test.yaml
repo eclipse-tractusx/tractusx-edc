@@ -89,6 +89,8 @@ jobs:
         run: |-
           ./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
           ./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: "Load images into KinD"
         shell: bash
