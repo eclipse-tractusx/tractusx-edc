@@ -221,4 +221,5 @@ edc-sts = [
 ]
 
 [plugins]
+shadow = { id = "com.gradleup.shadow", version = "8.3.6" }
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.29" }

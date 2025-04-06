@@ -27,7 +27,7 @@ plugins {
     `maven-publish`
     `jacoco-report-aggregation`
     `java-test-fixtures`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    alias(libs.plugins.shadow)
     id("com.bmuschko.docker-remote-api") version "9.4.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
@@ -158,7 +158,7 @@ allprojects {
 subprojects {
     afterEvaluate {
         // the "dockerize" task is added to all projects that use the `shadowJar` plugin
-        if (project.plugins.hasPlugin("com.github.johnrengelman.shadow")) {
+        if (project.plugins.hasPlugin(libs.plugins.shadow.get().pluginId)) {
             val downloadOpentelemetryAgent = tasks.create("downloadOpentelemetryAgent", Copy::class) {
                 val openTelemetry = configurations.create("open-telemetry")
 
