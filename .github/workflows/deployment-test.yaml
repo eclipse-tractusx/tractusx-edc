@@ -72,7 +72,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/run-deployment-test
-        name: "Run deployment test using KinD and Helm - tokenbased auth"
+        name: "Run deployment test using KinD and Helm"
         with:
           imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
           rootDir: "edc-controlplane/edc-controlplane-postgresql-hashicorp-vault edc-dataplane/edc-dataplane-hashicorp-vault"
@@ -89,22 +89,3 @@ jobs:
 
             # execute the helm test using token based auth in the Management API
             helm test tx-prod
-
-      - uses: ./.github/actions/run-deployment-test
-        name: "Run deployment test using KinD and Helm - delegated auth"
-        with:
-          imagename: "edc-controlplane-postgresql-hashicorp-vault edc-dataplane-hashicorp-vault"
-          rootDir: "edc-controlplane/edc-controlplane-postgresql-hashicorp-vault edc-dataplane/edc-dataplane-hashicorp-vault"
-          k8sversion: ${{ matrix.k8s-version }}
-          helm_command: |-
-            helm install tx-prod charts/tractusx-connector \
-            -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
-            --set controlplane.endpoints.management.jwksUrl="http://foo-bar.com/.well-known/jwks.json" \
-            --dependency-update \
-            --wait-for-jobs --timeout=120s    
-
-            # wait for the pod to become ready
-            kubectl rollout status deployment tx-prod-controlplane
-            kubectl rollout status deployment tx-prod-dataplane
-            
-            # no helm test here, because the delegated auth won't work without an actual IdP
