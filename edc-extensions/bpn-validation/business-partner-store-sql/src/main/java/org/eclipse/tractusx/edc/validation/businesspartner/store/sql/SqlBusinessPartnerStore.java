@@ -63,6 +63,22 @@ public class SqlBusinessPartnerStore extends AbstractSqlStore implements Busines
     }
 
     @Override
+    public StoreResult<List<String>> resolveForBpnGroup(String businessPartnerGroup) {
+        Objects.requireNonNull(businessPartnerGroup);
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                var sql = statements.findByBpnGroupTemplate();
+                List<String> list = queryExecutor.query(connection, true, this::mapGroupJson, sql, businessPartnerGroup).toList();
+                return list.isEmpty() ?
+                        StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerGroup)) :
+                        StoreResult.success(list);
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
+    @Override
     public StoreResult<Void> save(String businessPartnerNumber, List<String> groups) {
         Objects.requireNonNull(businessPartnerNumber);
         return transactionContext.execute(() -> {
@@ -116,6 +132,10 @@ public class SqlBusinessPartnerStore extends AbstractSqlStore implements Busines
 
     private List<String> mapJson(ResultSet resultSet) throws SQLException {
         return fromJson(resultSet.getString(statements.getGroupsColumn()), LIST_OF_STRING);
+    }
+
+    private String mapGroupJson(ResultSet resultSet) throws SQLException {
+        return resultSet.getString(statements.getBpnColumn());
     }
 
     private boolean exists(String businessPartnerNumber, Connection connection) {

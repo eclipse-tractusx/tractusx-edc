@@ -31,6 +31,8 @@ public interface BusinessPartnerStore {
 
     StoreResult<List<String>> resolveForBpn(String businessPartnerNumber);
 
+    StoreResult<List<String>> resolveForBpnGroup(String businessPartnerGroup);
+
     StoreResult<Void> save(String businessPartnerNumber, List<String> groups);
 
     StoreResult<Void> delete(String businessPartnerNumber);

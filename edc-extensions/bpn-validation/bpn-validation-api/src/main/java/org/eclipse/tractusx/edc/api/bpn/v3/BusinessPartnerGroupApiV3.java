@@ -50,6 +50,15 @@ public interface BusinessPartnerGroupApiV3 {
             })
     JsonObject resolveV3(@Parameter(name = "bpn", description = "The business partner number") String bpn);
 
+    @Operation(description = "Resolves all BPNs for a particular BPN group",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "An object containing an array with the assigned bpn"),
+                    @ApiResponse(responseCode = "404", description = "No entry for the given BPN group was found"),
+                    @ApiResponse(responseCode = "400", description = "Request body was malformed",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
+            })
+    JsonObject resolveGroupV3(@Parameter(name = "group", description = "The business partner group") String group);
+
     @Operation(description = "Deletes the entry for a particular BPN",
             responses = {
                     @ApiResponse(responseCode = "204", description = "The object was successfully deleted"),

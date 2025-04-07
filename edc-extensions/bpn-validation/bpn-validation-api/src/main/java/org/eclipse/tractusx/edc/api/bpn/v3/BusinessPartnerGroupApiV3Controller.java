@@ -50,6 +50,13 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
         return super.resolve(bpn);
     }
 
+    @GET
+    @Path("/group/{group}")
+    @Override
+    public JsonObject resolveGroupV3(@PathParam("group") String group) {
+        return super.resolveGroup(group);
+    }
+
     @DELETE
     @Path("/{bpn}")
     @Override
