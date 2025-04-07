@@ -32,7 +32,6 @@ dependencies {
     testImplementation(libs.edc.fc.spi.crawler)
     testRuntimeOnly(libs.edc.transaction.local)
 
-    testCompileOnly(project(":edc-tests:runtime:runtime-memory"))
     testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 }
 

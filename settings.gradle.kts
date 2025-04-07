@@ -85,7 +85,6 @@ include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:mock-connector")
-include(":edc-tests:runtime:runtime-memory")
 include(":edc-tests:runtime:runtime-postgresql")
 
 // modules for controlplane artifacts

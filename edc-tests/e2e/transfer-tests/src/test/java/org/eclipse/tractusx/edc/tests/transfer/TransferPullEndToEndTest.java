@@ -22,12 +22,10 @@ package org.eclipse.tractusx.edc.tests.transfer;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -42,163 +40,141 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.atLeast;
 
-public class TransferPullEndToEndTest {
+@EndToEndTest
+public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
-    abstract static class Tests extends ConsumerPullBaseTest {
+    private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+            .name(CONSUMER_NAME)
+            .id(CONSUMER_BPN)
+            .build();
+    private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+            .name(PROVIDER_NAME)
+            .id(PROVIDER_BPN)
+            .build();
 
-        protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
-                .name(CONSUMER_NAME)
-                .id(CONSUMER_BPN)
-                .build();
-        protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
-                .name(PROVIDER_NAME)
-                .id(PROVIDER_BPN)
-                .build();
+    @RegisterExtension
+    @Order(0)
+    private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
 
-        @Override
-        public TractusxParticipantBase provider() {
-            return PROVIDER;
-        }
+    @RegisterExtension
+    private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
-        @Override
-        public TractusxParticipantBase consumer() {
-            return CONSUMER;
-        }
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
-        @Test
-        void transferData_withSuspendResume() {
-            var assetId = "api-asset-1";
+    @Override
+    public TractusxParticipantBase provider() {
+        return PROVIDER;
+    }
 
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+    @Override
+    public TractusxParticipantBase consumer() {
+        return CONSUMER;
+    }
 
-            Map<String, Object> dataAddress = Map.of(
-                    "baseUrl", privateBackendUrl,
-                    "type", "HttpData",
-                    "contentType", "application/json"
-            );
+    @Test
+    void transferData_withSuspendResume() {
+        var assetId = "api-asset-1";
 
-            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
-            var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
-            PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", privateBackendUrl,
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
 
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-            // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
 
-            var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-            // consumer can fetch data with a valid token
-            var data = CONSUMER.data().pullData(edr, Map.of());
-            assertThat(data).isNotNull().isEqualTo("test response");
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-            CONSUMER.suspendTransfer(transferProcessId, "reason");
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.SUSPENDED);
+        // consumer can fetch data with a valid token
+        var data = CONSUMER.data().pullData(edr, Map.of());
+        assertThat(data).isNotNull().isEqualTo("test response");
 
-            // consumer cannot fetch data with the prev token (suspended)
-            await().untilAsserted(() -> {
-                CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
-                server.verify(requestDefinition, atLeast(1));
-            });
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
 
-            CONSUMER.resumeTransfer(transferProcessId);
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+        CONSUMER.suspendTransfer(transferProcessId, "reason");
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.SUSPENDED);
 
-            var newEdr = CONSUMER.edrs().waitForEdr(transferProcessId);
-
-            // consumer can now re-fetch data with a new EDR token
-            data = CONSUMER.data().pullData(newEdr, Map.of());
-            assertThat(data).isNotNull().isEqualTo("test response");
-
-            server.verify(requestDefinition, VerificationTimes.atLeast(2));
-
-            // consumer cannot fetch data with the prev token (suspended) after the transfer process has been resumed
+        // consumer cannot fetch data with the prev token (suspended)
+        await().untilAsserted(() -> {
             CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
-            server.verify(requestDefinition, VerificationTimes.atLeast(2));
-        }
+            server.verify(requestDefinition, atLeast(1));
+        });
 
-        @Test
-        void transferData_withTerminate() {
-            var assetId = "api-asset-1";
+        CONSUMER.resumeTransfer(transferProcessId);
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+        var newEdr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-            Map<String, Object> dataAddress = Map.of(
-                    "baseUrl", privateBackendUrl,
-                    "type", "HttpData",
-                    "contentType", "application/json"
-            );
+        // consumer can now re-fetch data with a new EDR token
+        data = CONSUMER.data().pullData(newEdr, Map.of());
+        assertThat(data).isNotNull().isEqualTo("test response");
 
-            PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+        server.verify(requestDefinition, VerificationTimes.atLeast(2));
 
-            var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
-            PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
-
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
-
-            // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
-
-            var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
-
-            // consumer can fetch data with a valid token
-            var data = CONSUMER.data().pullData(edr, Map.of());
-            assertThat(data).isNotNull().isEqualTo("test response");
-
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
-
-            CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
-
-            // consumer cannot fetch data with the prev token (suspended)
-            var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403).extract().body().asString();
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
-
-        }
-
-        protected JsonObject inForcePolicy() {
-            return inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
-        }
-
+        // consumer cannot fetch data with the prev token (suspended) after the transfer process has been resumed
+        CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
+        server.verify(requestDefinition, VerificationTimes.atLeast(2));
     }
 
-    @Nested
-    @EndToEndTest
-    class InMemory extends Tests {
+    @Test
+    void transferData_withTerminate() {
+        var assetId = "api-asset-1";
 
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = memoryRuntime(CONSUMER.getName(), CONSUMER.getBpn(), CONSUMER::getConfig);
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = memoryRuntime(PROVIDER.getName(), PROVIDER.getBpn(), PROVIDER::getConfig);
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", privateBackendUrl,
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
 
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        // consumer can fetch data with a valid token
+        var data = CONSUMER.data().pullData(edr, Map.of());
+        assertThat(data).isNotNull().isEqualTo("test response");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
+
+        // consumer cannot fetch data with the prev token (suspended)
+        var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403).extract().body().asString();
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
     }
 
-    @Nested
-    @PostgresqlIntegrationTest
-    class Postgres extends Tests {
-
-        @RegisterExtension
-        @Order(0)
-        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
-
-        @RegisterExtension
-        protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
-
-        @RegisterExtension
-        protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-
+    protected JsonObject inForcePolicy() {
+        return inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
     }
+
 }
