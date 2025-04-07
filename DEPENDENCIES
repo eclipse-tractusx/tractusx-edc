@@ -647,16 +647,11 @@ maven/mavencentral/org.slf4j/slf4j-api/2.0.16, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.17, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.6, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
-maven/mavencentral/org.testcontainers/database-commons/1.20.5, Apache-2.0, approved, #16630
 maven/mavencentral/org.testcontainers/database-commons/1.20.6, Apache-2.0, approved, #16630
-maven/mavencentral/org.testcontainers/jdbc/1.20.5, Apache-2.0, approved, #16621
 maven/mavencentral/org.testcontainers/jdbc/1.20.6, Apache-2.0, approved, #16621
-maven/mavencentral/org.testcontainers/junit-jupiter/1.20.5, MIT, approved, #16552
 maven/mavencentral/org.testcontainers/junit-jupiter/1.20.6, MIT, approved, #16552
-maven/mavencentral/org.testcontainers/minio/1.20.5, MIT, approved, clearlydefined
-maven/mavencentral/org.testcontainers/postgresql/1.20.5, MIT, approved, #16627
+maven/mavencentral/org.testcontainers/minio/1.20.6, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/postgresql/1.20.6, MIT, approved, #16627
-maven/mavencentral/org.testcontainers/testcontainers/1.20.5, MIT, approved, #15747
 maven/mavencentral/org.testcontainers/testcontainers/1.20.6, MIT, approved, #15747
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, #19677
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
