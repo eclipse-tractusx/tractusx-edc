@@ -189,7 +189,6 @@ edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", versio
 
 # other deps
 allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
-assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
