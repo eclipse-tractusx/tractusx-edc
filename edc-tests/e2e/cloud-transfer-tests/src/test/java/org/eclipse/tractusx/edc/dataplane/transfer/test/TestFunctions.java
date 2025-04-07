@@ -17,14 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.dataplane.transfer.test;
 
-public class TestRuntimeConfiguration {
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
 
-    public static final String BPN_SUFFIX = "-BPN";
-    public static final String CONSUMER_NAME = "CONSUMER";
-    public static final String CONSUMER_BPN = CONSUMER_NAME + BPN_SUFFIX;
-    public static final String PROVIDER_NAME = "PROVIDER";
-    public static final String PROVIDER_BPN = PROVIDER_NAME + BPN_SUFFIX;
+public class TestFunctions {
+    public static File createSparseFile(long sizeBytes) {
+        try {
+            var name = Files.createTempFile("", ".bin");
+            try (var f = new RandomAccessFile(name.toFile(), "rw")) {
+                f.setLength(sizeBytes);
+                f.write("foobar".getBytes());
+            }
+            return name.toFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
 }

@@ -4,9 +4,8 @@ format.version = "1.1"
 [versions]
 edc = "0.12.0"
 allure = "2.29.1"
-assertj = "3.27.3"
-awaitility = "4.2.2"
-aws = "2.31.1"
+awaitility = "4.3.0"
+aws = "2.31.11"
 azure-storage-blob = "12.30.0"
 bouncyCastle-jdk18on = "1.80"
 flyway = "11.4.0"
@@ -206,6 +205,7 @@ netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = 
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-minio = { module = "org.testcontainers:minio", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
 

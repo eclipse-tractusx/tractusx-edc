@@ -106,7 +106,6 @@ jobs:
 
           git push origin gh-pages
 
-  # Release: GitHub tag & release; Starts a new development cycle if latest release;
   github-release:
     name: Publish new github release
     needs: [ validation, maven-release, docker-release, helm-release ]
@@ -116,11 +115,37 @@ jobs:
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/publish-tag-and-release
+      - name: Prepare Git Config
+        shell: bash
+        run: |
+          # Prepare git env
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+      - name: Create Release Tag
+        id: create_release_tag
+        shell: bash
+        run: |
+          # informative
+          git branch -a
+          git tag
+
+          # Create & push tag
+          git tag ${{ needs.validation.outputs.RELEASE_VERSION }}
+          git push origin ${{ needs.validation.outputs.RELEASE_VERSION }}
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+          generateReleaseNotes: true
+          tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          is_latest: ${{ github.ref_name == 'main' }}
+          makeLatest: ${{ github.ref_name == 'main' }}
+          removeArtifacts: true
+
+  bump-snapshot-version:
+    needs: github-release
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/bump-version.yaml
+    secrets: inherit
 
   # Release: Publish specs to GitHub Pages
   publish-openapi-to-gh-pages:

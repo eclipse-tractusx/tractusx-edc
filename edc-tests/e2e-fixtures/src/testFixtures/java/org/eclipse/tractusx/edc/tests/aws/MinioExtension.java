@@ -27,20 +27,35 @@ import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MinIOContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String S3_REGION = Region.US_WEST_2.id();
-    private final MinioContainer minioContainer = new MinioContainer();
+
+    private final String accessKeyId = "test-access-key";
+    private final String secretAccessKey = UUID.randomUUID().toString();
+    private final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
+            .withEnv("MINIO_ROOT_USER", accessKeyId)
+            .withEnv("MINIO_ROOT_PASSWORD", secretAccessKey)
+            .withExposedPorts(9000)
+            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
     private final LazySupplier<AwsClientProvider> clientProvider = new LazySupplier<>(() ->
             new AwsClientProviderImpl(getConfiguration()));
 
@@ -55,7 +70,7 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
     }
 
     public AwsCredentials getCredentials() {
-        return minioContainer.getCredentials();
+        return AwsBasicCredentials.create(accessKeyId, secretAccessKey);
     }
 
     public String getEndpointOverride() {
@@ -74,6 +89,23 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
         return S3_REGION;
     }
 
+    public String createBucket() {
+        var bucketName = UUID.randomUUID().toString();
+        var response = s3Client().createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+        assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
+        return bucketName;
+    }
+
+    public void uploadObjectOnBucket(String bucketName, String key, Path filePath) {
+        var response = s3Client().putObject(PutObjectRequest.builder().bucket(bucketName).key(key).build(), filePath);
+        assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
+    }
+
+    public List<String> listObjects(String bucketName) {
+        return s3Client().listObjects(ListObjectsRequest.builder().bucket(bucketName).build())
+                .contents().stream().map(S3Object::key).toList();
+    }
+
     private AwsClientProviderConfiguration getConfiguration() {
         return AwsClientProviderConfiguration.Builder.newInstance()
                 .endpointOverride(URI.create(getEndpointOverride()))
@@ -81,20 +113,4 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
                 .build();
     }
 
-    private static class MinioContainer extends GenericContainer<MinioContainer> {
-
-        private final String accessKeyId = "test-access-key";
-        private final String secretAccessKey = UUID.randomUUID().toString();
-
-        MinioContainer() {
-            super("bitnami/minio");
-            addEnv("MINIO_ROOT_USER", accessKeyId);
-            addEnv("MINIO_ROOT_PASSWORD", secretAccessKey);
-            addExposedPort(9000);
-        }
-
-        public AwsBasicCredentials getCredentials() {
-            return AwsBasicCredentials.create(accessKeyId, secretAccessKey);
-        }
-    }
 }

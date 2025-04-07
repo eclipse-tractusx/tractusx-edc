@@ -69,24 +69,24 @@ include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
 
 // test modules
 include(":edc-tests:e2e-fixtures")
-include(":edc-tests:edc-controlplane:edr-api-tests")
-include(":edc-tests:edc-controlplane:catalog-tests")
-include(":edc-tests:edc-controlplane:transfer-tests")
-include(":edc-tests:edc-controlplane:iatp-tests")
-include(":edc-tests:edc-controlplane:policy-tests")
-include(":edc-tests:edc-controlplane:agreement-retirement-tests")
-include(":edc-tests:edc-controlplane:validator-tests")
-include(":edc-tests:runtime:runtime-memory")
-include(":edc-tests:runtime:mock-connector")
+include(":edc-tests:e2e:agreement-retirement-tests")
+include(":edc-tests:e2e:catalog-tests")
+include(":edc-tests:e2e:cloud-transfer-tests")
+include(":edc-tests:e2e:edc-dataplane-tokenrefresh-tests")
+include(":edc-tests:e2e:edr-api-tests")
+include(":edc-tests:e2e:end2end-transfer-cloud")
+include(":edc-tests:e2e:iatp-tests")
+include(":edc-tests:e2e:policy-tests")
+include(":edc-tests:e2e:transfer-tests")
+include(":edc-tests:e2e:validator-tests")
 include(":edc-tests:runtime:dataplane-cloud")
-include(":edc-tests:runtime:runtime-postgresql")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
-include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
-include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
-include(":edc-tests:edc-dataplane:cloud-transfer-tests")
-include(":edc-tests:edc-end2end:end2end-transfer-cloud")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-sts")
+include(":edc-tests:runtime:mock-connector")
+include(":edc-tests:runtime:runtime-memory")
+include(":edc-tests:runtime:runtime-postgresql")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
@@ -119,7 +119,7 @@ pluginManagement {
 
 plugins {
     id("com.gradle.develocity") version "3.19.2"
-    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.1"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.2.1"
 }
 
 dependencyResolutionManagement {
