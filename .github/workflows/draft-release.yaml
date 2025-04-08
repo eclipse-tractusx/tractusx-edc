@@ -130,3 +130,5 @@ jobs:
             Versions have been bumped in [commit ${{ steps.make-commit.outputs.commit }}](${{ steps.make-commit.outputs.commit }}).
 
             Merging this PR will create a GitHub release and upload any assets that are created as part of the release build.
+            
+            IMPORTANT NOTE: tests should be passed before the merge, otherwise allure report for the release will not be generated.
