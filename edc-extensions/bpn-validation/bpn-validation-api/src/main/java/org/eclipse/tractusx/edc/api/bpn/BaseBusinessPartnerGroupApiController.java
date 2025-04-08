@@ -40,7 +40,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public abstract class BaseBusinessPartnerGroupApiController {
 
     private static final String TX_NAMESPACE_GROUPS = "groups";
-    private static final String TX_NAMESPACE_BPN = "bpn";
+    private static final String TX_NAMESPACE_BPN = "bpns";
     private final BusinessPartnerStore businessPartnerService;
 
     public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
