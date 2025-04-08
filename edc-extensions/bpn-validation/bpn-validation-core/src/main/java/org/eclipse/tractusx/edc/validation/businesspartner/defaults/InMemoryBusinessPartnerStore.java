@@ -44,7 +44,9 @@ public class InMemoryBusinessPartnerStore implements BusinessPartnerStore {
                 .filter(bpn -> bpn.getValue().stream().anyMatch(groups -> groups.contains(businessPartnerGroup)))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        return StoreResult.success(bpns);
+        return bpns.isEmpty() ?
+                StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerGroup)) :
+                StoreResult.success(bpns);
     }
 
     @Override

@@ -46,6 +46,24 @@ public abstract class BusinessPartnerStoreTestBase {
     }
 
     @Test
+    void resolveForBpnGroup_multipleBpns() {
+        getStore().save("test-bpn-1", List.of("test-bpn-group", "group2", "group3"));
+        getStore().save("test-bpn-2", List.of("test-bpn-group"));
+        getStore().save("test-bpn-3", List.of("test-bpn-group", "group17"));
+        assertThat(getStore().resolveForBpnGroup("test-bpn-group").getContent()).containsExactly("test-bpn-1", "test-bpn-2", "test-bpn-3");
+    }
+
+    @Test
+    void resolveForBpnGroup_bpnGroupNotExists() {
+        assertThat(getStore().resolveForBpnGroup("group-not-exist").succeeded()).isFalse();
+    }
+
+    @Test
+    void resolveForBpnGroup_bpnNotExists() {
+        assertThat(getStore().resolveForBpnGroup("not-stored-bpn").succeeded()).isFalse();
+    }
+
+    @Test
     void save() {
         getStore().save("test-bpn", List.of("group1", "group2", "group3"));
         assertThat(getStore().resolveForBpn("test-bpn").getContent()).containsExactly("group1", "group2", "group3");

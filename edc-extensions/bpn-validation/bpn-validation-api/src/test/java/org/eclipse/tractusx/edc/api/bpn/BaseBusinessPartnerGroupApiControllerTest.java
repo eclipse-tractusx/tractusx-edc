@@ -84,6 +84,25 @@ public abstract class BaseBusinessPartnerGroupApiControllerTest extends RestCont
     }
 
     @Test
+    void resolveForBpnGroup_exists() {
+        when(businessPartnerStore.resolveForBpnGroup(any())).thenReturn(StoreResult.success(List.of("bpn1", "bpn2")));
+        baseRequest()
+                .get("/group/test-bpn-group")
+                .then()
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    void resolveForBpnGroup_notExists() {
+        when(businessPartnerStore.resolveForBpnGroup(any())).thenReturn(StoreResult.success(List.of()));
+        baseRequest()
+                .get("/group/test-bpn-group-not-exists")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
     void deleteEntry() {
         when(businessPartnerStore.delete(anyString())).thenReturn(StoreResult.success());
         baseRequest()

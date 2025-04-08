@@ -68,7 +68,7 @@ public class SqlBusinessPartnerStore extends AbstractSqlStore implements Busines
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 var sql = statements.findByBpnGroupTemplate();
-                List<String> list = queryExecutor.query(connection, true, this::mapGroupJson, sql, businessPartnerGroup).toList();
+                var list = queryExecutor.single(connection, true, this::mapJson, sql, businessPartnerGroup);
                 return list.isEmpty() ?
                         StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerGroup)) :
                         StoreResult.success(list);
