@@ -52,7 +52,7 @@ public interface BusinessPartnerGroupApiV3 {
 
     @Operation(description = "Resolves all BPNs for a particular BPN group",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "An object containing an array with the assigned bpn"),
+                    @ApiResponse(responseCode = "200", description = "An object containing an array with the bpns assigned to the group"),
                     @ApiResponse(responseCode = "404", description = "No entry for the given BPN group was found"),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))

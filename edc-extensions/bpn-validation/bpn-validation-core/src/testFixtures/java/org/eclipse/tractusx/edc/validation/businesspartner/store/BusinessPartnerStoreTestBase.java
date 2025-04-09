@@ -47,6 +47,7 @@ public abstract class BusinessPartnerStoreTestBase {
 
     @Test
     void resolveForBpnGroup_multipleBpns() {
+        getStore().save("test-bpn-0", List.of("group2"));
         getStore().save("test-bpn-1", List.of("test-bpn-group", "group2", "group3"));
         getStore().save("test-bpn-2", List.of("test-bpn-group"));
         getStore().save("test-bpn-3", List.of("test-bpn-group", "group17"));

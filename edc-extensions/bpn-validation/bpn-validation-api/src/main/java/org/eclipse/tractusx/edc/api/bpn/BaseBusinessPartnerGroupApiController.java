@@ -40,7 +40,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public abstract class BaseBusinessPartnerGroupApiController {
 
     private static final String TX_NAMESPACE_GROUPS = "groups";
-    private static final String TX_NAMESPACE_BPN = "bpns";
+    private static final String TX_NAMESPACE_BPNS = "bpns";
     private final BusinessPartnerStore businessPartnerService;
 
     public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
@@ -61,7 +61,7 @@ public abstract class BaseBusinessPartnerGroupApiController {
     public JsonObject resolveGroup(String group) {
         var result = businessPartnerService.resolveForBpnGroup(group);
         if (result.succeeded()) {
-            return createObject(group, result.getContent(), TX_NAMESPACE_BPN);
+            return createObject(group, result.getContent(), TX_NAMESPACE_BPNS);
         }
 
         throw new ObjectNotFoundException(List.class, result.getFailureDetail());
