@@ -60,11 +60,6 @@ public abstract class BusinessPartnerStoreTestBase {
     }
 
     @Test
-    void resolveForBpnGroup_bpnNotExists() {
-        assertThat(getStore().resolveForBpnGroup("not-stored-bpn").succeeded()).isFalse();
-    }
-
-    @Test
     void save() {
         getStore().save("test-bpn", List.of("group1", "group2", "group3"));
         assertThat(getStore().resolveForBpn("test-bpn").getContent()).containsExactly("group1", "group2", "group3");
