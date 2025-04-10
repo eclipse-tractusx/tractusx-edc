@@ -39,34 +39,19 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public abstract class BaseBusinessPartnerGroupApiController {
 
-    private final BusinessPartnerStore businessPartnerService;
+    protected final BusinessPartnerStore businessPartnerService;
 
     public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
         this.businessPartnerService = businessPartnerService;
     }
 
     public JsonObject resolve(String bpn) {
-        var result = businessPartnerService.resolveForBpn(bpn);
-        if (result.succeeded()) {
-            return Json.createObjectBuilder()
-                    .add(ID, bpn)
-                    .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result.getContent()))
-                    .build();
-        }
-
-        throw new ObjectNotFoundException(List.class, result.getFailureDetail());
-    }
-
-    public JsonObject resolveGroup(String group) {
-        var result = businessPartnerService.resolveForBpnGroup(group);
-        if (result.succeeded()) {
-            return Json.createObjectBuilder()
-                    .add(ID, group)
-                    .add(TX_NAMESPACE + "bpns", Json.createArrayBuilder(result.getContent()))
-                    .build();
-        }
-
-        throw new ObjectNotFoundException(List.class, result.getFailureDetail());
+        return businessPartnerService.resolveForBpn(bpn)
+                .map(result -> Json.createObjectBuilder()
+                        .add(ID, bpn)
+                        .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result))
+                        .build())
+                .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
     }
 
     public void deleteEntry(@PathParam("bpn") String bpn) {

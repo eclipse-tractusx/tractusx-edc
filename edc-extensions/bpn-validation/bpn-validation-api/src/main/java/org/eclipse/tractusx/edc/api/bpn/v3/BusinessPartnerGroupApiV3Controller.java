@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.api.bpn.v3;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -30,12 +31,18 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiController;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
 
+import java.util.List;
 
-@Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+
+
+@Consumes({ MediaType.APPLICATION_JSON })
+@Produces({ MediaType.APPLICATION_JSON })
 @Path("/v3/business-partner-groups")
 public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGroupApiController implements BusinessPartnerGroupApiV3 {
 
@@ -54,7 +61,7 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
     @Path("/group/{group}")
     @Override
     public JsonObject resolveGroupV3(@PathParam("group") String group) {
-        return super.resolveGroup(group);
+        return resolveGroup(group);
     }
 
     @DELETE
@@ -76,4 +83,12 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
         super.createEntry(object);
     }
 
+    private JsonObject resolveGroup(String group) {
+        return businessPartnerService.resolveForBpnGroup(group)
+                .map(result -> Json.createObjectBuilder()
+                        .add(ID, group)
+                        .add(TX_NAMESPACE + "bpns", Json.createArrayBuilder(result))
+                        .build())
+                .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
+    }
 }
