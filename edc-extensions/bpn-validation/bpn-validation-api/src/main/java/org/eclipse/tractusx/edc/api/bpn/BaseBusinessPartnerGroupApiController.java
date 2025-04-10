@@ -39,8 +39,6 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public abstract class BaseBusinessPartnerGroupApiController {
 
-    private static final String TX_NAMESPACE_GROUPS = "groups";
-    private static final String TX_NAMESPACE_BPNS = "bpns";
     private final BusinessPartnerStore businessPartnerService;
 
     public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
@@ -48,11 +46,12 @@ public abstract class BaseBusinessPartnerGroupApiController {
     }
 
     public JsonObject resolve(String bpn) {
-
-        // StoreResult does not support the .map() operator, because it does not override newInstance()
         var result = businessPartnerService.resolveForBpn(bpn);
         if (result.succeeded()) {
-            return createObject(bpn, result.getContent(), TX_NAMESPACE_GROUPS);
+            return Json.createObjectBuilder()
+                    .add(ID, bpn)
+                    .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result.getContent()))
+                    .build();
         }
 
         throw new ObjectNotFoundException(List.class, result.getFailureDetail());
@@ -61,7 +60,10 @@ public abstract class BaseBusinessPartnerGroupApiController {
     public JsonObject resolveGroup(String group) {
         var result = businessPartnerService.resolveForBpnGroup(group);
         if (result.succeeded()) {
-            return createObject(group, result.getContent(), TX_NAMESPACE_BPNS);
+            return Json.createObjectBuilder()
+                    .add(ID, group)
+                    .add(TX_NAMESPACE + "bpns", Json.createArrayBuilder(result.getContent()))
+                    .build();
         }
 
         throw new ObjectNotFoundException(List.class, result.getFailureDetail());
@@ -84,13 +86,6 @@ public abstract class BaseBusinessPartnerGroupApiController {
         var groups = getGroups(object);
         businessPartnerService.save(bpn, groups)
                 .orElseThrow(f -> new ObjectConflictException(f.getFailureDetail()));
-    }
-
-    private JsonObject createObject(String id, List<String> list, String namespace) {
-        return Json.createObjectBuilder()
-                .add(ID, id)
-                .add(TX_NAMESPACE + namespace, Json.createArrayBuilder(list))
-                .build();
     }
 
     private String getBpn(JsonObject object) {
