@@ -61,7 +61,12 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
     @Path("/group/{group}")
     @Override
     public JsonObject resolveGroupV3(@PathParam("group") String group) {
-        return resolveGroup(group);
+        return businessPartnerService.resolveForBpnGroup(group)
+                .map(result -> Json.createObjectBuilder()
+                        .add(ID, group)
+                        .add(TX_NAMESPACE + "bpns", Json.createArrayBuilder(result))
+                        .build())
+                .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
     }
 
     @DELETE
@@ -83,12 +88,4 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
         super.createEntry(object);
     }
 
-    private JsonObject resolveGroup(String group) {
-        return businessPartnerService.resolveForBpnGroup(group)
-                .map(result -> Json.createObjectBuilder()
-                        .add(ID, group)
-                        .add(TX_NAMESPACE + "bpns", Json.createArrayBuilder(result))
-                        .build())
-                .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
-    }
 }
