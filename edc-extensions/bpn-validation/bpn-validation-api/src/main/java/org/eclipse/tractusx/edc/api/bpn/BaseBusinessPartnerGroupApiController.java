@@ -39,21 +39,19 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public abstract class BaseBusinessPartnerGroupApiController {
 
-    private final BusinessPartnerStore businessPartnerService;
+    protected final BusinessPartnerStore businessPartnerService;
 
     public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
         this.businessPartnerService = businessPartnerService;
     }
 
     public JsonObject resolve(String bpn) {
-
-        // StoreResult does not support the .map() operator, because it does not override newInstance()
-        var result = businessPartnerService.resolveForBpn(bpn);
-        if (result.succeeded()) {
-            return createObject(bpn, result.getContent());
-        }
-
-        throw new ObjectNotFoundException(List.class, result.getFailureDetail());
+        return businessPartnerService.resolveForBpn(bpn)
+                .map(result -> Json.createObjectBuilder()
+                        .add(ID, bpn)
+                        .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result))
+                        .build())
+                .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
     }
 
     public void deleteEntry(@PathParam("bpn") String bpn) {
@@ -73,13 +71,6 @@ public abstract class BaseBusinessPartnerGroupApiController {
         var groups = getGroups(object);
         businessPartnerService.save(bpn, groups)
                 .orElseThrow(f -> new ObjectConflictException(f.getFailureDetail()));
-    }
-
-    private JsonObject createObject(String bpn, List<String> list) {
-        return Json.createObjectBuilder()
-                .add(ID, bpn)
-                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(list))
-                .build();
     }
 
     private String getBpn(JsonObject object) {

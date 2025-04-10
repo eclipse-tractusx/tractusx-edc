@@ -21,12 +21,38 @@ package org.eclipse.tractusx.edc.api.bpn.v3;
 
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiControllerTest;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ApiTest
 class BusinessPartnerGroupApiV3ControllerTest extends BaseBusinessPartnerGroupApiControllerTest {
+
+    @Test
+    void resolveForBpnGroup_exists() {
+        when(businessPartnerStore.resolveForBpnGroup(any())).thenReturn(StoreResult.success(List.of("bpn1", "bpn2")));
+        baseRequest()
+                .get("/group/test-bpn-group")
+                .then()
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    void resolveForBpnGroup_notExists_returns404() {
+        when(businessPartnerStore.resolveForBpnGroup(any())).thenReturn(StoreResult.notFound("test-message"));
+        baseRequest()
+                .get("/group/test-bpn-group-not-exists")
+                .then()
+                .statusCode(404);
+    }
 
     @Override
     protected Object controller() {

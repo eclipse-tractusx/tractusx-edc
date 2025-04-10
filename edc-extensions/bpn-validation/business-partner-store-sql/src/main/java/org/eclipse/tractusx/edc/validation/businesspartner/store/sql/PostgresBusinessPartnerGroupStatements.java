@@ -34,6 +34,12 @@ public class PostgresBusinessPartnerGroupStatements implements BusinessPartnerGr
     }
 
     @Override
+    public String findByBpnGroupTemplate() {
+        return format("SELECT %s from %s WHERE EXISTS (SELECT 1 FROM json_array_elements_text(%s) AS group_element WHERE group_element = ?)",
+                getBpnColumn(), getTable(), getGroupsColumn());
+    }
+
+    @Override
     public String insertTemplate() {
         return format("INSERT INTO %s (%s, %s) VALUES (?, ?%s)", getTable(), getBpnColumn(), getGroupsColumn(), getFormatJsonOperator());
     }
