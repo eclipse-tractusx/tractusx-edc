@@ -28,8 +28,8 @@ plugins {
     `jacoco-report-aggregation`
     `java-test-fixtures`
     alias(libs.plugins.shadow)
-    id("com.bmuschko.docker-remote-api") version "9.4.0"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    alias(libs.plugins.docker)
+    alias(libs.plugins.nexus)
 }
 
 val txScmConnection: String by project
@@ -57,15 +57,9 @@ project.subprojects.forEach {
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
 
-    repositories {
-        mavenCentral()
-    }
     dependencies {
 
         implementation("org.slf4j:slf4j-api:2.0.17")
-        // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
-        // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.12.2"))
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
@@ -90,14 +84,9 @@ allprojects {
         }
     }
 
-    // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(edcVersion)
         outputDirectory.set(project.layout.buildDirectory.asFile.get())
-        // uncomment the following lines to enable the Autodoc-2-Markdown converter
-        // only available with EDC 0.2.1 SNAPSHOT
-        // additionalInputDirectory.set(downloadDir.asFile)
-        // downloadDirectory.set(downloadDir.asFile)
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
@@ -138,21 +127,6 @@ allprojects {
         this.isShowViolations = System.getProperty("checkstyle.verbose", "true").toBoolean()
     }
 
-    // publishing to OSSRH is handled by the build plugin, but publishing to GH packages
-    // must be configured separately
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/${System.getenv("REPO")}")
-                credentials {
-                    username = System.getenv("GITHUB_PACKAGE_USERNAME")
-                    password = System.getenv("GITHUB_PACKAGE_PASSWORD")
-                }
-            }
-        }
-    }
-
 }
 
 subprojects {
@@ -191,7 +165,7 @@ subprojects {
                 .dependsOn(downloadOpentelemetryAgent)
 
             //actually apply the plugin to the (sub-)project
-            apply(plugin = "com.bmuschko.docker-remote-api")
+            apply(plugin = libs.plugins.docker.get().pluginId)
 
             val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
                 dockerFile.set(File("build/resources/docker/Dockerfile"))
