@@ -932,6 +932,35 @@ paths:
                   $ref: "#/components/schemas/ApiErrorDetail"
         "409":
           description: An entry already exists for that BPN
+  /v3/business-partner-groups/group/{group}:
+    get:
+      tags:
+      - Business Partner Group
+      description: Resolves all BPNs for a particular BPN group
+      operationId: resolveGroupV3
+      parameters:
+      - name: group
+        in: path
+        description: The business partner group
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: An object containing an array with the bpns assigned to the
+            group
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: No entry for the given BPN group was found
   /v3/business-partner-groups/{bpn}:
     get:
       tags:
