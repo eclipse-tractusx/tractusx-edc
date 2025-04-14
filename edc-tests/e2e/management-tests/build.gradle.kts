@@ -27,9 +27,9 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
+    testImplementation(libs.testcontainers.keycloak)
 }
 
-// do not publish
 edcBuild {
     publish.set(false)
 }

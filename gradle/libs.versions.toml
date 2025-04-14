@@ -17,6 +17,7 @@ postgres = "42.7.5"
 restAssured = "5.5.1"
 rsApi = "4.0.0"
 testcontainers = "1.20.6"
+testcontainers-keycloak = "3.6.0"
 titanium = "1.6.0"
 
 [libraries]
@@ -202,6 +203,7 @@ netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = 
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
 testcontainers-minio = { module = "org.testcontainers:minio", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }

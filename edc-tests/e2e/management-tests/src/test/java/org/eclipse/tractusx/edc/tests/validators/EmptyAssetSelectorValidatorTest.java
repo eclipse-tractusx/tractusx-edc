@@ -63,7 +63,7 @@ public class EmptyAssetSelectorValidatorTest {
     private static final PostgresExtension POSTGRES = new PostgresExtension(PROVIDER.getName());
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES,
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES,
             () -> PROVIDER.getConfig().merge(ConfigFactory.fromMap(
                     Map.of("tx.edc.validator.contractdefinitions.block-empty-asset-selector", "true"))
             )
