@@ -24,11 +24,14 @@ import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventSubscriber;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
 
 public class EventLoggingSubscriber implements EventSubscriber {
 
+    private static Logger logger = LoggerFactory.getLogger(EventSubscriber.class);
     private final TypeManager typeManager;
     private final Monitor monitor;
 
@@ -43,7 +46,7 @@ public class EventLoggingSubscriber implements EventSubscriber {
         var json = typeManager.writeValueAsString(event.getPayload());
 
         monitor.info(format("Event happened with ID %s and Type %s and data %s", event.getId(), event.getPayload().getClass().getName(), json));
-
+        logger.info("Event happened with ID {} and Type {} and data {}", event.getId(), event.getPayload().getClass().getName(), json);
     }
 
 }
