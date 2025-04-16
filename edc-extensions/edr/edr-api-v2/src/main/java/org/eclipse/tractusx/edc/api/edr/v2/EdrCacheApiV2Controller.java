@@ -38,6 +38,8 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.tractusx.edc.api.edr.BaseEdrCacheApiController;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
 
@@ -46,6 +48,8 @@ import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
 @Path("/v2/edrs")
 @Deprecated(since = "0.8.0")
 public class EdrCacheApiV2Controller extends BaseEdrCacheApiController implements EdrCacheApiV2 {
+
+    private static Logger logger = LoggerFactory.getLogger(EdrCacheApiV2.class);
 
     public EdrCacheApiV2Controller(EndpointDataReferenceStore edrStore,
                                    TypeTransformerRegistry transformerRegistry,
@@ -58,6 +62,7 @@ public class EdrCacheApiV2Controller extends BaseEdrCacheApiController implement
     @POST
     @Override
     public JsonObject initiateEdrNegotiationV2(JsonObject requestObject) {
+        logger.error("testerror");
         monitor.warning(deprecationWarning("/v2", "/v3"));
         return super.initiateEdrNegotiation(requestObject);
     }

@@ -26,6 +26,7 @@ dependencies {
     runtimeOnly(project(":core:edr-core"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    runtimeOnly(project(":edc-extensions:event-subscriber"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))

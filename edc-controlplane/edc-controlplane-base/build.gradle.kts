@@ -93,5 +93,7 @@ dependencies {
     runtimeOnly(libs.edc.fc.core)
     runtimeOnly(libs.edc.fc.api)
 
+    runtimeOnly(project(":edc-extensions:event-subscriber"))
+
 
 }
