@@ -47,6 +47,6 @@ public class EventSubscriberExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager));
+        eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor()));
     }
 }

@@ -22,24 +22,27 @@ package org.eclipse.tractusx.edc.eventsubscriber;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventSubscriber;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static java.lang.String.format;
 
 public class EventLoggingSubscriber implements EventSubscriber {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventLoggingSubscriber.class);
     private final TypeManager typeManager;
+    private final Monitor monitor;
 
-    EventLoggingSubscriber(TypeManager typeManager) {
+    EventLoggingSubscriber(TypeManager typeManager, Monitor monitor) {
         this.typeManager = typeManager;
+        this.monitor = monitor;
     }
+
 
     @Override
     public <E extends Event> void on(EventEnvelope<E> event) {
-        var json = typeManager.writeValueAsBytes(event.getPayload());
+        var json = typeManager.writeValueAsString(event.getPayload());
 
-        LOGGER.info("Event happened with ID {} and Type {} and data {}", event.getId(), event.getPayload().getClass().getName(), json);
+        monitor.info(format("Event happened with ID %s and Type %s and data %s", event.getId(), event.getPayload().getClass().getName(), json));
 
     }
 
