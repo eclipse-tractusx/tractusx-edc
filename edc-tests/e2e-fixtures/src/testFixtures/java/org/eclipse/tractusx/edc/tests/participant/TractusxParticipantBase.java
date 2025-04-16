@@ -212,12 +212,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.id)
-                .add("counterPartyAddress", provider.federatedCatalog.get().toString())
+                .add("counterPartyAddress", provider.getProtocolUrl())
                 .add("protocol", protocol);
 
-
-        return given()
-                .baseUri(federatedCatalog.get().toString())
+        return baseManagementRequest()
                 .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .when()

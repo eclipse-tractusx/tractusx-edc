@@ -153,6 +153,11 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+
+        consumer().getCatalog(provider())
+                .log().ifValidationFails()
+                .statusCode(200);
+
         var negotiationId = consumer().initContractNegotiation(provider(), assetId);
 
         await().pollInterval(fibonacci())
@@ -199,16 +204,15 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
-
-        // verify the failed catalog request
         try {
             consumer().getCatalog(provider())
                     .log().ifError()
                     .statusCode(not(200));
         } finally {
-            // restore the non-expired cred
+            // restore the original credential without credentialStatus
             store.update(existingCred);
         }
+
     }
 
     @DisplayName("Expect the Catalog request to fail if a credential is revoked")
