@@ -226,4 +226,4 @@ edc-sts = [
 docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.6" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.29" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.30" }
