@@ -52,7 +52,6 @@ import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPo
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.stsRuntime;
-import static org.hamcrest.Matchers.not;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -139,7 +138,7 @@ public class CredentialSpoofTest implements IatpParticipants {
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
                 .log().ifError()
-                .statusCode(not(200));
+                .statusCode(502);
     }
 
     @Test
@@ -167,7 +166,7 @@ public class CredentialSpoofTest implements IatpParticipants {
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
                 .log().ifError()
-                .statusCode(not(200));
+                .statusCode(502);
 
     }
 
