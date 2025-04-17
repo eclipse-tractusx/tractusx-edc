@@ -60,7 +60,6 @@ import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frame
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVcBuilder;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.membershipSubject;
-import static org.hamcrest.Matchers.not;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -207,9 +206,9 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         try {
             consumer().getCatalog(provider())
                     .log().ifError()
-                    .statusCode(not(200));
+                    .statusCode(502);
         } finally {
-            // restore the original credential without credentialStatus
+            // restore the original credential
             store.update(existingCred);
         }
 
@@ -272,9 +271,9 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
             // verify the failed catalog request
             consumer().getCatalog(provider())
                     .log().ifValidationFails()
-                    .statusCode(not(200));
+                    .statusCode(502);
         } finally {
-            // restore the original credential without credentialStatus
+            // restore the original credential
             store.update(existingCred);
         }
     }
