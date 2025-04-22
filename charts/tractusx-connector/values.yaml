@@ -334,7 +334,7 @@ controlplane:
   opentelemetry: |-
     otel.javaagent.enabled=false
     otel.javaagent.debug=false
-    # By default prometheus uses port 9464
+    # Alignment of edc /metrics port and OTEL prometheus configuration (By default OTEL is exposing prometheus metrics at 9464)
     otel.exporter.prometheus.port=9090
     otel.metrics.exporter=prometheus
 
@@ -579,7 +579,7 @@ dataplane:
   opentelemetry: |-
     otel.javaagent.enabled=false
     otel.javaagent.debug=false
-    # By default prometheus uses port 9464
+    # Alignment of edc /metrics port and OTEL prometheus configuration (By default OTEL is exposing prometheus metrics at 9464)
     otel.exporter.prometheus.port=9090
     otel.metrics.exporter=prometheus
 
