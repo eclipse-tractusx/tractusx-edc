@@ -6,7 +6,7 @@ See https://github.com/eclipse-tractusx/tractusx-edc/releases for the releases a
 
 --- 
 ## Historic Releases
-All notable changes to this project historically were documented in this file.
+All notable changes to this project historically were documented in this file. 
 
 ## [0.5.3] - 2023-11-10
 
