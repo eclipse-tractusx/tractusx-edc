@@ -31,6 +31,7 @@ dependencies {
     runtimeOnly(project(":edc-extensions:edr:edr-callback"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(project(":edc-extensions:agreements"))
+    runtimeOnly(project(":edc-extensions:validators:empty-asset-selector"))
 
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.edr.store.receiver)
@@ -59,6 +60,7 @@ dependencies {
     runtimeOnly(libs.edc.core.token)
     runtimeOnly(libs.edc.core.policy.monitor)
     runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.auth.oauth2.client)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.auth.delegated)
     runtimeOnly(libs.edc.auth.configuration)
@@ -80,7 +82,6 @@ dependencies {
 
     runtimeOnly(libs.edc.ext.http)
     runtimeOnly(libs.bundles.edc.monitoring)
-    runtimeOnly(libs.edc.transfer.dynamicreceiver)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.event)
     runtimeOnly(libs.edc.controlplane.callback.dispatcher.http)
 
@@ -92,5 +93,6 @@ dependencies {
     runtimeOnly(project(":edc-extensions:federated-catalog"))
     runtimeOnly(libs.edc.fc.core)
     runtimeOnly(libs.edc.fc.api)
+
 
 }

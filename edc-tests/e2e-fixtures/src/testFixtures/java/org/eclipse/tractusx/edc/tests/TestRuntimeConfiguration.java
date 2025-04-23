@@ -26,6 +26,5 @@ public class TestRuntimeConfiguration {
     public static final String CONSUMER_BPN = CONSUMER_NAME + BPN_SUFFIX;
     public static final String PROVIDER_NAME = "PROVIDER";
     public static final String PROVIDER_BPN = PROVIDER_NAME + BPN_SUFFIX;
-    public static final String DB_SCHEMA_NAME = "testschema";
 
 }

@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 
 public abstract class BusinessPartnerStoreTestBase {
 
@@ -43,6 +45,24 @@ public abstract class BusinessPartnerStoreTestBase {
     void resolveForBpn_existsNoGroups() {
         getStore().save("test-bpn", List.of());
         assertThat(getStore().resolveForBpn("test-bpn").getContent()).isNotNull().isEmpty();
+    }
+
+    @Test
+    void resolveForBpnGroup_multipleBpns() {
+        getStore().save("test-bpn-0", List.of("group2"));
+        getStore().save("test-bpn-1", List.of("test-bpn-group", "group2", "group3"));
+        getStore().save("test-bpn-2", List.of("test-bpn-group"));
+        getStore().save("test-bpn-3", List.of("test-bpn-group", "group17"));
+
+        assertThat(getStore().resolveForBpnGroup("test-bpn-group"))
+                .isSucceeded()
+                .asInstanceOf(list(String.class))
+                .containsExactly("test-bpn-1", "test-bpn-2", "test-bpn-3");
+    }
+
+    @Test
+    void resolveForBpnGroup_bpnGroupNotExists() {
+        assertThat(getStore().resolveForBpnGroup("group-not-exist")).isFailed();
     }
 
     @Test

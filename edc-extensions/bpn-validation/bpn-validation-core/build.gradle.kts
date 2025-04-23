@@ -35,6 +35,4 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testFixturesImplementation(libs.edc.junit)
-    testFixturesImplementation(libs.junit.jupiter.api)
-    testFixturesImplementation(libs.assertj)
 }

@@ -31,7 +31,6 @@ dependencies {
 
 
     testFixturesApi(libs.edc.core.token)
-    testFixturesApi(libs.edc.identity.trust.sts.embedded)
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.lib.cryptocommon)
     testFixturesApi(libs.edc.lib.jws2020)
@@ -44,17 +43,15 @@ dependencies {
     testFixturesApi(libs.edc.spi.transfer)
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))
 
-    testFixturesApi(libs.assertj)
     testFixturesApi(libs.awaitility)
     testFixturesApi(libs.aws.s3)
     testFixturesApi(libs.azure.storage.blob)
     testFixturesApi(libs.jakartaJson)
-    testFixturesApi(libs.junit.jupiter.api)
-    testFixturesApi(libs.junit.jupiter.params)
     testFixturesApi(libs.netty.mockserver)
     testFixturesApi(libs.postgres)
     testFixturesApi(libs.restAssured)
     testFixturesApi(libs.testcontainers.junit)
+    testFixturesApi(libs.testcontainers.minio)
     testFixturesApi(libs.testcontainers.postgres)
 }
 

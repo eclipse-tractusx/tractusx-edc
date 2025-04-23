@@ -52,6 +52,7 @@ include(":edc-extensions:cx-policy")
 include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
+include(":edc-extensions:validators:empty-asset-selector")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
@@ -64,28 +65,27 @@ include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-
 include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
+include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
 
 // test modules
 include(":edc-tests:e2e-fixtures")
-include(":edc-tests:edc-controlplane:edr-api-tests")
-include(":edc-tests:edc-controlplane:catalog-tests")
-include(":edc-tests:edc-controlplane:transfer-tests")
-include(":edc-tests:edc-controlplane:iatp-tests")
-include(":edc-tests:edc-controlplane:policy-tests")
-include(":edc-tests:edc-controlplane:agreement-retirement-tests")
-include(":edc-tests:runtime:extensions")
-include(":edc-tests:runtime:runtime-memory")
-include(":edc-tests:runtime:mock-connector")
+include(":edc-tests:e2e:agreement-retirement-tests")
+include(":edc-tests:e2e:catalog-tests")
+include(":edc-tests:e2e:cloud-transfer-tests")
+include(":edc-tests:e2e:edc-dataplane-tokenrefresh-tests")
+include(":edc-tests:e2e:edr-api-tests")
+include(":edc-tests:e2e:end2end-transfer-cloud")
+include(":edc-tests:e2e:management-tests")
+include(":edc-tests:e2e:iatp-tests")
+include(":edc-tests:e2e:policy-tests")
+include(":edc-tests:e2e:transfer-tests")
 include(":edc-tests:runtime:dataplane-cloud")
-include(":edc-tests:runtime:runtime-postgresql")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim")
-include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:iatp:iatp-extensions")
-include(":edc-tests:edc-dataplane:edc-dataplane-tokenrefresh-tests")
-include(":edc-tests:edc-dataplane:cloud-transfer-tests")
-include(":edc-tests:edc-end2end:end2end-transfer-cloud")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-sts")
+include(":edc-tests:runtime:mock-connector")
+include(":edc-tests:runtime:runtime-postgresql")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
@@ -116,6 +116,11 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("com.gradle.develocity") version "4.0"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.2.1"
+}
+
 dependencyResolutionManagement {
     repositories {
         maven {
@@ -123,5 +128,31 @@ dependencyResolutionManagement {
         }
         mavenCentral()
         mavenLocal()
+    }
+}
+
+// Develocity
+val isCI = System.getenv("CI") != null // adjust to your CI provider
+
+develocity {
+    server = "https://develocity-staging.eclipse.org"
+    projectId = "automotive.tractusx"
+    buildScan {
+        uploadInBackground = !isCI
+        publishing.onlyIf { it.isAuthenticated }
+        obfuscation {
+            ipAddresses { addresses -> addresses.map { _ -> "0.0.0.0" } }
+        }
+    }
+}
+
+buildCache {
+    local {
+        isEnabled = true
+    }
+
+    remote(develocity.buildCache) {
+        isEnabled = true
+        isPush = isCI
     }
 }

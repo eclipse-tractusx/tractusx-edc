@@ -154,10 +154,10 @@ spec:
             # API #
             #######
             {{- if .Values.runtime.endpoints.management.jwksUrl }}
-            - name: "EDC_API_AUTH_DAC_KEY_URL"
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_DAC_KEY_URL"
               value: {{ .Values.runtime.endpoints.management.jwksUrl | quote}}
             {{- else }}
-            - name: "EDC_API_AUTH_KEY"
+            - name: "EDC_HTTP_MANAGEMENT_AUTH_KEY"
               value: {{ .Values.runtime.endpoints.management.authKey | required ".Values.controlplane.endpoints.management.authKey is required" | quote }}
             {{- end }}
 

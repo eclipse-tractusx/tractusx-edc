@@ -34,7 +34,6 @@ dependencies {
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
 
-    implementation(project(":edc-tests:runtime:extensions"))
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     // use basic (all in-mem) data plane
@@ -44,7 +43,6 @@ dependencies {
     }
 
     implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.core.identitytrust)
     implementation(libs.edc.core.did)
     implementation(libs.edc.identity.trust.transform)
     implementation(libs.edc.identity.trust.sts.remote.client)
@@ -56,6 +54,7 @@ dependencies {
     implementation(libs.edc.ih.participants)
     implementation(libs.edc.sts.account.provisioner)
     implementation(libs.edc.ih.did)
+    implementation(libs.edc.ih.common.core)
     implementation(libs.edc.ih.core)
 
     // for the controller

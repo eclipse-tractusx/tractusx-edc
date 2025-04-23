@@ -54,6 +54,12 @@ Build Tractus-X EDC together with its Container Images
 ./gradlew dockerize
 ```
 
+## Known Incompatibilities
+
+- Hashicorp Vault 1.18.1 is not compatible with the EDC due to a bug in the vault concerning path handling
+  - [Internal Issue](https://github.com/eclipse-tractusx/tractusx-edc/issues/1772)
+  - [Hashicorp Vault Issue](https://github.com/hashicorp/vault/issues/29357)
+
 ## License
 
 Distributed under the Apache 2.0 License.
