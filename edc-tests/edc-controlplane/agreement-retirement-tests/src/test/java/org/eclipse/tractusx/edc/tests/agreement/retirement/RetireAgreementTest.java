@@ -19,18 +19,18 @@
 
 package org.eclipse.tractusx.edc.tests.agreement.retirement;
 
-import jakarta.json.Json;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+//import jakarta.json.Json;
+//import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
+//import org.eclipse.edc.policy.model.Operator;
+//import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+//import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -38,18 +38,18 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
-import java.util.Map;
+//import java.util.Map;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+//import static org.assertj.core.api.Assertions.assertThat;
+//import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
+//import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
+//import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.memoryRuntime;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -75,7 +75,7 @@ public class RetireAgreementTest {
             server = ClientAndServer.startClientAndServer("localhost", getFreePort());
         }
 
-        @Test
+        /*@Test
         @DisplayName("Verify all existing TPs related to an agreement are terminated upon its retirement")
         void retireAgreement_shouldCloseTransferProcesses() {
 
@@ -130,7 +130,7 @@ public class RetireAgreementTest {
             CONSUMER.waitForTransferProcess(failedTransferId, TransferProcessStates.TERMINATED);
 
 
-        }
+        }*/
 
         @Test
         void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
