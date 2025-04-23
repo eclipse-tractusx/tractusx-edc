@@ -98,7 +98,10 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = consumer().requestAssetFrom(assetId, provider())
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
 
         var edr = new AtomicReference<JsonObject>();
 

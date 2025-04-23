@@ -158,7 +158,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
 
-    private JsonObject httpDataDestination() {
+    protected JsonObject httpDataDestination() {
         return createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
                 .add(EDC_NAMESPACE + "type", "HttpData")
