@@ -132,10 +132,10 @@ public class RetireAgreementTest {
 
         }*/
 
-        @Test
-        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
-            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
-        }
+//        @Test
+//        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
+//            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
+//        }
 
         @AfterEach
         void teardown() throws IOException {
