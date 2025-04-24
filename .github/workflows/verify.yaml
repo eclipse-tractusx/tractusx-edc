@@ -148,6 +148,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Output report version
+        id: release-version
+        run: |
+          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          
+          # if it contains "SNAPSHOT", output "main", otherwise the real version
+          if [[ "$VERSION" == *SNAPSHOT* ]]; then
+            echo "RELEASE_VERSION=main" >> $GITHUB_OUTPUT
+          else
+            echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v8
@@ -155,6 +168,6 @@ jobs:
       - name: Generate and publish Allure report
         uses: ./.github/actions/generate-and-publish-allure-report
         with:
-          version: ${{ steps.branch-name.outputs.current_branch }}
+          version: ${{ steps.release-version.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allure_results: allure-results

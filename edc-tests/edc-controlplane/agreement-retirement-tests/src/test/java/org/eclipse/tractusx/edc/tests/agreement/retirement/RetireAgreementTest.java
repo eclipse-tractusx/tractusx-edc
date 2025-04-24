@@ -33,13 +33,13 @@ import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
 //import java.util.Map;
-import java.util.UUID;
+//import java.util.UUID;
 
 //import static org.assertj.core.api.Assertions.assertThat;
 //import static org.awaitility.Awaitility.await;
@@ -132,10 +132,10 @@ public class RetireAgreementTest {
 
         }*/
 
-//        @Test
-//        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
-//            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
-//        }
+        /*@Test
+        void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
+            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
+        }*/
 
         @AfterEach
         void teardown() throws IOException {
