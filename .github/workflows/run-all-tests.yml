@@ -40,8 +40,8 @@ on:
 
 concurrency:
   # cancel older running jobs on the same branch
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.event.head_commit.message, 'Prepare release')}}
+  group: ${{ (startsWith(github.event.head_commit.message, 'Prepare release') && github.ref) || format('{0}-{1}', github.workflow, github.ref) }}
+  cancel-in-progress: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
