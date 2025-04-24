@@ -40,17 +40,8 @@ on:
 
 concurrency:
   # cancel older running jobs on the same branch
-  group: ${{
-    if( startsWith(github.head_ref, 'release/'), 
-      github.sha,
-      format('{0}-{1}', github.workflow, github.ref))
-    }}
-  cancel-in-progress: true
-  #concurrency:
-    #group: ${{ contains(github.head_ref, 'release') || contains(github.ref, 'release')
-    # ? github.sha
-  # : format('{0}-{1}', github.workflow, github.ref) }}
-  #cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.head_ref, 'release/')}}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
