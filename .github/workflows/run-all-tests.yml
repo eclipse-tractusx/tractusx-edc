@@ -39,7 +39,6 @@ on:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
 
 concurrency:
-  # cancel older running jobs on the same branch except commit with `release` message
   group: ${{ contains(github.head_ref, 'release') || contains(github.ref, 'release')
            ? github.sha
            : format('{0}-{1}', github.workflow, github.ref) }}
