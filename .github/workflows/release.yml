@@ -158,25 +158,16 @@ jobs:
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
 
-  run-all-tests:
-    name: "run-all-tests"
-    needs: [ validation, github-release ]
-    uses: ./.github/workflows/run-all-tests.yml
-
   # Release: Update Release Notes with Allure Report Link
   publish-allure-report-link-to-release:
     name: "Update Release Notes with Allure Report Link"
     runs-on: ubuntu-latest
-    needs: [ validation, run-all-tests ]
+    needs: [ validation, github-release ]
     permissions:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v8
 
       - uses: actions/github-script@v7
         with:
@@ -190,7 +181,7 @@ jobs:
               tag: version
             });
 
-            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${{ steps.branch-name.outputs.current_branch }}/`;
+            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${version}/`;
             const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
 
             await github.rest.repos.updateRelease({
