@@ -39,7 +39,7 @@ on:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
 
 concurrency:
-  # cancel older running jobs on the same branch
+  # cancel older running jobs on the same branch blabla
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ !startsWith(github.event.head_commit.message, 'Release')}}
 
