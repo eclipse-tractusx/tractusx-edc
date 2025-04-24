@@ -134,7 +134,7 @@ public class RetireAgreementTest {
 
         /*@Test
         void retireAgreement_shouldFail_whenAgreementDoesNotExist() {
-            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
+            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);fghfgh
         }*/
 
         @AfterEach
