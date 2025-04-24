@@ -160,11 +160,6 @@ jobs:
             echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
           fi
 
-
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v8
-
       - name: Generate and publish Allure report
         uses: ./.github/actions/generate-and-publish-allure-report
         with:
