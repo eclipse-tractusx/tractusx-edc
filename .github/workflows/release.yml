@@ -68,7 +68,7 @@ jobs:
   publish-allure-report-link-to-release:
     name: "Update Release Notes with Allure Report Link"
     runs-on: ubuntu-latest
-    needs: [ validation ]
+    needs: [ validation, github-release ]
     permissions:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
