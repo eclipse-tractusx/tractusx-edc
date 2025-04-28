@@ -157,3 +157,36 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+
+  # Release: Update Release Notes with Allure Report Link
+  publish-allure-report-link-to-release:
+    name: "Update Release Notes with Allure Report Link"
+    runs-on: ubuntu-latest
+    needs: [ validation, github-release ]
+    permissions:
+      contents: write
+    if: needs.validation.outputs.RELEASE_VERSION
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
+            
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: version
+            });
+
+            const reportUrl = `https://${owner}.github.io/${repo}/allure-reports/${version}/`;
+            const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              body: newBody
+            });
