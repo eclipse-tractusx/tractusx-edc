@@ -3,6 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.12.0"
+allure = "2.29.1"
 awaitility = "4.3.0"
 aws = "2.31.25"
 azure-storage-blob = "12.30.0"
@@ -19,6 +20,7 @@ rsApi = "4.0.0"
 testcontainers = "1.20.6"
 testcontainers-keycloak = "3.7.0"
 titanium = "1.6.0"
+
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
@@ -187,7 +189,7 @@ edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.re
 edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", version.ref = "edc" }
 
 # other deps
-
+allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
