@@ -3,12 +3,13 @@ format.version = "1.1"
 
 [versions]
 edc = "0.12.0"
+allure = "2.29.1"
 awaitility = "4.3.0"
-aws = "2.31.25"
+aws = "2.31.30"
 azure-storage-blob = "12.30.0"
 bouncyCastle-jdk18on = "1.80"
-flyway = "11.7.2"
-jackson = "2.18.3"
+flyway = "11.8.0"
+jackson = "2.19.0"
 jakarta-json = "2.0.1"
 nimbus = "10.2"
 netty-mockserver = "5.15.0"
@@ -16,9 +17,10 @@ opentelemetry = "2.15.0"
 postgres = "42.7.5"
 restAssured = "5.5.1"
 rsApi = "4.0.0"
-testcontainers = "1.20.6"
+testcontainers = "1.21.0"
 testcontainers-keycloak = "3.7.0"
 titanium = "1.6.0"
+
 
 [libraries]
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
@@ -187,7 +189,7 @@ edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.re
 edc-edr-store-receiver = { module = "org.eclipse.edc:edr-store-receiver", version.ref = "edc" }
 
 # other deps
-
+allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", version.ref = "aws" }
