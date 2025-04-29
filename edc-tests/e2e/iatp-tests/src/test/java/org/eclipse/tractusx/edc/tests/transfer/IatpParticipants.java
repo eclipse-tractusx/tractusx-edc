@@ -27,10 +27,6 @@ import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
 import java.net.URI;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
 public interface IatpParticipants {
 
@@ -40,25 +36,18 @@ public interface IatpParticipants {
             .id("STS")
             .name("STS")
             .build();
-    IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
-            .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
-            .stsUri(STS.stsUri())
-            .stsClientId(CONSUMER_BPN)
-            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .dimUri(DIM_URI)
-            .did(did(CONSUMER_NAME))
-            .build();
 
-    IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
-            .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
-            .stsUri(STS.stsUri())
-            .stsClientId(PROVIDER_BPN)
-            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .dimUri(DIM_URI)
-            .did(did(PROVIDER_NAME))
-            .build();
+    static IatpParticipant participant(String name, String bpn) {
+        return IatpParticipant.Builder.newInstance()
+                .name(name)
+                .id(bpn)
+                .stsUri(STS.stsUri())
+                .stsClientId(bpn)
+                .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+                .dimUri(DIM_URI)
+                .did(did(name))
+                .build();
+    }
 
     static String did(String name) {
         return "did:example:" + name.toLowerCase();
