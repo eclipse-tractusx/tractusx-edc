@@ -69,4 +69,10 @@ class FileBasedTargetNodeDirectory implements TargetNodeDirectory {
     public void insert(TargetNode targetNode) {
         monitor.warning("Inserting nodes into the file-based TargetNodeDirectory is not supported.");
     }
+
+    @Override
+    public TargetNode remove(String s) {
+        monitor.warning("Deleting nodes into the file-based TargetNodeDirectory is not supported.");
+        return null;
+    }
 }
