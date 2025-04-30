@@ -75,7 +75,6 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
     public JsonObject resolveGroupsV3() {
         return businessPartnerService.resolveForBpnGroups()
                 .map(result -> Json.createObjectBuilder()
-                        //.add(ID, "groups")
                         .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result))
                         .build())
                 .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));

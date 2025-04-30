@@ -56,7 +56,7 @@ class BusinessPartnerGroupApiV3ControllerTest extends BaseBusinessPartnerGroupAp
 
     @Test
     void resolveForBpnGroups_exists() {
-        when(businessPartnerStore.resolveForBpnGroups()).thenReturn(StoreResult.success(List.of("bpn1", "bpn2")));
+        when(businessPartnerStore.resolveForBpnGroups()).thenReturn(StoreResult.success(List.of("group1", "group2")));
         baseRequest()
                 .get("/groups")
                 .then()

@@ -75,7 +75,7 @@ public abstract class BusinessPartnerStoreTestBase {
         assertThat(getStore().resolveForBpnGroups())
                 .isSucceeded()
                 .asInstanceOf(list(String.class))
-                .containsExactly("group2", "test-bpn-group", "group3", "group17");
+                .containsExactly("test-bpn-group", "group2", "group17", "group3");
     }
 
     @Test
