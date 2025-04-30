@@ -64,7 +64,7 @@ maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.18
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.18.3, Apache-2.0, approved, #16370
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.18.2, Apache-2.0, approved, #16622
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.18.3, Apache-2.0, approved, #16622
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.19.0, , restricted, clearlydefined
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.19.0, Apache-2.0, approved, #20841
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.17.2, Apache-2.0, approved, #15117
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.18.3, Apache-2.0, approved, #17264
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.14.0, Apache-2.0, approved, #4699
@@ -86,16 +86,16 @@ maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-a
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.18.3, Apache-2.0, approved, #16368
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.16.2, Apache-2.0, approved, #11852
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.18.3, Apache-2.0, approved, #16628
-maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.19.0, , restricted, clearlydefined
+maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.19.0, Apache-2.0, approved, #20843
 maven/mavencentral/com.fasterxml.uuid/java-uuid-generator/4.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.cliftonlabs/json-simple/3.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.dasniko/testcontainers-keycloak/3.7.0, , restricted, clearlydefined
-maven/mavencentral/com.github.docker-java/docker-java-api/3.4.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.github.docker-java/docker-java-api/3.4.2, , restricted, clearlydefined
+maven/mavencentral/com.github.docker-java/docker-java-api/3.4.1, Apache-2.0, approved, #20872
+maven/mavencentral/com.github.docker-java/docker-java-api/3.4.2, Apache-2.0, approved, #20872
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.4.1, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #15745
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.4.2, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #15745
-maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.2, , restricted, clearlydefined
+maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.1, Apache-2.0, approved, #20873
+maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.2, Apache-2.0, approved, #20873
 maven/mavencentral/com.github.java-json-tools/btf/1.3, Apache-2.0 OR LGPL-3.0-only, approved, #15201
 maven/mavencentral/com.github.java-json-tools/jackson-coreutils-equivalence/1.0, LGPL-3.0 OR Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.java-json-tools/jackson-coreutils/2.0, Apache-2.0 OR LGPL-3.0-or-later, approved, #15186
@@ -712,16 +712,16 @@ maven/mavencentral/org.slf4j/slf4j-api/2.0.17, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.6, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
 maven/mavencentral/org.testcontainers/database-commons/1.20.6, Apache-2.0, approved, #16630
-maven/mavencentral/org.testcontainers/database-commons/1.21.0, , restricted, clearlydefined
+maven/mavencentral/org.testcontainers/database-commons/1.21.0, Apache-2.0, approved, #20875
 maven/mavencentral/org.testcontainers/jdbc/1.20.6, Apache-2.0, approved, #16621
-maven/mavencentral/org.testcontainers/jdbc/1.21.0, , restricted, clearlydefined
+maven/mavencentral/org.testcontainers/jdbc/1.21.0, Apache-2.0, approved, #20877
 maven/mavencentral/org.testcontainers/junit-jupiter/1.20.6, MIT, approved, #16552
 maven/mavencentral/org.testcontainers/junit-jupiter/1.21.0, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/minio/1.21.0, , restricted, clearlydefined
 maven/mavencentral/org.testcontainers/postgresql/1.20.6, MIT, approved, #16627
-maven/mavencentral/org.testcontainers/postgresql/1.21.0, , restricted, clearlydefined
+maven/mavencentral/org.testcontainers/postgresql/1.21.0, None, restricted, #20876
 maven/mavencentral/org.testcontainers/testcontainers/1.20.6, MIT, approved, #15747
-maven/mavencentral/org.testcontainers/testcontainers/1.21.0, , restricted, clearlydefined
+maven/mavencentral/org.testcontainers/testcontainers/1.21.0, None, restricted, #20874
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, #19677
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.xmlunit/xmlunit-placeholders/2.9.1, Apache-2.0, approved, clearlydefined
