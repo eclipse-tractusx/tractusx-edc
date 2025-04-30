@@ -21,14 +21,12 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import com.azure.core.util.BinaryData;
 import org.apache.commons.codec.binary.Base64;
-import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageResourceDefinition;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.tests.azure.AzureBlobClient;
 import org.eclipse.tractusx.edc.tests.azure.AzuriteExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
@@ -112,8 +110,6 @@ public class AzureToAzureEndToEndTest {
 
     @BeforeEach
     void setup() {
-        CONSUMER_RUNTIME.getService(TypeManager.class).registerTypes(ObjectStorageResourceDefinition.class);
-
         PROVIDER_RUNTIME.getService(Vault.class)
                 .storeSecret(PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
 

@@ -39,6 +39,8 @@ dependencies {
     testFixturesApi(libs.edc.aws.s3.core)
     testFixturesApi(libs.edc.spi.edrstore)
     testFixturesApi(libs.edc.spi.jsonld)
+    testFixturesApi(libs.edc.spi.identity.trust)
+    testFixturesApi(libs.edc.spi.identity.did)
     testFixturesApi(libs.edc.spi.policy)
     testFixturesApi(libs.edc.spi.transfer)
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))

@@ -22,16 +22,17 @@ plugins {
 }
 
 dependencies {
-
-    testImplementation(project(":spi:tokenrefresh-spi"))
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.restAssured)
-
     testImplementation(project(":spi:core-spi"))
+    testImplementation(project(":spi:tokenrefresh-spi"))
+
+    testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(libs.edc.dpf.http)
     testImplementation(libs.edc.spi.identity.did)
+
+    testImplementation(libs.bouncyCastle.bcpkixJdk18on)
     testImplementation(libs.nimbus.jwt)
+    testImplementation(libs.restAssured)
 }
 
 

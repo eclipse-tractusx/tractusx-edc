@@ -76,5 +76,10 @@ public class FederatedCatalogExtension implements ServiceExtension {
         public void insert(TargetNode targetNode) {
 
         }
+
+        @Override
+        public TargetNode remove(String s) {
+            return null;
+        }
     }
 }

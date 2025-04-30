@@ -51,6 +51,7 @@ dependencies {
     runtimeOnly(libs.edc.dpf.api.signaling)
 
     runtimeOnly(libs.edc.api.control.config)
+    runtimeOnly(libs.edc.core.runtime)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
     runtimeOnly(libs.edc.core.edrstore)

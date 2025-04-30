@@ -25,9 +25,9 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -42,21 +42,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 @ComponentTest
 public class UseMockConnectorSampleTest {
-    @Container
-    protected static GenericContainer<?> edcContainer = new GenericContainer<>("mock-connector")
-            .withEnv("WEB_HTTP_PORT", "8080")
-            .withEnv("WEB_HTTP_PATH", "/api")
-            .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
-            .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
-            .withExposedPorts(8080, 8081);
-    private int managementPort;
-    private int defaultPort;
 
-    @BeforeEach
-    void setup() {
-        managementPort = edcContainer.getMappedPort(8081);
-        defaultPort = edcContainer.getMappedPort(8080);
-    }
+    private static final int DEFAULT_PORT = 8080;
+    private static final int MANAGEMENT_PORT = 8081;
+
+    @Container
+    private final GenericContainer<?> edcContainer = new GenericContainer<>("mock-connector")
+            .withEnv("WEB_HTTP_PORT", String.valueOf(DEFAULT_PORT))
+            .withEnv("WEB_HTTP_PATH", "/api")
+            .withEnv("WEB_HTTP_MANAGEMENT_PORT", String.valueOf(MANAGEMENT_PORT))
+            .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
+            .withExposedPorts(DEFAULT_PORT, MANAGEMENT_PORT)
+            .waitingFor(Wait.forLogMessage(".* ready.*", 1));
 
     @Test
     void test_getAsset() {
@@ -77,7 +74,7 @@ public class UseMockConnectorSampleTest {
                         """)
                 .post("/v3/assets/request")
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200)
                 .extract().body().as(JsonArray.class);
 
@@ -108,7 +105,7 @@ public class UseMockConnectorSampleTest {
                         """)
                 .post("/v3/assets/request")
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(400)
                 .extract().body().as(JsonArray.class);
 
@@ -136,7 +133,7 @@ public class UseMockConnectorSampleTest {
                         """)
                 .post("/v4alpha/protocol-versions/request")
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(200)
                 .extract()
                 .body()
@@ -159,19 +156,19 @@ public class UseMockConnectorSampleTest {
                 .body(json)
                 .post("/instrumentation")
                 .then()
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(204);
     }
 
     private RequestSpecification apiRequest() {
         return given()
-                .baseUri("http://localhost:" + defaultPort + "/api")
+                .baseUri("http://localhost:" + edcContainer.getMappedPort(DEFAULT_PORT) + "/api")
                 .when();
     }
 
     private RequestSpecification mgmtRequest() {
         return given()
-                .baseUri("http://localhost:" + managementPort + "/api/management")
+                .baseUri("http://localhost:" + edcContainer.getMappedPort(MANAGEMENT_PORT) + "/api/management")
                 .when();
     }
 }

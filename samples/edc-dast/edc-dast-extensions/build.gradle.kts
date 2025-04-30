@@ -23,6 +23,7 @@ plugins {
 
 dependencies {
     implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.lib.cryptocommon)
     implementation(libs.edc.lib.token)
     implementation(libs.edc.core.token)
