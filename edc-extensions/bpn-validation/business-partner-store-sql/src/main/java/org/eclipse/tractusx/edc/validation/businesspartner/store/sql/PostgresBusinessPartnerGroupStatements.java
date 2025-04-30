@@ -40,6 +40,12 @@ public class PostgresBusinessPartnerGroupStatements implements BusinessPartnerGr
     }
 
     @Override
+    public String findByBpnGroupsTemplate() {
+        return format("SELECT DISTINCT group_element AS group_name from %s, json_array_elements_text(%s) AS group_element;",
+                getTable(), getGroupsColumn());
+    }
+
+    @Override
     public String insertTemplate() {
         return format("INSERT INTO %s (%s, %s) VALUES (?, ?%s)", getTable(), getBpnColumn(), getGroupsColumn(), getFormatJsonOperator());
     }
