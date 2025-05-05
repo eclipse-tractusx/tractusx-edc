@@ -1535,6 +1535,22 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v3/dataplanes:
+    get:
+      tags:
+      - Dataplane Selector V3
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV3
+      responses:
+        "200":
+          description: A (potentially empty) list of currently registered data plane
+            instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV3"
   /v3/edrs:
     post:
       tags:
@@ -2334,6 +2350,22 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4alpha/dataplanes:
+    get:
+      tags:
+      - Dataplane Selector v4alpha
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV4
+      responses:
+        "200":
+          description: A (potentially empty) list of currently registered data plane
+            instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
   /v4alpha/protocol-versions/request:
     post:
       tags:
@@ -2755,6 +2787,104 @@ components:
           example: https://w3id.org/edc/v0.0.1/ns/DataAddress
         type:
           type: string
+    DataPlaneInstanceSchemaV3:
+      required:
+      - '@context'
+      - allowedDestTypes
+      - allowedSourceTypes
+      - url
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+        allowedDestTypes:
+          uniqueItems: true
+          type: array
+          deprecated: true
+          items:
+            type: string
+            deprecated: true
+        allowedSourceTypes:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        lastActive:
+          type: integer
+          format: int64
+        state:
+          type: string
+        stateTimestamp:
+          type: integer
+          format: int64
+        turnCount:
+          type: integer
+          format: int32
+          deprecated: true
+        url:
+          type: string
+          format: url
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedDestTypes:
+        - your-dest-type
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
+    DataPlaneInstanceSchemaV4:
+      required:
+      - '@context'
+      - allowedSourceTypes
+      - url
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+        allowedSourceTypes:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        lastActive:
+          type: integer
+          format: int64
+        state:
+          type: string
+        stateTimestamp:
+          type: integer
+          format: int64
+        url:
+          type: string
+          format: url
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
     Dataset:
       type: object
       description: DCAT dataset
