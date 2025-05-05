@@ -99,7 +99,7 @@ jobs:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
           GITHUB_PACKAGE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       - name: Bump version in /charts
-        uses: mikefarah/yq@v4.45.1
+        uses: mikefarah/yq@v4.45.2
         with:
           cmd: |-
             find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
