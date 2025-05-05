@@ -28,25 +28,22 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
-    runtimeOnly(project(":edc-extensions:migrations::control-plane-migration"))
-    runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
-    runtimeOnly(project(":edc-extensions:agreements:retirement-evaluation-store-sql"))
-    runtimeOnly(project(":edc-extensions:edr:edr-index-lock-sql"))
-    runtimeOnly(libs.edc.vault.hashicorp)
-    runtimeOnly(libs.bundles.edc.sqlstores)
-    runtimeOnly(libs.edc.transaction.local)
-    runtimeOnly(libs.edc.sql.pool)
-    runtimeOnly(libs.edc.core.controlplane)
-    runtimeOnly(libs.edc.core.sql)
-    runtimeOnly(libs.postgres)
-}
 
+    runtimeOnly(libs.edc.bom.controlplane.feature.sql)
+    runtimeOnly(libs.edc.bom.federatedcatalog.feature.sql)
+
+    runtimeOnly(project(":edc-extensions:agreements:retirement-evaluation-store-sql"))
+    runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
+    runtimeOnly(project(":edc-extensions:edr:edr-index-lock-sql"))
+    runtimeOnly(project(":edc-extensions:migrations::control-plane-migration"))
+
+    runtimeOnly(libs.edc.vault.hashicorp)
+}
 
 tasks.withType<ShadowJar> {
     mergeServiceFiles()
     archiveFileName.set("${project.name}.jar")
 }
-
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")

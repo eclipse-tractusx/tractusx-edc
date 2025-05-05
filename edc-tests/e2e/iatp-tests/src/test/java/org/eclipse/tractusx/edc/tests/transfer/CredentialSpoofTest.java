@@ -47,7 +47,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
@@ -58,17 +61,9 @@ import static org.mockserver.model.HttpResponse.response;
 @EndToEndTest
 public class CredentialSpoofTest implements IatpParticipants {
 
-    public static final String MALICIOUS_ACTOR_NAME = "MALICIOUS";
-    public static final String MALICIOUS_ACTOR_BPN = MALICIOUS_ACTOR_NAME + BPN_SUFFIX;
-    protected static final IatpParticipant MALICIOUS_ACTOR = IatpParticipant.Builder.newInstance()
-            .name(MALICIOUS_ACTOR_NAME)
-            .id(MALICIOUS_ACTOR_BPN)
-            .stsUri(STS.stsUri())
-            .stsClientId(MALICIOUS_ACTOR_BPN)
-            .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .dimUri(DIM_URI)
-            .did(IatpParticipants.did(MALICIOUS_ACTOR_NAME))
-            .build();
+    private static final IatpParticipant CONSUMER = IatpParticipants.participant(CONSUMER_NAME, CONSUMER_BPN);
+    private static final IatpParticipant PROVIDER = IatpParticipants.participant(PROVIDER_NAME, PROVIDER_BPN);
+    private static final IatpParticipant MALICIOUS_ACTOR = IatpParticipants.participant("MALICIOUS", "MALICIOUS-BPN");
 
     @RegisterExtension
     protected static final RuntimeExtension MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.getKeyPair(), () -> MALICIOUS_ACTOR.iatpConfig(PROVIDER, CONSUMER));
@@ -78,6 +73,7 @@ public class CredentialSpoofTest implements IatpParticipants {
     protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER, MALICIOUS_ACTOR));
     @RegisterExtension
     protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER, MALICIOUS_ACTOR));
+
     private static final Integer MOCKED_CS_SERVICE_PORT = getFreePort();
     protected ClientAndServer server;
 

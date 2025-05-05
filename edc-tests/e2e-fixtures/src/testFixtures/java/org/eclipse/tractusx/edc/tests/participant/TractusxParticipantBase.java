@@ -97,6 +97,8 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.management.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.control.port", String.valueOf(getFreePort()));
                 put("web.http.control.path", "/control");
+                put("web.http.version.port", String.valueOf(getFreePort()));
+                put("web.http.version.path", "/version");
                 put("web.http.catalog.port", String.valueOf(federatedCatalog.get().getPort()));
                 put("web.http.catalog.path", federatedCatalog.get().getPath());
                 put("web.http.catalog.auth.type", "tokenbased");
