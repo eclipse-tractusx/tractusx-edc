@@ -177,7 +177,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3.1alpha/retireagreements")
+                .post("/v3/contractagreements/retire")
                 .then();
     }
 
