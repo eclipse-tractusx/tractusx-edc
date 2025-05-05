@@ -716,7 +716,6 @@ maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-C
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
 maven/mavencentral/org.yaml/snakeyaml/2.4, Apache-2.0, approved, #19469
 maven/mavencentral/software.amazon.awssdk/annotations/2.31.16, Apache-2.0, approved, #20424
-maven/mavencentral/software.amazon.awssdk/annotations/2.31.21, Apache-2.0, approved, #20424
 maven/mavencentral/software.amazon.awssdk/annotations/2.31.35, Apache-2.0, approved, #20424
 maven/mavencentral/software.amazon.awssdk/apache-client/2.31.16, Apache-2.0, approved, #20407
 maven/mavencentral/software.amazon.awssdk/apache-client/2.31.35, Apache-2.0, approved, #20407
@@ -747,7 +746,6 @@ maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.31.35, Apache-2.0, app
 maven/mavencentral/software.amazon.awssdk/http-auth/2.31.16, Apache-2.0, approved, #20417
 maven/mavencentral/software.amazon.awssdk/http-auth/2.31.35, Apache-2.0, approved, #20417
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.31.16, Apache-2.0, approved, #20421
-maven/mavencentral/software.amazon.awssdk/http-client-spi/2.31.21, Apache-2.0, approved, #20421
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.31.35, Apache-2.0, approved, #20421
 maven/mavencentral/software.amazon.awssdk/iam/2.31.16, Apache-2.0, approved, #20419
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.31.16, Apache-2.0, approved, #20428
@@ -755,10 +753,8 @@ maven/mavencentral/software.amazon.awssdk/identity-spi/2.31.35, Apache-2.0, appr
 maven/mavencentral/software.amazon.awssdk/json-utils/2.31.16, Apache-2.0, approved, #20410
 maven/mavencentral/software.amazon.awssdk/json-utils/2.31.35, Apache-2.0, approved, #20410
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.31.16, Apache-2.0, approved, #20432
-maven/mavencentral/software.amazon.awssdk/metrics-spi/2.31.21, Apache-2.0, approved, #20432
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.31.35, Apache-2.0, approved, #20432
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.31.16, Apache-2.0, approved, #20408
-maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.31.21, Apache-2.0, approved, #20408
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.31.35, Apache-2.0, approved, #20408
 maven/mavencentral/software.amazon.awssdk/profiles/2.31.16, Apache-2.0, approved, #20418
 maven/mavencentral/software.amazon.awssdk/profiles/2.31.35, Apache-2.0, approved, #20418
@@ -779,6 +775,5 @@ maven/mavencentral/software.amazon.awssdk/sts/2.31.16, Apache-2.0, approved, #20
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.31.16, Apache-2.0, approved, #20401
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.31.35, Apache-2.0, approved, #20401
 maven/mavencentral/software.amazon.awssdk/utils/2.31.16, Apache-2.0, approved, #20430
-maven/mavencentral/software.amazon.awssdk/utils/2.31.21, Apache-2.0, approved, #20430
 maven/mavencentral/software.amazon.awssdk/utils/2.31.35, Apache-2.0, approved, #20430
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, #19691
