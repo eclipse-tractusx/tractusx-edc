@@ -891,6 +891,23 @@ paths:
                   $ref: "#/components/schemas/ApiErrorDetail"
         "404":
           description: No entry for the given BPN group was found
+  /v3/business-partner-groups/groups:
+    get:
+      tags:
+      - Business Partner Group
+      description: Resolves all BPN Groups
+      operationId: resolveGroupsV3
+      responses:
+        "200":
+          description: An object containing an array with the all BPN groups
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/business-partner-groups/{bpn}:
     get:
       tags:
