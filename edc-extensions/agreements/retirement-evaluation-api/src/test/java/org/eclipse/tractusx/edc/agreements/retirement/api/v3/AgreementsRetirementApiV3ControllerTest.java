@@ -224,7 +224,7 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
     private RequestSpecification baseRequest() {
         return given()
                 .baseUri("http://localhost:" + port)
-                .basePath("/v3.1alpha/retireagreements")
+                .basePath("/v3/contractagreements/retirements")
                 .when();
     }
 
