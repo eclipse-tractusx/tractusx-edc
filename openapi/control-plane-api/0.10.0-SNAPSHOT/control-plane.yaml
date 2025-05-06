@@ -643,76 +643,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorDetail"
-  /v3.1alpha/retireagreements:
-    post:
-      tags:
-      - Agreements Retirement
-      description: Retires an active contract agreement.
-      operationId: retireAgreementV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Retirement Example"
-      responses:
-        "204":
-          description: The contract agreement was successfully retired
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-        "409":
-          description: The contract agreement is already retired
-  /v3.1alpha/retireagreements/request:
-    post:
-      tags:
-      - Agreements Retirement
-      description: Get all retired contract agreements.
-      operationId: getAllRetiredV3
-      responses:
-        "200":
-          description: A list of retired contract agreements
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-  /v3.1alpha/retireagreements/{agreementId}:
-    delete:
-      tags:
-      - Agreements Retirement
-      description: "Removes a contract agreement from the retired list, reactivating\
-        \ it."
-      operationId: reactivateRetiredV3
-      parameters:
-      - name: agreementId
-        in: path
-        description: The contract agreement id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "204":
-          description: The contract agreement is reactivated
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-        "404":
-          description: No entry for the given agreementId was found
   /v3/assets:
     put:
       tags:
@@ -1078,6 +1008,76 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v3/contractagreements/retirements:
+    post:
+      tags:
+      - Agreements Retirement
+      description: Retires an active contract agreement.
+      operationId: retireAgreementV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Retirement Example"
+      responses:
+        "204":
+          description: The contract agreement was successfully retired
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "409":
+          description: The contract agreement is already retired
+  /v3/contractagreements/retirements/request:
+    post:
+      tags:
+      - Agreements Retirement
+      description: Get all retired contract agreements.
+      operationId: getAllRetiredV3
+      responses:
+        "200":
+          description: A list of retired contract agreements
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+  /v3/contractagreements/retirements/{agreementId}:
+    delete:
+      tags:
+      - Agreements Retirement
+      description: "Removes a contract agreement from the retired list, reactivating\
+        \ it."
+      operationId: reactivateRetiredV3
+      parameters:
+      - name: agreementId
+        in: path
+        description: The contract agreement id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The contract agreement is reactivated
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: No entry for the given agreementId was found
   /v3/contractagreements/{id}:
     get:
       tags:
