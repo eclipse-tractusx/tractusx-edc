@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SqlBusinessPartnerStore extends AbstractSqlStore implements BusinessPartnerStore {
     private static final TypeReference<List<String>> LIST_OF_STRING = new TypeReference<>() {
@@ -73,6 +74,20 @@ public class SqlBusinessPartnerStore extends AbstractSqlStore implements Busines
                 return bpns.isEmpty() ?
                         StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(businessPartnerGroup)) :
                         StoreResult.success(bpns);
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
+    @Override
+    public StoreResult<List<String>> resolveForBpnGroups() {
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                var sql = statements.findByBpnGroupsTemplate();
+                var result = queryExecutor.query(connection, true, this::mapGroups, sql);
+                var groups = result.collect(Collectors.toList());
+                return StoreResult.success(groups);
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }
@@ -137,6 +152,10 @@ public class SqlBusinessPartnerStore extends AbstractSqlStore implements Busines
 
     private String mapGroup(ResultSet resultSet) throws SQLException {
         return resultSet.getString(statements.getBpnColumn());
+    }
+
+    private String mapGroups(ResultSet resultSet) throws SQLException {
+        return resultSet.getString("group_name");
     }
 
     private boolean exists(String businessPartnerNumber, Connection connection) {

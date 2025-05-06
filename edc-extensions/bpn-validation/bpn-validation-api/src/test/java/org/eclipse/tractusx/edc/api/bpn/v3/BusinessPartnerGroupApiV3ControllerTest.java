@@ -54,6 +54,25 @@ class BusinessPartnerGroupApiV3ControllerTest extends BaseBusinessPartnerGroupAp
                 .statusCode(404);
     }
 
+    @Test
+    void resolveForBpnGroups_exists() {
+        when(businessPartnerStore.resolveForBpnGroups()).thenReturn(StoreResult.success(List.of("group1", "group2")));
+        baseRequest()
+                .get("/groups")
+                .then()
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    void resolveForBpnGroups_notExists_returns404() {
+        when(businessPartnerStore.resolveForBpnGroups()).thenReturn(StoreResult.notFound("test-message"));
+        baseRequest()
+                .get("/groups")
+                .then()
+                .statusCode(404);
+    }
+
     @Override
     protected Object controller() {
         return new BusinessPartnerGroupApiV3Controller(businessPartnerStore);

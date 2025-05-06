@@ -66,6 +66,19 @@ public abstract class BusinessPartnerStoreTestBase {
     }
 
     @Test
+    void resolveForBpnGroups() {
+        getStore().save("test-bpn-0", List.of("group2"));
+        getStore().save("test-bpn-1", List.of("test-bpn-group", "group2", "group3"));
+        getStore().save("test-bpn-2", List.of("test-bpn-group"));
+        getStore().save("test-bpn-3", List.of("test-bpn-group", "group17"));
+
+        assertThat(getStore().resolveForBpnGroups())
+                .isSucceeded()
+                .asInstanceOf(list(String.class))
+                .contains("group2", "test-bpn-group", "group3", "group17");
+    }
+
+    @Test
     void save() {
         getStore().save("test-bpn", List.of("group1", "group2", "group3"));
         assertThat(getStore().resolveForBpn("test-bpn").getContent()).containsExactly("group1", "group2", "group3");

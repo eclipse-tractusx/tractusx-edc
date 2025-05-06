@@ -40,6 +40,8 @@ public interface BusinessPartnerGroupStatements {
 
     String findByBpnGroupTemplate();
 
+    String findByBpnGroupsTemplate();
+
     String insertTemplate();
 
     String deleteTemplate();
