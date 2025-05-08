@@ -136,14 +136,14 @@ jobs:
 
       - name: Set sanitized artifact name
         run: |
-          SANITIZED_NAME=$(echo "${{ matrix.variant.dir }}" | tr '/' '-')
+          SANITIZED_NAME=$(echo "edc-tests/e2e/${{ matrix.dir }}" | tr '/' '-')
           echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ env.ARTIFACT_NAME }}
-          path: ${{ matrix.variant.dir }}/build/allure-results
+          path: edc-tests/e2e/${{ matrix.dir }}/build/allure-results
 
   postgres-tests:
     runs-on: ubuntu-latest
