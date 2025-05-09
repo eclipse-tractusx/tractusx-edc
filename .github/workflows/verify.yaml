@@ -130,7 +130,7 @@ jobs:
       - name: Run E2E tests (${{ matrix.dir }})
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
+          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
