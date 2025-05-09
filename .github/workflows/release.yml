@@ -21,23 +21,18 @@
 
 ---
 name: "Release"
+run-name: "Release from ${{ github.ref_name }}"
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
-
-  workflow_call:
+  workflow_dispatch:
 
 
 jobs:
   # Gate
   validation:
-    name: "Check if repository is not fork AND head is release OR base is bugfix"
+    name: "Check if repository is not fork AND ( base is bugfix/* OR main )"
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'eclipse-tractusx/tractusx-edc' && (startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')) }}
+    if: ${{ github.repository == 'eclipse-tractusx/tractusx-edc' && (startsWith(github.ref_name, 'bugfix/') || git.ref_name == 'main') }}
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
