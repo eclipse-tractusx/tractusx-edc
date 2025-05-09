@@ -69,6 +69,7 @@ jobs:
           # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # Use +security-extended,security-and-quality for wider security and better code quality
           queries: +security-extended,security-and-quality
+          debug: true
 
 
       # build only production code, no test sources
