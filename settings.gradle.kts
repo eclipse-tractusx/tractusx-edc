@@ -152,7 +152,7 @@ buildCache {
     }
 
     remote(develocity.buildCache) {
-        isEnabled = true
+        isEnabled = false
         isPush = isCI
     }
 }
