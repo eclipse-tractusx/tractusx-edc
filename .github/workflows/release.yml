@@ -21,23 +21,17 @@
 
 ---
 name: "Release"
+run-name: "Release from ${{ github.ref_name }}"
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
-
-  workflow_call:
+  workflow_dispatch:
 
 
 jobs:
   # Gate
   validation:
-    name: "Check if repository is not fork AND head is release OR base is bugfix"
+    name: "Workflow Validation"
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'eclipse-tractusx/tractusx-edc' && (startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')) }}
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
@@ -47,6 +41,23 @@ jobs:
         run: |
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - name: Validations
+        run: |
+          if [[ "${{ github.repository }}" != "eclipse-tractusx/tractusx-edc" ]]; then
+            echo "This workflow can only be run on the eclipse-tractusx/tractusx-edc repository."
+            exit 1
+          fi
+
+          if [[ "${{ github.ref_name }}" != "main" && ! "${{ github.ref_name }}" =~ ^bugfix/ ]]; then
+            echo "This workflow can only be run on the main branch or branches starting with bugfix/."
+            exit 1
+          fi
+          
+          if [[ "${{steps.release-version.outputs.RELEASE_VERSION}}" =~ SNAPSHOT ]]; then
+            echo "This workflow can not be executed for SNAPSHOT versions."
+            exit 1
+          fi
+  
 
   # Release: Maven Artifacts
   maven-release:
