@@ -39,7 +39,12 @@ class BdrsClientAudienceMapper implements AudienceResolver {
 
     @Override
     public Result<String> resolve(RemoteMessage remoteMessage) {
-        return Result.from(Optional.ofNullable(client.resolve(remoteMessage.getCounterPartyId())));
+        try {
+            var resolve = client.resolve(remoteMessage.getCounterPartyId());
+            return Result.from(Optional.ofNullable(resolve));
+        } catch (Exception e) {
+            return Result.failure("Failure in DID resolution: " + e.getMessage());
+        }
     }
 
 }

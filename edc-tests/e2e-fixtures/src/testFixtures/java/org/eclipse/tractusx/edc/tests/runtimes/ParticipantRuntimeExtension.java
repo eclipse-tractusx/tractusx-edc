@@ -53,8 +53,6 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
 
     public ParticipantRuntimeExtension(EmbeddedRuntime runtime) {
         super(runtime);
-        registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()));
-        registerServiceMock(BdrsClient.class, (s) -> s);
         registerSystemExtension(ServiceExtension.class, new SignServicesExtension(this));
         registerSystemExtension(ServiceExtension.class, new DataWiperExtension(wiper, DataWiper::new));
     }

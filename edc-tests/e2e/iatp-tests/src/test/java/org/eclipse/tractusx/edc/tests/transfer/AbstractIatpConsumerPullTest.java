@@ -66,15 +66,10 @@ import static org.mockserver.model.HttpResponse.response;
 
 public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest {
 
-    protected static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer();
     protected static final StsParticipant STS = StsParticipant.Builder.newInstance()
             .id("STS")
             .name("STS")
             .build();
-
-    protected static String did(String name) {
-        return "did:example:" + name.toLowerCase();
-    }
 
     @DisplayName("Contract policy is fulfilled")
     @ParameterizedTest(name = "{1}")
@@ -190,14 +185,14 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
         var did = consumer().getDid();
         var bpn = consumer().getBpn();
-        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
+        var newRawVc = createVcBuilder(dataspaceIssuer().didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("expirationDate", expirationDate.toString());
 
-        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createJwtVc(newRawVc.build(), did);
+        var newVcString = dataspaceIssuer().createJwtVc(newRawVc.build(), did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
-                        .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+                        .issuerId(dataspaceIssuer().didUrl())
                         .holderId(bpn)
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
@@ -242,7 +237,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
         var did = consumer().getDid();
         var bpn = consumer().getBpn();
-        var newRawVc = createVcBuilder(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "MembershipCredential", membershipSubject(did, bpn));
+        var newRawVc = createVcBuilder(dataspaceIssuer().didUrl(), "MembershipCredential", membershipSubject(did, bpn));
         newRawVc.add("credentialStatus", Json.createObjectBuilder()
                 .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
                 .add("type", "StatusList2021Entry")
@@ -251,11 +246,11 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                 .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
                 .build());
 
-        var newVcString = DATASPACE_ISSUER_PARTICIPANT.createJwtVc(newRawVc.build(), did);
+        var newVcString = dataspaceIssuer().createJwtVc(newRawVc.build(), did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
-                        .issuerId(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+                        .issuerId(dataspaceIssuer().didUrl())
                         .participantContextId(did)
                         .holderId(bpn)
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
@@ -264,7 +259,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
         // return a StatusListCredential, where the credential's status is "revocation"
         try (var revocationServer = startClientAndServer(port)) {
-            var slCred = StatusList2021.create(DATASPACE_ISSUER_PARTICIPANT.didUrl(), "revocation")
+            var slCred = StatusList2021.create(dataspaceIssuer().didUrl(), "revocation")
                     .withStatus(12345, true);
             revocationServer.when(request().withPath("/status/list/7")).respond(response().withBody(slCred.toJsonObject().toString()));
 
@@ -286,6 +281,8 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     protected abstract RuntimeExtension consumerRuntime();
 
     protected abstract RuntimeExtension providerRuntime();
+
+    protected abstract DataspaceIssuer dataspaceIssuer();
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
         @Override

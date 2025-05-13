@@ -17,6 +17,5 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.iatp.TestAudienceMapperExtension
 org.eclipse.tractusx.edc.iatp.ih.IdentityHubExtension
 org.eclipse.tractusx.edc.iatp.CredentialsJsonLdExtension

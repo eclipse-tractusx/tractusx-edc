@@ -24,10 +24,8 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * Specialized version of {@link TractusxParticipantBase} with IATP configurations
@@ -38,7 +36,7 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
     protected String stsClientId;
     protected String trustedIssuer;
 
-    public Config iatpConfig(TractusxIatpParticipantBase... others) {
+    public Config iatpConfig() {
         var additionalSettings = Map.of(
                 "edc.iam.sts.oauth.token.url", stsUri.get() + "/token",
                 "edc.iam.sts.oauth.client.id", getDid(),
@@ -48,21 +46,11 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
                 "edc.agent.identity.key", "client_id",
                 "edc.iam.trusted-issuer.issuer.id", trustedIssuer,
                 "edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias(),
-                "edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId()
+                "edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId(),
+                "edc.iam.did.web.use.https", "false"
         );
 
-        var baseConfig = getConfig().merge(ConfigFactory.fromMap(additionalSettings));
-
-        return Stream.concat(Stream.of(this), Arrays.stream(others))
-                .map(p -> {
-                    var prefix = "tx.edc.iam.iatp.audiences.%s".formatted(p.getName().toLowerCase());
-                    return Map.of(
-                            "%s.from".formatted(prefix), p.getBpn(),
-                            "%s.to".formatted(prefix), p.getDid()
-                    );
-                })
-                .map(ConfigFactory::fromMap)
-                .reduce(baseConfig, Config::merge);
+        return getConfig().merge(ConfigFactory.fromMap(additionalSettings));
     }
 
     public static class Builder<P extends TractusxIatpParticipantBase, B extends Builder<P, B>> extends TractusxParticipantBase.Builder<P, B> {

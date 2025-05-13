@@ -26,7 +26,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "bdrs-client")
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
         exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
     }

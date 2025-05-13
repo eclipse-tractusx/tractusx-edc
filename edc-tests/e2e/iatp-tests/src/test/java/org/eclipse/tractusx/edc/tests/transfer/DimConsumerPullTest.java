@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
-import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.identitytrust.sts.spi.service.StsAccountService;
@@ -35,7 +34,10 @@ import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
+import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,7 +48,6 @@ import org.mockserver.model.HttpResponse;
 
 import java.net.URI;
 import java.time.Clock;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,31 +65,40 @@ import static org.mockserver.model.HttpRequest.request;
 @EndToEndTest
 public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
 
-    protected static final LazySupplier<URI> DIM_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
+    @RegisterExtension
+    private static final DidServerExtension DID_SERVER = new DidServerExtension();
 
-    protected static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
+    private static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer(DID_SERVER.didFor("issuer"));
+    private static final LazySupplier<URI> DIM_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
+
+    private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
-            .did(did(CONSUMER_NAME))
+            .did(DID_SERVER.didFor(CONSUMER_NAME))
             .build();
-    protected static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
+    private static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
-            .did(did(PROVIDER_NAME))
+            .did(DID_SERVER.didFor(PROVIDER_NAME))
             .build();
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
+    private static final BdrsServerExtension BDRS_SERVER_EXTENSION = new BdrsServerExtension(DATASPACE_ISSUER_PARTICIPANT.didUrl());
+
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER));
+    private static final RuntimeExtension CONSUMER_RUNTIME = dimRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(),
+            () -> CONSUMER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = dimRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(),
+            () -> PROVIDER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
 
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private static ClientAndServer oauthServer;
@@ -96,6 +106,13 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @BeforeAll
     static void prepare() {
+        DID_SERVER.register(CONSUMER_NAME, CONSUMER.getDidDocument());
+        DID_SERVER.register(PROVIDER_NAME, PROVIDER.getDidDocument());
+        DID_SERVER.register("issuer", DATASPACE_ISSUER_PARTICIPANT.didDocument());
+
+        BDRS_SERVER_EXTENSION.addMapping(CONSUMER.getBpn(), CONSUMER.getDid());
+        BDRS_SERVER_EXTENSION.addMapping(PROVIDER.getBpn(), PROVIDER.getDid());
+
         var consumerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(CONSUMER_RUNTIME.getService(PrivateKeyResolver.class)));
         var providerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(PROVIDER_RUNTIME.getService(PrivateKeyResolver.class)));
 
@@ -147,14 +164,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
     // credentials etc get wiped after every, so the need to be created before every test
     @BeforeEach
     void setupParticipants() {
-        // create the DIDs cache
-        var dids = new HashMap<String, DidDocument>();
-        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
-        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
-
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, null);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, null);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, null);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, null);
     }
 
     @Override
@@ -165,6 +176,11 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
     @Override
     protected RuntimeExtension providerRuntime() {
         return PROVIDER_RUNTIME;
+    }
+
+    @Override
+    protected DataspaceIssuer dataspaceIssuer() {
+        return DATASPACE_ISSUER_PARTICIPANT;
     }
 
     @Override

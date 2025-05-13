@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.identitytrust.spi.model.PresentationResponseMessage;
@@ -33,15 +34,20 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
+import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
+import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
-import java.util.HashMap;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -59,50 +65,69 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 @EndToEndTest
-public class CredentialSpoofTest implements IatpParticipants {
-
-    private static final IatpParticipant CONSUMER = IatpParticipants.participant(CONSUMER_NAME, CONSUMER_BPN);
-    private static final IatpParticipant PROVIDER = IatpParticipants.participant(PROVIDER_NAME, PROVIDER_BPN);
-    private static final IatpParticipant MALICIOUS_ACTOR = IatpParticipants.participant("MALICIOUS", "MALICIOUS-BPN");
+public class CredentialSpoofTest {
 
     @RegisterExtension
-    protected static final RuntimeExtension MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.getKeyPair(), () -> MALICIOUS_ACTOR.iatpConfig(PROVIDER, CONSUMER));
+    private static final DidServerExtension DID_SERVER = new DidServerExtension();
+    private static final StsParticipant STS = StsParticipant.Builder.newInstance()
+            .id("STS")
+            .name("STS")
+            .build();
+
+    private static final LazySupplier<URI> DIM_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
+    private static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer(DID_SERVER.didFor("issuer"));
+
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER, MALICIOUS_ACTOR));
+    private static final BdrsServerExtension BDRS_SERVER_EXTENSION = new BdrsServerExtension(DATASPACE_ISSUER_PARTICIPANT.didUrl());
+
+    private static final IatpParticipant CONSUMER = participant(CONSUMER_NAME, CONSUMER_BPN);
+    private static final IatpParticipant PROVIDER = participant(PROVIDER_NAME, PROVIDER_BPN);
+    private static final IatpParticipant MALICIOUS_ACTOR = participant("MALICIOUS", "MALICIOUS-BPN");
+
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER, MALICIOUS_ACTOR));
+    protected static final RuntimeExtension MALICIOUS_ACTOR_RUNTIME = iatpRuntime(MALICIOUS_ACTOR.getName(), MALICIOUS_ACTOR.getKeyPair(),
+            () -> MALICIOUS_ACTOR.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
     @RegisterExtension
-    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER, MALICIOUS_ACTOR));
+    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(),
+            () -> CONSUMER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
+    @RegisterExtension
+    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(),
+            () -> PROVIDER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
+    @RegisterExtension
+    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(),
+            () -> STS.stsConfig(CONSUMER, PROVIDER, MALICIOUS_ACTOR).merge(BDRS_SERVER_EXTENSION.getConfig()));
 
     private static final Integer MOCKED_CS_SERVICE_PORT = getFreePort();
     protected ClientAndServer server;
 
-    private static DidDocument maliciousActorDidDocument(DidDocument didDocument) {
-        var service = new Service();
-        service.setId("#credential-service");
-        service.setType("CredentialService");
-        service.setServiceEndpoint("http://%s:%d".formatted("localhost", MOCKED_CS_SERVICE_PORT));
-        return DidDocument.Builder.newInstance()
-                .id(didDocument.getId())
-                .verificationMethod(didDocument.getVerificationMethod())
-                .service(List.of(service))
+    private static IatpParticipant participant(String name, String bpn) {
+        return IatpParticipant.Builder.newInstance().name(name).id(bpn)
+                .stsUri(STS.stsUri())
+                .stsClientId(bpn)
+                .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
+                .dimUri(DIM_URI)
+                .did(DID_SERVER.didFor(name))
                 .build();
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        DID_SERVER.register(CONSUMER_NAME, CONSUMER.getDidDocument());
+        DID_SERVER.register(PROVIDER_NAME, PROVIDER.getDidDocument());
+        DID_SERVER.register("issuer", DATASPACE_ISSUER_PARTICIPANT.didDocument());
+        DID_SERVER.register(MALICIOUS_ACTOR.getName(), maliciousActorDidDocument(MALICIOUS_ACTOR.getDidDocument()));
+
+        BDRS_SERVER_EXTENSION.addMapping(CONSUMER.getBpn(), CONSUMER.getDid());
+        BDRS_SERVER_EXTENSION.addMapping(PROVIDER.getBpn(), PROVIDER.getDid());
     }
 
     @BeforeEach
     void setup() {
         server = ClientAndServer.startClientAndServer("localhost", getFreePort(), MOCKED_CS_SERVICE_PORT);
 
-        // create the DIDs cache
-        var dids = new HashMap<String, DidDocument>();
-        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
-        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
-        dids.put(MALICIOUS_ACTOR.getDid(), maliciousActorDidDocument(MALICIOUS_ACTOR.getDidDocument()));
-
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR, MALICIOUS_ACTOR_RUNTIME, dids, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR, MALICIOUS_ACTOR_RUNTIME, STS_RUNTIME);
     }
 
     @AfterEach
@@ -133,7 +158,7 @@ public class CredentialSpoofTest implements IatpParticipants {
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(502);
     }
 
@@ -161,9 +186,20 @@ public class CredentialSpoofTest implements IatpParticipants {
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
-                .log().ifError()
+                .log().ifValidationFails()
                 .statusCode(502);
+    }
 
+    private static DidDocument maliciousActorDidDocument(DidDocument didDocument) {
+        var service = new Service();
+        service.setId("#credential-service");
+        service.setType("CredentialService");
+        service.setServiceEndpoint("http://%s:%d".formatted("localhost", MOCKED_CS_SERVICE_PORT));
+        return DidDocument.Builder.newInstance()
+                .id(didDocument.getId())
+                .verificationMethod(didDocument.getVerificationMethod())
+                .service(List.of(service))
+                .build();
     }
 
     void withMock(Function<VerifiableCredentialResource, Result<PresentationResponseMessage>> response) {

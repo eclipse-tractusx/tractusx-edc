@@ -26,7 +26,6 @@ import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.runtimes.DataWiper;
 import org.eclipse.tractusx.edc.tests.runtimes.DataWiperExtension;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -41,7 +40,6 @@ public class IatpParticipantRuntimeExtension extends RuntimePerClassExtension im
 
     public IatpParticipantRuntimeExtension(EmbeddedRuntime runtime, KeyPair keyPair) {
         super(runtime);
-        registerServiceMock(BdrsClient.class, (s) -> s);
         registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
 
             @Inject

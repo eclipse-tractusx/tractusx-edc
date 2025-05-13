@@ -21,9 +21,12 @@ package org.eclipse.tractusx.edc.tests.runtimes;
 
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
@@ -41,6 +44,8 @@ public interface Runtimes {
                         .configurationProvider(() -> participant.getConfig().merge(postgres.getConfig(participant.getName())))
                         .configurationProvider(configurationProvider)
                         .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
+                        .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
+                        .registerServiceMock(BdrsClient.class, (s) -> s)
         );
     }
 }
