@@ -46,7 +46,7 @@ import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.Agreement
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
-@Path("/v3.1alpha/retireagreements")
+@Path("/v3/contractagreements/retirements")
 public class AgreementsRetirementApiV3Controller implements AgreementsRetirementApiV3 {
 
     private final AgreementsRetirementService service;

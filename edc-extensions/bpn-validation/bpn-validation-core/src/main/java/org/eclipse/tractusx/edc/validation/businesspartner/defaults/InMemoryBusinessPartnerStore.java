@@ -50,6 +50,15 @@ public class InMemoryBusinessPartnerStore implements BusinessPartnerStore {
     }
 
     @Override
+    public StoreResult<List<String>> resolveForBpnGroups() {
+        var groups = cache.values().stream()
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
+        return StoreResult.success(groups);
+    }
+
+    @Override
     public StoreResult<Void> save(String businessPartnerNumber, List<String> groups) {
         //to maintain behavioural consistency with the SQL store
         if (cache.containsKey(businessPartnerNumber)) {

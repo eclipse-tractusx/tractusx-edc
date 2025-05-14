@@ -90,27 +90,25 @@ class BdrsClientImpl implements BdrsClient {
 
     @Override
     public String resolve(String bpn) {
-        String value;
         lock.readLock().lock();
         try {
-            if (isCacheExpired()) {
-                lock.readLock().unlock(); // unlock read, acquire write -> "upgrade" lock
-                lock.writeLock().lock();
-                try {
-                    if (isCacheExpired()) {
-                        updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
-                    }
-                } finally {
-                    lock.readLock().lock(); // downgrade lock
-                    lock.writeLock().unlock();
-                }
+            if (!isCacheExpired()) {
+                return cache.get(bpn);
             }
-
-            value = cache.get(bpn);
         } finally {
             lock.readLock().unlock();
         }
-        return value;
+
+        lock.writeLock().lock();
+        try {
+            if (isCacheExpired()) {
+                updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
+            }
+            return cache.get(bpn);
+        } finally {
+            lock.writeLock().unlock();
+        }
+
     }
 
     private boolean isCacheExpired() {

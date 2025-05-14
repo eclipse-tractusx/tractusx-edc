@@ -73,7 +73,7 @@ allprojects {
             implementation("com.azure:azure-core-http-netty:1.15.11") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
-            implementation("software.amazon.awssdk:netty-nio-client:2.31.21") {
+            implementation("software.amazon.awssdk:netty-nio-client:2.31.35") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
             testImplementation("com.networknt:json-schema-validator:1.5.6") {
@@ -187,6 +187,21 @@ subprojects {
 
             dockerTask.dependsOn(shadowJarTask)
         }
+
+        if (path.startsWith(":edc-tests")) {
+            dependencies {
+                testImplementation(libs.allure.junit5)
+            }
+
+            tasks.withType<Test> {
+                useJUnitPlatform()
+                systemProperty("allure.results.directory", layout.buildDirectory.dir("allure-results").get().asFile.absolutePath)
+            }
+        }
+
+        tasks.withType<Test>().configureEach {
+            finalizedBy(rootProject.tasks.named("aggregateAllureResults"))
+        }
     }
 
     tasks.register("downloadOpenapi") {
@@ -220,6 +235,19 @@ nexusPublishing {
 
 tasks.check {
     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
+}
+
+tasks.register<Copy>("aggregateAllureResults") {
+    group = "reporting"
+    description = "Aggregates Allure test results from all subprojects into a single folder"
+    doFirst {
+        project.delete(layout.buildDirectory.dir("allure-results"))
+    }
+
+    subprojects.forEach { subproject ->
+        from(subproject.layout.buildDirectory.dir("allure-results"))
+    }
+    into(layout.buildDirectory.dir("allure-results"))
 }
 
 

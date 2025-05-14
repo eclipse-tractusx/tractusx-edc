@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.edc.lib.util)
 
     // runtime dependencies
+    runtimeOnly(libs.edc.core.runtime)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
     runtimeOnly(libs.edc.api.management) {

@@ -112,6 +112,11 @@ public class FederatedCatalogTest {
         public void insert(TargetNode node) {
 
         }
+
+        @Override
+        public TargetNode remove(String s) {
+            return null;
+        }
     }
 
 }

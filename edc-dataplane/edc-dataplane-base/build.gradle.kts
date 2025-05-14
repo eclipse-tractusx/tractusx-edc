@@ -23,41 +23,21 @@ plugins {
 }
 
 dependencies {
+    runtimeOnly(libs.edc.bom.dataplane.base)
+
     runtimeOnly(project(":core:edr-core"))
-    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
-    runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
-    runtimeOnly(project(":edc-extensions:event-subscriber"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2"))
-
-    runtimeOnly(libs.edc.jsonld) // needed by the DataPlaneSignalingApi
-    runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
-    runtimeOnly(libs.edc.identity.did.web)
-    runtimeOnly(libs.edc.config.filesystem)
-    runtimeOnly(libs.edc.dpf.awss3)
-    runtimeOnly(libs.edc.dpf.azblob)
-    runtimeOnly(libs.edc.dpf.oauth2)
-    runtimeOnly(libs.edc.dpf.http)
-
-    runtimeOnly(libs.edc.aws.validator.data.address.s3)
-
-    runtimeOnly(libs.edc.dpf.core)
-    runtimeOnly(libs.edc.dpf.iam)
-    runtimeOnly(libs.edc.controlplane.apiclient)
-
-    runtimeOnly(libs.edc.data.plane.selector.client)
-    runtimeOnly(libs.edc.data.plane.self.registration)
-    runtimeOnly(libs.edc.dpf.api.signaling)
-
-    runtimeOnly(libs.edc.api.control.config)
-    runtimeOnly(libs.edc.core.connector)
-    runtimeOnly(libs.edc.boot)
-    runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
+    runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
+    runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
+    runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
-    runtimeOnly(libs.edc.ext.http)
-    runtimeOnly(libs.edc.api.observability)
-    runtimeOnly(libs.edc.api.core)
+    runtimeOnly(libs.edc.aws.validator.data.address.s3)
+    runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
+    runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.dpf.awss3)
+    runtimeOnly(libs.edc.dpf.azblob)
+    runtimeOnly(libs.edc.identity.did.web)
 }

@@ -29,7 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
-import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -117,7 +117,6 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
 
         try {
             // transfer the data asynchronously
-
             AsyncStreamingDataSink.AsyncResponseContext asyncResponseContext = callback -> {
                 StreamingOutput output = t -> callback.outputStreamConsumer().accept(t);
                 var resp = Response.ok(output).type(callback.mediaType()).build();
@@ -125,12 +124,27 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
             };
             var sink = new AsyncStreamingDataSink(asyncResponseContext, executorService);
 
-            transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> handleCompletion(response, result, throwable));
+            transferService.transfer(flowRequest, sink).whenComplete((result, throwable) -> {
+                if (throwable != null) {
+                    response.resume(unexpectedFailure(throwable));
+                } else {
+                    result.onSuccess(response::resume)
+                            .onFailure(failure -> response.resume(failedResponse(failure)));
+                }
+            });
         } catch (Exception e) {
-            reportError(response, e);
+            response.resume(unexpectedFailure(e));
         }
     }
 
+    private Response failedResponse(StreamFailure failure) {
+        var httpStatus = switch (failure.getReason()) {
+            case NOT_FOUND -> NOT_FOUND;
+            case NOT_AUTHORIZED -> UNAUTHORIZED;
+            case GENERAL_ERROR -> INTERNAL_SERVER_ERROR;
+        };
+        return status(httpStatus).type(APPLICATION_JSON).build();
+    }
 
     private Map<String, String> dataPlaneProperties(AssetRequest request) {
         var props = new HashMap<String, String>();
@@ -200,32 +214,9 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         return spec;
     }
 
-    /**
-     * Handles a request completion, checking for errors. If no errors are present, nothing needs to be done as the response will have already been written to the client.
-     */
-    private void handleCompletion(AsyncResponse response, StreamResult<Object> result, Throwable throwable) {
-        if (result != null && result.failed()) {
-            switch (result.reason()) {
-                case NOT_FOUND -> response.resume(status(NOT_FOUND).type(APPLICATION_JSON).build());
-                case NOT_AUTHORIZED -> response.resume(status(UNAUTHORIZED).type(APPLICATION_JSON).build());
-                case GENERAL_ERROR -> response.resume(status(INTERNAL_SERVER_ERROR).type(APPLICATION_JSON).build());
-                default -> throw new IllegalStateException("Unexpected value: " + result.reason());
-            }
-        } else if (throwable != null) {
-            reportError(response, throwable);
-        }
-        if (result.succeeded()) {
-            response.resume(result.getContent());
-        }
-    }
-
-    /**
-     * Reports an error to the client. On the consumer side, the error is reported as a {@code BAD_GATEWAY} since the consumer data plane acts as proxy.
-     */
-    private void reportError(AsyncResponse response, Throwable throwable) {
+    private Response unexpectedFailure(Throwable throwable) {
         monitor.severe("Error processing gateway request", throwable);
-        var entity = status(BAD_GATEWAY).entity(format("'%s'", throwable.getMessage())).type(APPLICATION_JSON).build();
-        response.resume(entity);
+        return status(BAD_GATEWAY).entity(format("'%s'", throwable.getMessage())).type(APPLICATION_JSON).build();
     }
 
 }

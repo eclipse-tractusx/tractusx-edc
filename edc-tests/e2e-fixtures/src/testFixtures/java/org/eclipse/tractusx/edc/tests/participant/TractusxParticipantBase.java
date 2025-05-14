@@ -97,6 +97,8 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.management.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.control.port", String.valueOf(getFreePort()));
                 put("web.http.control.path", "/control");
+                put("web.http.version.port", String.valueOf(getFreePort()));
+                put("web.http.version.path", "/version");
                 put("web.http.catalog.port", String.valueOf(federatedCatalog.get().getPort()));
                 put("web.http.catalog.path", federatedCatalog.get().getPath());
                 put("web.http.catalog.auth.type", "tokenbased");
@@ -177,7 +179,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3.1alpha/retireagreements")
+                .post("/v3/contractagreements/retirements")
                 .then();
     }
 
@@ -212,12 +214,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.id)
-                .add("counterPartyAddress", provider.federatedCatalog.get().toString())
+                .add("counterPartyAddress", provider.getProtocolUrl())
                 .add("protocol", protocol);
 
-
-        return given()
-                .baseUri(federatedCatalog.get().toString())
+        return baseManagementRequest()
                 .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .when()

@@ -130,9 +130,20 @@ jobs:
       - name: Run E2E tests (${{ matrix.dir }})
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
+          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
+
+      - name: Set sanitized artifact name
+        run: |
+          SANITIZED_NAME=$(echo "edc-tests/e2e/${{ matrix.dir }}" | tr '/' '-')
+          echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ env.ARTIFACT_NAME }}
+          path: edc-tests/e2e/${{ matrix.dir }}/build/allure-results
 
   postgres-tests:
     runs-on: ubuntu-latest
@@ -144,3 +155,30 @@ jobs:
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
+
+  generate-allure-report:
+    runs-on: ubuntu-latest
+    needs: end-to-end-tests
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'bugfix/') || github.ref_type  == 'tag' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Output report version
+        id: release-version
+        run: |
+          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          
+          # if it contains "SNAPSHOT", output "main", otherwise the real version
+          if [[ "$VERSION" == *SNAPSHOT* ]]; then
+            echo "RELEASE_VERSION=main" >> $GITHUB_OUTPUT
+          else
+            echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate and publish Allure report
+        uses: ./.github/actions/generate-and-publish-allure-report
+        with:
+          version: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allure_results: allure-results
