@@ -58,17 +58,18 @@ import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFun
  */
 public class DataspaceIssuer extends IdentityParticipant {
 
-    public static final String DATASPACE_ISSUER = "did:example:dataspace_issuer";
     private static final ObjectMapper MAPPER = createObjectMapper();
     private static final String KEY_ID = "#key1";
     private final DidDocument didDocument;
+    private final String did;
 
-    public DataspaceIssuer() {
+    public DataspaceIssuer(String did) {
+        this.did = did;
         didDocument = generateDidDocument();
     }
 
     public String didUrl() {
-        return DATASPACE_ISSUER;
+        return did;
     }
 
     public DidDocument didDocument() {
@@ -76,7 +77,7 @@ public class DataspaceIssuer extends IdentityParticipant {
     }
 
     public String verificationId() {
-        return DATASPACE_ISSUER + "#" + getKeyId();
+        return did + "#" + getKeyId();
     }
 
     public VerifiableCredentialResource issueCredential(String did, String bpn, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObject subjectSupplier) {

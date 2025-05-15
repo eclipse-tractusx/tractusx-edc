@@ -39,6 +39,9 @@ dependencies {
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
+
+    testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih"))
+    testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-ih"))
 }
 
 // do not publish

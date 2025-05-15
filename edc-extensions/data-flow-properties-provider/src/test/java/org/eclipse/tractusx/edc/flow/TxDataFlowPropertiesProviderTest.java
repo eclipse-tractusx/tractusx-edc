@@ -19,12 +19,12 @@
 
 package org.eclipse.tractusx.edc.flow;
 
-import org.assertj.core.api.Assertions;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.mockito.Mockito.mock;
@@ -32,32 +32,47 @@ import static org.mockito.Mockito.when;
 
 public class TxDataFlowPropertiesProviderTest {
 
-    private final BdrsClient client = mock();
-    private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(client);
-
+    private final BdrsClient bdrsClient = mock();
+    private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(bdrsClient);
 
     @Test
-    void propertiesFor() {
-
+    void shouldReturnProperties() {
         var bpn = "bpn";
         var did = "did";
+        when(bdrsClient.resolve(bpn)).thenReturn(did);
 
-        when(client.resolve(bpn)).thenReturn(did);
-        var result = provider.propertiesFor(TransferProcess.Builder.newInstance().build(), Policy.Builder.newInstance().assignee(bpn).build());
+        var result = provider.propertiesFor(createTransferProcess(), createPolicy(bpn));
 
         assertThat(result).isSucceeded().satisfies(properties -> {
-            Assertions.assertThat(properties).containsEntry(AUDIENCE_PROPERTY, did);
+            assertThat(properties).containsEntry(AUDIENCE_PROPERTY, did);
         });
     }
 
     @Test
-    void propertiesFor_fails_whenResolutionIsNull() {
-
+    void shouldReturnFailure_whenResolutionFails() {
         var bpn = "bpn";
+        when(bdrsClient.resolve(bpn)).thenReturn(null);
 
-        when(client.resolve(bpn)).thenReturn(null);
-        var result = provider.propertiesFor(TransferProcess.Builder.newInstance().build(), Policy.Builder.newInstance().assignee(bpn).build());
+        var result = provider.propertiesFor(createTransferProcess(), createPolicy(bpn));
 
-        assertThat(result).isFailed().withFailMessage("Failed to fetch did for BPN %s".formatted(bpn));
+        assertThat(result).isFailed().detail().isEqualTo("Failed to fetch did for BPN %s".formatted(bpn));
+    }
+
+    @Test
+    void shouldReturnFailure_whenResolutionThrowsException() {
+        var bpn = "bpn";
+        when(bdrsClient.resolve(bpn)).thenThrow(new RuntimeException("exception"));
+
+        var result = provider.propertiesFor(createTransferProcess(), createPolicy(bpn));
+
+        assertThat(result).isFailed().detail().contains("exception");
+    }
+
+    private TransferProcess createTransferProcess() {
+        return TransferProcess.Builder.newInstance().build();
+    }
+
+    private Policy createPolicy(String bpn) {
+        return Policy.Builder.newInstance().assignee(bpn).build();
     }
 }

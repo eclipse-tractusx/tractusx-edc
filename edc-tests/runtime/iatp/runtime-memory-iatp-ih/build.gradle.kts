@@ -26,7 +26,6 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "bdrs-client")
         exclude(module = "tx-dcp-sts-dim")
         exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }

@@ -22,13 +22,13 @@ package org.eclipse.tractusx.edc.flow;
 import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowPropertiesProvider;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.Map;
 
+import static org.eclipse.edc.spi.response.ResponseStatus.FATAL_ERROR;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 
 /**
@@ -36,7 +36,6 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
  * like the DID of the counter-party BPN. The resolution is made with the {@link BdrsClient}
  */
 public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider {
-
 
     private final BdrsClient bdrsClient;
 
@@ -46,11 +45,14 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
 
     @Override
     public StatusResult<Map<String, String>> propertiesFor(TransferProcess transferProcess, Policy policy) {
-        var did = bdrsClient.resolve(policy.getAssignee());
-        if (did != null) {
+        try {
+            var did = bdrsClient.resolve(policy.getAssignee());
+            if (did == null) {
+                return StatusResult.failure(FATAL_ERROR, "Failed to fetch did for BPN %s".formatted(policy.getAssignee()));
+            }
             return StatusResult.success(Map.of(AUDIENCE_PROPERTY, did));
-        } else {
-            return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Failed to fetch did for BPN %s".formatted(policy.getAssignee()));
+        } catch (Exception e) {
+            return StatusResult.failure(FATAL_ERROR, "Failed to fetch did for BPN %s: %s".formatted(policy.getAssignee(), e.getMessage()));
         }
     }
 }
