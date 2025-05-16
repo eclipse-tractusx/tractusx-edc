@@ -122,7 +122,6 @@ edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", v
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
 edc-identity-trust-service = { module = "org.eclipse.edc:identity-trust-service", version.ref = "edc" }
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
-edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-trust-issuers-configuration", version.ref = "edc" }
 
 # DCP for Testing
 edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }

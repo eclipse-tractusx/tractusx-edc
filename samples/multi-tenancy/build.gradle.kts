@@ -29,13 +29,10 @@ dependencies {
     implementation(libs.edc.iam.mock)
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "auth-tokenbased")
-        // the token refresh extension is not needed
-        exclude(module = "tx-dcp-sts-dim")
         exclude(module = "tokenrefresh-handler")
         exclude(module = "edr-core")
         exclude(module = "edr-api-v2")
         exclude(module = "edr-callback")
-        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
     }
     implementation(libs.edc.core.controlplane)
     implementation(libs.jakarta.rsApi)
