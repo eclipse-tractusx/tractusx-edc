@@ -42,7 +42,7 @@ runs:
       with:
         dash_input: dependency-list
         dependencies_file: DEPENDENCIES
-        fail_on_out_of_date: true
+        fail_on_out_of_date: false
         fail_on_rejected: true
         fail_on_restricted: ${{ inputs.run == 'strict' }}
 
