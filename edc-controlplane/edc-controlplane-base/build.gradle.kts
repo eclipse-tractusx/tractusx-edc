@@ -51,6 +51,8 @@ dependencies {
     runtimeOnly(project(":edc-extensions:provision-additional-headers"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
     runtimeOnly(project(":edc-extensions:validators:empty-asset-selector"))
+    runtimeOnly(project(":edc-extensions:event-subscriber"))
+    runtimeOnly(project(":edc-extensions:slf4jlogger-monitor"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)

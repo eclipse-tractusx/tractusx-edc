@@ -46,7 +46,9 @@ public class EventLoggingSubscriber implements EventSubscriber {
         var json = typeManager.writeValueAsString(event.getPayload());
 
         monitor.info(format("Event happened with ID %s and Type %s and data %s", event.getId(), event.getPayload().getClass().getName(), json));
+        logger.info("TYPE OF MONITOR " + monitor.getClass().getName());
         logger.info("Event happened with ID {} and Type {} and data {}", event.getId(), event.getPayload().getClass().getName(), json);
+        System.out.println("Monitor type: " + monitor.getClass().getName());
     }
 
 }
