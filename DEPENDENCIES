@@ -568,7 +568,6 @@ maven/mavencentral/org.eclipse.edc/sts-account-service-local/0.13.0-20250516-SNA
 maven/mavencentral/org.eclipse.edc/sts-api/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sts-core/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sts-spi/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/target-node-directory-sql/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/token-core/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/token-lib/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/token-spi/0.13.0-20250516-SNAPSHOT, Apache-2.0, approved, technology.edc
