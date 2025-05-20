@@ -216,10 +216,11 @@ maven/mavencentral/io.qameta.allure/allure-junit5/2.29.1, Apache-2.0, approved, 
 maven/mavencentral/io.qameta.allure/allure-model/2.29.1, Apache-2.0, approved, #20927
 maven/mavencentral/io.qameta.allure/allure-test-filter/2.29.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.quarkus/quarkus-junit4-mock/3.20.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.rest-assured/json-path/5.5.1, Apache-2.0, approved, #19524
-maven/mavencentral/io.rest-assured/rest-assured-common/5.5.1, Apache-2.0, approved, #19522
+maven/mavencentral/io.rest-assured/json-path/5.5.2, Apache-2.0, approved, #19524
+maven/mavencentral/io.rest-assured/rest-assured-common/5.5.2, Apache-2.0, approved, #19522
 maven/mavencentral/io.rest-assured/rest-assured/5.5.1, Apache-2.0, approved, #15676
-maven/mavencentral/io.rest-assured/xml-path/5.5.1, Apache-2.0, approved, #19523
+maven/mavencentral/io.rest-assured/rest-assured/5.5.2, Apache-2.0, approved, #15676
+maven/mavencentral/io.rest-assured/xml-path/5.5.2, Apache-2.0, approved, #19523
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.26, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.30, Apache-2.0, approved, #5947
