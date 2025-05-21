@@ -1,4 +1,4 @@
-# Dataplane to expose HTTP status code
+# Dataplane to expose selected HTTP status code
 
 ## Decision
 
