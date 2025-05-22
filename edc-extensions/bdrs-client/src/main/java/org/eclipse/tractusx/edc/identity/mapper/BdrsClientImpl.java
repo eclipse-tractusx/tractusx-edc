@@ -148,7 +148,7 @@ class BdrsClientImpl implements BdrsClient {
     }
 
     private Result<String> createMembershipPresentation() {
-        var claims = Map.of(
+        var claims = Map.<String, Object>of(
                 JWT_ID, UUID.randomUUID().toString(),
                 ISSUER, ownDid,
                 SUBJECT, ownDid,
