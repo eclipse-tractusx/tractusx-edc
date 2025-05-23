@@ -95,7 +95,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(200, invocation, requestAcceptor, response));
 
-        var input = Map.of(ISSUER, "issuer", AUDIENCE, "audience");
+        var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
         var result = client.createToken(input, "namespace:TestCredential:read");
 
 
@@ -129,7 +129,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(200, invocation, requestAcceptor, response));
 
-        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "accessToken");
+        var input = Map.<String, Object>of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "accessToken");
         var result = client.createToken(input, null);
 
         assertThat(result).isSucceeded()
@@ -144,7 +144,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
-        var input = Map.of(ISSUER, "issuer", AUDIENCE, "audience");
+        var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
         var result = client.createToken(input, "namespace:TestCredential:read");
 
         assertThat(result).isFailed()
@@ -159,7 +159,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
-        var input = Map.of("foo", "bar");
+        var input = Map.<String, Object>of("foo", "bar");
         var result = client.createToken(input, "namespace:TestCredential:read");
 
         assertThat(result).isFailed()
@@ -176,7 +176,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(200, invocation, Map.of()));
 
-        var input = Map.of(ISSUER, "issuer", AUDIENCE, "audience");
+        var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
         var result = client.createToken(input, "namespace:TestCredential:read");
 
         assertThat(result).isFailed()
@@ -192,7 +192,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
-        var input = Map.of(ISSUER, "issuer", AUDIENCE, "audience");
+        var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
         var result = client.createToken(input, "invalidScope");
 
         assertThat(result).isFailed()
@@ -208,7 +208,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
-        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
+        var input = Map.<String, Object>of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
         var result = client.createToken(input, null);
 
         assertThat(result).isFailed()
@@ -223,7 +223,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(200, invocation, Map.of()));
 
-        var input = Map.of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
+        var input = Map.<String, Object>of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
         var result = client.createToken(input, null);
 
         assertThat(result).isFailed()
@@ -239,7 +239,7 @@ public class DimSecureTokenServiceTest {
         when(interceptor.intercept(isA(Interceptor.Chain.class)))
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
-        var input = Map.of("foo", "bar");
+        var input = Map.<String, Object>of("foo", "bar");
         var result = client.createToken(input, null);
 
         assertThat(result).isFailed()

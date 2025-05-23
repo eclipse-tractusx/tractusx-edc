@@ -111,7 +111,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
             return ServiceResult.badRequest("Cannot perform token refresh: required property 'refreshAudience' not found on EDR.");
         }
 
-        var claims = Map.of(
+        var claims = Map.<String, Object>of(
                 JWT_ID, tokenId,
                 ISSUER, ownDid,
                 SUBJECT, ownDid,
