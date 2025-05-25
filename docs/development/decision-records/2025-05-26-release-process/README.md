@@ -40,7 +40,7 @@ To streamline our release process, we will split it into two manually triggered 
     - Update according to the “Execute Release” workflow steps.
 
 3. **New Action:** `update-version-and-charts`
-    - Automates version bumps in `build.gradle` (or `gradle.properties`) and `Chart.yaml`.
+    - Automates version update in `gradle.properties` and `Chart.yaml`
 
 4. **`verify.yaml`**
     - Extend to generate the Allure report for any `release/*` or `hotfix/*` branch.
