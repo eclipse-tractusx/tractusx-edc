@@ -170,6 +170,8 @@ spec:
               value: {{ include "txdc.dataplane.url.control" . }}
             - name: "EDC_DPF_SELECTOR_URL"
               value: {{ include "txdc.controlplane.url.control" . }}/v1/dataplanes
+            - name: "edc.dcp.v08.forced"
+              value: "true"
 
             #######
             # AWS #

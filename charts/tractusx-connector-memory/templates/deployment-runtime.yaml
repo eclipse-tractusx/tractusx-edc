@@ -213,6 +213,8 @@ spec:
               value: "idsc:IDS_CONNECTORS_ALL"
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
               value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path | quote }}
+            - name: "edc.dcp.v08.forced"
+              value: "true"
 
             #############################
             ## IATP / STS / DIM CONFIG ##
