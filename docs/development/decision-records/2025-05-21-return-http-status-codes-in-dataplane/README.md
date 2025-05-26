@@ -1,4 +1,4 @@
-# Dataplane to expose selected HTTP status code
+# Dataplane to expose selected HTTP status code and respective message
 
 ## Decision
 
@@ -6,7 +6,7 @@ The dataplane API will expose the status codes and respective messages based on 
 
 ## Rationale
 
-Currently, the dataplane does not return status code different from 2XX or 5XX. However, there is a requirement to allow the option of returning different http status codes (like 4XX) back to the consumer.
+Currently, the dataplane does not return status code different from 2XX or 5XX. However, there is a requirement to allow the option of returning different http status codes (like 4XX) back to the consumer and the respective message.
 
 To achieve it, a new `proxyStatusCodes` field will be added to the http data address in which it contains the accepted http status codes (and respective response messages) that the dataplane can return. The current behaviour will be kept as the default one.
 
