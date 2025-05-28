@@ -32,8 +32,8 @@ To streamline our release process, we will split it into two manually triggered 
         - For release candidates (RC) or hotfixes, leave version in `gradle.properties` unchanged.
         - Update the Helm chart version according to the workflow’s input parameter.
 
-2. **`release.yaml`**
-- **Trigger:** Can be started from the `HEAD` of a `release/*`, `hotfix/*` branch.
+2. **`release.yml`**
+- **Trigger:** Can be started from the `HEAD` of a `release/*` or `hotfix/*` branch.
 - **Actions:**
     1) Run automated tests.
     2) Publish artifacts (Maven, Docker, Helm).
