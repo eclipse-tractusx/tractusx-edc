@@ -15,7 +15,7 @@ nimbus = "10.3"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.16.0"
 postgres = "42.7.5"
-restAssured = "5.5.2"
+restAssured = "5.5.5"
 rsApi = "4.0.0"
 testcontainers = "1.21.0"
 testcontainers-keycloak = "3.7.0"
@@ -194,4 +194,4 @@ edc-sts = [
 docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.6" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.30" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.32" }
