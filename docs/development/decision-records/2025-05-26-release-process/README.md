@@ -24,7 +24,7 @@ To streamline our release process, we will split it into two manually triggered 
     2) release version (required)
 - **Actions:**
     1. Create a new `release/*` or `hotfix/*` branch.
-    2. Update DEPENDENCIES file in both the release/hotfix branch and in `main`.
+    2. Run `generate-and-check-dependencies` action in strict mode
     3. On the release/hotfix branch:
         - Bump the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter.
     4. On the `main` branch:
