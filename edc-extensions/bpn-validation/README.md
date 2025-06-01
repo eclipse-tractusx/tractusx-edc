@@ -13,7 +13,7 @@ This extension is used to introduce the capability to a connector to evaluate tw
 
 Technically, both these policies and their evaluation functions can be used in several circumstances, which in EDC are
 called *scopes*. More information on how to bind policy functions to scopes can be found in
-the [official documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/policy-engine.md).
+the [official documentation](https://eclipse-edc.github.io/documentation/for-adopters/control-plane/policy-engine/).
 
 Both previously mentioned evaluation functions are bound to the following scopes:
 
