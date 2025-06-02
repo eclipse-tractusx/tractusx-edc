@@ -4,9 +4,9 @@
 
 To streamline our release process, we will split it into two manually triggered workflows:
 
-**Draft Release** - responsible for all release preparations and for creating the release or hotfix branch.
+**Draft Release** - responsible for all release preparations and for creating the release branch.
 
-**Release** - responsible for performing the actual release based on the release/hotfix branch.
+**Release** - responsible for performing the actual release based on the release branch.
 
 ## Rationale
 
@@ -23,24 +23,24 @@ To streamline our release process, we will split it into two manually triggered 
     1) commit SHA (if empty, will use `HEAD`)
     2) release version (required)
 - **Actions:**
-    1. Create a new `release/*` branch.
-    2. Run `generate-and-check-dependencies` action in strict mode
-    3. On the release/hotfix branch:
+    1) Create a new `release/*` branch.
+    2) Run `generate-and-check-dependencies` action in strict mode.
+    3) Run automated tests.  
+    4) On the release branch:
         - Bump the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter.
-    4. On the `main` branch:
-        - For a real release, bump the project version in `gradle.properties` to the next `-SNAPSHOT`.
+    5) On the `main` branch:
+        - For the official release, bump the project version in `gradle.properties` to the next `-SNAPSHOT`.
         - For release candidates (RC) or hotfixes, leave version in `gradle.properties` unchanged.
         - Update the Helm chart version according to the workflow’s input parameter.
 
 2. **`release.yml`**
 - **Trigger:** Can be started from the `HEAD` of a `release/*` branch.
 - **Actions:**
-    1) Run automated tests.
-    2) Publish artifacts (Maven, Docker, Helm).
-    3) Create the Git tag for this release.
-    4) Generate a GitHub Release entry.
-    5) Publish the OpenAPI UI spec to GitHub Pages.
-    6) Update release notes with a link to the Allure test-report.
+    1) Publish artifacts (Maven, Docker, Helm).
+    2) Create the Git tag for this release.
+    3) Generate a GitHub Release entry.
+    4) Publish the OpenAPI UI spec to GitHub Pages.
+    5) Update release notes with a link to the Allure test-report.
 
 3. **New Action:** `update-version-and-charts`
     - Automates version update in `gradle.properties` and `Chart.yaml`
