@@ -17,7 +17,7 @@ opentelemetry = "2.16.0"
 postgres = "42.7.5"
 restAssured = "5.5.5"
 rsApi = "4.0.0"
-testcontainers = "1.21.0"
+testcontainers = "1.21.1"
 testcontainers-keycloak = "3.7.0"
 titanium = "1.6.0"
 
