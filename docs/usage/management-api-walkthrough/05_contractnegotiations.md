@@ -140,7 +140,7 @@ The Contract Negotiation was successful when `edc:state == FINALIZED`.
 As shown in the example above, state transitions can also be subscribed to by adding a `callbackAddress`. A typical
 callback message will hold the relevant information in the `type` property. The value of the `type` property will always
 hold a string following the schema `ContractNegotiation` appended by the new state like `Verified` yielding `ContractNegotiationVerified`
-The state-machine for the Contract Negotiation process is [visualized in the documentation](https://eclipse-edc.github.io/docs/#/submodule/Connector/docs/developer/contracts?id=state-machine)
+The state-machine for the Contract Negotiation process is [visualized in the documentation](https://eclipse-edc.github.io/documentation/for-contributors/control-plane/entities/#4-contract-negotiations)
 of the eclipse-edc/connector. The diagram only visualizes the transitions while the callbacks are fired when such a
 transition is done yielding a new state.
 

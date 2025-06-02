@@ -53,7 +53,7 @@ auto-refresh the token if it is nearing expiry.
 
 In order for Dataplane Signaling to become aligned with the Dataspace Protocol (DSP), `DataAddress` objects now conform
 to
-the `dspace` [data format](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md#2-updates-to-thedataaddress-format).
+the `dspace` [data format](https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md#2-updates-to-thedataaddress-format).
 
 ### 1.4 Dataplane Signaling API
 
@@ -73,9 +73,9 @@ participant's control plane and data plane.
 ### 1.6 Further references
 
 - Dataplane Signaling
-  [documentation](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling.md)
+  [documentation](https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling.md)
   and [token
-  handling](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md)
+  handling](https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md)
 - [Tractus-X Specification for Token
   Renewal](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md)
 - [Tractus-X EDC Implementation
@@ -91,7 +91,7 @@ Likewise, the option to dynamically register a consumer-side HTTP-callback via `
 
 The main reason is that EDC/Tractus-X-EDC switched to Dataplane Signaling for handling transfers and the EDR format
 specified in
-DPS [spec](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md)
+DPS [spec](https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md)
 was not handled properly by the receiver extension.
 
 Now all the EDRs are automatically stored by the consumer's EDR cache and made available via the new
@@ -138,7 +138,7 @@ EDC_CALLBACK_CB1_EVENTS="transfer.process.started"
 
 - [OpenAPI Spec](https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.7.0), "Control Plane EDR Api"
 - More info
-  about [callbacks](https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-02-28-processing-callbacks)
+  about [callbacks](https://github.com/eclipse-edc/Connector/tree/v0.7.2/docs/developer/decision-records/2023-02-28-processing-callbacks)
 
 ## 3. Identity And Trust Protocols (IATP)
 
@@ -318,7 +318,7 @@ the [EDR API documentation](https://github.com/eclipse-tractusx/tractusx-edc/blo
 - The `consumerId` and `providerId` were replaced by the ODRL `assignee `and `assigner`, respectively. The latter also
   has to be injected in the ContractRequest Message.
 - A transfer process has now a new transfer type property that should adhere to the following
-  mapping: https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling-mapping.md
+  mapping: https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-mapping.md
 - The EDR API changed, and it's no longer possible to query for EDRs by contract agreement directly. A `QuerySpec` with
   a filter has to be used for this.
 - The AWS S3 Extension also has been improved and now enables the user to specify S3 object prefixes in the data
