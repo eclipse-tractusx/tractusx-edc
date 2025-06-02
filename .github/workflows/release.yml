@@ -48,8 +48,8 @@ jobs:
             exit 1
           fi
 
-          if [[ "${{ github.ref_name }}" != "main" && ! "${{ github.ref_name }}" =~ ^bugfix/ ]]; then
-            echo "This workflow can only be run on the main branch or branches starting with bugfix/."
+          if [[ ! "${{ github.ref_name }}" =~ ^release/ && ! "${{ github.ref_name }}" =~ ^bugfix/ ]]; then
+            echo "This workflow can only be run on the branches starting with release/ or bugfix/."
             exit 1
           fi
           

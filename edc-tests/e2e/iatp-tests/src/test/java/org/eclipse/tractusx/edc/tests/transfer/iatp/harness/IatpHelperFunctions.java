@@ -23,8 +23,6 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import org.eclipse.edc.iam.did.spi.document.DidDocument;
-import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.identitytrust.sts.spi.store.StsAccountStore;
 import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
@@ -37,7 +35,6 @@ import org.eclipse.edc.spi.security.Vault;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 public class IatpHelperFunctions {
 
@@ -91,15 +88,9 @@ public class IatpHelperFunctions {
                 .build();
     }
 
-    public static void configureParticipant(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtimeExtension, Map<String, DidDocument> didDocs, RuntimeExtension stsRuntimeExtension) {
-
-
+    public static void configureParticipant(DataspaceIssuer issuer, IatpParticipant participant, RuntimeExtension runtimeExtension, RuntimeExtension stsRuntimeExtension) {
         var participantContextService = runtimeExtension.getService(ParticipantContextService.class);
         var vault = runtimeExtension.getService(Vault.class);
-        var didResolverRegistry = runtimeExtension.getService(DidResolverRegistry.class);
-        var didResolver = new DidExampleResolver();
-        didDocs.forEach(didResolver::addCached);
-        didResolverRegistry.register(didResolver);
 
         var participantKey = participant.getKeyPairAsJwk();
         var key = KeyDescriptor.Builder.newInstance()

@@ -95,27 +95,27 @@ public class DimSecureTokenService implements SecureTokenService {
     }
 
     @Override
-    public Result<TokenRepresentation> createToken(Map<String, String> claims, @Nullable String bearerAccessScope) {
+    public Result<TokenRepresentation> createToken(Map<String, Object> claims, @Nullable String bearerAccessScope) {
         return Optional.ofNullable(bearerAccessScope)
                 .map(scope -> grantAccessRequest(claims, scope))
                 .orElseGet(() -> signTokenRequest(claims));
     }
 
-    private Result<TokenRepresentation> grantAccessRequest(Map<String, String> claims, @Nullable String bearerAccessScope) {
+    private Result<TokenRepresentation> grantAccessRequest(Map<String, Object> claims, @Nullable String bearerAccessScope) {
         return grantAccessPayload(claims, bearerAccessScope)
                 .compose(this::postRequest)
                 .map(builder -> builder.url(dimUrl).build())
                 .compose(request -> executeRequest(request, GRANT_ACCESS));
     }
 
-    private Result<TokenRepresentation> signTokenRequest(Map<String, String> claims) {
+    private Result<TokenRepresentation> signTokenRequest(Map<String, Object> claims) {
         return signTokenPayload(claims)
                 .compose(this::postRequest)
                 .map(builder -> builder.url(dimUrl).build())
                 .compose(request -> executeRequest(request, SIGN_TOKEN));
     }
 
-    private Result<Map<String, Object>> grantAccessPayload(Map<String, String> claims, String bearerAccessScope) {
+    private Result<Map<String, Object>> grantAccessPayload(Map<String, Object> claims, String bearerAccessScope) {
         return mapClaims(claims, grantAccessMapper)
                 .compose(payload -> extractScopes(bearerAccessScope)
                         .onSuccess(scopes -> payload.put(CREDENTIAL_TYPES, scopes))
@@ -152,7 +152,7 @@ public class DimSecureTokenService implements SecureTokenService {
     }
 
     @NotNull
-    private Result<Map<String, Object>> signTokenPayload(Map<String, String> claims) {
+    private Result<Map<String, Object>> signTokenPayload(Map<String, Object> claims) {
         return mapClaims(claims, signTokenMapper)
                 .map(payload -> Map.of(SIGN_TOKEN, payload));
     }
@@ -165,10 +165,10 @@ public class DimSecureTokenService implements SecureTokenService {
     private Result<TokenRepresentation> handleResponse(Response response) {
         try {
             var body = Objects.requireNonNull(response.body()).string();
-            var parsedBody = mapper.readValue(body, new TypeReference<Map<String, String>>() {
+            var parsedBody = mapper.readValue(body, new TypeReference<Map<String, Object>>() {
             });
             return Optional.ofNullable(parsedBody.get("jwt"))
-                    .map(token -> TokenRepresentation.Builder.newInstance().token(token).build())
+                    .map(token -> TokenRepresentation.Builder.newInstance().token(token.toString()).build())
                     .map(Result::success)
                     .orElseGet(() -> Result.failure("Failed to get jwt field"));
         } catch (IOException e) {
@@ -198,7 +198,7 @@ public class DimSecureTokenService implements SecureTokenService {
                 .addHeader("Authorization", format("Bearer %s", tokenRepresentation.getToken()));
     }
 
-    private Result<Map<String, Object>> mapClaims(Map<String, String> claims, Map<String, String> mappings) {
+    private Result<Map<String, Object>> mapClaims(Map<String, Object> claims, Map<String, String> mappings) {
         var payload = new HashMap<String, Object>();
         var result = mappings.entrySet().stream()
                 .map((entry -> mapClaim(claims, entry)))
@@ -214,7 +214,7 @@ public class DimSecureTokenService implements SecureTokenService {
 
     }
 
-    private Result<Map.Entry<String, String>> mapClaim(Map<String, String> claims, Map.Entry<String, String> mapping) {
+    private Result<Map.Entry<String, Object>> mapClaim(Map<String, Object> claims, Map.Entry<String, String> mapping) {
         var value = claims.get(mapping.getKey());
         if (value != null) {
             return Result.success(Map.entry(mapping.getValue(), value));

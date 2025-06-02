@@ -26,6 +26,9 @@ plugins {
 configurations.all {
     // edr-cache-api excluded due to edr controller signature clash with tx-edr-api-v2 that provides same functionality with token auto_refresh capability
     exclude(group = "org.eclipse.edc", module = "edr-cache-api")
+
+    // identity-trust-sts-remote-client excluded because we have the tx-dcp-sts-dim that takes care to define the correct client in case of DIM
+    exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
 }
 
 dependencies {
@@ -35,22 +38,22 @@ dependencies {
     runtimeOnly(libs.edc.bom.federatedcatalog.base)
     runtimeOnly(libs.edc.bom.federatedcatalog.dcp)
 
-    runtimeOnly(project(":core:edr-core"))
-    runtimeOnly(project(":core:json-ld-core"))
-    runtimeOnly(project(":edc-extensions:agreements"))
-    runtimeOnly(project(":edc-extensions:bdrs-client"))
-    runtimeOnly(project(":edc-extensions:bpn-validation"))
-    runtimeOnly(project(":edc-extensions:cx-policy"))
-    runtimeOnly(project(":edc-extensions:data-flow-properties-provider"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
-    runtimeOnly(project(":edc-extensions:dcp:tx-dcp"))
-    runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
-    runtimeOnly(project(":edc-extensions:edr:edr-api-v2"))
-    runtimeOnly(project(":edc-extensions:edr:edr-callback"))
-    runtimeOnly(project(":edc-extensions:federated-catalog"))
-    runtimeOnly(project(":edc-extensions:provision-additional-headers"))
-    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
-    runtimeOnly(project(":edc-extensions:validators:empty-asset-selector"))
+    implementation(project(":core:edr-core"))
+    implementation(project(":core:json-ld-core"))
+    implementation(project(":edc-extensions:agreements"))
+    implementation(project(":edc-extensions:bdrs-client"))
+    implementation(project(":edc-extensions:bpn-validation"))
+    implementation(project(":edc-extensions:cx-policy"))
+    implementation(project(":edc-extensions:data-flow-properties-provider"))
+    implementation(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
+    implementation(project(":edc-extensions:dcp:tx-dcp"))
+    implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    implementation(project(":edc-extensions:edr:edr-api-v2"))
+    implementation(project(":edc-extensions:edr:edr-callback"))
+    implementation(project(":edc-extensions:federated-catalog"))
+    implementation(project(":edc-extensions:provision-additional-headers"))
+    implementation(project(":edc-extensions:tokenrefresh-handler"))
+    implementation(project(":edc-extensions:validators:empty-asset-selector"))
     runtimeOnly(project(":edc-extensions:event-subscriber"))
     runtimeOnly(project(":edc-extensions:slf4jlogger-monitor"))
 

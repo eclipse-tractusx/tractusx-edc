@@ -25,11 +25,7 @@ plugins {
 dependencies {
 
     // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "bdrs-client")
-        exclude("org.eclipse.edc", "identity-trust-issuers-configuration")
-        exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
-    }
+    implementation(project(":edc-controlplane:edc-controlplane-base"))
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
@@ -46,7 +42,6 @@ dependencies {
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.did)
     implementation(libs.edc.identity.trust.transform)
-    implementation(libs.edc.identity.trust.issuers.configuration)
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.ih.api.presentation)
     implementation(libs.edc.ih.keypairs)

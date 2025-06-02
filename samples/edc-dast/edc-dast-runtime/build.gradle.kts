@@ -27,13 +27,11 @@ plugins {
 dependencies {
     runtimeOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")) {
         exclude(module = "tx-dcp-sts-dim")
-        exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
 
     }
 
     runtimeOnly(project(":edc-tests:runtime:iatp:runtime-memory-sts")) {
         exclude(module = "tx-dcp-sts-dim")
-        exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
         exclude(group = "org.eclipse.edc", module = "iam-mock")
         exclude(module = "bdrs-client")
 

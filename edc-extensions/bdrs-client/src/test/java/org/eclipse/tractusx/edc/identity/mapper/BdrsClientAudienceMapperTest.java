@@ -29,30 +29,34 @@ import static org.mockito.Mockito.when;
 
 class BdrsClientAudienceMapperTest {
 
-    private final BdrsClient client = mock();
-
-    private final BdrsClientAudienceMapper clientAudienceMapper = new BdrsClientAudienceMapper(client);
+    private final BdrsClient bdrsClient = mock();
+    private final BdrsClientAudienceMapper clientAudienceMapper = new BdrsClientAudienceMapper(bdrsClient);
 
     @Test
-    void resolve() {
-
-        when(client.resolve("bpn1")).thenReturn("did:web:did1");
+    void shouldReturnDid() {
+        when(bdrsClient.resolve("bpn1")).thenReturn("did:web:did1");
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
         assertThat(did).isSucceeded().isEqualTo("did:web:did1");
-
     }
 
     @Test
-    void resolve_notFound() {
-
-        when(client.resolve("bpn1")).thenReturn(null);
+    void shouldFail_whenResolutionFails() {
+        when(bdrsClient.resolve("bpn1")).thenReturn(null);
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
         assertThat(did).isFailed();
+    }
 
+    @Test
+    void shouldFail_whenResolutionThrowsException() {
+        when(bdrsClient.resolve("bpn1")).thenThrow(new RuntimeException("exception"));
+
+        var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
+
+        assertThat(did).isFailed().detail().contains("exception");
     }
 
     private record TestMessage(String bpn) implements RemoteMessage {

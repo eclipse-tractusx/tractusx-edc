@@ -19,17 +19,19 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
-import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.tests.extension.VaultSeedExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
+import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
+import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -43,43 +45,60 @@ import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.stsR
 @EndToEndTest
 public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
 
-    protected static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
+    @RegisterExtension
+    private static final DidServerExtension DID_SERVER = new DidServerExtension();
+
+    private static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer(DID_SERVER.didFor("issuer"));
+
+    private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
             .id(CONSUMER_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .did(did(CONSUMER_NAME))
+            .did(DID_SERVER.didFor(CONSUMER_NAME))
             .build();
-    protected static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
+    private static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .did(did(PROVIDER_NAME))
+            .did(DID_SERVER.didFor(PROVIDER_NAME))
             .build();
 
     @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), () -> CONSUMER.iatpConfig(PROVIDER));
+    private static final BdrsServerExtension BDRS_SERVER_EXTENSION = new BdrsServerExtension(DATASPACE_ISSUER_PARTICIPANT.didUrl());
 
     @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(), () -> PROVIDER.iatpConfig(CONSUMER))
+    private static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(),
+            () -> CONSUMER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
+
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = iatpRuntime(PROVIDER.getName(), PROVIDER.getKeyPair(),
+            () -> PROVIDER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()))
             .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
 
     @RegisterExtension
-    protected static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(), () -> STS.stsConfig(CONSUMER, PROVIDER))
+    private static final RuntimeExtension STS_RUNTIME = stsRuntime(STS.getName(), STS.getKeyPair(),
+            () -> STS.stsConfig(CONSUMER, PROVIDER).merge(BDRS_SERVER_EXTENSION.getConfig()))
             .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
 
+    @BeforeAll
+    static void beforeAll() {
+        DID_SERVER.register(CONSUMER_NAME, CONSUMER.getDidDocument());
+        DID_SERVER.register(PROVIDER_NAME, PROVIDER.getDidDocument());
+        DID_SERVER.register("issuer", DATASPACE_ISSUER_PARTICIPANT.didDocument());
+
+        BDRS_SERVER_EXTENSION.addMapping(CONSUMER.getBpn(), CONSUMER.getDid());
+        BDRS_SERVER_EXTENSION.addMapping(PROVIDER.getBpn(), PROVIDER.getDid());
+    }
+
+    // credentials etc get wiped after every, so the need to be created before every test
     @BeforeEach
-    void prepare() {
-        var dids = new HashMap<String, DidDocument>();
-        dids.put(DATASPACE_ISSUER_PARTICIPANT.didUrl(), DATASPACE_ISSUER_PARTICIPANT.didDocument());
-        dids.put(CONSUMER.getDid(), CONSUMER.getDidDocument());
-        dids.put(PROVIDER.getDid(), PROVIDER.getDidDocument());
-
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, dids, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, dids, STS_RUNTIME);
+    void setUp() {
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, STS_RUNTIME);
+        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, STS_RUNTIME);
     }
 
     @Override
@@ -90,6 +109,11 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
     @Override
     protected RuntimeExtension providerRuntime() {
         return PROVIDER_RUNTIME;
+    }
+
+    @Override
+    protected DataspaceIssuer dataspaceIssuer() {
+        return DATASPACE_ISSUER_PARTICIPANT;
     }
 
     @Override

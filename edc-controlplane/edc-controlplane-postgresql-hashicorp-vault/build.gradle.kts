@@ -26,6 +26,11 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
+configurations.all {
+    // target-node-directory-sql excluded because we provide our own file based target node directory implementation
+    exclude(group = "org.eclipse.edc", module = "target-node-directory-sql")
+}
+
 dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
 

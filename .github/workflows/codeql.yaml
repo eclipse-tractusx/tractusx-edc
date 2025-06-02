@@ -75,7 +75,7 @@ jobs:
       - uses: ./.github/actions/setup-java
       - name: Build Production Code
         run: |
-          ./gradlew compileJava --no-daemon
+          ./gradlew compileJava --no-daemon --no-build-cache
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 

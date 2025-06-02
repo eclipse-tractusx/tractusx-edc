@@ -2,20 +2,20 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.13.0-20250503-SNAPSHOT"
+edc = "0.13.0"
 allure = "2.29.1"
 awaitility = "4.3.0"
-aws = "2.31.35"
+aws = "2.31.50"
 azure-storage-blob = "12.30.0"
 bouncyCastle-jdk18on = "1.80"
-flyway = "11.8.0"
+flyway = "11.8.2"
 jackson = "2.19.0"
 jakarta-json = "2.0.1"
-nimbus = "10.2"
+nimbus = "10.3"
 netty-mockserver = "5.15.0"
-opentelemetry = "2.15.0"
+opentelemetry = "2.16.0"
 postgres = "42.7.5"
-restAssured = "5.5.1"
+restAssured = "5.5.5"
 rsApi = "4.0.0"
 testcontainers = "1.21.0"
 testcontainers-keycloak = "3.7.0"
@@ -122,7 +122,6 @@ edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", v
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
 edc-identity-trust-service = { module = "org.eclipse.edc:identity-trust-service", version.ref = "edc" }
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
-edc-identity-trust-issuers-configuration = { module = "org.eclipse.edc:identity-trust-issuers-configuration", version.ref = "edc" }
 
 # DCP for Testing
 edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
@@ -195,4 +194,4 @@ edc-sts = [
 docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.6" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.30" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.32" }
