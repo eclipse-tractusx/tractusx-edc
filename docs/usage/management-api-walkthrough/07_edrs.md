@@ -11,7 +11,7 @@ Previously TractusX-EDC provided a set extensions for caching EDRs on Consumer s
 The renewal was handled proactively by firing another transfer process with the same contract agreement near expiry and caching
 the newly transmitted EDR.
 
-Starting from TractusX-EDC 0.7.0, the high level concepts are the same, but with the advent of [DPS](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling.md) (Data plane signaling)
+Starting from TractusX-EDC 0.7.0, the high level concepts are the same, but with the advent of [DPS](https://eclipse-edc.github.io/documentation/for-contributors/data-plane/data-plane-signaling/) (Data plane signaling)
 the way EDRs are managed and renewed has been changed.
 
 Since the default implementation of DPS does not support token refresh, the TractusX-EDC project extends it by introducing refresh capabilities. More info [here](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/dataplane-signaling/tx-signaling.extensions.md)

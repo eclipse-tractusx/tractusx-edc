@@ -106,7 +106,7 @@ The status (`/health`, `/startup`, `/liveness`, `/readiness`) of the EDC can be 
 
 Starting from `0.5.0-rc5` which incorporates `EDC` 0.1.3, the consumer pull has been simplified in upstream, and it
 can cause some breaking changes on users usage. The change is reflected in
-this [diagram](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/architecture/data-transfer/diagrams/transfer-data-plane-consumer-pull.png).
+this [diagram](https://github.com/eclipse-edc/Connector/blob/v0.1.3/docs/developer/architecture/data-transfer/diagrams/transfer-data-plane-consumer-pull.png).
 
 The main difference is that in the previous iteration of the pull flow there were two EDRs involved. One created by the
 provider while serving

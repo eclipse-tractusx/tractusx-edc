@@ -117,7 +117,7 @@ policies.
    authorized to pass the constraint or define a group of BPNs that may pass and can be extended at runtime.
 3. **Checks for temporal validity**: If a usage policy is defined against a HTTP-based asset accessible via EDR-tokens,
    the Data Provider can prohibit issuance of new tokens by defining a specific constraint based on the
-   [contract validity check extension](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/contract-duration/contract-validity-check.md)
+   [contract validity check extension](https://eclipse-edc.github.io/documentation/for-adopters/control-plane/policy-engine/#in-force-policy)
 
 ### Access & Usage Policies
 

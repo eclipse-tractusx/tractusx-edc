@@ -17,13 +17,13 @@ Details at the [official documentation on swaggerhub](https://app.swaggerhub.com
 
 ## Settings changes
 
-- refactored the HTTP server contexts (more details on the [related decision record](https://eclipse-edc.github.io/docs/#/submodule/Connector/docs/developer/decision-records/2022-11-09-api-refactoring/renaming)). They need to be refactored as:
+- refactored the HTTP server contexts (more details on the [related decision record](https://github.com/eclipse-edc/Connector/blob/v0.1.0/docs/developer/decision-records/2022-11-09-api-refactoring/renaming.md)). They need to be refactored as:
   - `web.http.data` becomes `web.http.management`
   - `web.http.ids` becomes `web.http.protocol`
   - `web.http.validation`, `web.http.controlplane` and `web.http.dataplane` become `web.http.control`
 - Healthcheck api now it's exposed under the `management` context.
 - Removed default value for setting `edc.transfer.proxy.token.verifier.publickey.alias` so it must be valued accordingly
-- made the state machine settings configurable so it will be possible to tune them accordingly. More details in the [related documentation entry](https://eclipse-edc.github.io/docs/#/submodule/Connector/docs/developer/performance-tuning).
+- made the state machine settings configurable so it will be possible to tune them accordingly. More details in the [related documentation entry](https://github.com/eclipse-edc/Connector/blob/v0.1.0/docs/developer/performance-tuning.md).
 - renamed `edc.receiver.http.endpoint` to `edc.receiver.http.dynamic.endpoint`
 - renamed `edc.oauth.public.key.alias` setting to `edc.oauth.certificate.alias`
 
