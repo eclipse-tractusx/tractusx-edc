@@ -23,7 +23,7 @@ To streamline our release process, we will split it into two manually triggered 
     1) commit SHA (if empty, will use `HEAD`)
     2) release version (required)
 - **Actions:**
-    1. Create a new `release/*` or `hotfix/*` branch.
+    1. Create a new `release/*` branch.
     2. Run `generate-and-check-dependencies` action in strict mode
     3. On the release/hotfix branch:
         - Bump the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter.
@@ -33,7 +33,7 @@ To streamline our release process, we will split it into two manually triggered 
         - Update the Helm chart version according to the workflow’s input parameter.
 
 2. **`release.yml`**
-- **Trigger:** Can be started from the `HEAD` of a `release/*` or `hotfix/*` branch.
+- **Trigger:** Can be started from the `HEAD` of a `release/*` branch.
 - **Actions:**
     1) Run automated tests.
     2) Publish artifacts (Maven, Docker, Helm).
@@ -46,4 +46,4 @@ To streamline our release process, we will split it into two manually triggered 
     - Automates version update in `gradle.properties` and `Chart.yaml`
 
 4. **`verify.yaml`**
-    - Extend to generate the Allure report for any `release/*` or `hotfix/*` branch.
+    - Extend to generate the Allure report for any `release/*` branch.
