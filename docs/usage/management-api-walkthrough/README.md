@@ -93,16 +93,14 @@ given they are not part of the following list:
       the ["Connect" section of the E2E-Tutorial](https://eclipse-tractusx.github.io/docs/tutorials/e2e/connect/prepareInfrastructure)
       for first steps. It provides an easy-to-start preconfigured deployment of critical Catena-X infrastructure
       components.
-    - The [MXD documentation](https://eclipse-edc.github.io/docs/#/submodule/MinimumViableDataspace/docs/developer/continuous-deployment/continuous_deployment) has a similar section on its setup.
+    - The [MXD documentation](https://github.com/eclipse-tractusx/tutorial-resources/blob/main/mxd/README.md#1-prerequisites) has a similar section on its setup.
     - To deploy and configure the Tractus-X EDC, check
       its [documentation](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/README.md).
 - Exchanging data via two EDCs:
     - Via API: ["Boost" section of the E2E-Tutorial](https://eclipse-tractusx.github.io/docs/tutorials/e2e/boost/). It
       is
       exemplary and non-comprehensive.
-    - Via
-      Frontend: [The MXD-Documentation ](https://eclipse-edc.github.io/docs/#/submodule/MinimumViableDataspace/docs/developer/?id=scenarios-covered)
-      explains how to use the open-source web-view.
+    - Via the [MXD](https://github.com/eclipse-tractusx/tutorial-resources/blob/main/mxd/README.md#27-use-postman-collections-to-communicate-with-your-services).
 - [Eclipse-EDC Samples](https://github.com/eclipse-edc/Samples): This repo includes a wide variety of setups - many of
   which
   go beyond this Kit in scope but not in detail.

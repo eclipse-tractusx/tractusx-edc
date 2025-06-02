@@ -5,7 +5,7 @@ the consumer access to a `Dataset` under the terms negotiated the in [Contract N
 
 The processes are handled in the state machine of the Control Planes, but the real data transfer (if necessary)
 happens in the provider Data Plane. 
-TractusX 0.7.0 follows the spec of [DPS](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/data-plane-signaling/data-plane-signaling.md) (Data plane signaling) for Control Plane -> Data Plane communication
+TractusX 0.7.0 follows the spec of [DPS](https://eclipse-edc.github.io/documentation/for-contributors/data-plane/data-plane-signaling/) (Data plane signaling) for Control Plane -> Data Plane communication
 
 Currently, transfer processes are divided in two modes:
 
@@ -155,7 +155,7 @@ yielding
 }
 ```
 Note that the property `errorDetails` will only be returned in certain states and may contain hints to where the communication
-between the Data Planes failed. The state-machine for the Transfer Process is [documented here](https://eclipse-edc.github.io/docs/#/submodule/Connector/docs/developer/data-transfer?id=transfer-process-state-machine).
+between the Data Planes failed. The state-machine for the Transfer Process is [documented here](https://eclipse-edc.github.io/documentation/for-contributors/control-plane/entities/#7-transfer-processes).
 
 ### Callbacks
 
