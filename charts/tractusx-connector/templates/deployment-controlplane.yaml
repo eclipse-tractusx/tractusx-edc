@@ -200,6 +200,8 @@ spec:
               value: "idsc:IDS_CONNECTORS_ALL"
             - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
               value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path | quote }}
+            - name: "EDC_DCP_V08_FORCED"
+              value: "true"
 
             ################
             ## POSTGRESQL ##
