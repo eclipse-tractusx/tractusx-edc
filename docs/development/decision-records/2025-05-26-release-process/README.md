@@ -2,17 +2,21 @@
 
 ## Decision
 
-To streamline our release process, we will split it into two manually triggered workflows:
+To harmonize the release process, all releases will be based solely on `release/*` branches. We will no longer create or 
+use separate `bugfix/*` branches for release purposes, nor will we cut releases directly from `main`. In other words, 
+there will be no distinction between bugfix and release branches — everything intended for a release must reside in a 
+`release/*` branch. 
 
-**Draft Release** - responsible for all release preparations and for creating the release branch.
-
-**Release** - responsible for performing the actual release based on the release branch.
+Additionally, draft releases can now be triggered from a specific commit SHA, and the version type will be selected from 
+predefined options (`RC` as the default, `bugfix`, or `official release`) instead of entering a free-text version.
 
 ## Rationale
 
-- **Flexibility:** We can now prepare a release branch from any commit SHA, not just `main`.
-- **Clarity:** All tests and changes for a given release reside in its dedicated branch, making them easy to locate.
-- **Simplicity:** Eliminates unnecessary pull requests against `main` and run tests prematurely during the GitHub Release.
+- **Flexibility:** We can now prepare a release branch from commit SHA, not just `HEAD`.
+- **Cohesion:** Every release — whether a bugfix or a official version — will start from a `release/*` branch, providing 
+   a single branching pattern for all release work.
+- **Simplicity:** The draft releases workflow will now use predefined version-type options (`RC`, `bugfix`, or `official release`) 
+   instead of a free-text entry, minimizing confusion and input errors.
 
 
 ## Approach 
@@ -42,7 +46,7 @@ main ->> release/X.Y.0 : Draft release "X.Y.0" from the same commit sha as was u
 release/X.Y.0 ->> release/X.Y.0 : Release "X.Y.0"
 release/X.Y.0 ->> main : bump version to X.Y+1.0-SNAPSHOT
 
-Note over main, QA: Hotfix release flow
+Note over main, QA: Bugfix release flow
 QA ->> release/X.Y.0 : Found problem
 main ->> main : Fix problem if actual
 release/X.Y.0 ->> release/X.Y.1 : Draft release "X.Y.1"
@@ -51,23 +55,25 @@ release/X.Y.1 ->> release/X.Y.1 : Release "X.Y.1"
 ```
 
 1. **`draft-release.yaml`**
-- **Trigger:** Can be started from a specific commit SHA, the `HEAD` of `main`, the `HEAD` of any branch or tag.
+- **Trigger:** Should be started from the specific commit SHA or `HEAD` of `main` for an RC and the `HEAD` of a `release/*` 
+   branch to promote an RC to an official version or to create a bugfix
 - **Inputs:**
-    1) commit SHA (if empty, will use `HEAD`)
-    2) release version (required)
+-   1) commit SHA (if empty, will use `HEAD`)
+    2) choice that will include `RC` (default), `bugfix`, `official release`.
 - **Actions:**
-    1) Create a new `release/*` branch.
-    2) Run `generate-and-check-dependencies` action in strict mode.
-    3) Run automated tests.  
-    4) On the release branch:
+    1) Identify branch name basing on the input.
+    2) Create a new `release/*` branch.
+    3) Run `generate-and-check-dependencies` action in strict mode.
+    4) Run automated tests.  
+    5) On the `release/*` branch:
         - Bump the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter.
-    5) On the `main` branch:
-        - For the official release, bump the project version in `gradle.properties` to the next `-SNAPSHOT`.
-        - For release candidates (RC) or hotfixes, leave version in `gradle.properties` unchanged.
-        - Update the Helm chart version according to the workflow’s input parameter.
+    6) On the `main` branch:
+        - For the `official release` input, bump the project version in `gradle.properties` to the next `-SNAPSHOT`.
+        - For the `RC` or `bugfix` input, leave version in `gradle.properties` unchanged.
+        - Update the Helm chart version with the latest released version.
 
 2. **`release.yml`**
-- **Trigger:** Can be started from the `HEAD` of a `release/*` branch.
+- **Trigger:** Should be started from the `HEAD` of a `release/*` branch.
 - **Actions:**
     1) Publish artifacts (Maven, Docker, Helm).
     2) Create the Git tag for this release.
