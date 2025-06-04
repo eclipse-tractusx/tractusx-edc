@@ -31,9 +31,12 @@ import org.mockserver.verify.VerificationTimes;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
@@ -72,7 +75,8 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -120,7 +124,8 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
         var edr = new AtomicReference<JsonObject>();
 
@@ -151,6 +156,16 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
                 .withHeader("Edc-Contract-Agreement-Id")
                 .withHeader("Edc-Bpn", consumer().getBpn())
                 .withMethod("GET"), VerificationTimes.exactly(1));
+    }
+
+    protected JsonObject httpDataDestination() {
+        return createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                        .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
+                        .build())
+                .build();
     }
 
     @AfterEach
