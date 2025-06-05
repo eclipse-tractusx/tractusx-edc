@@ -39,9 +39,12 @@ import java.time.Duration;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -113,7 +116,8 @@ public class TransferWithTokenRefreshTest {
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
@@ -171,7 +175,8 @@ public class TransferWithTokenRefreshTest {
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
@@ -210,6 +215,16 @@ public class TransferWithTokenRefreshTest {
         assertThat(data).isNotNull().isEqualTo("test response");
 
         server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.exactly(1));
+    }
+
+    private JsonObject httpDataDestination() {
+        return createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                        .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
+                        .build())
+                .build();
     }
 
     @AfterEach
