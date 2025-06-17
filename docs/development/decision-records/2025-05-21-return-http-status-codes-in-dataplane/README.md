@@ -29,11 +29,11 @@ Expected change will be applied on an handle failure method that includes a vali
                 var streamFailure = new StreamFailure(
                         List.of(
                                 String.valueOf(response.code()),
-                                format("Received code transferring HTTP data: %s - %s - %S.", response.code(), response.message(), response.body())),
+                                format("Received code transferring HTTP data: %s - %s - %s.", response.code(), response.message(), response.body())),
                         null);
                 return failure(streamFailure);
             } else {
-                return error(format("Received code transferring HTTP data: %s - %s - %S.", response.code(), response.message(), response.body()));
+                return error(format("Received code transferring HTTP data: %s - %s - %s.", response.code(), response.message(), response.body()));
             }
         } finally {
             try {
