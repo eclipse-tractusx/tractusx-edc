@@ -9,7 +9,7 @@ The dataplane API will expose the status codes and respective messages based on 
 Currently, the dataplane does not return status code different from 2XX or 5XX. However, there is a requirement to allow the option of returning different http status codes (like 4XX) back to the consumer with the respective message.
 
 To achieve it, a new `proxyStatusCodes` flag will be added to the http data address in which, if set to `true`, the dataplane will return the specific http status code and respective message. The status codes could be of any successful or error type.
-The current behaviour will be kept as the default one by defining the flag default value as `false`.
+The current behaviour will be kept as the default one by defining the flag default value as `false` and the proxying of status codes (successful and otherwise) will only apply to HTTP Data Sources (for both PUSH and PULL transfer types).
 
 ## Approach
 
