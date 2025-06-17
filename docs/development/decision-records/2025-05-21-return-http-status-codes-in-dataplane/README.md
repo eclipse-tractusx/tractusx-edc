@@ -1,23 +1,23 @@
-# Dataplane to expose selected HTTP status code and respective message
+# Dataplane to expose selected HTTP status code, message and response body
 
 ## Decision
 
-The dataplane API will expose the status codes and respective messages based on a new proxy status code flag in the request parameters. 
+The dataplane API will expose the status codes, respective messages and response body based on a new proxy status code flag in the request parameters. 
 
 ## Rationale
 
-Currently, the dataplane does not return status code different from 2XX or 5XX. However, there is a requirement to allow the option of returning different http status codes (like 4XX) back to the consumer with the respective message.
+Currently, the dataplane does not return status code different from 2XX or 5XX. However, there is a requirement to allow the option of returning different http status codes (like 4XX) back to the consumer with the respective message and response body.
 
-To achieve it, a new `proxyStatusCodes` flag will be added to the http data address in which, if set to `true`, the dataplane will return the specific http status code and respective message. The status codes could be of any successful or error type.
+To achieve it, a new `proxyStatusCodes` flag will be added to the http data address in which, if set to `true`, the dataplane will return the specific http status code, message and response body. The status codes could be of any successful or error type.
 The current behaviour will be kept as the default one by defining the flag default value as `false` and the proxying of status codes (successful and otherwise) will only apply to HTTP Data Sources (for both PUSH and PULL transfer types).
 
 ## Approach
 
 1. Include the logic needed from `data-plane-http` and `data-plane-http-spi` (like `HttpDataSource`, `HttpRequestParams` or `HttpDataAddress`) upstream modules in the Tractus-X EDC distribution. 
 2. In the `HttpRequestParams` include the new optional parameter `proxyStatusCodes`. If is not set, the default behaviour (`false`) will be kept, i.e., return only 2XX's and 5XX's.
-3. In the `HttpDataSource` included implementation, update the `openPartStream()` overridden method to handle the error message to allow the return of the "real" status code and respective message, based on flag value.
+3. In the `HttpDataSource` included implementation, update the `openPartStream()` overridden method to handle the error message to allow the return of the "real" status code, message and response body, based on flag value.
 
-Expected change will be applied on an handle failure method that includes a validation of the new flag. If to be proxyed (i.e., flag is set to `true`) there will be returned a `StreamFailure` containing the exact status code and respective message.
+Expected change will be applied on an handle failure method that includes a validation of the new flag. If to be proxyed (i.e., flag is set to `true`) there will be returned a `StreamFailure` containing the exact status code, message and response body.
 ```java
     private StreamResult<Stream<Part>> handleFailureResponse(Response response, boolean containsProxyStatusCode) {
         try {
@@ -29,11 +29,11 @@ Expected change will be applied on an handle failure method that includes a vali
                 var streamFailure = new StreamFailure(
                         List.of(
                                 String.valueOf(response.code()),
-                                format("Received code transferring HTTP data: %s - %s.", response.code(), response.message())),
+                                format("Received code transferring HTTP data: %s - %s - %S.", response.code(), response.message(), response.body())),
                         null);
                 return failure(streamFailure);
             } else {
-                return error(format("Received code transferring HTTP data: %s - %s.", response.code(), response.message()));
+                return error(format("Received code transferring HTTP data: %s - %s - %S.", response.code(), response.message(), response.body()));
             }
         } finally {
             try {
