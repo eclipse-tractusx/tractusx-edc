@@ -5,7 +5,7 @@ format.version = "1.1"
 edc = "0.13.0"
 allure = "2.29.1"
 awaitility = "4.3.0"
-aws = "2.31.59"
+aws = "2.31.63"
 azure-storage-blob = "12.30.0"
 bouncyCastle-jdk18on = "1.80"
 flyway = "11.9.1"
@@ -14,7 +14,7 @@ jakarta-json = "2.0.1"
 nimbus = "10.3"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.16.0"
-postgres = "42.7.6"
+postgres = "42.7.7"
 restAssured = "5.5.5"
 rsApi = "4.0.0"
 testcontainers = "1.21.1"
@@ -194,4 +194,4 @@ edc-sts = [
 docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.6" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.32" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.33" }
