@@ -27,11 +27,17 @@ on:
   push:
     branches:
       - main
-      - bugfix/*
+      - release/*
   pull_request:
     paths-ignore:
       - docs/**
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Optional branch to check out. Defaults to the triggering branch.'
+        required: false
+        type: string
 
   schedule:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
@@ -45,14 +51,20 @@ concurrency:
 jobs:
   verify:
     uses: ./.github/workflows/verify.yaml
+    with:
+      branch: ${{ inputs.branch }}
     secrets: inherit
 
   deployment-test:
     uses: ./.github/workflows/deployment-test.yaml
+    with:
+      branch: ${{ inputs.branch }}
     secrets: inherit
 
   upgradeability-test:
     uses: ./.github/workflows/upgradeability-test.yaml
+    with:
+      branch: ${{ inputs.branch }}
     secrets: inherit
 
   # this job really serves no other purpose than waiting for the other two test workflows

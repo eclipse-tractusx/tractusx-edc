@@ -1,4 +1,5 @@
 #################################################################################
+#  Copyright (c) 2025 Cofinity-X GmbH
 #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
@@ -23,11 +24,15 @@ name: "Deployment Tests"
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        description: 'Optional branch to check out. Defaults to the triggering branch.'
+        required: false
+        type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-
   test-prepare:
     runs-on: ubuntu-latest
     steps:
@@ -42,6 +47,8 @@ jobs:
     needs: test-prepare
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
@@ -71,6 +78,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/run-deployment-test
         name: "Run deployment test using KinD and Helm"
         with:
