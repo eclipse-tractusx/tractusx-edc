@@ -51,7 +51,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.ref_name }}
+          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-helm
       - uses: ./.github/actions/setup-kubectl
 
