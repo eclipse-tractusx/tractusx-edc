@@ -39,8 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - run: |
           docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
           
@@ -57,8 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
         run: |
@@ -71,8 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref}}
       - uses: ./.github/actions/setup-java
       - name: Run Javadoc
         run: ./gradlew javadoc
@@ -84,8 +81,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run Unit tests
         run: ./gradlew test
@@ -97,8 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run Integration tests
         run: |
@@ -112,8 +107,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run API tests
         run: ./gradlew test -DincludeTags="ApiTest"
@@ -127,8 +121,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - name: get api groups and create matrix for next job
         id: outputStep
         run: |
@@ -144,8 +137,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run E2E tests (${{ matrix.dir }})
         run: |
@@ -168,8 +160,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
@@ -184,8 +175,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref}}
       - name: Output report version
         id: release-version
         run: |
