@@ -39,6 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - run: |
           docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
@@ -56,6 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
@@ -69,6 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run Javadoc
@@ -81,6 +84,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run Unit tests
@@ -93,6 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run Integration tests
@@ -107,6 +112,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run API tests
@@ -121,6 +127,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - name: get api groups and create matrix for next job
         id: outputStep
@@ -137,6 +144,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run E2E tests (${{ matrix.dir }})
@@ -160,6 +168,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run Postgresql E2E tests
@@ -175,6 +184,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
       - name: Output report version
         id: release-version
