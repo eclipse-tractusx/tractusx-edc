@@ -6,11 +6,10 @@ Provide explicit support for non-finite data transfers using the Provider-PUSH f
 
 ## Rationale
 
-Non-finite data is data that is defined by an infinite set or has no specified end.
-
-Currently, Provider-PUSH transfers transition the Transfer Processes and Data Flow to final states after the data specified by the source `DataAddress` is transferred, closing the communication channel between the Consumer and the Provider.
-
-This behavior needs to be adapted to permit the exchange of non-finite data, in case additional data becomes available over time.
+Non-finite data is data that is defined by an infinite set or has no specified end. Currently, Provider-PUSH transfers 
+transition the Transfer Processes and Data Flow to final states after the data specified by the source `DataAddress` is 
+transferred, closing the communication channel between the Consumer and the Provider. This behavior needs to be adapted 
+to permit the exchange of non-finite data, in case additional data becomes available over time.
 
 ## Approach
 
@@ -22,27 +21,34 @@ This feature consists of three main parts:
 
 ### Identify Non-Finite Data Flows
 
-A new `FinitenessEvaluator` interface will be added exposing the methods `isNonFinite(DataFlow dataflow)` and `isNonFinite(DataFlowStartMessage message)`. This model allows for custom implementations of ways to identify non-finite data.
+A new `FinitenessEvaluator` interface will be added exposing the methods `isNonFinite(DataFlow dataflow)` and 
+`isNonFinite(DataFlowStartMessage message)`. This model allows for custom implementations of ways to identify non-finite 
+data.
 
-A default implementation will also be available, enabling Providers to indicate the finiteness of their data during Asset registration by setting a new property, `isNonFinite`, in the data address.
-
-By default, data will be considered finite and will only be treated as non-finite if `isNonFinite` is set to `true`.
+A default implementation will also be available, enabling Providers to indicate the finiteness of their data during 
+Asset registration by setting a new property, `isNonFinite`, in the data address. By default, data will be considered 
+finite and will only be treated as non-finite if `isNonFinite` is set to `true`.
 
 The following sections will describe how the `FinitenessEvaluator` will be used.
 
 ### Handle Non-Finite Data During Transfers
 
-With non-finite data, Transfer Processes will stay in the *STARTED* state until explicitly terminated or suspended by either the Consumer or Provider.
+With non-finite data, Transfer Processes will stay in the *STARTED* state until explicitly terminated or suspended by 
+either the Consumer or Provider. Additionally, the implemented solution will also keep the corresponding Data Flow in 
+the *STARTED* state after a data transfer, thereby preventing the completion of the Transfer Process.
 
-Additionally, the implemented solution will also keep the corresponding Data Flow in the *STARTED* state after a data transfer, thereby preventing the completion of the Transfer Process.
+The implemented solution will adopt a fail-fast approach, terminating the Data Flow and Transfer Processes if an error 
+occurs in any transfer. This ensures visibility on transfer failures, which would otherwise be undetected due to the 
+asynchronous nature of data transfers. If the failed transfer is to be restarted, a new Transfer Process must be created.
 
-To achieve this, a new implementation of the `PipelineService` will be provided, allowing both finite and non-finite data to be transferred using the Provider-PUSH flow. 
-
-This implementation will be similar to upstream's `PipelineServiceImpl`, with the following changes to the `transfer` method:
+To achieve this, a new implementation of the `PipelineService` will be provided, allowing both finite and non-finite 
+data to be transferred using the Provider-PUSH flow. This implementation will be similar to upstream's 
+`PipelineServiceImpl`, with the following changes to the `transfer` method:
 
 - For finite data transfer, return a `CompletableFuture` with the transfer result (current behavior);
 - For failed non-finite data transfer, return a `CompletableFuture` with the failed transfer result;
-- For successful non-finite data transfer, return a `CompletableFuture` that never completes, preventing subsequent state transitions.
+- For successful non-finite data transfer, return a `CompletableFuture` that never completes, preventing subsequent state 
+  transitions.
 
 ```java
 // Example implementation
@@ -71,11 +77,10 @@ public CompletableFuture<StreamResult<Object>> transfer(DataFlowStartMessage req
 }
 ```
 
-The private `terminate` method will also be updated to account for the suspension and termination of non-finite data transfers.
-
-Since the associated `DataSource` reference is removed from the references map after a data transfer finishes, avoiding memory leaks, future suspension or termination request might not find it.
-
-This method will be updated to return a successful `StreamResult` even if the source was not found.
+The private `terminate` method will also be updated to account for the suspension and termination of non-finite data
+transfers. Since the associated `DataSource` reference is removed from the references map after a data transfer finishes,
+avoiding memory leaks, a future suspension or termination request might not find it. This method will be updated to return
+a successful `StreamResult` even if the source was not found.
 
 ```java
 private StreamResult<Void> terminate(String dataFlowId) {
@@ -93,19 +98,29 @@ private StreamResult<Void> terminate(String dataFlowId) {
 
 ### Trigger Additional Data Transfers
 
-The implemented solution will also include a triggering mechanism that enables the transfer of subsequent data chunks, allowing the active Transfer Processes and Data Flow to be reused.
+The implemented solution will also include a triggering mechanism that enables the transfer of subsequent data chunks,
+allowing the active Transfer Processes and Data Flow to be reused. This mechanism will be based on the
+`PipelineService` transfer behavior, retrieving data from the defined source data address and transferring it to the
+defined data destination. The trigger mechanism will be exposed as a Provider-side endpoint on the Data Plane,
+allowing data transfers to be restarted on demand.
 
-This mechanism will be based on the `PipelineService` transfer behavior, retrieving data from the defined source data address and transfering it to the defined data destination.
-
-The trigger mechanism will be exposed as a Provider-side endpoint on the Data Plane, allowing data transfers to be restarted on demand.
-
-A new `DataFlowApi` and its corresponding controller will be added to the management API context. This API will expose a "trigger endpoint" at `POST /api/v1/dataflows/{dataflowId}/trigger`.
-
-When invoked, this endpoint will call a new component, the `DataFlowService`, responsible for handling the logic to trigger a data transfer. The `DataFlowService` will contain a `trigger` method that applies the following validations:
+A new `DataFlowApi` and its corresponding controller will be added to the management API context. This API will expose a
+"trigger endpoint" at `POST /api/v1/dataflows/{dataflowId}/trigger`. When invoked, this endpoint will call a new
+component, the `DataFlowService`, responsible for handling the logic to trigger a data transfer. The `DataFlowService`
+will contain a `trigger` method that applies the following validations:
 
 - The `dataflowId` must map to an existing `DataFlow`, otherwise returns `NOT_FOUND`;
-- The `DataFlow` must be of PUSH flow type, otherwise returns `BAD_REQUEST`.
-- The `DataFlow` must be non-finite, otherwise returns `BAD_REQUEST`.
+- The `DataFlow` must be of PUSH flow type, otherwise returns `BAD_REQUEST`;
+- The `DataFlow` must be non-finite, otherwise returns `BAD_REQUEST`;
 - The `DataFlow` must be in the *STARTED* state, otherwise returns `CONFLICT`.
 
 If all validations succeed, the `DataFlow` transitions to *RECEIVED*, restarting the data transfer.
+
+## Future Work
+
+While many `TransferService` implementations may exist simultaneously, registering them in the `TransferServiceRegistry` 
+and resolving the appropriate one when needed, only one `PipelineService` implementation must be available at runtime, 
+since it is explicitly [injected](https://github.com/eclipse-edc/Connector/blob/v0.13.0/core/data-plane/data-plane-core/src/main/java/org/eclipse/edc/connector/dataplane/framework/DataPlaneFrameworkExtension.java#L115-L116).
+
+As a result, all functionality brought by the `PipelineServiceImpl` must be reimplemented and maintained within Tractus-X, 
+placing unneded pressure on this project. To address this, an upstream refactor will be proposed in a future iteration.
