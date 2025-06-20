@@ -1,0 +1,64 @@
+#################################################################################
+#  Copyright (c) 2025 Cofinity-X GmBh
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+name: "Update version and charts"
+description: "Update version and charts"
+inputs:
+  version:
+    description: 'The release version'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Bump version in /charts
+      uses: mikefarah/yq@v4.45.2
+      with:
+        cmd: |
+          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
+    - name: Update Chart READMEs
+      uses: addnab/docker-run-action@v3
+      with:
+        image: jnorwood/helm-docs:v1.10.0
+        options: -v ${{ github.workspace }}/charts:/helm-docs
+        run: |
+          helm-docs --log-level debug
+    - name: Bump version in gradle.properties
+      if: ${{ github.workflow == 'Draft Release' }}
+      shell: bash
+      run: |-
+        # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
+        sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
+    - name: Bump snapshot version in gradle.properties
+      if: ${{ github.workflow == 'Release' }}
+      shell: bash
+      run: |-
+        IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
+          VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
+        
+          # Persist the "version" in the gradle.properties
+          sed -i "s/version=.*/version=$VERSION/g" gradle.properties
+    - name: Commit changes
+      id: make-commit
+      shell: bash
+      run: |
+        git add .
+        git config user.name "eclipse-tractusx-bot"
+        git config user.email "tractusx-bot@eclipse.org"
+        git commit --message "Prepare release ${{ inputs.version }}"
+        echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
