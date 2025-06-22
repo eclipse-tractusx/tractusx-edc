@@ -29,7 +29,7 @@ on:
     inputs:
       release_type:
         type: choice
-        description: 'The release type you want to release. Ref should be either main for "rc" or a branch for "bugfix" and "official release". '
+        description: 'The release type you want to release. Ref should be either main for "release candidate" or a branch for "bugfix" and "official release". '
         required: true
         options:
           - release candidate
@@ -57,9 +57,9 @@ jobs:
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
           
-          if [[ ${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "rc" ]];
+          if [[ ${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "release candidate" ]];
           then
-            # RC on main → count existing RCs for this version and bump
+            # Release candidate on main → count existing RCs for this version and bump
             COUNT=$(git ls-remote --heads origin "release/${MAJOR}.${MINOR}.${PATCH}-rc*" | wc -l)
             RC_VERSION="rc$(( COUNT + 1 ))"
             VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
@@ -73,11 +73,11 @@ jobs:
           
           elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && "${{ inputs.release_type }}" == "official release" ]]
           then
-            # Official release on a release RC branch → reset patch to zero
+            # Official release on a RC branch → reset patch to zero
             VERSION="${MAJOR}.${MINOR}.0"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           else
-            echo "Ref branch does not match required criteria. Should either be "main" for "rc" type, a release branch for "bugfix" type or a release rc branch for "official release" type."
+            echo "Ref branch does not match required criteria. Should either be "main" for "release candidate" type, a release branch for "bugfix" type or a release "-rc*" branch for "official release" type."
             exit 1
           fi
       - id: check-tag
@@ -88,7 +88,7 @@ jobs:
 
           if [ ! -z $tag ];
           then
-            echo "Tag already exists! Please choose another tag."
+            echo "Tag ${{ steps.resolve_version.outputs.version }} already exists!"
             exit 1
           fi
       - id: resolve_branch
