@@ -321,8 +321,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         tokenDataStore.store(accessTokenData);
         vault.storeSecret(tokenId, objectMapper.writeValueAsString(refreshToken));
 
-        assertThat(tokenRefreshService.revoke(transferProcessId, "good-reason"))
-                .isSucceeded();
+        assertThat(tokenRefreshService.revoke(transferProcessId, "good-reason")).isSucceeded();
         assertThat(tokenDataStore.getById(tokenId)).isNull();
         assertThat(vault.resolveSecret(tokenId)).isNull();
     }

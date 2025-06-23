@@ -9,7 +9,7 @@
     }
   },
   "output": {
-    "class": "org.eclipse.edc.connector.controlplane.services.spi.protocol.ProtocolVersions",
+    "class": "org.eclipse.edc.protocol.spi.ProtocolVersions",
     "data": {
       "protocolVersions": [
         {
