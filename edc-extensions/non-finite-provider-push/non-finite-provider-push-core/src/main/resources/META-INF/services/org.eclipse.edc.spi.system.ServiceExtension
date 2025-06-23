@@ -18,3 +18,4 @@
 #################################################################################
 
 org.eclipse.edc.tractusx.non.finite.provider.push.core.evaluator.FinitenessEvaluatorExtension
+org.eclipse.edc.tractusx.non.finite.provider.push.core.pipeline.NonFiniteCapablePipelineServiceExtension
