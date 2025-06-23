@@ -28,6 +28,7 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -38,8 +39,8 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
+import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -112,7 +113,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -141,7 +142,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -165,7 +166,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -189,7 +190,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -211,7 +212,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -236,7 +237,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = "invalid_refresh_token";
@@ -260,7 +261,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -292,7 +293,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -324,7 +325,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
         prepareDataplaneRuntime();
 
         var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createStartMessage("test-process-id", CONSUMER_DID))
+        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -391,18 +392,17 @@ public class DataPlaneTokenRefreshEndToEndTest {
         }
     }
 
-    private DataFlowStartMessage createStartMessage(String processId, String audience) {
-        return DataFlowStartMessage.Builder.newInstance()
-                .processId(processId)
-                .sourceDataAddress(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://foo.bar/").build())
-                .destinationDataAddress(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://fizz.buzz").build())
-                .flowType(FlowType.PULL)
-                .transferTypeDestination("HttpData")
+    private DataFlow createDataFlow(String processId, String audience) {
+        return DataFlow.Builder.newInstance()
+                .id(processId)
+                .source(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://foo.bar/").build())
+                .destination(DataAddress.Builder.newInstance().type("HttpData").property(EDC_NAMESPACE + "baseUrl", "http://fizz.buzz").build())
+                .transferType(new TransferType("HttpData", FlowType.PULL))
                 .participantId("some-participantId")
                 .assetId("test-asset")
                 .callbackAddress(URI.create("https://foo.bar/callback"))
                 .agreementId("test-agreement")
-                .property(AUDIENCE_PROPERTY, audience)
+                .properties(Map.of(AUDIENCE_PROPERTY, audience))
                 .build();
     }
 }

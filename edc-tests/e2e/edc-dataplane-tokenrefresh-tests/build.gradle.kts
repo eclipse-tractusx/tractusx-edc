@@ -33,6 +33,8 @@ dependencies {
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
     testImplementation(libs.nimbus.jwt)
     testImplementation(libs.restAssured)
+
+    testCompileOnly(project(":edc-tests:runtime:dataplane-cloud"))
 }
 
 

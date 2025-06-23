@@ -31,6 +31,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
@@ -49,9 +50,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVc;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.frameworkAgreementSubject;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.membershipSubject;
 
 /**
  * Dataspace issuer configurations
@@ -80,54 +78,53 @@ public class DataspaceIssuer extends IdentityParticipant {
         return did + "#" + getKeyId();
     }
 
-    public VerifiableCredentialResource issueCredential(String did, String bpn, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObject subjectSupplier) {
-        var credential = VerifiableCredential.Builder.newInstance()
-                .type(type)
-                .credentialSubject(credentialSubjectSupplier.get())
-                .issuer(new Issuer(didUrl(), Map.of()))
-                .issuanceDate(Instant.now())
-                .build();
-
-        var vcJson = createVc(didUrl(), type, subjectSupplier);
-        var rawVc = createJwtVc(vcJson, did);
-        return VerifiableCredentialResource.Builder.newInstance()
-                .issuerId(didUrl())
-                .participantContextId(did)
-                .holderId(bpn)
-                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.VC1_0_JWT, credential))
-                .build();
-
-    }
-
     public VerifiableCredentialResource issueMembershipCredential(String did, String bpn) {
-        return issueCredential(did, bpn, "MembershipCredential", () -> CredentialSubject.Builder.newInstance()
+        return issueCredential(
+                did, bpn, "MembershipCredential",
+                () -> CredentialSubject.Builder.newInstance()
+                        .id(did)
                         .claim("holderIdentifier", bpn)
                         .build(),
-                membershipSubject(did, bpn));
+                membershipRawVc(did, bpn)
+        );
     }
 
     public VerifiableCredentialResource issueDismantlerCredential(String did, String bpn) {
-        return issueCredential(did, bpn, "DismantlerCredential", () -> CredentialSubject.Builder.newInstance()
+        return issueCredential(
+                did, bpn, "DismantlerCredential",
+                () -> CredentialSubject.Builder.newInstance()
                         .id(did)
                         .claim("holderIdentifier", bpn)
                         .claim("activityType", "vehicleDismantle")
                         .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
                         .build(),
-                Json.createObjectBuilder()
+                createVcBuilder("DismantlerCredential", Json.createObjectBuilder()
                         .add("type", "DismantlerCredential")
                         .add("holderIdentifier", bpn)
                         .add("activityType", "vehicleDismantle")
                         .add("allowedVehicleBrands", Json.createArrayBuilder().add("Moskvich").add("Lada").build())
                         .add("id", did)
-                        .build());
+                        .build())
+        );
     }
 
     public VerifiableCredentialResource issueFrameworkCredential(String did, String bpn, String credentialType) {
-        return issueCredential(did, bpn, credentialType, () -> CredentialSubject.Builder.newInstance()
+        var subject = Json.createObjectBuilder()
+                .add("type", credentialType)
+                .add("holderIdentifier", bpn)
+                .add("contractVersion", "1.0.0")
+                .add("contractTemplate", "https://public.catena-x.org/contracts/traceabilty.v1.pdf")
+                .add("id", did)
+                .build();
+
+        return issueCredential(
+                did, bpn, credentialType,
+                () -> CredentialSubject.Builder.newInstance()
+                        .id(did)
                         .claim("holderIdentifier", bpn)
                         .build(),
-                frameworkAgreementSubject(did, bpn, credentialType));
-
+                createVcBuilder(credentialType, subject)
+        );
     }
 
     @Override
@@ -136,7 +133,6 @@ public class DataspaceIssuer extends IdentityParticipant {
     }
 
     public String createJwtVc(JsonObject verifiableCredential, String participantDid) {
-
         try {
             var vc = MAPPER.readValue(verifiableCredential.toString(), new TypeReference<Map<String, Object>>() {
             });
@@ -146,7 +142,49 @@ public class DataspaceIssuer extends IdentityParticipant {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public JsonObjectBuilder membershipRawVc(String did, String bpn) {
+        var subject = Json.createObjectBuilder()
+                .add("type", "MembershipCredential")
+                .add("holderIdentifier", bpn)
+                .add("id", did)
+                .build();
+
+        return createVcBuilder("MembershipCredential", subject);
+    }
+
+    private VerifiableCredentialResource issueCredential(String did, String bpn, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObjectBuilder vcBuilder) {
+        var credential = VerifiableCredential.Builder.newInstance()
+                .type(type)
+                .credentialSubject(credentialSubjectSupplier.get())
+                .issuer(new Issuer(didUrl(), Map.of()))
+                .issuanceDate(Instant.now())
+                .build();
+
+        var vcJson = vcBuilder.build();
+        var rawVc = createJwtVc(vcJson, did);
+        return VerifiableCredentialResource.Builder.newInstance()
+                .issuerId(didUrl())
+                .participantContextId(did)
+                .holderId(bpn)
+                .credential(new VerifiableCredentialContainer(rawVc, CredentialFormat.VC1_0_JWT, credential))
+                .build();
+    }
+
+    private JsonObjectBuilder createVcBuilder(String type, JsonObject subjectSupplier) {
+        return Json.createObjectBuilder()
+                .add("@context", Json.createArrayBuilder()
+                        .add("https://www.w3.org/2018/credentials/v1")
+                        .add("https://w3id.org/security/suites/jws-2020/v1")
+                        .add("https://w3id.org/catenax/credentials")
+                        .add("https://w3id.org/vc/status-list/2021/v1"))
+                .add("type", Json.createArrayBuilder()
+                        .add("VerifiableCredential")
+                        .add(type))
+                .add("credentialSubject", subjectSupplier)
+                .add("issuer", didUrl())
+                .add("issuanceDate", Instant.now().toString());
     }
 
     private String signJwt(ECKey privateKey, String issuerId, String subject, String audience, Map<String, Object> claims) {
