@@ -79,6 +79,7 @@ include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
 
 include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi")
+include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core")
 
 // test modules
 include(":edc-tests:e2e-fixtures")
