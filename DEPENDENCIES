@@ -16,8 +16,11 @@ maven/mavencentral/com.azure/azure-core/1.55.4, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.15.4, MIT, approved, #18662
 maven/mavencentral/com.azure/azure-json/1.5.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-storage-blob/12.30.0, MIT, approved, #20441
+maven/mavencentral/com.azure/azure-storage-blob/12.30.1, MIT, approved, #20441
 maven/mavencentral/com.azure/azure-storage-common/12.29.0, MIT, approved, #20440
+maven/mavencentral/com.azure/azure-storage-common/12.29.1, MIT, approved, #20440
 maven/mavencentral/com.azure/azure-storage-internal-avro/12.15.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-storage-internal-avro/12.15.1, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-xml/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.ethlo.time/itu/1.10.3, Apache-2.0, approved, #13168
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
@@ -42,7 +45,6 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.1, Apache-2.
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.2, Apache-2.0, approved, #7934
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.4, Apache-2.0, approved, #15199
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.0, approved, #11605
-maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.17.2, Apache-2.0, approved, #13671
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.0, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.1, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.2, Apache-2.0, approved, #16372
