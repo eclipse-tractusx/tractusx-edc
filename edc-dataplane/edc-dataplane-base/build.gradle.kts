@@ -33,6 +33,8 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
 
+    runtimeOnly(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))
+
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
