@@ -23,6 +23,9 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.function.Supplier;
+
 
 // to be extended
 public class Slf4jLoggerMonitor implements Monitor {
@@ -31,5 +34,39 @@ public class Slf4jLoggerMonitor implements Monitor {
     @Override
     public void info(String message, Throwable... errors) {
         LOGGER.info(message, errors);
+    }
+
+    @Override
+    public void severe(String message, Throwable... errors) {
+        LOGGER.error(message, errors);
+    }
+
+    public void severe(Supplier<String> supplier, Throwable... errors) {
+        this.severe(supplier.get(), errors);
+    }
+
+    @Override
+    public void severe(Map<String, Object> data) {
+
+    }
+
+    public void warning(Supplier<String> supplier, Throwable... errors) {
+        this.warning(supplier.get(), errors);
+    }
+
+    public void warning(String message, Throwable... errors) {
+        LOGGER.warn(message, errors);
+    }
+
+    public void info(Supplier<String> supplier, Throwable... errors) {
+        this.info(supplier.get(), errors);
+    }
+
+    public void debug(Supplier<String> supplier, Throwable... errors) {
+        this.debug(supplier.get(), errors);
+    }
+
+    public void debug(String message, Throwable... errors) {
+        LOGGER.debug(message, errors);
     }
 }

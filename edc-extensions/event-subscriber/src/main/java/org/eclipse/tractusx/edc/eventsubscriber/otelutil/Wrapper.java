@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,15 +15,28 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.http)
-    testImplementation(libs.edc.junit)
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.util.List;
+
+@JsonSerialize
+public class Wrapper {
+    private List<ResourceLog> resourceLogs;
+
+    public Wrapper(List<ResourceLog> resourceLogs) {
+        this.resourceLogs = resourceLogs;
+    }
+
+
+    public List<ResourceLog> getResourceLogs() {
+        return resourceLogs;
+    }
+
+    public void setResourceLogs(List<ResourceLog> resourceLogs) {
+        this.resourceLogs = resourceLogs;
+    }
 }
