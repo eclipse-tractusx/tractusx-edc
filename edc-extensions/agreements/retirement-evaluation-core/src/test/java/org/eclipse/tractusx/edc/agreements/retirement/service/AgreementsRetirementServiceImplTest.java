@@ -21,18 +21,22 @@ package org.eclipse.tractusx.edc.agreements.retirement.service;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreementReactivated;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreementRetired;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -43,20 +47,20 @@ import static org.eclipse.edc.spi.result.ServiceFailure.Reason.CONFLICT;
 import static org.eclipse.edc.spi.result.ServiceFailure.Reason.NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AgreementsRetirementServiceImplTest {
 
-    private AgreementsRetirementService service;
     private final AgreementsRetirementStore store = mock();
     private final TransactionContext transactionContext = new NoopTransactionContext();
     private final ContractAgreementService contractAgreementService = mock();
+    private final EventRouter eventRouter = mock();
 
-    @BeforeEach
-    void setUp() {
-        service = new AgreementsRetirementServiceImpl(store, transactionContext, contractAgreementService);
-    }
+    private final AgreementsRetirementService service = new AgreementsRetirementServiceImpl(store, transactionContext,
+            contractAgreementService, eventRouter, Clock.systemUTC());
 
     @Test
     @DisplayName("Returns true if agreement is retired")
@@ -101,27 +105,58 @@ class AgreementsRetirementServiceImplTest {
         assertThat(result.getContent()).hasSize(0);
     }
 
-    @Test
-    @DisplayName("Verify reactivate response on failure")
-    void verify_reactivateResponseOnFailure() {
-        when(store.delete(any()))
-                .thenReturn(StoreResult.notFound("test"));
+    @Nested
+    class Retire {
 
-        var result = service.reactivate(anyString());
-        assertThat(result).isFailed();
-        assertThat(result.reason()).isEqualTo(NOT_FOUND);
+        @Test
+        void shouldRetireAgreement() {
+            var contractAgreement = mock(ContractAgreement.class);
+            when(contractAgreementService.findById(anyString())).thenReturn(contractAgreement);
+            when(store.save(any())).thenReturn(StoreResult.success());
+
+            var result = service.retireAgreement(createAgreementsRetirementEntry());
+
+            assertThat(result).isSucceeded();
+            verify(eventRouter).publish(argThat(envelope -> envelope.getPayload().getClass().equals(ContractAgreementRetired.class)));
+        }
+
+        @Test
+        void shouldReturnConflict_whenAgreementIsAlreadyRetired() {
+            when(store.save(any())).thenReturn(StoreResult.alreadyExists("test"));
+            var contractAgreement = mock(ContractAgreement.class);
+            when(contractAgreementService.findById(anyString())).thenReturn(contractAgreement);
+
+            var result = service.retireAgreement(createAgreementsRetirementEntry());
+
+            assertThat(result).isFailed();
+            assertThat(result.reason()).isEqualTo(CONFLICT);
+        }
+
     }
 
-    @Test
-    @DisplayName("Verify retire response on failure")
-    void verify_retireResponseOnFailure() {
-        when(store.save(any())).thenReturn(StoreResult.alreadyExists("test"));
-        var contractAgreement = mock(ContractAgreement.class);
-        when(contractAgreementService.findById(anyString())).thenReturn(contractAgreement);
+    @Nested
+    class Reactivate {
 
-        var result = service.retireAgreement(createAgreementsRetirementEntry());
-        assertThat(result).isFailed();
-        assertThat(result.reason()).isEqualTo(CONFLICT);
+        @Test
+        void shouldReactivateRetiredAgreement() {
+            when(store.delete(any())).thenReturn(StoreResult.success());
+
+            var result = service.reactivate(anyString());
+
+            assertThat(result).isSucceeded();
+            verify(eventRouter).publish(argThat(envelope -> envelope.getPayload().getClass().equals(ContractAgreementReactivated.class)));
+        }
+
+        @Test
+        void shouldReturnNotFound_whenAgreementHasNotBeenRetired() {
+            when(store.delete(any()))
+                    .thenReturn(StoreResult.notFound("test"));
+
+            var result = service.reactivate(anyString());
+
+            assertThat(result).isFailed();
+            assertThat(result.reason()).isEqualTo(NOT_FOUND);
+        }
     }
 
     private static AgreementsRetirementEntry createAgreementsRetirementEntry() {
