@@ -20,14 +20,20 @@
 package org.eclipse.tractusx.edc.agreements.retirement.service;
 
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.spi.event.EventEnvelope;
+import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreementEvent;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreementReactivated;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreementRetired;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,11 +47,17 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
     private final AgreementsRetirementStore store;
     private final TransactionContext transactionContext;
     private final ContractAgreementService contractAgreementService;
+    private final EventRouter eventRouter;
+    private final Clock clock;
 
-    public AgreementsRetirementServiceImpl(AgreementsRetirementStore store, TransactionContext transactionContext, ContractAgreementService contractAgreementService) {
+    public AgreementsRetirementServiceImpl(AgreementsRetirementStore store, TransactionContext transactionContext,
+                                           ContractAgreementService contractAgreementService, EventRouter eventRouter,
+                                           Clock clock) {
         this.store = store;
         this.transactionContext = transactionContext;
         this.contractAgreementService = contractAgreementService;
+        this.eventRouter = eventRouter;
+        this.clock = clock;
     }
 
     @Override
@@ -62,15 +74,30 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
 
     @Override
     public ServiceResult<Void> retireAgreement(AgreementsRetirementEntry entry) {
-        return transactionContext.execute(() ->
-                contractAgreementService.findById(entry.getAgreementId()) != null
-                        ? ServiceResult.from(store.save(entry))
-                        : ServiceResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId())));
+        return transactionContext.execute(() -> {
+            var contractAgreement = contractAgreementService.findById(entry.getAgreementId());
+            if (contractAgreement == null) {
+                return ServiceResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId()));
+            }
+
+            return store.save(entry)
+                    .onSuccess(v -> publish(ContractAgreementRetired.Builder.newInstance()
+                            .contractAgreementId(entry.getAgreementId()).build()))
+                    .flatMap(ServiceResult::from);
+        });
     }
 
     @Override
     public ServiceResult<Void> reactivate(String contractAgreementId) {
-        return transactionContext.execute(() -> ServiceResult.from(store.delete(contractAgreementId)));
+        return transactionContext.execute(() -> store.delete(contractAgreementId)
+                .onSuccess(v -> publish(ContractAgreementReactivated.Builder.newInstance()
+                        .contractAgreementId(contractAgreementId).build()))
+                .flatMap(ServiceResult::from)
+        );
+    }
+
+    private void publish(ContractAgreementEvent event) {
+        eventRouter.publish(EventEnvelope.Builder.newInstance().at(clock.millis()).payload(event).build());
     }
 
     private QuerySpec createFilterQueryByAgreementId(String agreementId) {

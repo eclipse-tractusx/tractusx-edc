@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.agreement.retirement;
+package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
@@ -60,6 +60,7 @@ public class RetireAgreementTest {
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_BPN)
+            .enableEventSubscription()
             .build();
 
     @RegisterExtension
@@ -103,21 +104,19 @@ public class RetireAgreementTest {
 
         edrsApi.negotiateEdr(PROVIDER, assetId, Json.createArrayBuilder().build());
 
-        await().pollInterval(ASYNC_POLL_INTERVAL)
+        var edrCache = await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
-                    assertThat(edrCaches).hasSize(1);
-                });
+                .until(() -> CONSUMER.edrs().getEdrEntriesByAssetId(assetId), it -> it.size() == 1)
+                .get(0).asJsonObject();
 
-        var edrCaches = CONSUMER.edrs().getEdrEntriesByAssetId(assetId);
-
-        var agreementId = edrCaches.get(0).asJsonObject().getString("agreementId");
-
-        var transferProcessId = edrCaches.get(0).asJsonObject().getString("transferProcessId");
+        var agreementId = edrCache.getString("agreementId");
+        var transferProcessId = edrCache.getString("transferProcessId");
 
         var response = PROVIDER.retireProviderAgreement(agreementId);
         response.statusCode(204);
+
+        var event = PROVIDER.waitForEvent("ContractAgreementRetired");
+        assertThat(event).isNotNull();
 
         // verify existing TP on consumer retires
 
