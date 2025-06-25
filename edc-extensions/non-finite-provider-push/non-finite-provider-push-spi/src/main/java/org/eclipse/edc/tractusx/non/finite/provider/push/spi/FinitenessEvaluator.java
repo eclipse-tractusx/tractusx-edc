@@ -20,11 +20,13 @@
 package org.eclipse.edc.tractusx.non.finite.provider.push.spi;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
+import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 /**
  * Determines the finiteness of a data transfer
  */
+@ExtensionPoint
 public interface FinitenessEvaluator {
 
     /**
