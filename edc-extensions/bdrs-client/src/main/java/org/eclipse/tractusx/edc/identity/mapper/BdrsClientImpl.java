@@ -154,7 +154,7 @@ class BdrsClientImpl implements BdrsClient {
                 SUBJECT, ownDid,
                 AUDIENCE, ownDid
         );
-        var scope = TxIatpConstants.DEFAULT_MEMBERSHIP_SCOPE;
+        var scope = TxIatpConstants.MEMBERSHIP_SCOPE;
 
         return secureTokenService.createToken(claims, scope)
                 .compose(sit -> credentialServiceClient.requestPresentation(ownCredentialServiceUrl.get(), sit.getToken(), List.of(scope)))
