@@ -1,0 +1,69 @@
+#################################################################################
+#  Copyright (c) 2025 Cofinity-X GmbH
+#  Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+
+---
+name: "Resolve Version"
+description: "Resolves the release version based on branch name and release type"
+inputs:
+  release_type:
+    description: 'Release type: release candidate, bugfix, or official release'
+    required: true
+outputs:
+  version:
+    description: 'Resolved version string'
+    value: ${{ steps.resolver.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - name: Resolve version
+      id: resolver
+      shell: bash
+      run: |
+        set -euxo pipefail
+        # Read the current version (major.minor.patch[.snapshot]) from gradle.properties
+        GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
+        IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
+        
+        if [[ ${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "release candidate" ]];
+        then
+          # RC on main → count existing RCs for this version and bump
+          COUNT=$(git ls-remote --heads origin "release/${MAJOR}.${MINOR}.${PATCH}-rc*" | wc -l)
+          RC_VERSION="rc$(( COUNT + 1 ))"
+          VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        
+        elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && "${{ inputs.release_type }}" == "bugfix" ]]
+        then
+          # Bugfix on a release branch → increment patch
+          VERSION="${MAJOR}.${MINOR}.$(( PATCH + 1 ))"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        
+        elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && "${{ inputs.release_type }}" == "official release" ]]
+        then
+          # Official release on a release RC branch → reset patch to zero
+          VERSION="${MAJOR}.${MINOR}.0"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        else
+          echo "Ref branch does not match required criteria. Should either be "main" for "release candidate" type, a release branch for "bugfix" type or a release rc branch for "official release" type."
+          exit 1
+        fi
+
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
