@@ -35,13 +35,13 @@ import org.eclipse.edc.spi.event.EventSubscriber;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.Attribute;
+import org.eclipse.tractusx.edc.eventsubscriber.otelutil.OtelRequestWrapper;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.Resource;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.ResourceLog;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.Scope;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.ScopeLog;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.StringValue;
 import org.eclipse.tractusx.edc.eventsubscriber.otelutil.SubscribedEventLogRecord;
-import org.eclipse.tractusx.edc.eventsubscriber.otelutil.Wrapper;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +51,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventLoggingSubscriber implements EventSubscriber {
-
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final ObjectWriter MAPPER = new ObjectMapper().writer().withDefaultPrettyPrinter();
-    private static Logger logger = LoggerFactory.getLogger(EventSubscriber.class);
+    private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
+    private static final ObjectWriter JSON_WRITTER = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private final TypeManager typeManager;
     private final Monitor monitor;
     private OkHttpClient client = new OkHttpClient();
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventLoggingSubscriber.class);
+    private static final boolean IS_OTEL_ENABLED = Boolean.parseBoolean(System.getProperty("otel.javaagent.enabled", "true"));
+    private static final String OTEL_LOGS_ENDPOINT = System.getProperty("otel.exporter.otlp.endpoint", "http://umbrella-opentelemetry-collector.umbrella:4318") + "/v1/logs";
+    private static final String OTEL_SERVICE_NAME = System.getProperty("otel.service.name", "unknown_service");
 
     EventLoggingSubscriber(TypeManager typeManager, Monitor monitor) {
         this.typeManager = typeManager;
@@ -67,42 +69,42 @@ public class EventLoggingSubscriber implements EventSubscriber {
 
     @Override
     public <E extends Event> void on(EventEnvelope<E> event) {
-        var json = typeManager.writeValueAsString(event.getPayload());
-        var log = String.format("Event happened with ID %s and Type %s and data %s", event.getId(), event.getPayload().getClass().getName(), json);
-        var req = createLogEvent(log, event.getPayload().getClass().getName());
-        client.newCall(createRequest(new Wrapper(List.of(req)))).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                logger.error("failure");
-            }
+        if (IS_OTEL_ENABLED) {
+            var eventPayload = typeManager.writeValueAsString(event.getPayload());
+            var logMessage = String.format("Event happened with ID %s and Type %s and data %s", event.getId(), event.getPayload().getClass().getName(), eventPayload);
+            var logEvent = createLogEvent(logMessage, event.getPayload().getClass().getName());
+            client.newCall(createRequest(new OtelRequestWrapper(List.of(logEvent)))).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    monitor.severe(String.format("HTTP call has failed for event: %s with ID: %s.\nData: %s", event.getClass().getName(), event.getId(), eventPayload));
+                }
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                logger.info("SUCCESS");
-            }
-        });
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    response.close();
+                }
+            });
+        }
     }
 
     @NotNull
-    private Request createRequest(Wrapper messageWrapper) {
+    private Request createRequest(OtelRequestWrapper messageWrapper) {
         var requestBuilder = new Request.Builder();
-        Request request = null;
         try {
-            request = requestBuilder.post(RequestBody.create(MAPPER.writeValueAsString(messageWrapper), JSON))
-                    .url("http://umbrella-opentelemetry-collector.umbrella:4318/v1/logs")
+            LOGGER.error(String.format("ENDPOINT: %s\nSERVICE_NAME: %s\nOTEL_ENABLED: %b", OTEL_LOGS_ENDPOINT, OTEL_SERVICE_NAME, IS_OTEL_ENABLED));
+            // LOGGER.error(JSON_WRITTER.writeValueAsString(messageWrapper));
+            return requestBuilder.post(RequestBody.create(JSON_WRITTER.writeValueAsString(messageWrapper), JSON_MEDIA_TYPE))
+                    .url(OTEL_LOGS_ENDPOINT)
                     .build();
-            logger.error(MAPPER.writeValueAsString(messageWrapper));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
-        return request;
     }
 
     private ResourceLog createLogEvent(String message, String eventName) {
         return new ResourceLog(
-                new Resource(List.of(new Attribute("service.name", new StringValue("unknown_service")))),
-                List.of(new ScopeLog(new Scope("name", "1.0.0", new ArrayList<>()), List.of(new SubscribedEventLogRecord(new StringValue(message), eventName))))
+                new Resource(List.of(new Attribute("service.name", new StringValue(OTEL_SERVICE_NAME)))),
+                List.of(new ScopeLog(new Scope("default scope", "1.0.0", new ArrayList<>()), List.of(new SubscribedEventLogRecord(new StringValue(message), eventName))))
             );
     }
 }

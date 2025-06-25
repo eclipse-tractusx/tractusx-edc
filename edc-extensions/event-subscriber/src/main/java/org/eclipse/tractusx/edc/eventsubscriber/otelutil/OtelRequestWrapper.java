@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 
 @JsonSerialize
-public class Wrapper {
+public class OtelRequestWrapper {
     private List<ResourceLog> resourceLogs;
 
-    public Wrapper(List<ResourceLog> resourceLogs) {
+    public OtelRequestWrapper(List<ResourceLog> resourceLogs) {
         this.resourceLogs = resourceLogs;
     }
 
