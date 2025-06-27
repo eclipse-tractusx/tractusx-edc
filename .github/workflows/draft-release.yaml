@@ -71,7 +71,7 @@ jobs:
 
           if [ ! -z $tag ];
           then
-            echo "Tag ${{ steps.resolve_version.outputs.version }} already exists!"
+            echo "Tag ${{ steps.resolve_version.outputs.version }} already exists! Please check the correctness of the selected branch."
             exit 1
           fi
       - id: resolve_branch
