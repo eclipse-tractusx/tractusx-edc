@@ -42,7 +42,7 @@ runs:
         GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
         IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
         
-        if [[ ${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "release candidate" ]];
+        if [[ "${{ inputs.release_type }}" == "release candidate" ]];
         then
           # RC on main → count existing RCs for this version and bump
           COUNT=$(git ls-remote --heads origin "release/${MAJOR}.${MINOR}.${PATCH}-rc*" | wc -l)
@@ -50,20 +50,15 @@ runs:
           VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         
-        elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && "${{ inputs.release_type }}" == "bugfix" ]]
+        elif [[ "${{ inputs.release_type }}" == "bugfix" ]]
         then
           # Bugfix on a release branch → increment patch
           VERSION="${MAJOR}.${MINOR}.$(( PATCH + 1 ))"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         
-        elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && "${{ inputs.release_type }}" == "official release" ]]
+        elif [[ "${{ inputs.release_type }}" == "official release" ]]
         then
           # Official release on a release RC branch → reset patch to zero
           VERSION="${MAJOR}.${MINOR}.0"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-        else
-          echo "Ref branch does not match required criteria. Should either be "main" for "release candidate" type, a release branch for "bugfix" type or a release rc branch for "official release" type."
-          exit 1
         fi
-
-        echo "version=$VERSION" >> "$GITHUB_OUTPUT"

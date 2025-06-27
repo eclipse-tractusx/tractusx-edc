@@ -48,6 +48,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - id: validation
+        name: "Validate the correct relation between release_type and github.ref_name"
+        run: |
+          if [[ !(${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "release candidate")
+            && !(${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && "${{ inputs.release_type }}" == "bugfix")
+            && !(${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && "${{ inputs.release_type }}" == "official release")]]
+          then
+            echo "Ref branch does not match required criteria. Should either be "main" for "release candidate" type, a release branch for "bugfix" type or a release rc branch for "official release" type."
+            exit 1
+          fi
       - id: resolve_version
         name: "Resolve release version basing on release type"
         uses: ./.github/actions/resolve-version
