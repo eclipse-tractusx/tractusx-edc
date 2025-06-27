@@ -56,7 +56,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -164,8 +163,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
     // credentials etc get wiped after every, so the need to be created before every test
     @BeforeEach
     void setupParticipants() {
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, null);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, null);
+        CONSUMER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER_RUNTIME);
+        PROVIDER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER_RUNTIME);
     }
 
     @Override

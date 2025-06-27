@@ -58,8 +58,6 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.createVcBuilder;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.membershipSubject;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -185,10 +183,11 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
         var did = consumer().getDid();
         var bpn = consumer().getBpn();
-        var newRawVc = createVcBuilder(dataspaceIssuer().didUrl(), "MembershipCredential", membershipSubject(did, bpn));
-        newRawVc.add("expirationDate", expirationDate.toString());
+        var newRawVc = dataspaceIssuer().membershipRawVc(did, bpn)
+                .add("expirationDate", expirationDate.toString())
+                .build();
 
-        var newVcString = dataspaceIssuer().createJwtVc(newRawVc.build(), did);
+        var newVcString = dataspaceIssuer().createJwtVc(newRawVc, did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
@@ -237,16 +236,18 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
         var did = consumer().getDid();
         var bpn = consumer().getBpn();
-        var newRawVc = createVcBuilder(dataspaceIssuer().didUrl(), "MembershipCredential", membershipSubject(did, bpn));
-        newRawVc.add("credentialStatus", Json.createObjectBuilder()
-                .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
-                .add("type", "StatusList2021Entry")
-                .add("statusPurpose", "revocation")
-                .add("statusListIndex", "12345")
-                .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
-                .build());
 
-        var newVcString = dataspaceIssuer().createJwtVc(newRawVc.build(), did);
+        var newRawVc = dataspaceIssuer().membershipRawVc(did, bpn)
+                .add("credentialStatus", Json.createObjectBuilder()
+                    .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
+                    .add("type", "StatusList2021Entry")
+                    .add("statusPurpose", "revocation")
+                    .add("statusListIndex", "12345")
+                    .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
+                    .build())
+                .build();
+
+        var newVcString = dataspaceIssuer().createJwtVc(newRawVc, did);
 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
