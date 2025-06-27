@@ -22,13 +22,10 @@ package org.eclipse.tractusx.edc.eventsubscriber;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventSubscriber;
@@ -59,7 +56,7 @@ public class EventLoggingSubscriber implements EventSubscriber {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventLoggingSubscriber.class);
     private static final boolean IS_OTEL_ENABLED = Boolean.parseBoolean(System.getProperty("otel.javaagent.enabled", "true"));
     private static final String OTEL_LOGS_ENDPOINT = System.getProperty("otel.exporter.otlp.endpoint", "http://umbrella-opentelemetry-collector.umbrella:4318") + "/v1/logs";
-    private static final String OTEL_SERVICE_NAME = System.getProperty("otel.service.name", "unknown_service");
+    private static final String OTEL_SERVICE_NAME = System.getenv("OTEL_SERVICE_NAME") != null ? System.getenv("OTEL_SERVICE_NAME") : "unknown_service";
 
     EventLoggingSubscriber(TypeManager typeManager, Monitor monitor) {
         this.typeManager = typeManager;
@@ -73,17 +70,13 @@ public class EventLoggingSubscriber implements EventSubscriber {
             var eventPayload = typeManager.writeValueAsString(event.getPayload());
             var logMessage = String.format("Event happened with ID %s and Type %s and data %s", event.getId(), event.getPayload().getClass().getName(), eventPayload);
             var logEvent = createLogEvent(logMessage, event.getPayload().getClass().getName());
-            client.newCall(createRequest(new OtelRequestWrapper(List.of(logEvent)))).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    monitor.severe(String.format("HTTP call has failed for event: %s with ID: %s.\nData: %s", event.getClass().getName(), event.getId(), eventPayload));
+            try (var response = client.newCall(createRequest(new OtelRequestWrapper(List.of(logEvent)))).execute()) {
+                if (!response.isSuccessful()) {
+                    response.peekBody(response.body().contentLength());
                 }
-
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    response.close();
-                }
-            });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -92,7 +85,6 @@ public class EventLoggingSubscriber implements EventSubscriber {
         var requestBuilder = new Request.Builder();
         try {
             LOGGER.error(String.format("ENDPOINT: %s\nSERVICE_NAME: %s\nOTEL_ENABLED: %b", OTEL_LOGS_ENDPOINT, OTEL_SERVICE_NAME, IS_OTEL_ENABLED));
-            // LOGGER.error(JSON_WRITTER.writeValueAsString(messageWrapper));
             return requestBuilder.post(RequestBody.create(JSON_WRITTER.writeValueAsString(messageWrapper), JSON_MEDIA_TYPE))
                     .url(OTEL_LOGS_ENDPOINT)
                     .build();

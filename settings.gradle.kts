@@ -46,7 +46,6 @@ include(":edc-extensions:bdrs-client")
 include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:federated-catalog")
 include(":edc-extensions:event-subscriber")
-include(":edc-extensions:slf4jlogger-monitor")
 include(":edc-extensions:edr:edr-api-v2")
 include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:edr:edr-index-lock-sql")
@@ -158,5 +157,3 @@ buildCache {
         isPush = isCI
     }
 }
-include("edc-extensions:sfl4jlogger-monitor")
-findProject(":edc-extensions:sfl4jlogger-monitor")?.name = "sfl4jlogger-monitor"
