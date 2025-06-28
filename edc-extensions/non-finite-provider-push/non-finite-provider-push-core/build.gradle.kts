@@ -30,5 +30,4 @@ dependencies {
     implementation(libs.opentelemetry.instrumentation.annotations)
 
     testImplementation(libs.edc.junit)
-    testImplementation(libs.assertj)
 }
