@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
@@ -25,15 +25,22 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Result;
 
+import java.util.List;
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for UsageRestriction. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    public static final String USAGE_RESTRICTION = "UsageRestriction";
+    private static final Set<String> ALLOWED_VALUES = Set.of(
+            "cx.thirdParty.forbidden:1",
+            "cx.manipulation.forbidden:1",
+            "cx.derivations.forbidden:1",
+            "cx.extraordinaryAnalytics.forbidden:1",
+            "cx.dataProviderRemoval.forbidden:1"
+    );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.IS_ALL_OF
     );
@@ -48,8 +55,18 @@ public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolic
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
-        return rightValue instanceof String ?
+        if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
+            return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
+        }
+
+        var invalidValues = list.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .filter(value -> !ALLOWED_VALUES.contains(value))
+                .toList();
+
+        return invalidValues.isEmpty() ?
                 Result.success() :
-                Result.failure("Invalid right-operand: this constraint only allows string right-operands.");
+                Result.failure("Invalid right-operand: the following values are not allowed: %s".formatted(invalidValues));
     }
 }

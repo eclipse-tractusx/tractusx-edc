@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
@@ -27,15 +27,14 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for JurisdictionLocation. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class JurisdictionLocationConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    public static final String JURISDICTION_LOCATION_LITTERAL = "JurisdictionLocation";
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ALL_OF
+            Operator.EQ
     );
 
     @Override
@@ -44,12 +43,12 @@ public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolic
     }
 
     @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule){
+    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
-        return rightValue instanceof String ?
-                Result.success() :
-                Result.failure("Invalid right-operand: this constraint only allows string right-operands.");
+        return rightValue instanceof String
+                ? Result.success()
+                : Result.failure("Invalid right-operand: this constraint only allows string values");
     }
 }
