@@ -35,11 +35,11 @@ import java.util.Set;
 public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String USAGE_RESTRICTION = "UsageRestriction";
     private static final Set<String> ALLOWED_VALUES = Set.of(
-            "cx.thirdParty.forbidden:1",
+            "cx.thirdparty.forbidden:1",
             "cx.manipulation.forbidden:1",
             "cx.derivations.forbidden:1",
-            "cx.extraordinaryAnalytics.forbidden:1",
-            "cx.dataProviderRemoval.forbidden:1"
+            "cx.extraordinaryanalytics.forbidden:1",
+            "cx.dataProviderremoval.forbidden:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.IS_ALL_OF
@@ -55,6 +55,7 @@ public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicy
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
+
         if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
             return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
         }

@@ -34,8 +34,8 @@ import java.util.Set;
 public class VersionChangesConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String VERSION_CHANGES = "VersionChanges";
     private static final Set<String> ALLOWED_VALUES = Set.of(
-            "cx.versionChanges.minor:1",
-            "cx.versionChanges.major:1"
+            "cx.versionchanges.minor:1",
+            "cx.versionchanges.major:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ

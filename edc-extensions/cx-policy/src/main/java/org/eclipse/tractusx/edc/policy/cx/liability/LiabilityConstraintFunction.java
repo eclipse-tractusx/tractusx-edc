@@ -34,8 +34,8 @@ import java.util.Set;
 public class LiabilityConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String LIABILITY_LITERAL = "Liability";
     public static final Set<String> VALID_VALUES = Set.of(
-            "cx.grossNegligence:1",
-            "cx.slightNegligence:1"
+            "cx.grossnegligence:1",
+            "cx.slightnegligence:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ

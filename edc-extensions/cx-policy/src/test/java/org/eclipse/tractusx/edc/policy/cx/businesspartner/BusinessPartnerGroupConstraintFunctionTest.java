@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
@@ -30,34 +30,58 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class ContractReferenceConstraintFunctionTest {
+class BusinessPartnerGroupConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final ContractReferenceConstraintFunction<ParticipantAgentPolicyContext> function = new ContractReferenceConstraintFunction<>();
+    private final BusinessPartnerGroupConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "contractRef", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.IS_ANY_OF, "BPNL00000000001A", null, context)).isTrue();
     }
 
     @Test
-    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, "valid-test", null);
+    void validate_whenIsAnyOfAndValidRightValueArePassed_thenSuccess() {
+        var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
+    void validate_whenIsNoneOfAndValidRightValueArePassed_thenSuccess() {
+        var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
+        var result = function.validate(Operator.IS_NONE_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
+        var rightValue = List.of("BPNL00000000001A");
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenDuplicateItemsArePassed_thenFails() {
+        var rightValue = List.of("BPNL00000000001A", "BPNL00000000001A");
+        var result = function.validate(Operator.IS_NONE_OF, rightValue, null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    }
+
+    @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "valid-test", null);
+        var rightValue = List.of("BPNL00000000001A");
+        var result = function.validate(Operator.EQ, rightValue, null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
-    void validate_whenInvalidValueType_thenFailure() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("invalid"), null);
+    void validate_whenInvalidRightValueType_thenFailure() {
+        var result = function.validate(Operator.IS_ANY_OF, "BPNL000000001A", null);
         assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+        assertThat(result.getFailureDetail()).contains("must be a list");
     }
 }

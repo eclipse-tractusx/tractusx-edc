@@ -29,12 +29,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This is a placeholder constraint function for AffiliatesBpnl. It always returns true but allows
+ * This is a placeholder constraint function for AffiliatesRegion. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class AffilliatesBpnlConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String AFFILIATES_BPNL = "AffiliatesBpnl";
-    public static final String PATTERN = "^BPNL[0-9A-Z]{12}$";
+public class AffiliatesRegionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    public static final String AFFILIATES_REGION = "AffiliatesRegion";
+    public static final Set<String> ALLOWED_VALUES = Set.of(
+            "cx.region.all:1",
+            "cx.region.europe:1",
+            "cx.region.northAmerica:1",
+            "cx.region.southAmerica:1",
+            "cx.region.africa:1",
+            "cx.region.asia:1",
+            "cx.region.oceania:1",
+            "cx.region.antarctica:1"
+    );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.IS_ANY_OF
     );
@@ -54,16 +63,14 @@ public class AffilliatesBpnlConstraintFunction<C extends ParticipantAgentPolicyC
             return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
         }
 
-        var pattern = java.util.regex.Pattern.compile(PATTERN);
-        var distinctValues = list.stream()
+        var invalidValues = list.stream()
                 .filter(String.class::isInstance)
                 .map(String.class::cast)
-                .filter(s -> pattern.matcher(s).matches())
-                .distinct()
-                .count();
+                .filter(value -> !ALLOWED_VALUES.contains(value))
+                .toList();
 
-        return distinctValues == list.size() ?
+        return invalidValues.isEmpty() ?
                 Result.success() :
-                Result.failure("Invalid right-operand: list must contain unique values matching pattern: %s".formatted(PATTERN));
+                Result.failure("Invalid right-operand: the following values are not allowed: %s".formatted(invalidValues));
     }
 }

@@ -34,7 +34,7 @@ import java.util.Set;
 public class WarrantyDefinitionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String WARRANTY = "WarrantyDefinition";
     private static final Set<String> ALLOWED_VALUES = Set.of(
-            "cx.warranty.contractEndDate:1"
+            "cx.warranty.contractenddate:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ

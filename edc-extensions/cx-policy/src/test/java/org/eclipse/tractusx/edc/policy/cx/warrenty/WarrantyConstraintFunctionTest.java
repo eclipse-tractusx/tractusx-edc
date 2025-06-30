@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.warrenty;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
@@ -25,38 +25,36 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class ContractReferenceConstraintFunctionTest {
+class WarrantyConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final ContractReferenceConstraintFunction<ParticipantAgentPolicyContext> function = new ContractReferenceConstraintFunction<>();
+    private final WarrantyConstraintFunction<ParticipantAgentPolicyContext> function = new WarrantyConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "contractRef", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.EQ, "cx.warranty.none:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, "valid-test", null);
+        var result = function.validate(Operator.EQ, "cx.warranty.none:1", null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "valid-test", null);
+        var result = function.validate(Operator.IS_ANY_OF,"cx.warranty.none:1", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
-    void validate_whenInvalidValueType_thenFailure() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("invalid"), null);
+    void validate_whenInvalidValue_thenFailure() {
+        var result = function.validate(Operator.EQ, "invalid", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
     }

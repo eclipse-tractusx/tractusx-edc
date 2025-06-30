@@ -57,14 +57,7 @@ public class FrameworkAgreementCredentialConstraintFunction<C extends Participan
     public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
     public static final Set<String> ALLOWED_VALUES = Set.of(
-            "cx.region.all:1",
-            "cx.region.europe:1",
-            "cx.region.northAmerica:1",
-            "cx.region.southAmerica:1",
-            "cx.region.africa:1",
-            "cx.region.asia:1",
-            "cx.region.oceania:1",
-            "cx.region.antarctica:1"
+            "DataExchangeGovernance:2.0"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ

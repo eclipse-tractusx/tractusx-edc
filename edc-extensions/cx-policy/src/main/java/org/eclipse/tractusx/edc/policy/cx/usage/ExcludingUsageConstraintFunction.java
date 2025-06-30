@@ -34,7 +34,7 @@ import java.util.Set;
 public class ExcludingUsageConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String USAGE_PURPOSE = "ExclusiveUsage";
     private static final Set<String> ALLOWED_VALUES = Set.of(
-            "x.exclusiveUsage.dataConsumer:1"
+            "x.exclusiveusage.dataconsumer:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
