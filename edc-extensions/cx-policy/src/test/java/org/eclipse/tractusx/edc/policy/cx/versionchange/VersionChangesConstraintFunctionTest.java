@@ -38,18 +38,18 @@ class VersionChangesConstraintFunctionTest {
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "valid_value", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.EQ, "cx.versionchanges.minor:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.EQ, "valid_value", null);
+        var result = function.validate(Operator.EQ, "cx.versionchanges.minor:1", null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF,"valid_value", null);
+        var result = function.validate(Operator.IS_ANY_OF,"cx.versionchanges.minor:1", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
