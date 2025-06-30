@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber;
 
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.event.Event;
@@ -39,6 +40,8 @@ public class EventSubscriberExtension implements ServiceExtension {
 
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private EdcHttpClient httpClient;
 
     @Override
     public String name() {
@@ -47,6 +50,6 @@ public class EventSubscriberExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor()));
+        eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor(), httpClient));
     }
 }
