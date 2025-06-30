@@ -34,7 +34,7 @@ import java.util.Set;
 public class DataUsageEndDefinitionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String DATA_USAGE_END_DEFINITION = "DataUsageEndDefinition";
     public static final Set<String> VALID_VALUES = Set.of(
-            "cx.dataUsageEnd.unlimited:1"
+            "cx.datausageend.unlimited:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ

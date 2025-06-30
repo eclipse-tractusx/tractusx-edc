@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.affiliates;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
@@ -30,34 +30,43 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class ContractReferenceConstraintFunctionTest {
+class AffiliatesRegionConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final ContractReferenceConstraintFunction<ParticipantAgentPolicyContext> function = new ContractReferenceConstraintFunction<>();
+    private final AffiliatesRegionConstraintFunction<ParticipantAgentPolicyContext> function = new AffiliatesRegionConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "contractRef", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.IS_ANY_OF, "BPNL00000000001A", null, context)).isTrue();
     }
 
     @Test
-    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, "valid-test", null);
+    void validate_whenValidOperatorAndRightValueArePassed_thenSuccess() {
+        var rightValue = List.of("cx.region.europe:1", "cx.region.northAmerica:1");
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
+        var rightValue = List.of("cx.region.all:1");
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "valid-test", null);
+        var rightValue = List.of("cx.region.all:1");
+        var result = function.validate(Operator.EQ, rightValue, null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
-    void validate_whenInvalidValueType_thenFailure() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("invalid"), null);
+    void validate_whenInvalidRightValueType_thenFailure() {
+        var result = function.validate(Operator.IS_ANY_OF, "invalid_value", null);
         assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+        assertThat(result.getFailureDetail()).contains("must be a list");
     }
 }

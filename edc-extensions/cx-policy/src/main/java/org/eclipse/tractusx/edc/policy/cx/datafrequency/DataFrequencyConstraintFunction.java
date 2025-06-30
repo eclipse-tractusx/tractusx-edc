@@ -34,8 +34,8 @@ import java.util.Set;
 public class DataFrequencyConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String DATA_FREQUENCY = "DataFrequency";
     public static final Set<String> VALID_VALUES = Set.of(
-            "cx.dataFrequency.once:1",
-            "cx.dataFrequency.unlimited:1"
+            "cx.datafrequency.once:1",
+            "cx.datafrequency.unlimited:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ

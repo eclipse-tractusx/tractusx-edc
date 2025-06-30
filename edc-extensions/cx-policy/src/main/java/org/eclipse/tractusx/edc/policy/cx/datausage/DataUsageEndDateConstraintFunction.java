@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public class DataUsageEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String DATA_USAGE_END_DATE = "DataUsageEndDate";
-    public static final String PATTERN = "^(\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}(Z|[+-]\\\\d{2}:\\\\d{2}))$";
+    public static final String PATTERN = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$";
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
     );

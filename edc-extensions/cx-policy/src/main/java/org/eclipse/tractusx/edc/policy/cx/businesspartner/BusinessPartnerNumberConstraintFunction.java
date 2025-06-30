@@ -65,6 +65,6 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
 
         return distinctValues == list.size() ?
                 Result.success() :
-                Result.failure("Invalid right-operand: list must contain only unique values");
+                Result.failure("Invalid right-operand: list must contain only unique values matching pattern: %s".formatted(PATTERN));
     }
 }

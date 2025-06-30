@@ -34,8 +34,8 @@ import java.util.Set;
 public class JurisdictionLocationReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String JURISDICTION_LOCATION_REFERENCE_LITERAL = "JurisdictionLocationReference";
     public static final Set<String> VALID_VALUES = Set.of(
-            "cx.location.dataConsumer:1",
-            "cx.location.contractReference:1"
+            "cx.location.dataconsumer:1",
+            "cx.location.contractreference:1"
     );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
