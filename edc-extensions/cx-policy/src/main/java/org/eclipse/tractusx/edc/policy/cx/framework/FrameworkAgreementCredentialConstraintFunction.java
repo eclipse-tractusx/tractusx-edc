@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
@@ -55,6 +56,19 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 public class FrameworkAgreementCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
+    public static final Set<String> ALLOWED_VALUES = Set.of(
+            "cx.region.all:1",
+            "cx.region.europe:1",
+            "cx.region.northAmerica:1",
+            "cx.region.southAmerica:1",
+            "cx.region.africa:1",
+            "cx.region.asia:1",
+            "cx.region.oceania:1",
+            "cx.region.antarctica:1"
+    );
+    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
+            Operator.EQ
+    );
 
     /**
      * Evaluates the constraint's left-operand and right-operand against a list of {@link VerifiableCredential} objects.
@@ -122,6 +136,17 @@ public class FrameworkAgreementCredentialConstraintFunction<C extends Participan
     @Override
     public boolean canHandle(Object leftValue) {
         return leftValue instanceof String && leftValue.toString().startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL);
+    }
+
+    @Override
+    public Result<Void> validate(Object leftOperand, Operator operator, Object rightValue, Permission rule) {
+        if (!ALLOWED_OPERATORS.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
+        }
+        return rightValue instanceof String && ALLOWED_VALUES.contains(rightValue.toString().toLowerCase())
+                ? Result.success()
+                : Result.failure("Invalid right-operand: this constraint only allows the following right-operands: %s, but received '%s'."
+                .formatted(String.join(", ", ALLOWED_VALUES), rightValue));
     }
 
     @NotNull

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
@@ -25,17 +25,18 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Result;
 
+import java.util.List;
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for BusinessPartnerGroup. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    public static final String BUSINESS_PARTNER_GROUP = "BusinessPartnerGroup";
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ALL_OF
+            Operator.IS_ANY_OF,
+            Operator.IS_NONE_OF
     );
 
     @Override
@@ -44,12 +45,23 @@ public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolic
     }
 
     @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule){
+    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
-        return rightValue instanceof String ?
+
+        if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
+            return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
+        }
+
+        var distinctValues = list.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .distinct()
+                .count();
+
+        return distinctValues == list.size() ?
                 Result.success() :
-                Result.failure("Invalid right-operand: this constraint only allows string right-operands.");
+                Result.failure("Invalid right-operand: list must contain only unique values");
     }
 }

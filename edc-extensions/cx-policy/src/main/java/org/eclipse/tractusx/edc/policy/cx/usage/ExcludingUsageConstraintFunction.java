@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
@@ -27,15 +27,17 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for ExclusiveUsage. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class ExcludingUsageConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    public static final String USAGE_PURPOSE = "ExclusiveUsage";
+    private static final Set<String> ALLOWED_VALUES = Set.of(
+            "x.exclusiveUsage.dataConsumer:1"
+    );
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ALL_OF
+            Operator.EQ
     );
 
     @Override
@@ -48,8 +50,9 @@ public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolic
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
-        return rightValue instanceof String ?
-                Result.success() :
-                Result.failure("Invalid right-operand: this constraint only allows string right-operands.");
-    }
+
+        return rightValue instanceof String && ALLOWED_VALUES.contains(rightValue.toString().toLowerCase())
+                ? Result.success()
+                : Result.failure("Invalid right-operand: this constraint only allows the following right-operands: %s, but received '%s'."
+                .formatted(String.join(", ", ALLOWED_VALUES), rightValue));}
 }
