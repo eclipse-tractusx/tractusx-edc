@@ -43,6 +43,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Optional extension that logs EDC business events by direct HTTP call to the OpenTelemetry Collector.
+ * Should only be used when observability is enabled.
+ */
 public class EventLoggingSubscriber implements EventSubscriber {
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
     private final TypeManager typeManager;
