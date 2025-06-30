@@ -31,13 +31,17 @@ import java.util.Map;
 import java.util.UUID;
 
 import static jakarta.json.Json.createObjectBuilder;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
+import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
+import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.TERMINATED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.mockserver.model.HttpRequest.request;
 
@@ -47,6 +51,8 @@ import static org.mockserver.model.HttpRequest.request;
 public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
 
     public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
+    public static final String MOCK_BACKEND_SOURCE_PATH = "/mock/api/provider";
+    public static final String MOCK_BACKEND_DESTINATION_PATH = "/mock/api/consumer";
 
     private ClientAndServer server;
 
@@ -57,43 +63,75 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
 
     @Test
     void httpPushDataTransfer() {
+        var sourceUrl = createMockHttpDataUrl(MOCK_BACKEND_SOURCE_PATH);
+        var destinationUrl = createMockHttpDataUrl(MOCK_BACKEND_DESTINATION_PATH);
+
         var assetId = UUID.randomUUID().toString();
-
-        var providerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), "/mock/api/provider");
-        var consumerUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), "/mock/api/consumer");
-
-        server.when(request().withPath("/mock/api/provider"))
-                .respond(HttpResponse.response().withStatusCode(200));
-        server.when(request().withPath("/mock/api/consumer"))
-                .respond(HttpResponse.response().withStatusCode(200));
-
         Map<String, Object> dataAddress = Map.of(
                 "name", "transfer-test",
-                "baseUrl", providerUrl,
+                "baseUrl", sourceUrl,
                 "type", "HttpData",
-                "contentType", "application/json"
-        );
-
+                "contentType", "application/json");
         provider().createAsset(assetId, Map.of(), dataAddress);
         var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
-        var destination = httpDataAddress(consumerUrl);
-
+        var destination = httpDataAddress(destinationUrl);
         var transferProcessId = consumer()
                 .requestAssetFrom(assetId, provider())
                 .withDestination(destination)
                 .withTransferType("HttpData-PUSH")
                 .execute();
+
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
         });
     }
 
+    @Test
+    void httpPushNonFiniteDataTransfer() {
+        var sourceUrl = createMockHttpDataUrl(MOCK_BACKEND_SOURCE_PATH);
+        var destinationUrl = createMockHttpDataUrl(MOCK_BACKEND_DESTINATION_PATH);
+
+        var assetId = UUID.randomUUID().toString();
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", sourceUrl,
+                "type", "HttpData",
+                "contentType", "application/json",
+                "isNonFinite", "true");
+        provider().createAsset(assetId, Map.of(), dataAddress);
+        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
+        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
+
+        var destination = httpDataAddress(destinationUrl);
+        var transferProcessId = consumer()
+                .requestAssetFrom(assetId, provider())
+                .withDestination(destination)
+                .withTransferType("HttpData-PUSH")
+                .execute();
+
+        consumer().awaitTransferToBeInState(transferProcessId, STARTED);
+
+        await().during(3, SECONDS).pollInterval(ASYNC_POLL_INTERVAL).untilAsserted(() -> {
+            var state = consumer().getTransferProcessState(transferProcessId);
+            assertThat(state).isNotEqualTo(COMPLETED.name());
+        });
+
+        consumer().terminateTransfer(transferProcessId);
+        consumer().awaitTransferToBeInState(transferProcessId, TERMINATED);
+    }
+
     @AfterEach
     void teardown() {
         server.stop();
+    }
+
+    private String createMockHttpDataUrl(String path) {
+        server.when(request().withPath(path))
+                .respond(HttpResponse.response().withStatusCode(200));
+        return "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), path);
     }
 
     private JsonObject httpDataAddress(String baseUrl) {
