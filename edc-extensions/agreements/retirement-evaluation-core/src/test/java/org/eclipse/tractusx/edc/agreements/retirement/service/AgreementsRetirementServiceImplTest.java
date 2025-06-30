@@ -32,7 +32,6 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreemen
 import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsRetirementService;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetirementStore;
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +62,6 @@ class AgreementsRetirementServiceImplTest {
             contractAgreementService, eventRouter, Clock.systemUTC());
 
     @Test
-    @DisplayName("Returns true if agreement is retired")
     void returnsTrue_ifAgreementIsRetired() {
 
         var agreementId = "test-agreement-id";
@@ -82,7 +80,6 @@ class AgreementsRetirementServiceImplTest {
     }
 
     @Test
-    @DisplayName("Returns false if agreement is not retired")
     void returnsFalse_ifAgreementIsNotRetired() {
 
         when(store.findRetiredAgreements(any(QuerySpec.class)))
@@ -94,7 +91,6 @@ class AgreementsRetirementServiceImplTest {
     }
 
     @Test
-    @DisplayName("Verify find all response")
     void verify_findAll() {
         var query = QuerySpec.Builder.newInstance().build();
         when(store.findRetiredAgreements(query))
@@ -159,7 +155,7 @@ class AgreementsRetirementServiceImplTest {
         }
     }
 
-    private static AgreementsRetirementEntry createAgreementsRetirementEntry() {
+    private AgreementsRetirementEntry createAgreementsRetirementEntry() {
         return AgreementsRetirementEntry.Builder.newInstance()
                 .withAgreementId(UUID.randomUUID().toString())
                 .withReason("some-reason")

@@ -33,7 +33,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -92,7 +92,7 @@ public class TransferParticipant extends TractusxParticipantBase {
     private static class EventSubscription {
         private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
         private final ClientAndServer server = ClientAndServer.startClientAndServer(eventReceiverPort.get());
-        private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
+        private final BlockingQueue<JsonObject> events = new LinkedBlockingQueue<>();
         private final Duration timeout;
 
         public EventSubscription(Duration timeout) {
