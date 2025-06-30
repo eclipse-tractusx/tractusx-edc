@@ -41,7 +41,6 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.mockserver.model.HttpRequest.request;
 
@@ -114,7 +113,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
 
         consumer().awaitTransferToBeInState(transferProcessId, STARTED);
 
-        await().during(3, SECONDS).pollInterval(ASYNC_POLL_INTERVAL).untilAsserted(() -> {
+        // Reassert after 3 seconds
+        await().pollDelay(3, SECONDS).atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
             assertThat(state).isNotEqualTo(COMPLETED.name());
         });
