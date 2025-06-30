@@ -26,4 +26,6 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.http)
     testImplementation(libs.edc.junit)
+    testImplementation(project(":edc-extensions:agreements:retirement-evaluation-spi"))
+    testImplementation(libs.edc.spi.http)
 }
