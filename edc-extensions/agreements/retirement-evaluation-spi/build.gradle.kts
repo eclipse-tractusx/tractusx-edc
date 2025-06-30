@@ -23,9 +23,9 @@ plugins {
 }
 
 dependencies {
+    api(project(":spi:core-spi"))
     api(libs.edc.spi.policyengine)
-    implementation(libs.edc.spi.core)
-    implementation(project(":spi:core-spi"))
+    api(libs.edc.spi.core)
 
     testImplementation(libs.edc.junit)
 }
