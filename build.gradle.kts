@@ -59,10 +59,7 @@ allprojects {
 
     dependencies {
 
-//        implementation("org.slf4j:slf4j-api:2.0.17")
-        implementation("ch.qos.logback:logback-classic:1.5.18")
-        implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
-        implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
+        implementation("org.slf4j:slf4j-api:2.0.17")
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
@@ -157,7 +154,7 @@ subprojects {
             val copyDockerfile = tasks.create("copyDockerfile", Copy::class) {
                 from(rootProject.projectDir.toPath().resolve("resources"))
                 into(project.layout.buildDirectory.dir("resources").get().dir("docker"))
-                include("Dockerfile", "logback.xml")
+                include("Dockerfile")
             }
 
             val shadowJarTask = tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME).get()
@@ -184,7 +181,6 @@ subprojects {
                 buildArgs.put("JAR", "build/libs/${project.name}.jar")
                 buildArgs.put("OTEL_JAR", "build/resources/otel/opentelemetry-javaagent.jar")
                 buildArgs.put("ADDITIONAL_FILES", "build/legal/*")
-                buildArgs.put("LOGBACK_CONF", "build/resources/docker/logback.xml")
                 inputDir.set(file(dockerContextDir))
             }
 

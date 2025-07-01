@@ -47,7 +47,6 @@ import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
 @Deprecated(since = "0.8.0")
 public class EdrCacheApiV2Controller extends BaseEdrCacheApiController implements EdrCacheApiV2 {
 
-
     public EdrCacheApiV2Controller(EndpointDataReferenceStore edrStore,
                                    TypeTransformerRegistry transformerRegistry,
                                    JsonObjectValidatorRegistry validator,

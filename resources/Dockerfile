@@ -23,7 +23,6 @@ FROM eclipse-temurin:24.0.1_9-jre-alpine
 ARG JAR
 ARG OTEL_JAR
 ARG ADDITIONAL_FILES
-ARG LOGBACK_CONF
 
 ARG APP_USER=docker
 ARG APP_UID=10100
@@ -44,7 +43,6 @@ WORKDIR /app
 
 COPY ${JAR} edc-runtime.jar
 COPY ${OTEL_JAR} opentelemetry-javaagent.jar
-COPY ${LOGBACK_CONF} ./
 COPY ${ADDITIONAL_FILES} ./
 
 HEALTHCHECK NONE
@@ -54,6 +52,5 @@ ENTRYPOINT ["java", \
      "-Dotel.javaagent.configuration-file=/app/opentelemetry.properties", \
      "-Dedc.fs.config=/app/configuration.properties", \
      "-Djava.security.egd=file:/dev/urandom", \
-     "-Dlogback.configurationFile=file:/app/logback.xml", \
      "-jar", \
      "edc-runtime.jar"]
