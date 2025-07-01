@@ -67,11 +67,11 @@ customCaCerts: {}
 controlplane:
   image:
     # -- Which derivate of the control plane to use. When left empty the deployment will select the correct image automatically
-    repository: "edc-runtime-memory"
+    repository: ""
     # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
-    pullPolicy: Never
+    pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
-    tag: "latest"
+    tag: ""
   initContainers: []
   debug:
     # -- Enables java debugging mode.
@@ -348,12 +348,12 @@ controlplane:
 
 dataplane:
   image:
-    # -- Which derivate of the control plane to use. When left empty the deployment will select the correct image automatically
-    repository: "edc-runtime-memory"
+    # -- Which derivate of the data plane to use. When left empty the deployment will select the correct image automatically
+    repository: ""
     # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
-    pullPolicy: Never
+    pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion
-    tag: "latest"
+    tag: ""
   initContainers: []
   debug:
     # -- Enables java debugging mode.
