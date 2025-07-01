@@ -69,7 +69,6 @@ include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
 
 // test modules
 include(":edc-tests:e2e-fixtures")
-include(":edc-tests:e2e:agreement-retirement-tests")
 include(":edc-tests:e2e:catalog-tests")
 include(":edc-tests:e2e:cloud-transfer-tests")
 include(":edc-tests:e2e:edc-dataplane-tokenrefresh-tests")
@@ -118,7 +117,7 @@ pluginManagement {
 
 plugins {
     id("com.gradle.develocity") version "4.0.2"
-    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.2.1"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.3"
 }
 
 dependencyResolutionManagement {
