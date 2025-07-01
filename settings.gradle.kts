@@ -19,6 +19,17 @@
 
 rootProject.name = "tractusx-edc"
 
+// this is needed to have access to snapshot builds of plugins
+pluginManagement {
+    repositories {
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 // spi modules
 include(":spi:callback-spi")
 include(":spi:edr-spi")
@@ -103,31 +114,9 @@ include(":samples:testing-with-mocked-connector")
 include(":samples:edc-dast:edc-dast-runtime")
 include(":samples:edc-dast:edc-dast-extensions")
 
-
-// this is needed to have access to snapshot builds of plugins
-pluginManagement {
-    repositories {
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
 plugins {
     id("com.gradle.develocity") version "4.0.2"
     id("com.gradle.common-custom-user-data-gradle-plugin") version "2.3"
-}
-
-dependencyResolutionManagement {
-    repositories {
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
-        mavenCentral()
-        mavenLocal()
-    }
 }
 
 // Develocity
