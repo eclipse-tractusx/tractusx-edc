@@ -24,7 +24,6 @@ import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
-import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -40,9 +39,7 @@ import org.eclipse.edc.token.spi.TokenValidationService;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.DataPlaneTokenRefreshService;
 import org.jetbrains.annotations.NotNull;
 
-import java.security.PrivateKey;
 import java.time.Clock;
-import java.util.function.Supplier;
 
 import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
@@ -86,8 +83,6 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     @Inject
     private AccessTokenDataStore accessTokenDataStore;
     @Inject
-    private PrivateKeyResolver privateKeyResolver;
-    @Inject
     private Clock clock;
     @Inject
     private Vault vault;
@@ -108,7 +103,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
 
     // exposes the service as access token service
     @Provider
-    public DataPlaneAccessTokenService createAccessTokenService(ServiceExtensionContext context) {
+    public DataPlaneAccessTokenService  createAccessTokenService(ServiceExtensionContext context) {
         return getTokenRefreshService(context);
     }
 
@@ -161,15 +156,4 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         return did;
     }
 
-    @NotNull
-    private Supplier<PrivateKey> getPrivateKeySupplier(ServiceExtensionContext context) {
-        return () -> {
-            var alias = context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS);
-            return privateKeyResolver.resolvePrivateKey(alias)
-                    .orElse(f -> {
-                        context.getMonitor().warning("Cannot resolve private key: " + f.getFailureDetail());
-                        return null;
-                    });
-        };
-    }
 }

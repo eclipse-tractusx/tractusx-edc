@@ -58,7 +58,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
-import static org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.stsRuntime;
 import static org.mockserver.model.HttpRequest.request;
@@ -125,9 +124,9 @@ public class CredentialSpoofTest {
     void setup() {
         server = ClientAndServer.startClientAndServer("localhost", getFreePort(), MOCKED_CS_SERVICE_PORT);
 
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER, CONSUMER_RUNTIME, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER, PROVIDER_RUNTIME, STS_RUNTIME);
-        configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR, MALICIOUS_ACTOR_RUNTIME, STS_RUNTIME);
+        CONSUMER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER_RUNTIME, STS_RUNTIME);
+        PROVIDER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER_RUNTIME, STS_RUNTIME);
+        MALICIOUS_ACTOR.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR_RUNTIME, STS_RUNTIME);
     }
 
     @AfterEach
