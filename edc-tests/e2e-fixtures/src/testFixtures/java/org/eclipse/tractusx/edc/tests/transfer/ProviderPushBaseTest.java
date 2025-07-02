@@ -116,7 +116,7 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
         // Reassert after 3 seconds
         await().pollDelay(3, SECONDS).atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = consumer().getTransferProcessState(transferProcessId);
-            assertThat(state).isNotEqualTo(COMPLETED.name());
+            assertThat(state).isEqualTo(STARTED.name());
         });
 
         consumer().terminateTransfer(transferProcessId);
