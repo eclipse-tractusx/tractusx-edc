@@ -23,7 +23,6 @@ import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
-import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

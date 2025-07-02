@@ -49,7 +49,7 @@ class VersionChangesConstraintFunctionTest {
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF,"cx.versionchanges.minor:1", null);
+        var result = function.validate(Operator.IS_ANY_OF, "cx.versionchanges.minor:1", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
